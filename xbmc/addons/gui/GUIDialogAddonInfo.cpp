@@ -398,8 +398,8 @@ void CGUIDialogAddonInfo::OnSelectVersion()
       if (versions[i].second == LOCAL_CACHE)
       {
         CAddonInstaller::GetInstance().InstallFromZip(
-            StringUtils::Format("special://home/addons/packages/{}-{}.zip", processAddonId,
-                                versions[i].first.asString()));
+            StringUtils::Format("special://home/addons/packages/%s-%s.zip", processAddonId.c_str(),
+                                versions[i].first.asString().c_str()));
       }
       else
       {
@@ -774,8 +774,8 @@ bool CGUIDialogAddonInfo::SetItem(const CFileItemPtr& item)
   if (CServiceBroker::GetAddonMgr().GetAddon(item->GetAddonInfo()->ID(), m_localAddon,
                                              OnlyEnabled::CHOICE_NO))
   {
-    CLog::Log(LOGDEBUG, "{} - Addon with id {} not found locally.", __FUNCTION__,
-              item->GetAddonInfo()->ID());
+    CLog::Log(LOGDEBUG, "%s - Addon with id %s not found locally.", __FUNCTION__,
+              item->GetAddonInfo()->ID().c_str());
   }
   return true;
 }

@@ -353,7 +353,7 @@ int ShowSelectRatingDialog(int iSelected)
     dialog->SetHeading(38023);
     dialog->Add(g_localizeStrings.Get(38022));
     for (int i = 1; i <= 10; i++)
-      dialog->Add(StringUtils::Format("{}: {}", g_localizeStrings.Get(563), i));
+      dialog->Add(StringUtils::Format("%s: %i", g_localizeStrings.Get(563).c_str(), i));
     dialog->SetSelected(iSelected);
     dialog->Open();
 
@@ -584,13 +584,13 @@ void CAsyncGetItemsForPlaylist::GetItemsForPlaylist(const boost::shared_ptr<CFil
           PLAYLIST::CPlayListFactory::Create(*item));
       if (!playList)
       {
-        CLog::Log(LOGERROR, "{} failed to create playlist {}", __FUNCTION__, item->GetPath());
+        CLog::Log(LOGERROR, "%s failed to create playlist %s", __FUNCTION__, item->GetPath().c_str());
         return;
       }
 
       if (!playList->Load(item->GetPath()))
       {
-        CLog::Log(LOGERROR, "{} failed to load playlist {}", __FUNCTION__, item->GetPath());
+        CLog::Log(LOGERROR, "%s failed to load playlist %s", __FUNCTION__, item->GetPath().c_str());
         return;
       }
 
@@ -905,7 +905,7 @@ bool IsItemPlayable(const CFileItem& item)
     const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
     std::string path = settings->GetString(CSettings::SETTING_SYSTEM_PLAYLISTSPATH);
     StringUtils::TrimRight(path, "/");
-    if (StringUtils::StartsWith(item.GetPath(), StringUtils::Format("{}/music/", path)))
+    if (StringUtils::StartsWith(item.GetPath(), StringUtils::Format("%s/music/", path.c_str())))
       return true;
 
     if (!item.m_bIsFolder && !item.HasMusicInfoTag())

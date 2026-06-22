@@ -60,7 +60,7 @@ bool CDirectoryNodeMusicVideosOverview::GetContent(CFileItemList& items) const
     CFileItemPtr pItem(new CFileItem(g_localizeStrings.Get(MusicVideoChildren[i].label)));
 
     CVideoDbUrl itemUrl = videoUrl;
-    std::string strDir = StringUtils::Format("{}/", MusicVideoChildren[i].id);
+    std::string strDir = StringUtils::Format("%s/", MusicVideoChildren[i].id.c_str());
     itemUrl.AppendPath(strDir);
     pItem->SetPath(itemUrl.ToString());
 

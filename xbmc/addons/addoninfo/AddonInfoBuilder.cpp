@@ -191,7 +191,7 @@ AddonInfoPtr CAddonInfoBuilder::Generate(const std::string& id, AddonType::Type 
   // any character to go through.
   if (id.empty() || id.find_first_not_of(VALID_ADDON_IDENTIFIER_CHARACTERS) != std::string::npos)
   {
-    CLog::Log(LOGERROR, "CAddonInfoBuilder::{}: identifier '{}' is invalid", __FUNCTION__, id);
+    CLog::Log(LOGERROR, "CAddonInfoBuilder::%s: identifier '%s' is invalid", __FUNCTION__, id.c_str());
     return AddonInfoPtr();
   }
 
@@ -208,9 +208,9 @@ AddonInfoPtr CAddonInfoBuilder::Generate(const std::string& addonPath, bool plat
   CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(URIUtils::AddFileToFolder(addonRealPath, "addon.xml")))
   {
-    CLog::Log(LOGERROR, "CAddonInfoBuilder::{}: Unable to load '{}', Line {}\n{}",
+    CLog::Log(LOGERROR, "CAddonInfoBuilder::%s: Unable to load '%s', Line %i\n%s",
                                                __FUNCTION__,
-                                               URIUtils::AddFileToFolder(addonRealPath, "addon.xml"),
+                                               URIUtils::AddFileToFolder(addonRealPath, "addon.xml").c_str(),
                                                xmlDoc.ErrorRow(),
                                                xmlDoc.ErrorDesc());
     return AddonInfoPtr();
@@ -223,8 +223,8 @@ AddonInfoPtr CAddonInfoBuilder::Generate(const std::string& addonPath, bool plat
   if (!platformCheck || PlatformSupportsAddon(addon))
     return addon;
 
-  CLog::Log(LOGERROR, "CAddonInfoBuilder::{}: No platform for add-on {} (supported platforms: {})",
-            __FUNCTION__, addon->ID(), StringUtils::Join(addon->m_platforms, ", "));
+  CLog::Log(LOGERROR, "CAddonInfoBuilder::%s: No platform for add-on %s (supported platforms: %s)",
+            __FUNCTION__, addon->ID().c_str(), StringUtils::Join(addon->m_platforms, ", ").c_str());
 
   return AddonInfoPtr();
 }
@@ -279,7 +279,7 @@ bool CAddonInfoBuilder::ParseXML(const AddonInfoPtr& addon,
 
   if (!StringUtils::EqualsNoCase(element->Value(), "addon"))
   {
-    CLog::Log(LOGERROR, "CAddonInfoBuilder::{}: file from '{}' doesn't contain <addon>", __FUNCTION__, addonPath);
+    CLog::Log(LOGERROR, "CAddonInfoBuilder::%s: file from '%s' doesn't contain <addon>", __FUNCTION__, addonPath.c_str());
     return false;
   }
 
@@ -305,11 +305,11 @@ bool CAddonInfoBuilder::ParseXML(const AddonInfoPtr& addon,
 
   if (addon->m_id.empty() || addon->m_version.empty())
   {
-    CLog::Log(LOGERROR, "CAddonInfoBuilder::{}: file '{}' doesn't contain required values on <addon ... > id='{}', version='{}'",
+    CLog::Log(LOGERROR, "CAddonInfoBuilder::%s: file '%s' doesn't contain required values on <addon ... > id='%s', version='%s'",
               __FUNCTION__,
-              addonPath,
-              addon->m_id.empty() ? "missing" : addon->m_id,
-              addon->m_version.empty() ? "missing" : addon->m_version.asString());
+              addonPath.c_str(),
+              addon->m_id.empty() ? "missing" : addon->m_id.c_str(),
+              addon->m_version.empty() ? "missing" : addon->m_version.asString().c_str());
     return false;
   }
 
@@ -318,7 +318,7 @@ bool CAddonInfoBuilder::ParseXML(const AddonInfoPtr& addon,
   // any character to go through.
   if (addon->m_id.find_first_not_of(VALID_ADDON_IDENTIFIER_CHARACTERS) != std::string::npos)
   {
-    CLog::Log(LOGERROR, "CAddonInfoBuilder::{}: identifier {} is invalid", __FUNCTION__, addon->m_id);
+    CLog::Log(LOGERROR, "CAddonInfoBuilder::%s: identifier %s is invalid", __FUNCTION__, addon->m_id.c_str());
     return false;
   }
 
@@ -370,10 +370,10 @@ bool CAddonInfoBuilder::ParseXML(const AddonInfoPtr& addon,
   else
   {
     assetBasePath = URIUtils::AddFileToFolder(repo.artdir, addon->m_id);
-    addon->m_path = URIUtils::AddFileToFolder(repo.datadir, addon->m_id, StringUtils::Format("{}-{}.zip", addon->m_id, addon->m_version.asString()));
+    addon->m_path = URIUtils::AddFileToFolder(repo.datadir, addon->m_id, StringUtils::Format("%s-%s.zip", addon->m_id.c_str(), addon->m_version.asString().c_str()));
   }
 
-  addon->m_profilePath = StringUtils::Format("special://profile/addon_data/{}/", addon->m_id);
+  addon->m_profilePath = StringUtils::Format("special://profile/addon_data/%s/", addon->m_id.c_str());
 
   /*
    * Parse addon.xml:
@@ -566,7 +566,7 @@ bool CAddonInfoBuilder::ParseXML(const AddonInfoPtr& addon,
       AddonType::Type type = CAddonInfo::TranslateType(point);
       if (type == AddonType::UNKNOWN || type >= AddonType::MAX_TYPES)
       {
-        CLog::Log(LOGERROR, "CAddonInfoBuilder::{}: file '{}' doesn't contain a valid add-on type name ({})", __FUNCTION__, addon->m_path, point);
+        CLog::Log(LOGERROR, "CAddonInfoBuilder::%s: file '%s' doesn't contain a valid add-on type name (%s)", __FUNCTION__, addon->m_path.c_str(), point.c_str());
         return false;
       }
 
@@ -600,8 +600,8 @@ bool CAddonInfoBuilder::ParseXML(const AddonInfoPtr& addon,
       // Prevent log file entry if data is from repository, there normal on
       // addons for other OS's
       if (!isRepoXMLContent)
-        CLog::Log(LOGERROR, "CAddonInfoBuilder::{}: addon.xml from '{}' for binary type '{}' doesn't contain library and addon becomes ignored",
-                      __FUNCTION__, addon->ID(), CAddonInfo::TranslateType(addon->m_mainType));
+        CLog::Log(LOGERROR, "CAddonInfoBuilder::%s: addon.xml from '%s' for binary type '%s' doesn't contain library and addon becomes ignored",
+                      __FUNCTION__, addon->ID().c_str(), CAddonInfo::TranslateType(addon->m_mainType).c_str());
       return false;
     }
   }
@@ -649,7 +649,7 @@ bool CAddonInfoBuilder::ParseXMLTypes(CAddonType& addonType,
 
     if (!ParseXMLExtension(addonType, child))
     {
-      CLog::Log(LOGERROR, "CAddonInfoBuilder::{}: addon.xml file doesn't contain a valid add-on extensions ({})", __FUNCTION__, info->ID());
+      CLog::Log(LOGERROR, "CAddonInfoBuilder::%s: addon.xml file doesn't contain a valid add-on extensions (%s)", __FUNCTION__, info->ID().c_str());
       return false;
     }
     if (!addonType.GetValue("provides").empty())

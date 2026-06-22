@@ -530,7 +530,7 @@ void CGUIWindowVideoNav::UpdateButtons()
       StringUtils::StartsWith(m_vecItems->Get(m_vecItems->Size()-1)->GetPath(), "/-1/"))
       iItems--;
   }
-  std::string items = StringUtils::Format("{} {}", iItems, g_localizeStrings.Get(127));
+  std::string items = StringUtils::Format("%i %s", iItems, g_localizeStrings.Get(127).c_str());
   SET_CONTROL_LABEL(CONTROL_LABELFILES, items);
 
   // set the filter label
@@ -901,7 +901,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_GO_TO_ARTIST:
     {
       std::string strPath;
-      strPath = StringUtils::Format("musicdb://artists/{}/",
+      strPath = StringUtils::Format("musicdb://artists/%" PRId64 "/",
                                     item->GetProperty("artist_musicid").asInteger());
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_MUSIC_NAV, strPath);
       return true;
@@ -909,7 +909,7 @@ bool CGUIWindowVideoNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_GO_TO_ALBUM:
     {
       std::string strPath;
-      strPath = StringUtils::Format("musicdb://albums/{}/",
+      strPath = StringUtils::Format("musicdb://albums/%" PRId64 "/",
                                     item->GetProperty("album_musicid").asInteger());
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_MUSIC_NAV, strPath);
       return true;

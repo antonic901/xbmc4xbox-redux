@@ -47,7 +47,7 @@ bool CDirectoryNodeTop100::GetContent(CFileItemList& items) const
   for (unsigned int i = 0; i < sizeof(Top100Children) / sizeof(Node); ++i)
   {
     CFileItemPtr pItem(new CFileItem(g_localizeStrings.Get(Top100Children[i].label)));
-    std::string strDir = StringUtils::Format("{}/", Top100Children[i].id);
+    std::string strDir = StringUtils::Format("%s/", Top100Children[i].id.c_str());
     pItem->SetPath(BuildPath() + strDir);
     pItem->m_bIsFolder = true;
     items.Add(pItem);

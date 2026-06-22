@@ -50,7 +50,7 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
   ADDON::RepositoryDirList::const_iterator dirIt = std::find_if(m_dirs.begin(), m_dirs.end(), boost::bind(&pathHasParent, _1, path));
   if (dirIt == m_dirs.end())
   {
-    CLog::Log(LOGERROR, "Requested path {} not found in known repository directories", path);
+    CLog::Log(LOGERROR, "Requested path %s not found in known repository directories", path.c_str());
     KODI::UTILITY::TypedDigest digest;
     CRepository::ResolveResult resolveResult = {"", digest};
     return resolveResult;
@@ -70,7 +70,7 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
   CCurlFile file;
   if (!file.Open(url))
   {
-    CLog::Log(LOGERROR, "Could not fetch addon location and hash from {}", path);
+    CLog::Log(LOGERROR, "Could not fetch addon location and hash from %s", path.c_str());
     KODI::UTILITY::TypedDigest digest;
     CRepository::ResolveResult resolveResult = {"", digest};
     return resolveResult;
@@ -90,7 +90,7 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
     // Expected hash, but none found -> fall back to old method
     if (!FetchChecksum(path + "." + hashTypeStr, hash.value, tmp) || hash.Empty())
     {
-      CLog::Log(LOGERROR, "Failed to find hash for {} from HTTP header and in separate file", path);
+      CLog::Log(LOGERROR, "Failed to find hash for %s from HTTP header and in separate file", path.c_str());
       KODI::UTILITY::TypedDigest digest;
       CRepository::ResolveResult resolveResult = {"", digest};
       return resolveResult;
@@ -102,7 +102,7 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
     location = path;
   }
 
-  CLog::Log(LOGDEBUG, "Resolved addon path {} to {} hash {}", path, location, hash.value);
+  CLog::Log(LOGDEBUG, "Resolved addon path %s to %s hash %s", path.c_str(), location.c_str(), hash.value.c_str());
 
   CRepository::ResolveResult resolveResult = {location, hash};
   return resolveResult;
@@ -150,11 +150,11 @@ CRepository::CRepository(const AddonInfoPtr& addonInfo) : CAddon(addonInfo, Addo
     CURL datadir(dir->datadir);
     if (datadir.IsProtocol("http"))
     {
-      CLog::Log(LOGWARNING, "Repository add-on {} uses plain HTTP for add-on downloads in path {} - this is insecure and will make your Kodi installation vulnerable to attacks if enabled!", ID(), datadir.GetRedacted());
+      CLog::Log(LOGWARNING, "Repository add-on %s uses plain HTTP for add-on downloads in path %s - this is insecure and will make your Kodi installation vulnerable to attacks if enabled!", ID().c_str(), datadir.GetRedacted().c_str());
     }
     else if (datadir.IsProtocol("https") && datadir.HasProtocolOption("verifypeer") && datadir.GetProtocolOption("verifypeer") == "false")
     {
-      CLog::Log(LOGWARNING, "Repository add-on {} disabled peer verification for add-on downloads in path {} - this is insecure and will make your Kodi installation vulnerable to attacks if enabled!", ID(), datadir.GetRedacted());
+      CLog::Log(LOGWARNING, "Repository add-on %s disabled peer verification for add-on downloads in path %s - this is insecure and will make your Kodi installation vulnerable to attacks if enabled!", ID().c_str(), datadir.GetRedacted().c_str());
     }
   }
 }
@@ -204,8 +204,8 @@ bool CRepository::FetchChecksum(const std::string& url,
     }
     catch (...)
     {
-      CLog::Log(LOGWARNING, "Could not parse X-Kodi-Recheck-After header value '{}' from {}",
-                recheckAfterHeader, url);
+      CLog::Log(LOGWARNING, "Could not parse X-Kodi-Recheck-After header value '%s' from %s",
+                recheckAfterHeader.c_str(), url.c_str());
     }
   }
 
@@ -221,7 +221,7 @@ bool CRepository::FetchIndex(const RepositoryDirInfo& repo,
   std::string response;
   if (!http.Get(repo.info, response))
   {
-    CLog::Log(LOGERROR, "CRepository: failed to read {}", repo.info);
+    CLog::Log(LOGERROR, "CRepository: failed to read %s", repo.info.c_str());
     return false;
   }
 
@@ -230,7 +230,7 @@ bool CRepository::FetchIndex(const RepositoryDirInfo& repo,
     std::string actualDigest = CDigest::Calculate(repo.checksumType, response);
     if (!StringUtils::EqualsNoCase(digest, actualDigest))
     {
-      CLog::Log(LOGERROR, "CRepository: {} index has wrong digest {}, expected: {}", repo.info, actualDigest, digest);
+      CLog::Log(LOGERROR, "CRepository: %s index has wrong digest %s, expected: %s", repo.info.c_str(), actualDigest.c_str(), digest.c_str());
       return false;
     }
   }
@@ -238,11 +238,11 @@ bool CRepository::FetchIndex(const RepositoryDirInfo& repo,
   if (URIUtils::HasExtension(repo.info, ".gz")
       || CMime::GetFileTypeFromMime(http.GetProperty(XFILE::FILE_PROPERTY_MIME_TYPE)) == CMime::EFileType::FileTypeGZip)
   {
-    CLog::Log(LOGDEBUG, "CRepository '{}' is gzip. decompressing", repo.info);
+    CLog::Log(LOGDEBUG, "CRepository '%s' is gzip. decompressing", repo.info.c_str());
     std::string buffer;
     if (!CZipFile::DecompressGzip(response, buffer))
     {
-      CLog::Log(LOGERROR, "CRepository: failed to decompress gzip from '{}'", repo.info);
+      CLog::Log(LOGERROR, "CRepository: failed to decompress gzip from '%s'", repo.info.c_str());
       return false;
     }
     response = boost::move(buffer);
@@ -269,7 +269,7 @@ CRepository::FetchStatus CRepository::FetchIfChanged(const std::string& oldCheck
       if (!FetchChecksum(dir->checksum, part, recheckAfterThisDir))
       {
         recheckAfter = 1 * 60 * 60; // retry after 1 hour
-        CLog::Log(LOGERROR, "CRepository: failed read '{}'", dir->checksum);
+        CLog::Log(LOGERROR, "CRepository: failed read '%s'", dir->checksum.c_str());
         return STATUS_ERROR;
       }
       dirChecksums.push_back(boost::make_tuple(&(*dir), part));
@@ -329,7 +329,7 @@ RepositoryDirInfo CRepository::ParseDirConfiguration(const CAddonExtensions& con
     dir.hashType = CDigest::TypeFromString(hashStr);
     if (dir.hashType == CDigest::Type::MD5)
     {
-      CLog::Log(LOGWARNING, "CRepository::{}: Repository has MD5 hashes enabled - this hash function is broken and will only guard against unintentional data corruption", __FUNCTION__);
+      CLog::Log(LOGWARNING, "CRepository::%s: Repository has MD5 hashes enabled - this hash function is broken and will only guard against unintentional data corruption", __FUNCTION__);
     }
   }
 

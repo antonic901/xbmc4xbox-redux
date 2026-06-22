@@ -166,8 +166,8 @@ int CPlayListPlayer::GetNextItemIdx()
     // otherwise immediately abort playback
     if (m_iCurrentSong >= 0 && m_iCurrentSong < playlist.size() && playlist[m_iCurrentSong]->GetProperty("unplayable").asBoolean())
     {
-      CLog::Log(LOGERROR, "Playlist Player: RepeatOne stuck on unplayable item: {}, path [{}]",
-                m_iCurrentSong, playlist[m_iCurrentSong]->GetPath());
+      CLog::Log(LOGERROR, "Playlist Player: RepeatOne stuck on unplayable item: %i, path [%s]",
+                m_iCurrentSong, playlist[m_iCurrentSong]->GetPath().c_str());
       CGUIMessage msg(GUI_MSG_PLAYLISTPLAYER_STOPPED, 0, 0, m_iCurrentPlayList, m_iCurrentSong);
       CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
       Reset();
@@ -344,8 +344,8 @@ bool CPlayListPlayer::Play(int iSong,
   bool ret = g_application.PlayFile(*item, player, bAutoPlay);
   if (!ret)
   {
-    CLog::Log(LOGERROR, "Playlist Player: skipping unplayable item: {}, path [{}]", m_iCurrentSong,
-              CURL::GetRedacted(item->GetDynPath()));
+    CLog::Log(LOGERROR, "Playlist Player: skipping unplayable item: %i, path [%s]", m_iCurrentSong,
+              CURL::GetRedacted(item->GetDynPath()).c_str());
     playlist.SetUnPlayable(m_iCurrentSong);
 
     // abort on 100 failed CONSECUTIVE songs
@@ -553,8 +553,8 @@ void CPlayListPlayer::SetShuffle(Id playlistId, bool bYesNo, bool bNotify /* = f
     if (bNotify)
     {
       std::string shuffleStr =
-          StringUtils::Format("{}: {}", g_localizeStrings.Get(191),
-                              g_localizeStrings.Get(bYesNo ? 593 : 591)); // Shuffle: All/Off
+          StringUtils::Format("%s: %s", g_localizeStrings.Get(191).c_str(),
+                              g_localizeStrings.Get(bYesNo ? 593 : 591).c_str()); // Shuffle: All/Off
       CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(559),  shuffleStr);
     }
 

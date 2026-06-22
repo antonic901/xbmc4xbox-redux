@@ -453,7 +453,7 @@ protected:
   virtual bool OnPlayPartSelected(unsigned int part)
   {
     // part numbers are 1-based
-    ExecuteAction(CExecString("PlayMedia", *m_item, StringUtils::Format("playoffset={}", part - 1)));
+    ExecuteAction(CExecString("PlayMedia", *m_item, StringUtils::Format("playoffset=%u", part - 1)));
     return true;
   }
 

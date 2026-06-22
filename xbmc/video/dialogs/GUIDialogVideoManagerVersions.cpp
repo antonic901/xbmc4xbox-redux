@@ -251,7 +251,7 @@ bool CGUIDialogVideoManagerVersions::AddVideoVersion()
         return AddVideoVersionFilePicker();
     }
 
-    CLog::Log(LOGERROR, "Unknown return value {} from CGUIDialogYesNo", dlgResult);
+    CLog::Log(LOGERROR, "Unknown return value %i from CGUIDialogYesNo", dlgResult);
     return false;
   }
 
@@ -509,7 +509,7 @@ bool CGUIDialogVideoManagerVersions::AddVideoVersionFilePicker()
           msgid = 40026; // video is an extra of the movie
         else
         {
-          CLog::Log(LOGERROR, "unexpected asset type {}", static_cast<int>(newAsset.m_assetType));
+          CLog::Log(LOGERROR, "unexpected asset type %i", static_cast<int>(newAsset.m_assetType));
           return false;
         }
 
@@ -546,7 +546,7 @@ bool CGUIDialogVideoManagerVersions::AddVideoVersionFilePicker()
           msgid = 40027; // video is an extra of another movie
         else
         {
-          CLog::Log(LOGERROR, "unexpected asset type {}", static_cast<int>(newAsset.m_assetType));
+          CLog::Log(LOGERROR, "unexpected asset type %i", static_cast<int>(newAsset.m_assetType));
           return false;
         }
 
@@ -591,8 +591,8 @@ bool CGUIDialogVideoManagerVersions::AddVideoVersionFilePicker()
             CSettings::SETTING_MYVIDEOS_EXTRACTFLAGS))
     {
       CDVDFileInfo::GetFileStreamDetails(&item);
-      CLog::Log(LOGDEBUG, "Extracted filestream details from video file {}",
-                 CURL::GetRedacted(item.GetPath()));
+      CLog::Log(LOGDEBUG, "Extracted filestream details from video file %s",
+                 CURL::GetRedacted(item.GetPath()).c_str());
     }
 
     const int idNewVideoVersion(ChooseVideoAsset(m_videoAsset, VideoAssetType::VERSION, ""));

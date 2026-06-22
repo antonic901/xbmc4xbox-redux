@@ -612,7 +612,7 @@ void CGUIMediaWindow::UpdateButtons()
   }
 
   std::string items =
-      StringUtils::Format("{} {}", m_vecItems->GetObjectCount(), g_localizeStrings.Get(127));
+      StringUtils::Format("%i %s", m_vecItems->GetObjectCount(), g_localizeStrings.Get(127).c_str());
   SET_CONTROL_LABEL(CONTROL_LABELFILES, items);
 
   SET_CONTROL_LABEL2(CONTROL_BTN_FILTER, GetProperty("filter").asString());
@@ -722,8 +722,8 @@ bool CGUIMediaWindow::GetDirectory(const std::string &strDirectory, CFileItemLis
 
   std::string strParentPath = m_history.GetParentPath();
 
-  CLog::Log(LOGDEBUG, "CGUIMediaWindow::GetDirectory ({})", CURL::GetRedacted(strDirectory));
-  CLog::Log(LOGDEBUG, "  ParentPath = [{}]", CURL::GetRedacted(strParentPath));
+  CLog::Log(LOGDEBUG, "CGUIMediaWindow::GetDirectory (%s)", CURL::GetRedacted(strDirectory).c_str());
+  CLog::Log(LOGDEBUG, "  ParentPath = [%s]", CURL::GetRedacted(strParentPath).c_str());
 
   if (pathToUrl.IsProtocol("plugin") && !pathToUrl.GetHostName().empty())
     CServiceBroker::GetAddonMgr().UpdateLastUsed(pathToUrl.GetHostName());
@@ -834,7 +834,7 @@ bool CGUIMediaWindow::Update(const std::string &strDirectory, bool updateFilterP
 
   if (!GetDirectory(pathNoFilter, *m_vecItems))
   {
-    CLog::Log(LOGERROR, "CGUIMediaWindow::GetDirectory({}) failed", CURL(path).GetRedacted());
+    CLog::Log(LOGERROR, "CGUIMediaWindow::GetDirectory(%s) failed", CURL(path).GetRedacted().c_str());
 
     if (URIUtils::PathEquals(path, GetRootPath()))
       return false; // Nothing to fallback to
@@ -1107,7 +1107,7 @@ bool CGUIMediaWindow::OnClick(int iItem, const std::string &player)
   else if (pItem->IsAndroidApp())
   {
     std::string appName = URIUtils::GetFileName(pItem->GetPath());
-    CLog::Log(LOGDEBUG, "CGUIMediaWindow::OnClick Trying to run: {}", appName);
+    CLog::Log(LOGDEBUG, "CGUIMediaWindow::OnClick Trying to run: %s", appName.c_str());
     return CXBMCApp::StartActivity(appName);
   }
 #endif
@@ -1371,7 +1371,7 @@ void CGUIMediaWindow::GetDirectoryHistoryString(const CFileItem* pItem, std::str
   {
     // Could be a cue item, all items of a cue share the same filename
     // so add the offsets to build the history string
-    strHistoryString = StringUtils::Format("{}{}", pItem->GetStartOffset(), pItem->GetEndOffset());
+    strHistoryString = StringUtils::Format("%" PRId64 "%" PRId64, pItem->GetStartOffset(), pItem->GetEndOffset());
     strHistoryString += pItem->GetPath();
   }
   else
@@ -1475,7 +1475,7 @@ bool CGUIMediaWindow::OnPlayMedia(int iItem, const std::string &player)
   CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(PLAYLIST::TYPE_NONE);
   CFileItemPtr pItem=m_vecItems->Get(iItem);
 
-  CLog::Log(LOGDEBUG, "{} {}", __FUNCTION__, CURL::GetRedacted(pItem->GetPath()));
+  CLog::Log(LOGDEBUG, "%s %s", __FUNCTION__, CURL::GetRedacted(pItem->GetPath()).c_str());
 
   bool bResult = false;
   if (pItem->IsInternetStream() || pItem->IsPlayList())
@@ -1742,11 +1742,11 @@ bool CGUIMediaWindow::OnPopupMenu(int itemIdx)
   //Add items from plugin
   {
     int i = 0;
-    while (item->HasProperty(StringUtils::Format("contextmenulabel({})", i)))
+    while (item->HasProperty(StringUtils::Format("contextmenulabel(%i)", i)))
     {
       buttons.push_back(std::make_pair(
           ~buttons.size(),
-          item->GetProperty(StringUtils::Format("contextmenulabel({})", i)).asString()));
+          item->GetProperty(StringUtils::Format("contextmenulabel(%i)", i)).asString()));
       ++i;
     }
   }
@@ -1782,7 +1782,7 @@ bool CGUIMediaWindow::OnPopupMenu(int itemIdx)
     m_backgroundLoad = false;
     CServiceBroker::GetAppMessenger()->SendMsg(
         TMSG_EXECUTE_BUILT_IN, -1, -1, NULL,
-        item->GetProperty(StringUtils::Format("contextmenuaction({})", idx - pluginMenuRange.first))
+        item->GetProperty(StringUtils::Format("contextmenuaction(%i)", idx - pluginMenuRange.first))
             .asString());
     m_backgroundLoad = saveVal;
     return true;
@@ -2085,7 +2085,7 @@ bool CGUIMediaWindow::GetAdvanceFilteredItems(CFileItemList &items)
   }
 
   if (resultItems.Size() > 0)
-    CLog::Log(LOGWARNING, "CGUIMediaWindow::GetAdvanceFilteredItems(): {} unknown items",
+    CLog::Log(LOGWARNING, "CGUIMediaWindow::GetAdvanceFilteredItems(): %i unknown items",
               resultItems.Size());
 
   items.ClearItems();

@@ -61,7 +61,7 @@ bool CDirectoryNodeTvShowsOverview::GetContent(CFileItemList& items) const
     CFileItemPtr pItem(new CFileItem(g_localizeStrings.Get(TvShowChildren[i].label)));
 
     CVideoDbUrl itemUrl = videoUrl;
-    std::string strDir = StringUtils::Format("{}/", TvShowChildren[i].id);
+    std::string strDir = StringUtils::Format("%s/", TvShowChildren[i].id.c_str());
     itemUrl.AppendPath(strDir);
     pItem->SetPath(itemUrl.ToString());
 

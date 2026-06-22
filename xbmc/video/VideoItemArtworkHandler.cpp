@@ -374,7 +374,7 @@ std::vector<std::string> CVideoItemArtworkMovieSetHandler::GetRemoteArt() const
 
   std::vector<std::string> remoteArt;
   const std::string baseDir =
-      StringUtils::Format("videodb://movies/sets/{}", m_item->GetVideoInfoTag()->m_iDbId);
+      StringUtils::Format("videodb://movies/sets/%i", m_item->GetVideoInfoTag()->m_iDbId);
   CFileItemList items;
   if (videodb.GetMoviesNav(baseDir, items))
   {

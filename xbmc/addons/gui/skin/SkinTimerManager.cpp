@@ -34,7 +34,7 @@ void CSkinTimerManager::LoadTimers(const std::string& path)
   TiXmlElement* root = doc.RootElement();
   if (!root || !StringUtils::EqualsNoCase(root->Value(), "timers"))
   {
-    CLog::Log(LOGERROR, "Error loading timers file {}: Root element <timers> required.", path);
+    CLog::Log(LOGERROR, "Error loading timers file %s: Root element <timers> required.", path.c_str());
     return;
   }
 
@@ -135,7 +135,7 @@ bool CSkinTimerManager::TimerIsRunning(const std::string& timer) const
   {
     return iter->second->IsRunning();
   }
-  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
+  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: %s", timer.c_str());
   return false;
 }
 
@@ -146,7 +146,7 @@ float CSkinTimerManager::GetTimerElapsedSeconds(const std::string& timer) const
   {
     return iter->second->GetElapsedSeconds();
   }
-  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
+  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: %s", timer.c_str());
   return 0;
 }
 
@@ -157,7 +157,7 @@ void CSkinTimerManager::TimerStart(const std::string& timer) const
   {
     return iter->second->Start();
   }
-  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
+  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: %s", timer.c_str());
 }
 
 void CSkinTimerManager::TimerStop(const std::string& timer) const
@@ -167,7 +167,7 @@ void CSkinTimerManager::TimerStop(const std::string& timer) const
   {
     return iter->second->Stop();
   }
-  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: {}", timer);
+  CLog::Log(LOGERROR, "Couldn't find Skin Timer with name: %s", timer.c_str());
 }
 
 size_t CSkinTimerManager::GetTimerCount() const

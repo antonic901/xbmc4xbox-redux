@@ -296,7 +296,7 @@ bool CGUIDialogSubtitles::SetService(const std::string &service)
   if (service != m_currentService)
   {
     m_currentService = service;
-    CLog::Log(LOGDEBUG, "New Service [{}] ", m_currentService);
+    CLog::Log(LOGDEBUG, "New Service [%s] ", m_currentService.c_str());
 
     CFileItemPtr currentService = GetService();
     // highlight this item in the skin
@@ -408,8 +408,8 @@ void CGUIDialogSubtitles::OnSearchComplete(const CFileItemList *items)
           CSettings::SETTING_SUBTITLES_DOWNLOADFIRST))
   {
     CFileItemPtr item = items->Get(0);
-    CLog::Log(LOGDEBUG, "{} - Automatically download first subtitle: {}", __FUNCTION__,
-              item->GetLabel2());
+    CLog::Log(LOGDEBUG, "%s - Automatically download first subtitle: %s", __FUNCTION__,
+              item->GetLabel2().c_str());
     m_LastAutoDownloaded = g_application.CurrentFile();
     Download(*item);
   }
@@ -443,8 +443,8 @@ void CGUIDialogSubtitles::OnSubtitleServiceContextMenu(int itemIdx)
       }
       else
       {
-        CLog::Log(LOGERROR, "{} - Could not open settings for addon: {}", __FUNCTION__,
-                  service->GetProperty("Addon.ID").asString());
+        CLog::Log(LOGERROR, "%s - Could not open settings for addon: %s", __FUNCTION__,
+                  service->GetProperty("Addon.ID").asString().c_str());
       }
       break;
     }
@@ -598,7 +598,7 @@ void CGUIDialogSubtitles::OnDownloadComplete(const CFileItemList *items, const s
 
     // construct subtitle path
     std::string strSubExt = URIUtils::GetExtension(strUrl);
-    std::string strSubName = StringUtils::Format("{}.{}{}", strFileName, strSubLang, strSubExt);
+    std::string strSubName = StringUtils::Format("%s.%s%s", strFileName.c_str(), strSubLang.c_str(), strSubExt.c_str());
 
     // Handle URL encoding:
     std::string strDownloadFile = URIUtils::ChangeBasePath(strCurrentFilePath, strSubName, strDownloadPath);
@@ -607,8 +607,8 @@ void CGUIDialogSubtitles::OnDownloadComplete(const CFileItemList *items, const s
     if (!CFile::Copy(strUrl, strDownloadFile))
     {
       CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, strSubName, g_localizeStrings.Get(24113));
-      CLog::Log(LOGERROR, "{} - Saving of subtitle {} to {} failed", __FUNCTION__, strUrl,
-                strDownloadFile);
+      CLog::Log(LOGERROR, "%s - Saving of subtitle %s to %s failed", __FUNCTION__, strUrl.c_str(),
+                strDownloadFile.c_str());
     }
     else
     {
@@ -622,8 +622,8 @@ void CGUIDialogSubtitles::OnDownloadComplete(const CFileItemList *items, const s
          * so that all remaining items (including the .idx below) are copied directly to their final destination and thus all
          * items end up in the same folder
          */
-        CLog::Log(LOGDEBUG, "{} - Saving subtitle {} to {}", __FUNCTION__, strDownloadFile,
-                  strTryDestFile);
+        CLog::Log(LOGDEBUG, "%s - Saving subtitle %s to %s", __FUNCTION__, strDownloadFile.c_str(),
+                  strTryDestFile.c_str());
         if (CFile::Copy(strDownloadFile, strTryDestFile))
         {
           CFile::Delete(strDownloadFile);
@@ -632,14 +632,14 @@ void CGUIDialogSubtitles::OnDownloadComplete(const CFileItemList *items, const s
         }
         else
         {
-          CLog::Log(LOGWARNING, "{} - Saving of subtitle {} to {} failed. Falling back to {}",
-                    __FUNCTION__, strDownloadFile, strTryDestFile, strDownloadPath);
+          CLog::Log(LOGWARNING, "%s - Saving of subtitle %s to %s failed. Falling back to %s",
+                    __FUNCTION__, strDownloadFile.c_str(), strTryDestFile.c_str(), strDownloadPath.c_str());
           strDestPath = strDownloadPath; // Copy failed, use fallback for the rest of the items
         }
       }
       else
       {
-        CLog::Log(LOGDEBUG, "{} - Saved subtitle {} to {}", __FUNCTION__, strUrl, strDownloadFile);
+        CLog::Log(LOGDEBUG, "%s - Saved subtitle %s to %s", __FUNCTION__, strUrl.c_str(), strDownloadFile.c_str());
       }
 
       // for ".sub" subtitles we check if ".idx" counterpart exists and copy that as well
@@ -648,7 +648,7 @@ void CGUIDialogSubtitles::OnDownloadComplete(const CFileItemList *items, const s
         strUrl = URIUtils::ReplaceExtension(strUrl, ".idx");
         if(CFile::Exists(strUrl))
         {
-          std::string strSubNameIdx = StringUtils::Format("{}.{}.idx", strFileName, strSubLang);
+          std::string strSubNameIdx = StringUtils::Format("%s.%s.idx", strFileName.c_str(), strSubLang.c_str());
           // Handle URL encoding:
           strDestFile = URIUtils::ChangeBasePath(strCurrentFilePath, strSubNameIdx, strDestPath);
           CFile::Copy(strUrl, strDestFile);

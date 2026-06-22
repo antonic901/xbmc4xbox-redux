@@ -64,7 +64,7 @@ void CVideoInfoDownloader::Process()
   if (m_state == FIND_MOVIE)
   {
     if (!(m_found=FindMovie(m_movieTitle, m_movieYear, m_movieList)))
-      CLog::Log(LOGERROR, "{}: Error looking up item {} ({})", __FUNCTION__, m_movieTitle,
+      CLog::Log(LOGERROR, "%s: Error looking up item %s (%i)", __FUNCTION__, m_movieTitle.c_str(),
                 m_movieYear);
     m_state = DO_NOTHING;
     return;
@@ -74,26 +74,26 @@ void CVideoInfoDownloader::Process()
   {
     // empty url when it's not supposed to be..
     // this might happen if the previously scraped item was removed from the site (see ticket #10537)
-    CLog::Log(LOGERROR, "{}: Error getting details for {} ({}) due to an empty url", __FUNCTION__,
-              m_movieTitle, m_movieYear);
+    CLog::Log(LOGERROR, "%s: Error getting details for %s (%i) due to an empty url", __FUNCTION__,
+              m_movieTitle.c_str(), m_movieYear);
   }
   else if (m_state == GET_DETAILS)
   {
     if (!GetDetails(m_uniqueIDs, m_url, m_movieDetails))
-      CLog::Log(LOGERROR, "{}: Error getting details from {}", __FUNCTION__,
-                m_url.GetFirstThumbUrl());
+      CLog::Log(LOGERROR, "%s: Error getting details from %s", __FUNCTION__,
+                m_url.GetFirstThumbUrl().c_str());
   }
   else if (m_state == GET_EPISODE_DETAILS)
   {
     if (!GetEpisodeDetails(m_url, m_movieDetails))
-      CLog::Log(LOGERROR, "{}: Error getting episode details from {}", __FUNCTION__,
-                m_url.GetFirstThumbUrl());
+      CLog::Log(LOGERROR, "%s: Error getting episode details from %s", __FUNCTION__,
+                m_url.GetFirstThumbUrl().c_str());
   }
   else if (m_state == GET_EPISODE_LIST)
   {
     if (!GetEpisodeList(m_url, m_episode))
-      CLog::Log(LOGERROR, "{}: Error getting episode list from {}", __FUNCTION__,
-                m_url.GetFirstThumbUrl());
+      CLog::Log(LOGERROR, "%s: Error getting episode list from %s", __FUNCTION__,
+                m_url.GetFirstThumbUrl().c_str());
   }
   m_found = 1;
   m_state = DO_NOTHING;
@@ -103,7 +103,7 @@ int CVideoInfoDownloader::FindMovie(const std::string &movieTitle, int movieYear
                                     MOVIELIST& movieList,
                                     CGUIDialogProgress *pProgress /* = NULL */)
 {
-  //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::FindMovie({})", strMovie);
+  //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::FindMovie(%s)", strMovie.c_str());
 
   if (pProgress)
   { // threaded version
@@ -151,7 +151,7 @@ bool CVideoInfoDownloader::GetDetails(const boost::unordered_map<std::string, st
                                       CVideoInfoTag& movieDetails,
                                       CGUIDialogProgress* pProgress /* = NULL */)
 {
-  //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::GetDetails({})", url.m_strURL);
+  //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::GetDetails(%s)", url.m_strURL.c_str());
   m_url = url;
   m_uniqueIDs = uniqueIDs;
   m_movieDetails = movieDetails;
@@ -187,7 +187,7 @@ bool CVideoInfoDownloader::GetEpisodeDetails(const CScraperUrl &url,
                                              CVideoInfoTag &movieDetails,
                                              CGUIDialogProgress *pProgress /* = NULL */)
 {
-  //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::GetDetails({})", url.m_strURL);
+  //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::GetDetails(%s)", url.m_strURL.c_str());
   m_url = url;
   m_movieDetails = movieDetails;
 
@@ -222,7 +222,7 @@ bool CVideoInfoDownloader::GetEpisodeList(const CScraperUrl& url,
                                           EPISODELIST& movieDetails,
                                           CGUIDialogProgress *pProgress /* = NULL */)
 {
-  //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::GetDetails({})", url.m_strURL);
+  //CLog::Log(LOGDEBUG,"CVideoInfoDownloader::GetDetails(%s)", url.m_strURL.c_str());
   m_url = url;
   m_episode = movieDetails;
 

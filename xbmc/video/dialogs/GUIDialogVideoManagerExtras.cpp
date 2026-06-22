@@ -141,7 +141,7 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
           msgid = 40026; // video is an extra of the movie
         else
         {
-          CLog::Log(LOGERROR, "unexpected asset type {}", static_cast<int>(newAsset.m_assetType));
+          CLog::Log(LOGERROR, "unexpected asset type %i", static_cast<int>(newAsset.m_assetType));
           return false;
         }
 
@@ -178,7 +178,7 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
           msgid = 40027; // video is an extra of another movie
         else
         {
-          CLog::Log(LOGERROR, "unexpected asset type {}", static_cast<int>(newAsset.m_assetType));
+          CLog::Log(LOGERROR, "unexpected asset type %i", static_cast<int>(newAsset.m_assetType));
           return false;
         }
 
@@ -221,8 +221,8 @@ bool CGUIDialogVideoManagerExtras::AddVideoExtra()
             CSettings::SETTING_MYVIDEOS_EXTRACTFLAGS))
     {
       CDVDFileInfo::GetFileStreamDetails(&item);
-      CLog::Log(LOGDEBUG, "Extracted filestream details from video file {}",
-                 CURL::GetRedacted(item.GetPath()));
+      CLog::Log(LOGDEBUG, "Extracted filestream details from video file %s",
+                 CURL::GetRedacted(item.GetPath().c_str()));
     }
 
     const int idNewVideoVersion = m_database.AddVideoVersionType(

@@ -420,7 +420,7 @@ bool CGUIDialogMusicInfo::OnMessage(CGUIMessage& message)
         if (m_album.idAlbum >= 0)
         {
           // Play album
-          const std::string path = StringUtils::Format("musicdb://albums/{}", m_album.idAlbum);
+          const std::string path = StringUtils::Format("musicdb://albums/%i", m_album.idAlbum);
           OnPlayItem(boost::make_shared<CFileItem>(path, m_album));
           return true;
         }
@@ -804,7 +804,7 @@ void CGUIDialogMusicInfo::OnGetArt()
   for (unsigned int i = 0; i < remotethumbs.size(); ++i)
   {
     std::string strItemPath;
-    strItemPath = StringUtils::Format("thumb://Remote{}", i);
+    strItemPath = StringUtils::Format("thumb://Remote%u", i);
     CFileItemPtr item(new CFileItem(strItemPath, false));
     item->SetArt("thumb", remotethumbs[i]);
     item->SetArt("icon", "DefaultPicture.png");
@@ -970,14 +970,14 @@ void CGUIDialogMusicInfo::OnSetUserrating() const
 
 void CGUIDialogMusicInfo::ShowForAlbum(int idAlbum)
 {
-  std::string path = StringUtils::Format("musicdb://albums/{}", idAlbum);
+  std::string path = StringUtils::Format("musicdb://albums/%i", idAlbum);
   CFileItem item(path, true); // An album, but IsAlbum() not set as didn't use SetAlbum()
   ShowFor(&item);
 }
 
 void CGUIDialogMusicInfo::ShowForArtist(int idArtist)
 {
-  std::string path = StringUtils::Format("musicdb://artists/{}", idArtist);
+  std::string path = StringUtils::Format("musicdb://artists/%i", idArtist);
   CFileItem item(path, true);
   ShowFor(&item);
 }

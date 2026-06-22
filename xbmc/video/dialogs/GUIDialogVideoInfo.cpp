@@ -632,7 +632,7 @@ void CGUIDialogVideoInfo::DoSearch(std::string& strSearch, CFileItemList& items)
   {
     std::string label = movies[i]->GetVideoInfoTag()->m_strTitle;
     if (movies[i]->GetVideoInfoTag()->HasYear())
-      label += StringUtils::Format(" ({})", movies[i]->GetVideoInfoTag()->GetYear());
+      label += StringUtils::Format(" (%i)", movies[i]->GetVideoInfoTag()->GetYear());
     movies[i]->SetLabel(label);
   }
   CGUIWindowVideoBase::AppendAndClearSearchItems(movies, "[" + g_localizeStrings.Get(20338) + "] ", items);
@@ -642,7 +642,7 @@ void CGUIDialogVideoInfo::DoSearch(std::string& strSearch, CFileItemList& items)
   {
     std::string label = movies[i]->GetVideoInfoTag()->m_strShowTitle;
     if (movies[i]->GetVideoInfoTag()->HasYear())
-      label += StringUtils::Format(" ({})", movies[i]->GetVideoInfoTag()->GetYear());
+      label += StringUtils::Format(" (%i)", movies[i]->GetVideoInfoTag()->GetYear());
     movies[i]->SetLabel(label);
   }
   CGUIWindowVideoBase::AppendAndClearSearchItems(movies, "[" + g_localizeStrings.Get(20364) + "] ", items);
@@ -660,7 +660,7 @@ void CGUIDialogVideoInfo::DoSearch(std::string& strSearch, CFileItemList& items)
   {
     std::string label = StringUtils::Join(movies[i]->GetVideoInfoTag()->m_artist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator) + " - " + movies[i]->GetVideoInfoTag()->m_strTitle;
     if (movies[i]->GetVideoInfoTag()->HasYear())
-      label += StringUtils::Format(" ({})", movies[i]->GetVideoInfoTag()->GetYear());
+      label += StringUtils::Format(" (%i)", movies[i]->GetVideoInfoTag()->GetYear());
     movies[i]->SetLabel(label);
   }
   CGUIWindowVideoBase::AppendAndClearSearchItems(movies, "[" + g_localizeStrings.Get(20391) + "] ", items);
@@ -798,14 +798,14 @@ void CGUIDialogVideoInfo::Play(bool resume)
       }
     }
     else if (videoTag->m_type == MediaTypeTvShow)
-      strPath = StringUtils::Format("videodb://tvshows/titles/{}/", videoTag->m_iDbId);
+      strPath = StringUtils::Format("videodb://tvshows/titles/%i/", videoTag->m_iDbId);
     else // season
-      strPath = StringUtils::Format("videodb://tvshows/titles/{}/{}/", videoTag->m_iIdShow,
+      strPath = StringUtils::Format("videodb://tvshows/titles/%i/%i/", videoTag->m_iIdShow,
                                     videoTag->m_iSeason);
   }
   else if (videoTag->m_type == MediaTypeVideoCollection)
   {
-    strPath = StringUtils::Format("videodb://movies/sets/{}/?setid={}", videoTag->m_iDbId,
+    strPath = StringUtils::Format("videodb://movies/sets/%i/?setid=%i", videoTag->m_iDbId,
                                   videoTag->m_iDbId);
   }
 
@@ -1034,7 +1034,7 @@ void CGUIDialogVideoInfo::OnSetUserrating() const
     dialog->SetHeading( 38023 );
     dialog->Add(g_localizeStrings.Get(38022));
     for (int i = 1; i <= 10; i++)
-      dialog->Add(StringUtils::Format("{}: {}", g_localizeStrings.Get(563), i));
+      dialog->Add(StringUtils::Format("%s: %i", g_localizeStrings.Get(563).c_str(), i));
 
     dialog->SetSelected(m_movieItem->GetVideoInfoTag()->m_iUserRating);
 
@@ -1532,7 +1532,7 @@ bool CGUIDialogVideoInfo::GetMoviesForSet(const CFileItem *setItem, CFileItemLis
     return false;
 
   std::string baseDir =
-      StringUtils::Format("videodb://movies/sets/{}", setItem->GetVideoInfoTag()->m_iDbId);
+      StringUtils::Format("videodb://movies/sets/%i", setItem->GetVideoInfoTag()->m_iDbId);
 
   if (!CDirectory::GetDirectory(baseDir, originalMovies, "", DIR_FLAG_DEFAULTS) ||
       originalMovies.Size() <= 0) // keep a copy of the original members of the set
@@ -1927,7 +1927,7 @@ bool CGUIDialogVideoInfo::ManageVideoItemArtwork(const boost::shared_ptr<CFileIt
   for (size_t i = 0; i < remoteArt.size(); ++i)
   {
     const CFileItemPtr itemRemote =
-        boost::make_shared<CFileItem>(StringUtils::Format("thumb://Remote{0}", i), false);
+        boost::make_shared<CFileItem>(StringUtils::Format("thumb://Remote%" PRIuS, i), false);
     itemRemote->SetArt("thumb", remoteArt[i]);
     itemRemote->SetArt("icon", "DefaultPicture.png");
     itemRemote->SetLabel(g_localizeStrings.Get(13513));

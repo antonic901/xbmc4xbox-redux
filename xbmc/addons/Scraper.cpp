@@ -232,18 +232,18 @@ std::vector<std::string> CScraper::Run(const std::string &function,
   if (strXML.empty())
   {
     if (function != "NfoUrl" && function != "ResolveIDToUrl")
-      CLog::Log(LOGERROR, "{}: Unable to parse web site", __FUNCTION__);
+      CLog::Log(LOGERROR, "%s: Unable to parse web site", __FUNCTION__);
     throw CScraperError();
   }
 
-  CLog::Log(LOGDEBUG, "scraper: {} returned {}", function, strXML);
+  CLog::Log(LOGDEBUG, "scraper: %s returned %s", function.c_str(), strXML.c_str());
 
   CXBMCTinyXML doc;
   /* all data was converted to UTF-8 before being processed by scraper */
   doc.Parse(strXML, TIXML_ENCODING_UTF8);
   if (!doc.RootElement())
   {
-    CLog::Log(LOGERROR, "{}: Unable to parse XML", __FUNCTION__);
+    CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
     throw CScraperError();
   }
 
@@ -388,7 +388,7 @@ bool CScraper::Load()
   }
 
   if (!result)
-    CLog::Log(LOGWARNING, "failed to load scraper XML from {}", LibPath());
+    CLog::Log(LOGWARNING, "failed to load scraper XML from %s", LibPath().c_str());
   return m_fLoaded = result;
 }
 
@@ -439,7 +439,7 @@ CScraperUrl CScraper::NfoUrl(const std::string &sNfoContent)
     if (items.Size() == 0)
       return scurlRet;
     if (items.Size() > 1)
-      CLog::Log(LOGWARNING, "{}: scraper returned multiple results; using first", __FUNCTION__);
+      CLog::Log(LOGWARNING, "%s: scraper returned multiple results; using first", __FUNCTION__);
 
     CScraperUrl::SUrlEntry surl;
     surl.m_type = CScraperUrl::UrlType::General;
@@ -457,7 +457,7 @@ CScraperUrl CScraper::NfoUrl(const std::string &sNfoContent)
   if (vcsOut.empty() || vcsOut[0].empty())
     return scurlRet;
   if (vcsOut.size() > 1)
-    CLog::Log(LOGWARNING, "{}: scraper returned multiple results; using first", __FUNCTION__);
+    CLog::Log(LOGWARNING, "%s: scraper returned multiple results; using first", __FUNCTION__);
 
   // parse returned XML: either <error> element on error, blank on failure,
   // or <url>...</url> or <url>...</url><id>...</id> on success
@@ -533,7 +533,7 @@ CScraperUrl CScraper::ResolveIDToUrl(const std::string &externalID)
   if (vcsOut.empty() || vcsOut[0].empty())
     return scurlRet;
   if (vcsOut.size() > 1)
-    CLog::Log(LOGWARNING, "{}: scraper returned multiple results; using first", __FUNCTION__);
+    CLog::Log(LOGWARNING, "%s: scraper returned multiple results; using first", __FUNCTION__);
 
   // parse returned XML: either <error> element on error, blank on failure,
   // or <url>...</url> or <url>...</url><id>...</id> on success
@@ -614,7 +614,7 @@ CMusicAlbumInfo FromFileItem<CMusicAlbumInfo>(const CFileItem &item)
   std::string sArtist = item.GetProperty("album.artist").asString();
   std::string sAlbumName;
   if (!sArtist.empty())
-    sAlbumName = StringUtils::Format("{} - {}", sArtist, sTitle);
+    sAlbumName = StringUtils::Format("%s - %s", sArtist.c_str(), sTitle.c_str());
   else
     sAlbumName = sTitle;
 
@@ -966,7 +966,7 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl,
   std::vector<std::string> vcsOut = Run("CreateSearchUrl", scurl, fcurl, &vcsIn);
   if (vcsOut.empty())
   {
-    CLog::Log(LOGDEBUG, "{}: CreateSearchUrl failed", __FUNCTION__);
+    CLog::Log(LOGDEBUG, "%s: CreateSearchUrl failed", __FUNCTION__);
     throw CScraperError();
   }
   scurl.ParseFromData(vcsOut[0]);
@@ -985,7 +985,7 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl,
     doc.Parse(*i, TIXML_ENCODING_UTF8);
     if (!doc.RootElement())
     {
-      CLog::Log(LOGERROR, "{}: Unable to parse XML", __FUNCTION__);
+      CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
       continue; // might have more valid results later
     }
 
@@ -1045,11 +1045,11 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl,
 
         // reconstruct a title for the user
         if (!sCompareYear.empty())
-          title += StringUtils::Format(" ({})", sCompareYear);
+          title += StringUtils::Format(" (%s)", sCompareYear.c_str());
 
         std::string sLanguage;
         if (XMLUtils::GetString(pxeMovie, "language", sLanguage) && !sLanguage.empty())
-          title += StringUtils::Format(" ({})", sLanguage);
+          title += StringUtils::Format(" (%s)", sLanguage.c_str());
 
         // filter for dupes from naughty scrapers
         if (stsDupeCheck.insert(scurlMovie.GetFirstThumbUrl() + " " + title).second)
@@ -1105,7 +1105,7 @@ std::vector<CMusicAlbumInfo> CScraper::FindAlbum(CCurlFile &fcurl,
   CScraperUrl scurl;
   std::vector<std::string> vcsOut = RunNoThrow("CreateAlbumSearchUrl", scurl, fcurl, &extras);
   if (vcsOut.size() > 1)
-    CLog::Log(LOGWARNING, "{}: scraper returned multiple results; using first", __FUNCTION__);
+    CLog::Log(LOGWARNING, "%s: scraper returned multiple results; using first", __FUNCTION__);
 
   if (vcsOut.empty() || vcsOut[0].empty())
     return vcali;
@@ -1141,13 +1141,13 @@ std::vector<CMusicAlbumInfo> CScraper::FindAlbum(CCurlFile &fcurl,
         std::string sArtist;
         std::string sAlbumName;
         if (XMLUtils::GetString(pxeAlbum, "artist", sArtist) && !sArtist.empty())
-          sAlbumName = StringUtils::Format("{} - {}", sArtist, sTitle);
+          sAlbumName = StringUtils::Format("%s - %s", sArtist.c_str(), sTitle.c_str());
         else
           sAlbumName = sTitle;
 
         std::string sYear;
         if (XMLUtils::GetString(pxeAlbum, "year", sYear) && !sYear.empty())
-          sAlbumName = StringUtils::Format("{} ({})", sAlbumName, sYear);
+          sAlbumName = StringUtils::Format("%s (%s)", sAlbumName.c_str(), sYear.c_str());
 
         // if no URL is provided, use the URL we got back from CreateAlbumSearchUrl
         // (e.g., in case we only got one result back and were sent to the detail page)
@@ -1233,7 +1233,7 @@ std::vector<CMusicArtistInfo> CScraper::FindArtist(CCurlFile &fcurl, const std::
     doc.Parse(*i, TIXML_ENCODING_UTF8);
     if (!doc.RootElement())
     {
-      CLog::Log(LOGERROR, "{}: Unable to parse XML", __FUNCTION__);
+      CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
       return vcari;
     }
     TiXmlHandle xhDoc(&doc);
@@ -1324,7 +1324,7 @@ EPISODELIST CScraper::GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl 
     doc.Parse(*i);
     if (!doc.RootElement())
     {
-      CLog::Log(LOGERROR, "{}: Unable to parse XML", __FUNCTION__);
+      CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
       continue;
     }
 
@@ -1422,7 +1422,7 @@ bool CScraper::GetVideoDetails(XFILE::CCurlFile& fcurl,
     doc.Parse(*i, TIXML_ENCODING_UTF8);
     if (!doc.RootElement())
     {
-      CLog::Log(LOGERROR, "{}: Unable to parse XML", __FUNCTION__);
+      CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
       continue;
     }
 
@@ -1430,7 +1430,7 @@ bool CScraper::GetVideoDetails(XFILE::CCurlFile& fcurl,
     TiXmlElement *pxeDetails = xhDoc.FirstChild("details").Element();
     if (!pxeDetails)
     {
-      CLog::Log(LOGERROR, "{}: Invalid XML file (want <details>)", __FUNCTION__);
+      CLog::Log(LOGERROR, "%s: Invalid XML file (want <details>)", __FUNCTION__);
       continue;
     }
     video.Load(pxeDetails, true /*fChain*/);
@@ -1462,7 +1462,7 @@ bool CScraper::GetAlbumDetails(CCurlFile &fcurl, const CScraperUrl &scurl, CAlbu
     doc.Parse(*i, TIXML_ENCODING_UTF8);
     if (!doc.RootElement())
     {
-      CLog::Log(LOGERROR, "{}: Unable to parse XML", __FUNCTION__);
+      CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
       return false;
     }
     fRet = album.Load(doc.RootElement(), i != vcsOut.begin());
@@ -1505,7 +1505,7 @@ bool CScraper::GetArtistDetails(CCurlFile &fcurl,
     doc.Parse(*i, TIXML_ENCODING_UTF8);
     if (!doc.RootElement())
     {
-      CLog::Log(LOGERROR, "{}: Unable to parse XML", __FUNCTION__);
+      CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
       return false;
     }
 
@@ -1541,7 +1541,7 @@ bool CScraper::GetArtwork(XFILE::CCurlFile &fcurl, CVideoInfoTag &details)
     doc.Parse(*it, TIXML_ENCODING_UTF8);
     if (!doc.RootElement())
     {
-      CLog::Log(LOGERROR, "{}: Unable to parse XML", __FUNCTION__);
+      CLog::Log(LOGERROR, "%s: Unable to parse XML", __FUNCTION__);
       return false;
     }
     fRet = details.Load(doc.RootElement(), it != vcsOut.begin());

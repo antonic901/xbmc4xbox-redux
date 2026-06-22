@@ -188,7 +188,7 @@ void Interface_Base::addon_log_msg(const KODI_ADDON_BACKEND_HDL hdl,
       break;
   }
 
-  CLog::Log(logLevel, "AddOnLog: {}: {}", addon->ID(), strMessage);
+  CLog::Log(logLevel, "AddOnLog: %s: %s", addon->ID().c_str(), strMessage);
 }
 
 char* Interface_Base::get_type_version(const KODI_ADDON_BACKEND_HDL hdl, int type)
@@ -306,8 +306,8 @@ char* Interface_Base::get_addon_info(const KODI_ADDON_BACKEND_HDL hdl, const cha
     str = addon->Version().asString();
   else
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} -  add-on '{}' requests invalid id '{}'", __FUNCTION__,
-              addon->Name(), id);
+    CLog::Log(LOGERROR, "Interface_Base::%s -  add-on '%s' requests invalid id '%s'", __FUNCTION__,
+              addon->Name().c_str(), id);
     return NULL;
   }
 
@@ -328,8 +328,8 @@ bool Interface_Base::open_settings_dialog(const KODI_ADDON_BACKEND_HDL hdl)
   AddonPtr addonInfo;
   if (!CServiceBroker::GetAddonMgr().GetAddon(addon->ID(), addonInfo, OnlyEnabled::CHOICE_YES))
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - Could not get addon information for '{}'", __FUNCTION__,
-              addon->ID());
+    CLog::Log(LOGERROR, "Interface_Base::%s - Could not get addon information for '%s'", __FUNCTION__,
+              addon->ID().c_str());
     return false;
   }
 
@@ -341,7 +341,7 @@ bool Interface_Base::is_setting_using_default(const KODI_ADDON_BACKEND_HDL hdl, 
   CAddonDll* addon = static_cast<CAddonDll*>(hdl);
   if (addon == NULL || id == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid data (addon='{}', id='{}')", __FUNCTION__, hdl,
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid data (addon='%p', id='%p')", __FUNCTION__, hdl,
               static_cast<const void*>(id));
 
     return false;
@@ -349,16 +349,16 @@ bool Interface_Base::is_setting_using_default(const KODI_ADDON_BACKEND_HDL hdl, 
 
   if (!addon->HasSettings())
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - couldn't get settings for add-on '{}'", __FUNCTION__,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - couldn't get settings for add-on '%s'", __FUNCTION__,
+              addon->Name().c_str());
     return false;
   }
 
   SettingPtr setting = addon->GetSettings()->GetSetting(id);
   if (setting == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - can't find setting '{}' in '{}'", __FUNCTION__, id,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - can't find setting '%s' in '%s'", __FUNCTION__, id,
+              addon->Name().c_str());
     return false;
   }
 
@@ -370,7 +370,7 @@ bool Interface_Base::get_setting_bool(const KODI_ADDON_BACKEND_HDL hdl, const ch
   CAddonDll* addon = static_cast<CAddonDll*>(hdl);
   if (addon == NULL || id == NULL || value == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid data (addon='{}', id='{}', value='{}')",
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid data (addon='%p', id='%p', value='%p')",
               __FUNCTION__, hdl, static_cast<const void*>(id), static_cast<void*>(value));
 
     return false;
@@ -378,23 +378,23 @@ bool Interface_Base::get_setting_bool(const KODI_ADDON_BACKEND_HDL hdl, const ch
 
   if (!addon->HasSettings())
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - couldn't get settings for add-on '{}'", __FUNCTION__,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - couldn't get settings for add-on '%s'", __FUNCTION__,
+              addon->Name().c_str());
     return false;
   }
 
   SettingPtr setting = addon->GetSettings()->GetSetting(id);
   if (setting == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - can't find setting '{}' in '{}'", __FUNCTION__, id,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - can't find setting '%s' in '%s'", __FUNCTION__, id,
+              addon->Name().c_str());
     return false;
   }
 
   if (setting->GetType() != SettingType::Boolean)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - setting '{}' is not a boolean in '{}'", __FUNCTION__, id,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - setting '%s' is not a boolean in '%s'", __FUNCTION__, id,
+              addon->Name().c_str());
     return false;
   }
 
@@ -407,7 +407,7 @@ bool Interface_Base::get_setting_int(const KODI_ADDON_BACKEND_HDL hdl, const cha
   CAddonDll* addon = static_cast<CAddonDll*>(hdl);
   if (addon == NULL || id == NULL || value == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid data (addon='{}', id='{}', value='{}')",
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid data (addon='%p', id='%p', value='%p')",
               __FUNCTION__, hdl, static_cast<const void*>(id), static_cast<void*>(value));
 
     return false;
@@ -415,23 +415,23 @@ bool Interface_Base::get_setting_int(const KODI_ADDON_BACKEND_HDL hdl, const cha
 
   if (!addon->HasSettings())
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - couldn't get settings for add-on '{}'", __FUNCTION__,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - couldn't get settings for add-on '%s'", __FUNCTION__,
+              addon->Name().c_str());
     return false;
   }
 
   SettingPtr setting = addon->GetSettings()->GetSetting(id);
   if (setting == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - can't find setting '{}' in '{}'", __FUNCTION__, id,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - can't find setting '%s' in '%s'", __FUNCTION__, id,
+              addon->Name().c_str());
     return false;
   }
 
   if (setting->GetType() != SettingType::Integer && setting->GetType() != SettingType::Number)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - setting '{}' is not a integer in '{}'", __FUNCTION__, id,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - setting '%s' is not a integer in '%s'", __FUNCTION__, id,
+              addon->Name().c_str());
     return false;
   }
 
@@ -449,7 +449,7 @@ bool Interface_Base::get_setting_float(const KODI_ADDON_BACKEND_HDL hdl,
   CAddonDll* addon = static_cast<CAddonDll*>(hdl);
   if (addon == NULL || id == NULL || value == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid data (addon='{}', id='{}', value='{}')",
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid data (addon='%p', id='%p', value='%p')",
               __FUNCTION__, hdl, static_cast<const void*>(id), static_cast<void*>(value));
 
     return false;
@@ -457,23 +457,23 @@ bool Interface_Base::get_setting_float(const KODI_ADDON_BACKEND_HDL hdl,
 
   if (!addon->HasSettings())
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - couldn't get settings for add-on '{}'", __FUNCTION__,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - couldn't get settings for add-on '%s'", __FUNCTION__,
+              addon->Name().c_str());
     return false;
   }
 
   SettingPtr setting = addon->GetSettings()->GetSetting(id);
   if (setting == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - can't find setting '{}' in '{}'", __FUNCTION__, id,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - can't find setting '%s' in '%s'", __FUNCTION__, id,
+              addon->Name().c_str());
     return false;
   }
 
   if (setting->GetType() != SettingType::Number)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - setting '{}' is not a number in '{}'", __FUNCTION__, id,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - setting '%s' is not a number in '%s'", __FUNCTION__, id,
+              addon->Name().c_str());
     return false;
   }
 
@@ -488,7 +488,7 @@ bool Interface_Base::get_setting_string(const KODI_ADDON_BACKEND_HDL hdl,
   CAddonDll* addon = static_cast<CAddonDll*>(hdl);
   if (addon == NULL || id == NULL || value == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid data (addon='{}', id='{}', value='{}')",
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid data (addon='%p', id='%p', value='%p')",
               __FUNCTION__, hdl, static_cast<const void*>(id), static_cast<void*>(value));
 
     return false;
@@ -496,23 +496,23 @@ bool Interface_Base::get_setting_string(const KODI_ADDON_BACKEND_HDL hdl,
 
   if (!addon->HasSettings())
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - couldn't get settings for add-on '{}'", __FUNCTION__,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - couldn't get settings for add-on '%s'", __FUNCTION__,
+              addon->Name().c_str());
     return false;
   }
 
   SettingPtr setting = addon->GetSettings()->GetSetting(id);
   if (setting == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - can't find setting '{}' in '{}'", __FUNCTION__, id,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - can't find setting '%s' in '%s'", __FUNCTION__, id,
+              addon->Name().c_str());
     return false;
   }
 
   if (setting->GetType() != SettingType::String)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - setting '{}' is not a string in '{}'", __FUNCTION__, id,
-              addon->Name());
+    CLog::Log(LOGERROR, "Interface_Base::%s - setting '%s' is not a string in '%s'", __FUNCTION__, id,
+              addon->Name().c_str());
     return false;
   }
 
@@ -525,7 +525,7 @@ bool Interface_Base::set_setting_bool(const KODI_ADDON_BACKEND_HDL hdl, const ch
   CAddonDll* addon = static_cast<CAddonDll*>(hdl);
   if (addon == NULL || id == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid data (addon='{}', id='{}')", __FUNCTION__, hdl,
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid data (addon='%p', id='%p')", __FUNCTION__, hdl,
               static_cast<const void*>(id));
 
     return false;
@@ -537,7 +537,7 @@ bool Interface_Base::set_setting_bool(const KODI_ADDON_BACKEND_HDL hdl, const ch
 
   if (!addon->UpdateSettingBool(id, value))
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid setting type", __FUNCTION__);
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid setting type", __FUNCTION__);
     return false;
   }
 
@@ -551,7 +551,7 @@ bool Interface_Base::set_setting_int(const KODI_ADDON_BACKEND_HDL hdl, const cha
   CAddonDll* addon = static_cast<CAddonDll*>(hdl);
   if (addon == NULL || id == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid data (addon='{}', id='{}')", __FUNCTION__, hdl,
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid data (addon='%p', id='%p')", __FUNCTION__, hdl,
               static_cast<const void*>(id));
 
     return false;
@@ -563,7 +563,7 @@ bool Interface_Base::set_setting_int(const KODI_ADDON_BACKEND_HDL hdl, const cha
 
   if (!addon->UpdateSettingInt(id, value))
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid setting type", __FUNCTION__);
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid setting type", __FUNCTION__);
     return false;
   }
 
@@ -579,19 +579,19 @@ bool Interface_Base::set_setting_float(const KODI_ADDON_BACKEND_HDL hdl,
   CAddonDll* addon = static_cast<CAddonDll*>(hdl);
   if (addon == NULL || id == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid data (addon='{}', id='{}')", __FUNCTION__, hdl,
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid data (addon='%p', id='%p')", __FUNCTION__, hdl,
               static_cast<const void*>(id));
 
     return false;
   }
 
   if (Interface_Base::UpdateSettingInActiveDialog(addon, ADDON_SETTINGS_ID, id,
-                                                  StringUtils::Format("{:f}", value)))
+                                                  StringUtils::Format("%f", value)))
     return true;
 
   if (!addon->UpdateSettingNumber(id, static_cast<double>(value)))
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid setting type", __FUNCTION__);
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid setting type", __FUNCTION__);
     return false;
   }
 
@@ -607,7 +607,7 @@ bool Interface_Base::set_setting_string(const KODI_ADDON_BACKEND_HDL hdl,
   CAddonDll* addon = static_cast<CAddonDll*>(hdl);
   if (addon == NULL || id == NULL || value == NULL)
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid data (addon='{}', id='{}', value='{}')",
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid data (addon='%p', id='%p', value='%p')",
               __FUNCTION__, hdl, static_cast<const void*>(id), static_cast<const void*>(value));
 
     return false;
@@ -618,7 +618,7 @@ bool Interface_Base::set_setting_string(const KODI_ADDON_BACKEND_HDL hdl,
 
   if (!addon->UpdateSettingString(id, value))
   {
-    CLog::Log(LOGERROR, "Interface_Base::{} - invalid setting type", __FUNCTION__);
+    CLog::Log(LOGERROR, "Interface_Base::%s - invalid setting type", __FUNCTION__);
     return false;
   }
 

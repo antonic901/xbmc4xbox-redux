@@ -52,7 +52,7 @@ private:
 
 bool CRepositoryUpdateJob::DoWork()
 {
-  CLog::Log(LOGDEBUG, "CRepositoryUpdateJob[{}] checking for updates.", m_repo->ID());
+  CLog::Log(LOGDEBUG, "CRepositoryUpdateJob[%s] checking for updates.", m_repo->ID().c_str());
   CAddonDatabase database;
   database.Open();
 
@@ -81,7 +81,7 @@ bool CRepositoryUpdateJob::DoWork()
 
   if (status == CRepository::STATUS_NOT_MODIFIED)
   {
-    CLog::Log(LOGDEBUG, "CRepositoryUpdateJob[{}] checksum not changed.", m_repo->ID());
+    CLog::Log(LOGDEBUG, "CRepositoryUpdateJob[%s] checksum not changed.", m_repo->ID().c_str());
     return true;
   }
 
@@ -99,7 +99,7 @@ bool CRepositoryUpdateJob::DoWork()
       {
         if (!oldAddon->Icon().empty() || !oldAddon->Art().empty() ||
             !oldAddon->Screenshots().empty())
-          CLog::Log(LOGDEBUG, "CRepository: invalidating cached art for '{}'", (*addon)->ID());
+          CLog::Log(LOGDEBUG, "CRepository: invalidating cached art for '%s'", (*addon)->ID().c_str());
 
         if (!oldAddon->Icon().empty())
           textureDB.InvalidateCachedTexture(oldAddon->Icon());
@@ -345,7 +345,7 @@ void CRepositoryUpdater::ScheduleUpdate(UpdateScheduleType scheduleType)
     delta = std::max(1, delta);
   }
 
-  CLog::Log(LOGDEBUG, "CRepositoryUpdater: checking in {}", delta);
+  CLog::Log(LOGDEBUG, "CRepositoryUpdater: checking in %i", delta);
 
   if (!m_timer.Start(delta))
     CLog::Log(LOGERROR,"CRepositoryUpdater: failed to start timer");

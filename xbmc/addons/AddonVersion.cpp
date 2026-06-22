@@ -59,7 +59,7 @@ void CAddonVersion::Initialize()
     mRevision = mUpstream.substr(pos + 1);
     if (mRevision.find_first_not_of(VALID_ADDON_VERSION_CHARACTERS) != std::string::npos)
     {
-      CLog::Log(LOGERROR, "AddonVersion: {} is not a valid revision number", mRevision);
+      CLog::Log(LOGERROR, "AddonVersion: %s is not a valid revision number", mRevision.c_str());
       mRevision = "";
     }
     mUpstream.erase(pos);
@@ -67,7 +67,7 @@ void CAddonVersion::Initialize()
 
   if (mUpstream.find_first_not_of(VALID_ADDON_VERSION_CHARACTERS) != std::string::npos)
   {
-    CLog::Log(LOGERROR, "AddonVersion: {} is not a valid version", mUpstream);
+    CLog::Log(LOGERROR, "AddonVersion: %s is not a valid version", mUpstream.c_str());
     mUpstream = "0.0.0";
   }
 }
@@ -166,7 +166,7 @@ std::string CAddonVersion::asString() const
 {
   std::string out;
   if (mEpoch)
-    out = StringUtils::Format("{}:", mEpoch);
+    out = StringUtils::Format("%i:", mEpoch);
   out += mUpstream;
   if (!mRevision.empty())
     out += "-" + mRevision;
