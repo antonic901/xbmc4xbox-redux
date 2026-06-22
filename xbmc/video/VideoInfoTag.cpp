@@ -985,10 +985,10 @@ const std::string CVideoInfoTag::GetCast(bool bIncludeRole /*= false*/) const
   {
     std::string character;
     if (it->strRole.empty() || !bIncludeRole)
-      character = StringUtils::Format("{}\n", it->strName);
+      character = StringUtils::Format("%s\n", it->strName.c_str());
     else
       character =
-          StringUtils::Format("{} {} {}\n", it->strName, g_localizeStrings.Get(20347), it->strRole);
+          StringUtils::Format("%s %s %s\n", it->strName.c_str(), g_localizeStrings.Get(20347).c_str(), it->strRole.c_str());
     strLabel += character;
   }
   return StringUtils::TrimRight(strLabel, "\n");
@@ -1467,8 +1467,8 @@ unsigned int CVideoInfoTag::GetDurationFromMinuteString(const std::string &runti
   if (!duration)
   { // failed for some reason, or zero
     duration = strtoul(runtime.c_str(), NULL, 10);
-    CLog::Log(LOGWARNING, "{} <runtime> should be in minutes. Interpreting '{}' as {} minutes",
-              __FUNCTION__, runtime, duration);
+    CLog::Log(LOGWARNING, "%s <runtime> should be in minutes. Interpreting '%s' as %u minutes",
+              __FUNCTION__, runtime.c_str(), duration);
   }
   return duration*60;
 }
@@ -1687,7 +1687,7 @@ void CVideoInfoTag::SetEpisodeGuide(std::string episodeGuide)
     m_strEpisodeGuide = Trim(boost::move(episodeGuide));
   else
     m_strEpisodeGuide =
-        StringUtils::Format("<episodeguide>{}</episodeguide>", Trim(boost::move(episodeGuide)));
+        StringUtils::Format("<episodeguide>%s</episodeguide>", Trim(boost::move(episodeGuide)).c_str());
 }
 
 void CVideoInfoTag::SetStatus(std::string status)

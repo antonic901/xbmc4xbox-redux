@@ -388,7 +388,7 @@ int CGUIDialogVideoManager::ChooseVideoAsset(const boost::shared_ptr<CFileItem>&
       dialogNewHeadingMsgId = 40220;
       break;
     default:
-      CLog::Log(LOGERROR, "Unknown asset type ({})", static_cast<int>(assetType));
+      CLog::Log(LOGERROR, "Unknown asset type (%i)", static_cast<int>(assetType));
       return -1;
   }
 

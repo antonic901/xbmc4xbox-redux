@@ -146,7 +146,7 @@ bool CMusicInfoTagLoaderCDDA::Load(const std::string& strFileName, CMusicInfoTag
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "Tag loader CDDB: exception in file {}", strFileName);
+    CLog::Log(LOGERROR, "Tag loader CDDB: exception in file %s", strFileName.c_str());
   }
 
 #endif

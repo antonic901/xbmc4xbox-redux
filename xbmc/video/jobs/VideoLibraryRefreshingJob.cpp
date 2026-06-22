@@ -247,8 +247,8 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
               return false;
           }
 
-          CLog::Log(LOGDEBUG, "CVideoLibraryRefreshingJob: user selected item '{}' with URL '{}'",
-                    scraperUrl.GetTitle(), scraperUrl.GetFirstThumbUrl());
+          CLog::Log(LOGDEBUG, "CVideoLibraryRefreshingJob: user selected item '%s' with URL '%s'",
+                    scraperUrl.GetTitle().c_str(), scraperUrl.GetFirstThumbUrl().c_str());
         }
       }
       else if (result < 0 || !VIDEO::CVideoInfoScanner::DownloadFailed(GetProgressDialog()))

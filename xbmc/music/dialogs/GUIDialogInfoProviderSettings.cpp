@@ -195,8 +195,8 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const boost::shared_ptr<con
       }
       else
       {
-        CLog::Log(LOGERROR, "{} - Could not get settings for addon: {}", __FUNCTION__,
-                  selectedAddonId);
+        CLog::Log(LOGERROR, "%s - Could not get settings for addon: %s", __FUNCTION__,
+                  selectedAddonId.c_str());
       }
     }
   }
@@ -221,7 +221,7 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const boost::shared_ptr<con
       }
       else
       {
-        CLog::Log(LOGERROR, "{} - Could not get addon: {}", __FUNCTION__, selectedAddonId);
+        CLog::Log(LOGERROR, "%s - Could not get addon: %s", __FUNCTION__, selectedAddonId.c_str());
       }
     }
   }
@@ -268,7 +268,7 @@ bool CGUIDialogInfoProviderSettings::Save()
     return true; //Save done by caller of ::Show
 
   // Save default settings for fetching additional information and art
-  CLog::Log(LOGINFO, "{} called", __FUNCTION__);
+  CLog::Log(LOGINFO, "%s called", __FUNCTION__);
   // Save Fetch addiitional info during update
   const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
   settings->SetBool(CSettings::SETTING_MUSICLIBRARY_DOWNLOADINFO, m_fetchInfo);
@@ -389,13 +389,13 @@ void CGUIDialogInfoProviderSettings::InitializeSettings()
   boost::shared_ptr<CSettingCategory> category = AddCategory("infoprovidersettings", -1);
   if (category == NULL)
   {
-    CLog::Log(LOGERROR, "{}: unable to setup settings", __FUNCTION__);
+    CLog::Log(LOGERROR, "%s: unable to setup settings", __FUNCTION__);
     return;
   }
   boost::shared_ptr<CSettingGroup> group1 = AddGroup(category);
   if (group1 == NULL)
   {
-    CLog::Log(LOGERROR, "{}: unable to setup settings", __FUNCTION__);
+    CLog::Log(LOGERROR, "%s: unable to setup settings", __FUNCTION__);
     return;
   }
 
@@ -424,7 +424,7 @@ void CGUIDialogInfoProviderSettings::InitializeSettings()
   boost::shared_ptr<CSettingGroup> group = AddGroup(category, 38337);
   if (group == NULL)
   {
-    CLog::Log(LOGERROR, "{}: unable to setup settings", __FUNCTION__);
+    CLog::Log(LOGERROR, "%s: unable to setup settings", __FUNCTION__);
     return;
   }
   boost::shared_ptr<CSettingAction> subsetting;

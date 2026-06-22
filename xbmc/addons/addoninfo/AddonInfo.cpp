@@ -278,7 +278,7 @@ std::vector<AddonInstanceId> CAddonInfo::GetKnownInstanceIds() const
     return singletonInstance;
 
   std::vector<AddonInstanceId> ret;
-  const std::string searchPath = StringUtils::Format("special://profile/addon_data/{}/", m_id);
+  const std::string searchPath = StringUtils::Format("special://profile/addon_data/%s/", m_id.c_str());
 
   if (XFILE::CDirectory::Exists(searchPath))
   {

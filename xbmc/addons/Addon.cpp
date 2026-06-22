@@ -296,8 +296,8 @@ bool CAddon::LoadSettings(bool bForce,
   {
     if (CFile::Exists(addonSettingsDefinitionFile))
     {
-      CLog::Log(LOGERROR, "CAddon[{}]: unable to load: {}, Line {}\n{}", ID(),
-                addonSettingsDefinitionFile, addonSettingsDefinitionDoc.ErrorRow(),
+      CLog::Log(LOGERROR, "CAddon[%s]: unable to load: %s, Line %i\n%s", ID().c_str(),
+                addonSettingsDefinitionFile.c_str(), addonSettingsDefinitionDoc.ErrorRow(),
                 addonSettingsDefinitionDoc.ErrorDesc());
     }
 
@@ -307,7 +307,7 @@ bool CAddon::LoadSettings(bool bForce,
   // initialize the settings definition
   if (!GetSettings(id)->Initialize(addonSettingsDefinitionDoc))
   {
-    CLog::Log(LOGERROR, "CAddon[{}]: failed to initialize addon settings", ID());
+    CLog::Log(LOGERROR, "CAddon[%s]: failed to initialize addon settings", ID().c_str());
     return false;
   }
 
@@ -359,8 +359,8 @@ bool CAddon::LoadUserSettings(AddonInstanceId id /* = ADDON_SETTINGS_ID */)
   CXBMCTinyXML doc;
   if (!doc.LoadFile(data.m_userSettingsPath))
   {
-    CLog::Log(LOGERROR, "CAddon[{}]: failed to load addon settings from {}", ID(),
-              data.m_userSettingsPath);
+    CLog::Log(LOGERROR, "CAddon[%s]: failed to load addon settings from %s", ID().c_str(),
+              data.m_userSettingsPath.c_str());
     return false;
   }
 
@@ -478,7 +478,7 @@ void CAddon::UpdateSetting(const std::string& key,
     setting = m_settings[id].m_addonSettings->AddSetting(key, value);
     if (setting == NULL)
     {
-      CLog::Log(LOGERROR, "CAddon[{}]: failed to add undefined setting \"{}\"", ID(), key);
+      CLog::Log(LOGERROR, "CAddon[%s]: failed to add undefined setting \"%s\"", ID().c_str(), key.c_str());
       return;
     }
   }
@@ -504,7 +504,7 @@ bool UpdateSettingValue(CAddon& addon,
     setting = addon.GetSettings(instanceId)->AddSetting(key, value);
     if (setting == NULL)
     {
-      CLog::Log(LOGERROR, "CAddon[{}]: failed to add undefined setting \"{}\"", addon.ID(), key);
+      CLog::Log(LOGERROR, "CAddon[%s]: failed to add undefined setting \"%s\"", addon.ID().c_str(), key.c_str());
       return false;
     }
   }
@@ -555,7 +555,7 @@ bool CAddon::SettingsFromXML(const CXBMCTinyXML& doc,
   {
     if (!GetSettings(id)->Initialize(doc))
     {
-      CLog::Log(LOGERROR, "CAddon[{}]: failed to initialize addon settings", ID());
+      CLog::Log(LOGERROR, "CAddon[%s]: failed to initialize addon settings", ID().c_str());
       return false;
     }
   }
@@ -567,7 +567,7 @@ bool CAddon::SettingsFromXML(const CXBMCTinyXML& doc,
   // try to load the setting's values from the given XML
   if (!GetSettings(id)->Load(doc))
   {
-    CLog::Log(LOGERROR, "CAddon[{}]: failed to load user settings", ID());
+    CLog::Log(LOGERROR, "CAddon[%s]: failed to load user settings", ID().c_str());
     return false;
   }
 
@@ -583,7 +583,7 @@ bool CAddon::SettingsToXML(CXBMCTinyXML& doc, AddonInstanceId id /* = ADDON_SETT
 
   if (!m_settings[id].m_addonSettings->Save(doc))
   {
-    CLog::Log(LOGERROR, "CAddon[{}]: failed to save addon settings", ID());
+    CLog::Log(LOGERROR, "CAddon[%s]: failed to save addon settings", ID().c_str());
     return false;
   }
 
@@ -610,7 +610,7 @@ bool CAddon::InitSettings(AddonInstanceId id)
       data.m_addonSettingsPath =
           URIUtils::AddFileToFolder(m_addonInfo->Path(), "resources", "instance-settings.xml");
       data.m_userSettingsPath =
-          URIUtils::AddFileToFolder(Profile(), StringUtils::Format("instance-settings-{}.xml", id));
+          URIUtils::AddFileToFolder(Profile(), StringUtils::Format("instance-settings-%" PRIu32 ".xml", id));
     }
 
     m_settings[id] = boost::move(data);

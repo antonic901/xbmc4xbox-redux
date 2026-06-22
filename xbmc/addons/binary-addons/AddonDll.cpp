@@ -87,7 +87,7 @@ std::string CAddonDll::GetDllPath(const std::string &libPath)
 
     if (doCopy)
     {
-      CLog::Log(LOGDEBUG, "ADDON: caching {} to {}", strFileName, dstfile);
+      CLog::Log(LOGDEBUG, "ADDON: caching %s to %s", strFileName.c_str(), dstfile.c_str());
       XFILE::CFile::Copy(strFileName, dstfile);
     }
 
@@ -115,7 +115,7 @@ std::string CAddonDll::GetDllPath(const std::string &libPath)
         strAltFileName.erase(0, temp.size());
         strAltFileName = altbin + strAltFileName;
       }
-      CLog::Log(LOGDEBUG, "ADDON: Trying to load {}", strAltFileName);
+      CLog::Log(LOGDEBUG, "ADDON: Trying to load %s", strAltFileName.c_str());
     }
 
     if (XFILE::CFile::Exists(strAltFileName))
@@ -128,7 +128,7 @@ std::string CAddonDll::GetDllPath(const std::string &libPath)
       strFileName = tempbin + strFileName;
       if (!XFILE::CFile::Exists(strFileName))
       {
-        CLog::Log(LOGERROR, "ADDON: Could not locate {}", strLibName);
+        CLog::Log(LOGERROR, "ADDON: Could not locate %s", strLibName.c_str());
         strFileName.clear();
       }
     }
@@ -161,7 +161,7 @@ bool CAddonDll::LoadDll()
     m_pDll = NULL;
 
     std::string heading =
-        StringUtils::Format("{}: {}", CAddonInfo::TranslateType(Type(), true), Name());
+        StringUtils::Format("%s: %s", CAddonInfo::TranslateType(Type(), true).c_str(), Name().c_str());
     HELPERS::ShowOKDialogLines(heading, 24070, 24071);
 
     return false;
@@ -172,7 +172,7 @@ bool CAddonDll::LoadDll()
 
 ADDON_STATUS CAddonDll::Create(KODI_ADDON_INSTANCE_STRUCT* firstKodiInstance)
 {
-  CLog::Log(LOGDEBUG, "ADDON: Dll Initializing - {}", Name());
+  CLog::Log(LOGDEBUG, "ADDON: Dll Initializing - %s", Name().c_str());
   m_initialized = false;
 
   if (!LoadDll())
@@ -219,7 +219,7 @@ ADDON_STATUS CAddonDll::Create(KODI_ADDON_INSTANCE_STRUCT* firstKodiInstance)
 
     // @todo currently a copy and paste from other function and becomes improved.
     std::string heading =
-        StringUtils::Format("{}: {}", CAddonInfo::TranslateType(Type(), true), Name());
+        StringUtils::Format("%s: %s", CAddonInfo::TranslateType(Type(), true).c_str(), Name().c_str());
     HELPERS::ShowOKDialogLines( heading ,  24070 ,  24071 );
   }
 
@@ -242,7 +242,7 @@ void CAddonDll::Destroy()
   {
     delete m_pDll;
     m_pDll = NULL;
-    CLog::Log(LOGINFO, "ADDON: Dll Destroyed - {}", Name());
+    CLog::Log(LOGINFO, "ADDON: Dll Destroyed - %s", Name().c_str());
   }
 
   ResetSettings(ADDON_SETTINGS_ID);
@@ -369,7 +369,7 @@ ADDON_STATUS CAddonDll::TransferSettings(AddonInstanceId instanceId)
   bool restart = false;
   ADDON_STATUS reportStatus = ADDON_STATUS_OK;
 
-  CLog::Log(LOGDEBUG, "Calling TransferSettings for: {}", Name());
+  CLog::Log(LOGDEBUG, "Calling TransferSettings for: %s", Name().c_str());
 
   LoadSettings(false, true, instanceId);
 
@@ -486,7 +486,7 @@ ADDON_STATUS CAddonDll::TransferSettings(AddonInstanceId instanceId)
               default:
               {
                 // log unknowns as an error, but go ahead and transfer the string
-                CLog::Log(LOGERROR, "Unknown setting type of '{}' for {}", id, Name());
+                CLog::Log(LOGERROR, "Unknown setting type of '%s' for %s", id, Name().c_str());
                 if (instanceId == ADDON_SETTINGS_ID)
                 {
                   if (m_interface.toAddon->setting_change_string)
@@ -543,13 +543,13 @@ bool CAddonDll::CheckAPIVersion(int type)
   if (kodiMinVersion > addonVersion ||
       addonMinVersion > CAddonVersion(kodi::addon::GetTypeVersion(type)))
   {
-    CLog::Log(LOGERROR, "Add-on '{}' is using an incompatible API version for type '{}'. Kodi API min version = '{}/{}', add-on API version '{}/{}'",
-      Name(),
+    CLog::Log(LOGERROR, "Add-on '%s' is using an incompatible API version for type '%s'. Kodi API min version = '%s/%s', add-on API version '%s/%s'",
+      Name().c_str(),
       kodi::addon::GetTypeName(type),
       kodi::addon::GetTypeVersion(type),
-      kodiMinVersion.asString(),
-      addonMinVersion.asString(),
-      addonVersion.asString());
+      kodiMinVersion.asString().c_str(),
+      addonMinVersion.asString().c_str(),
+      addonVersion.asString().c_str());
 
     return false;
   }

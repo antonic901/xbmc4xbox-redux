@@ -162,14 +162,14 @@ void CTextureDatabase::CreateTables()
 
 void CTextureDatabase::CreateAnalytics()
 {
-  CLog::Log(LOGINFO, "{} creating indices", __FUNCTION__);
+  CLog::Log(LOGINFO, "%s creating indices", __FUNCTION__);
   m_pDS->exec("CREATE INDEX idxTexture ON texture(url)");
   m_pDS->exec("CREATE INDEX idxSize ON sizes(idtexture, size)");
   m_pDS->exec("CREATE INDEX idxSize2 ON sizes(idtexture, width, height)");
   //! @todo Should the path index be a covering index? (we need only retrieve texture)
   m_pDS->exec("CREATE INDEX idxPath ON path(url, type)");
 
-  CLog::Log(LOGINFO, "{} creating triggers", __FUNCTION__);
+  CLog::Log(LOGINFO, "%s creating triggers", __FUNCTION__);
   m_pDS->exec("CREATE TRIGGER textureDelete AFTER delete ON texture FOR EACH ROW BEGIN delete from sizes where sizes.idtexture=old.id; END");
 }
 
@@ -262,7 +262,7 @@ bool CTextureDatabase::GetCachedTexture(const std::string &url, CTextureDetails 
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{}, failed on url '{}'", __FUNCTION__, url);
+    CLog::Log(LOGERROR, "%s, failed on url '%s'", __FUNCTION__, url.c_str());
   }
   return false;
 }
@@ -310,7 +310,7 @@ bool CTextureDatabase::GetTextures(CVariant &items, const Filter &filter)
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{}, failed", __FUNCTION__);
+    CLog::Log(LOGERROR, "%s, failed", __FUNCTION__);
   }
   return false;
 }
@@ -349,7 +349,7 @@ bool CTextureDatabase::AddCachedTexture(const std::string &url, const CTextureDe
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{} failed on url '{}'", __FUNCTION__, url);
+    CLog::Log(LOGERROR, "%s failed on url '%s'", __FUNCTION__, url.c_str());
     RollbackTransaction();
   }
   return true;
@@ -386,7 +386,7 @@ bool CTextureDatabase::ClearCachedTexture(int id, std::string &cacheFile)
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{}, failed on texture id {}", __FUNCTION__, id);
+    CLog::Log(LOGERROR, "%s, failed on texture id %i", __FUNCTION__, id);
   }
   return false;
 }
@@ -423,7 +423,7 @@ std::string CTextureDatabase::GetTextureForPath(const std::string &url, const st
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{}, failed on url '{}'", __FUNCTION__, url);
+    CLog::Log(LOGERROR, "%s, failed on url '%s'", __FUNCTION__, url.c_str());
   }
   return "";
 }
@@ -458,7 +458,7 @@ void CTextureDatabase::SetTextureForPath(const std::string &url, const std::stri
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{} failed on url '{}'", __FUNCTION__, url);
+    CLog::Log(LOGERROR, "%s failed on url '%s'", __FUNCTION__, url.c_str());
   }
 }
 
@@ -476,7 +476,7 @@ void CTextureDatabase::ClearTextureForPath(const std::string &url, const std::st
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "{} failed on url '{}'", __FUNCTION__, url);
+    CLog::Log(LOGERROR, "%s failed on url '%s'", __FUNCTION__, url.c_str());
   }
 }
 

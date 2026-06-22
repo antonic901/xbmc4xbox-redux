@@ -81,7 +81,7 @@ bool CPlayerController::OnAction(const CAction &action)
           if (info.name.length() == 0)
             sub = lang;
           else
-            sub = StringUtils::Format("{} - {}", lang, info.name);
+            sub = StringUtils::Format("%s - %s", lang.c_str(), info.name.c_str());
         }
         else
           sub = g_localizeStrings.Get(1223);
@@ -128,7 +128,7 @@ bool CPlayerController::OnAction(const CAction &action)
           if (info.name.length() == 0)
             sub = lang;
           else
-            sub = StringUtils::Format("{} - {}", lang, info.name);
+            sub = StringUtils::Format("%s - %s", lang.c_str(), info.name.c_str());
         }
         else
           sub = g_localizeStrings.Get(1223);
@@ -228,9 +228,9 @@ bool CPlayerController::OnAction(const CAction &action)
         if (info.name.empty())
           aud = lan;
         else
-          aud = StringUtils::Format("{} - {}", lan, info.name);
+          aud = StringUtils::Format("%s - %s", lan.c_str(), info.name.c_str());
         std::string caption = g_localizeStrings.Get(460);
-        caption += StringUtils::Format(" ({}/{})", currentAudio + 1, audioStreamCount);
+        caption += StringUtils::Format(" (%i/%i)", currentAudio + 1, audioStreamCount);
         CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, caption, aud, DisplTime, false, MsgTime);
         return true;
       }
@@ -307,7 +307,7 @@ void CPlayerController::OnSliderChange(void *data, CGUISliderControl *slider)
   if (m_sliderAction == ACTION_ZOOM_OUT || m_sliderAction == ACTION_ZOOM_IN ||
       m_sliderAction == ACTION_INCREASE_PAR || m_sliderAction == ACTION_DECREASE_PAR)
   {
-    std::string strValue = StringUtils::Format("{:1.2f}", slider->GetFloatValue());
+    std::string strValue = StringUtils::Format("%1.2f", slider->GetFloatValue());
     slider->SetTextValue(strValue);
   }
   else

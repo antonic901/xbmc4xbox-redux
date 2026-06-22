@@ -394,8 +394,8 @@ bool CGUIWindowVideoBase::ShowInfo(const CFileItemPtr& item2, const ScraperPtr& 
           URIUtils::GetParentPath(item->GetPath(), strParentDirectory);
           if (m_database.GetTvShowId(strParentDirectory) < 0)
           {
-            CLog::Log(LOGERROR, "{}: could not add episode [{}]. tvshow does not exist yet..",
-                      __FUNCTION__, item->GetPath());
+            CLog::Log(LOGERROR, "%s: could not add episode [%s]. tvshow does not exist yet..",
+                      __FUNCTION__, item->GetPath().c_str());
             return false;
           }
         }
@@ -964,7 +964,7 @@ bool CGUIWindowVideoBase::OnPlayMedia(const boost::shared_ptr<CFileItem>& pItem,
     itemCopy->SetPath(pItem->GetVideoInfoTag()->m_strFileNameAndPath);
     itemCopy->SetProperty("original_listitem_url", pItem->GetPath());
   }
-  CLog::Log(LOGDEBUG, "{} {}", __FUNCTION__, CURL::GetRedacted(itemCopy->GetPath()));
+  CLog::Log(LOGDEBUG, "%s %s", __FUNCTION__, CURL::GetRedacted(itemCopy->GetPath()).c_str());
 
   itemCopy->SetProperty("playlist_type_hint", m_guiState->GetPlaylist());
 
@@ -1526,7 +1526,7 @@ void CGUIWindowVideoBase::UpdateVideoVersionItems()
 
         CVideoDbUrl itemUrl;
         itemUrl.FromString(
-            StringUtils::Format("videodb://movies/videoversions/{}", videoVersionId));
+            StringUtils::Format("videodb://movies/videoversions/%i", videoVersionId));
         itemUrl.AddOption("mediaid", item->GetVideoInfoTag()->m_iDbId);
         item->SetPath(itemUrl.ToString());
       }

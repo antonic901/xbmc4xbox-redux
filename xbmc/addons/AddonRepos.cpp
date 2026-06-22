@@ -201,7 +201,7 @@ void CAddonRepos::BuildUpdateOrOutdatedList(const std::vector<boost::shared_ptr<
 {
   boost::shared_ptr<IAddon> update;
 
-  CLog::Log(LOGDEBUG, "Building {} list from installed add-ons",
+  CLog::Log(LOGDEBUG, "Building %s list from installed add-ons",
               addonCheckType == AddonCheckType::OUTDATED_ADDONS ? "outdated" : "update");
   for (std::vector<boost::shared_ptr<IAddon> >::const_iterator addon = installed.begin(); addon != installed.end(); ++addon)
   {
@@ -233,8 +233,8 @@ void CAddonRepos::BuildAddonsWithUpdateList(
 bool CAddonRepos::DoAddonUpdateCheck(const boost::shared_ptr<IAddon>& addon,
                                      boost::shared_ptr<IAddon>& update) const
 {
-  CLog::Log(LOGDEBUG, "update check: addonID = {} / Origin = {} / Version = {}",
-              addon->ID(), addon->Origin(), addon->Version().asString());
+  CLog::Log(LOGDEBUG, "update check: addonID = %s / Origin = %s / Version = %s",
+              addon->ID().c_str(), addon->Origin().c_str(), addon->Version().asString().c_str());
 
   update.reset();
 
@@ -280,8 +280,8 @@ bool CAddonRepos::DoAddonUpdateCheck(const boost::shared_ptr<IAddon>& addon,
 
   if (update != NULL)
   {
-    CLog::Log(LOGDEBUG, "-- found -->: addonID = {} / Origin = {} / Version = {}",
-                update->ID(), update->Origin(), update->Version().asString());
+    CLog::Log(LOGDEBUG, "-- found -->: addonID = %s / Origin = %s / Version = %s",
+                update->ID().c_str(), update->Origin().c_str(), update->Version().asString().c_str());
     return true;
   }
 
@@ -464,8 +464,8 @@ bool CAddonRepos::FindDependency(const std::string& dependsId,
 
   repoForDep = boost::static_pointer_cast<CRepository>(tmp);
 
-  CLog::Log(LOGDEBUG, "found dependency [{}] for install/update from repo [{}]",
-              dependencyToInstall->ID(), repoForDep->ID());
+  CLog::Log(LOGDEBUG, "found dependency [%s] for install/update from repo [%s]",
+              dependencyToInstall->ID().c_str(), repoForDep->ID().c_str());
 
   if (dependencyToInstall->HasType(AddonType::REPOSITORY))
   {

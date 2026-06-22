@@ -251,7 +251,7 @@ void CLangInfo::CRegion::SetGlobalLocale()
   }
   g_langInfo.m_originalLocale = std::locale(std::locale::classic(), new custom_numpunct(m_cDecimalSep, m_cThousandsSep, m_strGrouping));
 
-  CLog::Log(LOGDEBUG, "trying to set locale to {}", strLocale);
+  CLog::Log(LOGDEBUG, "trying to set locale to %s", strLocale.c_str());
 
   // We need to set the locale to only change the collate. Otherwise,
   // decimal separator is changed depending of the current language
@@ -308,7 +308,7 @@ void CLangInfo::CRegion::SetGlobalLocale()
 #endif
 
   g_charsetConverter.resetSystemCharset();
-  CLog::Log(LOGINFO, "global locale set to {}", strLocale);
+  CLog::Log(LOGINFO, "global locale set to %s", strLocale.c_str());
 
 #ifdef TARGET_ANDROID
   // Force UTF8 for, e.g., vsnprintf
@@ -405,7 +405,7 @@ bool CLangInfo::Load(const std::string& strLanguage)
   CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(strFileName))
   {
-    CLog::Log(LOGERROR, "unable to load {}: {} at line {}", strFileName, xmlDoc.ErrorDesc(),
+    CLog::Log(LOGERROR, "unable to load %s: %s at line %i", strFileName.c_str(), xmlDoc.ErrorDesc(),
               xmlDoc.ErrorRow());
     return false;
   }
@@ -414,7 +414,7 @@ bool CLangInfo::Load(const std::string& strLanguage)
   m_languageAddon = GetLanguageAddon(strLanguage);
   if (m_languageAddon == NULL)
   {
-    CLog::Log(LOGERROR, "Unknown language {}", strLanguage);
+    CLog::Log(LOGERROR, "Unknown language %s", strLanguage.c_str());
     return false;
   }
 
@@ -430,7 +430,7 @@ bool CLangInfo::Load(const std::string& strLanguage)
   TiXmlElement* pRootElement = xmlDoc.RootElement();
   if (pRootElement->ValueStr() != "language")
   {
-    CLog::Log(LOGERROR, "{} Doesn't contain <language>", strFileName);
+    CLog::Log(LOGERROR, "%s Doesn't contain <language>", strFileName.c_str());
     return false;
   }
 
@@ -751,24 +751,24 @@ bool CLangInfo::SetLanguage(std::string language /* = "" */, bool reloadServices
       if (!addonMgr.GetAddon(language, addon, ADDON::AddonType::RESOURCE_LANGUAGE,
                              ADDON::OnlyEnabled::CHOICE_NO))
       {
-        CLog::Log(LOGFATAL, "CLangInfo::{}: could not find default language add-on '{}'", __FUNCTION__,
-                  language);
+        CLog::Log(LOGFATAL, "CLangInfo::%s: could not find default language add-on '%s'", __FUNCTION__,
+                  language.c_str());
         return false;
       }
     }
   }
 
-  CLog::Log(LOGINFO, "CLangInfo: loading {} language information...", language);
+  CLog::Log(LOGINFO, "CLangInfo: loading %s language information...", language.c_str());
   if (!Load(language))
   {
-    CLog::Log(LOGFATAL, "CLangInfo: failed to load {} language information", language);
+    CLog::Log(LOGFATAL, "CLangInfo: failed to load %s language information", language.c_str());
     return false;
   }
 
-  CLog::Log(LOGINFO, "CLangInfo: loading {} language strings...", language);
+  CLog::Log(LOGINFO, "CLangInfo: loading %s language strings...", language.c_str());
   if (!g_localizeStrings.Load(GetLanguagePath(), language))
   {
-    CLog::Log(LOGFATAL, "CLangInfo: failed to load {} language strings", language);
+    CLog::Log(LOGFATAL, "CLangInfo: failed to load %s language strings", language.c_str());
     return false;
   }
 
@@ -1123,8 +1123,8 @@ std::string CLangInfo::GetTemperatureAsString(const CTemperature& temperature) c
     return g_localizeStrings.Get(13205); // "Unknown"
 
   CTemperature::Unit temperatureUnit = GetTemperatureUnit();
-  return StringUtils::Format("{}{}", temperature.ToString(temperatureUnit),
-                             GetTemperatureUnitString());
+  return StringUtils::Format("%s%s", temperature.ToString(temperatureUnit).c_str(),
+                             GetTemperatureUnitString().c_str());
 }
 
 // Returns the temperature unit string for the current language
@@ -1172,7 +1172,7 @@ std::string CLangInfo::GetSpeedAsString(const CSpeed& speed) const
   if (!speed.IsValid())
     return g_localizeStrings.Get(13205); // "Unknown"
 
-  return StringUtils::Format("{}{}", speed.ToString(GetSpeedUnit()), GetSpeedUnitString());
+  return StringUtils::Format("%s%s", speed.ToString(GetSpeedUnit()).c_str(), GetSpeedUnitString().c_str());
 }
 
 // Returns the speed unit string for the current language

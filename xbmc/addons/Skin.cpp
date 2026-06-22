@@ -276,7 +276,7 @@ void CSkinInfo::LoadIncludes()
 {
   std::string includesPath =
       CSpecialProtocol::TranslatePathConvertCase(GetSkinPath("Includes.xml"));
-  CLog::Log(LOGINFO, "Loading skin includes from {}", includesPath);
+  CLog::Log(LOGINFO, "Loading skin includes from %s", includesPath.c_str());
   m_includes.Clear();
   m_includes.Load(includesPath);
 }
@@ -286,7 +286,7 @@ void CSkinInfo::LoadTimers()
   m_skinTimerManager.reset(new CSkinTimerManager(CServiceBroker::GetGUI()->GetInfoManager()));
   const std::string timersPath =
       CSpecialProtocol::TranslatePathConvertCase(GetSkinPath("Timers.xml"));
-  CLog::Log(LOGINFO, "Trying to load skin timers from {}", timersPath);
+  CLog::Log(LOGINFO, "Trying to load skin timers from %s", timersPath.c_str());
   m_skinTimerManager->LoadTimers(timersPath);
 }
 
@@ -673,7 +673,7 @@ void CSkinInfo::SetString(int setting, const std::string &label)
     return;
   }
 
-  CLog::Log(LOGFATAL, "{}: unknown setting ({}) requested", __FUNCTION__, setting);
+  CLog::Log(LOGFATAL, "%s: unknown setting (%i) requested", __FUNCTION__, setting);
   assert(false);
 }
 
@@ -717,7 +717,7 @@ void CSkinInfo::SetBool(int setting, bool set)
     return;
   }
 
-  CLog::Log(LOGFATAL, "{}: unknown setting ({}) requested", __FUNCTION__, setting);
+  CLog::Log(LOGFATAL, "%s: unknown setting (%i) requested", __FUNCTION__, setting);
   assert(false);
 }
 
@@ -868,8 +868,8 @@ bool CSkinInfo::SettingsFromXML(const CXBMCTinyXML& doc,
           std::make_pair(number++, boost::dynamic_pointer_cast<CSkinSettingBool>(*setting)));
     }
     else
-      CLog::Log(LOGWARNING, "CSkinInfo: ignoring setting of unknown type \"{}\"",
-                (*setting)->GetType());
+      CLog::Log(LOGWARNING, "CSkinInfo: ignoring setting of unknown type \"%s\"",
+                (*setting)->GetType().c_str());
   }
 
   return true;
@@ -890,13 +890,13 @@ bool CSkinInfo::SettingsToXML(CXBMCTinyXML& doc, AddonInstanceId id /* = ADDON_S
   for (std::map<int, CSkinSettingBoolPtr>::const_iterator it = m_bools.begin(); it != m_bools.end(); ++it)
   {
     if (!it->second->Serialize(settingsElement))
-      CLog::Log(LOGWARNING, "CSkinInfo: failed to save string setting \"{}\"", it->second->name);
+      CLog::Log(LOGWARNING, "CSkinInfo: failed to save string setting \"%s\"", it->second->name.c_str());
   }
 
   for (std::map<int, CSkinSettingStringPtr>::const_iterator it = m_strings.begin(); it != m_strings.end(); ++it)
   {
     if (!it->second->Serialize(settingsElement))
-      CLog::Log(LOGWARNING, "CSkinInfo: failed to save bool setting \"{}\"", it->second->name);
+      CLog::Log(LOGWARNING, "CSkinInfo: failed to save bool setting \"%s\"", it->second->name.c_str());
   }
 
   return true;

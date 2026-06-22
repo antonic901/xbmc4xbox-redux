@@ -166,7 +166,7 @@ int CGUIDialogVideoBookmarks::ItemToBookmarkIndex(int item) const
   const int bookmarkIdx(fileItem->GetProperty("bookmark").asInteger32(-1));
   if (bookmarkIdx < 0 || bookmarkIdx >= static_cast<int>(m_bookmarks.size()))
   {
-    CLog::Log(LOGERROR, "invalid bookmark index {} for {} bookmark(s)", bookmarkIdx,
+    CLog::Log(LOGERROR, "invalid bookmark index %i for %" PRIuS "bookmark(s)", bookmarkIdx,
                m_bookmarks.size());
     return -1;
   }
@@ -244,8 +244,8 @@ void CGUIDialogVideoBookmarks::OnRefreshList()
   {
     std::string bookmarkTime;
     if (m_bookmarks[i].type == CBookmark::EPISODE)
-      bookmarkTime = StringUtils::Format("{} {} {} {}", g_localizeStrings.Get(20373),
-                                         m_bookmarks[i].seasonNumber, g_localizeStrings.Get(20359),
+      bookmarkTime = StringUtils::Format("%s %ld %s %ld", g_localizeStrings.Get(20373).c_str(),
+                                         m_bookmarks[i].seasonNumber, g_localizeStrings.Get(20359).c_str(),
                                          m_bookmarks[i].episodeNumber);
     else
       bookmarkTime = StringUtils::SecondsToTimeString((long)m_bookmarks[i].timeInSeconds, TIME_FORMAT_HH_MM_SS);
@@ -280,7 +280,7 @@ void CGUIDialogVideoBookmarks::OnRefreshList()
     if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(
             CSettings::SETTING_MYVIDEOS_EXTRACTCHAPTERTHUMBS))
     {
-      std::string chapterPath = StringUtils::Format("chapter://{}/{}", m_filePath, i);
+      std::string chapterPath = StringUtils::Format("chapter://%s/%i", m_filePath.c_str(), i);
       item->SetArt("thumb", chapterPath);
     }
 
@@ -492,8 +492,8 @@ bool CGUIDialogVideoBookmarks::AddEpisodeBookmark()
     for (unsigned int i=0; i < episodes.size(); ++i)
     {
       std::string strButton =
-          StringUtils::Format("{} {}, {} {}", g_localizeStrings.Get(20373), episodes[i].m_iSeason,
-                              g_localizeStrings.Get(20359), episodes[i].m_iEpisode);
+          StringUtils::Format("%s %i, %s %i", g_localizeStrings.Get(20373).c_str(), episodes[i].m_iSeason,
+                              g_localizeStrings.Get(20359).c_str(), episodes[i].m_iEpisode);
       choices.Add(i, strButton);
     }
 

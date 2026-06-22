@@ -131,8 +131,8 @@ bool CTextureCacheJob::CacheTexture(boost::movelib::unique_ptr<CTexture>* out_te
     else
       m_details.file = m_cachePath + ".jpg";
 
-    CLog::Log(LOGDEBUG, "{} image '{}' to '{}':", m_oldHash.empty() ? "Caching" : "Recaching",
-              CURL::GetRedacted(image), m_details.file);
+    CLog::Log(LOGDEBUG, "%s image '%s' to '%s':", m_oldHash.empty() ? "Caching" : "Recaching",
+              CURL::GetRedacted(image).c_str(), m_details.file.c_str());
 
     if (CPicture::CacheTexture(texture.get(), width, height,
                                CTextureCache::GetCachedPath(m_details.file)))
@@ -248,14 +248,14 @@ std::string CTextureCacheJob::GetImageHash(const std::string &url)
     if (!time)
       time = st.st_ctime;
     if (time || st.st_size)
-      return StringUtils::Format("d{}s{}", time, st.st_size);
+      return StringUtils::Format("d%" PRId64"s%" PRId64, time, st.st_size);
 
     // the image exists but we couldn't determine the mtime/ctime and/or size
     // so set an obviously bad hash
     return "BADHASH";
   }
 
-  CLog::Log(LOGDEBUG, "{} - unable to stat url {}", __FUNCTION__, CURL::GetRedacted(url));
+  CLog::Log(LOGDEBUG, "%s - unable to stat url %s", __FUNCTION__, CURL::GetRedacted(url).c_str());
   return "";
 }
 
