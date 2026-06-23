@@ -2,11 +2,14 @@
 <addon id="screensaver.xbmc.builtin.slideshow"
        name="Slideshow"
        version="1.0.0"
-       provider-name="Team XBMC">
-  <extension point="xbmc.ui.screensaver" library=""/>
+       provider-name="Team Kodi">
+  <extension point="xbmc.ui.screensaver" library="dummy.so"/>
   <extension point="xbmc.addon.metadata">
-    <summary>Screensaver that displays a image slideshow</summary>
-    <description>The Slideshow screensaver will show you a slide show of images using various transition effects. It can be configured to show your libraries music or video fanart, or a custom folder of images</description>
     <platform>all</platform>
+    <assets>
+      <icon>icon.png</icon>
+    </assets>
+    <summary lang="en_GB">Screensaver that displays a image slideshow</summary>
+    <description lang="en_GB">The Slideshow screensaver will show you a slide show of images using various transition effects. It can be configured to show your libraries music or video fanart, or a custom folder of images.</description>
   </extension>
 </addon>
