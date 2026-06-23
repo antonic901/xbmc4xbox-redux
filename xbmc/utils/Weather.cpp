@@ -92,7 +92,7 @@ bool CWeatherJob::DoWork()
     return false;
 
   AddonPtr addon;
-  if (CServiceBroker::GetAddonMgr().GetAddon(
+  if (!CServiceBroker::GetAddonMgr().GetAddon(
           CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(
               CSettings::SETTING_WEATHER_ADDON),
           addon, AddonType::SCRIPT_WEATHER, OnlyEnabled::CHOICE_YES))
