@@ -23,7 +23,7 @@
 <!-- CP1255 - Hebrew (Windows)                          -->
 <!-- CP1256 - Arabic (Windows)                          -->
 <!-- CP1257 - Baltic (Windows)                          -->
-<!-- CP1258 - Vietnamesse (Windows)                     -->
+<!-- CP1258 - Vietnamese (Windows)                      -->
 <!-- CP874  - Thai (Windows)                            -->
 <!-- CP949  - Korean                                    -->
 <!--                                                    -->
@@ -54,6 +54,8 @@
       <time symbolAM="AM" symbolPM="PM">h:mm:ss xx</time>
       <tempunit>F</tempunit>
       <speedunit>mph</speedunit>
+      <thousandsseparator groupingformat="\3">,</thousandsseparator>
+      <decimalseparator>.</decimalseparator>
     </region>
 
     <region name="USA (24h)" locale="US">
@@ -62,6 +64,8 @@
       <time symbolAM="" symbolPM="">H:mm:ss</time>
       <tempunit>F</tempunit>
       <speedunit>mph</speedunit>
+      <thousandsseparator groupingformat="\3">,</thousandsseparator>
+      <decimalseparator>.</decimalseparator>
     </region>
 
     <region name="UK (12h)" locale="GB">
@@ -71,6 +75,8 @@
       <tempunit>C</tempunit>
       <speedunit>mph</speedunit>
       <timezone>GMT</timezone>
+      <thousandsseparator groupingformat="\3">,</thousandsseparator>
+      <decimalseparator>.</decimalseparator>
     </region>
 
     <region name="UK (24h)" locale="GB">
@@ -80,14 +86,18 @@
       <tempunit>C</tempunit>
       <speedunit>mph</speedunit>
       <timezone>GMT</timezone>
+      <thousandsseparator groupingformat="\3">,</thousandsseparator>
+      <decimalseparator>.</decimalseparator>
     </region>
 
     <region name="Canada" locale="CA">
-      <dateshort>MM/DD/YYYY</dateshort>
+      <dateshort>YYYY-MM-DD</dateshort>
       <datelong>DDDD, MMMM D, YYYY</datelong>
       <time symbolAM="AM" symbolPM="PM">h:mm:ss xx</time>
       <tempunit>C</tempunit>
       <speedunit>kmh</speedunit>
+      <thousandsseparator groupingformat="\3">,</thousandsseparator>
+      <decimalseparator>.</decimalseparator>
     </region>
 
     <region name="Australia (12h)" locale="AU">
@@ -97,6 +107,8 @@
       <tempunit>C</tempunit>
       <speedunit>kmh</speedunit>
       <timezone>GMT</timezone>
+      <thousandsseparator groupingformat="\3">,</thousandsseparator>
+      <decimalseparator>.</decimalseparator>
     </region>
 
     <region name="Australia (24h)" locale="AU">
@@ -106,8 +118,10 @@
       <tempunit>C</tempunit>
       <speedunit>kmh</speedunit>
       <timezone>GMT</timezone>
+      <thousandsseparator groupingformat="\3">,</thousandsseparator>
+      <decimalseparator>.</decimalseparator>
     </region>
-    
+
     <region name="Central Europe" locale="DE">
       <dateshort>DD-MM-YYYY</dateshort>
       <datelong>DDDD, D MMMM YYYY</datelong>
@@ -115,6 +129,8 @@
       <tempunit>C</tempunit>
       <speedunit>kmh</speedunit>
       <timezone>CET</timezone>
+      <thousandsseparator groupingformat="\3">,</thousandsseparator>
+      <decimalseparator>.</decimalseparator>
     </region>
 
     <region name="India (12h)" locale="IN">
@@ -124,6 +140,8 @@
       <tempunit>C</tempunit>
       <speedunit>kmh</speedunit>
       <timezone>GMT</timezone>
+      <thousandsseparator groupingformat="\3\2">,</thousandsseparator>
+      <decimalseparator>.</decimalseparator>
     </region>
 
     <region name="India (24h)" locale="IN">
@@ -133,6 +151,8 @@
       <tempunit>C</tempunit>
       <speedunit>kmh</speedunit>
       <timezone>IST</timezone>
+      <thousandsseparator groupingformat="\3\2">,</thousandsseparator>
+      <decimalseparator>.</decimalseparator>
     </region>
   </regions>
 </language>
