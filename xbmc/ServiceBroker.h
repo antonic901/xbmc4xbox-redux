@@ -49,8 +49,11 @@ class CApplicationMessenger;
 }
 } // namespace KODI
 
+template<class T>
+class CComponentContainer;
 class CContextMenuManager;
 class XBPython;
+class IApplicationComponent;
 class CWinSystemBase;
 class CWeather;
 class CPlayerCoreFactory;
@@ -90,6 +93,7 @@ public:
   static CPlayerCoreFactory& GetPlayerCoreFactory();
   static CDatabaseManager& GetDatabaseManager();
   static CMediaManager& GetMediaManager();
+  static CComponentContainer<IApplicationComponent>& GetAppComponents();
 
   static CGUIComponent* GetGUI();
   static void RegisterGUI(CGUIComponent* gui);

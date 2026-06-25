@@ -23,6 +23,7 @@
 #include "system.h" // for HAS_OPTICAL_DRIVE et. al.
 #include "XBApplicationEx.h"
 
+#include "application/ApplicationComponents.h"
 #include "IMsgTargetCallback.h"
 #include "input/keyboard/Key.h"
 #include "utils/GlobalsHandling.h"
@@ -83,7 +84,8 @@ struct VOICE_MASK {
   float whisper;
 };
 
-#include "ApplicationPlayer.h"
+#include "application/ApplicationPlayer.h"
+#include "application/ApplicationPowerHandling.h"
 
 class CSeekHandler;
 class CCdgParser;
@@ -93,7 +95,7 @@ class CGUITextLayout;
 
 class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMsgTargetCallback,
                      public ISettingCallback, public ISettingsHandler, public ISubSettings,
-                     public KODI::MESSAGING::IMessageTarget
+                     public KODI::MESSAGING::IMessageTarget, public CApplicationComponents
 {
   friend class CApplicationPlayer;
 public:

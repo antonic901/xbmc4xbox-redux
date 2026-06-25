@@ -40,7 +40,8 @@ enum SeekType
 class CSeekHandler : public ISettingCallback, public KODI::ACTION::IActionListener
 {
 public:
-  static CSeekHandler& GetInstance();
+  CSeekHandler();
+  virtual ~CSeekHandler();
 
   static void SettingOptionsSeekStepsFiller(const boost::shared_ptr<const CSetting>& setting,
                                             std::vector<IntegerSettingOption>& list,
@@ -63,10 +64,8 @@ public:
   int GetTimeCodeSeconds() const;
 
 protected:
-  CSeekHandler();
   CSeekHandler(const CSeekHandler&);
   CSeekHandler& operator=(CSeekHandler const&);
-  virtual ~CSeekHandler();
   bool SeekTimeCode(const CAction &action);
   void ChangeTimeCode(int remote);
 

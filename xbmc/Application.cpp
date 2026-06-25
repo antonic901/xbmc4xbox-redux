@@ -330,6 +330,10 @@ CApplication::CApplication(void)
   , m_progressTrackingItem(new CFileItem)
   , m_ignoreSkinSettingChanges(false)
 {
+  // register application components
+  RegisterComponent(boost::make_shared<CApplicationPlayer>());
+  RegisterComponent(boost::make_shared<CApplicationPowerHandling>());
+
   m_network = NULL;
   m_bSpinDown = false;
   m_bNetworkSpinDown = false;
@@ -368,6 +372,9 @@ CApplication::CApplication(void)
 
 CApplication::~CApplication(void)
 {
+  DeregisterComponent(typeid(CApplicationPowerHandling));
+  DeregisterComponent(typeid(CApplicationPlayer));
+
   delete m_currentStack;
 
   delete m_pPlayer;

@@ -24,6 +24,7 @@
 #include "utils/Geometry.h"
 #include "input/keyboard/Key.h"
 #include "utils/StdString.h"
+#include "VideoSettings.h"
 
 class TiXmlElement;
 class CStreamDetails;
