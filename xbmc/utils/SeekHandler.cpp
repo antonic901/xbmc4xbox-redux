@@ -56,12 +56,6 @@ CSeekHandler::~CSeekHandler()
   m_backwardSeekSteps.clear();
 }
 
-CSeekHandler& CSeekHandler::GetInstance()
-{
-  static CSeekHandler instance;
-  return instance;
-}
-
 void CSeekHandler::Configure()
 {
   Reset();

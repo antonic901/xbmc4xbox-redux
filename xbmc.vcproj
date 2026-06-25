@@ -5135,6 +5135,64 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\imagefiles\SpecialImageLoaderFactory.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="application"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\application\ApplicationComponents.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\application\ApplicationPlayer.cpp">
+					<FileConfiguration
+						Name="Debug|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile_FastCap|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release_LTCG|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug Xbox No Memory Tracking|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\xbmc\application\ApplicationPlayer.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\application\ApplicationPowerHandling.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\application\ApplicationPowerHandling.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\application\IApplicationComponent.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -5190,6 +5248,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\CharsetConverter.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\utils\ComponentContainer.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Crc32.h">
