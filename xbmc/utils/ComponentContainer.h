@@ -29,7 +29,12 @@ public:
   template<class T>
   boost::shared_ptr<T> GetComponent()
   {
-    return boost::const_pointer_cast<T>(std::as_const(*this).template GetComponent<T>());
+    CSingleLock lock(m_critSection);
+    std::map<XbmcCommons::type_index, boost::shared_ptr<BaseType> >::const_iterator it = m_components.find(XbmcCommons::type_index(typeid(T)));
+    if (it != m_components.end())
+      return boost::static_pointer_cast<T>((*it).second);
+
+    throw std::logic_error("ComponentContainer: Attempt to obtain non-existent component");
   }
 
   //! \brief Obtain a component.
