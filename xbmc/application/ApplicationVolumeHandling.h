@@ -37,10 +37,10 @@ public:
   };
 
   float GetVolumePercent() const;
-  float GetVolumeRatio() const;
+  int GetVolumeRatio() const;
   bool IsMuted() const;
 
-  void SetVolume(float iValue, bool isPercentage = true);
+  void SetVolume(int iValue, bool isPercentage = true);
   void SetMute(bool mute);
   void ToggleMute(void);
 
@@ -62,11 +62,11 @@ protected:
   void Mute();
   void UnMute();
 
-  void SetHardwareVolume(float hardwareVolume);
+  void SetHardwareVolume(int hardwareVolume);
 
   void VolumeChanged();
 
   bool m_muted;
-  float m_volumeLevel;
+  int m_volumeLevel;
   ReplayGainSettings m_replayGainSettings;
 };
