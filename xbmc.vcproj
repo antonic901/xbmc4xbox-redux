@@ -5202,6 +5202,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\application\ApplicationStackHelper.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\application\ApplicationVolumeHandling.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\application\ApplicationVolumeHandling.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\application\IApplicationComponent.h">
 				</File>
 			</Filter>
