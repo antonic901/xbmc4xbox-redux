@@ -25,30 +25,34 @@
 float CApplicationVolumeHandling::GetVolumePercent() const
 {
   // converts the hardware volume to a percentage
-  return m_volumeLevel * 100.0f;
+  return (m_volumeLevel - VOLUME_MINIMUM) * 100.0f / (VOLUME_MAXIMUM - VOLUME_MINIMUM);
 }
 
-float CApplicationVolumeHandling::GetVolumeRatio() const
+int CApplicationVolumeHandling::GetVolumeRatio() const
 {
   return m_volumeLevel;
 }
 
-void CApplicationVolumeHandling::SetHardwareVolume(float hardwareVolume)
+void CApplicationVolumeHandling::SetHardwareVolume(int hardwareVolume)
 {
-  m_volumeLevel = std::clamp(hardwareVolume, VOLUME_MINIMUM, VOLUME_MAXIMUM);
-
-  IAE* ae = CServiceBroker::GetActiveAE();
-  if (ae)
-    ae->SetVolume(m_volumeLevel);
+  m_volumeLevel = hardwareVolume;
+  if (m_volumeLevel > VOLUME_MAXIMUM)
+  {
+    m_volumeLevel = VOLUME_MAXIMUM;
+  }
+  else if (m_volumeLevel < VOLUME_MINIMUM)
+  {
+    m_volumeLevel = VOLUME_MINIMUM;
+  }
 }
 
 void CApplicationVolumeHandling::VolumeChanged()
 {
   CVariant data(CVariant::VariantTypeObject);
-  data["volume"] = static_cast<int>(std::lroundf(GetVolumePercent()));
+  data["volume"] = static_cast<int>(GetVolumePercent() + 0.5f);
   data["muted"] = m_muted;
   const boost::shared_ptr<ANNOUNCEMENT::CAnnouncementManager> announcementMgr = CServiceBroker::GetAnnouncementManager();
-  announcementMgr->Announce(ANNOUNCEMENT::Application, "OnVolumeChanged", data);
+  announcementMgr->Announce(ANNOUNCEMENT::Application, "xbmc", "OnVolumeChanged", data);
 
   CApplicationComponents &components = CServiceBroker::GetAppComponents();
   const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
@@ -74,10 +78,7 @@ void CApplicationVolumeHandling::ShowVolumeBar(const CAction* action)
 
 bool CApplicationVolumeHandling::IsMuted() const
 {
-  IAE* ae = CServiceBroker::GetActiveAE();
-  if (ae)
-    return ae->IsMuted();
-  return true;
+  return m_muted;
 }
 
 void CApplicationVolumeHandling::ToggleMute(void)
@@ -99,28 +100,22 @@ void CApplicationVolumeHandling::SetMute(bool mute)
 
 void CApplicationVolumeHandling::Mute()
 {
-  IAE* ae = CServiceBroker::GetActiveAE();
-  if (ae)
-    ae->SetMute(true);
   m_muted = true;
   VolumeChanged();
 }
 
 void CApplicationVolumeHandling::UnMute()
 {
-  IAE* ae = CServiceBroker::GetActiveAE();
-  if (ae)
-    ae->SetMute(false);
   m_muted = false;
   VolumeChanged();
 }
 
-void CApplicationVolumeHandling::SetVolume(float iValue, bool isPercentage)
+void CApplicationVolumeHandling::SetVolume(int iValue, bool isPercentage)
 {
-  float hardwareVolume = iValue;
+  int hardwareVolume = iValue;
 
   if (isPercentage)
-    hardwareVolume /= 100.0f;
+    hardwareVolume = static_cast<int>(iValue * 0.01f * (VOLUME_MAXIMUM - VOLUME_MINIMUM) + VOLUME_MINIMUM);
 
   SetHardwareVolume(hardwareVolume);
   VolumeChanged();
@@ -146,7 +141,7 @@ bool CApplicationVolumeHandling::Load(const TiXmlNode* settings)
   if (audioElement)
   {
     XMLUtils::GetBoolean(audioElement, "mute", m_muted);
-    if (!XMLUtils::GetFloat(audioElement, "fvolumelevel", m_volumeLevel, VOLUME_MINIMUM,
+    if (!XMLUtils::GetInt(audioElement, "volumelevel", m_volumeLevel, VOLUME_MINIMUM,
                             VOLUME_MAXIMUM))
       m_volumeLevel = VOLUME_MAXIMUM;
   }
@@ -165,7 +160,7 @@ bool CApplicationVolumeHandling::Save(TiXmlNode* settings) const
     return false;
 
   XMLUtils::SetBoolean(audioNode, "mute", m_muted);
-  XMLUtils::SetFloat(audioNode, "fvolumelevel", m_volumeLevel);
+  XMLUtils::SetInt(audioNode, "volumelevel", m_volumeLevel);
 
   return true;
 }
