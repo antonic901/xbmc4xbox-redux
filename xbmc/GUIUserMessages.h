@@ -145,3 +145,10 @@
 
 // Message is sent by the background info loader when it is finished with fetching a Insignia data.
 #define GUI_MSG_INSIGNIA_FETCHED      GUI_MSG_USER + 39
+
+#define GUI_MSG_PLAYBACK_ERROR        GUI_MSG_USER + 42
+
+#define GUI_MSG_PLAYBACK_PAUSED       GUI_MSG_USER + 47
+#define GUI_MSG_PLAYBACK_RESUMED      GUI_MSG_USER + 48
+#define GUI_MSG_PLAYBACK_SEEKED       GUI_MSG_USER + 49
+#define GUI_MSG_PLAYBACK_SPEED_CHANGED  GUI_MSG_USER + 50

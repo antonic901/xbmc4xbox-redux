@@ -1119,6 +1119,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\RssReader.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\SaveFileStateJob.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\SaveFileStateJob.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\ScraperParser.cpp">
 				</File>
 				<File
@@ -5184,6 +5190,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\application\ApplicationPlayer.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\application\ApplicationPlayerCallback.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\application\ApplicationPlayerCallback.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\application\ApplicationPowerHandling.cpp">
 				</File>
 				<File
@@ -5628,6 +5640,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 		<Filter
 			Name="cores"
 			Filter="">
+			<File
+				RelativePath=".\xbmc\cores\IPlayerCallback.h">
+			</File>
 			<File
 				RelativePath=".\xbmc\cores\ssrc.cpp">
 			</File>
