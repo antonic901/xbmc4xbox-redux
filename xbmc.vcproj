@@ -5190,6 +5190,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\application\ApplicationPowerHandling.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\application\ApplicationSettingsHandling.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\application\ApplicationSettingsHandling.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\application\ApplicationSkinHandling.cpp">
 				</File>
 				<File
