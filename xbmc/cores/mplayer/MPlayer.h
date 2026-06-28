@@ -69,10 +69,10 @@ public:
 
     inline bool GetDeinterlace() { return m_bDeinterlace; };
     inline void SetDeinterlace(bool mDeint) { m_bDeinterlace = mDeint; };
-      
+
     const std::string& GetSubtitleCharset() { return m_subcp; };
     void SetSubtitleCharset(const std::string& subcp) { m_subcp = subcp; };
-      
+
     const std::string GetChannelMapping() const;
     void SetChannelMapping(const std::string& strMapping);
     void SetSpeed(float fSpeed);
@@ -138,7 +138,7 @@ public:
   virtual bool CloseFile();
   virtual bool IsPlaying() const;
   virtual void Pause();
-  virtual bool IsPaused() const;  
+  virtual bool IsPaused() const;
   virtual void Unload();
   virtual bool HasVideo() const;
   virtual bool HasAudio() const;
@@ -154,7 +154,7 @@ public:
   virtual void GetVideoRect(RECT& SrcRect, RECT& DestRect);
   virtual void GetVideoAspectRatio(float& fAR);
   virtual void SeekPercentage(float fPercent = 0);
-  virtual float GetPercentage();
+  virtual float GetPercentage() const;
   virtual void SetAVDelay(float fValue = 0.0f);
   virtual float GetAVDelay();
   virtual float GetActualFPS();
@@ -162,24 +162,24 @@ public:
   virtual void SetSubTitleDelay(float fValue = 0.0f);
   virtual float GetSubTitleDelay();
 
-  virtual int GetSubtitleCount();
+  virtual int GetSubtitleCount() const;
   virtual int GetSubtitle();
   virtual int AddSubtitle(const CStdString& strFileName);
   virtual void GetSubtitleName(int iStream, CStdString &strStreamName);
   virtual void SetSubtitle(int iStream);
-  virtual bool GetSubtitleVisible();
+  virtual bool GetSubtitleVisible() const;
   virtual void SetSubtitleVisible(bool bVisible);
   virtual bool GetSubtitleExtension(std::string &strSubtitleExtension);
 
-  virtual int GetAudioStreamCount();
+  virtual int GetAudioStreamCount() const;
   virtual int GetAudioStream();
   virtual void GetAudioStreamName(int iStream, CStdString& strStreamName);
   virtual void SetAudioStream(int iStream);
 
-  virtual bool CanSeek();
+  virtual bool CanSeek() const;
   virtual void SeekTime(__int64 iTime = 0);
-  virtual int64_t GetTotalTime();
-  virtual __int64 GetTime();
+  virtual int64_t GetTotalTime() const;
+  virtual __int64 GetTime() const;
   virtual void ToFFRW(int iSpeed = 0);
   virtual void DoAudioWork();
 
