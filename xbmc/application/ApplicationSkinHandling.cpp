@@ -79,7 +79,6 @@ bool CApplicationSkinHandling::LoadSkin(const std::string& skinID)
     bPreviousPlayingState = !appPlayer->IsPausedPlayback();
     if (bPreviousPlayingState)
       appPlayer->Pause();
-    appPlayer->FlushRenderer();
     if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO)
     {
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_HOME);
