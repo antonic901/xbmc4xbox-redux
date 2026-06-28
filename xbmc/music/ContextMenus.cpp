@@ -8,7 +8,7 @@
 
 #include "ContextMenus.h"
 
-#include "Application.h" // m_eForcedNextPlayer
+#include "application/Application.h" // m_eForcedNextPlayer
 #include "FileItem.h"
 #include "GUIUserMessages.h"
 #include "ServiceBroker.h"

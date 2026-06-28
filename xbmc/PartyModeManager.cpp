@@ -22,7 +22,7 @@
 
 #include <algorithm>
 
-#include "Application.h"
+#include "application/Application.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "guilib/GUIComponent.h"

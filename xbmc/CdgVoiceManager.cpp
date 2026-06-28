@@ -22,7 +22,7 @@
 #include "AudioContext.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "Application.h"
+#include "application/Application.h"
 
 //CdgChatter
 CCdgChatter::CCdgChatter()

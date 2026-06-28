@@ -28,7 +28,7 @@
 #include "EventClient.h"
 #include "Socket.h"
 #include "threads/CriticalSection.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "Util.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"

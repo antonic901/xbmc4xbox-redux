@@ -29,7 +29,7 @@
 #include "utils/log.h"
 #include "utils/Job.h"
 #include "utils/JobManager.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogBusy.h"

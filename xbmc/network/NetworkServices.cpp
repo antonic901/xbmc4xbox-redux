@@ -19,7 +19,7 @@
  */
 
 #include "NetworkServices.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "GUIInfoManager.h"

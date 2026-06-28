@@ -8,7 +8,7 @@
 
 #include "GUIWindowSettingsScreenCalibration.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "ServiceBroker.h"
 #include "cores/VideoRenderers/RenderManager.h"
 #include "dialogs/GUIDialogYesNo.h"

@@ -8,7 +8,7 @@
 
 #include "VideoUtils.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "FileItem.h"
 #include "GUIPassword.h"
 #include "PartyModeManager.h"

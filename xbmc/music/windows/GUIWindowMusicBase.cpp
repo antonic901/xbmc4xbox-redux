@@ -18,7 +18,7 @@
 #include "ServiceBroker.h"
 #include "URL.h"
 #include "Util.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "addons/gui/GUIDialogAddonInfo.h"
 #ifdef HAS_CDDA_RIPPER
 #include "cdrip/CDDARipper.h"

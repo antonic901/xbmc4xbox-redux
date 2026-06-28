@@ -21,7 +21,7 @@
 #include "xbox/Network.h"
 #include "threads/SystemClock.h"
 #include "system.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "interfaces/builtins/Builtins.h"
 #include "utils/Variant.h"
 #include "utils/Splash.h"

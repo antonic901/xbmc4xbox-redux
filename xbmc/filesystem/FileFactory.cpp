@@ -40,7 +40,7 @@
 #include "SpecialProtocolFile.h"
 #include "MultiPathFile.h"
 #include "ResourceFile.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "ImageFile.h"
 #include "URL.h"
 #include "utils/log.h"

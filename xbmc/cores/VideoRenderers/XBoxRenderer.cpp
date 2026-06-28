@@ -21,7 +21,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "XBoxRenderer.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "XBVideoConfig.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/AdvancedSettings.h"

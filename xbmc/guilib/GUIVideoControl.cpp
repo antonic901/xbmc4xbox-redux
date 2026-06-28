@@ -8,7 +8,7 @@
 
 #include "GUIVideoControl.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "GUIComponent.h"
 #include "GUIWindowManager.h"
 #include "ServiceBroker.h"

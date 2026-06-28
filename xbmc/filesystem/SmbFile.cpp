@@ -28,7 +28,7 @@
 #include "SmbFile.h"
 #include "PasswordManager.h"
 #include "SMBDirectory.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "libsmb/xbLibSmb.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"

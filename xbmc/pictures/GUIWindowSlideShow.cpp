@@ -21,7 +21,7 @@
 #include "threads/SystemClock.h"
 #include "system.h"
 #include "GUIWindowSlideShow.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "utils/URIUtils.h"
 #include "URL.h"

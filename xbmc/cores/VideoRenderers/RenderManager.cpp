@@ -27,7 +27,7 @@
 #include "ComboRenderer.h"
 #include "RGBRenderer.h"
 #include "RGBRendererV2.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"

@@ -19,7 +19,7 @@
  */
  
 #include "WinRenderManager.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "ApplicationMessenger.h"
 #include "utils/log.h"
 

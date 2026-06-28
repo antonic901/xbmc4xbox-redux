@@ -15,7 +15,7 @@
 #include "Util.h"
 #include "addons/AddonManager.h"
 #include "addons/gui/GUIDialogAddonSettings.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "cores/IPlayer.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogKaiToast.h"

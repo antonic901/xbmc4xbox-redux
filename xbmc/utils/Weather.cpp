@@ -28,7 +28,7 @@
 
 #include "addons/AddonManager.h"
 #include "addons/gui/GUIDialogAddonSettings.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "filesystem/Directory.h"
 #include "filesystem/ZipManager.h"
 #ifdef _XBOX

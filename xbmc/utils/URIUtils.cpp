@@ -20,7 +20,7 @@
 
 #include "xbox/Network.h"
 #include "URIUtils.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "FileItem.h"
 #include "filesystem/MultiPathDirectory.h"
 #include "filesystem/SpecialProtocol.h"

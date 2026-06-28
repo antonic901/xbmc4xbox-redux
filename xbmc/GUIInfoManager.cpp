@@ -8,7 +8,7 @@
 
 #include "GUIInfoManager.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "FileItem.h"
 #include "ServiceBroker.h"
 #include "URL.h"

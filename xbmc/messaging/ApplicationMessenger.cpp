@@ -19,7 +19,7 @@
  */
 
 #include "ApplicationMessenger.h"
-#include "Application.h"
+#include "application/Application.h"
 
 #include "threads/SingleLock.h"
 #include "windowing/GraphicContext.h"

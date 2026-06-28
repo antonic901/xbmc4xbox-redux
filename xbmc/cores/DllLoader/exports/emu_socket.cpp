@@ -26,7 +26,7 @@
 #include "network/DNSNameCache.h"
 #include "emu_dummy.h"
 #include "emu_socket.h"
-#include "Application.h"
+#include "application/Application.h"
 
 
 #define MAX_SOCKETS 100

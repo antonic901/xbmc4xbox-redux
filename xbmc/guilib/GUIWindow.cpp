@@ -8,7 +8,7 @@
 
 #include "GUIWindow.h"
 
-#include "Application.h" // IsCurrentThread
+#include "application/Application.h" // IsCurrentThread
 #include "GUIAudioManager.h"
 #include "GUIComponent.h"
 #include "GUIControlFactory.h"

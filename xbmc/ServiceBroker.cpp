@@ -20,7 +20,7 @@
 
 #include "ServiceBroker.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "settings/SettingsComponent.h"
 #include "windowing/WinSystem.h"
 

@@ -10,7 +10,7 @@
 #include "stdafx.h"
 #include "XBMC_PC.h"
 #include <d3d8.h>
-#include "Application.h"
+#include "application/Application.h"
 #include "ApplicationMessenger.h"
 
 //-----------------------------------------------------------------------------

@@ -3,7 +3,7 @@
 #include "UPnP.h"
 #include "UPnPInternal.h"
 #include "Platinum.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "FileItem.h"
 #include "GUIInfoManager.h"

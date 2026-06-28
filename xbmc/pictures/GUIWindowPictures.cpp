@@ -23,7 +23,7 @@
 #include "GUIWindowPictures.h"
 #include "URL.h"
 #include "Util.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "GUIPassword.h"
 #include "GUIDialogPictureInfo.h"
 #include "addons/gui/GUIDialogAddonInfo.h"

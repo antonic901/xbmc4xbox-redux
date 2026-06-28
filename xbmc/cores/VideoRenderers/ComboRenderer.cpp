@@ -20,7 +20,7 @@
  
 #include "utils/log.h"
 #include "ComboRenderer.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "settings/DisplaySettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"

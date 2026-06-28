@@ -22,7 +22,7 @@
 #include "GUIUserMessages.h"
 
 #include "playlists/PlayListFactory.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "Util.h"
 #include "URL.h"

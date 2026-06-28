@@ -20,7 +20,7 @@
 
 #include "xbox/Network.h"
 #include "system.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "AutoPtrHandle.h"
 #include "video/windows/GUIWindowVideoBase.h"
 #include "Util.h"

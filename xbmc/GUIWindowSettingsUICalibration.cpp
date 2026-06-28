@@ -20,7 +20,7 @@
 
 #include "GUIWindowSettingsUICalibration.h"
 #include "GUIMoverControl.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "settings/DisplaySettings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/GUIWindowSettingsScreenCalibration.h"

@@ -8,7 +8,7 @@
 
 #include "GUIDialog.h"
 
-#include "Application.h" // IsCurrentThread
+#include "application/Application.h" // IsCurrentThread
 #include "GUIComponent.h"
 #include "GUIControlFactory.h"
 #include "GUILabelControl.h"

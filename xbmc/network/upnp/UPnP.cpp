@@ -24,7 +24,7 @@
 #include "xbox/Network.h"
 #include "system.h"
 #include "Util.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 
 #include "UPnP.h"

@@ -3,7 +3,7 @@
 #include "conio.h"
 #include "utils/SystemInfo.h"
 #include "memutil.h"
-#include "Application.h" // for g_application.IsInScreenSaver()
+#include "application/Application.h" // for g_application.IsInScreenSaver()
 #include "utils/LED.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"

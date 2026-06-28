@@ -21,7 +21,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "video/windows/GUIWindowFullScreen.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "Util.h"
 #ifdef HAS_VIDEO_PLAYBACK
 #include "cores/VideoRenderers/RenderManager.h"

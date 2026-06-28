@@ -37,7 +37,7 @@ to maintain a single distribution point for the source code.
 #include "xbox/Network.h"
 #include "Sntp.h"
 #include "network/DNSNameCache.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "AutoPtrHandle.h"

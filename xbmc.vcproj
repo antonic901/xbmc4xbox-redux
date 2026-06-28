@@ -392,9 +392,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\xbmc\Application.cpp">
-			</File>
-			<File
 				RelativePath=".\xbmc\ApplicationPlayer.cpp">
 			</File>
 			<File
@@ -5245,9 +5242,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\AlbumDirectory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\Application.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Archive.h">

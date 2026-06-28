@@ -8,7 +8,7 @@
 
 #include "GUIWindowVideoPlaylist.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "GUIUserMessages.h"
 #include "PartyModeManager.h"
 #include "PlayListPlayer.h"
