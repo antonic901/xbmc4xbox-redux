@@ -20,7 +20,7 @@
 
 #include "AudioDecoder.h"
 #include "CodecFactory.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "FileItem.h"

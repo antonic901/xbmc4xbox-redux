@@ -26,7 +26,7 @@
 #include "settings/MediaSettings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
-#include "Application.h" // Karaoke patch (114097)
+#include "application/Application.h" // Karaoke patch (114097)
 #include "AudioContext.h"
 #include "CdgParser.h"
 #include "MPlayer.h"

@@ -11,7 +11,7 @@
 
 /********************************* Includes ***********************************/
 
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "GUIInfoManager.h"
 #include "boost/make_shared.hpp"

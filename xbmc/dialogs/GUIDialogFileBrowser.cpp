@@ -8,7 +8,7 @@
 
 #include "GUIDialogFileBrowser.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "AutoSwitch.h"
 #include "FileItem.h"
 #include "GUIDialogContextMenu.h"

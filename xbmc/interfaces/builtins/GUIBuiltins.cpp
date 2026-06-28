@@ -20,7 +20,7 @@
 
 #include "GUIBuiltins.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogNumeric.h"

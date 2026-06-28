@@ -18,7 +18,7 @@
 #include "URL.h"
 #include "Util.h"
 #include "addons/gui/GUIDialogAddonInfo.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"

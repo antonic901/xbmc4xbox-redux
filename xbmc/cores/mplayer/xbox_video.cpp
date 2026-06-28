@@ -20,7 +20,7 @@
 #include "system.h"
 #include "utils/log.h"
 #include "cores/VideoRenderers/RenderManager.h"
-#include "Application.h"
+#include "application/Application.h"
 
 #include "video.h"
 #include "mplayer.h"

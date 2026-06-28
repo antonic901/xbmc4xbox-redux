@@ -16,7 +16,7 @@
 #include "addons/gui/GUIDialogAddonSettings.h"
 #include "addons/kodi-dev-kit/include/kodi/versions.h"
 #include "addons/settings/AddonSettings.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "filesystem/Directory.h"
 #include "filesystem/SpecialProtocol.h"
 #include "guilib/GUIComponent.h"

@@ -9,7 +9,7 @@
 #include "PlayerController.h"
 
 #include "ServiceBroker.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "cores/IPlayer.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSelect.h"

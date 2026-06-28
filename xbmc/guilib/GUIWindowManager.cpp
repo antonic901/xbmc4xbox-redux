@@ -8,7 +8,7 @@
 
 #include "GUIWindowManager.h"
 
-#include "Application.h" // IsCurrentThread
+#include "application/Application.h" // IsCurrentThread
 #include "GUIAudioManager.h"
 #include "GUIDialog.h"
 #include "GUIInfoManager.h"
@@ -18,7 +18,7 @@
 #include "WindowIDs.h"
 #include "addons/Skin.h"
 #include "addons/gui/GUIWindowAddonBrowser.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "dialogs/GUIDialogFavourites.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"

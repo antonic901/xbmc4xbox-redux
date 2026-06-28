@@ -26,7 +26,7 @@
 #include "threads/SystemClock.h"
 #include "system.h"
 #include "ServiceBroker.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "ShoutcastFile.h"
 #include "URL.h"
 #include "messaging/ApplicationMessenger.h"

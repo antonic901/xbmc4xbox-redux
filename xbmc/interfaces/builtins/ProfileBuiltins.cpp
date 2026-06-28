@@ -21,7 +21,7 @@
 #include "ProfileBuiltins.h"
 
 #include "addons/AddonManager.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "guilib/LocalizeStrings.h"

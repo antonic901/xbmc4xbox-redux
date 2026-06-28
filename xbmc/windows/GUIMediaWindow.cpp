@@ -20,7 +20,7 @@
 #include "Util.h"
 #include "addons/AddonManager.h"
 #include "addons/PluginSource.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogKaiToast.h"

@@ -8,7 +8,7 @@
 
 #include "GUIWindowScreensaver.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "GUIPassword.h"
 #include "GUIUserMessages.h"
 #include "ServiceBroker.h"

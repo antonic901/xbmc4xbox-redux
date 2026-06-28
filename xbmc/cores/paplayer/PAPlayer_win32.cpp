@@ -6,7 +6,7 @@
 #include "CodecFactory.h"
 #include "GUIInfoManager.h"
 #include "AudioContext.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "FileItem.h"
 #include "music/tags/MusicInfoTag.h"
 #include "settings/Settings.h"

@@ -20,7 +20,7 @@
 
 #include "system.h"
 #include "GUIWindowFileManager.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "Util.h"
 #include "filesystem/Directory.h"

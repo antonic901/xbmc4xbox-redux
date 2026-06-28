@@ -31,7 +31,7 @@
 #include "utils/Variant.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "utils/StringUtils.h"
 
 using namespace ANNOUNCEMENT;

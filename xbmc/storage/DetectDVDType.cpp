@@ -35,7 +35,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "filesystem/File.h"
 #include "FileItem.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "Util.h"
 
 using namespace XFILE;

@@ -7,7 +7,7 @@
  */
 
 #include "AddonUtils.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "utils/XBMCTinyXML.h"
 #include "addons/Skin.h"
 #include "LanguageHook.h"

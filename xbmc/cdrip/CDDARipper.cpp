@@ -46,7 +46,7 @@
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
 #include "settings/MediaSourceSettings.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "music/MusicDatabase.h"
 
 using namespace XFILE;

@@ -23,7 +23,7 @@
 #include <cmath>
 #include <stdlib.h>
 
-#include "Application.h"
+#include "application/Application.h"
 #include "FileItem.h"
 #include "ServiceBroker.h"
 #include "guilib/GUIComponent.h"

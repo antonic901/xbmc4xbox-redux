@@ -8,7 +8,7 @@
 
 #include "Settings.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "Autorun.h"
 #include "CdgParser.h"
 #include "GUIPassword.h"

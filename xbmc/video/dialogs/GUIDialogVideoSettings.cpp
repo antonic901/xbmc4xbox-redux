@@ -12,7 +12,7 @@
 #include "ServiceBroker.h"
 #include "Util.h"
 #include "addons/Skin.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "ApplicationPlayer.h"
 #include "cores/VideoRenderers/RenderManager.h"
 #include "dialogs/GUIDialogYesNo.h"

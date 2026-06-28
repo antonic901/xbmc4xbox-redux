@@ -13,7 +13,7 @@
 
 #include "system.h"
 #include "PythonInvoker.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "ServiceBroker.h"
 #include "messaging/ApplicationMessenger.h"
 #include "addons/AddonManager.h"

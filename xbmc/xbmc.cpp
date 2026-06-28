@@ -28,7 +28,7 @@
 
 #include "system.h"
 #include "settings/AdvancedSettings.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "XbmcContext.h"
 
 CApplication g_application;

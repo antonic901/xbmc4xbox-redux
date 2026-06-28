@@ -20,7 +20,7 @@
 
 #include "PlayerBuiltins.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "guilib/GUIComponent.h"

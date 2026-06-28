@@ -20,7 +20,7 @@
 
 #include "GUISound.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "AudioContext.h"
 #include "ServiceBroker.h"
 #include "filesystem/File.h"

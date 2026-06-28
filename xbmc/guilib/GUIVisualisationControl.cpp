@@ -16,7 +16,7 @@
 #include "addons/AddonManager.h"
 #include "addons/Visualization.h"
 #include "addons/addoninfo/AddonType.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "filesystem/SpecialProtocol.h"
 #include "guilib/guiinfo/GUIInfoLabels.h"
 #include "input/actions/Action.h"

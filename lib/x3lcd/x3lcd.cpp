@@ -1,7 +1,7 @@
 
 #include "x3lcd.h"
 #include "conio.h"
-#include "Application.h" // for g_application.IsInScreenSaver()
+#include "application/Application.h" // for g_application.IsInScreenSaver()
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"

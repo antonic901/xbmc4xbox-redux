@@ -22,7 +22,7 @@
 #include "system.h"
 #include "RssReader.h"
 #include "utils/HTMLUtil.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "URL.h"
 #include "LocalizeStrings.h"
 #include "filesystem/File.h"

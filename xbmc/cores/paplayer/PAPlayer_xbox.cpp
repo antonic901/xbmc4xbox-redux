@@ -28,7 +28,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "FileItem.h"
 
 #define VOLUME_FFWD_MUTE 900 // 9dB

@@ -10,7 +10,7 @@
  */
 
 #include "WebServer.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "addons/AddonManager.h"
 #include "addons/AddonSystemSettings.h"
 #include "addons/IAddon.h"

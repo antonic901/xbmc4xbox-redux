@@ -9,7 +9,7 @@
 #include "Player.h"
 
 #include "AddonUtils.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "GUIInfoManager.h"
 #include "GUIUserMessages.h"
 #include "ListItem.h"

@@ -20,7 +20,7 @@
 
 #include "LibraryBuiltins.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "guilib/LocalizeStrings.h"

@@ -12,7 +12,7 @@
 
 #include "ModuleXbmc.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "aojsonrpc.h"
 #include "guilib/LocalizeStrings.h"

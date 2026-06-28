@@ -43,7 +43,7 @@
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 #include "GUIUserMessages.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "DVDPerformanceCounter.h"
 #include "filesystem/File.h"

@@ -20,7 +20,7 @@
 
 #include "GraphicContext.h"
 #include "XBVideoConfig.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "guilib/GUIAudioManager.h"
 #include "settings/DisplaySettings.h"

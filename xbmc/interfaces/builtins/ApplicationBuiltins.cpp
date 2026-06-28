@@ -20,7 +20,7 @@
 
 #include "ApplicationBuiltins.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #ifdef HAS_FILESYSTEM_RAR
 #include "filesystem/RarManager.h"
 #endif

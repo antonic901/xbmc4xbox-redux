@@ -13,7 +13,7 @@
 #include "FileItem.h"
 #include "GUIUserMessages.h"
 #include "ServiceBroker.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"

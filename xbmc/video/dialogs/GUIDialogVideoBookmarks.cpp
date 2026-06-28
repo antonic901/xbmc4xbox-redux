@@ -12,7 +12,7 @@
 #include "ServiceBroker.h"
 #include "TextureCache.h"
 #include "Util.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "guilib/GUIComponent.h"

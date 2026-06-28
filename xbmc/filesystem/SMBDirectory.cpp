@@ -33,7 +33,7 @@
 
 #include "SMBDirectory.h"
 #include "guilib/LocalizeStrings.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"

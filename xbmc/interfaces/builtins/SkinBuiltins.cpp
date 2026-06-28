@@ -22,7 +22,7 @@
 
 #include "addons/Addon.h"
 #include "addons/gui/GUIWindowAddonBrowser.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogSelect.h"

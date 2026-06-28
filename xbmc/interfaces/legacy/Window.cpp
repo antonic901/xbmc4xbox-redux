@@ -8,7 +8,7 @@
 
 #include "Window.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "WindowException.h"
 #include "WindowInterceptor.h"
 #include "guilib/GUIButtonControl.h"

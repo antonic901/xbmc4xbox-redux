@@ -39,7 +39,7 @@
 #include "FTPDirectory.h"
 #include "HTTPDirectory.h"
 #include "DAVDirectory.h"
-#include "Application.h"
+#include "application/Application.h"
 #include "utils/StringUtils.h"
 #include "addons/Addon.h"
 #include "utils/log.h"

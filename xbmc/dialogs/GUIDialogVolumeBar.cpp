@@ -8,7 +8,7 @@
 
 #include "GUIDialogVolumeBar.h"
 
-#include "Application.h"
+#include "application/Application.h"
 #include "guilib/GUIMessage.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
