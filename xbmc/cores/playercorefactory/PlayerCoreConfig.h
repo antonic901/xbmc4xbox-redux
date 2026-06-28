@@ -1,103 +1,58 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "utils/XBMCTinyXML.h"
-#include "utils/XMLUtils.h"
-#include "../IPlayer.h"
-#include "PlayerCoreFactory.h"
-#include "../dvdplayer/DVDPlayer.h"
-#include "../paplayer/PAPlayer.h"
+#pragma once
+
+#include "system.h" // <xtl.h>
+#include <boost/move/unique_ptr.hpp>
+#include <boost/shared_ptr.hpp>
+#include <string>
+
+class IPlayer;
+class IPlayerCallback;
+class TiXmlElement;
 
 class CPlayerCoreConfig
 {
-friend class CPlayerCoreFactory;
-
 public:
-  CPlayerCoreConfig(CStdString name, std::string type, const EPLAYERCORES eCore, const TiXmlElement* pConfig)
-  {
-    m_name = name;
-    m_type = type;
-    m_eCore = eCore;
-    m_bPlaysAudio = false;
-    m_bPlaysVideo = false;
+  CPlayerCoreConfig(std::string name,
+                    std::string type,
+                    const TiXmlElement* pConfig,
+                    const std::string& id = "");
 
-    if (pConfig)
-    {
-      m_config = (TiXmlElement*)pConfig->Clone();
-      const char *szAudio = pConfig->Attribute("audio");
-      const char *szVideo = pConfig->Attribute("video");
-      m_bPlaysAudio = szAudio && stricmp(szAudio, "true") == 0;
-      m_bPlaysVideo = szVideo && stricmp(szVideo, "true") == 0;
-    }
-    else
-    {
-      m_config = NULL;
-    }
-    CLog::Log(LOGDEBUG, "CPlayerCoreConfig::<ctor>: created player %s for core %d", m_name.c_str(), m_eCore);
-  }
+  ~CPlayerCoreConfig() {}
 
-  virtual ~CPlayerCoreConfig()
-  {
-    SAFE_DELETE(m_config);
-  }
-
-  const CStdString& GetName() const
+  const std::string& GetName() const
   {
     return m_name;
   }
 
-  IPlayer* CreatePlayer(IPlayerCallback& callback) const
+  const std::string& GetId() const
   {
-    IPlayer* pPlayer;
-    switch(m_eCore)
-    {
-#ifdef HAS_XBOX_HARDWARE
-      case EPC_MPLAYER: pPlayer = new CMPlayer(callback); break;
-#else
-      case EPC_MPLAYER: pPlayer = new CDVDPlayer(callback); break;
-#endif
-      case EPC_DVDPLAYER: pPlayer = new CDVDPlayer(callback); break;
-      case EPC_PAPLAYER: pPlayer = new PAPlayer(callback); break;
-      default: return NULL; 
-    }
-
-    pPlayer->m_name = m_name;
-    pPlayer->m_type = m_type;
-
-    if (pPlayer->Initialize(m_config))
-    {
-      return pPlayer;
-    }
-    else
-    {
-      SAFE_DELETE(pPlayer);
-      return NULL;
-    }
+    return m_id;
   }
 
-private:
-  CStdString m_name;
+  bool PlaysAudio() const
+  {
+    return m_bPlaysAudio;
+  }
+
+  bool PlaysVideo() const
+  {
+    return m_bPlaysVideo;
+  }
+
+  boost::shared_ptr<IPlayer> CreatePlayer(IPlayerCallback& callback) const;
+
+  std::string m_name;
+  std::string m_id; // uuid for upnp
   std::string m_type;
   bool m_bPlaysAudio;
   bool m_bPlaysVideo;
-  EPLAYERCORES m_eCore;
-  TiXmlElement* m_config;
+  boost::movelib::unique_ptr<TiXmlElement> m_config;
 };

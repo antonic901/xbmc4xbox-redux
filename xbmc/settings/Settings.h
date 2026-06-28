@@ -371,11 +371,11 @@ public:
   inline std::string GetPlayerName(const int& player) const
   {
     if (player == 0)
-      return "mplayer";
+      return "MPlayer";
     if (player == 1)
-      return "dvdplayer";
+      return "VideoPlayer";
     if (player == 2)
-      return "paplayer";
+      return "PAPlayer";
 
     return "";
   }

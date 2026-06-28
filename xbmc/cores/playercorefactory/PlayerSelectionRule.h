@@ -1,46 +1,37 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "FileItem.h"
+#pragma once
+
 #include "PlayerCoreFactory.h"
 
+#include <string>
+#include <vector>
+
+class CFileItem;
 class CRegExp;
 class TiXmlElement;
 
 class CPlayerSelectionRule
 {
 public:
-  CPlayerSelectionRule(TiXmlElement* rule);
-  virtual ~CPlayerSelectionRule();
+  explicit CPlayerSelectionRule(TiXmlElement* rule);
+  virtual ~CPlayerSelectionRule() {}
 
-  //bool Matches(const CFileItem& item) const;
-  //CStdString GetPlayerName() const;
-  void GetPlayers(const CFileItem& item, VECPLAYERCORES &vecCores);
+  void GetPlayers(const CFileItem& item, std::vector<std::string>&validPlayers, std::vector<std::string>&players);
 
 private:
-  int GetTristate(const char* szValue) const;
+  static int GetTristate(const char* szValue);
+  static bool CompileRegExp(const std::string& str, CRegExp& regExp);
+  static bool MatchesRegExp(const std::string& str, CRegExp& regExp);
   void Initialize(TiXmlElement* pRule);
-  PLAYERCOREID GetPlayerCore();
 
-  CStdString m_name;
+  std::string m_name;
 
   int m_tAudio;
   int m_tVideo;
@@ -48,15 +39,21 @@ private:
 
   int m_tDVD;
   int m_tDVDFile;
-  int m_tDVDImage;
+  int m_tDiscImage;
 
-  CStdString m_protocols;
-  CStdString m_fileTypes;
-  CStdString m_mimeTypes;
-  CStdString m_fileName;
+  std::string m_protocols;
+  std::string m_fileTypes;
+  std::string m_mimeTypes;
+  std::string m_fileName;
 
-  CStdString m_playerName;
-  PLAYERCOREID m_playerCoreId;
+  bool m_bStreamDetails;
+  std::string m_audioCodec;
+  std::string m_audioChannels;
+  std::string m_videoCodec;
+  std::string m_videoResolution;
+  std::string m_videoAspect;
 
-  std::vector<CPlayerSelectionRule *> vecSubRules;
+  std::string m_playerName;
+
+  std::vector<boost::shared_ptr<CPlayerSelectionRule> > vecSubRules;
 };

@@ -6593,6 +6593,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="playercorefactory"
 				Filter="">
 				<File
+					RelativePath=".\xbmc\cores\playercorefactory\PlayerCoreConfig.cpp">
+				</File>
+				<File
 					RelativePath=".\xbmc\cores\playercorefactory\PlayerCoreConfig.h">
 				</File>
 				<File

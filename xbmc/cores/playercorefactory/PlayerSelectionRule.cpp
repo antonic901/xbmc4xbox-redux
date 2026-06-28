@@ -1,38 +1,32 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "URL.h"
 #include "PlayerSelectionRule.h"
+
+#include "FileItem.h"
 #include "ServiceBroker.h"
-#include "utils/log.h"
+#include "URL.h"
+#include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/RegExp.h"
+#include "utils/StreamDetails.h"
+#include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
+#include "utils/log.h"
+#include "video/VideoInfoTag.h"
+
+#include <boost/make_shared.hpp>
 
 CPlayerSelectionRule::CPlayerSelectionRule(TiXmlElement* pRule)
 {
   Initialize(pRule);
 }
-
-CPlayerSelectionRule::~CPlayerSelectionRule()
-{}
 
 void CPlayerSelectionRule::Initialize(TiXmlElement* pRule)
 {
@@ -48,80 +42,148 @@ void CPlayerSelectionRule::Initialize(TiXmlElement* pRule)
 
   m_tDVD = GetTristate(pRule->Attribute("dvd"));
   m_tDVDFile = GetTristate(pRule->Attribute("dvdfile"));
-  m_tDVDImage = GetTristate(pRule->Attribute("dvdimage"));
+  m_tDiscImage = GetTristate(pRule->Attribute("discimage"));
+  if (m_tDiscImage < 0)
+  {
+    m_tDiscImage = GetTristate(pRule->Attribute("dvdimage"));
+    if (m_tDiscImage >= 0)
+      CLog::Log(LOGWARNING, "\"dvdimage\" tag is deprecated. use \"discimage\"");
+  }
 
   m_protocols = XMLUtils::GetAttribute(pRule, "protocols");
   m_fileTypes = XMLUtils::GetAttribute(pRule, "filetypes");
   m_mimeTypes = XMLUtils::GetAttribute(pRule, "mimetypes");
   m_fileName = XMLUtils::GetAttribute(pRule, "filename");
 
+  m_audioCodec = XMLUtils::GetAttribute(pRule, "audiocodec");
+  m_audioChannels = XMLUtils::GetAttribute(pRule, "audiochannels");
+  m_videoCodec = XMLUtils::GetAttribute(pRule, "videocodec");
+  m_videoResolution = XMLUtils::GetAttribute(pRule, "videoresolution");
+  m_videoAspect = XMLUtils::GetAttribute(pRule, "videoaspect");
+
+  m_bStreamDetails = m_audioCodec.length() > 0 || m_audioChannels.length() > 0 ||
+    m_videoCodec.length() > 0 || m_videoResolution.length() > 0 || m_videoAspect.length() > 0;
+
+  if (m_bStreamDetails && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_MYVIDEOS_EXTRACTFLAGS))
+  {
+    CLog::Log(LOGWARNING,
+              "CPlayerSelectionRule::Initialize: rule: %s needs media flagging, which is disabled",
+              m_name.c_str());
+  }
+
   m_playerName = XMLUtils::GetAttribute(pRule, "player");
-  m_playerCoreId = 0;
 
   TiXmlElement* pSubRule = pRule->FirstChildElement("rule");
   while (pSubRule)
   {
-    vecSubRules.push_back(new CPlayerSelectionRule(pSubRule));
+    vecSubRules.push_back(boost::make_shared<CPlayerSelectionRule>(pSubRule));
     pSubRule = pSubRule->NextSiblingElement("rule");
   }
 }
 
-int CPlayerSelectionRule::GetTristate(const char* szValue) const
+int CPlayerSelectionRule::GetTristate(const char* szValue)
 {
   if (szValue)
   {
-    if (stricmp(szValue, "true") == 0) return 1;
-    if (stricmp(szValue, "false") == 0) return 0;
+    if (StringUtils::CompareNoCase(szValue, "true") == 0)
+      return 1;
+    if (StringUtils::CompareNoCase(szValue, "false") == 0)
+      return 0;
   }
   return -1;
 }
 
-void CPlayerSelectionRule::GetPlayers(const CFileItem& item, VECPLAYERCORES &vecCores)
+bool CPlayerSelectionRule::CompileRegExp(const std::string& str, CRegExp& regExp)
+{
+  return !str.empty() && regExp.RegComp(str.c_str());
+}
+
+bool CPlayerSelectionRule::MatchesRegExp(const std::string& str, CRegExp& regExp)
+{
+  return regExp.RegFind(str, 0) == 0;
+}
+
+void CPlayerSelectionRule::GetPlayers(const CFileItem& item, std::vector<std::string>&validPlayers, std::vector<std::string>&players)
 {
   CLog::Log(LOGDEBUG, "CPlayerSelectionRule::GetPlayers: considering rule: %s", m_name.c_str());
 
-  if (m_tAudio >= 0 && (m_tAudio > 0) != item.IsAudio()) return;
-  if (m_tVideo >= 0 && (m_tVideo > 0) != item.IsVideo()) return;
-  if (m_tInternetStream >= 0 && (m_tInternetStream > 0) != item.IsInternetStream()) return;
+  if (m_bStreamDetails && !item.HasVideoInfoTag())
+    return;
+  if (m_tAudio >= 0 && (m_tAudio > 0) != item.IsAudio())
+    return;
+  if (m_tVideo >= 0 && (m_tVideo > 0) != item.IsVideo())
+    return;
+  if (m_tInternetStream >= 0 && (m_tInternetStream > 0) != item.IsInternetStream())
+    return;
 
-  if (m_tDVD >= 0 && (m_tDVD > 0) != item.IsDVD()) return;
-  if (m_tDVDFile >= 0 && (m_tDVDFile > 0) != item.IsDVDFile()) return;
-  if (m_tDVDImage >= 0 && (m_tDVDImage > 0) != item.IsDiscImage()) return;
+  if (m_tDVD >= 0 && (m_tDVD > 0) != item.IsDVD())
+    return;
+  if (m_tDVDFile >= 0 && (m_tDVDFile > 0) != item.IsDVDFile())
+    return;
+  if (m_tDiscImage >= 0 && (m_tDiscImage > 0) != item.IsDiscImage())
+    return;
 
-  CURL url(item.GetPath());
+  CRegExp regExp(false, CRegExp::autoUtf8);
 
-  CRegExp regExp;
-  if (m_fileTypes && m_fileTypes.length() > 0 && regExp.RegComp(m_fileTypes.c_str()))
-    if (regExp.RegFind(url.GetFileType(), 0) != 0) return;
-  
-  if (m_protocols && m_protocols.length() > 0 && regExp.RegComp(m_protocols.c_str()) &&
-      regExp.RegFind(url.GetProtocol(), 0) != 0) return;
-  
-  if (m_mimeTypes && m_mimeTypes.length() > 0 && regExp.RegComp(m_mimeTypes.c_str()) &&
-      regExp.RegFind(item.GetMimeType(), 0) != 0) return;
+  if (m_bStreamDetails)
+  {
+    if (!item.GetVideoInfoTag()->HasStreamDetails())
+    {
+      CLog::Log(LOGDEBUG,
+                "CPlayerSelectionRule::GetPlayers: cannot check rule: %s, no StreamDetails",
+                m_name.c_str());
+      return;
+    }
 
-  if (m_fileName && m_fileName.length() > 0 && regExp.RegComp(m_fileName.c_str()) &&
-      regExp.RegFind(item.GetPath(), 0) != 0) return;
+    CStreamDetails streamDetails = item.GetVideoInfoTag()->m_streamDetails;
+
+    if (CompileRegExp(m_audioCodec, regExp) && !MatchesRegExp(streamDetails.GetAudioCodec(), regExp))
+      return;
+
+    std::stringstream itoa;
+    itoa << streamDetails.GetAudioChannels();
+    std::string audioChannelsstr = itoa.str();
+
+    if (CompileRegExp(m_audioChannels, regExp) && !MatchesRegExp(audioChannelsstr, regExp))
+      return;
+
+    if (CompileRegExp(m_videoCodec, regExp) && !MatchesRegExp(streamDetails.GetVideoCodec(), regExp))
+      return;
+
+    if (CompileRegExp(m_videoResolution, regExp) &&
+        !MatchesRegExp(CStreamDetails::VideoDimsToResolutionDescription(streamDetails.GetVideoWidth(), streamDetails.GetVideoHeight()), regExp))
+      return;
+
+    if (CompileRegExp(m_videoAspect, regExp) &&
+        !MatchesRegExp(CStreamDetails::VideoAspectToAspectDescription(streamDetails.GetVideoAspect()),  regExp))
+      return;
+  }
+
+  CURL url(item.GetDynPath());
+
+  if (CompileRegExp(m_fileTypes, regExp) && !MatchesRegExp(url.GetFileType(), regExp))
+    return;
+
+  if (CompileRegExp(m_protocols, regExp) && !MatchesRegExp(url.GetProtocol(), regExp))
+    return;
+
+  if (CompileRegExp(m_mimeTypes, regExp) && !MatchesRegExp(item.GetMimeType(), regExp))
+    return;
+
+  if (CompileRegExp(m_fileName, regExp) && !MatchesRegExp(item.GetDynPath(), regExp))
+    return;
 
   CLog::Log(LOGDEBUG, "CPlayerSelectionRule::GetPlayers: matches rule: %s", m_name.c_str());
 
-  for (unsigned int i = 0; i < vecSubRules.size(); i++)
-    vecSubRules[i]->GetPlayers(item, vecCores);
+  for (std::vector<boost::shared_ptr<CPlayerSelectionRule> >::const_iterator rule = vecSubRules.begin(); rule != vecSubRules.end(); ++rule)
+    (*rule)->GetPlayers(item, validPlayers, players);
 
-  PLAYERCOREID playerCoreId = GetPlayerCore();
-  if (playerCoreId != EPC_NONE)
+  if (std::find(validPlayers.begin(), validPlayers.end(), m_playerName) != validPlayers.end())
   {
-    CLog::Log(LOGDEBUG, "CPlayerSelectionRule::GetPlayers: adding player: %s (%d) for rule: %s", m_playerName.c_str(), playerCoreId, m_name.c_str());
-    vecCores.push_back(GetPlayerCore());
+    CLog::Log(LOGDEBUG, "CPlayerSelectionRule::GetPlayers: adding player: %s for rule: %s",
+              m_playerName.c_str(), m_name.c_str());
+    players.push_back(m_playerName);
   }
 }
 
-PLAYERCOREID CPlayerSelectionRule::GetPlayerCore()
-{
-  if (!m_playerCoreId)
-  {
-    m_playerCoreId = CServiceBroker::GetPlayerCoreFactory().GetPlayerCore(m_playerName);
-  }
-  return m_playerCoreId;
-}
 
