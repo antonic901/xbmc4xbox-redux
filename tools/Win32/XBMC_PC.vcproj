@@ -1400,12 +1400,6 @@
 					RelativePath="..\..\xbmc\music\tags\MusicInfoTagLoaderGYM.h">
 				</File>
 				<File
-					RelativePath="..\..\xbmc\music\tags\MusicInfoTagLoaderMod.cpp">
-				</File>
-				<File
-					RelativePath="..\..\xbmc\music\tags\MusicInfoTagLoaderMod.h">
-				</File>
-				<File
 					RelativePath="..\..\xbmc\music\tags\MusicInfoTagLoaderMP3.cpp">
 				</File>
 				<File

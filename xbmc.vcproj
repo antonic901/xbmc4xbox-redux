@@ -4330,12 +4330,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderGYM.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMod.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMod.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMP3.cpp">
 					</File>
 					<File
@@ -5012,9 +5006,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\memutil.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\cores\ModPlayer.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\NfoFile.h">
 			</File>
 			<File
@@ -5189,9 +5180,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 		<Filter
 			Name="cores"
 			Filter="">
-			<File
-				RelativePath=".\xbmc\cores\ModPlayer.cpp">
-			</File>
 			<File
 				RelativePath=".\xbmc\cores\ssrc.cpp">
 			</File>

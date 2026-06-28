@@ -273,9 +273,6 @@ using namespace KODI::MESSAGING::HELPERS;
   #pragma comment (lib,"../../lib/libfribidi/libfribidid.lib")
   #pragma comment (lib,"../../lib/libpcre/libpcred.lib")
  #endif
- #ifdef HAS_MIKMOD
-  #pragma comment (lib,"lib/mikxbox/mikxboxd.lib")  // SECTIONNAME=MOD_RW,MOD_RX
- #endif
 #else
  #ifdef HAS_FILESYSTEM
   #pragma comment (lib,"lib/libsmb/libsmb.lib")
@@ -295,9 +292,6 @@ using namespace KODI::MESSAGING::HELPERS;
   #pragma comment (lib,"../../lib/libiconv/libiconv.lib")
   #pragma comment (lib,"../../lib/libfribidi/libfribidi.lib")
   #pragma comment (lib,"../../lib/libpcre/libpcre.lib")
- #endif
- #ifdef HAS_MIKMOD
-  #pragma comment (lib,"lib/mikxbox/mikxbox.lib")
  #endif
 #endif
 

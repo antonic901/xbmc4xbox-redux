@@ -76,9 +76,6 @@ public:
 #endif
       case EPC_DVDPLAYER: pPlayer = new CDVDPlayer(callback); break;
       case EPC_PAPLAYER: pPlayer = new PAPlayer(callback); break;
-#ifdef HAS_MODPLAYER
-      case EPC_MODPLAYER: pPlayer = new ModPlayer(callback); break;
-#endif
       default: return NULL; 
     }
 
