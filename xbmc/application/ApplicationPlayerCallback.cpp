@@ -51,21 +51,6 @@ void CApplicationPlayerCallback::OnPlayBackStarted(const CFileItem& file)
   CLog::Log(LOGDEBUG, "CApplication::OnPlayBackStarted");
   boost::shared_ptr<CFileItem> itemCurrentFile;
 
-  // check if VideoPlayer should set file item stream details from its current streams
-  const bool isBlu_dvd_image_or_stream = (URIUtils::IsBluray(file.GetPath()) || file.IsDVDFile() ||
-                                          file.IsDiscImage() || file.IsInternetStream());
-
-  const bool hasNoStreamDetails =
-      (!file.HasVideoInfoTag() || !file.GetVideoInfoTag()->HasStreamDetails());
-
-  if (file.GetProperty("get_stream_details_from_player").asBoolean() ||
-      (hasNoStreamDetails && isBlu_dvd_image_or_stream))
-  {
-    CApplicationComponents &components = CServiceBroker::GetAppComponents();
-    const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
-    appPlayer->SetUpdateStreamDetails();
-  }
-
   CApplicationComponents &components = CServiceBroker::GetAppComponents();
   const boost::shared_ptr<CApplicationStackHelper> stackHelper = components.GetComponent<CApplicationStackHelper>();
 

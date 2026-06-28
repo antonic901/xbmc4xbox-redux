@@ -39,40 +39,23 @@ typedef enum
 class CApplicationPlayer : public IApplicationComponent
 {
 public:
-  CApplicationPlayer() {}
+  CApplicationPlayer() : m_iPlaySpeed(0) {}
 
   // player management
   void ClosePlayer();
   void ResetPlayer();
   std::string GetCurrentPlayer() const;
-  float GetPlaySpeed() const;
-  float GetPlayTempo() const;
+  int GetPlaySpeed() const;
   bool HasPlayer() const;
   bool OpenFile(const CFileItem& item, const CPlayerOptions& options,
                 const CPlayerCoreFactory &factory,
                 const std::string &playerName, IPlayerCallback& callback);
   void OpenNext(const CPlayerCoreFactory &factory);
-  void SetPlaySpeed(float speed);
-  void SetTempo(float tempo);
-  void FrameAdvance(int frames);
+  void SetPlaySpeed(int speed);
 
-  void FrameMove();
-  void Render(bool clear, uint32_t alpha = 255, bool gui = true);
-  void FlushRenderer();
   void SetRenderViewMode(int mode, float zoom, float par, float shift, bool stretch);
   float GetRenderAspectRatio() const;
-  void TriggerUpdateResolution();
   bool IsRenderingVideo() const;
-  bool IsRenderingGuiLayer() const;
-  bool IsRenderingVideoLayer() const;
-  bool Supports(EINTERLACEMETHOD method) const;
-  EINTERLACEMETHOD GetDeinterlacingMethodDefault() const;
-  unsigned int RenderCaptureAlloc();
-  void RenderCapture(unsigned int captureId, unsigned int width, unsigned int height, int flags = 0);
-  void RenderCaptureRelease(unsigned int captureId);
-  bool RenderCaptureGetPixels(unsigned int captureId, unsigned int millis, uint8_t *buffer, unsigned int size);
-  bool IsExternalPlaying() const;
-  bool IsRemotePlaying() const;
 
   /*!
    * \brief Get the name of the player in use
@@ -84,11 +67,9 @@ public:
   void AddSubtitle(const std::string& strSubPath);
   bool CanPause() const;
   bool CanSeek() const;
-  int GetAudioDelay() const;
-  void GetAudioCapabilities(std::vector<int>& audioCaps) const;
   int GetAudioStream();
   int GetAudioStreamCount() const;
-  void GetAudioStreamInfo(int index, SPlayerAudioStreamInfo& info) const;
+  void GetAudioStreamInfo(int index, SPlayerAudioStreamInfo& info);
   int GetCacheLevel() const;
   float GetCachePercentage() const;
   int GetChapterCount() const;
@@ -98,37 +79,23 @@ public:
   float GetPercentage() const;
   std::string GetPlayerState();
   PLAYLIST::Id GetPreferredPlaylist() const;
-  int GetSubtitleDelay() const;
   int GetSubtitle();
-  void GetSubtitleCapabilities(std::vector<int>& subCaps) const;
   int GetSubtitleCount() const;
-  void GetSubtitleStreamInfo(int index, SPlayerSubtitleStreamInfo& info) const;
+  void GetSubtitleStreamInfo(int index, SPlayerSubtitleStreamInfo& info);
   bool GetSubtitleVisible() const;
-  bool HasTeletextCache() const;
   int64_t GetTime() const;
-  int64_t GetMinTime() const;
-  int64_t GetMaxTime() const;
-  time_t GetStartTime() const;
   int64_t GetTotalTime() const;
-  int GetVideoStream();
-  int GetVideoStreamCount() const;
-  void GetVideoStreamInfo(int streamId, SPlayerVideoStreamInfo& info) const;
+  void GetVideoStreamInfo(int streamId, SPlayerVideoStreamInfo& info);
   bool HasAudio() const;
 
   bool HasVideo() const;
-  bool HasGame() const;
-  bool HasRDS() const;
   bool IsCaching() const;
   bool IsInMenu() const;
   bool IsPaused() const;
   bool IsPausedPlayback() const;
-  bool IsPassthrough() const;
   bool IsPlaying() const;
   bool IsPlayingAudio() const;
   bool IsPlayingVideo() const;
-  bool IsPlayingGame() const;
-  bool IsPlayingRDS() const;
-  void LoadPage(int p, int sp, unsigned char* buffer);
   bool OnAction(const CAction &action);
   void OnNothingToQueueNotify();
   void Pause();
@@ -148,33 +115,13 @@ public:
   void SetSubTitleDelay(float fValue = 0.0f);
   void SetSubtitleVisible(bool bVisible);
 
-  /*!
-   * \brief Set the subtitle vertical position,
-   * it depends on current screen resolution
-   * \param value The subtitle position in pixels
-   * \param save If true, the value will be saved to resolution info
-   */
-  void SetSubtitleVerticalPosition(const int value, bool save);
-
-  void SetTime(int64_t time);
-  void SetTotalTime(int64_t time);
-  void SetVideoStream(int iStream);
-  void SetVolume(float volume);
-  void SetSpeed(float speed);
-  bool SupportsTempo() const;
+  void SetVolume(int volume);
 
   CVideoSettings GetVideoSettings() const;
   void SetVideoSettings(CVideoSettings& settings);
 
   CSeekHandler& GetSeekHandler();
   const CSeekHandler& GetSeekHandler() const;
-
-  void SetUpdateStreamDetails();
-
-  /*!
-   * \copydoc IPlayer::HasGameAgent
-   */
-  bool HasGameAgent() const;
 
 private:
   boost::shared_ptr<const IPlayer> GetInternal() const;
@@ -189,8 +136,6 @@ private:
   // cache player state
   XbmcThreads::EndTime m_audioStreamUpdate;
   int m_iAudioStream;
-  XbmcThreads::EndTime m_videoStreamUpdate;
-  int m_iVideoStream;
   XbmcThreads::EndTime m_subtitleStreamUpdate;
   int m_iSubtitleStream;
 
@@ -202,4 +147,6 @@ private:
     std::string playerName;
     IPlayerCallback *callback;
   } m_nextItem;
+
+  int m_iPlaySpeed;
 };
