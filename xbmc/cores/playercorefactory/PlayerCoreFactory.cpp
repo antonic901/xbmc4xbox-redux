@@ -23,8 +23,6 @@
 #include "../dvdplayer/DVDPlayer.h"
 #ifdef HAS_XBOX_HARDWARE
 #include "../mplayer/mplayer.h"
-#else
-#include "../DummyVideoPlayer.h"
 #endif
 #include "../paplayer/paplayer.h"
 #include "dialogs/GUIDialogContextMenu.h"

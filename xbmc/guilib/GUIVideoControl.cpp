@@ -24,8 +24,6 @@
 #include "Application.h"
 #ifdef HAS_VIDEO_PLAYBACK
 #include "cores/VideoRenderers/RenderManager.h"
-#else
-#include "cores/DummyVideoPlayer.h"
 #endif
 
 CGUIVideoControl::CGUIVideoControl(int parentID, int controlID, float posX, float posY, float width, float height)
@@ -66,8 +64,6 @@ void CGUIVideoControl::Render()
 #ifdef HAS_VIDEO_PLAYBACK
     color_t alpha = g_graphicsContext.MergeAlpha(0xFF000000) >> 24;
     g_renderManager.RenderUpdate(false, 0, alpha);
-#else
-    ((CDummyVideoPlayer *)g_application.m_pPlayer)->Render();
 #endif
     g_graphicsContext.RestoreViewPort();
   }
