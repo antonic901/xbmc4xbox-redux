@@ -116,17 +116,17 @@ public:
   virtual void OnNothingToQueueNotify() {}
   virtual bool CloseFile(bool reopen = false){ return true;}
   virtual bool IsPlaying() const { return false;}
-  virtual bool CanPause() { return true; };
+  virtual bool CanPause() const { return true; }
   virtual void Pause() = 0;
   virtual bool IsPaused() const = 0;
   virtual bool HasVideo() const = 0;
   virtual bool HasAudio() const = 0;
-  virtual bool CanSeek() {return true;}
+  virtual bool CanSeek() const { return true; }
   virtual void Seek(bool bPlus = true, bool bLargeStep = false, bool bChapterOverride = false) = 0;
   virtual bool SeekScene(bool bPlus = true) {return false;}
   virtual void SeekPercentage(float fPercent = 0){}
-  virtual float GetPercentage(){ return 0;}
-  virtual float GetCachePercentage(){ return 0;}
+  virtual float GetPercentage() const { return 0; }
+  virtual float GetCachePercentage() const { return 0; }
   virtual void SetMute(bool bOnOff){}
   virtual void SetVolume(long nVolume){}
   virtual void SetDynamicRangeCompression(long drc){}
@@ -145,17 +145,17 @@ public:
 
   virtual void SetSubTitleDelay(float fValue = 0.0f){};
   virtual float GetSubTitleDelay()    { return 0.0f; }
-  virtual int  GetSubtitleCount()     { return 0; }
+  virtual int GetSubtitleCount() const { return 0; }
   virtual int  GetSubtitle()          { return -1; }
   virtual void GetSubtitleName(int iStream, CStdString &strStreamName){};
   virtual void GetSubtitleLanguage(int iStream, CStdString &strStreamLang){};
   virtual void SetSubtitle(int iStream){};
-  virtual bool GetSubtitleVisible(){ return false;};
+  virtual bool GetSubtitleVisible() const { return false; }
   virtual void SetSubtitleVisible(bool bVisible){};
   virtual bool GetSubtitleExtension(std::string &strSubtitleExtension){ return false;};
   virtual int  AddSubtitle(const CStdString& strSubPath) {return -1;};
 
-  virtual int  GetAudioStreamCount()  { return 0; }
+  virtual int GetAudioStreamCount() const { return 0; }
   virtual int  GetAudioStream()       { return -1; }
   virtual void GetAudioStreamName(int iStream, CStdString &strStreamName){};
   virtual void SetAudioStream(int iStream){};
@@ -163,10 +163,10 @@ public:
 
   virtual std::string GetRadioText(unsigned int line) { return ""; };
 
-  virtual int  GetChapterCount()                               { return 0; }
-  virtual int  GetChapter()                                    { return -1; }
-  virtual void GetChapterName(std::string& strChapterName)     { return; }
-  virtual int64_t GetChapterPos(int chapterIdx=-1)             { return -1; }
+  virtual int GetChapterCount() const { return 0; }
+  virtual int GetChapter() const { return -1; }
+  virtual void GetChapterName(std::string& strChapterName) const {}
+  virtual int64_t GetChapterPos(int chapterIdx = -1) const { return 0; }
   virtual int  SeekChapter(int iChapter)                       { return -1; }
 //  virtual bool GetChapterInfo(int chapter, SChapterInfo &info) { return false; }
 
@@ -181,11 +181,11 @@ public:
   /*!
    \brief current time in milliseconds
    */
-  virtual int64_t GetTime() { return 0; }
+  virtual int64_t GetTime() const { return 0; }
   /*!
    \brief total time in milliseconds
    */
-  virtual int64_t GetTotalTime() { return 0; }
+  virtual int64_t GetTotalTime() const { return 0; }
   virtual void ResetTime() {};
   virtual int GetAudioBitrate(){ return 0;}
   virtual int GetVideoBitrate(){ return 0;}

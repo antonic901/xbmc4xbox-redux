@@ -171,12 +171,12 @@ public:
   virtual bool IsPaused() const;
   virtual bool HasVideo() const;
   virtual bool HasAudio() const;
-  virtual bool CanSeek();
+  virtual bool CanSeek() const;
   virtual void Seek(bool bPlus, bool bLargeStep, bool bChapterOverride);
   virtual bool SeekScene(bool bPlus = true);
   virtual void SeekPercentage(float iPercent);
-  virtual float GetPercentage();
-  virtual float GetCachePercentage();
+  virtual float GetPercentage() const;
+  virtual float GetCachePercentage() const;
 
   virtual void SetVolume(long nVolume)                          { m_dvdPlayerAudio.SetVolume(nVolume); }
   virtual void SetDynamicRangeCompression(long drc)             { m_dvdPlayerAudio.SetDynamicRangeCompression(drc); }
@@ -188,37 +188,37 @@ public:
   virtual void GetVideoAspectRatio(float& fAR)                  { fAR = m_dvdPlayerVideo.GetAspectRatio(); }
   virtual bool CanRecord();
   virtual bool IsRecording();
-  virtual bool CanPause();
+  virtual bool CanPause() const;
   virtual bool Record(bool bOnOff);
   virtual void SetAVDelay(float fValue = 0.0f);
   virtual float GetAVDelay();
 
   virtual void SetSubTitleDelay(float fValue = 0.0f);
   virtual float GetSubTitleDelay();
-  virtual int GetSubtitleCount();
+  virtual int GetSubtitleCount() const;
   virtual int GetSubtitle();
   virtual void GetSubtitleName(int iStream, CStdString &strStreamName);
   virtual void GetSubtitleLanguage(int iStream, CStdString &strStreamLang);
   virtual void SetSubtitle(int iStream);
-  virtual bool GetSubtitleVisible();
+  virtual bool GetSubtitleVisible() const;
   virtual void SetSubtitleVisible(bool bVisible);
   virtual bool GetSubtitleExtension(std::string &strSubtitleExtension) { return false; }
   virtual int  AddSubtitle(const CStdString& strSubPath);
 
-  virtual int GetAudioStreamCount();
+  virtual int GetAudioStreamCount() const;
   virtual int GetAudioStream();
   virtual void GetAudioStreamName(int iStream, CStdString &strStreamName);
   virtual void SetAudioStream(int iStream);
 
-  virtual int  GetChapterCount();
-  virtual int  GetChapter();
-  virtual void GetChapterName(std::string& strChapterName);
+  virtual int  GetChapterCount() const;
+  virtual int  GetChapter() const;
+  virtual void GetChapterName(std::string& strChapterName) const;
   virtual int  SeekChapter(int iChapter);
 
   virtual void SeekTime(int64_t iTime);
   virtual bool SeekTimeRelative(int64_t iTime);
-  virtual int64_t GetTime();
-  virtual int64_t GetTotalTime();
+  virtual int64_t GetTime() const;
+  virtual int64_t GetTotalTime() const;
   virtual void ToFFRW(int iSpeed);
   virtual bool OnAction(const CAction &action);
   virtual bool HasMenu();
@@ -248,7 +248,7 @@ public:
   virtual bool IsCaching() const { return m_caching == CACHESTATE_FULL; }
   virtual int GetCacheLevel() const ;
 
-  virtual int OnDVDNavResult(void* pData, int iMessage);    
+  virtual int OnDVDNavResult(void* pData, int iMessage);
 protected:
   friend class CSelectionStreams;
 
@@ -273,7 +273,7 @@ protected:
   void ProcessAudioData(CDemuxStream* pStream, DemuxPacket* pPacket);
   void ProcessVideoData(CDemuxStream* pStream, DemuxPacket* pPacket);
   void ProcessSubData(CDemuxStream* pStream, DemuxPacket* pPacket);
-  
+
   int  AddSubtitleFile(const std::string& filename, CDemuxStream::EFlags flags = CDemuxStream::FLAG_NONE);
   /**
    * one of the DVD_PLAYSPEED defines
@@ -350,9 +350,9 @@ protected:
   CDVDInputStream* m_pInputStream;  // input stream for current playing file
   CDVDDemux* m_pDemuxer;            // demuxer for current playing file
   CDVDDemux* m_pSubtitleDemuxer;
-  
+
   CStdString m_lastSub;
-  
+
   struct SDVDInfo
   {
     void Clear()
@@ -465,9 +465,9 @@ protected:
   } m_EdlAutoSkipMarkers;
 
   CPlayerOptions m_PlayerOptions;
-  
+
   bool m_HasVideo;
   bool m_HasAudio;
-  
+
   bool m_DemuxerPausePending;
 };

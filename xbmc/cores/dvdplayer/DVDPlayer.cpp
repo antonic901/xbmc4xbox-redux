@@ -2119,7 +2119,7 @@ void CDVDPlayer::SetPlaySpeed(int speed)
   SynchronizeDemuxer(100);
 }
 
-bool CDVDPlayer::CanPause()
+bool CDVDPlayer::CanPause() const
 {
   CSingleLock lock(m_StateSection);
   return m_State.canpause;
@@ -2376,7 +2376,7 @@ void CDVDPlayer::SeekPercentage(float iPercent)
   SeekTime((int64_t)(iTotalTime * iPercent / 100));
 }
 
-float CDVDPlayer::GetPercentage()
+float CDVDPlayer::GetPercentage() const
 {
   int64_t iTotalTime = GetTotalTimeInMsec();
 
@@ -2386,7 +2386,7 @@ float CDVDPlayer::GetPercentage()
   return GetTime() * 100 / (float)iTotalTime;
 }
 
-float CDVDPlayer::GetCachePercentage()
+float CDVDPlayer::GetCachePercentage() const
 {
   CSingleLock lock(m_StateSection);
   return m_StateInput.cache_offset * 100; // NOTE: Percentage returned is relative
@@ -2413,7 +2413,7 @@ float CDVDPlayer::GetSubTitleDelay()
 }
 
 // priority: 1: libdvdnav, 2: external subtitles, 3: muxed subtitles
-int CDVDPlayer::GetSubtitleCount()
+int CDVDPlayer::GetSubtitleCount() const
 {
   StreamLock lock(this);
   m_SelectionStreams.Update(m_pInputStream, m_pDemuxer);
@@ -2450,7 +2450,7 @@ void CDVDPlayer::SetSubtitle(int iStream)
   m_messenger.Put(new CDVDMsgPlayerSetSubtitleStream(iStream));
 }
 
-bool CDVDPlayer::GetSubtitleVisible()
+bool CDVDPlayer::GetSubtitleVisible() const
 {
   if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
   {
@@ -2470,7 +2470,7 @@ void CDVDPlayer::SetSubtitleVisible(bool bVisible)
   m_messenger.Put(new CDVDMsgBool(CDVDMsg::PLAYER_SET_SUBTITLESTREAM_VISIBLE, bVisible));
 }
 
-int CDVDPlayer::GetAudioStreamCount()
+int CDVDPlayer::GetAudioStreamCount() const
 {
   StreamLock lock(this);
   m_SelectionStreams.Update(m_pInputStream, m_pDemuxer);
@@ -2519,7 +2519,7 @@ bool CDVDPlayer::SeekTimeRelative(int64_t iTime)
 }
 
 // return the time in milliseconds
-int64_t CDVDPlayer::GetTime()
+int64_t CDVDPlayer::GetTime() const
 {
   CSingleLock lock(m_StateSection);
   double offset = 0;
@@ -3317,25 +3317,25 @@ bool CDVDPlayer::SetPlayerState(CStdString state)
   return true;
 }
 
-int CDVDPlayer::GetChapterCount()
+int CDVDPlayer::GetChapterCount() const
 {
   CSingleLock lock(m_StateSection);
   return m_State.chapter_count;
 }
 
-int CDVDPlayer::GetChapter()
+int CDVDPlayer::GetChapter() const
 {
   CSingleLock lock(m_StateSection);
   return m_State.chapter;
 }
 
-void CDVDPlayer::GetChapterName(std::string& strChapterName)
+void CDVDPlayer::GetChapterName(std::string& strChapterName) const
 {
   CSingleLock lock(m_StateSection);
   strChapterName = m_State.chapter_name;
 }
 
-int CDVDPlayer::SeekChapter(int iChapter)
+int CDVDPlayer::SeekChapter(int iChapter) const
 {
   if (GetChapterCount() > 0)
   {

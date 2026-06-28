@@ -789,7 +789,7 @@ void PAPlayer::ResetTime()
   m_bytesSentOut = 0;
 }
 
-__int64 PAPlayer::GetTime()
+__int64 PAPlayer::GetTime() const
 {
   __int64  timeplus = m_BytesPerSecond ? (__int64)(((float) m_bytesSentOut / (float)m_BytesPerSecond ) * 1000.0) : 0;
   return m_timeOffset + timeplus - m_currentFile->GetStartOffset() * 1000 / 75;
@@ -805,7 +805,7 @@ __int64 PAPlayer::GetTotalTime64()
   return total;
 }
 
-int64_t PAPlayer::GetTotalTime()
+int64_t PAPlayer::GetTotalTime() const
 {
   return (GetTotalTime64()/1000);
 }
@@ -855,7 +855,7 @@ int PAPlayer::GetAudioBitrate()
   return 0;
 }
 
-bool PAPlayer::CanSeek()
+bool PAPlayer::CanSeek() const
 {
   return ((m_decoder[m_currentDecoder].TotalTime() > 0) && m_decoder[m_currentDecoder].CanSeek());
 }
@@ -901,7 +901,7 @@ void PAPlayer::SeekPercentage(float fPercent /*=0*/)
   SeekTime((__int64)(fPercent * 0.01f * (float)GetTotalTime64()));
 }
 
-float PAPlayer::GetPercentage()
+float PAPlayer::GetPercentage() const
 {
   float percent = (float)GetTime() * 100.0f / GetTotalTime64();
   return percent;

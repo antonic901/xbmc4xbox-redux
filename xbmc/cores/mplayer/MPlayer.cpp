@@ -1747,7 +1747,7 @@ void CMPlayer::SeekPercentage(float percent)
   WaitOnCommand();
 }
 
-float CMPlayer::GetPercentage()
+float CMPlayer::GetPercentage() const
 {
   if (m_Edl.HasCut())
     return ( (float)(100 / ((double)(GetTotalTime())/(double)GetTime())) );
@@ -1776,7 +1776,7 @@ float CMPlayer::GetSubTitleDelay()
   return mplayer_getSubtitleDelay();
 }
 
-int CMPlayer::GetSubtitleCount()
+int CMPlayer::GetSubtitleCount() const
 {
   return mplayer_getSubtitleCount();
 }
@@ -1829,7 +1829,7 @@ void CMPlayer::SetSubtitle(int iStream)
   }
 };
 
-bool CMPlayer::GetSubtitleVisible()
+bool CMPlayer::GetSubtitleVisible() const
 {
   return( m_bSubsVisibleTTF || mplayer_SubtitleVisible() != 0 );
 }
@@ -1848,7 +1848,7 @@ void CMPlayer::SetSubtitleVisible(bool bVisible)
   }
 }
 
-int CMPlayer::GetAudioStreamCount()
+int CMPlayer::GetAudioStreamCount() const
 {
   return mplayer_getAudioStreamCount();
 }
@@ -1897,7 +1897,7 @@ void CMPlayer::SetAudioStream(int iStream)
   CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_RESTART);
 }
 
-bool CMPlayer::CanSeek()
+bool CMPlayer::CanSeek() const
 {
   return GetTotalTime() > 0;
 }
@@ -1931,7 +1931,7 @@ void CMPlayer::SeekTime(__int64 iTime)
 }
 
 //Time in milliseconds
-__int64 CMPlayer::GetTime()
+__int64 CMPlayer::GetTime() const
 {
   __int64 time = 0;
   if (m_bIsPlaying)
@@ -1957,7 +1957,7 @@ __int64 CMPlayer::GetTime()
   return time;
 }
 
-int64_t CMPlayer::GetTotalTime()
+int64_t CMPlayer::GetTotalTime() const
 {
   int64_t time = 0;
   if (m_bIsPlaying)

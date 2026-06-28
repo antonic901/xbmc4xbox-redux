@@ -833,7 +833,7 @@ int PAPlayer::GetAudioBitrate()
   return 0;
 }
 
-bool PAPlayer::CanSeek()
+bool PAPlayer::CanSeek() const
 {
   return ((m_decoder[m_currentDecoder].TotalTime() > 0) && m_decoder[m_currentDecoder].CanSeek());
 }
@@ -881,7 +881,7 @@ void PAPlayer::SeekPercentage(float fPercent /*=0*/)
   SeekTime((__int64)(fPercent * 0.01f * (float)GetTotalTime64()));
 }
 
-float PAPlayer::GetPercentage()
+float PAPlayer::GetPercentage() const
 {
   return (float)GetTime() * 100.0f / GetTotalTime64();
 }

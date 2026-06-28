@@ -60,10 +60,10 @@ public:
   virtual bool IsPaused() const { return m_bPaused; }
   virtual bool HasVideo() const { return false; }
   virtual bool HasAudio() const { return true; }
-  virtual bool CanSeek();
+  virtual bool CanSeek() const;
   virtual void Seek(bool bPlus = true, bool bLargeStep = false, bool bChapterOverride = false);
   virtual void SeekPercentage(float fPercent = 0.0f);
-  virtual float GetPercentage();
+  virtual float GetPercentage() const;
   virtual void SetVolume(long nVolume);
   virtual void SetDynamicRangeCompression(long drc);
   virtual void GetAudioInfo( CStdString& strAudioInfo) {}
@@ -73,15 +73,15 @@ public:
   virtual void GetVideoRect(RECT& SrcRect, RECT& DestRect){}
   virtual void GetVideoAspectRatio(float& fAR) {}
   virtual void ToFFRW(int iSpeed = 0);
-  virtual int GetCacheLevel() const; 
-  virtual int64_t GetTotalTime();
+  virtual int GetCacheLevel() const;
+  virtual int64_t GetTotalTime() const;
   __int64 GetTotalTime64();
   virtual int GetAudioBitrate();
   virtual int GetChannels();
   virtual int GetBitsPerSample();
   virtual int GetSampleRate();
   virtual CStdString GetAudioCodecName();
-  virtual __int64 GetTime();
+  virtual __int64 GetTime() const;
   virtual void ResetTime();
   virtual void SeekTime(__int64 iTime = 0);
   // Skip to next track/item inside the current media (if supported).
@@ -118,12 +118,12 @@ protected:
   int m_iSpeed;   // current playing speed
 
 private:
-  
+
   bool ProcessPAP();    // does the actual reading and decode from our PAP dll
 
   __int64 m_SeekTime;
   int     m_IsFFwdRewding;
-  __int64 m_timeOffset; 
+  __int64 m_timeOffset;
   bool    m_forceFadeToNext;
 
   int m_currentDecoder;
@@ -140,7 +140,7 @@ private:
   void FlushStreams();
   void WaitForStream();
   void SetStreamVolume(int stream, long nVolume);
-  
+
   void UpdateCrossFadingTime(const CFileItem& file);
   bool QueueNextFile(const CFileItem &file, bool checkCrossFading);
   void UpdateCacheLevel();
