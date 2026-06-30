@@ -564,11 +564,13 @@ void CApplicationPlayer::SetSubtitleVisible(bool bVisible)
   }
 }
 
-void CApplicationPlayer::AddSubtitle(const std::string& strSubPath)
+int CApplicationPlayer::AddSubtitle(const std::string& strSubPath)
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
-    player->AddSubtitle(strSubPath);
+    return player->AddSubtitle(strSubPath);
+  else
+    return 0;
 }
 
 void CApplicationPlayer::SetSubTitleDelay(float fValue)
@@ -653,7 +655,7 @@ int CApplicationPlayer::GetPlaySpeed() const
     return 0;
 }
 
-void CApplicationPlayer::SetRenderViewMode(int mode, float zoom, float par, float shift, bool stretch)
+void CApplicationPlayer::SetRenderViewMode(int mode)
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
@@ -715,4 +717,144 @@ CSeekHandler& CApplicationPlayer::GetSeekHandler()
 const CSeekHandler& CApplicationPlayer::GetSeekHandler() const
 {
   return m_seekHandler;
+}
+
+int CApplicationPlayer::GetSubtitleDelay() const
+{
+  // converts subtitle delay to a percentage
+  const boost::shared_ptr<CAdvancedSettings> &advSettings = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings();
+  const float delay = this->GetVideoSettings().m_SubtitleDelay;
+  const float range = advSettings->m_videoSubsDelayRange;
+  return static_cast<int>(0.5f + (delay + range) / (2.f * range) * 100.0f);
+}
+
+int CApplicationPlayer::GetAudioDelay() const
+{
+  // converts audio delay to a percentage
+  const boost::shared_ptr<CAdvancedSettings> &advSettings = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings();
+  const float delay = this->GetVideoSettings().m_AudioDelay;
+  const float range = advSettings->m_videoAudioDelayRange;
+  return static_cast<int>(0.5f + (delay + range) / (2.f * range) * 100.0f);
+}
+
+bool CApplicationPlayer::CanRecord()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    return player->CanRecord();
+  return false;
+}
+
+bool CApplicationPlayer::IsRecording()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    return player->IsRecording();
+  return false;
+}
+
+bool CApplicationPlayer::Record(bool bOnOff)
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    return player->Record(bOnOff);
+  return false;
+}
+
+bool CApplicationPlayer::HasMenu()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    return player->HasMenu();
+  return false;
+}
+
+void CApplicationPlayer::RegisterAudioCallback(IAudioCallback* pCallback)
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    player->RegisterAudioCallback(pCallback);
+}
+
+void CApplicationPlayer::UnRegisterAudioCallback()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    player->UnRegisterAudioCallback();
+}
+
+void CApplicationPlayer::GetAudioInfo(std::string& strAudioInfo)
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+  {
+    CStdString temp;
+    player->GetAudioInfo(temp);
+    strAudioInfo = temp;
+  }
+}
+
+void CApplicationPlayer::GetVideoInfo(std::string& strVideoInfo)
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+  {
+    CStdString temp;
+    player->GetVideoInfo(temp);
+    strVideoInfo = temp;
+  }
+}
+
+void CApplicationPlayer::GetGeneralInfo(std::string& strVideoInfo)
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+  {
+    CStdString temp;
+    player->GetGeneralInfo(temp);
+    strVideoInfo = temp;
+  }
+}
+
+bool CApplicationPlayer::GetCurrentSubtitle(std::string& strSubtitle)
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+  {
+    CStdString temp;
+    bool ret = player->GetCurrentSubtitle(temp);
+    strSubtitle = temp;
+    return ret;
+  }
+  return false;
+}
+
+float CApplicationPlayer::GetActualFPS()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    return player->GetActualFPS();
+
+  return 0.0f;
+}
+
+bool CApplicationPlayer::GetSubtitleExtension(std::string& strSubtitleExtension)
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+  {
+    player->GetSubtitleExtension(strSubtitleExtension);
+    return true;
+  }
+
+  return false;
+}
+
+bool CApplicationPlayer::SkipNext()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    return player->SkipNext();
+
+  return false;
 }
