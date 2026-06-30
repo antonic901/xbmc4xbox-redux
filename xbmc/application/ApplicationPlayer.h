@@ -53,7 +53,7 @@ public:
   void OpenNext(const CPlayerCoreFactory &factory);
   void SetPlaySpeed(int speed);
 
-  void SetRenderViewMode(int mode, float zoom, float par, float shift, bool stretch);
+  void SetRenderViewMode(int mode);
   float GetRenderAspectRatio() const;
   bool IsRenderingVideo() const;
 
@@ -64,9 +64,10 @@ public:
   std::string GetName() const;
 
   // proxy calls
-  void AddSubtitle(const std::string& strSubPath);
+  int AddSubtitle(const std::string& strSubPath);
   bool CanPause() const;
   bool CanSeek() const;
+  int GetAudioDelay() const;
   int GetAudioStream();
   int GetAudioStreamCount() const;
   void GetAudioStreamInfo(int index, SPlayerAudioStreamInfo& info);
@@ -79,6 +80,7 @@ public:
   float GetPercentage() const;
   std::string GetPlayerState();
   PLAYLIST::Id GetPreferredPlaylist() const;
+  int GetSubtitleDelay() const;
   int GetSubtitle();
   int GetSubtitleCount() const;
   void GetSubtitleStreamInfo(int index, SPlayerSubtitleStreamInfo& info);
@@ -116,6 +118,25 @@ public:
   void SetSubtitleVisible(bool bVisible);
 
   void SetVolume(int volume);
+
+  // These were removed at some point
+  bool CanRecord();
+  bool IsRecording();
+  bool Record(bool bOnOff);
+  bool HasMenu();
+
+  void RegisterAudioCallback(IAudioCallback* pCallback);
+  void UnRegisterAudioCallback();
+
+  void GetAudioInfo(std::string& strAudioInfo);
+  void GetGeneralInfo(std::string& strVideoInfo);
+  void GetVideoInfo(std::string& strVideoInfo);
+  bool GetCurrentSubtitle(std::string& strSubtitle);
+
+  // Specific to Xbox
+  float GetActualFPS();
+  bool GetSubtitleExtension(std::string& strSubtitleExtension);
+  bool SkipNext();
 
   CVideoSettings GetVideoSettings() const;
   void SetVideoSettings(CVideoSettings& settings);
