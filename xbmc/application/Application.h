@@ -1,58 +1,63 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "system.h" // for HAS_OPTICAL_DRIVE et. al.
-#include "XBApplicationEx.h"
+#pragma once
 
 #include "application/ApplicationComponents.h"
-#include "IMsgTargetCallback.h"
-#include "input/keyboard/Key.h"
-#include "utils/GlobalsHandling.h"
+#include "application/ApplicationPlayerCallback.h"
+#include "application/ApplicationSettingsHandling.h"
+#include "guilib/IMsgTargetCallback.h"
+#include "guilib/IWindowManagerCallback.h"
 #include "messaging/IMessageTarget.h"
-#include "ServiceManager.h"
+#include "playlists/PlayListTypes.h"
+#include "threads/SystemClock.h"
+#include "utils/GlobalsHandling.h"
+#include "utils/Stopwatch.h"
+#include "windowing/GraphicContext.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
+class CAction;
+class CBookmark;
 class CFileItem;
 class CFileItemList;
 class CGUIComponent;
+class CKey;
+class CSeekHandler;
+class CServiceManager;
+class CSettingsComponent;
+class CSplash;
+class CWinSystemBase;
+
+namespace ADDON
+{
+  class CSkinInfo;
+  class IAddon;
+  typedef boost::shared_ptr<IAddon> AddonPtr;
+  class CAddonInfo;
+}
 
 namespace ANNOUNCEMENT
 {
   class CAnnouncementManager;
 }
 
-#include "utils/Idle.h"
-#include "utils/DelayController.h"
-#include "cores/IPlayer.h"
-#include "cores/playercorefactory/PlayerCoreFactory.h"
-#include "PlayListPlayer.h"
-#include "settings/lib/ISettingsHandler.h"
-#include "settings/ISubSettings.h"
-#include "storage/DetectDVDType.h"
-#include "Autorun.h"
-#include "video/Bookmark.h"
-#include "utils/Stopwatch.h"
-#include "input/actions/interfaces/IActionListener.h"
+namespace MEDIA_DETECT
+{
+  class CAutorun;
+}
 
-class CNetwork;
+namespace PLAYLIST
+{
+  class CPlayList;
+}
 
 namespace VIDEO
 {
@@ -64,146 +69,74 @@ namespace MUSIC_INFO
   class CMusicInfoScanner;
 }
 
-#define VOLUME_MINIMUM -6000  // -60dB
-#define VOLUME_MAXIMUM 0      // 0dB
-
-// replay gain settings struct for quick access by the player multiple
-// times per second (saves doing settings lookup)
-struct ReplayGainSettings
+class CApplication : public IWindowManagerCallback,
+                     public IMsgTargetCallback,
+                     public KODI::MESSAGING::IMessageTarget,
+                     public CApplicationComponents,
+                     public CApplicationPlayerCallback,
+                     public CApplicationSettingsHandling
 {
-  int iPreAmp;
-  int iNoGainPreAmp;
-  int iType;
-  bool bAvoidClipping;
-};
-
-struct VOICE_MASK {
-  float energy;
-  float pitch;
-  float robotic;
-  float whisper;
-};
-
-#include "application/ApplicationPlayer.h"
-#include "application/ApplicationPowerHandling.h"
-
-class CSeekHandler;
-class CCdgParser;
-class CProfile;
-class CSplash;
-class CGUITextLayout;
-
-class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMsgTargetCallback,
-                     public ISettingCallback, public ISettingsHandler, public ISubSettings,
-                     public KODI::MESSAGING::IMessageTarget, public CApplicationComponents
-{
-  friend class CApplicationPlayer;
 public:
 
-  enum ESERVERS
-  {
-    ES_WEBSERVER = 1,
-    ES_AIRPLAYSERVER,
-    ES_JSONRPCSERVER,
-    ES_UPNPRENDERER,
-    ES_UPNPSERVER,
-    ES_EVENTSERVER,
-    ES_ZEROCONF
-  };
+  // If playback time of current item is greater than this value, ACTION_PREV_ITEM will seek to start
+  // of currently playing item, otherwise it will seek to start of the previous item in playlist
+  static const unsigned int ACTION_PREV_ITEM_THRESHOLD = 3; // seconds;
 
   CApplication(void);
   virtual ~CApplication(void);
-  virtual HRESULT Initialize();
+
+  bool Create();
+  bool Initialize();
+  int Run();
+  bool Cleanup();
+
   virtual void FrameMove(bool processEvents, bool processGUI = true);
   virtual void Render();
-#ifndef HAS_XBOX_D3D
-  virtual void RenderNoPresent();
-#endif
-  virtual HRESULT Create(HWND hWnd);
-  virtual HRESULT Cleanup();
-  void StartServices();
-  void StopServices();
-  void StartIdleThread();
-  void StopIdleThread();
-  void RefreshEventServer();
-  void StartLEDControl(bool switchoff = false);
-  void DimLCDOnPlayback(bool dim);
-  bool IsCurrentThread() const;
-  void PrintXBEToLCD(const char* xbePath);
-  void CheckDate();
-  DWORD GetThreadId() const { return m_threadID; };
-  void Stop(bool bLCDStop = true);
-  void RestartApp();
-  void UnloadSkin(bool forReload = false);
-  bool LoadCustomWindows();
-  void ReloadSkin(bool confirm = false);
+
+  bool IsInitialized() const { return !m_bInitializing; }
+  bool IsStopping() const { return m_bStop; }
+
+  bool CreateGUI();
+  bool InitWindow(RESOLUTION res = RES_INVALID);
+
+  bool Stop(int exitCode);
   const std::string& CurrentFile();
   CFileItem& CurrentFileItem();
   boost::shared_ptr<CFileItem> CurrentFileItemPtr();
-  CFileItem& CurrentUnstackedItem();
+  const CFileItem& CurrentUnstackedItem();
   virtual bool OnMessage(CGUIMessage& message);
-  PLAYERCOREID GetCurrentPlayer();
-  virtual void OnPlayBackEnded();
-  virtual void OnPlayBackStarted();
-  virtual void OnPlayBackPaused();
-  virtual void OnPlayBackResumed();
-  virtual void OnPlayBackStopped();
-  virtual void OnQueueNextItem();
-  virtual void OnPlayBackSeek(int iTime, int seekOffset);
-  virtual void OnPlayBackSeekChapter(int iChapter);
-  virtual void OnPlayBackSpeedChanged(int iSpeed);
+  std::string GetCurrentPlayer();
 
   virtual int  GetMessageMask();
   virtual void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
 
-  bool PlayMedia(CFileItem& item, const std::string &player, int iPlaylist = PLAYLIST::TYPE_MUSIC);
-  bool ProcessAndStartPlaylist(const CStdString& strPlayList, PLAYLIST::CPlayList& playlist, int iPlaylist, int track=0);
-  PlayBackRet PlayFile(CFileItem item, const std::string& player, bool bRestart = false);
-  void SaveFileState(bool bForeground = false);
-  void UpdateFileState();
+  bool PlayMedia(CFileItem& item, const std::string& player, PLAYLIST::Id playlistId);
+  bool ProcessAndStartPlaylist(const std::string& strPlayList,
+                               PLAYLIST::CPlayList& playlist,
+                               PLAYLIST::Id playlistId,
+                               int track = 0);
+  bool PlayFile(CFileItem item, const std::string& player, bool bRestart = false);
   void StopPlaying();
   void Restart(bool bSamePosition = true);
   void DelayedPlayerRestart();
   void CheckDelayedPlayerRestart();
-  void RenderFullScreen();
-  bool NeedRenderFullScreen();
   bool IsPlayingFullScreenVideo() const;
-  bool IsStartingPlayback() const { return m_bPlaybackStarting; }
   bool IsFullScreen();
-  bool OnKey(CKey& key);
-  bool OnAction(CAction &action);
-  void RenderMemoryStatus();
-  bool MustBlockHDSpinDown(bool bCheckThisForNormalSpinDown = true);
-  void CheckNetworkHDSpinDown(bool playbackStarted = false);
-  void CheckHDSpindown();
-  void CheckShutdown();
-  void CheckScreenSaver();   // CB: SCREENSAVER PATCH
-  void CheckPlayingProgress();
-  void ActivateScreenSaver(bool forceType = false);
+  bool OnAction(const CAction &action);
+  void CloseNetworkShares();
 
+  void ConfigureAndEnableAddons();
   virtual void Process();
   void ProcessSlow();
-  void ResetScreenSaver();
-  int GetVolume(bool percentage = true) const;
-  void SetVolume(long iValue, bool isPercentage = true);
-  int GetDynamicRangeCompressionLevel() { return m_dynamicRangeCompressionLevel; };
-  VOICE_MASK GetKaraokeVoiceMask(DWORD dwPort) { return m_karaokeVoiceMask[dwPort]; }
-  bool IsMuted() const;
-  void ToggleMute(void);
-  void SetMute(bool mute);
-  void ShowVolumeBar(const CAction *action = NULL);
-  int GetSubtitleDelay() const;
-  int GetAudioDelay() const;
-  bool IsButtonDown(DWORD code);
-  bool AnyButtonDown();
-  bool ResetScreenSaverWindow(); // this is MAYBE WakeUpScreenSaverAndDPMS
   /*!
    \brief Returns the total time in fractional seconds of the currently playing media
+
    Beware that this method returns fractional seconds whereas IPlayer::GetTotalTime() returns milliseconds.
    */
   double GetTotalTime() const;
   /*!
    \brief Returns the current time in fractional seconds of the currently playing media
+
    Beware that this method returns fractional seconds whereas IPlayer::GetTime() returns milliseconds.
    */
   double GetTime() const;
@@ -215,219 +148,80 @@ public:
   void SeekPercentage(float percent);
   void SeekTime( double dTime = 0.0 );
 
-  void StopVideoScan();
-  void StopMusicScan();
-  bool IsMusicScanning() const;
-  bool IsVideoScanning() const;
-
-  /*!
-   \brief Starts a video library cleanup.
-   \param userInitiated Whether the action was initiated by the user (either via GUI or any other method) or not.  It is meant to hide or show dialogs.
-   */
-  void StartVideoCleanup(bool userInitiated = true);
-
-  /*!
-   \brief Starts a video library update.
-   \param path The path to scan or "" (empty string) for a global scan.
-   \param userInitiated Whether the action was initiated by the user (either via GUI or any other method) or not.  It is meant to hide or show dialogs.
-   \param scanAll Whether to scan everything not already scanned (regardless of whether the user normally doesn't want a folder scanned).
-   */
-  void StartVideoScan(const std::string &path, bool userInitiated = true, bool scanAll = false);
-
-  /*!
-  \brief Starts a music library cleanup.
-  \param userInitiated Whether the action was initiated by the user (either via GUI or any other method) or not.  It is meant to hide or show dialogs.
-  */
-  void StartMusicCleanup(bool userInitiated = true);
-
-  /*!
-   \brief Starts a music library update.
-   \param path The path to scan or "" (empty string) for a global scan.
-   \param userInitiated Whether the action was initiated by the user (either via GUI or any other method) or not.  It is meant to hide or show dialogs.
-   \param flags Flags for controlling the scanning process.  See xbmc/music/infoscanner/MusicInfoScanner.h for possible values.
-   */
-  void StartMusicScan(const std::string &path, bool userInitiated = true, int flags = 0);
-  void StartMusicAlbumScan(const std::string& strDirectory, bool refresh = false);
-  void StartMusicArtistScan(const std::string& strDirectory, bool refresh = false);
-
   void UpdateLibraries();
 
   void UpdateCurrentPlayArt();
 
-  CNetwork& getNetwork();
+  bool ExecuteXBMCAction(std::string action, const boost::shared_ptr<CGUIListItem>& item = boost::shared_ptr<CGUIListItem>());
 
-  bool ExecuteXBMCAction(std::string action, const boost::shared_ptr<CGUIListItem> &item = boost::shared_ptr<CGUIListItem>());
+#ifdef HAS_OPTICAL_DRIVE
+  boost::movelib::unique_ptr<MEDIA_DETECT::CAutorun> m_Autorun;
+#endif
 
-  CIdleThread m_idleThread;
-  MEDIA_DETECT::CAutorun m_Autorun;
-  MEDIA_DETECT::CDetectDVDMedia m_DetectDVDType;
-  CDelayController m_ctrDpad;
-  CApplicationPlayer* m_pPlayer;
+  std::string m_strPlayListFile;
 
-  bool m_bSpinDown;
-  bool m_bNetworkSpinDown;
-  DWORD m_dwSpinDownTime;
-
-  inline bool IsInScreenSaver() { return m_bScreenSave; };
-  int m_iScreenSaveLock; // spiff: are we checking for a lock? if so, ignore the screensaver state, if -1 we have failed to input locks
-
-  bool m_bPlaybackStarting;
-  typedef enum
-  {
-    PLAY_STATE_NONE = 0,
-    PLAY_STATE_STARTING,
-    PLAY_STATE_PLAYING,
-    PLAY_STATE_STOPPED,
-    PLAY_STATE_ENDED,
-  } PlayState;
-  PlayState m_ePlayState;
-  CCriticalSection m_playStateMutex;
-
-  bool m_bIsPaused;
-  bool m_128MBHack;
-
-  CCdgParser* m_pCdgParser;
-
-  PLAYERCOREID m_eForcedNextPlayer;
-  CStdString m_strPlayListFile;
-
-  int GlobalIdleTime();
-
-  bool IsStandAlone()
-  {
-    return true;
-  }
-
-  virtual bool GetRenderGUI() const { return true; };
+  virtual bool GetRenderGUI() const;
 
   bool SetLanguage(const std::string &strLanguage);
   bool LoadLanguage(bool reload);
 
-  ReplayGainSettings& GetReplayGainSettings() { return m_replayGainSettings; }
-
-  void SetLoggingIn(bool loggingIn) { m_loggingIn = loggingIn; }
-
-  /*!
-   \brief Register an action listener.
-   \param listener The listener to register
-   */
-  void RegisterActionListener(KODI::ACTION::IActionListener *listener);
-  /*!
-   \brief Unregister an action listener.
-   \param listener The listener to unregister
-   */
-  void UnregisterActionListener(KODI::ACTION::IActionListener *listener);
+  void SetLoggingIn(bool switchingProfiles);
 
   boost::movelib::unique_ptr<CServiceManager> m_ServiceManager;
 
-protected:
-  virtual bool OnSettingsSaving() const;
-
-  virtual bool Load(const TiXmlNode *settings);
-  virtual bool Save(TiXmlNode *settings) const;
-
-  virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
-  virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
-  virtual bool OnSettingUpdate(const boost::shared_ptr<CSetting>& setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
-
-  bool LoadSkin(const std::string& skinID);
+  /*!
+  \brief Locks calls from outside kodi (e.g. python) until framemove is processed.
+  */
+  void LockFrameMoveGuard();
 
   /*!
-   \brief Delegates the action to all registered action handlers.
-   \param action The action
-   \return true, if the action was taken by one of the action listener.
-   */
-  bool NotifyActionListeners(const CAction &action) const;
+  \brief Unlocks calls from outside kodi (e.g. python).
+  */
+  void UnlockFrameMoveGuard();
 
-  bool m_skinReverting;
-  bool m_ignoreSkinSettingChanges;
-
-  bool m_loggingIn;
-
-  // screensaver
-  bool m_bScreenSave;
-  std::string m_screensaverIdInUse;
-
-  D3DGAMMARAMP m_OldRamp;
+protected:
+  virtual bool OnSettingsSaving() const;
+  void PlaybackCleanup();
 
   boost::shared_ptr<ANNOUNCEMENT::CAnnouncementManager> m_pAnnouncementManager;
   boost::movelib::unique_ptr<CGUIComponent> m_pGUI;
   boost::movelib::unique_ptr<CWinSystemBase> m_pWinSystem;
 
   // timer information
-  CStopWatch m_idleTimer;
   CStopWatch m_restartPlayerTimer;
   CStopWatch m_frameTime;
-  CStopWatch m_navigationTimer;
   CStopWatch m_slowTimer;
-  CStopWatch m_screenSaverTimer;
-  CStopWatch m_shutdownTimer;
-  CStopWatch m_updaterTimer;
+  XbmcThreads::EndTime m_guiRefreshTimer;
 
-  CFileItemPtr m_itemCurrentFile;
-  CFileItemList* m_currentStack;
-  CFileItemPtr m_stackFileItemToUpdate;
-
-  CStdString m_prevMedia;
-  DWORD m_threadID;       // application thread ID.  Used in applicationMessanger to know where we are firing a thread with delay from.
+  std::string m_prevMedia;
   bool m_bInitializing;
 
-  CBookmark m_progressTrackingVideoResumeBookmark;
-  CFileItemPtr m_progressTrackingItem;
-  bool m_progressTrackingPlayCountUpdate;
-
-  int m_currentStackPosition;
   int m_nextPlaylistItem;
 
-  CGUITextLayout *m_debugLayout;
+  unsigned int m_lastRenderTime;
+  bool m_skipGuiRender;
 
-  static LONG WINAPI UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo);
+  boost::movelib::unique_ptr<MUSIC_INFO::CMusicInfoScanner> m_musicInfoScanner;
 
-  MUSIC_INFO::CMusicInfoScanner *m_musicInfoScanner;
+  bool PlayStack(CFileItem& item, bool bRestart);
 
-  bool m_muted;
-  int m_volumeLevel;                     // measured in milliBels -60dB -> 0dB range.
-  int m_dynamicRangeCompressionLevel;    // measured in milliBels  0dB -> 30dB range.
+  void HandlePortEvents();
 
-  VOICE_MASK m_karaokeVoiceMask[4];
+  std::vector<boost::shared_ptr<ADDON::CAddonInfo> >
+      m_incompatibleAddons; /*!< Result of addon migration (incompatible addon infos) */
 
-  void Mute();
-  void UnMute();
-
-  void SetHardwareVolume(long hardwareVolume);
-  void UpdateLCD();
-  void FatalErrorHandler(bool InitD3D, bool MapDrives, bool InitNetwork);
-  void InitBasicD3D();
-
-  PlayBackRet PlayStack(const CFileItem& item, bool bRestart);
-  bool ProcessHTTPApiButtons();
-  bool ProcessKeyboard();
-  bool ProcessRemote(float frameTime);
-  bool ProcessGamepad(float frameTime);
-  bool ProcessEventServer(float frameTime);
-
-  bool ProcessJoystickEvent(const std::string& joystickName, int button, bool isAxis, float fAmount, unsigned int holdTime = 0);
-  bool ExecuteInputAction(CAction action);
-
-  void CheckForDebugButtonCombo();
-  float NavigationIdleTime();
-  void CheckForTitleChange();
-  static bool AlwaysProcess(const CAction& action);
-
-  void SaveCurrentFileSettings();
-
-  CNetwork    *m_network;
-
-#ifdef HAS_EVENT_SERVER
-  std::map<std::string, std::map<int, float> > m_lastAxisMap;
-#endif
-
-  ReplayGainSettings m_replayGainSettings;
-
-  std::vector<KODI::ACTION::IActionListener *> m_actionListeners;
+public:
+  bool m_bStop;
 
 private:
-  CCriticalSection                m_critSection;                 /*!< critical section for all changes to this class, except for changes to triggers */
+  void PrintStartupLog();
+  void ResetCurrentItem();
+
+  mutable CCriticalSection m_critSection; /*!< critical section for all changes to this class, except for changes to triggers */
+
+  CCriticalSection m_frameMoveGuard;              /*!< critical section for synchronizing GUI actions from inside and outside (python) */
+  int m_ExitCode;
+  boost::shared_ptr<CFileItem> m_itemCurrentFile; //!< Currently playing file
 };
 
 XBMC_GLOBAL_REF(CApplication,g_application);

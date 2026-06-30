@@ -470,9 +470,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\TextureDatabase.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\xbmc.cpp">
-			</File>
-			<File
 				RelativePath=".\xbmc\XbmcContext.cpp">
 			</File>
 			<File
@@ -5142,6 +5139,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="application"
 				Filter="">
 				<File
+					RelativePath=".\xbmc\application\Application.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\application\Application.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\application\ApplicationComponents.h">
 				</File>
 				<File
@@ -5225,6 +5228,26 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\application\IApplicationComponent.h">
 				</File>
+			</Filter>
+			<Filter
+				Name="platform"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\platform\xbmc.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\platform\xbmc.h">
+				</File>
+				<Filter
+					Name="xbox"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\platform\xbox\atomic.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\main.cpp">
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
