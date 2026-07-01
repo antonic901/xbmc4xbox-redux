@@ -8,8 +8,12 @@
 
 #pragma once
 
+#include "system.h" // <xtl.h>
 #include "guilib/guiinfo/GUIInfoProvider.h"
 
+#include <boost/shared_ptr.hpp>
+
+class CApplicationPlayer;
 class CVideoInfoTag;
 
 namespace KODI
@@ -41,6 +45,8 @@ public:
 private:
   int GetPercentPlayed(const CVideoInfoTag* tag) const;
   bool GetPlaylistInfo(std::string& value, const CGUIInfo& info) const;
+
+  const boost::shared_ptr<CApplicationPlayer> m_appPlayer;
 };
 
 } // namespace GUIINFO

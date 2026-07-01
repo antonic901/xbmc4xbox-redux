@@ -21,6 +21,9 @@
 #include "PlayerBuiltins.h"
 
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
+#include "application/ApplicationPowerHandling.h"
 #include "FileItem.h"
 #include "filesystem/Directory.h"
 #include "guilib/GUIComponent.h"
@@ -99,8 +102,11 @@ static int PlayOffset(const std::vector<std::string>& params)
   }
   // play the desired offset
   int pos = atol(strPos.c_str());
+
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
   // playlist is already playing
-  if (g_application.m_pPlayer->IsPlaying())
+  if (appPlayer->IsPlaying())
     CServiceBroker::GetPlaylistPlayer().PlayNext(pos);
   // we start playing the 'other' playlist so we need to use play to initialize the player state
   else
@@ -116,21 +122,25 @@ static int PlayOffset(const std::vector<std::string>& params)
  */
 static int PlayerControl(const std::vector<std::string>& params)
 {
-  g_application.ResetScreenSaver();
-  g_application.ResetScreenSaverWindow();
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+  appPower->ResetScreenSaver();
+  appPower->WakeUpScreenSaverAndDPMS();
 
   std::string paramlow(params[0]);
   StringUtils::ToLower(paramlow);
 
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+
   if (paramlow ==  "play")
   { // play/pause
     // either resume playing, or pause
-    if (g_application.m_pPlayer->IsPlaying())
+    if (appPlayer->IsPlaying())
     {
-      if (g_application.m_pPlayer->GetPlaySpeed() != 1)
-        g_application.m_pPlayer->SetPlaySpeed(1);
+      if (appPlayer->GetPlaySpeed() != 1)
+        appPlayer->SetPlaySpeed(1);
       else
-        g_application.m_pPlayer->Pause();
+        appPlayer->Pause();
     }
   }
   else if (paramlow == "stop")
@@ -139,9 +149,9 @@ static int PlayerControl(const std::vector<std::string>& params)
   }
   else if (paramlow =="rewind" || paramlow == "forward")
   {
-    if (g_application.m_pPlayer->IsPlaying() && !g_application.m_pPlayer->IsPaused())
+    if (appPlayer->IsPlaying() && !appPlayer->IsPaused())
     {
-      int playSpeed = g_application.m_pPlayer->GetPlaySpeed();
+      int playSpeed = appPlayer->GetPlaySpeed();
       if (playSpeed >= 0.75 && playSpeed <= 1.55)
         playSpeed = 1;
 
@@ -161,14 +171,14 @@ static int PlayerControl(const std::vector<std::string>& params)
       if (playSpeed > 32 || playSpeed < -32)
         playSpeed = 1;
 
-      g_application.m_pPlayer->SetPlaySpeed(playSpeed, false);
+      appPlayer->SetPlaySpeed(playSpeed);
     }
   }
   else if (paramlow =="tempoup" || paramlow == "tempodown")
   {
 #ifndef _XBOX
-    if (g_application.m_pPlayer->SupportsTempo() &&
-        g_application.m_pPlayer->IsPlaying() && !g_application.m_pPlayer->IsPaused())
+    if (appPlayer->SupportsTempo() &&
+        appPlayer->IsPlaying() && !appPlayer->IsPaused())
     {
       float playSpeed = g_application.m_pPlayer->GetPlaySpeed();
       if (playSpeed >= 0.75 && playSpeed <= 1.55)
@@ -194,23 +204,23 @@ static int PlayerControl(const std::vector<std::string>& params)
   }
   else if (paramlow == "bigskipbackward")
   {
-    if (g_application.m_pPlayer->IsPlaying())
-      g_application.m_pPlayer->Seek(false, true);
+    if (appPlayer->IsPlaying())
+      appPlayer->Seek(false, true);
   }
   else if (paramlow == "bigskipforward")
   {
-    if (g_application.m_pPlayer->IsPlaying())
-      g_application.m_pPlayer->Seek(true, true);
+    if (appPlayer->IsPlaying())
+      appPlayer->Seek(true, true);
   }
   else if (paramlow == "smallskipbackward")
   {
-    if (g_application.m_pPlayer->IsPlaying())
-      g_application.m_pPlayer->Seek(false, false);
+    if (appPlayer->IsPlaying())
+      appPlayer->Seek(false, false);
   }
   else if (paramlow == "smallskipforward")
   {
-    if (g_application.m_pPlayer->IsPlaying())
-      g_application.m_pPlayer->Seek(true, false);
+    if (appPlayer->IsPlaying())
+      appPlayer->Seek(true, false);
   }
   else if (StringUtils::StartsWithNoCase(params[0], "seekpercentage"))
   {
@@ -227,19 +237,19 @@ static int PlayerControl(const std::vector<std::string>& params)
       float offsetpercent = (float) atof(offset.c_str());
       if (offsetpercent < 0 || offsetpercent > 100)
         CLog::Log(LOGERROR,"PlayerControl(seekpercentage(n)) argument, %f, must be 0-100", offsetpercent);
-      else if (g_application.m_pPlayer->IsPlaying())
+      else if (appPlayer->IsPlaying())
         g_application.SeekPercentage(offsetpercent);
     }
   }
   else if (paramlow == "showvideomenu")
   {
-    if( g_application.m_pPlayer->IsPlaying() )
-      g_application.m_pPlayer->OnAction(CAction(ACTION_SHOW_VIDEOMENU));
+    if( appPlayer->IsPlaying() )
+      appPlayer->OnAction(CAction(ACTION_SHOW_VIDEOMENU));
   }
   else if (paramlow == "record")
   {
-    if( g_application.m_pPlayer->IsPlaying() && g_application.m_pPlayer->CanRecord())
-      g_application.m_pPlayer->Record(!g_application.m_pPlayer->IsRecording());
+    if( appPlayer->IsPlaying() && appPlayer->CanRecord())
+      appPlayer->Record(!appPlayer->IsRecording());
   }
   else if (StringUtils::StartsWithNoCase(params[0], "partymode"))
   {
@@ -382,8 +392,10 @@ static int PlayMedia(const std::vector<std::string>& params)
     CServiceBroker::GetGUI()->GetWindowManager().PreviousWindow();
 
   // reset screensaver
-  g_application.ResetScreenSaver();
-  g_application.ResetScreenSaverWindow();
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+  appPower->ResetScreenSaver();
+  appPower->WakeUpScreenSaverAndDPMS();
 
   // ask if we need to check guisettings to resume
   bool askToResume = true;
@@ -500,8 +512,10 @@ static int PlayWith(const std::vector<std::string>& params)
  */
 static int Seek(const std::vector<std::string>& params)
 {
-  if (g_application.m_pPlayer->IsPlaying())
-    CSeekHandler::GetInstance().SeekSeconds(atoi(params[0].c_str()));
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (appPlayer->IsPlaying())
+    appPlayer->GetSeekHandler().SeekSeconds(atoi(params[0].c_str()));
 
   return 0;
 }

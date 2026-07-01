@@ -14,7 +14,8 @@
 #include "URL.h"
 #include "Util.h"
 #include "application/Application.h"
-#include "ApplicationPlayer.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
@@ -43,6 +44,7 @@ using namespace KODI::GUILIB;
 using namespace KODI::GUILIB::GUIINFO;
 
 CVideoGUIInfo::CVideoGUIInfo()
+  : m_appPlayer(CServiceBroker::GetAppComponents().GetComponent<CApplicationPlayer>())
 {
 }
 
@@ -61,7 +63,7 @@ bool CVideoGUIInfo::InitCurrentItem(CFileItem *item)
   if (item && item->IsVideo())
   {
     // special case where .strm is used to start an audio stream
-    if (item->IsInternetStream() && g_application.m_pPlayer->IsPlayingAudio())
+    if (item->IsInternetStream() && m_appPlayer->IsPlayingAudio())
       return false;
 
     CLog::Log(LOGDEBUG, "CVideoGUIInfo::InitCurrentItem(%s)", CURL::GetRedacted(item->GetPath()).c_str());
@@ -538,12 +540,12 @@ bool CVideoGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
     case VIDEOPLAYER_VIDEO_ASPECT:
     {
       SPlayerVideoStreamInfo info;
-      g_application.m_pPlayer->GetVideoStreamInfo(-1, info);
+      m_appPlayer->GetVideoStreamInfo(-1, info);
       value = CStreamDetails::VideoAspectToAspectDescription(info.videoAspectRatio);
       return true;
     }
     case VIDEOPLAYER_COVER:
-      if (g_application.m_pPlayer->IsPlayingVideo())
+      if (m_appPlayer->IsPlayingVideo())
       {
         if (fallback)
           *fallback = "DefaultVideoCover.png";
@@ -559,28 +561,28 @@ bool CVideoGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
     case VIDEOPLAYER_VIDEO_CODEC:
     {
       SPlayerVideoStreamInfo info;
-      g_application.m_pPlayer->GetVideoStreamInfo(-1, info);
+      m_appPlayer->GetVideoStreamInfo(-1, info);
       value = info.videoCodecName;
       return true;
     }
     case VIDEOPLAYER_VIDEO_RESOLUTION:
     {
       SPlayerVideoStreamInfo info;
-      g_application.m_pPlayer->GetVideoStreamInfo(-1, info);
+      m_appPlayer->GetVideoStreamInfo(-1, info);
       value = CStreamDetails::VideoDimsToResolutionDescription(info.width, info.height);
       return true;
     }
     case VIDEOPLAYER_AUDIO_CODEC:
     {
       SPlayerAudioStreamInfo info;
-      g_application.m_pPlayer->GetAudioStreamInfo(g_application.m_pPlayer->GetAudioStream(), info);
+      m_appPlayer->GetAudioStreamInfo(m_appPlayer->GetAudioStream(), info);
       value = info.audioCodecName;
       return true;
     }
     case VIDEOPLAYER_AUDIO_CHANNELS:
     {
       SPlayerAudioStreamInfo info;
-      g_application.m_pPlayer->GetAudioStreamInfo(g_application.m_pPlayer->GetAudioStream(), info);
+      m_appPlayer->GetAudioStreamInfo(m_appPlayer->GetAudioStream(), info);
       if (info.channels > 0)
       {
         value = StringUtils::Format("%i", info.channels);
@@ -699,7 +701,7 @@ bool CVideoGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWin
     // VIDEOPLAYER_*
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case VIDEOPLAYER_AUDIOSTREAMCOUNT:
-      value = g_application.m_pPlayer->GetAudioStreamCount();
+      value = m_appPlayer->GetAudioStreamCount();
       return true;
 
     default:
@@ -764,13 +766,13 @@ bool CVideoGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contextW
               CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_FULLSCREEN_GAME;
       return true;
     case VIDEOPLAYER_HASMENU:
-      value = g_application.m_pPlayer->HasMenu();
+      value = m_appPlayer->HasMenu();
       return true;
     case VIDEOPLAYER_HASSUBTITLES:
-      value = g_application.m_pPlayer->GetSubtitleCount() > 0;
+      value = m_appPlayer->GetSubtitleCount() > 0;
       return true;
     case VIDEOPLAYER_SUBTITLESENABLED:
-      value = g_application.m_pPlayer->GetSubtitleVisible();
+      value = m_appPlayer->GetSubtitleVisible();
       return true;
 
     ///////////////////////////////////////////////////////////////////////////////////////////////

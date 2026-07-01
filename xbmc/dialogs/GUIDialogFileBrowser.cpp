@@ -35,6 +35,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSourceSettings.h"
 #include "settings/SettingsComponent.h"
+#include "storage/DetectDVDType.h"
 #include "storage/MediaManager.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
@@ -573,7 +574,7 @@ bool CGUIDialogFileBrowser::HaveDiscOrConnection( int iDriveType )
   else if ( iDriveType == CMediaSource::SOURCE_TYPE_REMOTE )
   {
     //! @todo Handle not connected to a remote share
-    if ( !g_application.getNetwork().IsEthernetConnected() )
+    if ( !CServiceBroker::GetNetwork().IsEthernetConnected() )
     {
       HELPERS::ShowOKDialogText(220, 221);
       return false;

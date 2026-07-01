@@ -45,6 +45,14 @@ typedef enum
   FILE_SKIP
 } errCode;
 
+struct VOICE_MASK
+{
+  float energy;
+  float pitch;
+  float robotic;
+  float whisper;
+};
+
 class CCdgLoader : public CThread
 {
 public:

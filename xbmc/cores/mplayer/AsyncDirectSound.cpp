@@ -27,6 +27,8 @@
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "application/Application.h" // Karaoke patch (114097)
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationVolumeHandling.h"
 #include "AudioContext.h"
 #include "CdgParser.h"
 #include "MPlayer.h"
@@ -217,8 +219,11 @@ CASyncDirectSound::CASyncDirectSound(IAudioCallback* pCallback, int iChannels, u
   for (DWORD dwX = 1; dwX < m_dwNumPackets ; dwX++)
     m_pbSampleData[dwX] = m_pbSampleData[dwX - 1] + m_dwPacketSize;
 
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+
   // set volume (from settings)
-  m_nCurrentVolume = g_application.GetVolume(false);
+  m_nCurrentVolume = appVolume->GetVolumeRatio();
   m_pStream->SetVolume( m_nCurrentVolume );
 
   // Set the headroom of the stream to 0 (to allow the maximum volume)

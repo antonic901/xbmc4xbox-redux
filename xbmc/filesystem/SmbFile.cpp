@@ -94,7 +94,7 @@ void CSMB::Init()
   CSingleLock lock(*this);
   if (!m_context)
   {
-    set_xbox_interface(g_application.getNetwork().m_networkinfo.ip, g_application.getNetwork().m_networkinfo.subnet);
+    set_xbox_interface(CServiceBroker::GetNetwork().m_networkinfo.ip, CServiceBroker::GetNetwork().m_networkinfo.subnet);
 #ifdef _WIN32
     // set the log function
     set_log_callback(xb_smbc_log);
@@ -492,7 +492,7 @@ int64_t CSmbFile::Seek(int64_t iFilePosition, int iWhence)
   CSingleLock lock(smb); // Init not called since it has to be "inited" by now
 
   int64_t pos = smbc_lseek(m_fd, iFilePosition, iWhence);
-  
+
 //  CLog::Log(LOGDEBUG, "%s - iFilePosition=%"PRId64", pos=%"PRId64, __FUNCTION__, iFilePosition, pos);
 
   if ( pos < 0 )

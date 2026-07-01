@@ -14,7 +14,9 @@
 #include "URL.h"
 #include "Util.h"
 #include "application/Application.h"
-#include "ApplicationPlayer.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
+#include "application/ApplicationVolumeHandling.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIDialog.h"
 #include "guilib/GUIWindowManager.h"
@@ -35,7 +37,9 @@
 using namespace KODI::GUILIB::GUIINFO;
 
 CPlayerGUIInfo::CPlayerGUIInfo()
-  : m_playerShowTime(false),
+  : m_appPlayer(CServiceBroker::GetAppComponents().GetComponent<CApplicationPlayer>()),
+    m_appVolume(CServiceBroker::GetAppComponents().GetComponent<CApplicationVolumeHandling>()),
+    m_playerShowTime(false),
     m_playerShowInfo(false),
     m_seekOffset(0),
     m_AfterSeekTimeout(0)
@@ -70,7 +74,7 @@ float CPlayerGUIInfo::GetSeekPercent() const
   float fPercentPlayTime = static_cast<float>(GetPlayTime()) / iTotal * 0.1f;
   float fPercentPerSecond = 100.0f / static_cast<float>(iTotal);
   float fPercent =
-      fPercentPlayTime + fPercentPerSecond * CSeekHandler::GetInstance().GetSeekSize();
+      fPercentPlayTime + fPercentPerSecond * m_appPlayer->GetSeekHandler().GetSeekSize();
   fPercent = std::max(0.0f, std::min(fPercent, 100.0f));
   return fPercent;
 }
@@ -113,15 +117,15 @@ std::string CPlayerGUIInfo::GetCurrentSeekTime(TIME_FORMAT format) const
     format = TIME_FORMAT_HH_MM_SS;
 
   return StringUtils::SecondsToTimeString(
-      g_application.GetTime() + CSeekHandler::GetInstance().GetSeekSize(), format);
+      g_application.GetTime() + m_appPlayer->GetSeekHandler().GetSeekSize(), format);
 }
 
 std::string CPlayerGUIInfo::GetSeekTime(TIME_FORMAT format) const
 {
-  if (!CSeekHandler::GetInstance().HasTimeCode())
+  if (!m_appPlayer->GetSeekHandler().HasTimeCode())
     return std::string();
 
-  int iSeekTimeCode = CSeekHandler::GetInstance().GetTimeCodeSeconds();
+  int iSeekTimeCode = m_appPlayer->GetSeekHandler().GetTimeCodeSeconds();
   if (format == TIME_FORMAT_GUESS && iSeekTimeCode >= 3600)
     format = TIME_FORMAT_HH_MM_SS;
 
@@ -165,7 +169,7 @@ bool CPlayerGUIInfo::ToggleShowInfo()
 
 bool CPlayerGUIInfo::InitCurrentItem(CFileItem *item)
 {
-  if (item && g_application.m_pPlayer->IsPlaying())
+  if (item && m_appPlayer->IsPlaying())
   {
     CLog::Log(LOGDEBUG, "CPlayerGUIInfo::InitCurrentItem(%s)", CURL::GetRedacted(item->GetPath()).c_str());
     m_currentItem = boost::movelib::make_unique<CFileItem>(*item);
@@ -201,7 +205,7 @@ bool CPlayerGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       return true;
     case PLAYER_VOLUME:
       value =
-          StringUtils::Format("%2.1f dB", (float)(g_application.GetVolume(false) + g_application.GetDynamicRangeCompressionLevel()) * 0.01f);
+          StringUtils::Format("%2.1f dB", (float)(m_appVolume->GetVolumeRatio()) * 0.01f);
       return true;
     case PLAYER_SUBTITLE_DELAY:
       value = StringUtils::Format("%2.3f s", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
@@ -210,13 +214,13 @@ bool CPlayerGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       value = StringUtils::Format("%2.3f s", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay);
       return true;
     case PLAYER_CHAPTER:
-      value = StringUtils::Format("%02d", g_application.m_pPlayer->GetChapter());
+      value = StringUtils::Format("%02d", m_appPlayer->GetChapter());
       return true;
     case PLAYER_CHAPTERCOUNT:
-      value = StringUtils::Format("%02d", g_application.m_pPlayer->GetChapterCount());
+      value = StringUtils::Format("%02d", m_appPlayer->GetChapterCount());
       return true;
     case PLAYER_CHAPTERNAME:
-      g_application.m_pPlayer->GetChapterName(value);
+      m_appPlayer->GetChapterName(value);
       return true;
     case PLAYER_PATH:
     case PLAYER_FILENAME:
@@ -231,7 +235,7 @@ bool CPlayerGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       return true;
     case PLAYER_PLAYSPEED:
     {
-      value = StringUtils::Format("%i", g_application.m_pPlayer->GetPlaySpeed());
+      value = StringUtils::Format("%i", m_appPlayer->GetPlaySpeed());
       return true;
     }
     case PLAYER_TIME:
@@ -260,7 +264,7 @@ bool CPlayerGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
     }
     case PLAYER_TIME_SPEED:
     {
-      float speed = g_application.m_pPlayer->GetPlaySpeed();
+      float speed = m_appPlayer->GetPlaySpeed();
       if (speed != 1.0f)
         value = StringUtils::Format("%s (%ix)",
                                     GetCurrentPlayTime(static_cast<TIME_FORMAT>(info.GetData1())).c_str(),
@@ -274,7 +278,7 @@ bool CPlayerGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       return true;
     case PLAYER_SEEKSTEPSIZE:
     {
-      int seekSize = CSeekHandler::GetInstance().GetSeekSize();
+      int seekSize = m_appPlayer->GetSeekHandler().GetSeekSize();
       std::string strSeekSize = StringUtils::SecondsToTimeString(abs(seekSize), static_cast<TIME_FORMAT>(info.GetData1()));
       if (seekSize < 0)
         value = "-" + strSeekSize;
@@ -287,7 +291,7 @@ bool CPlayerGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       return !value.empty();
     case PLAYER_CACHELEVEL:
     {
-      int iLevel = g_application.m_pPlayer->GetCacheLevel();
+      int iLevel = m_appPlayer->GetCacheLevel();
       if (iLevel >= 0)
       {
         value = std::to_string(iLevel);
@@ -328,7 +332,7 @@ bool CPlayerGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWi
     // PLAYER_*
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case PLAYER_VOLUME:
-      value = g_application.GetVolume();
+      value = m_appVolume->GetVolumePercent();
       return true;
     case PLAYER_PROGRESS:
       value = MathUtils::round_int(g_application.GetPercentage());
@@ -340,19 +344,19 @@ bool CPlayerGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWi
       value = MathUtils::round_int(GetSeekPercent());
       return true;
     case PLAYER_CACHELEVEL:
-      value = g_application.m_pPlayer->GetCacheLevel();
+      value = m_appPlayer->GetCacheLevel();
       return true;
     case PLAYER_CHAPTER:
-      value = g_application.m_pPlayer->GetChapter();
+      value = m_appPlayer->GetChapter();
       return true;
     case PLAYER_CHAPTERCOUNT:
-      value = g_application.m_pPlayer->GetChapterCount();
+      value = m_appPlayer->GetChapterCount();
       return true;
     case PLAYER_SUBTITLE_DELAY:
-      value = g_application.GetSubtitleDelay();
+      value = m_appPlayer->GetSubtitleDelay();
       return true;
     case PLAYER_AUDIO_DELAY:
-      value = g_application.GetAudioDelay();
+      value = m_appPlayer->GetAudioDelay();
       return true;
   }
 
@@ -377,79 +381,79 @@ bool CPlayerGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
       value = m_playerShowTime;
       return true;
     case PLAYER_MUTED:
-      value = (g_application.IsMuted() || g_application.GetVolume(false) <= VOLUME_MINIMUM);
+      value = (m_appVolume->IsMuted() || m_appVolume->GetVolumeRatio() <= CApplicationVolumeHandling::VOLUME_MINIMUM);
       return true;
     case PLAYER_HAS_MEDIA:
-      value = g_application.m_pPlayer->IsPlaying();
+      value = m_appPlayer->IsPlaying();
       return true;
     case PLAYER_HAS_AUDIO:
-      value = g_application.m_pPlayer->IsPlayingAudio();
+      value = m_appPlayer->IsPlayingAudio();
       return true;
     case PLAYER_HAS_VIDEO:
-      value = g_application.m_pPlayer->IsPlayingVideo();
+      value = m_appPlayer->IsPlayingVideo();
       return true;
     case PLAYER_IS_EXTERNAL:
-      value = g_application.m_pPlayer->IsExternalPlaying();
+      value = false;
       return true;
     case PLAYER_PLAYING:
-      value = g_application.m_pPlayer->GetPlaySpeed() == 1.0f;
+      value = m_appPlayer->GetPlaySpeed() == 1.0f;
       return true;
     case PLAYER_PAUSED:
-      value = g_application.m_pPlayer->IsPausedPlayback();
+      value = m_appPlayer->IsPausedPlayback();
       return true;
     case PLAYER_REWINDING:
-      value = g_application.m_pPlayer->GetPlaySpeed() < 0.0f;
+      value = m_appPlayer->GetPlaySpeed() < 0.0f;
       return true;
     case PLAYER_FORWARDING:
-      value = g_application.m_pPlayer->GetPlaySpeed() > 1.5f;
+      value = m_appPlayer->GetPlaySpeed() > 1.5f;
       return true;
     case PLAYER_REWINDING_2x:
-      value = g_application.m_pPlayer->GetPlaySpeed() == -2;
+      value = m_appPlayer->GetPlaySpeed() == -2;
       return true;
     case PLAYER_REWINDING_4x:
-      value = g_application.m_pPlayer->GetPlaySpeed() == -4;
+      value = m_appPlayer->GetPlaySpeed() == -4;
       return true;
     case PLAYER_REWINDING_8x:
-      value = g_application.m_pPlayer->GetPlaySpeed() == -8;
+      value = m_appPlayer->GetPlaySpeed() == -8;
       return true;
     case PLAYER_REWINDING_16x:
-      value = g_application.m_pPlayer->GetPlaySpeed() == -16;
+      value = m_appPlayer->GetPlaySpeed() == -16;
       return true;
     case PLAYER_REWINDING_32x:
-      value = g_application.m_pPlayer->GetPlaySpeed() == -32;
+      value = m_appPlayer->GetPlaySpeed() == -32;
       return true;
     case PLAYER_FORWARDING_2x:
-      value = g_application.m_pPlayer->GetPlaySpeed() == 2;
+      value = m_appPlayer->GetPlaySpeed() == 2;
       return true;
     case PLAYER_FORWARDING_4x:
-      value = g_application.m_pPlayer->GetPlaySpeed() == 4;
+      value = m_appPlayer->GetPlaySpeed() == 4;
       return true;
     case PLAYER_FORWARDING_8x:
-      value = g_application.m_pPlayer->GetPlaySpeed() == 8;
+      value = m_appPlayer->GetPlaySpeed() == 8;
       return true;
     case PLAYER_FORWARDING_16x:
-      value = g_application.m_pPlayer->GetPlaySpeed() == 16;
+      value = m_appPlayer->GetPlaySpeed() == 16;
       return true;
     case PLAYER_FORWARDING_32x:
-      value = g_application.m_pPlayer->GetPlaySpeed() == 32;
+      value = m_appPlayer->GetPlaySpeed() == 32;
       return true;
     case PLAYER_CAN_PAUSE:
-      value = g_application.m_pPlayer->CanPause();
+      value = m_appPlayer->CanPause();
       return true;
     case PLAYER_CAN_SEEK:
-      value = g_application.m_pPlayer->CanSeek();
+      value = m_appPlayer->CanSeek();
       return true;
     case PLAYER_SUPPORTS_TEMPO:
-      value = g_application.m_pPlayer->SupportsTempo();
+      value = false;
       return true;
     case PLAYER_IS_TEMPO:
     {
-      float speed = (float)g_application.m_pPlayer->GetPlaySpeed();
+      float speed = (float)m_appPlayer->GetPlaySpeed();
       value = (speed >= 0.75 && speed <= 1.55 && speed != 1);
       return true;
     }
     case PLAYER_CACHING:
-      value = g_application.m_pPlayer->IsCaching();
+      value = m_appPlayer->IsCaching();
       return true;
     case PLAYER_SEEKBAR:
     {
@@ -458,10 +462,10 @@ bool CPlayerGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
       return true;
     }
     case PLAYER_SEEKING:
-      value = CSeekHandler::GetInstance().InProgress();
+      value = m_appPlayer->GetSeekHandler().InProgress();
       return true;
     case PLAYER_PASSTHROUGH:
-      value = g_application.m_pPlayer->IsPassthrough();
+      value = false;
       return true;
     case PLAYER_ISINTERNETSTREAM:
       if (item)

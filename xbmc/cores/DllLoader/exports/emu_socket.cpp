@@ -156,8 +156,8 @@ extern "C"
 
     if (!strcmp(hbn_hostname, name))
     {
-      if(g_application.getNetwork().IsAvailable())
-        hbn_dwList2[0] = inet_addr(g_application.getNetwork().m_networkinfo.ip);
+      if(CServiceBroker::GetNetwork().IsAvailable())
+        hbn_dwList2[0] = inet_addr(CServiceBroker::GetNetwork().m_networkinfo.ip);
 
       return &hbn_hostent;
     }
@@ -214,7 +214,7 @@ extern "C"
 
     return iResult;
   }
-  
+
   int __stdcall dllsend(int s, const char *buf, int len, int flags)
   {
     SOCKET socket = GetSocketForIndex(s);
@@ -238,7 +238,7 @@ extern "C"
     SOCKET socket = GetSocketForIndex(s);
     struct sockaddr_in address2;
 
-    if( name->sa_family == AF_INET 
+    if( name->sa_family == AF_INET
     &&  namelen >= sizeof(sockaddr_in) )
     {
       struct sockaddr_in* address = (struct sockaddr_in*)name;
@@ -251,8 +251,8 @@ extern "C"
             address->sin_addr.S_un.S_un_b.s_b3,
             address->sin_addr.S_un.S_un_b.s_b4);
 
-      
-      if( address->sin_addr.S_un.S_addr == inet_addr(g_application.getNetwork().m_networkinfo.ip)
+
+      if( address->sin_addr.S_un.S_addr == inet_addr(CServiceBroker::GetNetwork().m_networkinfo.ip)
       ||  address->sin_addr.S_un.S_addr == inet_addr("127.0.0.1") )
       {
         // local xbox, correct for xbox stack
@@ -261,7 +261,7 @@ extern "C"
         name = (sockaddr*)&address2;
         namelen = sizeof(address2);
       }
-    }    
+    }
 
     int iResult = bind(socket, name, namelen);
     if(iResult == SOCKET_ERROR)
@@ -329,7 +329,7 @@ extern "C"
     {
 //      CLog::Log(LOGDEBUG, __FUNCTION__" - called with MSG_PEEK set, attempting workaround");
       // work around for peek, it will give garbage as data
-      
+
       if(socket.data == NULL)
       {
         socket.data = new char[len];
@@ -359,7 +359,7 @@ extern "C"
       socket.start += len2;
       buf++;
       len--;
-    }      
+    }
 
     if(socket.start >= socket.end)
     {
@@ -387,11 +387,11 @@ extern "C"
     fd_set* preadset = &readset;
     fd_set* pwriteset = &writeset;
     fd_set* pexceptset = &exceptset;
-    
+
     if (!readfds) preadset = NULL;
     if (!writefds) pwriteset = NULL;
     if (!exceptfds) pexceptset = NULL;
-    
+
     FD_ZERO(&readset);
     FD_ZERO(&writeset);
     FD_ZERO(&exceptset);
@@ -411,7 +411,7 @@ extern "C"
       for (i = 0; i < exceptfds->fd_count; ++i)
        FD_SET(GetSocketForIndex(exceptfds->fd_array[i]), &exceptset);
     }
-    
+
     int ifd = select(nfds, preadset, pwriteset, pexceptset, timeout);
 
     // convert real socket identifiers back to our custom ones and clean results
@@ -442,7 +442,7 @@ extern "C"
       errno = WSAGetLastError();
     return res;
   }
-  
+
   int __stdcall dllsetsockopt(int s, int level, int optname, const char FAR * optval, int optlen)
   {
     SOCKET socket = GetSocketForIndex(s);
@@ -471,7 +471,7 @@ extern "C"
       return res;
     }
 
-    if( name->sa_family == AF_INET 
+    if( name->sa_family == AF_INET
     && *namelen >= sizeof(sockaddr_in) )
     {
       sockaddr_in *addr = (sockaddr_in*)name;
@@ -480,8 +480,8 @@ extern "C"
         // unspecifed address will always be on local xbox ip
         // some dll's assume this will return a proper address
         // even if windows standard doesn't gurantee it
-        if( g_application.getNetwork().IsAvailable() )
-          addr->sin_addr.S_un.S_addr = inet_addr(g_application.getNetwork().m_networkinfo.ip);
+        if( CServiceBroker::GetNetwork().IsAvailable() )
+          addr->sin_addr.S_un.S_addr = inet_addr(CServiceBroker::GetNetwork().m_networkinfo.ip);
       }
     }
     return res;
@@ -506,7 +506,7 @@ extern "C"
     SOCKET socket = GetSocketForIndex(s);
     int res = recvfrom(socket, buf, len, flags, from, fromlen);
     if(res == SOCKET_ERROR)
-      errno = WSAGetLastError();    
+      errno = WSAGetLastError();
     return res;
   }
 
@@ -514,13 +514,13 @@ extern "C"
   {
     fd_set real_set; // the set with real socket id's
     int real_socket = GetSocketForIndex(s);
-    
+
     FD_ZERO(&real_set);
     if (set)
     {
       for (unsigned int i = 0; i < set->fd_count; ++i)
         FD_SET(GetSocketForIndex(set->fd_array[i]), &real_set);
-    }      
+    }
 
     return __WSAFDIsSet(real_socket, &real_set);
   }
@@ -599,7 +599,7 @@ extern "C"
     OutputDebugString("TODO: getprotobyname\n");
     return NULL;
   }
-  
+
   int __stdcall dllgetpeername(int s, struct sockaddr FAR *name, int FAR *namelen)
   {
     int socket = GetSocketForIndex(s);
@@ -617,10 +617,10 @@ extern "C"
   {
     return getnameinfo(sa, salen, host, hostlen, serv, servlen, flags);
   }
-  
+
   void freeaddrinfo(struct addrinfo *ai);
-	void __stdcall dllfreeaddrinfo(struct addrinfo *ai)
-	{
-	  return freeaddrinfo(ai);
-	}	
+    void __stdcall dllfreeaddrinfo(struct addrinfo *ai)
+    {
+      return freeaddrinfo(ai);
+    }
 }

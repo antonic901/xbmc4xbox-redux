@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "system.h"
 #include "utils/log.h"
 #include "RenderManager.h"
@@ -28,6 +28,8 @@
 #include "RGBRenderer.h"
 #include "RGBRendererV2.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "messaging/ApplicationMessenger.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
@@ -78,9 +80,9 @@ CXBoxRenderManager::~CXBoxRenderManager()
 bool CXBoxRenderManager::Configure(unsigned int width, unsigned int height, unsigned int d_width, unsigned int d_height, float fps, unsigned flags)
 {
   CSingleExit leaveIt(CServiceBroker::GetWinSystem()->GetGfxContext());
-  CExclusiveLock lock(m_sharedSection);      
+  CExclusiveLock lock(m_sharedSection);
 
-  if(!m_pRenderer) 
+  if(!m_pRenderer)
   {
     CLog::Log(LOGERROR, "%s called without a valid Renderer object", __FUNCTION__);
     return false;
@@ -124,7 +126,7 @@ void CXBoxRenderManager::Update(bool bPauseDrawing)
 void CXBoxRenderManager::RenderUpdate(bool clear, DWORD flags, DWORD alpha)
 {
   CSingleExit leaveIt(CServiceBroker::GetWinSystem()->GetGfxContext());
-  CSharedLock lock(m_sharedSection); 
+  CSharedLock lock(m_sharedSection);
 
   if (m_pRenderer)
     m_pRenderer->RenderUpdate(clear, flags, alpha);
@@ -149,7 +151,7 @@ unsigned int CXBoxRenderManager::PreInit()
   m_bPauseDrawing = false;
   m_presentdelay = 5;
   if (!m_pRenderer)
-  { 
+  {
     // no renderer
     m_rendermethod = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.rendermethod");
     if (m_rendermethod == RENDER_OVERLAYS)
@@ -191,8 +193,8 @@ void CXBoxRenderManager::UnInit()
   if (m_pRenderer)
   {
     m_pRenderer->UnInit();
-    delete m_pRenderer; 
-    m_pRenderer = NULL; 
+    delete m_pRenderer;
+    m_pRenderer = NULL;
   }
 }
 
@@ -232,7 +234,9 @@ void CXBoxRenderManager::FlipPage(DWORD delay /* = 0LL*/, int source /*= -1*/, E
   m_presentfield = sync;
 
   CSingleLock lock2(CServiceBroker::GetWinSystem()->GetGfxContext());
-  if( CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() && !g_application.m_pPlayer->IsPaused() )
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  if( CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() && !appPlayer->IsPaused() )
   {
     lock2.Leave();
 
@@ -290,12 +294,12 @@ void CXBoxRenderManager::Present()
   {
     /* this is uggly to do on each frame, should only need be done once */
     int mResolution = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
-    if( m_rendermethod == RENDER_HQ_RGB_SHADER 
+    if( m_rendermethod == RENDER_HQ_RGB_SHADER
      || m_rendermethod == RENDER_HQ_RGB_SHADERV2 )
       mInt = VS_INTERLACEMETHOD_RENDER_BOB;
-    else if( mResolution == RES_HDTV_480p_16x9 
-          || mResolution == RES_HDTV_480p_4x3 
-          || mResolution == RES_HDTV_720p 
+    else if( mResolution == RES_HDTV_480p_16x9
+          || mResolution == RES_HDTV_480p_4x3
+          || mResolution == RES_HDTV_720p
           || mResolution == RES_HDTV_1080i )
       mInt = VS_INTERLACEMETHOD_RENDER_BLEND;
     else
@@ -442,7 +446,7 @@ void CXBoxRenderManager::Process()
     //Wait for new frame or an stop event
     m_eventFrame.Wait();
     if( m_bStop )
-    { 
+    {
       return;
     }
 
@@ -452,7 +456,9 @@ void CXBoxRenderManager::Process()
       CSharedLock lock(m_sharedSection);
       CSingleLock lock2(CServiceBroker::GetWinSystem()->GetGfxContext());
 
-      if( m_pRenderer && CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() && !g_application.m_pPlayer->IsPaused() )
+      const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+      if( m_pRenderer && CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() && !appPlayer->IsPaused() )
         Present();
     }
     catch(...)

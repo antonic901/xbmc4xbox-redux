@@ -572,7 +572,7 @@ bool CPluginDirectory::WaitOnScriptResult(const std::string &scriptPath, int scr
   // CPluginDirectory::GetDirectory can be called from the main and other threads.
   // If called form the main thread, we need to bring up the BusyDialog in order to
   // keep the render loop alive
-  if (g_application.IsCurrentThread())
+  if (CServiceBroker::GetAppMessenger()->IsProcessThread())
   {
     if (!m_fetchComplete.WaitMSec(20))
     {

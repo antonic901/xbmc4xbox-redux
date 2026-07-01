@@ -8,9 +8,10 @@
 
 #include "GUIDialogSeekBar.h"
 
-#include "application/Application.h"
 #include "GUIInfoManager.h"
 #include "SeekHandler.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIMessage.h"
 #include "guilib/guiinfo/GUIInfoLabels.h"
@@ -48,7 +49,9 @@ bool CGUIDialogSeekBar::OnMessage(CGUIMessage& message)
 
 void CGUIDialogSeekBar::FrameMove()
 {
-  if (!g_application.m_pPlayer->HasPlayer())
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (!appPlayer->HasPlayer())
   {
     Close(true);
     return;
@@ -67,7 +70,9 @@ int CGUIDialogSeekBar::GetProgress() const
 
   int progress = 0;
 
-  if (CSeekHandler::GetInstance().GetSeekSize() != 0)
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (appPlayer->GetSeekHandler().GetSeekSize() != 0)
     infoMgr.GetInt(progress, PLAYER_SEEKBAR, INFO::DEFAULT_CONTEXT);
   else
     infoMgr.GetInt(progress, PLAYER_PROGRESS, INFO::DEFAULT_CONTEXT);

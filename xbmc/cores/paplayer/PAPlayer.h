@@ -75,7 +75,7 @@ public:
   virtual void ToFFRW(int iSpeed = 0);
   virtual int GetCacheLevel() const;
   virtual int64_t GetTotalTime() const;
-  __int64 GetTotalTime64();
+  __int64 GetTotalTime64() const;
   virtual int GetAudioBitrate();
   virtual int GetChannels();
   virtual int GetBitsPerSample();

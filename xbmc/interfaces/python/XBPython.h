@@ -57,7 +57,7 @@ public:
   XBPython();
   virtual ~XBPython();
   virtual void OnPlayBackEnded();
-  virtual void OnPlayBackStarted();
+  virtual void OnPlayBackStarted(const CFileItem& file);
   virtual void OnAVStarted(const CFileItem &file);
   virtual void OnAVChange();
   virtual void OnPlayBackPaused();
@@ -65,7 +65,7 @@ public:
   virtual void OnPlayBackStopped();
   virtual void OnPlayBackError();
   virtual void OnPlayBackSpeedChanged(int iSpeed);
-  virtual void OnPlayBackSeek(int iTime, int seekOffset);
+  virtual void OnPlayBackSeek(int64_t iTime, int64_t seekOffset);
   virtual void OnPlayBackSeekChapter(int iChapter);
   virtual void OnQueueNextItem();
 

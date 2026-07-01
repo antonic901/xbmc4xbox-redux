@@ -15,8 +15,12 @@
 #include <ctime>
 #include <boost/bind.hpp>
 #include <boost/move/unique_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <utility>
 #include <vector>
+
+class CApplicationPlayer;
+class CApplicationVolumeHandling;
 
 namespace KODI
 {
@@ -71,6 +75,8 @@ private:
   boost::movelib::unique_ptr<CFileItem> m_currentItem;
   bool m_playerShowTime;
   bool m_playerShowInfo;
+  const boost::shared_ptr<CApplicationPlayer> m_appPlayer;
+  const boost::shared_ptr<CApplicationVolumeHandling> m_appVolume;
   CEventSource<PlayerShowInfoChangedEvent> m_events;
 
   unsigned int m_AfterSeekTimeout;

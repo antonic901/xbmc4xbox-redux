@@ -162,16 +162,16 @@ public:
   virtual void SetSubTitleDelay(float fValue = 0.0f);
   virtual float GetSubTitleDelay();
 
-  virtual int GetSubtitleCount() const;
+  virtual int GetSubtitleCount();
   virtual int GetSubtitle();
   virtual int AddSubtitle(const CStdString& strFileName);
   virtual void GetSubtitleName(int iStream, CStdString &strStreamName);
   virtual void SetSubtitle(int iStream);
-  virtual bool GetSubtitleVisible() const;
+  virtual bool GetSubtitleVisible();
   virtual void SetSubtitleVisible(bool bVisible);
   virtual bool GetSubtitleExtension(std::string &strSubtitleExtension);
 
-  virtual int GetAudioStreamCount() const;
+  virtual int GetAudioStreamCount();
   virtual int GetAudioStream();
   virtual void GetAudioStreamName(int iStream, CStdString& strStreamName);
   virtual void SetAudioStream(int iStream);

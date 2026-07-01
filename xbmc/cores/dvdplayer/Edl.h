@@ -31,13 +31,13 @@ public:
   CEdl();
   virtual ~CEdl(void);
 
-  typedef enum 
+  typedef enum
   {
     CUT = 0,
     MUTE = 1,
     // SCENE = 2,
     COMM_BREAK = 3
-  } Action;  
+  } Action;
 
   struct Cut
   {
@@ -48,12 +48,12 @@ public:
 
   bool ReadEditDecisionLists(const CStdString& strMovie, const float fFramesPerSecond, const int iHeight);
   void Clear();
-  
-  bool HasCut();
+
+  bool HasCut() const;
   bool HasSceneMarker();
   CStdString GetInfo();
-  int64_t GetTotalCutTime();
-  int64_t RemoveCutTime(int64_t iSeek);
+  int64_t GetTotalCutTime() const;
+  int64_t RemoveCutTime(int64_t iSeek) const;
   int64_t RestoreCutTime(int64_t iClock);
 
   bool InCut(int64_t iSeek, Cut *pCut = NULL);

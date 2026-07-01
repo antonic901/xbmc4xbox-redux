@@ -21,6 +21,8 @@
 #include "addons/Service.h" //! @todo Remove me
 #include "addons/Skin.h"
 #include "application/Application.h" //! @todo Remove me
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPowerHandling.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "filesystem/Directory.h"
@@ -255,7 +257,7 @@ void CProfileManager::PrepareLoadProfile(unsigned int profileIndex)
 {
   CContextMenuManager &contextMenuManager = CServiceBroker::GetContextMenuManager();
   ADDON::CServiceAddonManager &serviceAddons = CServiceBroker::GetServiceAddons();
-  CNetwork &networkManager = g_application.getNetwork();
+  CNetwork &networkManager = CServiceBroker::GetNetwork();
 
   contextMenuManager.Deinit();
 
@@ -364,7 +366,7 @@ bool CProfileManager::LoadProfile(unsigned int index)
 void CProfileManager::FinalizeLoadProfile()
 {
   CContextMenuManager &contextMenuManager = CServiceBroker::GetContextMenuManager();
-  CNetwork &networkManager = g_application.getNetwork();
+  CNetwork &networkManager = CServiceBroker::GetNetwork();
   ADDON::CAddonMgr &addonManager = CServiceBroker::GetAddonMgr();
   CWeather &weatherManager = CServiceBroker::GetWeatherManager();
   PLAYLIST::CPlayListPlayer &playlistManager = CServiceBroker::GetPlaylistPlayer();
@@ -414,7 +416,7 @@ void CProfileManager::FinalizeLoadProfile()
 
 void CProfileManager::LogOff()
 {
-  CNetwork &networkManager = g_application.getNetwork();
+  CNetwork &networkManager = CServiceBroker::GetNetwork();
 
   g_application.StopPlaying();
 
@@ -434,7 +436,9 @@ void CProfileManager::LogOff()
 
   g_passwordManager.bMasterUser = false;
 
-  g_application.ResetScreenSaverWindow();
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+  appPower->WakeUpScreenSaverAndDPMS();
   CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_LOGIN_SCREEN, std::vector<std::string>(), false);
 
   if (!CNetworkServices::GetInstance().StartEventServer()) // event server could be needed in some situations

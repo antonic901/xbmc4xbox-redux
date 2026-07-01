@@ -36,6 +36,8 @@
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "Util.h"
 
 using namespace XFILE;
@@ -209,7 +211,7 @@ void CDetectDVDMedia::DetectMediaType()
   CLog::Log(LOGINFO, "Detecting DVD-ROM media filesystem...");
 
   CStdString strNewUrl;
-  CCdIoSupport cdio; 
+  CCdIoSupport cdio;
 
   // Delete old CD-Information
   if ( m_pCdInfo != NULL )
@@ -394,7 +396,9 @@ bool CDetectDVDMedia::IsDiscInDrive()
     if ((clock() - m_LastPoll) > 5000)
     {
       // only poll if we're not playing media from the drive
-      if (!(g_application.m_pPlayer->IsPlaying() && g_application.CurrentFileItem().IsOnDVD()))
+      const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+      if (!(appPlayer->IsPlaying() && g_application.CurrentFileItem().IsOnDVD()))
       {
         CLog::Log(LOGINFO, "Polling PC-DVDROM...");
 

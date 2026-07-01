@@ -17,6 +17,7 @@
 #include "ListItem.h"
 #include "PlayList.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
+#include "cores/IPlayerCallback.h"
 #include "swighelper.h"
 
 #include <vector>
@@ -59,9 +60,6 @@ namespace XBMCAddon
     {
     private:
       int iPlayList;
-#ifdef _XBOX
-      EPLAYERCORES playerCore;
-#endif
 
       void playStream(const String& item = emptyString, const XBMCAddon::xbmcgui::ListItem* listitem = NULL, bool windowed = false);
       void playPlaylist(const PlayList* playlist = NULL,
@@ -735,7 +733,7 @@ namespace XBMCAddon
 #endif
 
 #if !defined SWIG && !defined DOXYGEN_SHOULD_SKIP_THIS
-      SWIGHIDDENVIRTUAL void OnPlayBackStarted();
+      SWIGHIDDENVIRTUAL void OnPlayBackStarted(const CFileItem& file);
       SWIGHIDDENVIRTUAL void OnAVStarted(const CFileItem& file);
       SWIGHIDDENVIRTUAL void OnAVChange();
       SWIGHIDDENVIRTUAL void OnPlayBackEnded();

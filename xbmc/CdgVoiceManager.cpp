@@ -20,6 +20,7 @@
 
 #include "CdgVoiceManager.h"
 #include "AudioContext.h"
+#include "application/ApplicationVolumeHandling.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "application/Application.h"
@@ -41,7 +42,7 @@ CCdgChatter::CCdgChatter()
   m_pbCompletedPackets = NULL;
   m_dwTempStatus = NULL;
   ZeroMemory(&m_wfx, sizeof(WAVEFORMATEX) );
-  m_lVolume = VOLUME_MINIMUM;
+  m_lVolume = CApplicationVolumeHandling::VOLUME_MINIMUM;
   m_pVoiceManager = NULL;      // Pointer to CVoiceManager
   m_pOutputStream = NULL;      // DSound mixing stream
 
@@ -216,7 +217,7 @@ void CCdgChatter::LoadSettings()
   int iPercent = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(strSetting);
   if (iPercent < 0) iPercent = 0;
   if (iPercent > 100) iPercent = 100;
-  float fHardwareVolume = ((float)iPercent) / 100.0f * (VOLUME_MAXIMUM - VOLUME_MINIMUM) + VOLUME_MINIMUM;
+  float fHardwareVolume = ((float)iPercent) / 100.0f * (CApplicationVolumeHandling::VOLUME_MAXIMUM - CApplicationVolumeHandling::VOLUME_MINIMUM) + CApplicationVolumeHandling::VOLUME_MINIMUM;
   m_lVolume = (long)fHardwareVolume;
   //Load the voice mask
   strSetting.Format("karaoke.port%ivoicemask", m_dwPort);
@@ -656,7 +657,7 @@ void CCdgVoiceManager::SetVolume(DWORD dwPort, int iPercent)
   // convert the percentage to a mB (milliBell) value (*100 for dB)
   if (iPercent < 0) iPercent = 0;
   if (iPercent > 100) iPercent = 100;
-  float fHardwareVolume = ((float)iPercent) / 100.0f * (VOLUME_MAXIMUM - VOLUME_MINIMUM) + VOLUME_MINIMUM;
+  float fHardwareVolume = ((float)iPercent) / 100.0f * (CApplicationVolumeHandling::VOLUME_MAXIMUM - CApplicationVolumeHandling::VOLUME_MINIMUM) + CApplicationVolumeHandling::VOLUME_MINIMUM;
   m_Chatters[dwPort].SetVolume((long) fHardwareVolume);
 }
 HRESULT CCdgVoiceManager::ProcessVoice()

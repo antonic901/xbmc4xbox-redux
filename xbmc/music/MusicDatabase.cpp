@@ -49,6 +49,7 @@
 #include "settings/MediaSourceSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "storage/DetectDVDType.h"
 #include "storage/MediaManager.h"
 #include "utils/FileUtils.h"
 #include "utils/LegacyPathTranslation.h"
@@ -4719,7 +4720,7 @@ bool CMusicDatabase::LookupCDDBInfo(bool bRequery /*=false*/)
     return false;
 
   // check network connectivity
-  if (!g_application.getNetwork().IsAvailable())
+  if (!CServiceBroker::GetNetwork().IsAvailable())
     return false;
 
   // Get information for the inserted disc

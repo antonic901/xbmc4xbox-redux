@@ -365,9 +365,9 @@ int CApplicationPlayer::GetCacheLevel() const
     return 0;
 }
 
-int CApplicationPlayer::GetSubtitleCount() const
+int CApplicationPlayer::GetSubtitleCount()
 {
-  const boost::shared_ptr<const IPlayer> player = GetInternal();
+  const boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
     return player->GetSubtitleCount();
   else
@@ -406,9 +406,9 @@ int CApplicationPlayer::GetSubtitle()
     return 0;
 }
 
-bool CApplicationPlayer::GetSubtitleVisible() const
+bool CApplicationPlayer::GetSubtitleVisible()
 {
-  const boost::shared_ptr<const IPlayer> player = GetInternal();
+  const boost::shared_ptr<IPlayer> player = GetInternal();
   return player && player->GetSubtitleVisible();
 }
 
@@ -510,9 +510,9 @@ bool CApplicationPlayer::OnAction(const CAction &action)
   return (player && player->OnAction(action));
 }
 
-int CApplicationPlayer::GetAudioStreamCount() const
+int CApplicationPlayer::GetAudioStreamCount()
 {
-  const boost::shared_ptr<const IPlayer> player = GetInternal();
+  const boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
     return player->GetAudioStreamCount();
   else

@@ -23,11 +23,13 @@
 #include "File.h"
 #include "IFile.h"
 #include "FileFactory.h"
-#include "application/Application.h"
 #include "DirectoryCache.h"
 #include "Directory.h"
 #include "FileCache.h"
 #include "PasswordManager.h"
+#include "ServiceBroker.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPowerHandling.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "utils/BitstreamStats.h"
@@ -148,9 +150,11 @@ bool CFile::Copy(const CURL& url2, const CURL& dest, XFILE::IFileCallback* pCall
     CStopWatch timer;
     timer.StartZero();
     float start = 0.0f;
+    CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
     while (true)
     {
-      g_application.ResetScreenSaver();
+      appPower->ResetScreenSaver();
 
       iRead = file.Read(buffer.get(), iBufferSize);
       if (iRead == 0) break;

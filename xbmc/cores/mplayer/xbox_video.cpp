@@ -20,7 +20,8 @@
 #include "system.h"
 #include "utils/log.h"
 #include "cores/VideoRenderers/RenderManager.h"
-#include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 
 #include "video.h"
 #include "mplayer.h"
@@ -68,7 +69,7 @@ static void video_draw_osd(void)
   //RECT rs, rd;
   //g_renderManager.GetVideoRect(rs, rd);
   //vo_draw_text(rd.right-rd.left, rd.bottom-rd.top, draw_alpha);
-  // for now use fixed vobsub size, so scaling workes ok for 
+  // for now use fixed vobsub size, so scaling workes ok for
   // mplayer text subs size we force the scaling based on fixes size
   vo_draw_text(720, 480, draw_alpha);
 }
@@ -156,9 +157,12 @@ static unsigned int video_config(unsigned int width, unsigned int height, unsign
 
   m_iLastFieldFlags = 0;
 
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+
   float fps = 25.00f;
-  if (g_application.m_pPlayer->HasPlayer())
-    fps = g_application.m_pPlayer->GetActualFPS();
+  if (appPlayer->HasPlayer())
+    fps = appPlayer->GetActualFPS();
 
   unsigned flags = 0;
   if(options & VOFLAG_FULLSCREEN)
@@ -228,8 +232,8 @@ static unsigned int video_control(unsigned int request, void *data, ...)
       {
         if( mpi->flags & MP_IMGFLAG_SWAPPED )
         {
-			    mpi->planes[2] = image.plane[0];
-	        mpi->planes[1] = image.plane[1];
+                mpi->planes[2] = image.plane[0];
+            mpi->planes[1] = image.plane[1];
           mpi->planes[0] = image.plane[2];
 
           mpi->stride[2] = image.stride[0];
@@ -238,8 +242,8 @@ static unsigned int video_control(unsigned int request, void *data, ...)
         }
         else
         {
-			    mpi->planes[0] = image.plane[0];
-	        mpi->planes[1] = image.plane[1];
+                mpi->planes[0] = image.plane[0];
+            mpi->planes[1] = image.plane[1];
           mpi->planes[2] = image.plane[2];
 
           mpi->stride[0] = image.stride[0];

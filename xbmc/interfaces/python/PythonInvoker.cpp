@@ -6,38 +6,37 @@
  *  See LICENSES/README.md for more information.
  */
 
+// clang-format off
 // python.h should always be included first before any other includes
 #include <Python.h>
-#include <iterator>
-#include <osdefs.h>
+// clang-format on
 
-#include "system.h"
 #include "PythonInvoker.h"
-#include "application/Application.h"
+
 #include "ServiceBroker.h"
-#include "messaging/ApplicationMessenger.h"
 #include "addons/AddonManager.h"
+#include "addons/addoninfo/AddonInfo.h"
+#include "addons/addoninfo/AddonType.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
-#include "windowing/GraphicContext.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "interfaces/python/PyContext.h"
 #include "interfaces/python/pythreadstate.h"
 #include "interfaces/python/swig.h"
-#include "interfaces/python/XBPython.h"
+#include "messaging/ApplicationMessenger.h"
 #include "threads/SingleLock.h"
-#if defined(TARGET_WINDOWS)
+#include "threads/SystemClock.h"
 #include "utils/CharsetConverter.h"
-#endif // defined(TARGET_WINDOWS)
-#include "utils/log.h"
+#include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
-#ifdef TARGET_POSIX
-#include "platform/posix/XTimeUtils.h"
-#endif
+#include "utils/log.h"
+#include "windowing/GraphicContext.h"
+
+#include <osdefs.h>
 
 #ifdef TARGET_WINDOWS
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
@@ -479,7 +478,7 @@ bool CPythonInvoker::stop(bool abort)
       // We can't empty-spin in the main thread and expect scripts to be able to
       // dismantle themselves. Python dialogs aren't normal XBMC dialogs, they rely
       // on TMSG_GUI_PYTHON_DIALOG messages, so pump the message loop.
-      if (g_application.IsCurrentThread())
+      if (CServiceBroker::GetAppMessenger()->IsProcessThread())
       {
         CServiceBroker::GetAppMessenger()->ProcessMessages();
       }

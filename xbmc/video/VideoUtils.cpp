@@ -8,7 +8,6 @@
 
 #include "VideoUtils.h"
 
-#include "application/Application.h"
 #include "FileItem.h"
 #include "GUIPassword.h"
 #include "PartyModeManager.h"
@@ -16,6 +15,8 @@
 #include "ServiceBroker.h"
 #include "URL.h"
 #include "Util.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "filesystem/Directory.h"
 #include "filesystem/VideoDatabaseDirectory.h"
@@ -473,11 +474,12 @@ void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
   }
 
   PLAYLIST::CPlayListPlayer &player = CServiceBroker::GetPlaylistPlayer();
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
 
   // Determine the proper list to queue this element
   PLAYLIST::Id playlistId = player.GetCurrentPlaylist();
   if (playlistId == PLAYLIST::TYPE_NONE)
-    playlistId = g_application.m_pPlayer->GetPreferredPlaylist();
+    playlistId = components.GetComponent<CApplicationPlayer>()->GetPreferredPlaylist();
 
   if (playlistId == PLAYLIST::TYPE_NONE)
     playlistId = PLAYLIST::TYPE_VIDEO;
@@ -493,7 +495,7 @@ void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
   }
 
   if (pos == POSITION_BEGIN &&
-      g_application.m_pPlayer->IsPlaying())
+      components.GetComponent<CApplicationPlayer>()->IsPlaying())
     player.Insert(playlistId, queuedItems, player.GetCurrentItemIdx() + 1);
   else
     player.Add(playlistId, queuedItems);

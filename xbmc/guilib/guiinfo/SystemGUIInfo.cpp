@@ -9,6 +9,8 @@
 #include "guilib/guiinfo/SystemGUIInfo.h"
 
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPowerHandling.h"
 #include "FileItem.h"
 #include "GUIPassword.h"
 #include "LangInfo.h"
@@ -27,6 +29,7 @@
 #include "settings/SettingUtils.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "storage/DetectDVDType.h"
 #include "storage/MediaManager.h"
 #include "utils/AlarmClock.h"
 #include "utils/FanController.h"
@@ -477,16 +480,18 @@ bool CSystemGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
     case SYSTEM_IDLE_SHUTDOWN_INHIBITED:
     case SYSTEM_IDLE_TIME:
     {
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
       switch (info.m_info)
       {
         case SYSTEM_SCREENSAVER_ACTIVE:
-          value = g_application.IsInScreenSaver();
+          value = appPower->IsInScreenSaver();
           return true;
         case SYSTEM_DPMS_ACTIVE:
           value = false;
           return true;
         case SYSTEM_IDLE_TIME:
-          value = g_application.GlobalIdleTime() >= (int)info.GetData1();
+          value = appPower->GlobalIdleTime() >= static_cast<int>(info.GetData1());
           return true;
         default:
           return false;

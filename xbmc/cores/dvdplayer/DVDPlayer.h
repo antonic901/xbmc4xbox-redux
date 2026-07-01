@@ -195,17 +195,17 @@ public:
 
   virtual void SetSubTitleDelay(float fValue = 0.0f);
   virtual float GetSubTitleDelay();
-  virtual int GetSubtitleCount() const;
+  virtual int GetSubtitleCount();
   virtual int GetSubtitle();
   virtual void GetSubtitleName(int iStream, CStdString &strStreamName);
   virtual void GetSubtitleLanguage(int iStream, CStdString &strStreamLang);
   virtual void SetSubtitle(int iStream);
-  virtual bool GetSubtitleVisible() const;
+  virtual bool GetSubtitleVisible();
   virtual void SetSubtitleVisible(bool bVisible);
   virtual bool GetSubtitleExtension(std::string &strSubtitleExtension) { return false; }
   virtual int  AddSubtitle(const CStdString& strSubPath);
 
-  virtual int GetAudioStreamCount() const;
+  virtual int GetAudioStreamCount();
   virtual int GetAudioStream();
   virtual void GetAudioStreamName(int iStream, CStdString &strStreamName);
   virtual void SetAudioStream(int iStream);
@@ -255,7 +255,7 @@ protected:
   class StreamLock : public CSingleLock
   {
   public:
-    inline StreamLock(CDVDPlayer* cdvdplayer) : CSingleLock(cdvdplayer->m_critStreamSection) {}
+    inline StreamLock(const CDVDPlayer* cdvdplayer) : CSingleLock(cdvdplayer->m_critStreamSection) {}
   };
 
   virtual void OnStartup();
@@ -282,7 +282,7 @@ protected:
   int GetPlaySpeed()                                                { return m_playSpeed; }
   void SetCaching(ECacheState state);
 
-  int64_t GetTotalTimeInMsec();
+  int64_t GetTotalTimeInMsec() const;
 
   double GetQueueTime();
   bool GetCachingTimes(double& play_left, double& cache_left, double& file_offset);

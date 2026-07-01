@@ -2166,7 +2166,7 @@ bool CDVDPlayer::HasAudio() const
   return m_HasAudio;
 }
 
-bool CDVDPlayer::CanSeek()
+bool CDVDPlayer::CanSeek() const
 {
   CSingleLock lock(m_StateSection);
   return m_State.canseek;
@@ -2413,7 +2413,7 @@ float CDVDPlayer::GetSubTitleDelay()
 }
 
 // priority: 1: libdvdnav, 2: external subtitles, 3: muxed subtitles
-int CDVDPlayer::GetSubtitleCount() const
+int CDVDPlayer::GetSubtitleCount()
 {
   StreamLock lock(this);
   m_SelectionStreams.Update(m_pInputStream, m_pDemuxer);
@@ -2450,7 +2450,7 @@ void CDVDPlayer::SetSubtitle(int iStream)
   m_messenger.Put(new CDVDMsgPlayerSetSubtitleStream(iStream));
 }
 
-bool CDVDPlayer::GetSubtitleVisible() const
+bool CDVDPlayer::GetSubtitleVisible()
 {
   if (m_pInputStream && m_pInputStream->IsStreamType(DVDSTREAM_TYPE_DVD))
   {
@@ -2470,7 +2470,7 @@ void CDVDPlayer::SetSubtitleVisible(bool bVisible)
   m_messenger.Put(new CDVDMsgBool(CDVDMsg::PLAYER_SET_SUBTITLESTREAM_VISIBLE, bVisible));
 }
 
-int CDVDPlayer::GetAudioStreamCount() const
+int CDVDPlayer::GetAudioStreamCount()
 {
   StreamLock lock(this);
   m_SelectionStreams.Update(m_pInputStream, m_pDemuxer);
@@ -2535,14 +2535,14 @@ int64_t CDVDPlayer::GetTime() const
 }
 
 // return length in msec
-int64_t CDVDPlayer::GetTotalTimeInMsec()
+int64_t CDVDPlayer::GetTotalTimeInMsec() const
 {
   CSingleLock lock(m_StateSection);
   return llrint(m_State.time_total);
 }
 
 // return length in seconds.. this should be changed to return in milleseconds throughout xbmc
-int64_t CDVDPlayer::GetTotalTime()
+int64_t CDVDPlayer::GetTotalTime() const
 {
   return GetTotalTimeInMsec();
 }
@@ -3335,7 +3335,7 @@ void CDVDPlayer::GetChapterName(std::string& strChapterName) const
   strChapterName = m_State.chapter_name;
 }
 
-int CDVDPlayer::SeekChapter(int iChapter) const
+int CDVDPlayer::SeekChapter(int iChapter)
 {
   if (GetChapterCount() > 0)
   {

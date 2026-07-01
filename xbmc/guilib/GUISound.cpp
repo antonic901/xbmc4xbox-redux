@@ -21,6 +21,8 @@
 #include "GUISound.h"
 
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationVolumeHandling.h"
 #include "AudioContext.h"
 #include "ServiceBroker.h"
 #include "filesystem/File.h"
@@ -155,7 +157,9 @@ bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
   }
 
   //  Make effects as loud as possible
-  m_soundBuffer->SetVolume(g_application.GetVolume(false));
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+  m_soundBuffer->SetVolume(appVolume->GetVolumeRatio());
 #ifdef HAS_XBOX_AUDIO
   m_soundBuffer->SetHeadroom(0);
 

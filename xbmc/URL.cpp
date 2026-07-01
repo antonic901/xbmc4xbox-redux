@@ -639,7 +639,7 @@ bool CURL::IsLocal() const
 
 bool CURL::IsLocalHost() const
 {
-  return g_application.getNetwork().IsLocalHost(m_strHostName);
+  return CServiceBroker::GetNetwork().IsLocalHost(m_strHostName);
 }
 
 bool CURL::IsFileOnly(const std::string &url)

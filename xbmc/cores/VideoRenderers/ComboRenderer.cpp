@@ -17,10 +17,12 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "utils/log.h"
 #include "ComboRenderer.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPowerHandling.h"
 #include "settings/DisplaySettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
@@ -202,12 +204,14 @@ void CComboRenderer::FlipPage(int source)
 }
 
 void CComboRenderer::YV12toYUY2()
-{ 
+{
   int index = m_iYV12RenderBuffer;
   if (!m_RGBSurface[m_iYUY2RenderBuffer]) return;
 
   /* if we have dimmed our texture, don't overwrite it */
-  if( g_application.IsInScreenSaver() && m_bHasDimView ) return;
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+  if( appPower->IsInScreenSaver() && m_bHasDimView ) return;
 
   if( WaitForSingleObject(m_eventTexturesDone[index], 500) == WAIT_TIMEOUT )
     CLog::Log(LOGWARNING, __FUNCTION__" - Timeout waiting for texture %d", index);
@@ -383,7 +387,9 @@ void CComboRenderer::UnInit()
 
 void CComboRenderer::CheckScreenSaver()
 {
-  if (g_application.IsInScreenSaver() && !m_bHasDimView)
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+  if (appPower->IsInScreenSaver() && !m_bHasDimView)
   {
     D3DLOCKED_RECT lr;
     float fAmount = (float)CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("screensaver.dimlevel") / 100.0f;

@@ -55,7 +55,7 @@ bool MakeRequest(const std::string& strURL, std::string& strResponse)
 bool CInsigniaJob::DoWork()
 {
   // wait for the network
-  if (!g_application.getNetwork().IsAvailable())
+  if (!CServiceBroker::GetNetwork().IsAvailable())
     return false;
 
   std::string strResponse;

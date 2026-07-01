@@ -82,7 +82,7 @@ IFile* CFileFactory::CreateLoader(const CURL& url)
 #endif
   if (url.IsProtocol("resource")) return new CResourceFile();
 
-  if( g_application.getNetwork().IsAvailable() )
+  if( CServiceBroker::GetNetwork().IsAvailable() )
   {
     if (url.IsProtocol("ftp")
     ||  url.IsProtocol("ftpx")

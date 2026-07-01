@@ -21,6 +21,8 @@
 #include "xbox/Network.h"
 #include "system.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "AutoPtrHandle.h"
 #include "video/windows/GUIWindowVideoBase.h"
 #include "Util.h"
@@ -1279,7 +1281,7 @@ void CUtil::CacheSubtitles(const CStdString& strMovie, CStdString& strExtensionC
 
   if (!CMediaSettings::GetInstance().GetAdditionalSubtitleDirectoryChecked() && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.custompath").empty()) // to avoid checking non-existent directories (network) every time..
   {
-    if (!g_application.getNetwork().IsAvailable() && !URIUtils::IsHD(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.custompath")))
+    if (!CServiceBroker::GetNetwork().IsAvailable() && !URIUtils::IsHD(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.custompath")))
     {
       CLog::Log(LOGINFO,"CUtil::CacheSubtitles: disabling alternate subtitle directory for this session, it's nonaccessible");
       CMediaSettings::GetInstance().SetAdditionalSubtitleDirectoryChecked(-1); // disabled
@@ -1721,7 +1723,9 @@ void CUtil::TakeScreenshot(const CStdString& strFileName, bool flashScreen)
     LPDIRECT3DSURFACE8 lpSurface = NULL;
     CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
     CStdString strFileNameTranslated = CSpecialProtocol::TranslatePath(strFileName);
-    if (g_application.m_pPlayer->IsPlayingVideo())
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    if (appPlayer->IsPlayingVideo())
     {
 #ifdef HAS_VIDEO_PLAYBACK
       g_renderManager.SetupScreenshot();

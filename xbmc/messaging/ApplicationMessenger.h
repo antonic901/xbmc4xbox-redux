@@ -190,6 +190,23 @@ public:
 
   void RegisterReceiver(IMessageTarget* target);
 
+  /*!
+   * \brief Set the UI thread id to avoid messenger being dependent on
+   * CApplication to determine if marshaling is required
+   * \param thread The UI thread ID
+   */
+  void SetGUIThread(const DWORD thread) { m_guiThreadId = thread; }
+
+  /*!
+   * \brief Set the processing thread id to avoid messenger being dependent on
+   * CApplication to determine if marshaling is required
+   * \param thread The processing thread ID
+   */
+  void SetProcessThread(const DWORD thread) { m_processThreadId = thread; }
+
+  //! \brief Returns true if this is the process / app loop thread.
+  bool IsProcessThread() const;
+
 #ifdef _XBOX
   std::string GetResponse();
   int SetResponse(std::string response);
@@ -208,6 +225,8 @@ private:
   std::queue<ThreadMessage*> m_vecWindowMessages;
   std::map<int, IMessageTarget*> m_mapTargets;
   CCriticalSection m_critSection;
+  DWORD m_guiThreadId;
+  DWORD m_processThreadId;
 
 #ifdef _XBOX
   CCriticalSection m_critBuffer;

@@ -21,11 +21,11 @@ All rights reserved.
 
 Copyright / Usage Details:
 
-You are allowed to include the source code in any product (commercial, shareware, freeware or otherwise) 
-when your product is released in binary form. You are allowed to modify the source code in any way you want 
-except you cannot modify the copyright details at the top of each module. If you want to distribute source 
-code with your application, then you are only allowed to distribute versions released by the author. This is 
-to maintain a single distribution point for the source code. 
+You are allowed to include the source code in any product (commercial, shareware, freeware or otherwise)
+when your product is released in binary form. You are allowed to modify the source code in any way you want
+except you cannot modify the copyright details at the top of each module. If you want to distribute source
+code with your application, then you are only allowed to distribute versions released by the author. This is
+to maintain a single distribution point for the source code.
 
 */
 
@@ -710,12 +710,12 @@ void CSNTPClient::Update()
   // update once every 5 minutes
   m_dwTimeout = XbmcThreads::SystemClockMillis() + 5*60*1000;
 
-  if(!g_application.getNetwork().IsAvailable())
+  if(!CServiceBroker::GetNetwork().IsAvailable())
   {
     CLog::Log(LOGDEBUG, __FUNCTION__" - No network available");
     return;
   }
-  
+
   if(!CThread::WaitForThreadExit(0))
   {
     CLog::Log(LOGWARNING, __FUNCTION__" - Thread already running");

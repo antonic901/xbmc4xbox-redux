@@ -8,14 +8,14 @@
 
 #include "GUIVideoControl.h"
 
-#include "application/Application.h"
 #include "GUIComponent.h"
 #include "GUIWindowManager.h"
 #include "ServiceBroker.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
+#include "application/ApplicationPowerHandling.h"
 #ifdef HAS_VIDEO_PLAYBACK
 #include "cores/VideoRenderers/RenderManager.h"
-#else
-#include "cores/DummyVideoPlayer.h"
 #endif
 #include "input/actions/ActionIDs.h"
 #include "utils/ColorUtils.h"
@@ -40,18 +40,24 @@ void CGUIVideoControl::Process(unsigned int currentTime, CDirtyRegionList &dirty
 
 void CGUIVideoControl::Render()
 {
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
 #ifdef HAS_VIDEO_PLAYBACK
   // don't render if we aren't playing video, or if the renderer isn't started
   // (otherwise the lock we have from CApplication::Render() may clash with the startup
   // locks in the RenderManager.)
-  if (g_application.m_pPlayer->IsPlayingVideo() && g_renderManager.IsStarted())
+  if (appPlayer->IsPlayingVideo() && g_renderManager.IsStarted())
   {
 #else
-  if (g_application.m_pPlayer->IsPlayingVideo())
+  if (appPlayer->IsPlayingVideo())
   {
 #endif
-    if (!g_application.m_pPlayer->IsPaused())
-      g_application.ResetScreenSaver();
+    if (!appPlayer->IsPaused())
+    {
+      CApplicationComponents &appComponents = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPowerHandling> appPower = appComponents.GetComponent<CApplicationPowerHandling>();
+      appPower->ResetScreenSaver();
+    }
 
     CServiceBroker::GetWinSystem()->GetGfxContext().SetViewWindow(m_posX, m_posY, m_posX + m_width, m_posY + m_height);
     CServiceBroker::GetWinSystem()->GetGfxContext().SetViewPort(m_posX, m_posY, m_width, m_height);
@@ -59,8 +65,6 @@ void CGUIVideoControl::Render()
 #ifdef HAS_VIDEO_PLAYBACK
     color_t alpha = CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(0xFF000000) >> 24;
     g_renderManager.RenderUpdate(false, 0, alpha);
-#else
-    ((CDummyVideoPlayer *)g_application.m_pPlayer)->Render();
 #endif
     CServiceBroker::GetWinSystem()->GetGfxContext().RestoreViewPort();
   }

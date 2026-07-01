@@ -115,14 +115,14 @@ void XBPython::Announce(ANNOUNCEMENT::AnnouncementFlag flag, const char *sender,
 }
 
 // message all registered callbacks that we started playing
-void XBPython::OnPlayBackStarted()
+void XBPython::OnPlayBackStarted(const CFileItem& file)
 {
   XBMC_TRACE;
   LOCK_AND_COPY(std::vector<void*>,tmp,m_vecPlayerCallbackList);
   for (PlayerCallbackList::iterator it = tmp.begin(); (it != tmp.end()); ++it)
   {
     if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList, (*it)))
-      ((IPlayerCallback*)(*it))->OnPlayBackStarted();
+      ((IPlayerCallback*)(*it))->OnPlayBackStarted(file);
   }
 }
 
@@ -229,7 +229,7 @@ void XBPython::OnPlayBackSpeedChanged(int iSpeed)
 }
 
 // message all registered callbacks that player is seeking
-void XBPython::OnPlayBackSeek(int iTime, int seekOffset)
+void XBPython::OnPlayBackSeek(int64_t iTime, int64_t seekOffset)
 {
   XBMC_TRACE;
   LOCK_AND_COPY(std::vector<void*>,tmp,m_vecPlayerCallbackList);

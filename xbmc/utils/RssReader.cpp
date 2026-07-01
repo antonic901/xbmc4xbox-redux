@@ -70,9 +70,9 @@ CRssReader::~CRssReader()
 void CRssReader::Create(IRssObserver* aObserver, const vector<string>& aUrls, const vector<int> &times, int spacesBetweenFeeds, bool rtl)
 {
   CSingleLock lock(m_critical);
-  
+
   m_pObserver = aObserver;
-  m_spacesBetweenFeeds = spacesBetweenFeeds; 
+  m_spacesBetweenFeeds = spacesBetweenFeeds;
   m_vecUrls = aUrls;
   m_strFeed.resize(aUrls.size());
   m_strColors.resize(aUrls.size());
@@ -97,7 +97,7 @@ void CRssReader::requestRefresh()
 }
 
 void CRssReader::AddToQueue(int iAdd)
-{  
+{
   CSingleLock lock(m_critical);
   if (iAdd < (int)m_vecUrls.size())
     m_vecQueue.push_back(iAdd);
@@ -117,7 +117,7 @@ void CRssReader::OnExit()
 int CRssReader::GetQueueSize()
 {
   CSingleLock lock(m_critical);
-  return m_vecQueue.size(); 
+  return m_vecQueue.size();
 }
 
 void CRssReader::Process()
@@ -125,7 +125,7 @@ void CRssReader::Process()
   while (GetQueueSize())
   {
     CSingleLock lock(m_critical);
-    
+
     int iFeed = m_vecQueue.front();
     m_vecQueue.erase(m_vecQueue.begin());
 
@@ -138,13 +138,13 @@ void CRssReader::Process()
     CStdString strXML;
     CStdString strUrl = m_vecUrls[iFeed];
     lock.Leave();
-    
+
     int nRetries = 3;
     CURL url(strUrl);
 
     // we wait for the network to come up
     if ((url.IsProtocol("http") || url.IsProtocol("https")) &&
-        !g_application.getNetwork().IsAvailable())
+        !CServiceBroker::GetNetwork().IsAvailable())
       strXML = "<rss><item><title>"+g_localizeStrings.Get(15301)+"</title></item></rss>";
     else
     {
@@ -156,7 +156,7 @@ void CRssReader::Process()
           CLog::Log(LOGERROR, "Timeout whilst retrieving %s", strUrl.c_str());
           http.Cancel();
           break;
-        } 
+        }
         nRetries--;
 
         if (!url.IsProtocol("http") && !url.IsProtocol("https"))
@@ -280,7 +280,7 @@ void CRssReader::GetNewsItems(TiXmlElement* channelXmlNode, int iFeed)
           // This usually happens in right-to-left languages where they want to
           // specify in the RSS body that the text should be RTL.
           // <title>
-          //		<div dir="RTL">òìå áøùú: ùîøå òì òöîëí</div> 
+          //        <div dir="RTL">òìå áøùú: ùîøå òì òöîëí</div>
           // </title>
           if (htmlText.Equals("div") || htmlText.Equals("span"))
             htmlText = childNode->FirstChild()->FirstChild()->Value();

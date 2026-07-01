@@ -13,6 +13,8 @@
 #include "TextureCache.h"
 #include "Util.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "guilib/GUIComponent.h"
@@ -72,7 +74,9 @@ bool CGUIDialogVideoBookmarks::OnMessage(CGUIMessage& message)
   case GUI_MSG_WINDOW_INIT:
     {
       // don't init this dialog if we don't playback a file
-      if (!g_application.m_pPlayer->IsPlaying())
+      const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+      if (!appPlayer->IsPlaying())
         return false;
 
       CGUIWindow::OnMessage(message);
@@ -261,12 +265,14 @@ void CGUIDialogVideoBookmarks::OnRefreshList()
   }
 
   // add chapters if around
-  for (int i = 1; i <= g_application.m_pPlayer->GetChapterCount(); ++i)
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  for (int i = 1; i <= appPlayer->GetChapterCount(); ++i)
   {
     std::string chapterName;
-    g_application.m_pPlayer->GetChapterName(chapterName, i);
+    appPlayer->GetChapterName(chapterName, i);
 
-    int64_t pos = g_application.m_pPlayer->GetChapterPos(i);
+    int64_t pos = appPlayer->GetChapterPos(i);
     std::string time = StringUtils::SecondsToTimeString((long) pos, TIME_FORMAT_HH_MM_SS);
 
     if (chapterName.empty() ||
@@ -350,18 +356,20 @@ void CGUIDialogVideoBookmarks::Clear()
 
 void CGUIDialogVideoBookmarks::GotoBookmark(int item)
 {
-  if (item < 0 || item >= m_vecItems->Size() || !g_application.m_pPlayer->HasPlayer())
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (item < 0 || item >= m_vecItems->Size() || !appPlayer->HasPlayer())
     return;
 
   CFileItemPtr fileItem = m_vecItems->Get(item);
   int chapter = static_cast<int>(fileItem->GetProperty("chapter").asInteger());
   if (chapter <= 0)
   {
-    g_application.m_pPlayer->SetPlayerState(fileItem->GetProperty("playerstate").asString());
+    appPlayer->SetPlayerState(fileItem->GetProperty("playerstate").asString());
     g_application.SeekTime(fileItem->GetProperty("resumepoint").asDouble());
   }
   else
-    g_application.m_pPlayer->SeekChapter(chapter);
+    appPlayer->SeekChapter(chapter);
 
   Close();
 }
@@ -386,7 +394,8 @@ bool CGUIDialogVideoBookmarks::AddBookmark(CVideoInfoTag* tag)
   bookmark.timeInSeconds = (int)g_application.GetTime();
   bookmark.totalTimeInSeconds = (int)g_application.GetTotalTime();
 
-  CApplicationPlayer *const appPlayer = g_application.m_pPlayer;
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
 
   if (appPlayer->HasPlayer())
     bookmark.playerState = appPlayer->GetPlayerState();

@@ -22,6 +22,8 @@
 #include "utils/log.h"
 #include "XBoxRenderer.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "XBVideoConfig.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/AdvancedSettings.h"
@@ -1070,7 +1072,9 @@ void CXBoxRenderer::Render(DWORD flags)
       g_application.RenderFullScreen();
     }
 
-    if (!g_application.m_pPlayer->IsPaused())
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    if (!appPlayer->IsPaused())
     {
       g_application.RenderMemoryStatus();
     }

@@ -31,7 +31,8 @@
 #include "utils/Variant.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "utils/StringUtils.h"
 
 using namespace ANNOUNCEMENT;
@@ -54,12 +55,18 @@ CGUIWindowHome::~CGUIWindowHome(void)
 bool CGUIWindowHome::OnAction(const CAction &action)
 {
   static unsigned int min_hold_time = 1000;
-  if (action.GetID() == ACTION_NAV_BACK &&
-      action.GetHoldTime() < min_hold_time &&
-      g_application.m_pPlayer->IsPlaying())
+  if (action.GetID() == ACTION_NAV_BACK && action.GetHoldTime() < min_hold_time)
   {
-    CServiceBroker::GetGUI()->GetWindowManager().SwitchToFullScreen();
-    return true;
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    if (appPlayer->IsPlaying() && appPlayer->HasAudio())
+    {
+      CGUIComponent* gui = CServiceBroker::GetGUI();
+      if (gui)
+        gui->GetWindowManager().SwitchToFullScreen();
+
+      return true;
+    }
   }
   return CGUIWindow::OnAction(action);
 }

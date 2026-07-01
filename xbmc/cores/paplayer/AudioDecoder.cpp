@@ -20,7 +20,9 @@
 
 #include "AudioDecoder.h"
 #include "CodecFactory.h"
-#include "application/Application.h"
+#include "ServiceBroker.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationVolumeHandling.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "FileItem.h"
@@ -124,7 +126,7 @@ __int64 CAudioDecoder::Seek(__int64 time)
   return m_codec->Seek(time);
 }
 
-__int64 CAudioDecoder::TotalTime()
+__int64 CAudioDecoder::TotalTime() const
 {
   if (m_codec)
     return m_codec->m_TotalTime;
@@ -214,7 +216,7 @@ int CAudioDecoder::ReadSamples(int numsamples)
     else
       result = ReadPCMSamples(m_inputBuffer, numsamples, &actualsamples);
 
-    if ( result != READ_ERROR && actualsamples ) 
+    if ( result != READ_ERROR && actualsamples )
     {
       // do any post processing of the audio (eg replaygain etc.)
       ProcessAudio(m_inputBuffer, actualsamples);
@@ -258,7 +260,10 @@ int CAudioDecoder::ReadSamples(int numsamples)
 
 void CAudioDecoder::ProcessAudio(float *data, int numsamples)
 {
-  const ReplayGainSettings &replayGainSettings = g_application.GetReplayGainSettings();
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+
+  const CApplicationVolumeHandling::ReplayGainSettings &replayGainSettings = appVolume->GetReplayGainSettings();
   if (replayGainSettings.iType != REPLAY_GAIN_NONE)
   {
     float gainFactor = GetReplayGain();
@@ -275,7 +280,9 @@ void CAudioDecoder::ProcessAudio(float *data, int numsamples)
 float CAudioDecoder::GetReplayGain()
 {
 #define REPLAY_GAIN_DEFAULT_LEVEL 89.0f
-  const ReplayGainSettings &replayGainSettings = g_application.GetReplayGainSettings();
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+  const CApplicationVolumeHandling::ReplayGainSettings &replayGainSettings = appVolume->GetReplayGainSettings();
   // Compute amount of gain
   float replaydB = (float)replayGainSettings.iNoGainPreAmp;
   float peak = 0.0f;

@@ -30,6 +30,7 @@
 #include "utils/Job.h"
 #include "utils/JobManager.h"
 #include "application/Application.h"
+#include "messaging/ApplicationMessenger.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogBusy.h"
@@ -203,7 +204,7 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
         {
           if (!cancel)
           {
-            if (g_application.IsCurrentThread() && pDirectory->ProcessRequirements())
+            if (CServiceBroker::GetAppMessenger()->IsProcessThread() && pDirectory->ProcessRequirements())
             {
               authUrl.SetUserName("");
               authUrl.SetPassword("");

@@ -127,7 +127,7 @@ DWORD CWebServer::ResumeThread()
 
 bool CWebServer::Start(int port, bool wait)
 {
-  char *szLocalAddress = g_application.getNetwork().m_networkinfo.ip;
+  char *szLocalAddress = CServiceBroker::GetNetwork().m_networkinfo.ip;
 
   m_bFinished = false;
   ResetEvent(m_hEvent);

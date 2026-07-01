@@ -39,6 +39,7 @@
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 #include "threads/SingleLock.h"
 #include "PasswordManager.h"
 
@@ -55,7 +56,7 @@ using namespace std;
 
 CSMBDirectory::CSMBDirectory(void)
 {
-} 
+}
 
 CSMBDirectory::~CSMBDirectory(void)
 {

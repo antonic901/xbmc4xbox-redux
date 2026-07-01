@@ -3,7 +3,9 @@
 #include "conio.h"
 #include "utils/SystemInfo.h"
 #include "memutil.h"
-#include "application/Application.h" // for g_application.IsInScreenSaver()
+#include "ServiceBroker.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPowerHandling.h"
 #include "utils/LED.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
@@ -265,7 +267,9 @@ void CSmartXXLCD::DisplayBuildCustomChars()
   // TODO: it's probably better to move the default charset in ILCD also:
   // that will take out the screensaver mode check here and keeps everything central,
   // but ILCD then has to deal with animation
-  if ( g_application.IsInScreenSaver() ) //IsInScreenSaver()
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+  if ( appPower->IsInScreenSaver() ) //IsInScreenSaver()
   {
       for(I=0;I<64;I++) DisplayOut( GetLCDCharsetCharacter( I ), DAT ); // all numberblocks chars
   }
@@ -421,12 +425,12 @@ void CSmartXXLCD::DisplaySetBacklight(unsigned char level)
       fBackLight*=127.0f;
       int iNewLevel=(int)fBackLight;
       if (iNewLevel==63) iNewLevel=64;
-      
+
       // SmartXX OPX port for RGB-Red is the same port for display brightness control
       // The brightness control has a higher priority, stopping possible running rgb controls
       if ( g_iledSmartxxrgb.IsRunning() )
         g_iledSmartxxrgb.Stop();
-     
+
       // Set new value
       _outp(DISP_O_LIGHT, iNewLevel&127);
     }

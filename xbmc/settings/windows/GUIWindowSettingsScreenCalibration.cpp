@@ -8,8 +8,9 @@
 
 #include "GUIWindowSettingsScreenCalibration.h"
 
-#include "application/Application.h"
 #include "ServiceBroker.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "cores/VideoRenderers/RenderManager.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "guilib/GUIComponent.h"
@@ -183,7 +184,9 @@ bool CGUIWindowSettingsScreenCalibration::OnMessage(CGUIMessage& message)
       // Get the allowable resolutions that we can calibrate...
       m_Res.clear();
 
-      bool isPlayingVideo = g_application.m_pPlayer->IsPlayingVideo();
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+      bool isPlayingVideo(appPlayer->IsPlayingVideo());
       if (isPlayingVideo)
       { // don't allow resolution switching if we are playing a video
 
