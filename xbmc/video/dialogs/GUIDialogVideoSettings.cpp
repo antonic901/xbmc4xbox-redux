@@ -13,7 +13,8 @@
 #include "Util.h"
 #include "addons/Skin.h"
 #include "application/Application.h"
-#include "ApplicationPlayer.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "cores/VideoRenderers/RenderManager.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "guilib/GUIComponent.h"
@@ -293,7 +294,7 @@ void CGUIDialogVideoSettings::InitializeSettings()
   AddPercentageSlider(groupVideo, SETTING_VIDEO_CONTRAST, 465, SettingLevel::Basic, static_cast<int>(videoSettings.m_Contrast), 14047, 1, 465, usePopup);
   AddPercentageSlider(groupVideo, SETTING_VIDEO_GAMMA, 466, SettingLevel::Basic, static_cast<int>(videoSettings.m_Gamma), 14047, 1, 466, usePopup);
 
-  if (g_application.GetCurrentPlayer() == EPC_MPLAYER)
+  if (g_application.GetCurrentPlayer() == "MPlayer")
   {
     AddSlider(groupVideo, SETTING_VIDEO_FILM_GRAIN, 14058, SettingLevel::Basic, videoSettings.m_FilmGrain, "%f", 0.0f, 1.0f, 10.0f);
     AddToggle(groupVideo, SETTING_VIDEO_NON_INTERLEAVED, 306, SettingLevel::Basic, videoSettings.m_NonInterleaved);

@@ -14,6 +14,8 @@
 #include "PlayListPlayer.h"
 #include "ServiceBroker.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSelect.h"
@@ -151,7 +153,9 @@ public:
     }
 
     // Similarly update the art of the currently playing song so it shows on OSD
-    if (g_application.m_pPlayer->IsPlayingAudio() && g_application.CurrentFileItem().HasMusicInfoTag())
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    if (appPlayer->IsPlayingAudio() && g_application.CurrentFileItem().HasMusicInfoTag())
     {
       CFileItemPtr songitem = boost::make_shared<CFileItem>(g_application.CurrentFileItem());
       if (HasSongExtraArtChanged(songitem, type, itemID, db))
@@ -784,7 +788,8 @@ void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
   PLAYLIST::Id playlistId = player.GetCurrentPlaylist();
   if (playlistId == PLAYLIST::TYPE_NONE)
   {
-    playlistId = g_application.m_pPlayer->GetPreferredPlaylist();
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    playlistId = components.GetComponent<CApplicationPlayer>()->GetPreferredPlaylist();
   }
 
   if (playlistId == PLAYLIST::TYPE_NONE)
@@ -810,7 +815,10 @@ void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
     return;
   }
 
-  if (pos == MUSIC_UTILS::POSITION_BEGIN && g_application.m_pPlayer->IsPlaying())
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+
+  if (pos == MUSIC_UTILS::POSITION_BEGIN && appPlayer->IsPlaying())
     player.Insert(playlistId, queuedItems,
                   CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() + 1);
   else
@@ -818,7 +826,7 @@ void QueueItem(const boost::shared_ptr<CFileItem>& itemIn, QueuePosition pos)
 
   bool playbackStarted = false;
 
-  if (!g_application.m_pPlayer->IsPlaying() && player.GetPlaylist(playlistId).size())
+  if (!appPlayer->IsPlaying() && player.GetPlaylist(playlistId).size())
   {
     const int winID = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
     if (winID == WINDOW_MUSIC_NAV)

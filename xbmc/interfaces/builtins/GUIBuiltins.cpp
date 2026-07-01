@@ -21,6 +21,9 @@
 #include "GUIBuiltins.h"
 
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPowerHandling.h"
+#include "application/ApplicationSkinHandling.h"
 #include "messaging/ApplicationMessenger.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogNumeric.h"
@@ -99,7 +102,9 @@ static int ActivateWindow(const std::vector<std::string>& params2)
     // activate window only if window and path differ from the current active window
     if (iWindow != CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() || !bIsSameStartFolder)
     {
-      g_application.ResetScreenSaverWindow();
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+      appPower->WakeUpScreenSaverAndDPMS();
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(iWindow, params, Replace);
       return 0;
     }
@@ -133,7 +138,9 @@ static int ActivateAndFocus(const std::vector<std::string>& params)
     if (iWindow != CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow())
     {
       // disable the screensaver
-      g_application.ResetScreenSaverWindow();
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+      appPower->WakeUpScreenSaverAndDPMS();
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(iWindow, std::vector<std::string>(), Replace);
 
       unsigned int iPtr = 1;
@@ -361,7 +368,9 @@ static int SetResolution(const std::vector<std::string>& params)
   if (CServiceBroker::GetWinSystem()->GetGfxContext().IsValidResolution(res))
   {
     CDisplaySettings::GetInstance().SetCurrentResolution(res, true);
-    g_application.ReloadSkin();
+    CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<CApplicationSkinHandling> appSkin = components.GetComponent<CApplicationSkinHandling>();
+    appSkin->ReloadSkin();
   }
 
   return 0;

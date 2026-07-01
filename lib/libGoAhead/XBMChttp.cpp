@@ -16,6 +16,9 @@
 #include "GUIInfoManager.h"
 #include "addons/AddonManager.h"
 #include "addons/AddonSystemSettings.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
+#include "application/ApplicationVolumeHandling.h"
 #include "includes.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
@@ -1358,14 +1361,16 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
     CStdString strPath(url.GetWithoutUserDetails());
     CURL::Decode(strPath);
     output = openTag + "Filename:" + strPath;  // currently playing item filename
-    if (g_application.m_pPlayer->IsPlaying())
-      if (!g_application.m_pPlayer->IsPaused())
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    if (appPlayer->IsPlaying())
+      if (!appPlayer->IsPaused())
         output+=closeTag+openTag+"PlayStatus:Playing";
       else
         output+=closeTag+openTag+"PlayStatus:Paused";
     else
       output+=closeTag+openTag+"PlayStatus:Stopped";
-    if (g_application.m_pPlayer->IsPlayingVideo())
+    if (appPlayer->IsPlayingVideo())
     { // Video information
       tmp.Format("%i",CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx());
       output+=closeTag+openTag+"VideoNo:"+tmp;  // current item # in playlist
@@ -1436,7 +1441,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
       copyThumb(thumb,thumbFn);
       output+=closeTag+openTag+"Thumb"+tag+":"+thumb;
     }
-    else if (g_application.m_pPlayer->IsPlayingAudio())
+    else if (appPlayer->IsPlayingAudio())
     { // Audio information
       tmp.Format("%i",CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx());
       output+=closeTag+openTag+"SongNo:"+tmp;  // current item # in playlist
@@ -1486,7 +1491,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, CStdString paras[])
     }
     output+=closeTag+openTag+"Time:"+StringUtils::SecondsToTimeString(MathUtils::round_int(g_application.GetTime()), TIME_FORMAT_HH_MM_SS).c_str();
     output+=closeTag+openTag+"Duration:";
-    if (g_application.m_pPlayer->IsPlayingVideo())
+    if (appPlayer->IsPlayingVideo())
       output += StringUtils::SecondsToTimeString(MathUtils::round_int(g_application.GetTotalTime()), TIME_FORMAT_HH_MM_SS);
     else
       output += StringUtils::SecondsToTimeString(MathUtils::round_int(g_application.GetTotalTime()), TIME_FORMAT_HH_MM_SS);
@@ -1532,7 +1537,9 @@ int CXbmcHttp::xbmcGetVideoLabel(int numParas, CStdString paras[])
 
 int CXbmcHttp::xbmcGetPercentage()
 {
-  if (g_application.m_pPlayer->HasPlayer())
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (appPlayer->HasPlayer())
   {
     CStdString tmp;
     tmp.Format("%i",(int)g_application.GetPercentage());
@@ -1548,7 +1555,9 @@ int CXbmcHttp::xbmcSeekPercentage(int numParas, CStdString paras[], bool relativ
     return SetResponse(openTag+"Error:Missing Parameter");
   else
   {
-    if (g_application.m_pPlayer->HasPlayer())
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    if (appPlayer->HasPlayer())
     {
       float percent=(float)atof(paras[0].c_str());
       if (relative)
@@ -1575,7 +1584,9 @@ int CXbmcHttp::xbmcSeekPercentage(int numParas, CStdString paras[], bool relativ
 
 int CXbmcHttp::xbmcMute()
 {
-  g_application.ToggleMute();
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+  appVolume->ToggleMute();
   return SetResponse(openTag+"OK");
 }
 
@@ -1586,15 +1597,19 @@ int CXbmcHttp::xbmcSetVolume(int numParas, CStdString paras[])
   else
   {
     int iPercent = atoi(paras[0].c_str());
-    g_application.SetVolume(iPercent);
+    CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+    appVolume->SetVolume(iPercent);
     return SetResponse(openTag+"OK");
   }
 }
 
 int CXbmcHttp::xbmcGetVolume()
 {
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
   CStdString tmp;
-  tmp.Format("%i",g_application.GetVolume());
+  tmp.Format("%i",appVolume->GetVolumeRatio());
   return SetResponse(openTag + tmp);
 }
 
@@ -1673,7 +1688,9 @@ int CXbmcHttp::xbmcAddToSlideshow(int numParas, CStdString paras[])
 int CXbmcHttp::xbmcSetPlaySpeed(int numParas, CStdString paras[])
 {
   if (numParas>0) {
-    g_application.m_pPlayer->SetPlaySpeed(atoi(paras[0]));
+    CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    appPlayer->SetPlaySpeed(atoi(paras[0]));
     return SetResponse(openTag+"OK");
   }
   else
@@ -1682,8 +1699,10 @@ int CXbmcHttp::xbmcSetPlaySpeed(int numParas, CStdString paras[])
 
 int CXbmcHttp::xbmcGetPlaySpeed()
 {
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
   CStdString strSpeed;
-  strSpeed.Format("%i", g_application.m_pPlayer->GetPlaySpeed());
+  strSpeed.Format("%i", appPlayer->GetPlaySpeed());
   return SetResponse(openTag + strSpeed );
 }
 
@@ -1832,7 +1851,9 @@ int CXbmcHttp::xbmcPlayerPlayFile(int numParas, CStdString paras[])
     CFileItemList *l = new CFileItemList; //don't delete,
     l->Add(boost::make_shared<CFileItem>(paras[0], false));
     CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_PLAY, -1, -1, static_cast<void*>(l));
-    if(g_application.m_pPlayer->IsPlaying())
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    if(appPlayer->IsPlaying())
       return SetResponse(openTag+"OK");
   }
   return SetResponse(openTag+"Error:Could not play file");
@@ -2001,7 +2022,9 @@ int CXbmcHttp::xbmcRemoveFromPlayList(int numParas, CStdString paras[])
     else
       itemToRemove=FindPathInPlayList(iPlaylist, strItem);
     // The current playing song can't be removed
-    if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC && g_application.m_pPlayer->IsPlayingAudio()
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC && appPlayer->IsPlayingAudio()
       && CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx() == itemToRemove)
       return SetResponse(openTag+"Error:Can't remove current playing song");
     if (itemToRemove<0 || itemToRemove>=CServiceBroker::GetPlaylistPlayer().GetPlaylist(iPlaylist).size())
@@ -2009,7 +2032,7 @@ int CXbmcHttp::xbmcRemoveFromPlayList(int numParas, CStdString paras[])
     CServiceBroker::GetPlaylistPlayer().GetPlaylist(PLAYLIST::TYPE_MUSIC).Remove(itemToRemove);
 
     // Correct the current playing song in playlistplayer
-    if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC && g_application.m_pPlayer->IsPlayingAudio())
+    if (CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC && appPlayer->IsPlayingAudio())
     {
       int iCurrentSong = CServiceBroker::GetPlaylistPlayer().GetCurrentItemIdx();
       if (itemToRemove <= iCurrentSong)
@@ -2297,7 +2320,7 @@ int CXbmcHttp::xbmcChooseAlbum(int numParas, CStdString paras[])
       ScraperPtr info; // TODO - WTF is this code supposed to do?
       if (musicInfo.Load(http,info))
       {
-        if (musicInfo.GetAlbum().thumbURL.HasUrls() > 0)
+        if (musicInfo.GetAlbum().thumbURL.HasUrls())
           output=openTag+"image:" + musicInfo.GetAlbum().thumbURL.GetFirstThumbUrl().c_str();
 
         output+=closeTag+openTag+"review:" + musicInfo.GetAlbum().strReview.c_str();
@@ -2616,13 +2639,19 @@ int CXbmcHttp::xbmcSTSetting(int numParas, CStdString paras[])
       else if (paras[i]=="httpapibroadcastlevel")
         tmp.Format("%i",CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastlevel"));
       else if (paras[i]=="volumelevel")
-        tmp.Format("%i",g_application.GetVolume(false));
-      else if (paras[i]=="dynamicrangecompressionlevel")
-        tmp.Format("%i",g_application.GetDynamicRangeCompressionLevel());
+      {
+        const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+        const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+        tmp.Format("%i",appVolume->GetVolumeRatio());
+      }
       else if (paras[i]=="systemtimetotalup")
         tmp.Format("%i",g_sysinfo.GetTotalUptime());
       else if (paras[i]=="mute")
-        tmp = (g_application.IsMuted()==0) ? "False" : "True";
+      {
+        const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+        const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+        tmp = !appVolume->IsMuted() ? "False" : "True";
+      }
       else if (paras[i]=="myvideonavflatten")
         tmp = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myvideos.flatten")==0) ? "False" : "True";
       else if (paras[i]=="zoomamount")
@@ -2779,7 +2808,9 @@ int CXbmcHttp::xbmcSpinDownHardDisk(int numParas, CStdString paras[])
       return SetResponse(openTag+"Error:Can't spin down now (modal dialog)");
   if (g_application.MustBlockHDSpinDown())
       return SetResponse(openTag+"Error:Can't spin down now (must block)");
-  if (g_application.m_pPlayer->IsPlaying() && g_application.CurrentFileItem().IsHD())
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (appPlayer->IsPlaying() && g_application.CurrentFileItem().IsHD())
       return SetResponse(openTag+"Error:Can't spin down now (playing media on hard disk)");
   #ifdef HAS_XBOX_HARDWARE
     XKHDD::SpindownHarddisk();
@@ -2906,8 +2937,11 @@ int CXbmcHttp::xbmcRecordStatus(int numParas, CStdString paras[])
 {
   if (numParas!=0)
     return SetResponse(openTag+"Error:Too many parameters");
-  else if( g_application.m_pPlayer->IsPlaying() && g_application.m_pPlayer->CanRecord())
-    return SetResponse(g_application.m_pPlayer->IsRecording()?openTag+"Recording":openTag+"Not recording");
+
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  if( appPlayer->IsPlaying() && appPlayer->CanRecord())
+    return SetResponse(appPlayer->IsRecording()?openTag+"Recording":openTag+"Not recording");
   else
     return SetResponse(openTag+"Can't record");
 }

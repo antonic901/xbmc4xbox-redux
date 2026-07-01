@@ -12,6 +12,8 @@
 /********************************* Includes ***********************************/
 
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "messaging/ApplicationMessenger.h"
 #include "GUIInfoManager.h"
 #include "boost/make_shared.hpp"
@@ -34,6 +36,7 @@
 #include "settings/MediaSourceSettings.h"
 #include "utils/URIUtils.h"
 #include "guilib/GUIComponent.h"
+#include "input/XBIRRemote.h"
 
 using namespace std;
 using namespace XFILE;
@@ -882,7 +885,9 @@ int CXbmcWeb::xbmcPlayerPrevious(int eid, webs_t wp, char_t *parameter)
 /* Turn on subtitles */
 int CXbmcWeb::xbmcSubtitles( int eid, webs_t wp, char_t *parameter)
 {
-  g_application.m_pPlayer->SetSubtitleVisible(!g_application.m_pPlayer->GetSubtitleVisible());
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  appPlayer->SetSubtitleVisible(!appPlayer->GetSubtitleVisible());
   return 0;
 }
 

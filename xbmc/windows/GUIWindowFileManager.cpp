@@ -21,6 +21,8 @@
 #include "system.h"
 #include "GUIWindowFileManager.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "messaging/ApplicationMessenger.h"
 #include "Util.h"
 #include "filesystem/Directory.h"
@@ -55,6 +57,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "threads/IRunnable.h"
 #include "threads/Thread.h"
+#include "storage/DetectDVDType.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"
 #include "utils/JobManager.h"
@@ -673,7 +676,9 @@ void CGUIWindowFileManager::OnStart(CFileItem *pItem, const std::string &player)
     CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
     if (!pSlideShow)
       return ;
-    if (g_application.m_pPlayer->IsPlayingVideo())
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    if (appPlayer->IsPlayingVideo())
       g_application.StopPlaying();
 
     pSlideShow->Reset();
@@ -702,7 +707,7 @@ bool CGUIWindowFileManager::HaveDiscOrConnection( std::string& strPath, int iDri
   else if ( iDriveType == CMediaSource::SOURCE_TYPE_REMOTE )
   {
     //! @todo Handle not connected to a remote share
-    if ( !g_application.getNetwork().IsEthernetConnected() )
+    if ( !CServiceBroker::GetNetwork().IsEthernetConnected() )
     {
       CGUIDialogOK::ShowAndGetInput(220, 221);
       return false;
@@ -1031,6 +1036,9 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
     pItem->Select(false);
     return ;
   }
+
+  const CPlayerCoreFactory &playerCoreFactory = CServiceBroker::GetPlayerCoreFactory();
+
   // popup the context menu
 
   bool showEntry = false;
@@ -1039,8 +1047,8 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
     showEntry=(!pItem->IsParentFolder() || (pItem->IsParentFolder() && m_vecItems[list]->GetSelectedCount()>0));
 
   // determine available players
-  VECPLAYERCORES players;
-  CServiceBroker::GetPlayerCoreFactory().GetPlayers(*pItem, players);
+  std::vector<std::string>players;
+  playerCoreFactory.GetPlayers(*pItem, players);
 
   // add the needed buttons
   CContextButtons choices;
@@ -1084,11 +1092,11 @@ void CGUIWindowFileManager::OnPopupMenu(int list, int item, bool bContextDriven 
   }
   if (btnid == CONTROL_BTNPLAYWITH)
   {
-    VECPLAYERCORES players;
-    CServiceBroker::GetPlayerCoreFactory().GetPlayers(*pItem, players);
-    g_application.m_eForcedNextPlayer = CServiceBroker::GetPlayerCoreFactory().SelectPlayerDialog(players);
-    if (g_application.m_eForcedNextPlayer != EPC_NONE)
-      OnStart(pItem.get(), ""/*player*/);
+    std::vector<std::string>players;
+    playerCoreFactory.GetPlayers(*pItem, players);
+    std::string player = playerCoreFactory.SelectPlayerDialog(players);
+    if (!player.empty())
+      OnStart(pItem.get(), player);
   }
   if (btnid == CONTROL_BTNRENAME)
     OnRename(list);

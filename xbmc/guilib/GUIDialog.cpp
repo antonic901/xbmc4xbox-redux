@@ -193,9 +193,9 @@ void CGUIDialog::Open(const std::string &param /* = "" */)
 void CGUIDialog::Open(bool bProcessRenderLoop, const std::string& param /* = "" */)
 {
 #ifdef HAS_XBOX_D3D
-  if (!g_application.IsCurrentThread() && !CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
+  if (!CServiceBroker::GetAppMessenger()->IsProcessThread() && !CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
 #else
-  if (!g_application.IsCurrentThread())
+  if (!CServiceBroker::GetAppMessenger()->IsProcessThread())
 #endif
   {
     // make sure graphics lock is not held

@@ -39,6 +39,7 @@ class CPlayListPlayer;
 
 class CContextMenuManager;
 class XBPython;
+class CNetwork;
 class CWinSystemBase;
 class CWeather;
 
@@ -61,6 +62,7 @@ public:
   ADDON::CBinaryAddonManager& GetBinaryAddonManager();
   ADDON::CServiceAddonManager& GetServiceAddons();
   ADDON::CRepositoryUpdater& GetRepositoryUpdater();
+  CNetwork& GetNetwork();
   XBPython& GetXBPython();
   CContextMenuManager& GetContextMenuManager();
 
@@ -88,6 +90,7 @@ protected:
   boost::movelib::unique_ptr<XBPython> m_XBPython;
   boost::movelib::unique_ptr<CContextMenuManager, delete_contextMenuManager> m_contextMenuManager;
   boost::movelib::unique_ptr<PLAYLIST::CPlayListPlayer> m_playlistPlayer;
+  boost::movelib::unique_ptr<CNetwork> m_network;
   boost::movelib::unique_ptr<CWeather> m_weatherManager;
   boost::movelib::unique_ptr<CPlayerCoreFactory> m_playerCoreFactory;
   boost::movelib::unique_ptr<CDatabaseManager> m_databaseManager;

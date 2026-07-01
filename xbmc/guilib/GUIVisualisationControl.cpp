@@ -17,6 +17,8 @@
 #include "addons/Visualization.h"
 #include "addons/addoninfo/AddonType.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "filesystem/SpecialProtocol.h"
 #include "guilib/guiinfo/GUIInfoLabels.h"
 #include "input/actions/Action.h"
@@ -151,7 +153,9 @@ bool CGUIVisualisationControl::OnAction(const CAction& action)
 
 void CGUIVisualisationControl::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
-  if (g_application.m_pPlayer->IsPlayingAudio())
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (appPlayer->IsPlayingAudio())
   {
     if (m_bInvalidated)
       FreeResources(true);
@@ -360,8 +364,11 @@ bool CGUIVisualisationControl::GetPresetList(std::vector<std::string>& vecpreset
 
 bool CGUIVisualisationControl::InitVisualization()
 {
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+
   CWinSystemBase* const winSystem = CServiceBroker::GetWinSystem();
-  if (!g_application.m_pPlayer->HasPlayer() || !winSystem)
+  if (!appPlayer->HasPlayer() || !winSystem)
     return false;
 
   const std::string addon = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(
@@ -371,7 +378,7 @@ bool CGUIVisualisationControl::InitVisualization()
   if (!addonBase)
     return false;
 
-  g_application.m_pPlayer->RegisterAudioCallback(this);
+  appPlayer->RegisterAudioCallback(this);
 
   CGraphicContext &context = winSystem->GetGfxContext();
 
@@ -407,8 +414,11 @@ void CGUIVisualisationControl::DeInitVisualization()
   if (!winSystem)
     return;
 
-  if (g_application.m_pPlayer->HasPlayer())
-    g_application.m_pPlayer->UnRegisterAudioCallback();
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+
+  if (appPlayer->HasPlayer())
+    appPlayer->UnRegisterAudioCallback();
 
   m_attemptedLoad = false;
 

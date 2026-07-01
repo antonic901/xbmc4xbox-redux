@@ -29,6 +29,7 @@
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/python/XBPython.h"
+#include "xbox/Network.h"
 #include "storage/MediaManager.h"
 #include "utils/log.h"
 #include "utils/Weather.h"
@@ -50,6 +51,8 @@ bool CServiceManager::Init1()
   CScriptInvocationManager::GetInstance().RegisterLanguageInvocationHandler(m_XBPython.get(), ".py");
 
   m_playlistPlayer.reset(new PLAYLIST::CPlayListPlayer());
+
+  m_network.reset(new CNetwork());
 
   init_level = 1;
   return true;
@@ -98,6 +101,7 @@ void CServiceManager::Deinit()
 {
   init_level = 0;
 
+  m_network.reset();
   m_weatherManager.reset();
   m_playerCoreFactory.reset();
   m_contextMenuManager.reset();
@@ -145,6 +149,11 @@ CContextMenuManager& CServiceManager::GetContextMenuManager()
 PLAYLIST::CPlayListPlayer& CServiceManager::GetPlaylistPlayer()
 {
   return *m_playlistPlayer;
+}
+
+CNetwork& CServiceManager::GetNetwork()
+{
+  return *m_network;
 }
 
 CWeather& CServiceManager::GetWeatherManager()

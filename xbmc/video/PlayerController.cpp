@@ -9,7 +9,8 @@
 #include "PlayerController.h"
 
 #include "ServiceBroker.h"
-#include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "cores/IPlayer.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogSelect.h"
@@ -51,7 +52,8 @@ bool CPlayerController::OnAction(const CAction &action)
   const unsigned int MsgTime = 300;
   const unsigned int DisplTime = 2000;
 
-  CApplicationPlayer *const appPlayer = g_application.m_pPlayer;
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
 
   if (appPlayer->IsPlayingVideo())
   {
@@ -74,7 +76,7 @@ bool CPlayerController::OnAction(const CAction &action)
         {
           std::string lang;
           SPlayerSubtitleStreamInfo info;
-          appPlayer->GetSubtitleStreamInfo(g_application.m_pPlayer->GetSubtitle(), info);
+          appPlayer->GetSubtitleStreamInfo(appPlayer->GetSubtitle(), info);
           if (!g_LangCodeExpander.Lookup(info.language, lang))
             lang = g_localizeStrings.Get(13205); // Unknown
 
@@ -314,7 +316,8 @@ void CPlayerController::OnSliderChange(void *data, CGUISliderControl *slider)
     slider->SetTextValue(
         CGUIDialogAudioSettings::FormatDelay(slider->GetFloatValue(), AUDIO_DELAY_STEP));
 
-  CApplicationPlayer *const appPlayer = g_application.m_pPlayer;
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
 
   if (appPlayer->HasPlayer())
   {

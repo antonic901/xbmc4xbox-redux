@@ -20,7 +20,10 @@
 
 #include "ApplicationBuiltins.h"
 
-#include "application/Application.h"
+#include "ServiceBroker.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPowerHandling.h"
+#include "application/ApplicationVolumeHandling.h"
 #ifdef HAS_FILESYSTEM_RAR
 #include "filesystem/RarManager.h"
 #endif
@@ -78,7 +81,9 @@ static int Extract(const std::vector<std::string>& params)
  */
 static int Mute(const std::vector<std::string>& params)
 {
-  g_application.ToggleMute();
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+  appVolume->ToggleMute();
 
   return 0;
 }
@@ -107,10 +112,12 @@ static int NotifyAll(const std::vector<std::string>& params)
  */
 static int SetVolume(const std::vector<std::string>& params)
 {
-  int oldVolume = g_application.GetVolume();
-  int volume = atoi(params[0].c_str());
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+  float oldVolume = appVolume->GetVolumePercent();
+  float volume = static_cast<float>(strtod(params[0].c_str(), NULL));
 
-  g_application.SetVolume(volume);
+  appVolume->SetVolume(static_cast<int>(volume));
   if(oldVolume != volume)
   {
     if(params.size() > 1 && StringUtils::EqualsNoCase(params[1], "showVolumeBar"))
@@ -152,7 +159,7 @@ static int ToggleDPMS(const std::vector<std::string>& params)
  */
 static int WakeOnLAN(const std::vector<std::string>& params)
 {
-  g_application.getNetwork().WakeOnLan((char*)params[0].c_str());
+  CServiceBroker::GetNetwork().WakeOnLan((char*)params[0].c_str());
 
   return 0;
 }

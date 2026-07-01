@@ -30,6 +30,8 @@
 #include "filesystem/CDDADirectory.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "utils/LabelFormatter.h"
+#include "music/MusicLibraryQueue.h"
+#include "music/infoscanner/MusicInfoScanner.h"
 #include "music/tags/MusicInfoTag.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
@@ -321,7 +323,8 @@ void CCDDARipper::OnJobComplete(unsigned int jobID, bool success, CJob* job)
       CMusicDatabase database;
       database.Open();
       if (source>=0 && database.InsideScannedPath(dir))
-        g_application.StartMusicScan(dir, false);
+        CMusicLibraryQueue::GetInstance().ScanLibrary(
+            dir, MUSIC_INFO::CMusicInfoScanner::SCAN_NORMAL, false);
       database.Close();
     }
     return CJobQueue::OnJobComplete(jobID, success, job);

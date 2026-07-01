@@ -20,6 +20,7 @@
 
 #include "ServiceBroker.h"
 
+#include "ServiceManager.h"
 #include "application/Application.h"
 #include "settings/SettingsComponent.h"
 #include "windowing/WinSystem.h"
@@ -110,6 +111,11 @@ void CServiceBroker::RegisterGUI(CGUIComponent* gui)
 void CServiceBroker::UnregisterGUI()
 {
   g_serviceBroker.m_pGUI = nullptr;
+}
+
+CNetwork& CServiceBroker::GetNetwork()
+{
+  return g_application.m_ServiceManager->GetNetwork();
 }
 
 bool CServiceBroker::IsAddonInterfaceUp()

@@ -23,9 +23,11 @@
 #include <cmath>
 #include <stdlib.h>
 
-#include "application/Application.h"
 #include "FileItem.h"
 #include "ServiceBroker.h"
+#include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
@@ -192,7 +194,9 @@ void CSeekHandler::SeekSeconds(int seconds)
   m_seekSize = seconds;
 
   // perform relative seek
-  g_application.m_pPlayer->SeekTimeRelative(static_cast<int64_t>(seconds * 1000));
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  appPlayer->SeekTimeRelative(static_cast<int64_t>(seconds * 1000));
 
   Reset();
 }
@@ -214,7 +218,9 @@ void CSeekHandler::FrameMove()
     CSingleLock lock(m_critSection);
 
     // perform relative seek
-    g_application.m_pPlayer->SeekTimeRelative(static_cast<int64_t>(m_seekSize * 1000));
+    CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    appPlayer->SeekTimeRelative(static_cast<int64_t>(m_seekSize * 1000));
 
     m_seekChanged = true;
 
@@ -266,7 +272,9 @@ void CSeekHandler::OnSettingChanged(const boost::shared_ptr<const CSetting>& set
 
 bool CSeekHandler::OnAction(const CAction &action)
 {
-  if (!g_application.m_pPlayer->IsPlaying() || !g_application.m_pPlayer->CanSeek())
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (!appPlayer->IsPlaying() || !appPlayer->CanSeek())
     return false;
 
   SeekType type = g_application.CurrentFileItem().IsAudio() ? SEEK_TYPE_MUSIC : SEEK_TYPE_VIDEO;
@@ -290,23 +298,23 @@ bool CSeekHandler::OnAction(const CAction &action)
     case ACTION_BIG_STEP_BACK:
     case ACTION_CHAPTER_OR_BIG_STEP_BACK:
     {
-      g_application.m_pPlayer->Seek(false, true, action.GetID() == ACTION_CHAPTER_OR_BIG_STEP_BACK);
+      appPlayer->Seek(false, true, action.GetID() == ACTION_CHAPTER_OR_BIG_STEP_BACK);
       return true;
     }
     case ACTION_BIG_STEP_FORWARD:
     case ACTION_CHAPTER_OR_BIG_STEP_FORWARD:
     {
-      g_application.m_pPlayer->Seek(true, true, action.GetID() == ACTION_CHAPTER_OR_BIG_STEP_FORWARD);
+      appPlayer->Seek(true, true, action.GetID() == ACTION_CHAPTER_OR_BIG_STEP_FORWARD);
       return true;
     }
     case ACTION_NEXT_SCENE:
     {
-      g_application.m_pPlayer->SeekScene(true);
+      appPlayer->SeekScene(true);
       return true;
     }
     case ACTION_PREV_SCENE:
     {
-      g_application.m_pPlayer->SeekScene(false);
+      appPlayer->SeekScene(false);
       return true;
     }
     case ACTION_ANALOG_SEEK_FORWARD:
@@ -354,7 +362,7 @@ bool CSeekHandler::SeekTimeCode(const CAction &action)
     {
       CSingleLock lock(m_critSection);
 
-      g_application.m_pPlayer->SeekTime(GetTimeCodeSeconds() * 1000);
+      g_application.SeekTime(GetTimeCodeSeconds());
       Reset();
       return true;
     }

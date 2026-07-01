@@ -34,6 +34,8 @@
 #include "IFileTypes.h"
 #include "URL.h"
 
+#include <boost/move/unique_ptr.hpp>
+
 class BitstreamStats;
 
 namespace XFILE

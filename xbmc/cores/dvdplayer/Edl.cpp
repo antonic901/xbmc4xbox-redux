@@ -708,17 +708,17 @@ CStdString CEdl::GetMPlayerEdl()
   return MPLAYER_EDL_FILENAME;
 }
 
-bool CEdl::HasCut()
+bool CEdl::HasCut() const
 {
   return !m_vecCuts.empty();
 }
 
-int64_t CEdl::GetTotalCutTime()
+int64_t CEdl::GetTotalCutTime() const
 {
   return m_iTotalCutTime; // ms
 }
 
-int64_t CEdl::RemoveCutTime(int64_t iSeek)
+int64_t CEdl::RemoveCutTime(int64_t iSeek) const
 {
   if (!HasCut())
     return iSeek;

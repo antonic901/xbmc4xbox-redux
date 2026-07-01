@@ -1776,7 +1776,7 @@ float CMPlayer::GetSubTitleDelay()
   return mplayer_getSubtitleDelay();
 }
 
-int CMPlayer::GetSubtitleCount() const
+int CMPlayer::GetSubtitleCount()
 {
   return mplayer_getSubtitleCount();
 }
@@ -1829,7 +1829,7 @@ void CMPlayer::SetSubtitle(int iStream)
   }
 };
 
-bool CMPlayer::GetSubtitleVisible() const
+bool CMPlayer::GetSubtitleVisible()
 {
   return( m_bSubsVisibleTTF || mplayer_SubtitleVisible() != 0 );
 }
@@ -1848,7 +1848,7 @@ void CMPlayer::SetSubtitleVisible(bool bVisible)
   }
 }
 
-int CMPlayer::GetAudioStreamCount() const
+int CMPlayer::GetAudioStreamCount()
 {
   return mplayer_getAudioStreamCount();
 }

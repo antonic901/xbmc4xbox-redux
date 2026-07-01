@@ -21,6 +21,7 @@
 
 #include "utils/log.h"
 #include "application/Application.h"
+#include "application/ApplicationVolumeHandling.h"
 #include "Ac97DirectSound.h"
 #include "AudioContext.h"
 
@@ -84,7 +85,7 @@ CAc97DirectSound::CAc97DirectSound(IAudioCallback* pCallback, int iChannels, uns
 
   WAVEFORMATEX m_wfx = {};
   XAudioCreatePcmFormat( 2, 48000, 16, &m_wfx ); //passthrough is always 2ch 48000KHz/16bit
-  
+
   m_adwStatus = new DWORD[ m_dwNumPackets ];
   for ( DWORD j = 0; j < m_dwNumPackets; j++ )
     m_adwStatus[ j ] = XMEDIAPACKET_STATUS_SUCCESS;
@@ -94,7 +95,7 @@ CAc97DirectSound::CAc97DirectSound(IAudioCallback* pCallback, int iChannels, uns
 
   // align m_dwPacketSize to dwInputSize
   XMEDIAINFO info;
-  m_pDigitalOutput->GetInfo(&info);  
+  m_pDigitalOutput->GetInfo(&info);
   m_dwPacketSize /= info.dwInputSize;
   m_dwPacketSize *= info.dwInputSize;
 
@@ -126,7 +127,7 @@ HRESULT CAc97DirectSound::Deinitialize()
     delete [] m_adwStatus;
   m_adwStatus = NULL;
 
-  m_pDigitalOutput=NULL;  
+  m_pDigitalOutput=NULL;
   g_audioContext.SetActiveDevice(CAudioContext::DEFAULT_DEVICE);
 
   return S_OK;
@@ -204,7 +205,7 @@ void CAc97DirectSound::Mute(bool bMute)
 HRESULT CAc97DirectSound::SetCurrentVolume(LONG nVolume)
 {
   if (!m_bIsAllocated) return -1;
-  if (nVolume == VOLUME_MINIMUM)
+  if (nVolume == CApplicationVolumeHandling::VOLUME_MINIMUM)
     m_bMute = true;
   else
     m_bMute = false;
@@ -300,7 +301,7 @@ DWORD CAc97DirectSound::AddPackets(unsigned char *data, DWORD len)
     {
       break;
     }
-  }  
+  }
   return iBytesCopied;
 }
 
@@ -340,7 +341,7 @@ FLOAT CAc97DirectSound::GetDelay()
 
   // buffer delay
   FLOAT delay = (FLOAT)(m_dwTotalBytesAdded - m_dwPos) / (2 * 48000 * (16>>3));
-  
+
   // static delay
   if (m_bAc3DTS)
     delay += 0.028f;  //(fake PCM output 8ms) + (receiver 20ms)

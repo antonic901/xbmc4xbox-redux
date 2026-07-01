@@ -22,7 +22,8 @@
 
 #include "addons/Addon.h"
 #include "addons/gui/GUIWindowAddonBrowser.h"
-#include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationSkinHandling.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogSelect.h"
@@ -50,8 +51,9 @@ using namespace ADDON;
 static int ReloadSkin(const std::vector<std::string>& params)
 {
   //  Reload the skin
-  g_application.ReloadSkin(!params.empty() &&
-                           StringUtils::EqualsNoCase(params[0], "confirm"));
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationSkinHandling> appSkin = components.GetComponent<CApplicationSkinHandling>();
+  appSkin->ReloadSkin(!params.empty() && StringUtils::EqualsNoCase(params[0], "confirm"));
 
   return 0;
 }
@@ -61,7 +63,9 @@ static int ReloadSkin(const std::vector<std::string>& params)
  */
 static int UnloadSkin(const std::vector<std::string>& params)
 {
-  g_application.UnloadSkin(true); // we're reloading the skin after this
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationSkinHandling> appSkin = components.GetComponent<CApplicationSkinHandling>();
+  appSkin->UnloadSkin();
 
   return 0;
 }
@@ -379,13 +383,11 @@ static int SetTheme(const std::vector<std::string>& params)
   if (iTheme != -1 && iTheme < (int)vecTheme.size())
     strSkinTheme = vecTheme[iTheme];
 
+  // Because of the way callbacks are implemented, calling  settings->SetString(...)
+  // causes ApplicationSkinHandling::OnSettingChanged(...) to be called.
+  // The ApplicationSkinHandling::OnSettingChanged method will do all the work of
+  // changing to the new theme, including reloading the skin.
   CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("lookandfeel.skintheme", strSkinTheme);
-  // also set the default color theme
-  std::string colorTheme(URIUtils::ReplaceExtension(strSkinTheme, ".xml"));
-  if (StringUtils::EqualsNoCase(colorTheme, "Textures.xml"))
-    colorTheme = "defaults.xml";
-  CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("lookandfeel.skincolors", colorTheme);
-  g_application.ReloadSkin();
 
   return 0;
 }

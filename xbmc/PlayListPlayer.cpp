@@ -14,6 +14,9 @@
 #include "ServiceBroker.h"
 #include "URL.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
+#include "application/ApplicationPowerHandling.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/PluginDirectory.h"
 #include "filesystem/VideoDatabaseFile.h"
@@ -659,8 +662,10 @@ void CPlayListPlayer::ReShuffle(Id playlistId, int iPosition)
   // so we shuffle starting at two positions below the current item
   else if (playlistId == m_iCurrentPlayList)
   {
-    if ((g_application.m_pPlayer->IsPlayingAudio() && playlistId == TYPE_MUSIC) ||
-        (g_application.m_pPlayer->IsPlayingVideo() && playlistId == TYPE_VIDEO))
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    if ((appPlayer->IsPlayingAudio() && playlistId == TYPE_MUSIC) ||
+        (appPlayer->IsPlayingVideo() && playlistId == TYPE_VIDEO))
     {
       GetPlaylist(playlistId).Shuffle(m_iCurrentSong + 2);
     }
@@ -804,9 +809,12 @@ void CPlayListPlayer::AnnouncePropertyChanged(Id playlistId,
                                               const std::string& strProperty,
                                               const CVariant& value)
 {
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+
   if (strProperty.empty() || value.isNull() ||
-      (playlistId == TYPE_VIDEO && !g_application.m_pPlayer->IsPlayingVideo()) ||
-      (playlistId == TYPE_MUSIC && !g_application.m_pPlayer->IsPlayingAudio()))
+      (playlistId == TYPE_VIDEO && !appPlayer->IsPlayingVideo()) ||
+      (playlistId == TYPE_MUSIC && !appPlayer->IsPlayingAudio()))
     return;
 
   CVariant data;
@@ -821,11 +829,18 @@ int PLAYLIST::CPlayListPlayer::GetMessageMask()
   return TMSG_MASK_PLAYLISTPLAYER;
 }
 
-void wakeScreensaver() { g_application.ResetScreenSaver(); g_application.ResetScreenSaverWindow(); }
+void wakeScreensaver()
+{
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+  appPower->ResetScreenSaver();
+  appPower->WakeUpScreenSaverAndDPMS();
+}
 
 void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg)
 {
-  CApplicationPlayer *const appPlayer = g_application.m_pPlayer;
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
 
   switch (pMsg->dwMessage)
   {

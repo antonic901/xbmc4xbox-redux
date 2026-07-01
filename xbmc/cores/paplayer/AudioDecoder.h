@@ -59,9 +59,9 @@ public:
 
   int ReadSamples(int numsamples);
 
-  bool CanSeek() { if (m_codec) return m_codec->CanSeek(); else return false; };
+  bool CanSeek() const { if (m_codec) return m_codec->CanSeek(); else return false; };
   __int64 Seek(__int64 time);
-  __int64 TotalTime();
+  __int64 TotalTime() const;
   void Start() { m_canPlay = true;}; // cause a pre-buffered stream to start.
   int GetStatus() { return m_status; };
   void SetStatus(int status) { m_status = status; };

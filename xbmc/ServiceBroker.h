@@ -54,6 +54,7 @@ class CComponentContainer;
 class CContextMenuManager;
 class XBPython;
 class IApplicationComponent;
+class CNetwork;
 class CWinSystemBase;
 class CWeather;
 class CPlayerCoreFactory;
@@ -89,6 +90,7 @@ public:
   static ADDON::CRepositoryUpdater& GetRepositoryUpdater();
   static bool IsAddonInterfaceUp();
   static bool IsServiceManagerUp();
+  static CNetwork& GetNetwork();
   static CWeather& GetWeatherManager();
   static CPlayerCoreFactory& GetPlayerCoreFactory();
   static CDatabaseManager& GetDatabaseManager();

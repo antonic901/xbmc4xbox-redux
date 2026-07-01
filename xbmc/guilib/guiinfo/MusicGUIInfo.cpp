@@ -15,7 +15,8 @@
 #include "URL.h"
 #include "Util.h"
 #include "application/Application.h"
-#include "ApplicationPlayer.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "guilib/LocalizeStrings.h"
 #include "guilib/guiinfo/GUIInfo.h"
 #include "guilib/guiinfo/GUIInfoHelper.h"
@@ -37,7 +38,8 @@ using namespace MUSIC_INFO;
 
 bool CMusicGUIInfo::InitCurrentItem(CFileItem *item)
 {
-  const CApplicationPlayer* appPlayer = g_application.m_pPlayer;
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
   if (item && (item->IsAudio() || (item->IsInternetStream() && appPlayer->IsPlayingAudio())))
   {
     CLog::Log(LOGDEBUG, "CMusicGUIInfo::InitCurrentItem(%s)", item->GetPath().c_str());
@@ -241,7 +243,9 @@ bool CMusicGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
       }
       case PLAYER_DURATION:
       {
-        if (!g_application.m_pPlayer->IsPlayingAudio())
+        const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+        const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+        if (!appPlayer->IsPlayingAudio())
           break;
       }
         //[[fallthrough]];
@@ -330,7 +334,9 @@ bool CMusicGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
   }
 
   SPlayerAudioStreamInfo audioInfo;
-  g_application.m_pPlayer->GetAudioStreamInfo(g_application.m_pPlayer->GetAudioStream(), audioInfo);
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  appPlayer->GetAudioStreamInfo(appPlayer->GetAudioStream(), audioInfo);
   switch (info.m_info)
   {
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -363,7 +369,9 @@ bool CMusicGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
       break;
     case MUSICPLAYER_COVER:
     {
-      if (g_application.m_pPlayer->IsPlayingAudio())
+      const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+      if (appPlayer->IsPlayingAudio())
       {
         if (fallback)
           *fallback = "DefaultAlbumCover.png";
@@ -581,7 +589,9 @@ bool CMusicGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int contextW
       break;
     case MUSICPLAYER_PLAYLISTPLAYING:
     {
-      if (g_application.m_pPlayer->IsPlayingAudio() &&
+      const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+      if (appPlayer->IsPlayingAudio() &&
           CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_MUSIC)
       {
         value = true;

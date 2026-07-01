@@ -8,13 +8,14 @@
 
 #include "GUIWindowScreensaver.h"
 
-#include "application/Application.h"
 #include "GUIPassword.h"
 #include "GUIUserMessages.h"
 #include "ServiceBroker.h"
 #include "addons/AddonManager.h"
 #include "addons/ScreenSaver.h"
 #include "addons/addoninfo/AddonType.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPowerHandling.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUITexture.h"
 #include "guilib/GUIWindowManager.h"
@@ -73,7 +74,9 @@ void CGUIWindowScreensaver::OnInitWindow()
 
 void CGUIWindowScreensaver::UpdateVisibility()
 {
-  if (!g_application.IsInScreenSaver() && m_visible)
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+  if (!appPower->IsInScreenSaver() && m_visible)
   {
     m_visible = false;
     Close();
@@ -119,12 +122,14 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
 
     case GUI_MSG_CHECK_LOCK:
     {
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
       if (!g_passwordManager.IsProfileLockUnlocked())
       {
-        g_application.m_iScreenSaveLock = -1;
+        appPower->SetScreenSaverLockFailed();
         return false;
       }
-      g_application.m_iScreenSaveLock = 1;
+      appPower->SetScreenSaverUnlocked();
       return true;
     }
   }

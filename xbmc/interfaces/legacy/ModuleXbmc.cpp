@@ -12,7 +12,8 @@
 
 #include "ModuleXbmc.h"
 
-#include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPowerHandling.h"
 #include "messaging/ApplicationMessenger.h"
 #include "aojsonrpc.h"
 #include "guilib/LocalizeStrings.h"
@@ -26,6 +27,7 @@
 #include "FileItem.h"
 #include "LangInfo.h"
 #include "PlayListPlayer.h"
+#include "network/NetworkServices.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
@@ -379,7 +381,9 @@ namespace XBMCAddon
     int getGlobalIdleTime()
     {
       XBMC_TRACE;
-      return g_application.GlobalIdleTime();
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+      return appPower->GlobalIdleTime();
     }
 
     String getCacheThumbName(const String& path)
@@ -544,22 +548,16 @@ namespace XBMCAddon
       return CSysInfo::GetUserAgent();
     }
 
-    int getSERVER_WEBSERVER() { return CApplication::ES_WEBSERVER; }
-    int getSERVER_AIRPLAYSERVER() { return CApplication::ES_AIRPLAYSERVER; }
-    int getSERVER_UPNPSERVER() { return CApplication::ES_UPNPSERVER; }
-    int getSERVER_UPNPRENDERER() { return CApplication::ES_UPNPRENDERER; }
-    int getSERVER_EVENTSERVER() { return CApplication::ES_EVENTSERVER; }
-    int getSERVER_JSONRPCSERVER() { return CApplication::ES_JSONRPCSERVER; }
-    int getSERVER_ZEROCONF() { return CApplication::ES_ZEROCONF; }
+    int getSERVER_WEBSERVER() { return CNetworkServices::ES_WEBSERVER; }
+    int getSERVER_AIRPLAYSERVER() { return CNetworkServices::ES_AIRPLAYSERVER; }
+    int getSERVER_UPNPSERVER() { return CNetworkServices::ES_UPNPSERVER; }
+    int getSERVER_UPNPRENDERER() { return CNetworkServices::ES_UPNPRENDERER; }
+    int getSERVER_EVENTSERVER() { return CNetworkServices::ES_EVENTSERVER; }
+    int getSERVER_JSONRPCSERVER() { return CNetworkServices::ES_JSONRPCSERVER; }
+    int getSERVER_ZEROCONF() { return CNetworkServices::ES_ZEROCONF; }
 
     int getPLAYLIST_MUSIC() { return PLAYLIST::TYPE_MUSIC; }
     int getPLAYLIST_VIDEO() { return PLAYLIST::TYPE_VIDEO; }
-#ifdef _XBOX
-    int getPLAYER_CORE_AUTO() { return EPC_NONE; }
-    int getPLAYER_CORE_DVDPLAYER() { return EPC_DVDPLAYER; }
-    int getPLAYER_CORE_MPLAYER() { return EPC_MPLAYER; }
-    int getPLAYER_CORE_PAPLAYER() { return EPC_PAPLAYER; }
-#endif
     int getTRAY_OPEN() { return TRAY_OPEN; }
     int getDRIVE_NOT_READY() { return DRIVE_NOT_READY; }
     int getTRAY_CLOSED_NO_MEDIA() { return TRAY_CLOSED_NO_MEDIA; }

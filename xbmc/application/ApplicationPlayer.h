@@ -69,7 +69,7 @@ public:
   bool CanSeek() const;
   int GetAudioDelay() const;
   int GetAudioStream();
-  int GetAudioStreamCount() const;
+  int GetAudioStreamCount();
   void GetAudioStreamInfo(int index, SPlayerAudioStreamInfo& info);
   int GetCacheLevel() const;
   float GetCachePercentage() const;
@@ -82,9 +82,9 @@ public:
   PLAYLIST::Id GetPreferredPlaylist() const;
   int GetSubtitleDelay() const;
   int GetSubtitle();
-  int GetSubtitleCount() const;
+  int GetSubtitleCount();
   void GetSubtitleStreamInfo(int index, SPlayerSubtitleStreamInfo& info);
-  bool GetSubtitleVisible() const;
+  bool GetSubtitleVisible();
   int64_t GetTime() const;
   int64_t GetTotalTime() const;
   void GetVideoStreamInfo(int streamId, SPlayerVideoStreamInfo& info);

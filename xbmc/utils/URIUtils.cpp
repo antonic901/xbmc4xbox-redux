@@ -719,8 +719,8 @@ bool URIUtils::IsHostOnLAN(const CStdString& host, bool offLineCheck)
   if(address != INADDR_NONE)
   {
     // check if we are on the local subnet
-    unsigned long subnet = ntohl(inet_addr(g_application.getNetwork().m_networkinfo.subnet));
-    unsigned long local  = ntohl(inet_addr(g_application.getNetwork().m_networkinfo.ip));
+    unsigned long subnet = ntohl(inet_addr(CServiceBroker::GetNetwork().m_networkinfo.subnet));
+    unsigned long local  = ntohl(inet_addr(CServiceBroker::GetNetwork().m_networkinfo.ip));
     if( (address & subnet) == (local & subnet) )
       return true;
   }

@@ -93,7 +93,7 @@ int CApplicationMessenger::SendMsg(ThreadMessage& message, bool wait)
     message.result = boost::make_shared<int>(-1);
     // check that we're not being called from our application thread, else we'll be waiting
     // forever!
-    if (!g_application.IsCurrentThread())
+    if (m_guiThreadId != CThread::GetCurrentThreadId())
     {
       message.waitEvent.reset(new CEvent(true));
       waitEvent = message.waitEvent;
@@ -267,6 +267,11 @@ void CApplicationMessenger::RegisterReceiver(IMessageTarget* target)
 {
   CSingleLock lock(m_critSection);
   m_mapTargets.insert(std::make_pair(target->GetMessageMask(), target));
+}
+
+bool CApplicationMessenger::IsProcessThread() const
+{
+  return m_processThreadId == CThread::GetCurrentThreadId();
 }
 
 #ifdef _XBOX

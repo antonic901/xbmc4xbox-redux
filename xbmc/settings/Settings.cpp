@@ -620,7 +620,6 @@ void CSettings::InitializeISettingsHandlers()
   // register ISettingsHandler implementations
   // The order of these matters! Handlers are processed in the order they were registered.
   GetSettingsManager()->RegisterSettingsHandler(&CMediaSourceSettings::GetInstance());
-  GetSettingsManager()->RegisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
 #ifdef HAS_UPNP
   GetSettingsManager()->RegisterSettingsHandler(&CUPnPSettings::GetInstance());
 #endif
@@ -639,7 +638,6 @@ void CSettings::UninitializeISettingsHandlers()
 {
   // unregister ISettingsHandler implementations
   GetSettingsManager()->UnregisterSettingsHandler(&CMediaSettings::GetInstance());
-  GetSettingsManager()->UnregisterSettingsHandler(&CServiceBroker::GetPlayerCoreFactory());
   GetSettingsManager()->UnregisterSettingsHandler(&g_langInfo);
   GetSettingsManager()->UnregisterSettingsHandler(&CRssManager::GetInstance());
 #ifdef HAS_UPNP
@@ -701,13 +699,6 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("videooutput.hd720p");
   settingSet.insert("videooutput.hd1080i");
   GetSettingsManager()->RegisterCallback(&CDisplaySettings::GetInstance(), settingSet);
-
-  settingSet.clear();
-  settingSet.insert(CSettings::SETTING_VIDEOPLAYER_SEEKDELAY);
-  settingSet.insert(CSettings::SETTING_VIDEOPLAYER_SEEKSTEPS);
-  settingSet.insert(CSettings::SETTING_MUSICPLAYER_SEEKDELAY);
-  settingSet.insert(CSettings::SETTING_MUSICPLAYER_SEEKSTEPS);
-  GetSettingsManager()->RegisterCallback(&CSeekHandler::GetInstance(), settingSet);
 
   settingSet.clear();
   settingSet.insert("audiooutput.channels");
@@ -842,7 +833,6 @@ void CSettings::UninitializeISettingCallbacks()
 {
   GetSettingsManager()->UnregisterCallback(&CMediaSettings::GetInstance());
   GetSettingsManager()->UnregisterCallback(&CDisplaySettings::GetInstance());
-  GetSettingsManager()->UnregisterCallback(&CSeekHandler::GetInstance());
   GetSettingsManager()->UnregisterCallback(&g_application);
   GetSettingsManager()->UnregisterCallback(&g_charsetConverter);
   GetSettingsManager()->UnregisterCallback(CFanController::Instance());

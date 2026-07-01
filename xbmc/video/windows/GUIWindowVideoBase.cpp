@@ -19,6 +19,8 @@
 #include "Util.h"
 #include "addons/gui/GUIDialogAddonInfo.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "dialogs/GUIDialogSelect.h"
 #include "dialogs/GUIDialogSmartPlaylistEditor.h"
@@ -159,12 +161,14 @@ bool CGUIWindowVideoBase::OnMessage(CGUIMessage& message)
         }
         else if (iAction == ACTION_PLAYER_PLAY)
         {
+          const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+          const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
           // if playback is paused or playback speed != 1, return
-          if (g_application.m_pPlayer->IsPlayingVideo())
+          if (appPlayer->IsPlayingVideo())
           {
-            if (g_application.m_pPlayer->IsPausedPlayback())
+            if (appPlayer->IsPausedPlayback())
               return false;
-            if (g_application.m_pPlayer->GetPlaySpeed() != 1)
+            if (appPlayer->GetPlaySpeed() != 1)
               return false;
           }
 
@@ -973,7 +977,9 @@ bool CGUIWindowVideoBase::OnPlayMedia(const boost::shared_ptr<CFileItem>& pItem,
 
   CServiceBroker::GetPlaylistPlayer().Play(itemCopy, player);
 
-  if (!g_application.m_pPlayer->IsPlayingVideo())
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+  if (!appPlayer->IsPlayingVideo())
     m_thumbLoader.Load(*m_vecItems);
 
   return true;

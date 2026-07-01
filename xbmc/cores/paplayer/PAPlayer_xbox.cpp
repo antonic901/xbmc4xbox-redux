@@ -29,6 +29,8 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationVolumeHandling.h"
 #include "FileItem.h"
 
 #define VOLUME_FFWD_MUTE 900 // 9dB
@@ -409,9 +411,12 @@ bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersa
   dsed.dwRelease      = DWORD( 48000 * FADE_TIME / 512 );
   dsed.dwSustain      = 255;
 
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+
   m_pStream[num]->SetEG(&dsed);
   m_pStream[num]->SetHeadroom(0);
-  m_pStream[num]->SetVolume(g_application.GetVolume(false));
+  m_pStream[num]->SetVolume(appVolume->GetVolumeRatio());
   m_pStream[num]->Pause(DSSTREAMPAUSE_PAUSE);
 
   // TODO: How do we best handle the callback, given that our samplerate etc. may be
@@ -726,6 +731,9 @@ bool PAPlayer::ProcessPAP()
       m_decoder[1 - m_currentDecoder].Destroy();
     }
 
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+
     // if we're cross-fading, then we do this for both streams, otherwise
     // we do it just for the one stream.
     if (m_currentlyCrossFading)
@@ -734,7 +742,7 @@ bool PAPlayer::ProcessPAP()
       {
         CLog::Log(LOGDEBUG, "Finished Crossfading");
         m_currentlyCrossFading = false;
-        SetStreamVolume(m_currentStream, g_application.GetVolume(false));
+        SetStreamVolume(m_currentStream, appVolume->GetVolumeRatio());
         FreeStream(1 - m_currentStream);
         m_decoder[1 - m_currentDecoder].Destroy();
       }
@@ -746,8 +754,8 @@ bool PAPlayer::ProcessPAP()
         if (fraction < -0.499f) fraction = -0.499f;
         float volumeCurrent = 2000.0f * log10(0.5f - fraction);
         float volumeNext = 2000.0f * log10(0.5f + fraction);
-        SetStreamVolume(m_currentStream, g_application.GetVolume(false) + (int)volumeCurrent);
-        SetStreamVolume(1 - m_currentStream, g_application.GetVolume(false) + (int)volumeNext);
+        SetStreamVolume(m_currentStream, appVolume->GetVolumeRatio() + (int)volumeCurrent);
+        SetStreamVolume(1 - m_currentStream, appVolume->GetVolumeRatio() + (int)volumeNext);
         if (AddPacketsToStream(1 - m_currentStream, m_decoder[1 - m_currentDecoder]))
           retVal2 = RET_SUCCESS;
       }
@@ -767,13 +775,13 @@ void PAPlayer::ResetTime()
   m_bytesSentOut = 0;
 }
 
-__int64 PAPlayer::GetTime()
+__int64 PAPlayer::GetTime() const
 {
   __int64  timeplus = m_BytesPerSecond ? (__int64)(((float) m_bytesSentOut / (float)m_BytesPerSecond ) * 1000.0) : 0;
   return m_timeOffset + timeplus - m_currentFile->GetStartOffset() * 1000 / 75;
 }
 
-__int64 PAPlayer::GetTotalTime64()
+__int64 PAPlayer::GetTotalTime64() const
 {
   __int64 total = m_decoder[m_currentDecoder].TotalTime();
   if (m_currentFile->GetEndOffset())
@@ -783,7 +791,7 @@ __int64 PAPlayer::GetTotalTime64()
   return total;
 }
 
-int64_t PAPlayer::GetTotalTime()
+int64_t PAPlayer::GetTotalTime() const
 {
   return (int64_t)GetTotalTime64();
 }
@@ -927,7 +935,9 @@ bool PAPlayer::HandleFFwdRewd()
   if (m_IsFFwdRewding && m_iSpeed == 1)
   { // stop ffwd/rewd
     m_IsFFwdRewding = false;
-    SetVolume(g_application.GetVolume(false));
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+    SetVolume(appVolume->GetVolumeRatio());
     m_bytesSentOut = 0;
     FlushStreams();
     return true;
@@ -941,6 +951,9 @@ bool PAPlayer::HandleFFwdRewd()
     if (m_IsFFwdRewding) snippet = (int)m_bytesSentOut;
     time += (__int64)((double)snippet * (m_iSpeed - 1.0) / m_BytesPerSecond * 1000.0);
 
+    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
+
     // Is our offset inside the track range?
     if (time >= 0 && time <= m_decoder[m_currentDecoder].TotalTime())
     { // just set next position to read
@@ -949,7 +962,7 @@ bool PAPlayer::HandleFFwdRewd()
       m_timeOffset = m_decoder[m_currentDecoder].Seek(time);
       m_bytesSentOut = 0;
       FlushStreams();
-      SetVolume(g_application.GetVolume(false) - VOLUME_FFWD_MUTE); // override xbmc mute
+      SetVolume(appVolume->GetVolumeRatio() - VOLUME_FFWD_MUTE); // override xbmc mute
     }
     else if (time < 0)
     { // ...disable seeking and start the track again
@@ -958,12 +971,12 @@ bool PAPlayer::HandleFFwdRewd()
       m_bytesSentOut = 0;
       FlushStreams();
       m_iSpeed = 1;
-      SetVolume(g_application.GetVolume(false)); // override xbmc mute
+      SetVolume(appVolume->GetVolumeRatio()); // override xbmc mute
     } // is our next position greater then the end sector...
     else //if (time > m_codec->m_TotalTime)
     {
       // restore volume level so the next track isn't muted
-      SetVolume(g_application.GetVolume(false));
+      SetVolume(appVolume->GetVolumeRatio());
       CLog::Log(LOGDEBUG, "PAPlayer: End of track reached while seeking");
       return false;
     }

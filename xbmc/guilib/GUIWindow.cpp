@@ -400,9 +400,9 @@ void CGUIWindow::Close_Internal(bool forceClose /*= false*/, int nextWindowID /*
 void CGUIWindow::Close(bool forceClose /*= false*/, int nextWindowID /*= 0*/, bool enableSound /*= true*/, bool bWait /* = true */)
 {
 #ifdef HAS_XBOX_D3D
-  if (!g_application.IsCurrentThread() && !CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
+  if (!CServiceBroker::GetAppMessenger()->IsProcessThread() && !CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
 #else
-  if (!g_application.IsCurrentThread())
+  if (!CServiceBroker::GetAppMessenger()->IsProcessThread())
 #endif
   {
     // make sure graphics lock is not held
@@ -796,7 +796,7 @@ bool CGUIWindow::Initialize()
     return false;
   if (!NeedLoad())
     return true;
-  if (g_application.IsCurrentThread())
+  if (CServiceBroker::GetAppMessenger()->IsProcessThread())
     AllocResources(false);
   else
   {

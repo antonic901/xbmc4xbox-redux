@@ -88,7 +88,7 @@ CWeatherJob::CWeatherJob(int location)
 bool CWeatherJob::DoWork()
 {
   // wait for the network
-  if (!g_application.getNetwork().IsAvailable())
+  if (!CServiceBroker::GetNetwork().IsAvailable())
     return false;
 
   AddonPtr addon;

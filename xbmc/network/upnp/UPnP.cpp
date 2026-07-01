@@ -119,14 +119,14 @@ NPT_WinsockSystem NPT_WinsockSystem::Initializer;
 NPT_Result
 NPT_NetworkInterface::GetNetworkInterfaces(NPT_List<NPT_NetworkInterface*>& interfaces)
 {
-    if (!g_application.getNetwork().IsAvailable(true))
+    if (!CServiceBroker::GetNetwork().IsAvailable(true))
         return NPT_ERROR_NETWORK_DOWN;
 
     NPT_IpAddress primary_address;
-    primary_address.ResolveName(g_application.getNetwork().m_networkinfo.ip);
+    primary_address.ResolveName(CServiceBroker::GetNetwork().m_networkinfo.ip);
 
     NPT_IpAddress netmask;
-    netmask.ResolveName(g_application.getNetwork().m_networkinfo.subnet);
+    netmask.ResolveName(CServiceBroker::GetNetwork().m_networkinfo.subnet);
 
     NPT_IpAddress broadcast_address;
     broadcast_address.ResolveName("255.255.255.255");
@@ -134,7 +134,7 @@ NPT_NetworkInterface::GetNetworkInterfaces(NPT_List<NPT_NetworkInterface*>& inte
     NPT_Flags flags = NPT_NETWORK_INTERFACE_FLAG_BROADCAST | NPT_NETWORK_INTERFACE_FLAG_MULTICAST;
 
     NPT_MacAddress mac;
-    //mac.SetAddress(NPT_MacAddress::TYPE_ETHERNET, g_application.getNetwork().m_networkinfo.mac, 6);
+    //mac.SetAddress(NPT_MacAddress::TYPE_ETHERNET, CServiceBroker::GetNetwork().m_networkinfo.mac, 6);
 
     // create an interface object
     char iface_name[5];
@@ -290,7 +290,7 @@ CUPnP::CUPnP() :
     m_UPnP = new PLT_UPnP(1900, !broadcast);
 
     // keep main IP around
-    m_IP = g_application.getNetwork().m_networkinfo.ip;
+    m_IP = CServiceBroker::GetNetwork().m_networkinfo.ip;
     NPT_List<NPT_IpAddress> list;
     if (NPT_SUCCEEDED(PLT_UPnPMessageHelper::GetIPAddresses(list))) {
         m_IP = (*(list.GetFirstItem())).ToString();

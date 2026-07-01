@@ -29,14 +29,17 @@
 #include "GUIUserMessages.h"
 #include "MediaSource.h"
 #include "messaging/helpers/DialogHelper.h"
+#include "messaging/helpers/DialogOKHelper.h"
 #include "music/MusicDatabase.h"
 #include "music/MusicLibraryQueue.h"
+#include "music/infoscanner/MusicInfoScanner.h"
 #include "settings/LibExportSettings.h"
 #include "storage/MediaManager.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "video/VideoDatabase.h"
+#include "video/VideoLibraryQueue.h"
 
 using namespace KODI::MESSAGING;
 
@@ -49,20 +52,70 @@ static int CleanLibrary(const std::vector<std::string>& params)
   bool userInitiated = true;
   if (params.size() > 1)
     userInitiated = StringUtils::EqualsNoCase(params[1], "true");
-  if (!params.size() || StringUtils::EqualsNoCase(params[0], "video"))
+  if (!params.size() || StringUtils::EqualsNoCase(params[0], "video")
+                     || StringUtils::EqualsNoCase(params[0], "movies")
+                     || StringUtils::EqualsNoCase(params[0], "tvshows")
+                     || StringUtils::EqualsNoCase(params[0], "musicvideos"))
   {
-    if (!g_application.IsVideoScanning())
-      g_application.StartVideoCleanup(userInitiated);
+    if (!CVideoLibraryQueue::GetInstance().IsScanningLibrary())
+    {
+      if (userInitiated && CVideoLibraryQueue::GetInstance().IsRunning())
+        HELPERS::ShowOKDialogText(700, 703);
+      else
+      {
+        const std::string content = (params.empty() || params[0] == "video") ? "" : params[0];
+        const std::string directory = params.size() > 2 ? params[2] : "";
+
+        std::set<int> paths;
+        if (!content.empty() || !directory.empty())
+        {
+          CVideoDatabase db;
+          std::set<std::string> contentPaths;
+          if (db.Open())
+          {
+            if (!directory.empty())
+              contentPaths.insert(directory);
+            else
+              db.GetPaths(contentPaths);
+            for (std::set<std::string>::const_iterator path = contentPaths.begin(); path != contentPaths.end(); ++path)
+            {
+              if (db.GetContentForPath(*path) == content)
+              {
+                paths.insert(db.GetPathId(*path));
+                std::vector<std::pair<int, std::string> > sub;
+                if (db.GetSubPaths(*path, sub))
+                {
+                  for (std::vector<std::pair<int, std::string> >::const_iterator it = sub.begin(); it != sub.end(); ++it)
+                    paths.insert(it->first);
+                }
+              }
+            }
+          }
+          if (paths.empty())
+            return 0;
+        }
+
+        if (userInitiated)
+          CVideoLibraryQueue::GetInstance().CleanLibraryModal(paths);
+        else
+          CVideoLibraryQueue::GetInstance().CleanLibrary(paths, true);
+      }
+    }
     else
       CLog::Log(LOGERROR, "CleanLibrary is not possible while scanning or cleaning");
   }
   else if (StringUtils::EqualsNoCase(params[0], "music"))
   {
-    if (!g_application.IsMusicScanning())
-      g_application.StartMusicCleanup(userInitiated);
+    if (!CMusicLibraryQueue::GetInstance().IsScanningLibrary())
+    {
+      if (!(userInitiated && CMusicLibraryQueue::GetInstance().IsRunning()))
+        CMusicLibraryQueue::GetInstance().CleanLibrary(userInitiated);
+    }
     else
       CLog::Log(LOGERROR, "CleanLibrary is not possible while scanning for media info");
   }
+  else
+    CLog::Log(LOGERROR, "Unknown content type '{}' passed to CleanLibrary, ignoring", params[0]);
 
   return 0;
 }
@@ -260,17 +313,20 @@ static int UpdateLibrary(const std::vector<std::string>& params)
     userInitiated = StringUtils::EqualsNoCase(params[2], "true");
   if (StringUtils::EqualsNoCase(params[0], "music"))
   {
-    if (g_application.IsMusicScanning())
-      g_application.StopMusicScan();
+    if (CMusicLibraryQueue::GetInstance().IsScanningLibrary())
+      CMusicLibraryQueue::GetInstance().StopLibraryScanning();
     else
-      g_application.StartMusicScan(params.size() > 1 ? params[1] : "", userInitiated);
+      CMusicLibraryQueue::GetInstance().ScanLibrary(params.size() > 1 ? params[1] : "",
+                                                    MUSIC_INFO::CMusicInfoScanner::SCAN_NORMAL,
+                                                    userInitiated);
   }
   else if (StringUtils::EqualsNoCase(params[0], "video"))
   {
-    if (g_application.IsVideoScanning())
-      g_application.StopVideoScan();
+    if (CVideoLibraryQueue::GetInstance().IsScanningLibrary())
+      CVideoLibraryQueue::GetInstance().StopLibraryScanning();
     else
-      g_application.StartVideoScan(params.size() > 1 ? params[1] : "", userInitiated);
+      CVideoLibraryQueue::GetInstance().ScanLibrary(params.size() > 1 ? params[1] : "", false,
+                                                    userInitiated);
   }
 
   return 0;

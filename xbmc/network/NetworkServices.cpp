@@ -318,7 +318,7 @@ void CNetworkServices::Stop(bool bWait)
 bool CNetworkServices::StartTimeServer()
 {
 #ifdef HAS_TIME_SERVER
-  if (!g_application.getNetwork().IsAvailable())
+  if (!CServiceBroker::GetNetwork().IsAvailable())
     return false;
 
   if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.timeserver"))
@@ -372,7 +372,7 @@ void CNetworkServices::UpdateTimeServer()
 bool CNetworkServices::StartWebserver()
 {
 #ifdef HAS_WEB_SERVER
-  if (!g_application.getNetwork().IsAvailable())
+  if (!CServiceBroker::GetNetwork().IsAvailable())
     return false;
 
   if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.webserver"))
@@ -438,7 +438,7 @@ bool CNetworkServices::StopWebserver()
 bool CNetworkServices::StartFtpServer()
 {
 #ifdef HAS_FTP_SERVER
-  if (!g_application.getNetwork().IsAvailable())
+  if (!CServiceBroker::GetNetwork().IsAvailable())
     return false;
 
   if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpserver"))

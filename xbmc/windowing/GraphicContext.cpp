@@ -408,7 +408,7 @@ void CGraphicContext::GetAllowedResolutions(vector<RESOLUTION> &res, bool bAllow
 // call SetVideoResolutionInternal and ensure its done from mainthread
 void CGraphicContext::SetVideoResolution(RESOLUTION res, BOOL NeedZ, bool forceClear /* = false */)
 {
-  if (g_application.IsCurrentThread())
+  if (CServiceBroker::GetAppMessenger()->IsProcessThread())
   {
     SetVideoResolutionInternal(res, NeedZ, forceClear);
   }

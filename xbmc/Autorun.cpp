@@ -20,6 +20,9 @@
 
 #include "Autorun.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
+#include "application/ApplicationPowerHandling.h"
 #include "FileItem.h"
 #include "GUIPassword.h"
 #include "GUIUserMessages.h"
@@ -36,6 +39,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "storage/DetectDVDType.h"
 #include "storage/MediaManager.h"
 #include "video/VideoDatabase.h"
 #include "utils/URIUtils.h"
@@ -67,7 +71,10 @@ CAutorun::~CAutorun()
 
 void CAutorun::ExecuteAutorun( bool bypassSettings, bool ignoreplaying, bool restart )
 {
-  if ((!ignoreplaying && (g_application.m_pPlayer->IsPlayingAudio() || g_application.m_pPlayer->IsPlayingVideo() || CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog(true))) || CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_LOGIN_SCREEN)
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+
+  if ((!ignoreplaying && (appPlayer->IsPlayingAudio() || appPlayer->IsPlayingVideo() || CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog(true))) || CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_LOGIN_SCREEN)
     return ;
 
   CCdInfo* pInfo = CDetectDVDMedia::GetCdInfo();
@@ -75,7 +82,9 @@ void CAutorun::ExecuteAutorun( bool bypassSettings, bool ignoreplaying, bool res
   if ( pInfo == NULL )
     return ;
 
-  g_application.ResetScreenSaverWindow();  // turn off the screensaver if it's active
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+  appPower->ResetScreenSaver();
+  appPower->WakeUpScreenSaverAndDPMS(); // turn off the screensaver if it's active
 
   if ( pInfo->IsAudio( 1 ) )
   {

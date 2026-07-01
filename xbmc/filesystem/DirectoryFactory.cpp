@@ -125,7 +125,7 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
 #endif
   if (url.IsProtocol("resource")) return new CResourceDirectory();
 
-  if( g_application.getNetwork().IsAvailable(true) )
+  if( CServiceBroker::GetNetwork().IsAvailable(true) )
   {
     if (url.IsProtocol("ftp") ||  url.IsProtocol("ftpx") ||  url.IsProtocol("ftps")) return new CFTPDirectory();
     if (url.IsProtocol("http") || url.IsProtocol("https")) return new CHTTPDirectory();
