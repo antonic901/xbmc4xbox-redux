@@ -18,13 +18,14 @@
  *
  */
 
-#include "system.h"
-#include "utils/log.h"
 #include "XBoxRenderer.h"
-#include "application/Application.h"
+
+#include "XBVideoConfig.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
-#include "XBVideoConfig.h"
+#include "application/ApplicationXbox.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
@@ -32,6 +33,8 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
+#include "utils/log.h"
+#include "video/windows/GUIWindowFullScreen.h"
 
 #include "defs_from_settings.h"
 
@@ -1067,16 +1070,20 @@ void CXBoxRenderer::Render(DWORD flags)
 
   if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
   {
-    if (g_application.NeedRenderFullScreen())
-    { // render our subtitles and osd
-      g_application.RenderFullScreen();
+    // render our subtitles and osd
+    CGUIWindowFullScreen *pFSWin = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowFullScreen>(WINDOW_FULLSCREEN_VIDEO);
+    if (pFSWin && pFSWin->NeedRenderFullScreen())
+    {
+      pFSWin->RenderFullScreen();
+      if (CServiceBroker::GetGUI()->GetWindowManager().HasVisibleModalDialog())
+        CServiceBroker::GetGUI()->GetWindowManager().RenderDialogs();
     }
 
     const CApplicationComponents &components = CServiceBroker::GetAppComponents();
     const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
     if (!appPlayer->IsPaused())
     {
-      g_application.RenderMemoryStatus();
+      components.GetComponent<CApplicationXbox>()->RenderMemoryStatus();
     }
   }
 }

@@ -18,17 +18,20 @@
  *
  */
 
-#include "utils/log.h"
 #include "ComboRenderer.h"
+
 #include "application/Application.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPowerHandling.h"
-#include "settings/DisplaySettings.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
+#include "utils/log.h"
+#include "video/windows/GUIWindowFullScreen.h"
 
 CComboRenderer::CComboRenderer(LPDIRECT3DDEVICE8 pDevice)
     : CXBoxRenderer(pDevice)
@@ -493,9 +496,16 @@ void CComboRenderer::SetupScreenshot()
 
   RenderOSD();
 
-  if (g_application.NeedRenderFullScreen())
-  { // render our subtitles and osd
-    g_application.RenderFullScreen();
+  if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo())
+  {
+    // render our subtitles and osd
+    CGUIWindowFullScreen *pFSWin = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIWindowFullScreen>(WINDOW_FULLSCREEN_VIDEO);
+    if (pFSWin && pFSWin->NeedRenderFullScreen())
+    {
+      pFSWin->RenderFullScreen();
+      if (CServiceBroker::GetGUI()->GetWindowManager().HasVisibleModalDialog())
+        CServiceBroker::GetGUI()->GetWindowManager().RenderDialogs();
+    }
   }
 
   m_pD3DDevice->Present( NULL, NULL, NULL, NULL );
