@@ -473,7 +473,7 @@ void PAPlayer::Process()
   {
     m_startEvent.Reset();
 
-    m_callback.OnPlayBackStarted();
+    m_callback.OnPlayBackStarted(*m_currentFile);
 
     do
     {
@@ -591,7 +591,7 @@ bool PAPlayer::ProcessPAP()
           CLog::Log(LOGDEBUG, "Starting Crossfade - resuming stream %i", m_currentStream);
 
           m_pStream[m_currentStream]->Pause(DSSTREAMPAUSE_RESUME);
-          m_callback.OnPlayBackStarted();
+          m_callback.OnPlayBackStarted(*m_nextFile);
           m_timeOffset = m_nextFile->GetStartOffset() * 1000 / 75;
           m_bytesSentOut = 0;
           *m_currentFile = *m_nextFile;
@@ -655,7 +655,7 @@ bool PAPlayer::ProcessPAP()
 
             m_decoder[m_currentDecoder].Destroy();
             m_decoder[1 - m_currentDecoder].Start();
-            m_callback.OnPlayBackStarted();
+            m_callback.OnPlayBackStarted(*m_nextFile);
             m_timeOffset = m_nextFile->GetStartOffset() * 1000 / 75;
             m_bytesSentOut = 0;
             *m_currentFile = *m_nextFile;
@@ -700,7 +700,7 @@ bool PAPlayer::ProcessPAP()
       {
         // set the next track playing (.cue sheet)
         m_decoder[m_currentDecoder].SetStatus(STATUS_PLAYING);
-        m_callback.OnPlayBackStarted();
+        m_callback.OnPlayBackStarted(*m_nextFile);
         m_timeOffset = m_nextFile->GetStartOffset() * 1000 / 75;
         m_bytesSentOut = 0;
         *m_currentFile = *m_nextFile;

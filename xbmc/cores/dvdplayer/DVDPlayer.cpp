@@ -900,7 +900,7 @@ void CDVDPlayer::Process()
   UpdatePlayState(0);
 
   if(m_PlayerOptions.identify == false)
-    m_callback.OnPlayBackStarted();
+    m_callback.OnPlayBackStarted(m_item);
 
   // we are done initializing now, set the readyevent
   m_ready.Set();
