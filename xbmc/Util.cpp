@@ -23,6 +23,7 @@
 #include "application/Application.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
+#include "application/ApplicationXbox.h"
 #include "AutoPtrHandle.h"
 #include "video/windows/GUIWindowVideoBase.h"
 #include "Util.h"
@@ -831,19 +832,18 @@ bool CUtil::CacheXBEIcon(const std::string& strFilePath, const std::string& strI
   return success;
 }
 
-bool CUtil::GetDirectoryName(const CStdString& strFileName, CStdString& strDescription)
+bool CUtil::GetDirectoryName(const std::string& strFileName, std::string& strDescription)
 {
-  CStdString strFName = URIUtils::GetFileName(strFileName);
-  strDescription = strFileName.Left(strFileName.size() - strFName.size());
+  std::string strFName = URIUtils::GetFileName(strFileName);
+  strDescription = strFileName.substr(0, strFileName.size() - strFName.size());
   URIUtils::RemoveSlashAtEnd(strDescription);
 
-  int iPos = strDescription.ReverseFind("\\");
+  int iPos = strDescription.find_last_of("\\");
   if (iPos < 0)
-    iPos = strDescription.ReverseFind("/");
+    iPos = strDescription.find_last_of("/");
   if (iPos >= 0)
   {
-    CStdString strTmp = strDescription.Right(strDescription.size()-iPos-1);
-    strDescription = strTmp;//strDescription.Right(strDescription.size() - iPos - 1);
+    strDescription = strDescription.substr(iPos + 1);
   }
   else if (strDescription.size() <= 0)
     strDescription = strFName;
@@ -3084,11 +3084,6 @@ bool CUtil::MakeShortenPath(std::string StrInput, std::string& StrOutput, size_t
   return true;
 }
 
-float CUtil::CurrentCpuUsage()
-{
-  return (1.0f - g_application.m_idleThread.GetRelativeUsage())*100;
-}
-
 bool CUtil::SupportsWriteFileOperations(const CStdString& strPath)
 {
   // currently only hd,smb and dav support delete and rename
@@ -3424,7 +3419,9 @@ void CUtil::RunXBE(const char* szPath1, char* szParameters, F_VIDEO ForceVideo, 
   /// \brief Runs an executable file
   /// \param szPath1 Path of executeable to run
   /// \param szParameters Any parameters to pass to the executeable being run
-  g_application.PrintXBEToLCD(szPath1); //write to LCD
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+  appXbox->PrintXBETitleToLCD(szPath1); //write to LCD
   Sleep(600);        //and wait a little bit to execute
 
   char szPath[1024];

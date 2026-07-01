@@ -2789,35 +2789,7 @@ int CXbmcHttp::xbmcGetSystemInfoByName(int numParas, CStdString paras[])
 
 int CXbmcHttp::xbmcSpinDownHardDisk(int numParas, CStdString paras[])
 {
-  if (numParas==1 && paras[0].ToLower()=="false")
-  {
-      if (g_application.m_dwSpinDownTime!=0)
-        return SetResponse(openTag+"OK:Not spun down");
-      else
-      {
-        #ifdef HAS_XBOX_HARDWARE
-        XKHDD::SpindownHarddisk(false);
-      #endif
-        g_application.m_dwSpinDownTime = timeGetTime();
-        return SetResponse(openTag+"OK");
-      }
-  }
-  if (g_application.m_dwSpinDownTime==0)
-      return SetResponse(openTag+"OK:Already spin down");
-  if (CServiceBroker::GetGUI()->GetWindowManager().HasModalDialog(true))
-      return SetResponse(openTag+"Error:Can't spin down now (modal dialog)");
-  if (g_application.MustBlockHDSpinDown())
-      return SetResponse(openTag+"Error:Can't spin down now (must block)");
-  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
-  const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
-  if (appPlayer->IsPlaying() && g_application.CurrentFileItem().IsHD())
-      return SetResponse(openTag+"Error:Can't spin down now (playing media on hard disk)");
-  #ifdef HAS_XBOX_HARDWARE
-    XKHDD::SpindownHarddisk();
-  #endif
-  g_application.m_dwSpinDownTime = 0;
-  g_application.m_bSpinDown = true;
-  return SetResponse(openTag+"OK");
+  return SetResponse(openTag+"Error:Not supported!");
 }
 
 bool CXbmcHttp::xbmcBroadcast(CStdString message, int level)

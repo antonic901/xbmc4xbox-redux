@@ -72,4 +72,3 @@ private:
   std::vector<KODI::GUILIB::GUIINFO::CGUIInfoLabel> m_lcdMode[LCD_MODE_MAX];
   UINT m_eCurrentCharset;
 };
-extern ILCD* g_lcd;

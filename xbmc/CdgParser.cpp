@@ -22,6 +22,8 @@
 #include "utils/log.h"
 #include "CdgParser.h"
 #include "application/Application.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationXbox.h"
 #include "utils/URIUtils.h"
 #include "AudioContext.h"
 #include "GUIInfoManager.h"
@@ -780,7 +782,9 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
   #ifndef HAS_XBOX_AUDIO
   #define XVOICE_MASK_PARAM_DISABLED (-1.0f)
   #endif
-      VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+      const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<const CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+      VOICE_MASK karaokeVoiceMask = appXbox->GetKaraokeVoiceMask(port);
       karaokeVoiceMask.energy = XVOICE_MASK_PARAM_DISABLED;
       karaokeVoiceMask.pitch = XVOICE_MASK_PARAM_DISABLED;
       karaokeVoiceMask.whisper = XVOICE_MASK_PARAM_DISABLED;
@@ -797,6 +801,9 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
     if ( strValue != "VoiceMasks") return ;
     if (pRootElement)
     {
+      const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<const CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+
       const TiXmlNode *pChild = pRootElement->FirstChild("Name");
       while (pChild)
       {
@@ -814,7 +821,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
                 if (pChild->FirstChild())
                 {
                   CStdString strName = pChild->FirstChild()->Value();
-                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                  VOICE_MASK karaokeVoiceMask = appXbox->GetKaraokeVoiceMask(port);
                   karaokeVoiceMask.energy = (float) atof(strName.c_str());
                 }
               }
@@ -823,7 +830,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
                 if (pChild->FirstChild())
                 {
                   CStdString strName = pChild->FirstChild()->Value();
-                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                  VOICE_MASK karaokeVoiceMask = appXbox->GetKaraokeVoiceMask(port);
                   karaokeVoiceMask.pitch = (float) atof(strName.c_str());
                 }
               }
@@ -832,7 +839,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
                 if (pChild->FirstChild())
                 {
                   CStdString strName = pChild->FirstChild()->Value();
-                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                  VOICE_MASK karaokeVoiceMask = appXbox->GetKaraokeVoiceMask(port);
                   karaokeVoiceMask.whisper = (float) atof(strName.c_str());
                 }
               }
@@ -841,7 +848,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
                 if (pChild->FirstChild())
                 {
                   CStdString strName = pChild->FirstChild()->Value();
-                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                  VOICE_MASK karaokeVoiceMask = appXbox->GetKaraokeVoiceMask(port);
                   karaokeVoiceMask.robotic = (float) atof(strName.c_str());
                 }
               }

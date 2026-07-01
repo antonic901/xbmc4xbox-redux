@@ -28,6 +28,7 @@
 #include "application/ApplicationSkinHandling.h"
 #include "application/ApplicationStackHelper.h"
 #include "application/ApplicationVolumeHandling.h"
+#include "application/ApplicationXbox.h"
 #include "cores/IPlayer.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "dialogs/GUIDialogBusy.h"
@@ -194,10 +195,12 @@ CApplication::CApplication(void)
   RegisterComponent(boost::make_shared<CApplicationSkinHandling>(this, this, m_bInitializing));
   RegisterComponent(boost::make_shared<CApplicationVolumeHandling>());
   RegisterComponent(boost::make_shared<CApplicationStackHelper>());
+  RegisterComponent(boost::make_shared<CApplicationXbox>());
 }
 
 CApplication::~CApplication(void)
 {
+  DeregisterComponent(typeid(CApplicationXbox));
   DeregisterComponent(typeid(CApplicationStackHelper));
   DeregisterComponent(typeid(CApplicationVolumeHandling));
   DeregisterComponent(typeid(CApplicationSkinHandling));

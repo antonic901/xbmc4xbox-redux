@@ -120,7 +120,7 @@ public:
    \return md5 sum of the file
    */
   static std::string GetFileDigest(const std::string& strPath, KODI::UTILITY::CDigest::Type type);
-  static bool GetDirectoryName(const CStdString& strFileName, CStdString& strDescription);
+  static bool GetDirectoryName(const std::string& strFileName, std::string& strDescription);
   static void CreateShortcuts(CFileItemList &items);
   static void CreateShortcut(CFileItem* pItem);
   static std::string GetFatXQualifiedPath(const std::string& strPath);
@@ -194,7 +194,6 @@ public:
 
   static double AlbumRelevance(const CStdString& strAlbumTemp1, const CStdString& strAlbum1, const CStdString& strArtistTemp1, const CStdString& strArtist1);
   static bool MakeShortenPath(std::string StrInput, std::string& StrOutput, size_t iTextMaxLength);
-  static float CurrentCpuUsage();
   /*! \brief Checks wether the supplied path supports Write file operations (e.g. Rename, Delete, ...)
 
    \param strPath the path to be checked

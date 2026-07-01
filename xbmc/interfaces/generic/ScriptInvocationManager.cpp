@@ -13,7 +13,9 @@
 #include <utility>
 #include <vector>
 
-#include "application/Application.h"
+#include "ServiceBroker.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationXbox.h"
 #include "filesystem/File.h"
 #include "interfaces/generic/ILanguageInvocationHandler.h"
 #include "interfaces/generic/ILanguageInvoker.h"
@@ -293,7 +295,9 @@ int CScriptInvocationManager::ExecuteAsync(const std::string &script,
   CLanguageInvokerThreadPtr invokerThread = m_lastInvokerThread;
 
 #ifdef _XBOX
-  if (!g_application.m_128MBHack)
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+  if (!appXbox->HasMemoryUpgrade())
     m_lastInvokerThread.reset();
 #endif
 

@@ -29,6 +29,7 @@
 #include "application/Application.h" // Karaoke patch (114097)
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationVolumeHandling.h"
+#include "application/ApplicationXbox.h"
 #include "AudioContext.h"
 #include "CdgParser.h"
 #include "MPlayer.h"
@@ -258,8 +259,9 @@ HRESULT CASyncDirectSound::Deinitialize()
 
   // CDGParser needs to be close since closefile could be called from mplayer
   // WHY?????, what does it matter who removes this for the cdg parser?
-  if( g_application.m_pCdgParser )
-    g_application.m_pCdgParser->Stop();
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+  appXbox->GetCdgParser()->Stop();
 
   m_bIsAllocated = false;
   if (m_pStream)

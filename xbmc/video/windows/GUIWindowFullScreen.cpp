@@ -24,6 +24,7 @@
 #include "application/Application.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
+#include "application/ApplicationXbox.h"
 #include "Util.h"
 #ifdef HAS_VIDEO_PLAYBACK
 #include "cores/VideoRenderers/RenderManager.h"
@@ -702,7 +703,7 @@ void CGUIWindowFullScreen::RenderFullScreen()
     appPlayer->GetGeneralInfo(strGeneral);
     {
       CStdString strGeneralFPS;
-      float fCpuUsage = CUtil::CurrentCpuUsage();
+      float fCpuUsage = components.GetComponent<CApplicationXbox>()->GetCPUUsage();
 
       strGeneralFPS.Format("%s\nW( fps:%02.2f cpu:%02.2f )", strGeneral.c_str(), CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetSystemInfoProvider().GetFPS(), fCpuUsage);
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW3);
