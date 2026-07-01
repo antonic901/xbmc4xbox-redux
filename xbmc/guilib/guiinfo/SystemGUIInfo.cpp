@@ -11,6 +11,7 @@
 #include "application/Application.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPowerHandling.h"
+#include "application/ApplicationXbox.h"
 #include "FileItem.h"
 #include "GUIPassword.h"
 #include "LangInfo.h"
@@ -71,8 +72,12 @@ std::string CSystemGUIInfo::GetSystemHeatInfo(int info) const
       text = StringUtils::Format("%i%%", m_fanSpeed * 2);
       break;
     case SYSTEM_CPU_USAGE:
-      text = StringUtils::Format("%2.0f%%", (1.0f - g_application.m_idleThread.GetRelativeUsage()) * 100.0f);
+    {
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+      text = StringUtils::Format("%2.0f%%", appXbox->GetCPUUsage());
       break;
+    }
   }
   return text;
 }
@@ -255,8 +260,12 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("services.devicename");
       return true;
     case SYSTEM_GET_CORE_USAGE:
-      value = StringUtils::Format("%4.2f", 100 - ((int)(100.0f *g_application.m_idleThread.GetRelativeUsage())));
+    {
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+      value = StringUtils::Format("%4.2f", appXbox->GetCPUUsage());
       return true;
+    }
     case SYSTEM_RENDER_VENDOR:
       value = "Microsoft";
       return true;
@@ -342,8 +351,12 @@ bool CSystemGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWi
       return true;
     }
     case SYSTEM_CPU_USAGE:
-      value = 100 - static_cast<int>(100.0f * g_application.m_idleThread.GetRelativeUsage());
+    {
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+      value = static_cast<int>(appXbox->GetCPUUsage());
       return true;
+    }
     case SYSTEM_BATTERY_LEVEL:
       value = 0;
       return true;

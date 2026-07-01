@@ -5184,6 +5184,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\application\ApplicationVolumeHandling.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\application\ApplicationXbox.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\application\ApplicationXbox.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\application\IApplicationComponent.h">
 				</File>
 			</Filter>

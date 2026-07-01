@@ -275,6 +275,17 @@ const char* CSettings::SETTING_SOURCE_VIDEOS = "source.videos";
 const char* CSettings::SETTING_SOURCE_MUSIC = "source.music";
 const char* CSettings::SETTING_SOURCE_PICTURES = "source.pictures";
 const char* CSettings::SETTING_FILECACHE_BUFFERMODE = "filecache.buffermode";
+const char* CSettings::SETTING_HDD_REMOTE_PLAY_SPINDOWN = "harddisk.remoteplayspindown";
+const char* CSettings::SETTING_HDD_REMOTE_PLAY_SPINDOWN_DURATION = "harddisk.remoteplayspindownminduration";
+const char* CSettings::SETTING_HDD_REMOTE_PLAY_SPINDOWN_DELAY = "harddisk.remoteplayspindowndelay";
+const char* CSettings::SETTING_HDD_SPINDOWN_TIME = "harddisk.spindowntime";
+const char* CSettings::SETTING_KARAOKE_CHARSET = "karaoke.charset";
+const char* CSettings::SETTING_KARAOKE_EXPORT = "karaoke.export";
+const char* CSettings::SETTING_KARAOKE_IMPORT = "karaoke.importcsv";
+const char* CSettings::SETTING_KARAOKE_PORT_ONE_VOICEMASK = "karaoke.port0voicemask";
+const char* CSettings::SETTING_KARAOKE_PORT_TWO_VOICEMASK = "karaoke.port1voicemask";
+const char* CSettings::SETTING_KARAOKE_PORT_THREE_VOICEMASK = "karaoke.port2voicemask";
+const char* CSettings::SETTING_KARAOKE_PORT_FOUR_VOICEMASK = "karaoke.port3voicemask";
 
 bool CSettings::Initialize()
 {
@@ -676,8 +687,6 @@ void CSettings::InitializeISettingCallbacks()
 {
   // register any ISettingCallback implementations
   std::set<std::string> settingSet;
-  settingSet.insert("karaoke.export");
-  settingSet.insert("karaoke.importcsv");
   settingSet.insert(CSettings::SETTING_MUSICLIBRARY_CLEANUP);
   settingSet.insert(CSettings::SETTING_MUSICLIBRARY_EXPORT);
   settingSet.insert(CSettings::SETTING_MUSICLIBRARY_IMPORT);
@@ -711,10 +720,6 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert("audiooutput.mp3passthrough");
   settingSet.insert("harddisk.aamlevel");
   settingSet.insert("harddisk.apmlevel");
-  settingSet.insert("karaoke.port0voicemask");
-  settingSet.insert("karaoke.port1voicemask");
-  settingSet.insert("karaoke.port2voicemask");
-  settingSet.insert("karaoke.port3voicemask");
   settingSet.insert("lcd.backlight");
   settingSet.insert("lcd.contrast");
   settingSet.insert("lcd.modchip");
@@ -749,7 +754,7 @@ void CSettings::InitializeISettingCallbacks()
 
   settingSet.clear();
   settingSet.insert(CSettings::SETTING_SUBTITLES_CHARSET);
-  settingSet.insert("karaoke.charset");
+  settingSet.insert(CSettings::SETTING_KARAOKE_CHARSET);
   settingSet.insert(CSettings::SETTING_LOCALE_CHARSET);
   GetSettingsManager()->RegisterCallback(&g_charsetConverter, settingSet);
 

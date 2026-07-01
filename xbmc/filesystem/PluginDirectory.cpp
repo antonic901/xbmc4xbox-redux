@@ -8,10 +8,11 @@
 
 #include "PluginDirectory.h"
 
-#include "application/Application.h"
 #include "FileItem.h"
 #include "ServiceBroker.h"
 #include "URL.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationXbox.h"
 #include "addons/AddonInstaller.h"
 #include "addons/AddonManager.h"
 #include "addons/IAddon.h"
@@ -193,7 +194,9 @@ bool CPluginDirectory::StartScript(const std::string& strPath, bool retrievingDi
   std::string file = m_addon->LibPath();
   bool reuseLanguageInvoker = false;
 #ifdef _XBOX
-  if (g_application.m_128MBHack && m_addon->ExtraInfo().find("reuselanguageinvoker") != m_addon->ExtraInfo().end())
+  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<const CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+  if (appXbox->HasMemoryUpgrade() && m_addon->ExtraInfo().find("reuselanguageinvoker") != m_addon->ExtraInfo().end())
 #else
   if (m_addon->ExtraInfo().find("reuselanguageinvoker") != m_addon->ExtraInfo().end())
 #endif

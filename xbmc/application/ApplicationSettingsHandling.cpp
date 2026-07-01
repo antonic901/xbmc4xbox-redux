@@ -18,6 +18,7 @@
 #include "application/ApplicationPowerHandling.h"
 #include "application/ApplicationSkinHandling.h"
 #include "application/ApplicationVolumeHandling.h"
+#include "application/ApplicationXbox.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "messaging/ApplicationMessenger.h"
@@ -51,6 +52,12 @@ void CApplicationSettingsHandling::RegisterSettings()
   temp.insert(CSettings::SETTING_AUDIOOUTPUT_MP1PASSTHROUGH);
   temp.insert(CSettings::SETTING_AUDIOOUTPUT_MP2PASSTHROUGH);
   temp.insert(CSettings::SETTING_AUDIOOUTPUT_MP3PASSTHROUGH);
+  temp.insert(CSettings::SETTING_KARAOKE_EXPORT);
+  temp.insert(CSettings::SETTING_KARAOKE_IMPORT);
+  temp.insert(CSettings::SETTING_KARAOKE_PORT_ONE_VOICEMASK);
+  temp.insert(CSettings::SETTING_KARAOKE_PORT_TWO_VOICEMASK);
+  temp.insert(CSettings::SETTING_KARAOKE_PORT_THREE_VOICEMASK);
+  temp.insert(CSettings::SETTING_KARAOKE_PORT_FOUR_VOICEMASK);
   temp.insert(CSettings::SETTING_LOOKANDFEEL_SKIN);
   temp.insert(CSettings::SETTING_LOOKANDFEEL_SKINSETTINGS);
   temp.insert(CSettings::SETTING_LOOKANDFEEL_FONT);
@@ -120,6 +127,10 @@ void CApplicationSettingsHandling::OnSettingChanged(const boost::shared_ptr<cons
   if (appVolume->OnSettingChanged(*setting))
     return;
 
+  const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+  if (appXbox->OnSettingChanged(*setting))
+    return;
+
   const std::string& settingId = setting->GetId();
 
   if (StringUtils::StartsWithNoCase(settingId, "audiooutput."))
@@ -151,6 +162,10 @@ void CApplicationSettingsHandling::OnSettingAction(const boost::shared_ptr<const
   if (appPower->OnSettingAction(*setting))
     return;
 
+  const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+  if (appXbox->OnSettingAction(*setting))
+    return;
+
   const std::string& settingId = setting->GetId();
   if (settingId == CSettings::SETTING_LOOKANDFEEL_SKINSETTINGS)
     CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_SKIN_SETTINGS);
@@ -178,12 +193,26 @@ bool CApplicationSettingsHandling::Load(const TiXmlNode* settings)
 {
   CApplicationComponents &components = CServiceBroker::GetAppComponents();
   const boost::shared_ptr<CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
-  return appVolume->Load(settings);
+  if (!appVolume->Load(settings))
+    return false;
+
+  const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+  if (!appXbox->Load(settings))
+    return false;
+
+  return true;
 }
 
 bool CApplicationSettingsHandling::Save(TiXmlNode* settings) const
 {
   const CApplicationComponents &components = CServiceBroker::GetAppComponents();
   const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
-  return appVolume->Save(settings);
+  if (!appVolume->Save(settings))
+    return false;
+
+  const boost::shared_ptr<const CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+  if (!appXbox->Save(settings))
+    return false;
+
+  return true;
 }

@@ -20,13 +20,14 @@
  *
  */
 
-#include "LCD.h"
+class ILCD;
 
 class CLCDFactory
 {
 public:
-  CLCDFactory(void);
-  virtual ~CLCDFactory(void);
-  ILCD* Create();
+  CLCDFactory() {}
+  virtual ~CLCDFactory() {}
+
+  static ILCD* Create();
 };
 

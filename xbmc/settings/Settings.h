@@ -251,6 +251,17 @@ public:
   static const char* SETTING_SOURCE_MUSIC;
   static const char* SETTING_SOURCE_PICTURES;
   static const char* SETTING_FILECACHE_BUFFERMODE;
+  static const char* SETTING_HDD_REMOTE_PLAY_SPINDOWN;
+  static const char* SETTING_HDD_REMOTE_PLAY_SPINDOWN_DURATION;
+  static const char* SETTING_HDD_REMOTE_PLAY_SPINDOWN_DELAY;
+  static const char* SETTING_HDD_SPINDOWN_TIME;
+  static const char* SETTING_KARAOKE_CHARSET;
+  static const char* SETTING_KARAOKE_EXPORT;
+  static const char* SETTING_KARAOKE_IMPORT;
+  static const char* SETTING_KARAOKE_PORT_ONE_VOICEMASK;
+  static const char* SETTING_KARAOKE_PORT_TWO_VOICEMASK;
+  static const char* SETTING_KARAOKE_PORT_THREE_VOICEMASK;
+  static const char* SETTING_KARAOKE_PORT_FOUR_VOICEMASK;
 
   // values for SETTING_VIDEOLIBRARY_SHOWUNWATCHEDPLOTS
   static const int VIDEOLIBRARY_PLOTS_SHOW_UNWATCHED_MOVIES = 0;

@@ -20,10 +20,12 @@
 
 #include "CdgVoiceManager.h"
 #include "AudioContext.h"
+#include "ServiceBroker.h"
+#include "application/ApplicationComponents.h"
 #include "application/ApplicationVolumeHandling.h"
+#include "application/ApplicationXbox.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "application/Application.h"
 
 //CdgChatter
 CCdgChatter::CCdgChatter()
@@ -233,10 +235,12 @@ void CCdgChatter::LoadSettings()
     if (!m_pVoiceMask)
       m_pVoiceMask = new XVOICE_MASK;
     if (!m_pVoiceMask) return ;
-    m_pVoiceMask->fSpecEnergyWeight = g_application.GetKaraokeVoiceMask(m_dwPort).energy;
-    m_pVoiceMask->fPitchScale = g_application.GetKaraokeVoiceMask(m_dwPort).pitch;
-    m_pVoiceMask->fWhisperValue = g_application.GetKaraokeVoiceMask(m_dwPort).whisper;
-    m_pVoiceMask->fRoboticValue = g_application.GetKaraokeVoiceMask(m_dwPort).robotic;
+    CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+    m_pVoiceMask->fSpecEnergyWeight = appXbox->GetKaraokeVoiceMask(m_dwPort).energy;
+    m_pVoiceMask->fPitchScale = appXbox->GetKaraokeVoiceMask(m_dwPort).pitch;
+    m_pVoiceMask->fWhisperValue = appXbox->GetKaraokeVoiceMask(m_dwPort).whisper;
+    m_pVoiceMask->fRoboticValue = appXbox->GetKaraokeVoiceMask(m_dwPort).robotic;
   }
   //Calculate other useful constants
   DWORD dwSamplingRate, dwVoicePacketTime;
