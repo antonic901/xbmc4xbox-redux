@@ -25,14 +25,6 @@
 
 
 //-----------------------------------------------------------------------------
-// Error codes
-//-----------------------------------------------------------------------------
-#define XBAPPERR_MEDIANOTFOUND       0x82000003
-
-
-
-
-//-----------------------------------------------------------------------------
 // Name: class CXBApplicationEx
 // Desc: A base class for creating sample Xbox applications. To create a simple
 //       Xbox application, simply derive this class and override the following
@@ -53,13 +45,6 @@ public:
   //LPDIRECT3DSURFACE8    m_pDepthBuffer;      // The depth buffer
 
   // Variables for timing
-  FLOAT m_fTime;             // Current absolute time in seconds
-  FLOAT m_fElapsedTime;      // Elapsed absolute time since last frame
-  FLOAT m_fAppTime;          // Current app time in seconds
-  FLOAT m_fElapsedAppTime;   // Elapsed app time since last frame
-  BOOL m_bPaused;           // Whether app time is paused by user
-  WCHAR m_strFrameRate[20];  // Frame rate written to a CStdString
-  HANDLE m_hFrameCounter;     // Handle to frame rate perf counter
   bool m_bStop;
 #ifdef HAS_GAMEPAD
   // Members to init the XINPUT devices.

@@ -44,12 +44,6 @@ CXBApplicationEx::CXBApplicationEx()
   m_pBackBuffer = NULL;
 
   // Variables to perform app timing
-  m_bPaused = FALSE;
-  m_fTime = 0.0f;
-  m_fElapsedTime = 0.0f;
-  m_fAppTime = 0.0f;
-  m_fElapsedAppTime = 0.0f;
-  m_strFrameRate[0] = L'\0';
   m_bStop = false;
 
   // Set up the presentation parameters for a double-buffered, 640x480,
@@ -124,57 +118,9 @@ INT CXBApplicationEx::Run()
 {
   CLog::Log(LOGNOTICE, "Running the application..." );
 
-  // Get the frequency of the timer
-  LARGE_INTEGER qwTicksPerSec;
-  QueryPerformanceFrequency( &qwTicksPerSec );
-  FLOAT fSecsPerTick = 1.0f / (FLOAT)qwTicksPerSec.QuadPart;
-
-  // Save the start time
-  LARGE_INTEGER qwTime, qwLastTime, qwElapsedTime;
-  QueryPerformanceCounter( &qwTime );
-  qwLastTime.QuadPart = qwTime.QuadPart;
-
-  LARGE_INTEGER qwAppTime, qwElapsedAppTime;
-  qwAppTime.QuadPart = 0;
-  qwElapsedTime.QuadPart = 0;
-  qwElapsedAppTime.QuadPart = 0;
-
-  BYTE processExceptionCount = 0;
-  BYTE frameMoveExceptionCount = 0;
-  BYTE renderExceptionCount = 0;
-
-  const BYTE MAX_EXCEPTION_COUNT = 10;
-
   // Run the game loop, animating and rendering frames
   while (!m_bStop)
   {
-
-
-    //-----------------------------------------
-    // Perform app timing
-    //-----------------------------------------
-
-    // Check Start button
-#ifdef HAS_GAMEPAD
-    if ( m_DefaultGamepad.wPressedButtons & XINPUT_GAMEPAD_START )
-#endif
-      m_bPaused = !m_bPaused;
-
-    // Get the current time (keep in LARGE_INTEGER format for precision)
-    QueryPerformanceCounter( &qwTime );
-    qwElapsedTime.QuadPart = qwTime.QuadPart - qwLastTime.QuadPart;
-    qwLastTime.QuadPart = qwTime.QuadPart;
-    if ( m_bPaused )
-      qwElapsedAppTime.QuadPart = 0;
-    else
-      qwElapsedAppTime.QuadPart = qwElapsedTime.QuadPart;
-    qwAppTime.QuadPart += qwElapsedAppTime.QuadPart;
-
-    // Store the current time values as floating point
-    m_fTime = fSecsPerTick * ((FLOAT)(qwTime.QuadPart));
-    m_fElapsedTime = fSecsPerTick * ((FLOAT)(qwElapsedTime.QuadPart));
-    m_fAppTime = fSecsPerTick * ((FLOAT)(qwAppTime.QuadPart));
-    m_fElapsedAppTime = fSecsPerTick * ((FLOAT)(qwElapsedAppTime.QuadPart));
 
     //-----------------------------------------
     // Animate and render a frame
@@ -184,8 +130,6 @@ INT CXBApplicationEx::Run()
     {
 #endif
       Process();
-      //reset exception count
-      processExceptionCount = 0;
 
 #ifndef _DEBUG
 
@@ -193,13 +137,6 @@ INT CXBApplicationEx::Run()
     catch (...)
     {
       CLog::Log(LOGERROR, "exception in CApplication::Process()");
-      processExceptionCount++;
-      //MAX_EXCEPTION_COUNT exceptions in a row? -> bail out
-      if (processExceptionCount > MAX_EXCEPTION_COUNT)
-      {
-        CLog::Log(LOGERROR, "CApplication::Process(), too many exceptions");
-        throw;
-      }
     }
 #endif
     // Frame move the scene
@@ -208,8 +145,6 @@ INT CXBApplicationEx::Run()
     {
 #endif
       FrameMove(true);
-      //reset exception count
-      frameMoveExceptionCount = 0;
 
 #ifndef _DEBUG
 
@@ -217,13 +152,6 @@ INT CXBApplicationEx::Run()
     catch (...)
     {
       CLog::Log(LOGERROR, "exception in CApplication::FrameMove()");
-      frameMoveExceptionCount++;
-      //MAX_EXCEPTION_COUNT exceptions in a row? -> bail out
-      if (frameMoveExceptionCount > MAX_EXCEPTION_COUNT)
-      {
-        CLog::Log(LOGERROR, "CApplication::FrameMove(), too many exceptions");
-        throw;
-      }
     }
 #endif
 
@@ -233,8 +161,6 @@ INT CXBApplicationEx::Run()
     {
 #endif
       Render();
-      //reset exception count
-      renderExceptionCount = 0;
 
 #ifndef _DEBUG
 
@@ -242,13 +168,6 @@ INT CXBApplicationEx::Run()
     catch (...)
     {
       CLog::Log(LOGERROR, "exception in CApplication::Render()");
-      renderExceptionCount++;
-      //MAX_EXCEPTION_COUNT exceptions in a row? -> bail out
-      if (renderExceptionCount > MAX_EXCEPTION_COUNT)
-      {
-        CLog::Log(LOGERROR, "CApplication::Render(), too many exceptions");
-        throw;
-      }
     }
 #endif
 
