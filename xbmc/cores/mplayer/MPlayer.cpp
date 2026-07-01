@@ -1362,7 +1362,8 @@ void CMPlayer::Process()
 
   if (!m_pDLL || !m_bIsPlaying) return;
 
-  m_callback.OnPlayBackStarted();
+  // TODO: how to get path of curret playing file?
+  // m_callback.OnPlayBackStarted();
 
   int exceptionCount = 0;
   time_t mark = time(NULL);
