@@ -5139,6 +5139,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\application\Application.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\application\ApplicationActionListeners.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\application\ApplicationActionListeners.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\application\ApplicationComponents.h">
 				</File>
 				<File
