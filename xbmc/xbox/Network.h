@@ -81,6 +81,10 @@ public:
 
    // Return true if given name or ip address corresponds to localhost
    bool IsLocalHost(const std::string& hostname);
+
+  // Waits for the first network interface to become available
+  void WaitForNet();
+
 protected:
   bool  m_networkup;  /* true if network is available */
   bool  m_inited;     /* true if initalized() has been called */

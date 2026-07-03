@@ -198,14 +198,9 @@ protected:
 
   int m_nextPlaylistItem;
 
-  unsigned int m_lastRenderTime;
-  bool m_skipGuiRender;
-
   boost::movelib::unique_ptr<MUSIC_INFO::CMusicInfoScanner> m_musicInfoScanner;
 
   bool PlayStack(CFileItem& item, bool bRestart);
-
-  void HandlePortEvents();
 
   std::vector<boost::shared_ptr<ADDON::CAddonInfo> >
       m_incompatibleAddons; /*!< Result of addon migration (incompatible addon infos) */

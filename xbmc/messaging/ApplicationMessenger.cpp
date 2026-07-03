@@ -19,8 +19,9 @@
  */
 
 #include "ApplicationMessenger.h"
-#include "application/Application.h"
 
+#include "guilib/GUIMessage.h"
+#include "messaging/IMessageTarget.h"
 #include "threads/SingleLock.h"
 #include "windowing/GraphicContext.h"
 
@@ -30,6 +31,17 @@ namespace KODI
 {
 namespace MESSAGING
 {
+
+  class CDelayedMessage : public CThread
+{
+  public:
+    CDelayedMessage(ThreadMessage& msg, unsigned int delay);
+    virtual void Process();
+
+  private:
+    unsigned int   m_delay;
+    ThreadMessage  m_msg;
+};
 
 CDelayedMessage::CDelayedMessage(ThreadMessage& msg, unsigned int delay) : CThread("DelayedMessage")
 {
@@ -48,6 +60,7 @@ void CDelayedMessage::Process()
 
 CApplicationMessenger::CApplicationMessenger()
 {
+  m_bStop = false;
 }
 
 CApplicationMessenger::~CApplicationMessenger()
@@ -109,7 +122,7 @@ int CApplicationMessenger::SendMsg(ThreadMessage& message, bool wait)
   }
 
 
-  if (g_application.m_bStop)
+  if (m_bStop)
     return -1;
 
   ThreadMessage* msg = new ThreadMessage(boost::move(message));
