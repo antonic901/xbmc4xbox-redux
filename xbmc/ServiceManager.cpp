@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2005-2016 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "ServiceManager.h"
@@ -30,35 +18,44 @@
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/python/XBPython.h"
 #include "xbox/Network.h"
+#include "profiles/ProfileManager.h"
 #include "storage/MediaManager.h"
 #include "utils/log.h"
 #include "utils/Weather.h"
 
 #include <boost/move/make_unique.hpp>
 
-CServiceManager::CServiceManager()
-{
-  init_level = 0;
-}
+using namespace KODI;
+
+CServiceManager::CServiceManager() : init_level(0) {}
 
 CServiceManager::~CServiceManager()
 {
+  if (init_level > 2)
+    DeinitStageThree();
+  if (init_level > 1)
+    DeinitStageTwo();
+  if (init_level > 0)
+    DeinitStageOne();
 }
 
-bool CServiceManager::Init1()
+bool CServiceManager::InitStageOne()
 {
-  m_XBPython.reset(new XBPython());
-  CScriptInvocationManager::GetInstance().RegisterLanguageInvocationHandler(m_XBPython.get(), ".py");
+#ifdef HAS_PYTHON
+  m_XBPython = boost::movelib::make_unique<XBPython>();
+  CScriptInvocationManager::GetInstance().RegisterLanguageInvocationHandler(m_XBPython.get(),
+                                                                            ".py");
+#endif
 
-  m_playlistPlayer.reset(new PLAYLIST::CPlayListPlayer());
+  m_playlistPlayer = boost::movelib::make_unique<PLAYLIST::CPlayListPlayer>();
 
-  m_network.reset(new CNetwork());
+  m_network = boost::movelib::make_unique<CNetwork>();
 
   init_level = 1;
   return true;
 }
 
-bool CServiceManager::Init2()
+bool CServiceManager::InitStageTwo(const std::string& profilesUserDataFolder)
 {
   // Initialize the addon database (must be before the addon manager is init'd)
   m_databaseManager = boost::movelib::make_unique<CDatabaseManager>();
@@ -66,10 +63,10 @@ bool CServiceManager::Init2()
   m_binaryAddonManager = boost::movelib::make_unique<
       ADDON::
           CBinaryAddonManager>(); /* Need to constructed before, GetRunningInstance() of binary CAddonDll need to call them */
-  m_addonMgr.reset(new ADDON::CAddonMgr());
+  m_addonMgr = boost::movelib::make_unique<ADDON::CAddonMgr>();
   if (!m_addonMgr->Init())
   {
-    CLog::Log(LOGFATAL, "CServiceManager::Init: Unable to start CAddonMgr");
+    CLog::Log(LOGFATAL, "CServiceManager::%s: Unable to start CAddonMgr", __FUNCTION__);
     return false;
   }
 
@@ -77,7 +74,7 @@ bool CServiceManager::Init2()
 
   m_serviceAddons.reset(new ADDON::CServiceAddonManager(*m_addonMgr));
 
-  m_contextMenuManager.reset(new CContextMenuManager(*m_addonMgr.get()));
+  m_contextMenuManager.reset(new CContextMenuManager(*m_addonMgr));
 
   m_weatherManager = boost::movelib::make_unique<CWeather>();
 
@@ -87,7 +84,8 @@ bool CServiceManager::Init2()
   return true;
 }
 
-bool CServiceManager::Init3(const boost::shared_ptr<CProfileManager>& profileManager)
+// stage 3 is called after successful initialization of WindowManager
+bool CServiceManager::InitStageThree(const boost::shared_ptr<CProfileManager>& profileManager)
 {
   m_contextMenuManager->Init();
 
@@ -97,28 +95,43 @@ bool CServiceManager::Init3(const boost::shared_ptr<CProfileManager>& profileMan
   return true;
 }
 
-void CServiceManager::Deinit()
+void CServiceManager::DeinitStageThree()
 {
-  init_level = 0;
-
-  m_network.reset();
-  m_weatherManager.reset();
+  init_level = 2;
   m_playerCoreFactory.reset();
+  m_contextMenuManager->Deinit();
+}
+
+void CServiceManager::DeinitStageTwo()
+{
+  init_level = 1;
+
+  m_weatherManager.reset();
   m_contextMenuManager.reset();
   m_serviceAddons.reset();
   m_repositoryUpdater.reset();
   m_binaryAddonManager.reset();
   m_addonMgr.reset();
   m_databaseManager.reset();
-  CScriptInvocationManager::GetInstance().UnregisterLanguageInvocationHandler(m_XBPython.get());
-  m_XBPython.reset();
 
   m_mediaManager.reset();
 }
 
-ADDON::CAddonMgr &CServiceManager::GetAddonMgr()
+void CServiceManager::DeinitStageOne()
 {
-  return *m_addonMgr.get();
+  init_level = 0;
+
+  m_network.reset();
+  m_playlistPlayer.reset();
+#ifdef HAS_PYTHON
+  CScriptInvocationManager::GetInstance().UnregisterLanguageInvocationHandler(m_XBPython.get());
+  m_XBPython.reset();
+#endif
+}
+
+ADDON::CAddonMgr& CServiceManager::GetAddonMgr()
+{
+  return *m_addonMgr;
 }
 
 ADDON::CBinaryAddonManager& CServiceManager::GetBinaryAddonManager()
@@ -136,10 +149,12 @@ ADDON::CRepositoryUpdater& CServiceManager::GetRepositoryUpdater()
   return *m_repositoryUpdater;
 }
 
+#ifdef HAS_PYTHON
 XBPython& CServiceManager::GetXBPython()
 {
   return *m_XBPython;
 }
+#endif
 
 CContextMenuManager& CServiceManager::GetContextMenuManager()
 {
@@ -174,9 +189,4 @@ CDatabaseManager& CServiceManager::GetDatabaseManager()
 CMediaManager& CServiceManager::GetMediaManager()
 {
   return *m_mediaManager;
-}
-
-void CServiceManager::delete_contextMenuManager::operator()(CContextMenuManager *p) const
-{
-  delete p;
 }

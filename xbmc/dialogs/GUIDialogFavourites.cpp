@@ -138,7 +138,7 @@ void CGUIDialogFavourites::OnPopupMenu(int item)
 
   //temporary workaround until the context menu ids are removed
   const int addonItemOffset = 10000;
-  ContextMenuView addonItems = CContextMenuManager::GetInstance().GetAddonItems(*itemPtr);
+  ContextMenuView addonItems = CServiceBroker::GetContextMenuManager().GetAddonItems(*item);
   for (size_t i = 0; i < addonItems.size(); ++i)
     choices.Add(addonItemOffset + i, addonItems[i]->GetLabel(*itemPtr));
 

@@ -1,26 +1,14 @@
 /*
- *      Copyright (C) 2005-2016 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #pragma once
 
-#include <system.h> // xtl.h
+#include <system.h> // <xtl.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/move/unique_ptr.hpp>
 
@@ -30,7 +18,7 @@ class CAddonMgr;
 class CBinaryAddonManager;
 class CServiceAddonManager;
 class CRepositoryUpdater;
-}
+} // namespace ADDON
 
 namespace PLAYLIST
 {
@@ -38,7 +26,9 @@ class CPlayListPlayer;
 }
 
 class CContextMenuManager;
+#ifdef HAS_PYTHON
 class XBPython;
+#endif
 class CNetwork;
 class CWinSystemBase;
 class CWeather;
@@ -54,16 +44,22 @@ public:
   CServiceManager();
   ~CServiceManager();
 
-  bool Init1();
-  bool Init2();
-  bool Init3(const boost::shared_ptr<CProfileManager>& profileManager);
-  void Deinit();
+  bool InitStageOne();
+  bool InitStageTwo(const std::string& profilesUserDataFolder);
+  bool InitStageThree(const boost::shared_ptr<CProfileManager>& profileManager);
+  void DeinitTesting();
+  void DeinitStageThree();
+  void DeinitStageTwo();
+  void DeinitStageOne();
+
   ADDON::CAddonMgr& GetAddonMgr();
   ADDON::CBinaryAddonManager& GetBinaryAddonManager();
   ADDON::CServiceAddonManager& GetServiceAddons();
   ADDON::CRepositoryUpdater& GetRepositoryUpdater();
   CNetwork& GetNetwork();
+#ifdef HAS_PYTHON
   XBPython& GetXBPython();
+#endif
   CContextMenuManager& GetContextMenuManager();
 
   PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
@@ -78,17 +74,14 @@ public:
   CMediaManager& GetMediaManager();
 
 protected:
-  struct delete_contextMenuManager
-  {
-    void operator()(CContextMenuManager *p) const;
-  };
-
   boost::movelib::unique_ptr<ADDON::CAddonMgr> m_addonMgr;
   boost::movelib::unique_ptr<ADDON::CBinaryAddonManager> m_binaryAddonManager;
   boost::movelib::unique_ptr<ADDON::CServiceAddonManager> m_serviceAddons;
   boost::movelib::unique_ptr<ADDON::CRepositoryUpdater> m_repositoryUpdater;
+#ifdef HAS_PYTHON
   boost::movelib::unique_ptr<XBPython> m_XBPython;
-  boost::movelib::unique_ptr<CContextMenuManager, delete_contextMenuManager> m_contextMenuManager;
+#endif
+  boost::movelib::unique_ptr<CContextMenuManager> m_contextMenuManager;
   boost::movelib::unique_ptr<PLAYLIST::CPlayListPlayer> m_playlistPlayer;
   boost::movelib::unique_ptr<CNetwork> m_network;
   boost::movelib::unique_ptr<CWeather> m_weatherManager;

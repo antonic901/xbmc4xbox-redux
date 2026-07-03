@@ -37,7 +37,6 @@ public:
 
   CContextMenuManager(ADDON::CAddonMgr& addonMgr);
   ~CContextMenuManager();
-  static CContextMenuManager& GetInstance();
 
   void Init();
   void Deinit();
