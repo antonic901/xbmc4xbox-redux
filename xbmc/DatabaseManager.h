@@ -39,6 +39,8 @@ class CDatabaseManager
 {
 public:
   CDatabaseManager();
+  CDatabaseManager(const CDatabaseManager&);
+  CDatabaseManager const& operator=(CDatabaseManager const&);
   virtual ~CDatabaseManager();
 
   /*! \brief Initalize the database manager
@@ -65,9 +67,6 @@ public:
   void LocalizationChanged();
 
 private:
-  // private construction, and no assignements; use the provided singleton methods
-  CDatabaseManager(const CDatabaseManager&);
-  CDatabaseManager const& operator=(CDatabaseManager const&);
 
   enum DB_STATUS { DB_CLOSED, DB_UPDATING, DB_READY, DB_FAILED };
   void UpdateStatus(const std::string &name, DB_STATUS status);

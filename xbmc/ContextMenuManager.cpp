@@ -59,11 +59,6 @@ void CContextMenuManager::Deinit()
   m_items.clear();
 }
 
-CContextMenuManager& CContextMenuManager::GetInstance()
-{
-  return CServiceBroker::GetContextMenuManager();
-}
-
 void CContextMenuManager::Init()
 {
   m_addonMgr.Events().Subscribe(this, &CContextMenuManager::OnEvent);
@@ -233,8 +228,10 @@ bool CONTEXTMENU::ShowFor(const CFileItemPtr& fileItem, const CContextMenuItem& 
   if (!fileItem)
     return false;
 
-  ContextMenuView menuItems = CContextMenuManager::GetInstance().GetItems(*fileItem, root);
-  ContextMenuView vecAddonItems = CContextMenuManager::GetInstance().GetAddonItems(*fileItem, root);
+  const CContextMenuManager &contextMenuManager = CServiceBroker::GetContextMenuManager();
+
+  ContextMenuView menuItems = contextMenuManager.GetItems(*fileItem, root);
+  ContextMenuView vecAddonItems = contextMenuManager.GetAddonItems(*fileItem, root);
   for (ContextMenuView::const_iterator it = vecAddonItems.begin(); it != vecAddonItems.end(); ++it)
     menuItems.push_back(boost::move(*it));
 
