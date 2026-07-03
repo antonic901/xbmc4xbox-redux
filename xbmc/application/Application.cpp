@@ -12,6 +12,7 @@
 #include "GUIInfoManager.h"
 #include "LangInfo.h"
 #include "PlayListPlayer.h"
+#include "SectionLoader.h"
 #include "ServiceManager.h"
 #include "URL.h"
 #include "Util.h"
@@ -21,7 +22,6 @@
 #include "addons/Skin.h"
 #include "addons/addoninfo/AddonInfo.h"
 #include "addons/addoninfo/AddonType.h"
-#include "application/AppParams.h"
 #include "application/ApplicationActionListeners.h"
 #include "application/ApplicationPlayer.h"
 #include "application/ApplicationPowerHandling.h"
@@ -41,7 +41,7 @@
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "music/MusicLibraryQueue.h"
 #include "music/tags/MusicInfoTag.h"
-#include "network/Network.h"
+#include "xbox/Network.h"
 #include "playlists/PlayListFactory.h"
 #include "threads/SystemClock.h"
 #include "utils/ContentUtils.h"
@@ -66,6 +66,7 @@
 #include "filesystem/SpecialProtocol.h"
 #include "guilib/GUIAudioManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "input/ButtonTranslator.h"
 #include "input/KeyboardLayoutManager.h"
 #include "messaging/ApplicationMessenger.h"
 #include "messaging/ThreadMessage.h"
@@ -84,16 +85,13 @@
 #include "utils/SystemInfo.h"
 #include "utils/TimeUtils.h"
 #include "utils/log.h"
-#include "windowing/WinSystem.h"
+#include "windowing/xbox/WinSystemXbox.h"
 
 #include <cmath>
 
 #ifdef HAS_UPNP
 #include "network/upnp/UPnP.h"
 #include "filesystem/UPnPDirectory.h"
-#endif
-#if defined(TARGET_POSIX) && defined(HAS_FILESYSTEM_SMB)
-#include "platform/posix/filesystem/SMBFile.h"
 #endif
 #include "PartyModeManager.h"
 #include "interfaces/AnnouncementManager.h"
@@ -110,56 +108,25 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "video/dialogs/GUIDialogVideoBookmarks.h"
 
-#ifdef TARGET_WINDOWS
-#include "win32util.h"
-#endif
-
-#ifdef TARGET_DARWIN_OSX
-#include "platform/darwin/osx/CocoaInterface.h"
-#include "platform/darwin/osx/XBMCHelper.h"
-#endif
-#ifdef TARGET_DARWIN
-#include "platform/darwin/DarwinUtils.h"
-#endif
-
-#ifdef HAS_DVD_DRIVE
-#include <cdio/logging.h>
-#endif
-
 #include "DatabaseManager.h"
+#include "storage/DetectDVDType.h"
 #include "storage/MediaManager.h"
 #include "utils/AlarmClock.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 
-#ifdef TARGET_POSIX
-#include "platform/posix/XHandle.h"
-#include "platform/posix/PlatformPosix.h"
-#endif
-
-#if defined(TARGET_ANDROID)
-#include "platform/android/activity/XBMCApp.h"
-#endif
-
-#ifdef TARGET_WINDOWS
-#include "platform/Environment.h"
-#endif
-
-//TODO: XInitThreads
-#ifdef HAVE_X11
-#include <X11/Xlib.h>
-#endif
-
 #include "FileItem.h"
 #include "addons/AddonSystemSettings.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "utils/CharsetConverter.h"
+#include "xbox/XKHDD.h"
 
-#include <mutex>
+#include <boost/bind.hpp>
+#include <boost/move/make_unique.hpp>
 
 using namespace ADDON;
 using namespace XFILE;
-#ifdef HAS_DVD_DRIVE
+#ifdef HAS_OPTICAL_DRIVE
 using namespace MEDIA_DETECT;
 #endif
 using namespace VIDEO;
@@ -179,20 +146,15 @@ CApplication::CApplication(void)
     m_itemCurrentFile(boost::make_shared<CFileItem>()),
     m_bInitializing(true),
     m_nextPlaylistItem(-1),
-    m_skipGuiRender(false),
     m_bStop(false)
 {
   TiXmlBase::SetCondenseWhiteSpace(false);
 
-#ifdef HAVE_X11
-  XInitThreads();
-#endif
-
   // register application components
-  RegisterComponent(boost::make_shared<CApplicationActionListeners>(m_critSection));
+  RegisterComponent(boost::shared_ptr<CApplicationActionListeners>(new CApplicationActionListeners(m_critSection)));
   RegisterComponent(boost::make_shared<CApplicationPlayer>());
   RegisterComponent(boost::make_shared<CApplicationPowerHandling>());
-  RegisterComponent(boost::make_shared<CApplicationSkinHandling>(this, this, m_bInitializing));
+  RegisterComponent(boost::shared_ptr<CApplicationSkinHandling>(new CApplicationSkinHandling(this, this, m_bInitializing)));
   RegisterComponent(boost::make_shared<CApplicationVolumeHandling>());
   RegisterComponent(boost::make_shared<CApplicationStackHelper>());
   RegisterComponent(boost::make_shared<CApplicationXbox>());
@@ -209,18 +171,11 @@ CApplication::~CApplication(void)
   DeregisterComponent(typeid(CApplicationActionListeners));
 }
 
-void CApplication::HandlePortEvents()
-{
-
-}
-
 bool CApplication::Create()
 {
   m_bStop = false;
 
   RegisterSettings();
-
-  CServiceBroker::RegisterCPUInfo(CCPUInfo::GetCPUInfo());
 
   // Register JobManager service
   CServiceBroker::RegisterJobManager(boost::make_shared<CJobManager>());
@@ -230,10 +185,10 @@ bool CApplication::Create()
   m_pAnnouncementManager->Start();
   CServiceBroker::RegisterAnnouncementManager(m_pAnnouncementManager);
 
-  const auto appMessenger = boost::make_shared<CApplicationMessenger>();
+  const boost::shared_ptr<KODI::MESSAGING::CApplicationMessenger> appMessenger = boost::make_shared<CApplicationMessenger>();
   CServiceBroker::RegisterAppMessenger(appMessenger);
 
-  const auto keyboardLayoutManager = boost::make_shared<KEYBOARD::CKeyboardLayoutManager>();
+  const boost::shared_ptr<KODI::KEYBOARD::CKeyboardLayoutManager> keyboardLayoutManager = boost::make_shared<KEYBOARD::CKeyboardLayoutManager>();
   CServiceBroker::RegisterKeyboardLayoutManager(keyboardLayoutManager);
 
   m_ServiceManager = boost::movelib::make_unique<CServiceManager>();
@@ -257,19 +212,12 @@ bool CApplication::Create()
 
   CLog::Init(CSpecialProtocol::TranslatePath("special://logpath"));
 
-#ifdef TARGET_POSIX //! @todo Win32 has no special://home/ mapping by default, so we
-  //!       must create these here. Ideally this should be using special://home/ and
-  //!      be platform agnostic (i.e. unify the InitDirectories*() functions)
-  if (!CServiceBroker::GetAppParams()->HasPlatformDirectories())
-#endif
-  {
-    CDirectory::Create("special://xbmc/addons");
-  }
+  CDirectory::Create("special://xbmc/addons");
 
   PrintStartupLog();
 
   CLog::Log(LOGINFO, "loading settings");
-  const auto settingsComponent = CServiceBroker::GetSettingsComponent();
+  const boost::shared_ptr<CSettingsComponent> settingsComponent = CServiceBroker::GetSettingsComponent();
   if (!settingsComponent->Load())
     return false;
 
@@ -298,13 +246,12 @@ bool CApplication::Create()
   // load the keyboard layouts
   if (!keyboardLayoutManager->Load())
   {
-    CLog::Log(LogATAL, "CApplication::Create: Unable to load keyboard layouts");
+    CLog::Log(LOGFATAL, "CApplication::Create: Unable to load keyboard layouts");
     return false;
   }
 
   CUtil::InitRandomSeed();
 
-  m_lastRenderTime = std::chrono::steady_clock::now();
   return true;
 }
 
@@ -312,50 +259,14 @@ bool CApplication::CreateGUI()
 {
   m_frameMoveGuard.lock();
 
-  const auto appPower = GetComponent<CApplicationPowerHandling>();
-  appPower->SetRenderGUI(true);
+  m_pWinSystem = CWinSystemXbox::CreateWinSystem();
+  CServiceBroker::RegisterWinSystem(m_pWinSystem.get());
 
-  auto windowSystems = KODI::WINDOWING::CWindowSystemFactory::GetWindowSystems();
-
-  const std::string& windowing = CServiceBroker::GetAppParams()->GetWindowing();
-
-  if (!windowing.empty())
-    windowSystems = {windowing};
-
-  for (auto& windowSystem : windowSystems)
+  if (!m_pWinSystem->InitWindowSystem())
   {
-    CLog::Log(LOGDEBUG, "CApplication::%s - trying to init %s windowing system", __FUNCTION__,
-              windowSystem.c_str());
-    m_pWinSystem = KODI::WINDOWING::CWindowSystemFactory::CreateWindowSystem(windowSystem);
-
-    if (!m_pWinSystem)
-      continue;
-
-    if (!windowing.empty() && windowing != windowSystem)
-      continue;
-
-    CServiceBroker::RegisterWinSystem(m_pWinSystem.get());
-
-    if (!m_pWinSystem->InitWindowSystem())
-    {
-      CLog::Log(LOGDEBUG, "CApplication::%s - unable to init %s windowing system", __FUNCTION__,
-                windowSystem.c_str());
-      m_pWinSystem->DestroyWindowSystem();
-      m_pWinSystem.reset();
-      CServiceBroker::UnregisterWinSystem();
-      continue;
-    }
-    else
-    {
-      CLog::Log(LOGINFO, "CApplication::%s - using the %s windowing system", __FUNCTION__,
-                windowSystem.c_str());
-      break;
-    }
-  }
-
-  if (!m_pWinSystem)
-  {
-    CLog::Log(LogATAL, "CApplication::%s - unable to init windowing system", __FUNCTION__);
+    CLog::Log(LOGDEBUG, "CApplication::%s - unable to init windowing system", __FUNCTION__);
+    m_pWinSystem->DestroyWindowSystem();
+    m_pWinSystem.reset();
     CServiceBroker::UnregisterWinSystem();
     return false;
   }
@@ -388,11 +299,8 @@ bool CApplication::CreateGUI()
   }
 
   // Set default screen saver mode
-  auto screensaverModeSetting = boost::static_pointer_cast<CSettingString>(settings->GetSetting(CSettings::SETTING_SCREENSAVER_MODE));
-  {
-    // If OS has no screen saver, use Kodi one by default
-    screensaverModeSetting->SetDefault("screensaver.xbmc.builtin.dim");
-  }
+  boost::shared_ptr<CSettingString> screensaverModeSetting = boost::static_pointer_cast<CSettingString>(settings->GetSetting(CSettings::SETTING_SCREENSAVER_MODE));
+  screensaverModeSetting->SetDefault("screensaver.xbmc.builtin.dim");
 
   if (sav_res)
     CDisplaySettings::GetInstance().SetCurrentResolution(RES_DESKTOP, true);
@@ -405,7 +313,7 @@ bool CApplication::CreateGUI()
 
   // The key mappings may already have been loaded by a peripheral
   CLog::Log(LOGINFO, "load keymapping");
-  if (!CServiceBroker::GetInputManager().LoadKeymaps())
+  if (!CButtonTranslator::GetInstance().Load())
     return false;
 
   RESOLUTION_INFO info = CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo();
@@ -419,17 +327,16 @@ bool CApplication::InitWindow(RESOLUTION res)
   if (res == RES_INVALID)
     res = CDisplaySettings::GetInstance().GetCurrentResolution();
 
-  bool bFullScreen = res != RES_WINDOW;
-  if (!CServiceBroker::GetWinSystem()->CreateNewWindow(CSysInfo::GetAppName(),
-                                                      bFullScreen, CDisplaySettings::GetInstance().GetResolutionInfo(res)))
+  if (!CServiceBroker::GetWinSystem()->CreateNewWindow("xbox",
+                                                      true, CDisplaySettings::GetInstance().GetResolutionInfo(res)))
   {
-    CLog::Log(LogATAL, "CApplication::Create: Unable to create window");
+    CLog::Log(LOGFATAL, "CApplication::Create: Unable to create window");
     return false;
   }
 
   if (!CServiceBroker::GetRenderSystem()->InitRenderSystem())
   {
-    CLog::Log(LogATAL, "CApplication::Create: Unable to init rendering system");
+    CLog::Log(LOGFATAL, "CApplication::Create: Unable to init rendering system");
     return false;
   }
   // set GUI res and force the clear of the screen
@@ -437,14 +344,29 @@ bool CApplication::InitWindow(RESOLUTION res)
   return true;
 }
 
+void initializeDatabaseManager(CDatabaseManager& databaseManager, CEvent& event)
+{
+  databaseManager.Initialize();
+  event.Set();
+}
+
+void initializeFontManager(GUIFontManager& guiFontManager, CEvent& event)
+{
+  guiFontManager.Initialize();
+  event.Set();
+}
+
+void checkForAddonUpdates(CEvent& event, ADDON::AddonInfos& incompatibleAddons)
+{
+  if (CServiceBroker::GetRepositoryUpdater().CheckForUpdates())
+    CServiceBroker::GetRepositoryUpdater().Await();
+
+  incompatibleAddons = CServiceBroker::GetAddonMgr().MigrateAddons();
+  event.Set();
+}
+
 bool CApplication::Initialize()
 {
-#if defined(HAS_OPTICAL_DRIVE) && \
-    !defined(TARGET_WINDOWS) // somehow this throws an "unresolved external symbol" on win32
-  // turn off cdio logging
-  cdio_loglevel_default = CDIO_LOG_ERROR;
-#endif
-
   // load the language and its translated strings
   if (!LoadLanguage(false))
     return false;
@@ -460,15 +382,11 @@ bool CApplication::Initialize()
   CDatabaseManager &databaseManager = m_ServiceManager->GetDatabaseManager();
 
   CEvent event(true);
-#ifndef NXDK
-  CServiceBroker::GetJobManager()->Submit([&databaseManager, &event]() {
-    databaseManager.Initialize();
-    event.Set();
-  });
+  CServiceBroker::GetJobManager()->Submit(boost::bind(&initializeDatabaseManager, boost::ref(databaseManager), boost::ref(event)));
 
   std::string localizedStr = g_localizeStrings.Get(24150);
   int iDots = 1;
-  while (!event.Wait(1000ms))
+  while (!event.WaitMSec(1000))
   {
     if (databaseManager.IsUpgrading())
       CServiceBroker::GetRenderSystem()->ShowSplash(std::string(iDots, ' ') + localizedStr + std::string(iDots, '.'));
@@ -484,13 +402,10 @@ bool CApplication::Initialize()
   //! @todo Move GUIFontManager into service broker and drop the global reference
   event.Reset();
   GUIFontManager& guiFontManager = g_fontManager;
-  CServiceBroker::GetJobManager()->Submit([&guiFontManager, &event]() {
-    guiFontManager.Initialize();
-    event.Set();
-  });
+  CServiceBroker::GetJobManager()->Submit(boost::bind(&initializeFontManager, boost::ref(guiFontManager), boost::ref(event)));
   localizedStr = g_localizeStrings.Get(39175);
   iDots = 1;
-  while (!event.Wait(1000ms))
+  while (!event.WaitMSec(1000))
   {
     if (g_fontManager.IsUpdating())
       CServiceBroker::GetRenderSystem()->ShowSplash(std::string(iDots, ' ') + localizedStr +
@@ -501,23 +416,18 @@ bool CApplication::Initialize()
     else
       ++iDots;
   }
-#else
-  std::string localizedStr = "";
-  int iDots = 1;
-  databaseManager.Initialize();
-#endif
   CServiceBroker::GetRenderSystem()->ShowSplash("");
 
   // GUI depends on seek handler
   GetComponent<CApplicationPlayer>()->GetSeekHandler().Configure();
 
-  const auto skinHandling = GetComponent<CApplicationSkinHandling>();
+  const boost::shared_ptr<CApplicationSkinHandling> skinHandling = GetComponent<CApplicationSkinHandling>();
 
   bool uiInitializationFinished = false;
 
   if (CServiceBroker::GetGUI()->GetWindowManager().Initialized())
   {
-    const auto settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+    const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
 
     CServiceBroker::GetGUI()->GetWindowManager().CreateWindows();
 
@@ -532,17 +442,11 @@ bool CApplication::Initialize()
       if (CAddonSystemSettings::GetInstance().GetAddonAutoUpdateMode() == AUTO_UPDATES_ON)
       {
         CServiceBroker::GetJobManager()->Submit(
-            [&event, &incompatibleAddons]() {
-              if (CServiceBroker::GetRepositoryUpdater().CheckForUpdates())
-                CServiceBroker::GetRepositoryUpdater().Await();
-
-              incompatibleAddons = CServiceBroker::GetAddonMgr().MigrateAddons();
-              event.Set();
-            },
+            boost::bind(&checkForAddonUpdates, boost::ref(event), incompatibleAddons),
             CJob::PRIORITY_DEDICATED);
         localizedStr = g_localizeStrings.Get(24151);
         iDots = 1;
-        while (!event.Wait(1000ms))
+        while (!event.WaitMSec(1000))
         {
           CServiceBroker::GetRenderSystem()->ShowSplash(std::string(iDots, ' ') + localizedStr +
                                                         std::string(iDots, '.'));
@@ -565,10 +469,10 @@ bool CApplication::Initialize()
     CServiceBroker::GetRenderSystem()->ShowSplash("");
     skinHandling->m_confirmSkinChange = true;
 
-    auto setting = settings->GetSetting(CSettings::SETTING_LOOKANDFEEL_SKIN);
+    SettingPtr setting= settings->GetSetting(CSettings::SETTING_LOOKANDFEEL_SKIN);
     if (!setting)
     {
-      CLog::Log(LogATAL, "Failed to load setting for: %s", CSettings::SETTING_LOOKANDFEEL_SKIN);
+      CLog::Log(LOGFATAL, "Failed to load setting for: %s", CSettings::SETTING_LOOKANDFEEL_SKIN);
       return false;
     }
 
@@ -582,7 +486,7 @@ bool CApplication::Initialize()
           boost::static_pointer_cast<const CSettingString>(setting)->GetDefault();
       if (!skinHandling->LoadSkin(defaultSkin))
       {
-        CLog::Log(LogATAL, "Default skin '%s' could not be loaded! Terminating..", defaultSkin.c_str());
+        CLog::Log(LOGFATAL, "Default skin '%s' could not be loaded! Terminating..", defaultSkin.c_str());
         return false;
       }
     }
@@ -643,8 +547,8 @@ bool CApplication::Initialize()
   m_slowTimer.StartZero();
 
   // register action listeners
-  const auto appListener = GetComponent<CApplicationActionListeners>();
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<CApplicationActionListeners> appListener = GetComponent<CApplicationActionListeners>();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
   appListener->RegisterActionListener(&appPlayer->GetSeekHandler());
   appListener->RegisterActionListener(&CPlayerController::GetInstance());
 
@@ -654,8 +558,7 @@ bool CApplication::Initialize()
 
   CLog::Log(LOGINFO, "initialize done");
 
-  const auto appPower = GetComponent<CApplicationPowerHandling>();
-  appPower->CheckOSScreenSaverInhibitionSetting();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = GetComponent<CApplicationPowerHandling>();
   // reset our screensaver (starts timers etc.)
   appPower->ResetScreenSaver();
 
@@ -683,8 +586,8 @@ void CApplication::Render()
   if (m_bStop)
     return;
 
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
-  const auto appPower = GetComponent<CApplicationPowerHandling>();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = GetComponent<CApplicationPowerHandling>();
 
   bool hasRendered = false;
 
@@ -698,19 +601,14 @@ void CApplication::Render()
     return;
 
   // render gui layer
-  if (appPower->GetRenderGUI() && !m_skipGuiRender)
+  if (appPower->GetRenderGUI())
   {
     {
       hasRendered |= CServiceBroker::GetGUI()->GetWindowManager().Render();
     }
     // execute post rendering actions (finalize window closing)
     CServiceBroker::GetGUI()->GetWindowManager().AfterRender();
-
-    m_lastRenderTime = std::chrono::steady_clock::now();
   }
-
-  // render video layer
-  CServiceBroker::GetGUI()->GetWindowManager().RenderEx();
 
   CServiceBroker::GetRenderSystem()->EndRender();
 
@@ -726,10 +624,9 @@ void CApplication::Render()
     infoMgr.GetInfoProviders().GetSystemInfoProvider().UpdateFPS();
   }
 
-  CServiceBroker::GetWinSystem()->GetGfxContext().Flip(hasRendered,
-                                                       appPlayer->IsRenderingVideoLayer());
+  CServiceBroker::GetWinSystem()->GetGfxContext().Flip(hasRendered, false);
 
-  CTimeUtils::UpdateFrameTime(hasRendered);
+  CTimeUtils::UpdateFrameTime();
 }
 
 bool CApplication::OnAction(const CAction &action)
@@ -761,12 +658,18 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
   switch (msg)
   {
   case TMSG_POWERDOWN:
-    if (Stop(EXITCODE_POWERDOWN))
-      CServiceBroker::GetPowerManager().Powerdown();
+    if (Stop(0))
+    {
+      Sleep(200);
+      XKHDD::SpindownHarddisk();
+      XKUtils::XBOXPowerOff();
+      while (1) { Sleep(0); }
+    }
     break;
 
   case TMSG_QUIT:
-    Stop(EXITCODE_QUIT);
+    Stop(0);
+    CBuiltins::GetInstance().Execute("XBMC.Dashboard()");
     break;
 
   case TMSG_SHUTDOWN:
@@ -775,12 +678,16 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
 
   case TMSG_RESTART:
   case TMSG_RESET:
-    if (Stop(EXITCODE_REBOOT))
-      CServiceBroker::GetPowerManager().Reboot();
+    if (Stop(0))
+    {
+      Sleep(200);
+      XKUtils::XBOXPowerCycle();
+      while (1) { Sleep(0); }
+    }
     break;
 
   case TMSG_NETWORKMESSAGE:
-    m_ServiceManager->GetNetwork().NetworkMessage(static_cast<CNetworkBase::EMESSAGE>(pMsg->param1),
+    m_ServiceManager->GetNetwork().NetworkMessage(static_cast<CNetwork::EMESSAGE>(pMsg->param1),
                                                   pMsg->param2);
     break;
 
@@ -828,8 +735,7 @@ void CApplication::UnlockFrameMoveGuard()
 
 void CApplication::FrameMove(bool processEvents, bool processGUI)
 {
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
-  bool renderGUI = GetComponent<CApplicationPowerHandling>()->GetRenderGUI();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
   if (processEvents)
   {
     // currently we calculate the repeat time (ie time from last similar keypress) just global as fps
@@ -839,7 +745,7 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
     if (frameTime > 0.5f)
       frameTime = 0.5f;
 
-    if (processGUI && renderGUI)
+    if (processGUI)
     {
       CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
       // check if there are notifications to display
@@ -853,49 +759,28 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
       }
     }
 
-    HandlePortEvents();
-    CServiceBroker::GetInputManager().Process(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog(), frameTime);
+    // TODO: readn input, process input
 
-    if (processGUI && renderGUI)
+    if (processGUI)
     {
       appPlayer->GetSeekHandler().FrameMove();
     }
   }
 
-  if (processGUI && renderGUI)
+  if (processGUI)
   {
-    m_skipGuiRender = false;
-
-    /*! @todo look into the possibility to use this for GBM
-    int fps = 0;
-
-    // This code reduces rendering fps of the GUI layer when playing videos in fullscreen mode
-    // it makes only sense on architectures with multiple layers
-    if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() && !m_appPlayer.IsPausedPlayback() && m_appPlayer.IsRenderingVideoLayer())
-      fps = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOPLAYER_LIMITGUIUPDATE);
-
-    auto now = std::chrono::steady_clock::now();
-
-    auto frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(now - m_lastRenderTime).count();
-    if (fps > 0 && frameTime * fps < 1000)
-      m_skipGuiRender = true;
-    */
-
     if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_guiSmartRedraw && m_guiRefreshTimer.IsTimePast())
     {
       CServiceBroker::GetGUI()->GetWindowManager().SendMessage(GUI_MSG_REFRESH_TIMER, 0, 0);
-      m_guiRefreshTimer.Set(500ms);
+      m_guiRefreshTimer.Set(500);
     }
 
     if (!m_bStop)
     {
-      if (!m_skipGuiRender)
-        CServiceBroker::GetGUI()->GetWindowManager().Process(CTimeUtils::GetFrameTime());
+      CServiceBroker::GetGUI()->GetWindowManager().Process(CTimeUtils::GetFrameTime());
     }
     CServiceBroker::GetGUI()->GetWindowManager().FrameMove();
   }
-
-  appPlayer->FrameMove();
 
   // this will go away when render systems gets its own thread
   CServiceBroker::GetWinSystem()->DriveRenderLoop();
@@ -912,42 +797,21 @@ int CApplication::Run()
 {
   CLog::Log(LOGINFO, "Running the application...");
 
-  std::chrono::time_point<std::chrono::steady_clock> lastFrameTime;
-  std::chrono::milliseconds frameTime;
-  const unsigned int noRenderFrameTime = 15; // Simulates ~66fps
-
-  CFileItemList& playlist = CServiceBroker::GetAppParams()->GetPlaylist();
-  if (playlist.Size() > 0)
-  {
-    CServiceBroker::GetPlaylistPlayer().Add(PLAYLIST::TYPE_MUSIC, playlist);
-    CServiceBroker::GetPlaylistPlayer().SetCurrentPlaylist(PLAYLIST::TYPE_MUSIC);
-    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_PLAYLISTPLAYER_PLAY, -1);
-  }
-
   // Run the app
   while (!m_bStop)
   {
     // Animate and render a frame
 
-    lastFrameTime = std::chrono::steady_clock::now();
     Process();
 
-    bool renderGUI = GetComponent<CApplicationPowerHandling>()->GetRenderGUI();
     if (!m_bStop)
     {
-      FrameMove(true, renderGUI);
+      FrameMove(true);
     }
 
-    if (renderGUI && !m_bStop)
+    if (!m_bStop)
     {
       Render();
-    }
-    else if (!renderGUI)
-    {
-      auto now = std::chrono::steady_clock::now();
-      frameTime = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastFrameTime);
-      if (frameTime.count() < noRenderFrameTime)
-        KODI::TIME::Sleep(std::chrono::milliseconds(noRenderFrameTime - frameTime.count()));
     }
   }
 
@@ -1007,13 +871,6 @@ bool CApplication::Cleanup()
     if (m_ServiceManager)
       m_ServiceManager->DeinitStageTwo();
 
-#ifdef TARGET_POSIX
-    CXHandle::DumpObjectTracker();
-
-#ifdef HAS_OPTICAL_DRIVE
-    CLibcdio::ReleaseInstance();
-#endif
-#endif
 #ifdef _CRTDBG_MAP_ALLOC
     _CrtDumpMemoryLeaks();
     while(1); // execution ends
@@ -1049,7 +906,6 @@ bool CApplication::Cleanup()
     m_pAnnouncementManager.reset();
 
     CServiceBroker::UnregisterJobManager();
-    CServiceBroker::UnregisterCPUInfo();
 
     UnregisterSettings();
 
@@ -1066,19 +922,12 @@ bool CApplication::Cleanup()
 
 bool CApplication::Stop(int exitCode)
 {
-#if defined(TARGET_ANDROID)
-  // Note: On Android, the app must be stopped asynchronously, once Android has
-  // signalled that the app shall be destroyed. See android_main() implementation.
-  if (!CXBMCApp::Get().Stop(exitCode))
-    return false;
-#endif
-
   CLog::Log(LOGINFO, "Stopping the application...");
 
   bool success = true;
 
   CLog::Log(LOGINFO, "Stopping player");
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
   appPlayer->ClosePlayer();
 
   try
@@ -1087,7 +936,7 @@ bool CApplication::Stop(int exitCode)
 
     CVariant vExitCode(CVariant::VariantTypeObject);
     vExitCode["exitcode"] = exitCode;
-    CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::System, "OnQuit", vExitCode);
+    CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::System, "xbmc", "OnQuit", vExitCode);
 
     // Abort any active screensaver
     GetComponent<CApplicationPowerHandling>()->WakeUpScreenSaverAndDPMS();
@@ -1132,25 +981,7 @@ bool CApplication::Stop(int exitCode)
 
     CServiceBroker::GetAppMessenger()->Cleanup();
 
-    m_ServiceManager->GetNetwork().NetworkMessage(CNetworkBase::SERVICES_DOWN, 0);
-
-#ifdef HAS_ZEROCONF
-    if(CZeroconfBrowser::IsInstantiated())
-    {
-      CLog::Log(LOGINFO, "Stopping zeroconf browser");
-      CZeroconfBrowser::GetInstance()->Stop();
-      CZeroconfBrowser::ReleaseInstance();
-    }
-#endif
-
-#if defined(TARGET_POSIX) && defined(HAS_FILESYSTEM_SMB)
-    smb.Deinit();
-#endif
-
-#if defined(TARGET_DARWIN_OSX) and defined(HAS_XBMCHELPER)
-    if (XBMCHelper::GetInstance().IsAlwaysOn() == false)
-      XBMCHelper::GetInstance().Stop();
-#endif
+    m_ServiceManager->GetNetwork().NetworkMessage(CNetwork::SERVICES_DOWN, 0);
 
     // Stop services before unloading Python
     CServiceBroker::GetServiceAddons().Stop();
@@ -1159,7 +990,7 @@ bool CApplication::Stop(int exitCode)
     CScriptInvocationManager::GetInstance().StopRunningScripts();
 
     // unregister action listeners
-    const auto appListener = GetComponent<CApplicationActionListeners>();
+    const boost::shared_ptr<CApplicationActionListeners> appListener = GetComponent<CApplicationActionListeners>();
     appListener->UnregisterActionListener(&GetComponent<CApplicationPlayer>()->GetSeekHandler());
     appListener->UnregisterActionListener(&CPlayerController::GetInstance());
 
@@ -1175,7 +1006,7 @@ bool CApplication::Stop(int exitCode)
     success = false;
   }
 
-  KODI::TIME::Sleep(200ms);
+  Sleep(200);
 
   return success;
 }
@@ -1195,11 +1026,11 @@ bool CApplication::PlayMedia(CFileItem& item, const std::string& player, PLAYLIS
 // return value: same with PlayFile()
 bool CApplication::PlayStack(CFileItem& item, bool bRestart)
 {
-  const auto stackHelper = GetComponent<CApplicationStackHelper>();
+  const boost::shared_ptr<CApplicationStackHelper> stackHelper = GetComponent<CApplicationStackHelper>();
   if (!stackHelper->InitializeStack(item))
     return false;
 
-  std::optional<int> startoffset = stackHelper->InitializeStackStartPartAndOffset(item);
+  boost::optional<int> startoffset = stackHelper->InitializeStackStartPartAndOffset(item);
   if (!startoffset)
   {
     CLog::Log(LOGERROR, "Failed to obtain start offset for stack %s. Aborting playback.",
@@ -1227,8 +1058,8 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
 
 void CApplication::PlaybackCleanup()
 {
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
-  const auto stackHelper = GetComponent<CApplicationStackHelper>();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<CApplicationStackHelper> stackHelper = GetComponent<CApplicationStackHelper>();
 
   if (!appPlayer->IsPlaying())
   {
@@ -1250,12 +1081,9 @@ void CApplication::PlaybackCleanup()
       //  resets to res_desktop or look&feel resolution (including refreshrate)
       CServiceBroker::GetWinSystem()->GetGfxContext().SetFullScreenVideo(false);
     }
-#ifdef TARGET_DARWIN_EMBEDDED
-    CDarwinUtils::SetScheduling(false);
-#endif
   }
 
-  const auto appPower = GetComponent<CApplicationPowerHandling>();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = GetComponent<CApplicationPowerHandling>();
 
   if (!appPlayer->IsPlayingAudio() &&
       CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() == PLAYLIST::TYPE_NONE &&
@@ -1269,7 +1097,7 @@ void CApplication::PlaybackCleanup()
   // DVD ejected while playing in vis ?
   if (!appPlayer->IsPlayingAudio() &&
       (m_itemCurrentFile->IsCDDA() || m_itemCurrentFile->IsOnDVD()) &&
-      !CServiceBroker::GetMediaManager().IsDiscInDrive() &&
+      !CDetectDVDMedia::IsDiscInDrive() &&
       CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_VISUALISATION)
   {
     // yes, disable vis
@@ -1283,14 +1111,11 @@ void CApplication::PlaybackCleanup()
     stackHelper->Clear();
     appPlayer->ResetPlayer();
   }
-
-  if (CServiceBroker::GetAppParams()->IsTestMode())
-    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_QUIT);
 }
 
 bool CApplication::IsPlayingFullScreenVideo() const
 {
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
   return appPlayer->IsPlayingVideo() &&
          CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo();
 }
@@ -1309,7 +1134,7 @@ void CApplication::StopPlaying()
   if (gui)
   {
     int iWin = gui->GetWindowManager().GetActiveWindow();
-    const auto appPlayer = GetComponent<CApplicationPlayer>();
+    const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
     if (appPlayer->IsPlaying())
     {
       appPlayer->ClosePlayer();
@@ -1343,16 +1168,16 @@ bool CApplication::OnMessage(CGUIMessage& message)
         {
           // filter addons that are not dependencies
           std::vector<std::string> disabledAddonNames;
-          for (const auto& addoninfo : m_incompatibleAddons)
+          for (std::vector<boost::shared_ptr<ADDON::CAddonInfo> >::const_iterator addoninfo = m_incompatibleAddons.begin(); addoninfo != m_incompatibleAddons.end(); ++addoninfo)
           {
-            if (!CAddonType::IsDependencyType(addoninfo->MainType()))
-              disabledAddonNames.emplace_back(addoninfo->Name());
+            if (!CAddonType::IsDependencyType((*addoninfo)->MainType()))
+              disabledAddonNames.push_back((*addoninfo)->Name());
           }
 
           // migration (incompatible addons) dialog
-          auto addonList = StringUtils::Join(disabledAddonNames, ", ");
-          auto msg = StringUtils::Format(g_localizeStrings.Get(24149), addonList);
-          HELPERS::ShowOKDialogText(24148, std::move(msg));
+          std::string addonList = StringUtils::Join(disabledAddonNames, ", ");
+          std::string msg = StringUtils::Format(g_localizeStrings.Get(24149).c_str(), addonList.c_str());
+          HELPERS::ShowOKDialogText(24148, boost::move(msg));
           m_incompatibleAddons.clear();
         }
 
@@ -1406,8 +1231,8 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr,
   else
   {
     // try translating the action from our ButtonTranslator
-    unsigned int actionID;
-    if (ACTION::CActionTranslator::TranslateString(actionStr, actionID))
+    int actionID;
+    if (CButtonTranslator::TranslateActionString(actionStr.c_str(), actionID))
     {
       OnAction(CAction(actionID));
       return true;
@@ -1420,7 +1245,7 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr,
     }
     else
 #endif
-    if (item.IsAudio() || item.IsVideo() || item.IsGame())
+    if (item.IsAudio() || item.IsVideo())
     { // an audio or video file
       PlayFile(item, "");
     }
@@ -1476,8 +1301,6 @@ void CApplication::ProcessSlow()
   // process skin resources (skin timers)
   GetComponent<CApplicationSkinHandling>()->ProcessSkin();
 
-  CServiceBroker::GetPowerManager().ProcessEvents();
-
   // Temporarily pause pausable jobs when viewing video/picture
   int currentWindow = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
   if (CurrentFileItem().IsVideo() ||
@@ -1494,37 +1317,22 @@ void CApplication::ProcessSlow()
   }
 
   // Check if we need to activate the screensaver / DPMS.
-  const auto appPower = GetComponent<CApplicationPowerHandling>();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = GetComponent<CApplicationPowerHandling>();
   appPower->CheckScreenSaverAndDPMS();
 
   // Check if we need to shutdown (if enabled).
-#if defined(TARGET_DARWIN)
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_POWERMANAGEMENT_SHUTDOWNTIME) &&
-      CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_fullScreen)
-#else
   if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_POWERMANAGEMENT_SHUTDOWNTIME))
-#endif
   {
     appPower->CheckShutdown();
   }
 
-#if defined(TARGET_POSIX)
-  if (CPlatformPosix::TestQuitFlag())
-  {
-    CLog::Log(LOGINFO, "Quitting due to POSIX signal");
-    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_QUIT);
-  }
-#endif
-
   // check if we should restart the player
   CheckDelayedPlayerRestart();
 
-  // TODO: unload unreferenced DLLs
-
-#ifdef TARGET_ANDROID
-  // Pass the slow loop to droid
-  CXBMCApp::Get().ProcessSlow();
-#endif
+  // check if we can unload any unreferenced dlls or sections
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
+  if (!appPlayer->IsPlayingVideo())
+    CSectionLoader::UnloadDelayed();
 
   // TODO: setup curl
 
@@ -1543,12 +1351,6 @@ void CApplication::ProcessSlow()
   if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SERVICES_UPNP) && UPNP::CUPnP::IsInstantiated())
     UPNP::CUPnP::GetInstance()->UpdateState();
 #endif
-
-#if defined(TARGET_POSIX) && defined(HAS_FILESYSTEM_SMB)
-  smb.CheckIfIdle();
-#endif
-
-  CServiceBroker::GetMediaManager().ProcessEvents();
 
   // if we don't render the gui there's no reason to start the screensaver.
   // that way the screensaver won't kick in if we maximize the XBMC window
@@ -1578,7 +1380,7 @@ void CApplication::Restart(bool bSamePosition)
   // and which means we gotta close & reopen the current playing file
 
   // first check if we're playing a file
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
   if (!appPlayer->IsPlayingVideo() && !appPlayer->IsPlayingAudio())
     return ;
 
@@ -1624,7 +1426,7 @@ CFileItem& CApplication::CurrentFileItem()
 
 const CFileItem& CApplication::CurrentUnstackedItem()
 {
-  const auto stackHelper = GetComponent<CApplicationStackHelper>();
+  const boost::shared_ptr<CApplicationStackHelper> stackHelper = GetComponent<CApplicationStackHelper>();
 
   if (stackHelper->IsPlayingISOStack() || stackHelper->IsPlayingRegularStack())
     return stackHelper->GetCurrentStackPartFileItem();
@@ -1640,8 +1442,8 @@ double CApplication::GetTotalTime() const
 {
   double rc = 0.0;
 
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
-  const auto stackHelper = GetComponent<CApplicationStackHelper>();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<const CApplicationStackHelper> stackHelper = GetComponent<CApplicationStackHelper>();
 
   if (appPlayer->IsPlaying())
   {
@@ -1661,8 +1463,8 @@ double CApplication::GetTime() const
 {
   double rc = 0.0;
 
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
-  const auto stackHelper = GetComponent<CApplicationStackHelper>();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<const CApplicationStackHelper> stackHelper = GetComponent<CApplicationStackHelper>();
 
   if (appPlayer->IsPlaying())
   {
@@ -1685,8 +1487,8 @@ double CApplication::GetTime() const
 // consistent with GetTime() and GetTotalTime().
 void CApplication::SeekTime( double dTime )
 {
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
-  const auto stackHelper = GetComponent<CApplicationStackHelper>();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<CApplicationStackHelper> stackHelper = GetComponent<CApplicationStackHelper>();
 
   if (appPlayer->IsPlaying() && (dTime >= 0.0))
   {
@@ -1722,8 +1524,8 @@ void CApplication::SeekTime( double dTime )
 
 float CApplication::GetPercentage() const
 {
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
-  const auto stackHelper = GetComponent<CApplicationStackHelper>();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<const CApplicationStackHelper> stackHelper = GetComponent<CApplicationStackHelper>();
 
   if (appPlayer->IsPlaying())
   {
@@ -1749,8 +1551,8 @@ float CApplication::GetPercentage() const
 
 float CApplication::GetCachePercentage() const
 {
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
-  const auto stackHelper = GetComponent<CApplicationStackHelper>();
+  const boost::shared_ptr<const CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<const CApplicationStackHelper> stackHelper = GetComponent<CApplicationStackHelper>();
 
   if (appPlayer->IsPlaying())
   {
@@ -1772,8 +1574,8 @@ float CApplication::GetCachePercentage() const
 
 void CApplication::SeekPercentage(float percent)
 {
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
-  const auto stackHelper = GetComponent<CApplicationStackHelper>();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<CApplicationStackHelper> stackHelper = GetComponent<CApplicationStackHelper>();
 
   if (appPlayer->IsPlaying() && (percent >= 0.0f))
   {
@@ -1788,7 +1590,7 @@ void CApplication::SeekPercentage(float percent)
 
 std::string CApplication::GetCurrentPlayer()
 {
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
   return appPlayer->GetCurrentPlayer();
 }
 
@@ -1813,7 +1615,7 @@ void CApplication::UpdateLibraries()
 
 void CApplication::UpdateCurrentPlayArt()
 {
-  const auto appPlayer = GetComponent<CApplicationPlayer>();
+  const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
   if (!appPlayer->IsPlayingAudio())
     return;
   //Clear and reload the art for the currently playing item to show updated art on OSD
@@ -1910,8 +1712,4 @@ void CApplication::PrintStartupLog()
 void CApplication::CloseNetworkShares()
 {
   CLog::Log(LOGDEBUG,"CApplication::CloseNetworkShares: Closing all network shares");
-
-#if defined(HAS_FILESYSTEM_SMB) && !defined(TARGET_WINDOWS)
-  smb.Deinit();
-#endif
 }

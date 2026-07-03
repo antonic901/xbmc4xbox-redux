@@ -62,11 +62,13 @@ public:
    \return true if the database can be opened, false otherwise.
    */
   bool CanOpen(const std::string &name);
-  volatile bool m_bIsUpgrading;
+
+  bool IsUpgrading() const { return m_bIsUpgrading; }
 
   void LocalizationChanged();
 
 private:
+  volatile bool m_bIsUpgrading;
 
   enum DB_STATUS { DB_CLOSED, DB_UPDATING, DB_READY, DB_FAILED };
   void UpdateStatus(const std::string &name, DB_STATUS status);

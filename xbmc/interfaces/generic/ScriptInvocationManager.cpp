@@ -359,6 +359,15 @@ int CScriptInvocationManager::ExecuteSync(const std::string &script,
   return 0;
 }
 
+void CScriptInvocationManager::StopRunningScripts(bool wait /* = false */)
+{
+  for (LanguageInvokerThreadMap::iterator it = m_scripts.begin(); it != m_scripts.end(); )
+  {
+    if (!it->second.done)
+      Stop(it->second.script, wait);
+  }
+}
+
 bool CScriptInvocationManager::Stop(int scriptId, bool wait /* = false */)
 {
   if (scriptId < 0)

@@ -139,25 +139,13 @@ namespace KODI
 {
 namespace MESSAGING
 {
-
-class CDelayedMessage : public CThread
-{
-  public:
-    CDelayedMessage(ThreadMessage& msg, unsigned int delay);
-    virtual void Process();
-
-  private:
-    unsigned int   m_delay;
-    ThreadMessage  m_msg;
-};
+class IMessageTarget;
 
 struct ThreadMessageCallback
 {
   void (*callback)(void *userptr);
   void *userptr;
 };
-
-class IMessageTarget;
 
 class CApplicationMessenger
 {
@@ -204,6 +192,11 @@ public:
    */
   void SetProcessThread(const DWORD thread) { m_processThreadId = thread; }
 
+  /*
+   * \brief Signals the shutdown of the application and message processing
+   */
+  void Stop() { m_bStop = true; }
+
   //! \brief Returns true if this is the process / app loop thread.
   bool IsProcessThread() const;
 
@@ -227,6 +220,7 @@ private:
   CCriticalSection m_critSection;
   DWORD m_guiThreadId;
   DWORD m_processThreadId;
+  bool m_bStop;
 
 #ifdef _XBOX
   CCriticalSection m_critBuffer;
