@@ -1266,9 +1266,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Weather.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\XBApplicationEx.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\XBAudioConfig.cpp">
 				</File>
 				<File
@@ -5594,9 +5591,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Weather.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\XBApplicationEx.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\XBAudioConfig.h">

@@ -360,7 +360,7 @@ bool CApplication::InitWindow(RESOLUTION res)
     return false;
   }
   // set GUI res and force the clear of the screen
-  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res, false);
+  CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res, TRUE, true);
   return true;
 }
 
