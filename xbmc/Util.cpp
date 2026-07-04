@@ -3335,7 +3335,7 @@ void CUtil::RunShortcut(const char* szShortcutPath)
   }
 }
 
-void CUtil::GetHomePath(CStdString& strPath)
+void CUtil::GetHomePath(std::string& strPath)
 {
   char szXBEFileName[1024];
   CIoSupport::GetXbePath(szXBEFileName);

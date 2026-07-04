@@ -106,7 +106,7 @@ public:
   static void RunShortcut(const char* szPath);
   static void RunXBE(const char* szPath, char* szParameters = NULL, F_VIDEO ForceVideo=VIDEO_NULL, F_COUNTRY ForceCountry=COUNTRY_NULL, CUSTOM_LAUNCH_DATA* pData=NULL);
   static void LaunchXbe(const char* szPath, const char* szXbe, const char* szParameters, F_VIDEO ForceVideo=VIDEO_NULL, F_COUNTRY ForceCountry=COUNTRY_NULL, CUSTOM_LAUNCH_DATA* pData=NULL);
-  static void GetHomePath(CStdString& strPath);
+  static void GetHomePath(std::string& strPath);
   static bool ExcludeFileOrFolder(const CStdString& strFileOrFolder, const std::vector<std::string>& regexps);
   static void GetFileAndProtocol(const CStdString& strURL, CStdString& strDir);
   static int GetDVDIfoTitle(const CStdString& strPathFile);
