@@ -10,6 +10,11 @@
 
 #include "rendering/RenderSystem.h"
 
+#include <xtl.h>
+#include <xgraphics.h>
+#include <d3d8.h>
+#include <d3dx8.h>
+
 class CRenderSystemXbox : public CRenderSystemBase
 {
 public:
@@ -24,4 +29,9 @@ public:
 
 protected:
   virtual void PresentRenderImpl(bool rendered) = 0;
+
+  D3DPRESENT_PARAMETERS m_d3dpp;
+  LPDIRECT3D8 m_pD3D;
+  LPDIRECT3DDEVICE8 m_pd3dDevice;
+  LPDIRECT3DSURFACE8 m_pBackBuffer;
 };

@@ -8,6 +8,9 @@
 
 #include "WinSystemXbox.h"
 
+#include "settings/DisplaySettings.h"
+#include "windowing/GraphicContext.h"
+
 boost::movelib::unique_ptr<CWinSystemBase> CWinSystemXbox::CreateWinSystem()
 {
   return boost::movelib::unique_ptr<CWinSystemBase>(new CWinSystemXbox());
@@ -15,10 +18,16 @@ boost::movelib::unique_ptr<CWinSystemBase> CWinSystemXbox::CreateWinSystem()
 
 void CWinSystemXbox::PresentRenderImpl(bool rendered)
 {
-
+  m_pd3dDevice->Present(NULL, NULL, NULL, NULL);
 }
 
 bool CWinSystemXbox::CreateNewWindow(const std::string& name, bool fullScreen, RESOLUTION_INFO& res)
 {
-  return false;
+  for (int i = 0; i <= RES_PAL60_16x9; ++i)
+  {
+    m_gfxContext->ResetScreenParameters(static_cast<RESOLUTION>(i));
+    m_gfxContext->ResetOverscan(static_cast<RESOLUTION>(i), CDisplaySettings::GetInstance().GetResolutionInfo(static_cast<RESOLUTION>(i)).Overscan);
+  }
+
+  return true;
 }
