@@ -17,7 +17,6 @@
 #include "XBTimeZone.h"
 #include "XBVideoConfig.h"
 #include "addons/AddonSystemSettings.h"
-#include "addons/RepositoryUpdater.h"
 #include "addons/Skin.h"
 #include "cores/VideoRenderers/XBoxRenderer.h"
 #include "filesystem/File.h"
@@ -43,7 +42,6 @@
 #include "utils/SystemInfo.h"
 #include "utils/Variant.h"
 #include "utils/XBMCTinyXML.h"
-#include "utils/Weather.h"
 #include "utils/log.h"
 #include "view/ViewStateSettings.h"
 
@@ -818,15 +816,6 @@ void CSettings::InitializeISettingCallbacks()
 #endif
 
   settingSet.clear();
-  settingSet.insert(CSettings::SETTING_WEATHER_ADDON);
-  settingSet.insert(CSettings::SETTING_WEATHER_ADDONSETTINGS);
-  GetSettingsManager()->RegisterCallback(&CServiceBroker::GetWeatherManager(), settingSet);
-
-  settingSet.clear();
-  settingSet.insert(CSettings::SETTING_ADDONS_AUTOUPDATES);
-  GetSettingsManager()->RegisterCallback(&CServiceBroker::GetRepositoryUpdater(), settingSet);
-
-  settingSet.clear();
   settingSet.insert(CSettings::SETTING_ADDONS_SHOW_RUNNING);
   settingSet.insert(CSettings::SETTING_ADDONS_MANAGE_DEPENDENCIES);
   settingSet.insert(CSettings::SETTING_ADDONS_REMOVE_ORPHANED_DEPENDENCIES);
@@ -846,8 +835,6 @@ void CSettings::UninitializeISettingCallbacks()
   GetSettingsManager()->UnregisterCallback(&g_passwordManager);
   GetSettingsManager()->UnregisterCallback(&CRssManager::GetInstance());
   GetSettingsManager()->UnregisterCallback(&g_timezone);
-  GetSettingsManager()->UnregisterCallback(&CServiceBroker::GetWeatherManager());
-  GetSettingsManager()->UnregisterCallback(&CServiceBroker::GetRepositoryUpdater());
 }
 
 bool CSettings::Reset()

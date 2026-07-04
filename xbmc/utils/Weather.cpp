@@ -51,6 +51,7 @@
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "settings/lib/SettingsManager.h"
 #include "StringUtils.h"
 #include "URIUtils.h"
 #include "utils/POUtils.h"
@@ -739,6 +740,11 @@ void CWeatherJob::SetFromProperties()
 
 CWeather::CWeather(void) : CInfoLoader(30 * 60 * 1000) // 30 minutes
 {
+  std::set<std::string> settings;
+  settings.insert(CSettings::SETTING_WEATHER_ADDON);
+  settings.insert(CSettings::SETTING_WEATHER_ADDONSETTINGS);
+  CServiceBroker::GetSettingsComponent()->GetSettings()->GetSettingsManager()->RegisterCallback(this, settings);
+
   Reset();
 }
 
