@@ -8,6 +8,7 @@
 
 #include "WinSystem.h"
 
+#include "settings/DisplaySettings.h"
 #include "windowing/GraphicContext.h"
 
 #include <boost/move/make_unique.hpp>
@@ -16,7 +17,24 @@ CWinSystemBase::CWinSystemBase() : m_gfxContext(boost::movelib::make_unique<CGra
 {
 }
 
-CWinSystemBase::~CWinSystemBase() {};
+CWinSystemBase::~CWinSystemBase() {}
+
+bool CWinSystemBase::InitWindowSystem()
+{
+  CDisplaySettings::GetInstance().ApplyCalibrations();
+
+  return true;
+}
+
+bool CWinSystemBase::DestroyWindowSystem()
+{
+  return false;
+}
+
+void CWinSystemBase::DriveRenderLoop()
+{
+  MessagePump();
+}
 
 CGraphicContext& CWinSystemBase::GetGfxContext() const
 {

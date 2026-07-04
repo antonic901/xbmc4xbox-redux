@@ -245,15 +245,15 @@ bool CDisplaySettings::OnSettingChanging(const boost::shared_ptr<const CSetting>
 
 void CDisplaySettings::SetCurrentResolution(RESOLUTION resolution, bool save /* = false */)
 {
-  if (save)
-  {
-    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(CSettings::SETTING_VIDEOSCREEN_RESOLUTION, static_cast<int>(resolution));
-  }
-
   if (resolution == RES_AUTORES)
     m_currentResolution = g_videoConfig.GetBestMode();
   else
     m_currentResolution = resolution;
+
+  if (save)
+  {
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(CSettings::SETTING_VIDEOSCREEN_RESOLUTION, static_cast<int>(m_currentResolution));
+  }
 }
 
 RESOLUTION CDisplaySettings::GetDisplayResolution() const

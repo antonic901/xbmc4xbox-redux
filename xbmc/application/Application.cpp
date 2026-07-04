@@ -303,13 +303,6 @@ bool CApplication::CreateGUI()
   CDisplaySettings::GetInstance().SetCurrentResolution(CDisplaySettings::GetInstance().GetDisplayResolution());
   CLog::Log(LOGINFO, "Checking resolution %i",
             CDisplaySettings::GetInstance().GetCurrentResolution());
-  if (!CServiceBroker::GetWinSystem()->GetGfxContext().IsValidResolution(CDisplaySettings::GetInstance().GetCurrentResolution()))
-  {
-    CLog::Log(LOGINFO, "Setting safe mode %i", RES_DESKTOP);
-    // defer saving resolution after window was created
-    CDisplaySettings::GetInstance().SetCurrentResolution(RES_DESKTOP);
-    sav_res = true;
-  }
 
   const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
 
@@ -317,7 +310,7 @@ bool CApplication::CreateGUI()
   {
     // Oh uh - doesn't look good for starting in their wanted screenmode
     CLog::Log(LOGERROR, "The screen resolution requested is not valid, resetting to a valid mode");
-    CDisplaySettings::GetInstance().SetCurrentResolution(RES_DESKTOP);
+    CDisplaySettings::GetInstance().SetCurrentResolution(RES_AUTORES);
     sav_res = true;
   }
   if (!InitWindow())
@@ -330,7 +323,7 @@ bool CApplication::CreateGUI()
   screensaverModeSetting->SetDefault("screensaver.xbmc.builtin.dim");
 
   if (sav_res)
-    CDisplaySettings::GetInstance().SetCurrentResolution(RES_DESKTOP, true);
+    CDisplaySettings::GetInstance().SetCurrentResolution(RES_AUTORES, true);
 
   m_pGUI = boost::movelib::make_unique<CGUIComponent>();
   m_pGUI->Init();

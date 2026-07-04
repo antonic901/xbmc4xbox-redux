@@ -43,6 +43,7 @@ class XBPython;
 class IApplicationComponent;
 class CNetwork;
 class CWinSystemBase;
+class CRenderSystemBase;
 class CWeather;
 class CPlayerCoreFactory;
 class CDatabaseManager;
@@ -98,6 +99,7 @@ public:
   static void RegisterWinSystem(CWinSystemBase* winsystem);
   static void UnregisterWinSystem();
   static CWinSystemBase* GetWinSystem();
+  static CRenderSystemBase* GetRenderSystem();
 
   static void RegisterTextureCache(const boost::shared_ptr<CTextureCache>& cache);
   static void UnregisterTextureCache();
