@@ -28,6 +28,7 @@
  *
  */
 
+#include "Resolution.h"
 #include "utils/ColorUtils.h"
 #include <vector>
 #include <stack>
@@ -42,25 +43,6 @@
 #include "ServiceBroker.h"
 #include "WinSystem.h"
 
-/*!
- \ingroup graphics
- \brief
- */
-enum RESOLUTION {
-  RES_INVALID = -1,
-  RES_HDTV_1080i = 0,
-  RES_HDTV_720p = 1,
-  RES_HDTV_480p_4x3 = 2,
-  RES_HDTV_480p_16x9 = 3,
-  RES_NTSC_4x3 = 4,
-  RES_NTSC_16x9 = 5,
-  RES_PAL_4x3 = 6,
-  RES_PAL_16x9 = 7,
-  RES_PAL60_4x3 = 8,
-  RES_PAL60_16x9 = 9,
-  RES_AUTORES = 10
-};
-
 enum VIEW_TYPE { VIEW_TYPE_NONE = 0,
                  VIEW_TYPE_LIST,
                  VIEW_TYPE_ICON,
@@ -74,68 +56,6 @@ enum VIEW_TYPE { VIEW_TYPE_NONE = 0,
                  VIEW_TYPE_BIG_INFO,
                  VIEW_TYPE_AUTO,
                  VIEW_TYPE_MAX };
-
-/*!
- \ingroup graphics
- \brief
- */
-struct OVERSCAN
-{
-  int left;
-  int top;
-  int right;
-  int bottom;
-public:
-  OVERSCAN()
-  {
-    left = top = right = bottom = 0;
-  }
-
-  bool operator==(const OVERSCAN& other)
-  {
-    return left == other.left && right == other.right && top == other.top && bottom == other.bottom;
-  }
-  bool operator!=(const OVERSCAN& other)
-  {
-    return left != other.left || right != other.right || top != other.top || bottom != other.bottom;
-  }
-};
-
-/*!
- \ingroup graphics
- \brief
- */
-struct RESOLUTION_INFO
-{
-  OVERSCAN Overscan;
-  int iWidth;
-  int iHeight;
-  int iSubtitles;
-  DWORD dwFlags;
-  float fPixelRatio;
-  CStdString strMode;
-  CStdString strId;
-public:
-  RESOLUTION_INFO(int width = 1280, int height = 720, float aspect = 0, const CStdString &mode = "")
-  {
-    iWidth = width;
-    iHeight = height;
-    fPixelRatio = aspect ? ((float)width)/height / aspect : 1.0f;
-    strMode = mode;
-    dwFlags = iSubtitles = 0;
-  }
-  float DisplayRatio() const
-  {
-    return iWidth * fPixelRatio / iHeight;
-  }
-};
-
-enum AdjustRefreshRate
-{
-  ADJUST_REFRESHRATE_OFF          = 0,
-  ADJUST_REFRESHRATE_ALWAYS,
-  ADJUST_REFRESHRATE_ON_STARTSTOP
-};
 
 /*!
  \ingroup graphics
@@ -191,6 +111,8 @@ public:
   const RESOLUTION_INFO GetResInfo() const;
   const RESOLUTION_INFO GetResInfo(RESOLUTION res) const;
   void SetResInfo(RESOLUTION res, const RESOLUTION_INFO& info);
+
+  void Flip(bool rendered, bool videoLayer);
 
   /* \brief Get UI scaling information from a given resolution to the screen resolution.
    Takes account of overscan and UI zooming.

@@ -12,3 +12,13 @@ boost::movelib::unique_ptr<CWinSystemBase> CWinSystemXbox::CreateWinSystem()
 {
   return boost::movelib::unique_ptr<CWinSystemBase>(new CWinSystemXbox());
 }
+
+void CWinSystemXbox::PresentRenderImpl(bool rendered)
+{
+
+}
+
+bool CWinSystemXbox::CreateNewWindow(const std::string& name, bool fullScreen, RESOLUTION_INFO& res)
+{
+  return false;
+}

@@ -125,7 +125,15 @@ void CServiceBroker::RegisterWinSystem(CWinSystemBase* winsystem)
 
 void CServiceBroker::UnregisterWinSystem()
 {
-  g_serviceBroker.m_pWinSystem = nullptr;
+  g_serviceBroker.m_pWinSystem = NULL;
+}
+
+CRenderSystemBase* CServiceBroker::GetRenderSystem()
+{
+  if (g_serviceBroker.m_pWinSystem)
+    return g_serviceBroker.m_pWinSystem->GetRenderSystem();
+
+  return NULL;
 }
 
 CWeather& CServiceBroker::GetWeatherManager()

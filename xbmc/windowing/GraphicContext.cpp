@@ -23,6 +23,7 @@
 #include "application/Application.h"
 #include "messaging/ApplicationMessenger.h"
 #include "guilib/GUIAudioManager.h"
+#include "rendering/RenderSystem.h"
 #include "settings/DisplaySettings.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
@@ -373,6 +374,11 @@ void CGraphicContext::SetCalibrating(bool bOnOff)
 bool CGraphicContext::IsValidResolution(RESOLUTION res)
 {
   return g_videoConfig.IsValidResolution(res);
+}
+
+void CGraphicContext::Flip(bool rendered, bool videoLayer)
+{
+  CServiceBroker::GetRenderSystem()->PresentRender(rendered, videoLayer);
 }
 
 void CGraphicContext::GetAllowedResolutions(vector<RESOLUTION> &res, bool bAllowPAL60)

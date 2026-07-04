@@ -1149,9 +1149,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Speed.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\Splash.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\Stopwatch.cpp">
 				</File>
 				<File
@@ -5027,6 +5024,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\windowing\GraphicContext.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\windowing\Resolution.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\windowing\Resolution.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\windowing\WinSystem.cpp">
 				</File>
 				<File
@@ -5216,6 +5219,26 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\platform\xbox\main.cpp">
+					</File>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="rendering"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\rendering\RenderSystem.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\rendering\RenderSystem.h">
+				</File>
+				<Filter
+					Name="xbox"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\rendering\xbox\RenderSystemXbox.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\rendering\xbox\RenderSystemXbox.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -5529,9 +5552,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\lib\libSpeex\speex_bits.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Splash.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\stdafx.h">
