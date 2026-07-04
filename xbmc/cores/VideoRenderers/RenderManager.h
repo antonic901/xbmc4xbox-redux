@@ -20,13 +20,6 @@
  *
  */
 
-#if !defined(HAS_XBOX_HARDWARE)
-
-// we use this manager instead
-#include "WinRenderManager.h"
-
-#else
-
 #include "XBoxRenderer.h"
 #include "threads/SharedSection.h"
 #include "threads/Thread.h"
@@ -134,5 +127,3 @@ protected:
 };
 
 extern CXBoxRenderManager g_renderManager;
-
-#endif
