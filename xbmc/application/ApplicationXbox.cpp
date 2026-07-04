@@ -42,10 +42,14 @@ CApplicationXbox::CApplicationXbox()
 {
   // TODO: add HLT (power saving)
   m_idleThread.Create(false, 0x100);
+
+  MEMORYSTATUS stat;
+  GlobalMemoryStatus(&stat);
+  m_hasMemoryUpgrade = stat.dwTotalPhys > 67108864;
+
   m_bSpinDown = false;
   m_bNetworkSpinDown = false;
   m_dwSpinDownTime = XbmcThreads::SystemClockMillis();
-  m_128MBHack = false;
   m_pCdgParser = new CCdgParser();
   // TODO: add support, make it possible to disable/enable etc.
   g_lcd = NULL;
@@ -141,26 +145,9 @@ float CApplicationXbox::GetCPUUsage()
   return 100.0f - m_idleThread.GetRelativeUsage() * 100.0f;
 }
 
-void CApplicationXbox::ApplyMemoryHack()
-{
-  MEMORYSTATUS status;
-  GlobalMemoryStatus(&status);
-  if (status.dwTotalPhys > 67108864)
-  {
-    __asm
-    {
-      mov ecx, 0x2ff
-      rdmsr
-      mov al, 0x06
-      wrmsr
-    }
-    m_128MBHack = true;
-  }
-}
-
 bool CApplicationXbox::HasMemoryUpgrade() const
 {
-  return m_128MBHack;
+  return m_hasMemoryUpgrade;
 }
 
 void CApplicationXbox::RenderMemoryStatus() const

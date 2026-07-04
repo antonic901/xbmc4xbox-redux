@@ -32,7 +32,6 @@ public:
 
   float GetCPUUsage();
 
-  void ApplyMemoryHack();
   bool HasMemoryUpgrade() const;
 
   void RenderMemoryStatus() const;
@@ -61,7 +60,7 @@ public:
 private:
   CIdleThread m_idleThread;
 
-  bool m_128MBHack;
+  bool m_hasMemoryUpgrade;
 
   bool m_bSpinDown;
   bool m_bNetworkSpinDown;
