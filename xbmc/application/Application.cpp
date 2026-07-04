@@ -138,6 +138,33 @@ using namespace XbmcThreads;
 
 #define MAX_FFWD_SPEED 5
 
+// uncomment this if you want to use release libs in the debug build.
+// Atm this saves you 7 mb of memory
+#define USE_RELEASE_LIBS
+
+#ifdef HAS_LCD
+#pragma comment (lib,"lib/libXenium/XeniumSPIg.lib")
+#endif
+
+#if defined(_DEBUG) && !defined(USE_RELEASE_LIBS)
+  #pragma comment (lib,"lib/libsmb/libsmbd.lib")      // SECTIONNAME=LIBSMB
+  #pragma comment (lib,"lib/libGoAhead/goaheadd.lib") // SECTIONNAME=LIBHTTP
+  #pragma comment (lib,"lib/sqLite/libSQLite3d.lib")
+  #pragma comment (lib,"lib/libshout/libshoutd.lib" )
+  #pragma comment (lib,"lib/libcdio/libcdiod.lib" )
+  #pragma comment (lib,"lib/libiconv/libiconvd.lib")
+  #pragma comment (lib,"lib/libfribidi/libfribidid.lib")
+  #pragma comment (lib,"lib/libpcre/libpcred.lib")
+#else
+  #pragma comment (lib,"lib/libsmb/libsmb.lib")
+  #pragma comment (lib,"lib/libGoAhead/goahead.lib")
+  #pragma comment (lib,"lib/sqLite/libSQLite3.lib")
+  #pragma comment (lib,"lib/libcdio/libcdio.lib")
+  #pragma comment (lib,"lib/libiconv/libiconv.lib")
+  #pragma comment (lib,"lib/libfribidi/libfribidi.lib")
+  #pragma comment (lib,"lib/libpcre/libpcre.lib")
+#endif
+
 CApplication::CApplication(void)
   :
 #ifdef HAS_OPTICAL_DRIVE

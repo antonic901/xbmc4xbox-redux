@@ -293,10 +293,10 @@ bool CVideoResume::IsVisible(const CFileItem& itemIn) const
 
 namespace
 {
-VECPLAYERCORES GetPlayers(const CPlayerCoreFactory& playerCoreFactory,
+std::vector<std::string> GetPlayers(const CPlayerCoreFactory& playerCoreFactory,
                                     const CFileItem& item)
 {
-  VECPLAYERCORES players;
+  std::vector<std::string> players;
   if (item.IsVideoDb())
   {
     //! @todo CPlayerCoreFactory and classes called from there do not handle dyn path correctly.
@@ -332,16 +332,16 @@ protected:
     if (m_choosePlayer)
     {
       const CPlayerCoreFactory& playerCoreFactory = CServiceBroker::GetPlayerCoreFactory();
-      VECPLAYERCORES players = GetPlayers(playerCoreFactory, *m_item);
-      g_application.m_eForcedNextPlayer = CServiceBroker::GetPlayerCoreFactory().SelectPlayerDialog(players);
-      if (g_application.m_eForcedNextPlayer == EPC_NONE)
+      const std::vector<std::string> players = GetPlayers(playerCoreFactory, *m_item);
+      player = playerCoreFactory.SelectPlayerDialog(players);
+      if (player.empty())
       {
         m_userCancelled = true;
         return true; // User cancelled player selection. We're done.
       }
     }
 
-    Play("");
+    Play(player);
     return true;
   }
 

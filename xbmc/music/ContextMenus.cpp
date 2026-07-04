@@ -8,7 +8,6 @@
 
 #include "ContextMenus.h"
 
-#include "application/Application.h" // m_eForcedNextPlayer
 #include "FileItem.h"
 #include "GUIUserMessages.h"
 #include "ServiceBroker.h"
@@ -101,6 +100,14 @@ void Play(const boost::shared_ptr<CFileItem>& item, const std::string& player)
   MUSIC_UTILS::PlayItem(item, player, mode);
 }
 
+std::vector<std::string> GetPlayers(const CPlayerCoreFactory& playerCoreFactory,
+                                    const CFileItem& item)
+{
+  std::vector<std::string> players;
+  playerCoreFactory.GetPlayers(item, players);
+  return players;
+}
+
 bool CanQueue(const CFileItem& item)
 {
   if (!item.CanQueue())
@@ -122,19 +129,18 @@ bool CMusicPlay::Execute(const boost::shared_ptr<CFileItem>& item) const
 
 bool CMusicPlayUsing::IsVisible(const CFileItem& item) const
 {
-  VECPLAYERCORES players;
-  CServiceBroker::GetPlayerCoreFactory().GetPlayers(item, players);
-  return (players.size() > 1) && MUSIC_UTILS::IsItemPlayable(item);
+  const CPlayerCoreFactory& playerCoreFactory = CServiceBroker::GetPlayerCoreFactory();
+  return (GetPlayers(playerCoreFactory, item).size() > 1) && MUSIC_UTILS::IsItemPlayable(item);
 }
 
 bool CMusicPlayUsing::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
-  VECPLAYERCORES players;
-  CServiceBroker::GetPlayerCoreFactory().GetPlayers(*item, players);
-  g_application.m_eForcedNextPlayer = CServiceBroker::GetPlayerCoreFactory().SelectPlayerDialog(players);
-  if (g_application.m_eForcedNextPlayer != EPC_NONE)
+  const CPlayerCoreFactory& playerCoreFactory = CServiceBroker::GetPlayerCoreFactory();
+  const std::vector<std::string> players = GetPlayers(playerCoreFactory, *item);
+  const std::string player(playerCoreFactory.SelectPlayerDialog(players));
+  if (!player.empty())
   {
-    Play(item, "");
+    Play(item, player);
     return true;
   }
   return false;
