@@ -82,9 +82,6 @@
 #endif
 #include "music/MusicInfoLoader.h"
 #include "XBVideoConfig.h"
-#ifndef HAS_XBOX_D3D
-#include "DirectXGraphics.h"
-#endif
 #include "music/tags/MusicInfoTag.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"

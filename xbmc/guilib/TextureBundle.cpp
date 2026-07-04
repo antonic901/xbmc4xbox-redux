@@ -3,12 +3,8 @@
 #include "TextureBundle.h"
 #include "Texture.h"
 #include "windowing/GraphicContext.h"
-#ifdef HAS_XBOX_D3D
 #include <XGraphics.h>
 #include "utils/CharsetConverter.h"
-#else
-#include "DirectXGraphics.h"
-#endif
 #include "liblzo/LZO1X.H"
 #include "addons/Skin.h"
 #include "settings/Settings.h"
