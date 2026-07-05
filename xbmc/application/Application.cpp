@@ -644,6 +644,11 @@ void CApplication::Render()
     infoMgr.GetInfoProviders().GetSystemInfoProvider().UpdateFPS();
   }
 
+#ifdef _XBOX
+  // TODO: move this to CGUIWindowDebug if memory consuption is not too much bigger!
+  GetComponent<CApplicationXbox>()->RenderMemoryStatus();
+#endif
+
   CServiceBroker::GetWinSystem()->GetGfxContext().Flip(hasRendered, false);
 
   CTimeUtils::UpdateFrameTime();

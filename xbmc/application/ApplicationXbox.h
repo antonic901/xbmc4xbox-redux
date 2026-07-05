@@ -12,6 +12,7 @@
 #include "utils/Idle.h"
 
 class CCdgParser;
+class CGUITextLayout;
 class ILCD;
 
 struct VOICE_MASK
@@ -34,7 +35,7 @@ public:
 
   bool HasMemoryUpgrade() const;
 
-  void RenderMemoryStatus() const;
+  void RenderMemoryStatus();
 
   /*!
    \brief Checks if HDD spindown must be blocked
@@ -70,4 +71,6 @@ private:
   VOICE_MASK m_karaokeVoiceMask[4];
 
   ILCD *g_lcd;
+
+  CGUITextLayout *m_debugLayout;
 };

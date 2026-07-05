@@ -1079,8 +1079,8 @@ void CXBoxRenderer::Render(DWORD flags)
         CServiceBroker::GetGUI()->GetWindowManager().RenderDialogs();
     }
 
-    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
-    const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+    CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
     if (!appPlayer->IsPaused())
     {
       components.GetComponent<CApplicationXbox>()->RenderMemoryStatus();
