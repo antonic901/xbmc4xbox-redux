@@ -41,6 +41,7 @@ class CComponentContainer;
 class CContextMenuManager;
 class XBPython;
 class IApplicationComponent;
+class CInputManager;
 class CNetwork;
 class CWinSystemBase;
 class CRenderSystemBase;
@@ -79,6 +80,7 @@ public:
   static PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
   static ADDON::CServiceAddonManager& GetServiceAddons();
   static ADDON::CRepositoryUpdater& GetRepositoryUpdater();
+  static CInputManager& GetInputManager();
   static bool IsAddonInterfaceUp();
   static bool IsServiceManagerUp();
   static CNetwork& GetNetwork();

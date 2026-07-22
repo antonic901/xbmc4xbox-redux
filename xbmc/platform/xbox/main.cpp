@@ -93,6 +93,9 @@ void main()
     settingsComponent->GetAdvancedSettings()->m_guiKeepInMemory = true;
   }
 
+  // Initialize input devices
+  XInitDevices(0, NULL);
+
   int status = XBMC_Run();
   if (status == -1)
   {

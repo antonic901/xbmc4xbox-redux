@@ -98,6 +98,11 @@ ADDON::CRepositoryUpdater& CServiceBroker::GetRepositoryUpdater()
   return g_application.m_ServiceManager->GetRepositoryUpdater();
 }
 
+CInputManager& CServiceBroker::GetInputManager()
+{
+  return g_application.m_ServiceManager->GetInputManager();
+}
+
 CNetwork& CServiceBroker::GetNetwork()
 {
   return g_application.m_ServiceManager->GetNetwork();

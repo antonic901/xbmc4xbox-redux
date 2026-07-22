@@ -15,6 +15,7 @@
 #include "addons/Service.h"
 #include "addons/binary-addons/BinaryAddonManager.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
+#include "input/InputManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/python/XBPython.h"
 #include "xbox/Network.h"
@@ -76,6 +77,9 @@ bool CServiceManager::InitStageTwo(const std::string& profilesUserDataFolder)
 
   m_contextMenuManager.reset(new CContextMenuManager(*m_addonMgr));
 
+  m_inputManager = boost::movelib::make_unique<CInputManager>();
+  m_inputManager->InitializeInputs();
+
   m_weatherManager = boost::movelib::make_unique<CWeather>();
 
   m_mediaManager = boost::movelib::make_unique<CMediaManager>();
@@ -107,6 +111,7 @@ void CServiceManager::DeinitStageTwo()
   init_level = 1;
 
   m_weatherManager.reset();
+  m_inputManager.reset();
   m_contextMenuManager.reset();
   m_serviceAddons.reset();
   m_repositoryUpdater.reset();
@@ -164,6 +169,11 @@ CContextMenuManager& CServiceManager::GetContextMenuManager()
 PLAYLIST::CPlayListPlayer& CServiceManager::GetPlaylistPlayer()
 {
   return *m_playlistPlayer;
+}
+
+CInputManager& CServiceManager::GetInputManager()
+{
+  return *m_inputManager;
 }
 
 CNetwork& CServiceManager::GetNetwork()

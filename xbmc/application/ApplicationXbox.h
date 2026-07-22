@@ -58,6 +58,9 @@ public:
   bool OnSettingChanged(const CSetting& setting);
   bool OnSettingAction(const CSetting& setting);
 
+  void SetSpinDown(bool bSpinDown) { m_bSpinDown = bSpinDown; }
+  void SetNetworkSpinDown(bool bNetworkSpinDown) { m_bNetworkSpinDown = bNetworkSpinDown; }
+
 private:
   CIdleThread m_idleThread;
 

@@ -37,6 +37,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIFontManager.h"
 #include "guilib/TextureManager.h"
+#include "input/InputManager.h"
 #include "interfaces/builtins/Builtins.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "music/MusicLibraryQueue.h"
@@ -784,7 +785,7 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
       }
     }
 
-    // TODO: readn input, process input
+    CServiceBroker::GetInputManager().Process(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog(), frameTime);
 
     if (processGUI)
     {
