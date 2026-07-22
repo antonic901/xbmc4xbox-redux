@@ -891,9 +891,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\DatabaseUtils.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\DelayController.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\Digest.cpp">
 				</File>
 				<File
@@ -1270,9 +1267,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\XBDateTime.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\XBInputEx.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\XBLocale.cpp">
@@ -4815,6 +4809,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\input\InputCodingTableFactory.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\input\InputManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\input\InputManager.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\input\KeyboardLayout.cpp">
 				</File>
 				<File
@@ -5217,6 +5217,22 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					<File
 						RelativePath=".\xbmc\platform\xbox\main.cpp">
 					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XBInputEx.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XBInputEx.h">
+					</File>
+					<Filter
+						Name="utils"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\platform\xbox\utils\DelayController.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\utils\DelayController.h">
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter
@@ -5309,9 +5325,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\DbUrl.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\DelayController.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\FileSystem\DirectoryHistory.h">
@@ -5597,9 +5610,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\XBDateTime.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\XBInputEx.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\input\XBIRRemote.h">

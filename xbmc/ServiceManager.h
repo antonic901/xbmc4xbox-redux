@@ -33,6 +33,7 @@ class CNetwork;
 class CWinSystemBase;
 class CWeather;
 
+class CInputManager;
 class CPlayerCoreFactory;
 class CDatabaseManager;
 class CProfileManager;
@@ -65,6 +66,8 @@ public:
   PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
   int init_level;
 
+  CInputManager& GetInputManager();
+
   CWeather& GetWeatherManager();
 
   CPlayerCoreFactory& GetPlayerCoreFactory();
@@ -83,6 +86,7 @@ protected:
 #endif
   boost::movelib::unique_ptr<CContextMenuManager> m_contextMenuManager;
   boost::movelib::unique_ptr<PLAYLIST::CPlayListPlayer> m_playlistPlayer;
+  boost::movelib::unique_ptr<CInputManager> m_inputManager;
   boost::movelib::unique_ptr<CNetwork> m_network;
   boost::movelib::unique_ptr<CWeather> m_weatherManager;
   boost::movelib::unique_ptr<CPlayerCoreFactory> m_playerCoreFactory;
