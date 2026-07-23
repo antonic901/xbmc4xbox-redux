@@ -5233,6 +5233,46 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 							RelativePath=".\xbmc\platform\xbox\utils\DelayController.h">
 						</File>
 					</Filter>
+					<Filter
+						Name="input"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\platform\xbox\input\Keyboard.cpp">
+							<FileConfiguration
+								Name="Profile|Xbox">
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Profile_FastCap|Xbox">
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Release_LTCG|Xbox">
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+							</FileConfiguration>
+							<FileConfiguration
+								Name="Debug Xbox No Memory Tracking|Xbox">
+								<Tool
+									Name="VCCLCompilerTool"
+									ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+							</FileConfiguration>
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\input\Keyboard.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\input\XboxKeyboard.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\input\XboxKeyboard.h">
+						</File>
+					</Filter>
 				</Filter>
 			</Filter>
 			<Filter

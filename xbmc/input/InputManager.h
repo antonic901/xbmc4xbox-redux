@@ -13,6 +13,7 @@
 
 #include "XBInput.h"
 #include "XBInputEx.h"
+#include "input/Keyboard.h"
 #include "utils/DelayController.h"
 
 #include <string>
@@ -39,6 +40,12 @@ public:
   \return true if event is handled, false otherwise
   */
   bool ProcessGamepad(int windowId, float frameTime);
+
+  /*! \brief decode an input event from remote controls.
+
+   \return true if event is handled, false otherwise
+  */
+  bool ProcessKeyboard();
 
   /*! \brief Process all inputs
    *
@@ -92,4 +99,6 @@ private:
 
   XBIR_REMOTE m_IR_Remote[4];
   XBIR_REMOTE m_DefaultIR_Remote;
+
+  CKeyboard m_Keyboard;
 };
