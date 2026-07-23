@@ -17,8 +17,6 @@
 // Comment OUT, if not really debugging!!!:
 //#define DEBUG_KEYBOARD_GETCHAR
 
-CKeyboard g_Keyboard; // global
-
 CKeyboard::CKeyboard()
 {
 }

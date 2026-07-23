@@ -19,7 +19,7 @@
  */
 
 #include "../include.h"
-#include "XBoxKeyboard.h"
+#include "XboxKeyboard.h"
 
 static DWORD anKeyboardBitmapTable[4*2] =
   {

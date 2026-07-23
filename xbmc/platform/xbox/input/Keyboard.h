@@ -22,7 +22,7 @@
 
 #include <xtl.h>
 
-#include "XBoxKeyboard.h"
+#include "XboxKeyboard.h"
 
 class CKeyboard : public CLowLevelKeyboard
 {
@@ -33,7 +33,5 @@ public:
   char GetAscii(); // for backwards compatibility only
   WCHAR GetUnicode();
 };
-
-extern CKeyboard g_Keyboard;
 
 #endif

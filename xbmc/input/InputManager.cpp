@@ -17,8 +17,9 @@
 #include "guilib/GUIAudioManager.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "guilib/common/Keyboard.h"
+#include "input/Keyboard.h"
 #include "input/keyboard/KeyIDs.h"
+#include "input/keyboard/XBMC_vkeys.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/ExecString.h"
@@ -44,6 +45,9 @@ void CInputManager::InitializeInputs()
   {
     CLog::Log(LOGFATAL, "%s - failed to initialize remotes!");
   }
+
+  m_Keyboard.Initialize(NULL);
+
   m_ctrDpad.SetDelays(100, 500);
 }
 
@@ -115,6 +119,9 @@ void CInputManager::ReadInput()
   m_DefaultGamepad.fY1 = DeadZone(m_DefaultGamepad.fY1);
   m_DefaultGamepad.fX2 = DeadZone(m_DefaultGamepad.fX2);
   m_DefaultGamepad.fY2 = DeadZone(m_DefaultGamepad.fY2);
+
+  // Read the input from keyboard
+  m_Keyboard.Update();
 }
 
 bool CInputManager::ProcessGamepad(int windowId, float frameTime)
@@ -399,6 +406,24 @@ bool CInputManager::ProcessRemote(int windowId, float frameTime)
   return false;
 }
 
+bool CInputManager::ProcessKeyboard()
+{
+  BYTE vkey = m_Keyboard.GetKey();
+  WCHAR unicode = m_Keyboard.GetUnicode();
+  if (vkey || unicode)
+  {
+    // got a valid keypress - convert to a key code
+    int keyID = KEY_UNICODE;
+    if (vkey) // FIXME, every ascii has a vkey so vkey would always and ascii would never be processed, but fortunately OnKey uses wkeyID only to detect keyboard use and the real key is recalculated correctly.
+      keyID = vkey | KEY_VKEY;
+
+    CKey key(keyID);
+    key.SetHeld(m_Keyboard.KeyHeld());
+    return OnKey(key);
+  }
+  return false;
+}
+
 bool CInputManager::Process(int windowId, float frameTime)
 {
   // read raw input
@@ -407,6 +432,7 @@ bool CInputManager::Process(int windowId, float frameTime)
   // process input actions
   ProcessRemote(windowId, frameTime);
   ProcessGamepad(windowId, frameTime);
+  ProcessKeyboard();
 
   return true;
 }
@@ -468,7 +494,7 @@ bool CInputManager::OnKey(const CKey& key)
 
         // If the key pressed is shift-A to shift-Z set usekeyboard to true.
         // This causes the keypress to be used for list navigation.
-        if (control->IsContainer() && g_Keyboard.GetShift() &&
+        if (control->IsContainer() && m_Keyboard.GetShift() &&
             key.GetUnicode())
           useKeyboard = true;
       }
@@ -484,26 +510,14 @@ bool CInputManager::OnKey(const CKey& key)
         else
         {
           // Check for paste keypress
-#ifdef TARGET_WINDOWS
-          // In Windows paste is ctrl-V
-          if (key.GetVKey() == XBMCVK_V && key.GetModifiers() == CKey::MODIFIER_CTRL)
-#elif defined(TARGET_LINUX)
-          // In Linux paste is ctrl-V
-          if (key.GetVKey() == XBMCVK_V && key.GetModifiers() == CKey::MODIFIER_CTRL)
-#elif defined(TARGET_DARWIN_OSX)
-          // In OSX paste is cmd-V
-          if (key.GetVKey() == XBMCVK_V && key.GetModifiers() == CKey::MODIFIER_META)
-#else
-          // Placeholder for other operating systems
-          if (false)
-#endif
+          if (m_Keyboard.GetKey() == XBMCVK_V && m_Keyboard.GetCtrl())
             action = CAction(ACTION_PASTE);
           // If the unicode is non-zero the keypress is a non-printing character
-          else if (key.GetUnicode())
-            action = CAction(KEY_UNICODE, key.GetUnicode());
+          else if (m_Keyboard.GetUnicode())
+            action = CAction(KEY_UNICODE, m_Keyboard.GetUnicode());
           // The keypress is a non-printing character
           else
-            action = CAction(g_Keyboard.GetKey() | KEY_VKEY);
+            action = CAction(m_Keyboard.GetKey() | KEY_VKEY);
         }
       }
 
