@@ -33,6 +33,7 @@
 #include "cores/playercorefactory/PlayerCoreFactory.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogKaiToast.h"
+#include "filesystem/DllLibCurl.h"
 #include "filesystem/File.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIFontManager.h"
@@ -199,6 +200,10 @@ CApplication::~CApplication(void)
   DeregisterComponent(typeid(CApplicationActionListeners));
 }
 
+extern "C" void __stdcall init_emu_environ();
+extern "C" void __stdcall update_emu_environ();
+extern "C" void __stdcall cleanup_emu_environ();
+
 bool CApplication::Create()
 {
   m_bStop = false;
@@ -242,6 +247,9 @@ bool CApplication::Create()
 
   CDirectory::Create("special://xbmc/addons");
 
+  // Init our DllLoaders emu env
+  init_emu_environ();
+
   PrintStartupLog();
 
   CLog::Log(LOGINFO, "loading settings");
@@ -261,6 +269,8 @@ bool CApplication::Create()
   CDirectory::Create(profileManager->GetUserDataFolder());
   CDirectory::Create(profileManager->GetProfileUserDataFolder());
   profileManager->CreateProfileFolders();
+
+  update_emu_environ();//apply the GUI settings
 
   if (!m_ServiceManager->InitStageTwo(
           settingsComponent->GetProfileManager()->GetProfileUserDataFolder()))
@@ -1032,6 +1042,8 @@ bool CApplication::Stop(int exitCode)
     success = false;
   }
 
+  cleanup_emu_environ();
+
   Sleep(200);
 
   return success;
@@ -1360,7 +1372,8 @@ void CApplication::ProcessSlow()
   if (!appPlayer->IsPlayingVideo())
     CSectionLoader::UnloadDelayed();
 
-  // TODO: setup curl
+  // check for any idle curl connections
+  g_curlInterface.CheckIdle();
 
   CServiceBroker::GetGUI()->GetLargeTextureManager().CleanupUnusedImages();
 

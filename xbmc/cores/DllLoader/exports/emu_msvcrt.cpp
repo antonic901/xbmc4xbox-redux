@@ -159,6 +159,15 @@ extern "C" void __stdcall update_emu_environ()
   }
 }
 
+extern "C" void __stdcall cleanup_emu_environ()
+{
+  for (int i = 0; i < EMU_MAX_ENVIRONMENT_ITEMS; i++)
+  {
+    free(dll__environ[i]);
+    dll__environ[i] = NULL;
+  }
+}
+
 bool emu_is_hd(const char* path)
 {
   if (path[0] != 0 && path[1] == ':')
