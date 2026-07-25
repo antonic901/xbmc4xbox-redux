@@ -140,8 +140,8 @@ bool CLog::Init(const char* path)
     // constructor and changed in CApplication::Create()
     CStdString strLogFile, strLogFileOld;
 
-    strLogFile.Format("%sxbmc.log", path);
-    strLogFileOld.Format("%sxbmc.old.log", path);
+    strLogFile.Format("%sxodi.log", path);
+    strLogFileOld.Format("%sxodi.old.log", path);
 
     struct stat64 info;
     if (stat64_utf8(strLogFileOld.c_str(),&info) == 0 &&

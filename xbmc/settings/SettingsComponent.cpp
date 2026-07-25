@@ -117,7 +117,7 @@ bool CSettingsComponent::InitDirectoriesXbox(bool bPlatformDirectories)
   CSpecialProtocol::SetXBMCPath(xbmcPath);
   CSpecialProtocol::SetXBMCBinAddonPath(xbmcPath + "addons");
 
-  std::string strWin32UserFolder = "E:\\UDATA\\XBMC\\";
+  std::string strWin32UserFolder = "E:\\UDATA\\Xodi\\";
   CSpecialProtocol::SetLogPath(strWin32UserFolder);
   CSpecialProtocol::SetHomePath(strWin32UserFolder);
   CSpecialProtocol::SetMasterProfilePath(URIUtils::AddFileToFolder(strWin32UserFolder, "userdata"));
