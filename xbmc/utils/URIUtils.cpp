@@ -590,6 +590,18 @@ bool URIUtils::IsRemote(const CStdString& strFile)
     return false;
   }
 
+  if (IsSourcesPath(strFile))
+    return false;
+
+  if (IsVideoDb(strFile) || IsMusicDb(strFile))
+    return false;
+
+  if (IsLibraryFolder(strFile))
+    return false;
+
+  if (IsPlugin(strFile))
+    return false;
+
   CURL url(strFile);
   if(HasParentInHostname(url))
     return IsRemote(url.GetHostName());
