@@ -625,7 +625,14 @@ void CApplication::Render()
   if (CServiceBroker::GetWinSystem()->GetGfxContext().IsFullScreenVideo() &&
       !appPlayer->IsPausedPlayback())
   {
+    // On Xbox when CGUIWindowFullScreen is active and video playback is not paused,
+    // rendering is happening inside CXBoxRenderManager thread and not main render loop.
+    // Because of that we need to skip main render loop.
+    // TODO: understand why it's done like this and if it's possible to move videoplayback inside main render loop
+    Sleep(50);
     appPower->ResetScreenSaver();
+    CServiceBroker::GetGUI()->GetInfoManager().ResetCache();
+    return;
   }
 
   if (!CServiceBroker::GetRenderSystem()->BeginRender())
@@ -1300,6 +1307,67 @@ bool CApplication::ExecuteXBMCAction(std::string actionStr,
 
 void CApplication::ConfigureAndEnableAddons()
 {
+  std::vector<boost::shared_ptr<IAddon> >
+      disabledAddons; /*!< Installed addons, but not auto-enabled via manifest */
+
+  ADDON::CAddonMgr &addonMgr = CServiceBroker::GetAddonMgr();
+
+  if (addonMgr.GetDisabledAddons(disabledAddons) && !disabledAddons.empty())
+  {
+    // this applies to certain platforms only:
+    // look at disabled addons with disabledReason == NONE, usually those are installed via package managers or manually.
+    // also try to enable add-ons with disabledReason == INCOMPATIBLE at startup for all platforms.
+
+    bool isConfigureAddonsAtStartupEnabled = true;
+
+    for (std::vector<boost::shared_ptr<IAddon> >::const_iterator it = disabledAddons.begin(); it != disabledAddons.end(); ++it)
+    {
+      const ADDON::AddonPtr &addon = *it;
+      if (addonMgr.IsAddonDisabledWithReason(addon->ID(), ADDON::AddonDisabledReason::INCOMPATIBLE))
+      {
+        ADDON::AddonInfoPtr addonInfo = addonMgr.GetAddonInfo(addon->ID(), AddonType::UNKNOWN);
+        if (addonInfo && addonMgr.IsCompatible(addonInfo))
+        {
+          CLog::Log(LOGDEBUG, "CApplication::%s: enabling the compatible version of [%s].",
+                    __FUNCTION__, addon->ID().c_str());
+          addonMgr.EnableAddon(addon->ID());
+        }
+        continue;
+      }
+
+      if (addonMgr.IsAddonDisabledExcept(addon->ID(), ADDON::AddonDisabledReason::NONE) ||
+          CAddonType::IsDependencyType(addon->MainType()))
+      {
+        continue;
+      }
+
+      if (isConfigureAddonsAtStartupEnabled)
+      {
+        if (HELPERS::ShowYesNoDialogLines(24039, // Disabled add-ons
+                                          24059, // Would you like to enable this add-on?
+                                          addon->Name()) == HELPERS::YES)
+        {
+          if (addon->CanHaveAddonOrInstanceSettings())
+          {
+            if (CGUIDialogAddonSettings::ShowForAddon(addon))
+            {
+              // only enable if settings dialog hasn't been cancelled
+              addonMgr.EnableAddon(addon->ID());
+            }
+          }
+          else
+          {
+            addonMgr.EnableAddon(addon->ID());
+          }
+        }
+        else
+        {
+          // user chose not to configure/enable so we're not asking anymore
+          addonMgr.UpdateDisabledReason(addon->ID(), ADDON::AddonDisabledReason::USER);
+        }
+      }
+    }
+  }
 }
 
 void CApplication::Process()

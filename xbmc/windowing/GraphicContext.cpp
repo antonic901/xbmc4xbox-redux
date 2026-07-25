@@ -52,6 +52,7 @@ CGraphicContext::CGraphicContext(void) :
   m_maxTextureSize(4096),
   m_strMediaDir(""),
   m_bCalibrating(false),
+  m_bFullScreenVideo(false),
   m_Resolution(RES_INVALID)
   /*m_windowResolution(RES_INVALID)*/
 {

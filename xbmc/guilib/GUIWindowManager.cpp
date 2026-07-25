@@ -47,6 +47,7 @@
 #include "utils/log.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "video/dialogs/GUIDialogVideoOSD.h"
+#include "video/windows/GUIWindowFullScreen.h"
 #include "video/windows/GUIWindowVideoNav.h"
 #include "video/windows/GUIWindowVideoPlaylist.h"
 #include "windows/GUIWindowWeather.h"
@@ -182,6 +183,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIDialogVideoInfo);
 
   Add(new CGUIDialogTextViewer);
+  Add(new CGUIWindowFullScreen);
   Add(new CGUIWindowVisualisation);
   Add(new CGUIWindowSlideShow);
 

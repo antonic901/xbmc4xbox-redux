@@ -230,7 +230,8 @@ PLAYLIST::Id CApplicationPlayer::GetPreferredPlaylist() const
 
 bool CApplicationPlayer::IsPaused() const
 {
-  return (GetPlaySpeed() == 0);
+  boost::shared_ptr<const IPlayer> player = GetInternal();
+  return (player && player->IsPaused());
 }
 
 bool CApplicationPlayer::IsPlaying() const
@@ -241,7 +242,7 @@ bool CApplicationPlayer::IsPlaying() const
 
 bool CApplicationPlayer::IsPausedPlayback() const
 {
-  return (IsPlaying() && (GetPlaySpeed() == 0));
+  return (IsPlaying() && IsPaused());
 }
 
 bool CApplicationPlayer::IsPlayingAudio() const
