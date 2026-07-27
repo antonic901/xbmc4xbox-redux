@@ -24,6 +24,7 @@
 
 class CFileItemList;
 class CURL;
+class CFileItem;
 
 namespace XFILE
 {
@@ -49,10 +50,10 @@ namespace XFILE
     DIR_FLAG_BYPASS_CACHE  = (2 << 5)  ///< Completely bypass the directory cache (no reading, no writing)
   };
 /*!
- \ingroup filesystem 
+ \ingroup filesystem
  \brief Interface to the directory on a file system.
 
- This Interface is retrieved from CFactoryDirectory and can be used to 
+ This Interface is retrieved from CFactoryDirectory and can be used to
  access the directories on a filesystem.
  \sa CFactoryDirectory
  */
@@ -95,7 +96,7 @@ public:
   */
   virtual bool Exists(const CURL& url) { return false; }
   /*!
-  \brief Removes the directory 
+  \brief Removes the directory
   \param url Directory to remove.
   \return Returns \e false if not succesfull
   */
@@ -132,12 +133,20 @@ public:
 
   /*! \brief Process additional requirements before the directory fetch is performed.
    Some directory fetches may require authentication, keyboard input etc.  The IDirectory subclass
-   should call GetKeyboardInput, SetErrorDialog or RequireAuthentication and then return false 
+   should call GetKeyboardInput, SetErrorDialog or RequireAuthentication and then return false
    from the GetDirectory method. CDirectory will then prompt for input from the user, before
    re-calling the GetDirectory method.
    \sa GetKeyboardInput, SetErrorDialog, RequireAuthentication
    */
   bool ProcessRequirements();
+
+  /*!
+  \brief Resolves a given item to a playable item
+  \note Some directories (e.g. dvd, bluray, plugins etc) need to be translated/resolved to the actual playback url
+  \param item The item being manipulated (which the path points to a vfs protocol implementation)
+  \return true if the item was resolved, false if it failed to resolve
+  */
+  virtual bool Resolve(CFileItem& item) const { return true; };
 
 protected:
   /*! \brief Prompt the user for some keyboard input

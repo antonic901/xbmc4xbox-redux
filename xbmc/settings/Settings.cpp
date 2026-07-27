@@ -228,6 +228,7 @@ const char* CSettings::SETTING_SMB_WINSSERVER = "smb.winsserver";
 const char* CSettings::SETTING_SMB_WORKGROUP = "smb.workgroup";
 const char* CSettings::SETTING_VIDEOSCREEN_RESOLUTION = "videoscreen.resolution";
 const char* CSettings::SETTING_VIDEOSCREEN_GUICALIBRATION = "videoscreen.guicalibration";
+const char* CSettings::SETTING_AUDIOOUTPUT_MODE = "audiooutput.mode";
 const char* CSettings::SETTING_AUDIOOUTPUT_AACPASSTHROUGH = "audiooutput.aacpassthrough";
 const char* CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH = "audiooutput.ac3passthrough";
 const char* CSettings::SETTING_AUDIOOUTPUT_DTSPASSTHROUGH = "audiooutput.dtspassthrough";

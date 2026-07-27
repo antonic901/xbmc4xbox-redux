@@ -123,6 +123,13 @@
 #define ACTION_MUTE                 91
 #define ACTION_NAV_BACK             92
 
+//! Creates an episode bookmark on the currently playing video file containing
+//! more than one episode
+#define ACTION_CREATE_EPISODE_BOOKMARK 95
+
+//! Creates a bookmark of the currently playing video file
+#define ACTION_CREATE_BOOKMARK 96
+
 #define ACTION_CHAPTER_OR_BIG_STEP_FORWARD       97 // Goto the next chapter, if not available perform a big step forward
 #define ACTION_CHAPTER_OR_BIG_STEP_BACK          98 // Goto the previous chapter, if not available perform a big step back
 
@@ -222,7 +229,6 @@
 #define ACTION_NEXT_CONTROL           181
 #define ACTION_PREV_CONTROL           182
 
-#define ACTION_TOGGLE_FULLSCREEN      199 // switch 2 desktop resolution
 #define ACTION_TOGGLE_WATCHED         200 // Toggle watched status (videos)
 #define ACTION_SCAN_ITEM              201 // scan item
 #define ACTION_TOGGLE_DIGITAL_ANALOG  202 // switch digital <-> analog
@@ -230,6 +236,9 @@
 
 #define ACTION_INCREASE_PAR           219
 #define ACTION_DECREASE_PAR           220
+
+//! Play/pause. If playing it pauses, if paused it plays.
+#define ACTION_PLAYER_PLAYPAUSE       229
 
 #define ACTION_FILTER                 233
 
