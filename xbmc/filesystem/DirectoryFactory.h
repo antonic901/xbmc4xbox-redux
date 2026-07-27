@@ -21,10 +21,12 @@
 
 #include "IDirectory.h"
 
+class CFileItem;
+
 namespace XFILE
 {
 /*!
- \ingroup filesystem 
+ \ingroup filesystem
  \brief Get access to a directory of a file system.
 
  The Factory can be used to create a directory object
@@ -46,5 +48,6 @@ class CFactoryDirectory
 {
 public:
   static IDirectory* Create(const CURL& url);
+  static IDirectory* Create(const CFileItem& item);
 };
 }

@@ -77,6 +77,24 @@
 using namespace XFILE;
 
 /*!
+ \brief Create a IDirectory object of the share type specified in a given item path.
+ \param item Specifies the item to which the factory will create the directory instance
+ \return IDirectory object to access the directories on the share.
+ \sa IDirectory
+ */
+IDirectory* CFactoryDirectory::Create(const CFileItem& item)
+{
+  CURL curl(item.GetDynPath());
+
+  // Store the mimetype, allowing the PlayListFactory to set it on the created FileItem
+  const std::string& mimeType = item.GetMimeType();
+  if (!mimeType.empty())
+    curl.SetOption("mimetype", mimeType);
+
+  return Create(curl);
+}
+
+/*!
  \brief Create a IDirectory object of the share type specified in \e strPath .
  \param strPath Specifies the share type to access, can be a share or share with path.
  \return IDirectory object to access the directories on the share.

@@ -123,7 +123,6 @@ public:
   bool IsPlayingFullScreenVideo() const;
   bool IsFullScreen();
   bool OnAction(const CAction &action);
-  void CloseNetworkShares();
 
   void ConfigureAndEnableAddons();
   virtual void Process();
