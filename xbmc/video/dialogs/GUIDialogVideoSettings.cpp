@@ -137,13 +137,13 @@ void CGUIDialogVideoSettings::OnSettingChanged(const boost::shared_ptr<const CSe
   }
   else if (settingId == SETTING_VIDEO_FLICKER)
   {
-    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("videoplayer.flicker", boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(CSettings::SETTING_VIDEOPLAYER_FLICKER, boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
     RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
     CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res);
   }
   else if (settingId == SETTING_VIDEO_SOFTEN)
   {
-    CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("videoplayer.soften", boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_VIDEOPLAYER_SOFTEN, boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
     RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
     CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res);
   }
@@ -301,8 +301,8 @@ void CGUIDialogVideoSettings::InitializeSettings()
     AddToggle(groupVideo, SETTING_VIDEO_NO_CACHE, 431, SettingLevel::Basic, videoSettings.m_NoCache);
     AddButton(groupSaveAsDefault, SETTING_VIDEO_FORCE_INDEX, 12009, SettingLevel::Basic);
   }
-  AddSpinner(groupSaveAsDefault, SETTING_VIDEO_FLICKER, 13100, SettingLevel::Basic, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.flicker"), 0, 1, 5, -1, 351);
-  AddToggle(groupSaveAsDefault, SETTING_VIDEO_SOFTEN, 215, SettingLevel::Basic, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videoplayer.soften"));
+  AddSpinner(groupSaveAsDefault, SETTING_VIDEO_FLICKER, 13100, SettingLevel::Basic, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOPLAYER_FLICKER), 0, 1, 5, -1, 351);
+  AddToggle(groupSaveAsDefault, SETTING_VIDEO_SOFTEN, 215, SettingLevel::Basic, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_VIDEOPLAYER_SOFTEN));
 
   // general settings
   AddButton(groupSaveAsDefault, SETTING_VIDEO_MAKE_DEFAULT, 12376, SettingLevel::Basic);

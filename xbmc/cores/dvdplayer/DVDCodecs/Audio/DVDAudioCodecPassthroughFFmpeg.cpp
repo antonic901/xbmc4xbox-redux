@@ -290,10 +290,10 @@ bool CDVDAudioCodecPassthroughFFmpeg::SupportsFormat(CDVDStreamInfo &hints)
 bool CDVDAudioCodecPassthroughFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
 {
   // TODO - move this stuff somewhere else
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_AUDIOOUTPUT_MODE) == AUDIO_DIGITAL)
   {
-    m_bSupportsAC3Out = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiooutput.ac3passthrough");
-    m_bSupportsDTSOut = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiooutput.dtspassthrough");
+    m_bSupportsAC3Out = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH);
+    m_bSupportsDTSOut = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_AUDIOOUTPUT_DTSPASSTHROUGH);
     m_bSupportsAACOut = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiooutput.aacpassthrough");
   }
   else

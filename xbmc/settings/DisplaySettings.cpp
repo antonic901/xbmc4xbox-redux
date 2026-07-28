@@ -210,11 +210,11 @@ bool CDisplaySettings::OnSettingChanging(const boost::shared_ptr<const CSetting>
         m_resolutionChangeAborted = false;
     }
   }
-  else if (settingId == "videoscreen.flickerfilter" || settingId == "videoscreen.soften")
+  else if (settingId == CSettings::SETTING_VIDEOSCREEN_FLICKERFILTER || settingId == CSettings::SETTING_VIDEOSCREEN_SOFTEN)
     CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(CDisplaySettings::GetInstance().GetCurrentResolution(), TRUE);
   else if (StringUtils::StartsWith(settingId, "videooutput."))
   {
-    if (settingId == "videooutput.aspect")
+    if (settingId == CSettings::SETTING_VIDEOSCREEN_ASPECT)
     {
       switch(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue())
       {
@@ -229,11 +229,11 @@ bool CDisplaySettings::OnSettingChanging(const boost::shared_ptr<const CSetting>
         break;
       }
     }
-    else if (settingId == "videooutput.hd480p")
+    else if (settingId == CSettings::SETTING_VIDEOSCREEN_HD480p)
       g_videoConfig.Set480p(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
-    else if (settingId == "videooutput.hd720p")
+    else if (settingId == CSettings::SETTING_VIDEOSCREEN_HD720p)
       g_videoConfig.Set720p(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
-    else if (settingId == "videooutput.hd1080i")
+    else if (settingId == CSettings::SETTING_VIDEOSCREEN_HD1080i)
       g_videoConfig.Set1080i(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
 
     if (g_videoConfig.NeedsSave())

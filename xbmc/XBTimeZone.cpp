@@ -968,8 +968,8 @@ void XBTimeZone::SetDST(BOOL bEnable)
 
 void XBTimeZone::OnSettingsLoaded()
 {
-  CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("locale.timezone", GetTimeZoneIndex());
-  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("locale.usedst", GetDST());
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(CSettings::SETTING_LOCALE_TIMEZONE, GetTimeZoneIndex());
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_LOCALE_USE_DST, GetDST());
 }
 
 void XBTimeZone::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
@@ -978,9 +978,9 @@ void XBTimeZone::OnSettingChanged(const boost::shared_ptr<const CSetting>& setti
     return;
 
   const std::string &settingId = setting->GetId();
-  if (settingId == "locale.timezone" && GetTimeZoneIndex() != boost::static_pointer_cast<const CSettingInt>(setting)->GetValue())
+  if (settingId == CSettings::SETTING_LOCALE_TIMEZONE && GetTimeZoneIndex() != boost::static_pointer_cast<const CSettingInt>(setting)->GetValue())
     SetTimeZoneIndex(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
-  else if (settingId == "locale.usedst" && GetDST() != boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
+  else if (settingId == CSettings::SETTING_LOCALE_USE_DST && GetDST() != boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
     SetDST(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
 }
 

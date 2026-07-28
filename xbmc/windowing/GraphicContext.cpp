@@ -554,8 +554,8 @@ void CGraphicContext::SetScreenFilters(bool useFullScreenFilters)
     // These are only valid here and nowhere else
     // set soften on/off
 #ifdef HAS_XBOX_D3D
-    m_pd3dDevice->SetSoftDisplayFilter(useFullScreenFilters ? CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videoplayer.soften") : CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videoscreen.soften"));
-    m_pd3dDevice->SetFlickerFilter(useFullScreenFilters ? CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.flicker") : CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoscreen.flickerfilter"));
+    m_pd3dDevice->SetSoftDisplayFilter(useFullScreenFilters ? CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_VIDEOPLAYER_SOFTEN) : CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_VIDEOSCREEN_SOFTEN));
+    m_pd3dDevice->SetFlickerFilter(useFullScreenFilters ? CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOPLAYER_FLICKER) : CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOSCREEN_FLICKERFILTER));
 #endif
   }
   Unlock();

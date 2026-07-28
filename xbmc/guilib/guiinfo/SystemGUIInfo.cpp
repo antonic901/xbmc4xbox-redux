@@ -290,7 +290,7 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
     case SYSTEM_LOCALE_TIMEZONE:
     {
       value = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(
-          "locale.timezone");
+          CSettings::SETTING_LOCALE_TIMEZONE);
       return true;
     }
 

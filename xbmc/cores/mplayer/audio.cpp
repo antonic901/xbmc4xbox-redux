@@ -178,7 +178,7 @@ static int audio_init(int rate, int channels, int format, int flags)
 
   // Check whether we are passing digital output direct through.
   // Anything with 48kHz 2 channel audio can be passed direct.
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_AUDIOOUTPUT_MODE) == AUDIO_DIGITAL)
   {
     // Check that we are allowed to pass through DD or DTS
     if (strstr(strAudioCodec, "SPDIF"))

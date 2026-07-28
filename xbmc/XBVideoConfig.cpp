@@ -48,14 +48,14 @@ XBVideoConfig::~XBVideoConfig()
 void XBVideoConfig::OnSettingsLoaded()
 {
   if (HasLetterbox())
-    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("videooutput.aspect", VIDEO_LETTERBOX);
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(CSettings::SETTING_VIDEOSCREEN_ASPECT, VIDEO_LETTERBOX);
   else if (HasWidescreen())
-    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("videooutput.aspect", VIDEO_WIDESCREEN);
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(CSettings::SETTING_VIDEOSCREEN_ASPECT, VIDEO_WIDESCREEN);
   else
-    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("videooutput.aspect", VIDEO_NORMAL);
-  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("videooutput.hd480p", Has480p());
-  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("videooutput.hd720p", Has720p());
-  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("videooutput.hd1080i", Has1080i());
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(CSettings::SETTING_VIDEOSCREEN_ASPECT, VIDEO_NORMAL);
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_VIDEOSCREEN_HD480p, Has480p());
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_VIDEOSCREEN_HD720p, Has720p());
+  CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_VIDEOSCREEN_HD1080i, Has1080i());
 }
 
 bool XBVideoConfig::HasPAL() const
