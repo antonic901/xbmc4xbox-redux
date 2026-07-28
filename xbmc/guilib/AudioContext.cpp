@@ -133,7 +133,7 @@ void CAudioContext::SetupSpeakerConfig(int iChannels, bool& bAudioOnAllSpeakers,
 
 #ifdef HAS_AUDIO
   DWORD spconfig = DSSPEAKER_USE_DEFAULT;
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_AUDIOOUTPUT_MODE) == AUDIO_DIGITAL)
   {
     if (((CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers")) && (bIsMusic)) || (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_OutputToAllSpeakers && !bIsMusic))
     {

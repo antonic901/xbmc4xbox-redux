@@ -50,6 +50,7 @@ public:
   static const char* SETTING_LOCALE_USE24HOURCLOCK;
   static const char* SETTING_LOCALE_TEMPERATUREUNIT;
   static const char* SETTING_LOCALE_SPEEDUNIT;
+  static const char* SETTING_LOCALE_USE_DST;
   static const char* SETTING_FILELISTS_SHOWPARENTDIRITEMS;
   static const char* SETTING_FILELISTS_SHOWEXTENSIONS;
   static const char* SETTING_FILELISTS_IGNORETHEWHENSORTING;
@@ -95,6 +96,8 @@ public:
   static const char* SETTING_VIDEOPLAYER_ERRORINASPECT;
   static const char* SETTING_VIDEOPLAYER_RENDERMETHOD;
   static const char* SETTING_VIDEOPLAYER_DEFAULTPLAYER;
+  static const char* SETTING_VIDEOPLAYER_SOFTEN;
+  static const char* SETTING_VIDEOPLAYER_FLICKER;
   static const char* SETTING_MYVIDEOS_SELECTACTION;
   static const char* SETTING_MYVIDEOS_SELECTDEFAULTVERSION;
   static const char* SETTING_MYVIDEOS_PLAYACTION;
@@ -202,10 +205,21 @@ public:
   static const char* SETTING_SERVICES_ESALLINTERFACES;
   static const char* SETTING_SERVICES_ESINITIALDELAY;
   static const char* SETTING_SERVICES_ESCONTINUOUSDELAY;
+  static const char* SETTING_SERVICES_FTPSERVER;
+  static const char* SETTING_SERVICES_FTPSERVER_USER;
+  static const char* SETTING_SERVICES_FTPSERVER_PASSWORD;
+  static const char* SETTING_SERVICES_TIMESERVER;
+  static const char* SETTING_SERVICES_TIMESERVER_ADDRESS;
   static const char* SETTING_SMB_WINSSERVER;
   static const char* SETTING_SMB_WORKGROUP;
   static const char* SETTING_VIDEOSCREEN_RESOLUTION;
   static const char* SETTING_VIDEOSCREEN_GUICALIBRATION;
+  static const char* SETTING_VIDEOSCREEN_FLICKERFILTER;
+  static const char* SETTING_VIDEOSCREEN_SOFTEN;
+  static const char* SETTING_VIDEOSCREEN_ASPECT;
+  static const char* SETTING_VIDEOSCREEN_HD480p;
+  static const char* SETTING_VIDEOSCREEN_HD720p;
+  static const char* SETTING_VIDEOSCREEN_HD1080i;
   static const char* SETTING_AUDIOOUTPUT_MODE;
   static const char* SETTING_AUDIOOUTPUT_AACPASSTHROUGH;
   static const char* SETTING_AUDIOOUTPUT_AC3PASSTHROUGH;
@@ -263,6 +277,26 @@ public:
   static const char* SETTING_KARAOKE_PORT_TWO_VOICEMASK;
   static const char* SETTING_KARAOKE_PORT_THREE_VOICEMASK;
   static const char* SETTING_KARAOKE_PORT_FOUR_VOICEMASK;
+  static const char* SETTING_HARDDISK_AAMLEVEL;
+  static const char* SETTING_HARDDISK_APMLEVEL;
+  static const char* SETTING_LCD_BACKLIGHT;
+  static const char* SETTING_LCD_CONTRAST;
+  static const char* SETTING_LCD_MODCHIP;
+  static const char* SETTING_LCD_TYPE;
+  static const char* SETTING_TRAINER_SCAN;
+  static const char* SETTING_NETWORK_ASSIGNMENT;
+  static const char* SETTING_NETWORK_IPADDRESS;
+  static const char* SETTING_NETWORK_SUBNET;
+  static const char* SETTING_NETWORK_GATEWAY;
+  static const char* SETTING_NETWORK_DNS;
+  static const char* SETTING_NETWORK_DNS2;
+  static const char* SETTING_UPDATER_CHECK;
+  static const char* SETTING_XBOX_LED_COLOUR;
+  static const char* SETTING_XBOX_AUTO_TEMPERATURE;
+  static const char* SETTING_XBOX_FANSPEED_CONTROL;
+  static const char* SETTING_XBOX_FANSPEED;
+  static const char* SETTING_XBOX_MIN_FANSPEED;
+  static const char* SETTING_XBOX_TARGET_TEMPERATURE;
 
   // values for SETTING_VIDEOLIBRARY_SHOWUNWATCHEDPLOTS
   static const int VIDEOLIBRARY_PLOTS_SHOW_UNWATCHED_MOVIES = 0;

@@ -747,13 +747,13 @@ void CGUIWindowFullScreen::RenderFullScreen()
     {
       CStdString strStatus;
       strStatus.Format("%ix%i %s", CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).iWidth, CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).iHeight, CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).strMode.c_str());
-      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("videoplayer.soften"))
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_VIDEOPLAYER_SOFTEN))
         strStatus += "  |  Soften";
       else
         strStatus += "  |  No Soften";
 
       CStdString strFilter;
-      strFilter.Format("  |  Flicker Filter: %i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.flicker"));
+      strFilter.Format("  |  Flicker Filter: %i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOPLAYER_FLICKER));
       strStatus += strFilter;
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW3);
       msg.SetLabel(strStatus);

@@ -8,7 +8,6 @@
 
 #include "Settings.h"
 
-#include "application/Application.h"
 #include "Autorun.h"
 #include "CdgParser.h"
 #include "GUIPassword.h"
@@ -72,6 +71,7 @@ const char* CSettings::SETTING_LOCALE_TIMEFORMAT = "locale.timeformat";
 const char* CSettings::SETTING_LOCALE_USE24HOURCLOCK = "locale.use24hourclock";
 const char* CSettings::SETTING_LOCALE_TEMPERATUREUNIT = "locale.temperatureunit";
 const char* CSettings::SETTING_LOCALE_SPEEDUNIT = "locale.speedunit";
+const char* CSettings::SETTING_LOCALE_USE_DST = "locale.usedst";
 const char* CSettings::SETTING_FILELISTS_SHOWPARENTDIRITEMS = "filelists.showparentdiritems";
 const char* CSettings::SETTING_FILELISTS_SHOWEXTENSIONS = "filelists.showextensions";
 const char* CSettings::SETTING_FILELISTS_IGNORETHEWHENSORTING = "filelists.ignorethewhensorting";
@@ -117,6 +117,8 @@ const char* CSettings::SETTING_VIDEOPLAYER_SEEKDELAY = "videoplayer.seekdelay";
 const char* CSettings::SETTING_VIDEOPLAYER_ERRORINASPECT = "videoplayer.errorinaspect";
 const char* CSettings::SETTING_VIDEOPLAYER_RENDERMETHOD = "videoplayer.rendermethod";
 const char* CSettings::SETTING_VIDEOPLAYER_DEFAULTPLAYER = "videoplayer.defaultplayer";
+const char* CSettings::SETTING_VIDEOPLAYER_SOFTEN = "videoplayer.soften";
+const char* CSettings::SETTING_VIDEOPLAYER_FLICKER = "videoplayer.flicker";
 const char* CSettings::SETTING_MYVIDEOS_SELECTACTION = "myvideos.selectaction";
 const char* CSettings::SETTING_MYVIDEOS_SELECTDEFAULTVERSION = "myvideos.selectdefaultversion";
 const char* CSettings::SETTING_MYVIDEOS_PLAYACTION = "myvideos.playaction";
@@ -224,10 +226,21 @@ const char* CSettings::SETTING_SERVICES_ESMAXCLIENTS = "services.esmaxclients";
 const char* CSettings::SETTING_SERVICES_ESALLINTERFACES = "services.esallinterfaces";
 const char* CSettings::SETTING_SERVICES_ESINITIALDELAY = "services.esinitialdelay";
 const char* CSettings::SETTING_SERVICES_ESCONTINUOUSDELAY = "services.escontinuousdelay";
+const char* CSettings::SETTING_SERVICES_FTPSERVER = "services.ftpserver";
+const char* CSettings::SETTING_SERVICES_FTPSERVER_USER = "services.ftpserveruser";
+const char* CSettings::SETTING_SERVICES_FTPSERVER_PASSWORD = "services.ftpserverpassword";
+const char* CSettings::SETTING_SERVICES_TIMESERVER = "services.timeserver";
+const char* CSettings::SETTING_SERVICES_TIMESERVER_ADDRESS = "services.timeserveraddress";
 const char* CSettings::SETTING_SMB_WINSSERVER = "smb.winsserver";
 const char* CSettings::SETTING_SMB_WORKGROUP = "smb.workgroup";
 const char* CSettings::SETTING_VIDEOSCREEN_RESOLUTION = "videoscreen.resolution";
 const char* CSettings::SETTING_VIDEOSCREEN_GUICALIBRATION = "videoscreen.guicalibration";
+const char* CSettings::SETTING_VIDEOSCREEN_FLICKERFILTER = "videoscreen.flickerfilter";
+const char* CSettings::SETTING_VIDEOSCREEN_SOFTEN = "videoscreen.soften";
+const char* CSettings::SETTING_VIDEOSCREEN_ASPECT = "videooutput.aspect";
+const char* CSettings::SETTING_VIDEOSCREEN_HD480p = "videooutput.hd480p";
+const char* CSettings::SETTING_VIDEOSCREEN_HD720p = "videooutput.hd720p";
+const char* CSettings::SETTING_VIDEOSCREEN_HD1080i = "videooutput.hd1080i";
 const char* CSettings::SETTING_AUDIOOUTPUT_MODE = "audiooutput.mode";
 const char* CSettings::SETTING_AUDIOOUTPUT_AACPASSTHROUGH = "audiooutput.aacpassthrough";
 const char* CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH = "audiooutput.ac3passthrough";
@@ -285,6 +298,26 @@ const char* CSettings::SETTING_KARAOKE_PORT_ONE_VOICEMASK = "karaoke.port0voicem
 const char* CSettings::SETTING_KARAOKE_PORT_TWO_VOICEMASK = "karaoke.port1voicemask";
 const char* CSettings::SETTING_KARAOKE_PORT_THREE_VOICEMASK = "karaoke.port2voicemask";
 const char* CSettings::SETTING_KARAOKE_PORT_FOUR_VOICEMASK = "karaoke.port3voicemask";
+const char* CSettings::SETTING_HARDDISK_AAMLEVEL = "harddisk.aamlevel";
+const char* CSettings::SETTING_HARDDISK_APMLEVEL = "harddisk.apmlevel";
+const char* CSettings::SETTING_LCD_BACKLIGHT = "lcd.backlight";
+const char* CSettings::SETTING_LCD_CONTRAST = "lcd.contrast";
+const char* CSettings::SETTING_LCD_MODCHIP = "lcd.modchip";
+const char* CSettings::SETTING_LCD_TYPE = "lcd.type";
+const char* CSettings::SETTING_TRAINER_SCAN = "myprograms.trainerscan";
+const char* CSettings::SETTING_NETWORK_ASSIGNMENT = "network.assignment";
+const char* CSettings::SETTING_NETWORK_IPADDRESS = "network.ipaddress";
+const char* CSettings::SETTING_NETWORK_SUBNET = "network.subnet";
+const char* CSettings::SETTING_NETWORK_GATEWAY = "network.gateway";
+const char* CSettings::SETTING_NETWORK_DNS = "network.dns";
+const char* CSettings::SETTING_NETWORK_DNS2 = "network.dns2";
+const char* CSettings::SETTING_UPDATER_CHECK = "updater.check";
+const char* CSettings::SETTING_XBOX_LED_COLOUR = "system.ledcolour";
+const char* CSettings::SETTING_XBOX_AUTO_TEMPERATURE = "system.autotemperature";
+const char* CSettings::SETTING_XBOX_FANSPEED_CONTROL = "system.fanspeedcontrol";
+const char* CSettings::SETTING_XBOX_FANSPEED = "system.fanspeed";
+const char* CSettings::SETTING_XBOX_MIN_FANSPEED = "system.minfanspeed";
+const char* CSettings::SETTING_XBOX_TARGET_TEMPERATURE = "system.targettemperature";
 
 bool CSettings::Initialize()
 {
@@ -515,23 +548,23 @@ void CSettings::InitializeDefaults()
   // set some default values if necessary
 #if defined(_XBOX)
   CLog::Log(LOGNOTICE, "Getting hardware information now...");
-  if (boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting("audiooutput.mode"))->GetValue() == AUDIO_DIGITAL && !g_audioConfig.HasDigitalOutput())
-    boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting("audiooutput.mode"))->SetDefault(AUDIO_ANALOG);
-  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting("audiooutput.ac3passthrough"))->SetDefault(g_audioConfig.GetAC3Enabled());
-  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting("audiooutput.dtspassthrough"))->SetDefault(g_audioConfig.GetDTSEnabled());
+  if (boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_MODE))->GetValue() == AUDIO_DIGITAL && !g_audioConfig.HasDigitalOutput())
+    boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_MODE))->SetDefault(AUDIO_ANALOG);
+  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH))->SetDefault(g_audioConfig.GetAC3Enabled());
+  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_DTSPASSTHROUGH))->SetDefault(g_audioConfig.GetDTSEnabled());
 
   if (g_videoConfig.HasLetterbox())
-    boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting("videooutput.aspect"))->SetDefault(VIDEO_LETTERBOX);
+    boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting(CSettings::SETTING_VIDEOSCREEN_ASPECT))->SetDefault(VIDEO_LETTERBOX);
   else if (g_videoConfig.HasWidescreen())
-    boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting("videooutput.aspect"))->SetDefault(VIDEO_WIDESCREEN);
+    boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting(CSettings::SETTING_VIDEOSCREEN_ASPECT))->SetDefault(VIDEO_WIDESCREEN);
   else
-    boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting("videooutput.aspect"))->SetDefault(VIDEO_NORMAL);
-  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting("videooutput.hd480p"))->SetDefault(g_videoConfig.Has480p());
-  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting("videooutput.hd720p"))->SetDefault(g_videoConfig.Has720p());
-  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting("videooutput.hd1080i"))->SetDefault(g_videoConfig.Has1080i());
+    boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting(CSettings::SETTING_VIDEOSCREEN_ASPECT))->SetDefault(VIDEO_NORMAL);
+  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_VIDEOSCREEN_HD480p))->SetDefault(g_videoConfig.Has480p());
+  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_VIDEOSCREEN_HD720p))->SetDefault(g_videoConfig.Has720p());
+  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_VIDEOSCREEN_HD1080i))->SetDefault(g_videoConfig.Has1080i());
 
-  boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting("locale.timezone"))->SetDefault(g_timezone.GetTimeZoneIndex());
-  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting("locale.usedst"))->SetDefault(g_timezone.GetDST());
+  boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting(CSettings::SETTING_LOCALE_TIMEZONE))->SetDefault(g_timezone.GetTimeZoneIndex());
+  boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_LOCALE_USE_DST))->SetDefault(g_timezone.GetDST());
 #endif
 }
 
@@ -635,7 +668,6 @@ void CSettings::InitializeISettingsHandlers()
 #endif
   GetSettingsManager()->RegisterSettingsHandler(&CRssManager::GetInstance());
   GetSettingsManager()->RegisterSettingsHandler(&g_langInfo);
-  GetSettingsManager()->RegisterSettingsHandler(&g_application);
 #ifdef _XBOX
   GetSettingsManager()->RegisterSettingsHandler(&g_audioConfig);
   GetSettingsManager()->RegisterSettingsHandler(&g_videoConfig);
@@ -653,7 +685,6 @@ void CSettings::UninitializeISettingsHandlers()
 #ifdef HAS_UPNP
   GetSettingsManager()->UnregisterSettingsHandler(&CUPnPSettings::GetInstance());
 #endif
-  GetSettingsManager()->UnregisterSettingsHandler(&g_application);
   GetSettingsManager()->UnregisterSettingsHandler(&g_audioConfig);
   GetSettingsManager()->UnregisterSettingsHandler(&g_videoConfig);
   GetSettingsManager()->UnregisterSettingsHandler(&g_timezone);
@@ -663,7 +694,6 @@ void CSettings::UninitializeISettingsHandlers()
 void CSettings::InitializeISubSettings()
 {
   // register ISubSettings implementations
-  RegisterSubSettings(&g_application);
   RegisterSubSettings(&CDisplaySettings::GetInstance());
   RegisterSubSettings(&CMediaSettings::GetInstance());
   RegisterSubSettings(&CSkinSettings::GetInstance());
@@ -674,7 +704,6 @@ void CSettings::InitializeISubSettings()
 void CSettings::UninitializeISubSettings()
 {
   // unregister ISubSettings implementations
-  UnregisterSubSettings(&g_application);
   UnregisterSubSettings(&CDisplaySettings::GetInstance());
   UnregisterSubSettings(&CMediaSettings::GetInstance());
   UnregisterSubSettings(&CSkinSettings::GetInstance());
@@ -700,56 +729,13 @@ void CSettings::InitializeISettingCallbacks()
 
   settingSet.clear();
   settingSet.insert(CSettings::SETTING_VIDEOSCREEN_RESOLUTION);
-  settingSet.insert("videoscreen.flickerfilter");
-  settingSet.insert("videoscreen.soften");
-  settingSet.insert("videooutput.aspect");
-  settingSet.insert("videooutput.hd480p");
-  settingSet.insert("videooutput.hd720p");
-  settingSet.insert("videooutput.hd1080i");
+  settingSet.insert(CSettings::SETTING_VIDEOSCREEN_FLICKERFILTER);
+  settingSet.insert(CSettings::SETTING_VIDEOSCREEN_SOFTEN);
+  settingSet.insert(CSettings::SETTING_VIDEOSCREEN_ASPECT);
+  settingSet.insert(CSettings::SETTING_VIDEOSCREEN_HD480p);
+  settingSet.insert(CSettings::SETTING_VIDEOSCREEN_HD720p);
+  settingSet.insert(CSettings::SETTING_VIDEOSCREEN_HD1080i);
   GetSettingsManager()->RegisterCallback(&CDisplaySettings::GetInstance(), settingSet);
-
-  settingSet.clear();
-  settingSet.insert("audiooutput.channels");
-  settingSet.insert("audiooutput.guisoundmode");
-  settingSet.insert(CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH);
-  settingSet.insert(CSettings::SETTING_AUDIOOUTPUT_DTSPASSTHROUGH);
-  settingSet.insert("audiooutput.aacpassthrough");
-  settingSet.insert("audiooutput.mp1passthrough");
-  settingSet.insert("audiooutput.mp2passthrough");
-  settingSet.insert("audiooutput.mp3passthrough");
-  settingSet.insert("harddisk.aamlevel");
-  settingSet.insert("harddisk.apmlevel");
-  settingSet.insert("lcd.backlight");
-  settingSet.insert("lcd.contrast");
-  settingSet.insert("lcd.modchip");
-  settingSet.insert("lcd.type");
-  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_SKIN);
-  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_SKINSETTINGS);
-  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_FONT);
-  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_SKINTHEME);
-  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_SKINCOLORS);
-  settingSet.insert(CSettings::SETTING_LOOKANDFEEL_SKINZOOM);
-  settingSet.insert(CSettings::SETTING_MUSICPLAYER_REPLAYGAINPREAMP);
-  settingSet.insert(CSettings::SETTING_MUSICPLAYER_REPLAYGAINNOGAINPREAMP);
-  settingSet.insert(CSettings::SETTING_MUSICPLAYER_REPLAYGAINTYPE);
-  settingSet.insert(CSettings::SETTING_MUSICPLAYER_REPLAYGAINAVOIDCLIPPING);
-  settingSet.insert("myprograms.trainerscan");
-  settingSet.insert("network.assignment");
-  settingSet.insert("network.ipaddress");
-  settingSet.insert("network.subnet");
-  settingSet.insert("network.gateway");
-  settingSet.insert("network.dns");
-  settingSet.insert("network.dns2");
-  settingSet.insert(CSettings::SETTING_SCREENSAVER_MODE);
-  settingSet.insert(CSettings::SETTING_SCREENSAVER_PREVIEW);
-  settingSet.insert(CSettings::SETTING_SCREENSAVER_SETTINGS);
-  settingSet.insert("system.ledcolour");
-  settingSet.insert(CSettings::SETTING_VIDEOSCREEN_GUICALIBRATION);
-  settingSet.insert(CSettings::SETTING_SOURCE_VIDEOS);
-  settingSet.insert(CSettings::SETTING_SOURCE_MUSIC);
-  settingSet.insert(CSettings::SETTING_SOURCE_PICTURES);
-  settingSet.insert("updater.check");
-  GetSettingsManager()->RegisterCallback(&g_application, settingSet);
 
   settingSet.clear();
   settingSet.insert(CSettings::SETTING_SUBTITLES_CHARSET);
@@ -759,11 +745,11 @@ void CSettings::InitializeISettingCallbacks()
 
 #ifdef _XBOX
   settingSet.clear();
-  settingSet.insert("system.autotemperature");
-  settingSet.insert("system.fanspeedcontrol");
-  settingSet.insert("system.fanspeed");
-  settingSet.insert("system.minfanspeed");
-  settingSet.insert("system.targettemperature");
+  settingSet.insert(CSettings::SETTING_XBOX_AUTO_TEMPERATURE);
+  settingSet.insert(CSettings::SETTING_XBOX_FANSPEED_CONTROL);
+  settingSet.insert(CSettings::SETTING_XBOX_FANSPEED);
+  settingSet.insert(CSettings::SETTING_XBOX_MIN_FANSPEED);
+  settingSet.insert(CSettings::SETTING_XBOX_TARGET_TEMPERATURE);
   GetSettingsManager()->RegisterCallback(CFanController::Instance(), settingSet);
 #endif
 
@@ -792,11 +778,11 @@ void CSettings::InitializeISettingCallbacks()
   settingSet.insert(CSettings::SETTING_SERVICES_ESALLINTERFACES);
   settingSet.insert(CSettings::SETTING_SERVICES_ESINITIALDELAY);
   settingSet.insert(CSettings::SETTING_SERVICES_ESCONTINUOUSDELAY);
-  settingSet.insert("services.ftpserver");
-  settingSet.insert("services.ftpserveruser");
-  settingSet.insert("services.ftpserverpassword");
-  settingSet.insert("services.timeserver");
-  settingSet.insert("services.timeserveraddress");
+  settingSet.insert(CSettings::SETTING_SERVICES_FTPSERVER);
+  settingSet.insert(CSettings::SETTING_SERVICES_FTPSERVER_USER);
+  settingSet.insert(CSettings::SETTING_SERVICES_FTPSERVER_PASSWORD);
+  settingSet.insert(CSettings::SETTING_SERVICES_TIMESERVER);
+  settingSet.insert(CSettings::SETTING_SERVICES_TIMESERVER_ADDRESS);
   settingSet.insert(CSettings::SETTING_SMB_WINSSERVER);
   settingSet.insert(CSettings::SETTING_SMB_WORKGROUP);
   GetSettingsManager()->RegisterCallback(&CNetworkServices::GetInstance(), settingSet);
@@ -812,7 +798,7 @@ void CSettings::InitializeISettingCallbacks()
 #ifdef _XBOX
   settingSet.clear();
   settingSet.insert(CSettings::SETTING_LOCALE_TIMEZONE);
-  settingSet.insert("locale.usedst");
+  settingSet.insert(CSettings::SETTING_LOCALE_USE_DST);
   GetSettingsManager()->RegisterCallback(&g_timezone, settingSet);
 #endif
 
@@ -828,7 +814,6 @@ void CSettings::UninitializeISettingCallbacks()
 {
   GetSettingsManager()->UnregisterCallback(&CMediaSettings::GetInstance());
   GetSettingsManager()->UnregisterCallback(&CDisplaySettings::GetInstance());
-  GetSettingsManager()->UnregisterCallback(&g_application);
   GetSettingsManager()->UnregisterCallback(&g_charsetConverter);
   GetSettingsManager()->UnregisterCallback(CFanController::Instance());
   GetSettingsManager()->UnregisterCallback(&g_langInfo);

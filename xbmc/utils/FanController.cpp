@@ -85,7 +85,7 @@ void CFanController::OnExit()
 
 void CFanController::Process()
 {
-  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("system.autotemperature")) return ;
+  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_XBOX_AUTO_TEMPERATURE)) return ;
   int interval = 500;
   tooHotLoopCount = 0;
   tooColdLoopCount = 0;
@@ -162,36 +162,36 @@ void CFanController::OnSettingChanged(const boost::shared_ptr<const CSetting>& s
     return;
 
   const std::string &settingId = setting->GetId();
-  if (settingId == "system.autotemperature")
+  if (settingId == CSettings::SETTING_XBOX_AUTO_TEMPERATURE)
   {
     if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
     {
-      CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("system.fanspeedcontrol", false);
-      CFanController::Instance()->Start(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.targettemperature"), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.minfanspeed") );
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_XBOX_FANSPEED_CONTROL, false);
+      CFanController::Instance()->Start(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_XBOX_TARGET_TEMPERATURE), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_XBOX_MIN_FANSPEED) );
     }
     else
       CFanController::Instance()->Stop();
   }
-  else if (settingId == "system.fanspeed")
+  else if (settingId == CSettings::SETTING_XBOX_FANSPEED)
   {
     int iSpeed = boost::static_pointer_cast<const CSettingInt>(setting)->GetValue();
-    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("system.fanspeed", iSpeed);
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(CSettings::SETTING_XBOX_FANSPEED, iSpeed);
     CFanController::Instance()->SetFanSpeed(iSpeed);
   }
-  else if (settingId == "system.fanspeedcontrol")
+  else if (settingId == CSettings::SETTING_XBOX_FANSPEED_CONTROL)
   {
     if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
     {
-      CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool("system.autotemperature", false);
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_XBOX_AUTO_TEMPERATURE, false);
       CFanController::Instance()->Stop();
-      CFanController::Instance()->SetFanSpeed(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("system.fanspeed"));
+      CFanController::Instance()->SetFanSpeed(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_XBOX_FANSPEED));
     }
     else
       CFanController::Instance()->RestoreStartupSpeed();
   }
-  else if (settingId == "system.minfanspeed")
+  else if (settingId == CSettings::SETTING_XBOX_MIN_FANSPEED)
     CFanController::Instance()->SetMinFanSpeed(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
-  else if (settingId == "system.targettemperature")
+  else if (settingId == CSettings::SETTING_XBOX_TARGET_TEMPERATURE)
     CFanController::Instance()->SetTargetTemperature(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
 }
 

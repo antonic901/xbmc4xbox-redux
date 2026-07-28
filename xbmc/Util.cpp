@@ -2547,8 +2547,8 @@ bool CUtil::AutoDetection()
 
   // send ping and request new client info
   if ( CUtil::AutoDetectionPing(
-    CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("Autodetect.senduserpw") ? CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("services.ftpserveruser"):"anonymous",
-    CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("Autodetect.senduserpw") ? CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("services.ftpserverpassword"):"anonymous",
+    CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("Autodetect.senduserpw") ? CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SERVICES_FTPSERVER_USER):"anonymous",
+    CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("Autodetect.senduserpw") ? CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SERVICES_FTPSERVER_PASSWORD):"anonymous",
     CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("autodetect.nickname"),21 /*Our FTP Port! TODO: Extract FTP from FTP Server settings!*/) )
   {
     CStdString strFTPPath, strNickName, strFtpUserName, strFtpPassword, strFtpPort, strBoosMode;

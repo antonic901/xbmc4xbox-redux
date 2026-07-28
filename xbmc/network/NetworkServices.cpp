@@ -131,7 +131,7 @@ bool CNetworkServices::OnSettingChanging(const boost::shared_ptr<const CSetting>
 #endif // HAS_WEB_SERVER
 
 #ifdef HAS_FTP_SERVER
-  if (settingId == "services.ftpserveruser" || settingId == "services.ftpserverpassword")
+  if (settingId == CSettings::SETTING_SERVICES_FTPSERVER_USER || settingId == CSettings::SETTING_SERVICES_FTPSERVER_PASSWORD)
     return SetFTPServerUserPass();
   else
 #endif // HAS_FTP_SERVER
@@ -241,14 +241,14 @@ void CNetworkServices::OnSettingChanged(const boost::shared_ptr<const CSetting>&
 
   const std::string &settingId = setting->GetId();
 #ifdef HAS_TIME_SERVER
-  if (settingId == "services.timeserver")
+  if (settingId == CSettings::SETTING_SERVICES_TIMESERVER)
   {
     if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
       StartTimeServer();
     else
       StopTimeServer();
   }
-  else if (settingId == "services.timeserveraddress")
+  else if (settingId == CSettings::SETTING_SERVICES_TIMESERVER_ADDRESS)
   {
     StopTimeServer();
     StartTimeServer();
@@ -256,7 +256,7 @@ void CNetworkServices::OnSettingChanged(const boost::shared_ptr<const CSetting>&
   else
 #endif
 #ifdef HAS_FTP_SERVER
-  if (settingId == "services.ftpserver")
+  if (settingId == CSettings::SETTING_SERVICES_FTPSERVER)
   {
     if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
       StartFtpServer();
@@ -321,7 +321,7 @@ bool CNetworkServices::StartTimeServer()
   if (!CServiceBroker::GetNetwork().IsAvailable())
     return false;
 
-  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.timeserver"))
+  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SERVICES_TIMESERVER))
     return false;
 
   if(!IsTimeServerRunning())
@@ -441,7 +441,7 @@ bool CNetworkServices::StartFtpServer()
   if (!CServiceBroker::GetNetwork().IsAvailable())
     return false;
 
-  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpserver"))
+  if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SERVICES_FTPSERVER))
     return false;
 
   CLog::Log(LOGNOTICE, "XBFileZilla: Starting...");
@@ -563,8 +563,8 @@ bool CNetworkServices::SetFTPServerUserPass()
   // TODO: Read the FileZilla Server XML and Set it here!
   // Get GUI USER and pass and set pass to FTP Server
   CStdString strFtpUserName, strFtpUserPassword;
-  strFtpUserName      = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("services.ftpserveruser");
-  strFtpUserPassword  = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("services.ftpserverpassword");
+  strFtpUserName      = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SERVICES_FTPSERVER_USER);
+  strFtpUserPassword  = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SERVICES_FTPSERVER_PASSWORD);
 
   if(strFtpUserPassword.size() == 0)
   { // PopUp OK and Display: FTP Server Password is empty! Try Again!
@@ -589,7 +589,7 @@ bool CNetworkServices::SetFTPServerUserPass()
         if (p_ftpUser->SetPassword(strFtpUserPassword.c_str()) != XFS_INVALID_PARAMETERS)
         {
           p_ftpUser->CommitChanges();
-          CServiceBroker::GetSettingsComponent()->GetSettings()->SetString("services.ftpserverpassword",strFtpUserPassword.c_str());
+          CServiceBroker::GetSettingsComponent()->GetSettings()->SetString(CSettings::SETTING_SERVICES_FTPSERVER_PASSWORD,strFtpUserPassword.c_str());
           CGUIDialogOK::ShowAndGetInput(728, 0, 1247, 0);
           return true;
         }

@@ -952,7 +952,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
       // if we're using digital out
       // then try using direct passtrough
-      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL)
+      if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_AUDIOOUTPUT_MODE) == AUDIO_DIGITAL)
       {
         options.SetAC3PassTru(bSupportsAC3Out);
         options.SetDTSPassTru(bSupportsDTSOut);
@@ -1253,7 +1253,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
     if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioStream < -1)
     { // check + fix up the stereo/left/right setting
-      bool bAudioOnAllSpeakers = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL) && ((CMediaSettings::GetInstance().GetCurrentVideoSettings().m_OutputToAllSpeakers && HasVideo()) || (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers") && !HasVideo()));
+      bool bAudioOnAllSpeakers = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_AUDIOOUTPUT_MODE) == AUDIO_DIGITAL) && ((CMediaSettings::GetInstance().GetCurrentVideoSettings().m_OutputToAllSpeakers && HasVideo()) || (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers") && !HasVideo()));
       xbox_audio_switch_channel(-1 - CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioStream, bAudioOnAllSpeakers);
     }
     bIsVideo = HasVideo();

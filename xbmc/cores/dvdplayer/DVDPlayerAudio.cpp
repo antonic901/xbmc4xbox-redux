@@ -130,7 +130,7 @@ CDVDPlayerAudio::~CDVDPlayerAudio()
 
 bool CDVDPlayerAudio::OpenStream( CDVDStreamInfo &hints )
 {
-  bool passthrough = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiooutput.mode") == AUDIO_DIGITAL);
+  bool passthrough = (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_AUDIOOUTPUT_MODE) == AUDIO_DIGITAL);
 
   CLog::Log(LOGNOTICE, "Finding audio codec for: %i", hints.codec);
   CDVDAudioCodec* codec = CDVDFactoryCodec::CreateAudioCodec(hints, passthrough);
