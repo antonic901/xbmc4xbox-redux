@@ -216,6 +216,7 @@ private:
   CCriticalSection m_frameMoveGuard;              /*!< critical section for synchronizing GUI actions from inside and outside (python) */
   int m_ExitCode;
   boost::shared_ptr<CFileItem> m_itemCurrentFile; //!< Currently playing file
+  CEvent m_playerEvent;
 };
 
 XBMC_GLOBAL_REF(CApplication,g_application);
