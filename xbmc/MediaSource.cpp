@@ -25,7 +25,8 @@
 #include "filesystem/MultiPathDirectory.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
-#include "utils/MemoryUnitManager.h"
+
+#include "platform/xbox/filesystem/MemoryUnitManager.h"
 
 using namespace std;
 using namespace XFILE;
@@ -117,7 +118,7 @@ void AddOrReplace(VECSOURCES& sources, const CMediaSource& source)
   unsigned int i;
   for( i=0;i<sources.size();++i )
   {
-    if (sources[i].strPath.Equals(source.strPath)) 
+    if (sources[i].strPath.Equals(source.strPath))
     {
       sources[i] = source;
       break;

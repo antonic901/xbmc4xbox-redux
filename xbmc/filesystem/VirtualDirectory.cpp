@@ -17,9 +17,10 @@
 #include "Util.h"
 #include "storage/DetectDVDType.h"
 #include "storage/MediaManager.h"
-#include "utils/MemoryUnitManager.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
+
+#include "platform/xbox/filesystem/MemoryUnitManager.h"
 
 using namespace XFILE;
 

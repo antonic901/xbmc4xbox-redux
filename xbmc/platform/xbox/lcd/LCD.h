@@ -24,13 +24,26 @@
 
 #include "guilib/GUILabelControl.h"  // for CInfoPortion
 
-#include "defs_from_settings.h"
-
 #include <vector>
 
 class TiXmlNode;
 
 #define MAX_ROWS 20
+
+enum LCD_TYPE
+{
+  LCD_TYPE_NONE = 0,
+  LCD_TYPE_LCD_HD44780 = 1,
+  LCD_TYPE_LCD_KS0073 = 2,
+  LCD_TYPE_VFD = 3
+};
+
+enum LCD_MODCHIP
+{
+  MODCHIP_SMARTXX = 0,
+  MODCHIP_XENIUM = 1,
+  MODCHIP_XECUTER3 = 2
+};
 
 class ILCD : public CThread
 {

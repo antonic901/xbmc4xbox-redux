@@ -204,6 +204,8 @@ protected:
   std::vector<boost::shared_ptr<ADDON::CAddonInfo> >
       m_incompatibleAddons; /*!< Result of addon migration (incompatible addon infos) */
 
+  static LONG WINAPI UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo);
+
 public:
   bool m_bStop;
 

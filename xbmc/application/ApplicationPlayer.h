@@ -67,6 +67,7 @@ public:
   int AddSubtitle(const std::string& strSubPath);
   bool CanPause() const;
   bool CanSeek() const;
+  void DoAudioWork();
   int GetAudioDelay() const;
   int GetAudioStream();
   int GetAudioStreamCount();

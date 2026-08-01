@@ -19,7 +19,7 @@
 */
 #include "MemUnitFile.h"
 #include <sys/stat.h>
-#include "utils/MemoryUnitManager.h"
+#include "platform/xbox/filesystem/MemoryUnitManager.h"
 #include "MemoryUnits/IFileSystem.h"
 #include "MemoryUnits/IDevice.h"
 #include "utils/StringUtils.h"

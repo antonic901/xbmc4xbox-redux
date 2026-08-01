@@ -259,9 +259,9 @@ HRESULT CASyncDirectSound::Deinitialize()
 
   // CDGParser needs to be close since closefile could be called from mplayer
   // WHY?????, what does it matter who removes this for the cdg parser?
-  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
-  const boost::shared_ptr<const CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
-  appXbox->GetCdgParser()->Stop();
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+  appXbox->StopKaraoke();
 
   m_bIsAllocated = false;
   if (m_pStream)

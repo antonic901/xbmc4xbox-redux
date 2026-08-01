@@ -270,6 +270,7 @@ public:
   static const char* SETTING_HDD_REMOTE_PLAY_SPINDOWN_DURATION;
   static const char* SETTING_HDD_REMOTE_PLAY_SPINDOWN_DELAY;
   static const char* SETTING_HDD_SPINDOWN_TIME;
+  static const char* SETTING_KARAOKE_ENABLED;
   static const char* SETTING_KARAOKE_CHARSET;
   static const char* SETTING_KARAOKE_EXPORT;
   static const char* SETTING_KARAOKE_IMPORT;
@@ -283,6 +284,7 @@ public:
   static const char* SETTING_LCD_CONTRAST;
   static const char* SETTING_LCD_MODCHIP;
   static const char* SETTING_LCD_TYPE;
+  static const char* SETTING_LCD_DISABLE_ON_PLAYBACK;
   static const char* SETTING_TRAINER_SCAN;
   static const char* SETTING_NETWORK_ASSIGNMENT;
   static const char* SETTING_NETWORK_IPADDRESS;
@@ -292,6 +294,7 @@ public:
   static const char* SETTING_NETWORK_DNS2;
   static const char* SETTING_UPDATER_CHECK;
   static const char* SETTING_XBOX_LED_COLOUR;
+  static const char* SETTING_XBOX_LED_DISABLE_ON_PLAYBACK;
   static const char* SETTING_XBOX_AUTO_TEMPERATURE;
   static const char* SETTING_XBOX_FANSPEED_CONTROL;
   static const char* SETTING_XBOX_FANSPEED;

@@ -1,6 +1,6 @@
 #pragma once
 #include "threads/Thread.h"
-#include "utils/LCD.h"
+#include "platform/xbox/lcd/LCD.h"
 
 #define MAX_ROWS 20
 
@@ -15,7 +15,7 @@ public:
   virtual void SetContrast(int iContrast);
 
 protected:
-	virtual void		Process();
+    virtual void        Process();
   virtual void SetLine(int iLine, const CStdString& strLine);
   void    DisplayInit();
   void    DisplaySetBacklight(unsigned char level) ;
@@ -28,13 +28,13 @@ protected:
   void    DisplayBuildCustomChars() ;
   void    DisplayOut(unsigned char data, unsigned char command) ;
   void    wait_us(unsigned int value) ;
-  unsigned int m_iColumns;				// display columns for each line
-  unsigned int m_iRows;				// total number of rows
+  unsigned int m_iColumns;                // display columns for each line
+  unsigned int m_iRows;                // total number of rows
   unsigned int m_iRow1adr ;
   unsigned int m_iRow2adr ;
   unsigned int m_iRow3adr ;
   unsigned int m_iRow4adr ;
-  unsigned int m_iActualpos;				// actual cursor possition
+  unsigned int m_iActualpos;                // actual cursor possition
   int          m_iBackLight;
   int          m_iContrast;
   bool         m_bUpdate[MAX_ROWS];

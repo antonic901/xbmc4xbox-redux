@@ -104,11 +104,6 @@ CSmartXXLCD::~CSmartXXLCD()
 void CSmartXXLCD::Initialize()
 {
   StopThread();
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") == LCD_TYPE_NONE)
-  {
-    CLog::Log(LOGINFO, "lcd not used");
-    return;
-  }
   ILCD::Initialize();
   Create();
 
@@ -126,14 +121,12 @@ void CSmartXXLCD::SetContrast(int iContrast)
 //*************************************************************************************************************
 void CSmartXXLCD::Stop()
 {
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") == LCD_TYPE_NONE) return;
   StopThread();
 }
 
 //*************************************************************************************************************
 void CSmartXXLCD::SetLine(int iLine, const CStdString& strLine)
 {
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") == LCD_TYPE_NONE) return;
   if (iLine < 0 || iLine >= (int)m_iRows) return;
 
   CStdString strLineLong=strLine;
@@ -547,7 +540,7 @@ void CSmartXXLCD::Process()
   m_iRow2adr = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdAddress2;
   m_iRow3adr = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdAddress3;
   m_iRow4adr = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_lcdAddress4;
-  m_iBackLight= CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.backlight");
+  m_iBackLight= CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_LCD_BACKLIGHT);
   m_iContrast = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.contrast");
   if (m_iRows >= MAX_ROWS) m_iRows=MAX_ROWS-1;
 
