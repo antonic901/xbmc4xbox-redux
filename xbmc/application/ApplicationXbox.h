@@ -9,10 +9,12 @@
 #pragma once
 
 #include "application/IApplicationComponent.h"
+#include "storage/DetectDVDType.h"
 #include "utils/Idle.h"
 
 class CCdgParser;
 class CGUITextLayout;
+class CFileItem;
 class ILCD;
 
 struct VOICE_MASK
@@ -31,6 +33,8 @@ class CApplicationXbox : public IApplicationComponent
 public:
   CApplicationXbox();
 
+  void OnCreate();
+
   float GetCPUUsage();
 
   bool HasMemoryUpgrade() const;
@@ -46,12 +50,18 @@ public:
   void CheckNetworkHDSpinDown(bool playbackStarted = false);
   void CheckHDSpindown();
 
+  bool HasKaraoke() const { return m_pCdgParser != NULL; }
+  bool IsKaraokeRunning();
+  void StartKaraoke(const boost::shared_ptr<CFileItem>& pItem);
+  void StopKaraoke();
+  void ProcessKaraoke();
   VOICE_MASK GetKaraokeVoiceMask(int iPort) const { return m_karaokeVoiceMask[iPort]; }
-  CCdgParser* GetCdgParser() const { return m_pCdgParser; }
 
-  ILCD* GetLCD() const { return g_lcd; }
   bool HasLCD() const { return g_lcd != NULL; }
+  void DimLCDOnPlayback(bool dim);
   void PrintXBETitleToLCD(const std::string& strXbePath);
+  void SetLCDBacklight(int iValue);
+  void UpdateLCD();
 
   bool Load(const TiXmlNode* settings);
   bool Save(TiXmlNode* settings) const;
@@ -61,7 +71,19 @@ public:
   void SetSpinDown(bool bSpinDown) { m_bSpinDown = bSpinDown; }
   void SetNetworkSpinDown(bool bNetworkSpinDown) { m_bNetworkSpinDown = bNetworkSpinDown; }
 
+  /*!
+   \brief Controls LED color of front panel.
+   */
+  void StartLEDControl(bool switchoff = false);
+
+  /*!
+   \brief Configure temperature, fan speed, initialize LCD, etc.
+   */
+  void StartServices();
+  void StopServices();
+
 private:
+  MEDIA_DETECT::CDetectDVDMedia m_DetectDVDType;
   CIdleThread m_idleThread;
 
   bool m_hasMemoryUpgrade;

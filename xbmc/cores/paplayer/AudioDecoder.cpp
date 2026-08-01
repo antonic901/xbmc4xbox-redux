@@ -29,7 +29,9 @@
 #include "threads/SingleLock.h"
 #include "utils/log.h"
 
-#include "defs_from_settings.h"
+#define REPLAY_GAIN_NONE 0
+#define REPLAY_GAIN_ALBUM 1
+#define REPLAY_GAIN_TRACK 2
 
 #define INTERNAL_BUFFER_LENGTH  sizeof(float)*2*44100       // float samples, 2 channels, 44100 samples per sec = 1 second
 

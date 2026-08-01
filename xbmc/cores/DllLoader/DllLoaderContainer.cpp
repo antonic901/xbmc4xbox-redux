@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "system.h" // <xtl.h>
 #include "DllLoaderContainer.h"
 #include "DllLoader.h"
@@ -87,15 +87,6 @@ DllLoader comctl32("comctl32.dll",        false, true, false, export_comctl32);
 DllLoader pncrt("pncrt.dll",              false, true, false, export_pncrt);
 DllLoader iconvx("iconv.dll",             false, true, false, export_iconvx);
 DllLoader zlib("zlib1.dll",               false, true, false, export_zlib);
-  
-void DllLoaderContainer::Clear()
-{
-}
-
-HMODULE DllLoaderContainer::GetModuleAddress(const char* sName)
-{
-  return (HMODULE)GetModule(sName);
-}
 
 LibraryLoader* DllLoaderContainer::GetModule(const char* sName)
 {
@@ -112,7 +103,7 @@ LibraryLoader* DllLoaderContainer::GetModule(HMODULE hModule)
 {
   for (int i = 0; m_dlls[i] != NULL && i < m_iNrOfDlls; i++)
   {
-    if (m_dlls[i]->GetHModule() == hModule) return m_dlls[i];    
+    if (m_dlls[i]->GetHModule() == hModule) return m_dlls[i];
   }
   return NULL;
 }
@@ -131,7 +122,7 @@ LibraryLoader* DllLoaderContainer::LoadModule(const char* sName, const char* sCu
     strPath+=sName;
     pDll = GetModule(strPath.c_str());
   }
-  
+
   if (!pDll)
   {
     pDll = GetModule(sName);
@@ -254,7 +245,7 @@ LibraryLoader* DllLoaderContainer::LoadDll(const char* sName, bool bLoadSymbols)
 
   LibraryLoader* pLoader;
   pLoader = new DllLoader(sName, m_bTrack, false, bLoadSymbols);
-    
+
   if (!pLoader)
   {
     CLog::Log(LOGERROR, "Unable to create dll %s", sName);
@@ -278,17 +269,6 @@ bool DllLoaderContainer::IsSystemDll(const char* sName)
   }
 
   return false;
-}
-
-int DllLoaderContainer::GetNrOfModules()
-{
-  return m_iNrOfDlls;
-}
-
-LibraryLoader* DllLoaderContainer::GetModule(int iPos)
-{
-  if (iPos < m_iNrOfDlls) return m_dlls[iPos];
-  return NULL;
 }
 
 void DllLoaderContainer::RegisterDll(LibraryLoader* pDll)
@@ -356,18 +336,18 @@ void DllLoaderContainer::UnloadPythonDlls()
       LibraryLoader* pDll = m_dlls[i];
       pDll->IncrRef();
       while (pDll->DecrRef() > 1) pDll->DecrRef();
-      
+
       // since we freed all python extension dlls first, we have to remove any associations with them first
       DllTrackInfo* info = tracker_get_dlltrackinfo_byobject((DllLoader*) pDll);
       if (info != NULL)
       {
         info->dllList.clear();
       }
-      
+
       ReleaseModule(pDll);
       break;
     }
   }
 
-  
+
 }

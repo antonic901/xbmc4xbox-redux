@@ -28,11 +28,12 @@
 //
 //
 
-#include "cdioSupport.h"
 #include "threads/CriticalSection.h"
 #include "threads/Event.h"
 #include "threads/Thread.h"
-#include "boost/shared_ptr.hpp"
+#include "cdioSupport.h"
+
+#include <boost/shared_ptr.hpp>
 
 namespace MEDIA_DETECT
 {
@@ -60,7 +61,7 @@ public:
 protected:
   void UpdateDvdrom();
   DWORD GetTrayState();
-  
+
 
   void DetectMediaType();
   void SetNewDVDShareUrl( const CStdString& strNewUrl, bool bCDDA, const CStdString& strDiscLabel );
@@ -82,7 +83,7 @@ private:
 
   static CStdString m_diskLabel;
   static CStdString m_diskPath;
-  
+
   boost::shared_ptr<CLibcdio> m_cdio;
 };
 }

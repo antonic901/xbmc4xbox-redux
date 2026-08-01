@@ -439,6 +439,13 @@ float CApplicationPlayer::GetCachePercentage() const
     return 0.0;
 }
 
+void CApplicationPlayer::DoAudioWork()
+{
+  boost::shared_ptr<IPlayer> player = GetInternal();
+  if (player)
+    player->DoAudioWork();
+}
+
 std::string CApplicationPlayer::GetPlayerState()
 {
   boost::shared_ptr<IPlayer> player = GetInternal();

@@ -65,9 +65,9 @@
 #include "guilib/IGUIContainer.h"
 #include "utils/fstrcmp.h"
 #ifdef HAS_XBOX_HARDWARE
-#include "utils/MemoryUnitManager.h"
+#include "platform/xbox/filesystem/MemoryUnitManager.h"
+#include "platform/xbox/utils/LED.h"
 #include "utils/FilterFlickerPatch.h"
-#include "utils/LED.h"
 #include "utils/FanController.h"
 #include "utils/SystemInfo.h"
 #endif

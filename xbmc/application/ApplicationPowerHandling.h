@@ -23,6 +23,7 @@ typedef boost::shared_ptr<IAddon> AddonPtr;
 } // namespace ADDON
 
 class CApplication;
+class CApplicationXbox;
 class CSetting;
 
 /*!
@@ -32,6 +33,7 @@ class CSetting;
 class CApplicationPowerHandling : public IApplicationComponent
 {
   friend class CApplication;
+  friend class CApplicationXbox;
 
 public:
   CApplicationPowerHandling() : m_bInhibitScreenSaver(false), m_bResetScreenSaver(false), m_screensaverActive(false), m_iScreenSaveLock(0) {}

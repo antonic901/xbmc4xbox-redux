@@ -918,9 +918,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Fanart.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\FanController.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\FileItem.cpp">
 				</File>
 				<File
@@ -1011,9 +1008,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\LangInfo.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\LED.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\LegacyPathTranslation.cpp">
 				</File>
 				<File
@@ -1027,9 +1021,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\MediaSource.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\MemoryUnitManager.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\memutil.cpp">
@@ -1222,9 +1213,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\TimeUtils.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Trainer.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\Updater.cpp">
@@ -2481,18 +2469,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			<Filter
 				Name="LCD"
 				Filter="">
-				<File
-					RelativePath=".\xbmc\utils\LCD.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\LCD.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\LCDFactory.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\LCDFactory.h">
-				</File>
 				<File
 					RelativePath=".\lib\smartXX\smartxxlcd.cpp">
 				</File>
@@ -5232,6 +5208,24 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						<File
 							RelativePath=".\xbmc\platform\xbox\utils\DelayController.h">
 						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\utils\FanController.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\utils\FanController.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\utils\LED.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\utils\LED.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\utils\Trainer.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\utils\Trainer.h">
+						</File>
 					</Filter>
 					<Filter
 						Name="input"
@@ -5271,6 +5265,32 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						</File>
 						<File
 							RelativePath=".\xbmc\platform\xbox\input\XboxKeyboard.h">
+						</File>
+					</Filter>
+					<Filter
+						Name="lcd"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\platform\xbox\lcd\LCD.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\lcd\LCD.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\lcd\LCDFactory.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\lcd\LCDFactory.h">
+						</File>
+					</Filter>
+					<Filter
+						Name="filesystem"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\MemoryUnitManager.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\MemoryUnitManager.h">
 						</File>
 					</Filter>
 				</Filter>
@@ -5380,9 +5400,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\EventStreamDetail.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\FanController.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\FastDelegate.h">
@@ -5538,9 +5555,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\LangInfo.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\LED.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\utils\LegacyPathTranslation.h">
 			</File>
 			<File
@@ -5548,9 +5562,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\md5.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\MemoryUnitManager.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\memutil.h">
@@ -5623,9 +5634,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\ThumbnailCache.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Trainer.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\xbox\Undocumented.h">

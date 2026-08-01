@@ -43,8 +43,10 @@
 #include "music/MusicLibraryQueue.h"
 #include "music/tags/MusicInfoTag.h"
 #include "xbox/Network.h"
+#include "network/NetworkServices.h"
 #include "playlists/PlayListFactory.h"
 #include "threads/SystemClock.h"
+#include "threads/platform/win/Win32Exception.h"
 #include "utils/ContentUtils.h"
 #include "utils/JobManager.h"
 #include "utils/LangCodeExpander.h"
@@ -123,6 +125,8 @@
 #include "addons/AddonSystemSettings.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "utils/CharsetConverter.h"
+
+#include "platform/xbox/filesystem/MemoryUnitManager.h"
 #include "xbox/XKHDD.h"
 
 #include <boost/bind.hpp>
@@ -207,6 +211,35 @@ extern "C" void __stdcall init_emu_environ();
 extern "C" void __stdcall update_emu_environ();
 extern "C" void __stdcall cleanup_emu_environ();
 
+LONG WINAPI CApplication::UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo)
+{
+  PCSTR pExceptionString = "Unknown exception code";
+
+  #define STRINGIFY_EXCEPTION(code) case code: pExceptionString = #code; break
+  switch (ExceptionInfo->ExceptionRecord->ExceptionCode)
+  {
+    STRINGIFY_EXCEPTION(EXCEPTION_ACCESS_VIOLATION);
+    STRINGIFY_EXCEPTION(EXCEPTION_ARRAY_BOUNDS_EXCEEDED);
+    STRINGIFY_EXCEPTION(EXCEPTION_BREAKPOINT);
+    STRINGIFY_EXCEPTION(EXCEPTION_FLT_DENORMAL_OPERAND);
+    STRINGIFY_EXCEPTION(EXCEPTION_FLT_DIVIDE_BY_ZERO);
+    STRINGIFY_EXCEPTION(EXCEPTION_FLT_INEXACT_RESULT);
+    STRINGIFY_EXCEPTION(EXCEPTION_FLT_INVALID_OPERATION);
+    STRINGIFY_EXCEPTION(EXCEPTION_FLT_OVERFLOW);
+    STRINGIFY_EXCEPTION(EXCEPTION_FLT_STACK_CHECK);
+    STRINGIFY_EXCEPTION(EXCEPTION_ILLEGAL_INSTRUCTION);
+    STRINGIFY_EXCEPTION(EXCEPTION_INT_DIVIDE_BY_ZERO);
+    STRINGIFY_EXCEPTION(EXCEPTION_INT_OVERFLOW);
+    STRINGIFY_EXCEPTION(EXCEPTION_INVALID_DISPOSITION);
+    STRINGIFY_EXCEPTION(EXCEPTION_NONCONTINUABLE_EXCEPTION);
+    STRINGIFY_EXCEPTION(EXCEPTION_SINGLE_STEP);
+  }
+  #undef STRINGIFY_EXCEPTION
+
+  CLog::Log(LOGFATAL, "%s (0x%08x)\n at 0x%08x", pExceptionString, ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo->ExceptionRecord->ExceptionAddress);
+  return ExceptionInfo->ExceptionRecord->ExceptionCode;
+}
+
 bool CApplication::Create()
 {
   m_bStop = false;
@@ -253,6 +286,10 @@ bool CApplication::Create()
   // Init our DllLoaders emu env
   init_emu_environ();
 
+  /* install win32 exception translator, win32 exceptions
+   * can now be caught using c++ try catch */
+  win32_exception::install_handler();
+
   PrintStartupLog();
 
   CLog::Log(LOGINFO, "loading settings");
@@ -290,6 +327,12 @@ bool CApplication::Create()
     CLog::Log(LOGFATAL, "CApplication::Create: Unable to load keyboard layouts");
     return false;
   }
+
+  GetComponent<CApplicationXbox>()->OnCreate();
+
+  // show recovery console on fatal error instead of freezing
+  CLog::Log(LOGINFO, "install unhandled exception filter");
+  SetUnhandledExceptionFilter(UnhandledExceptionFilter);
 
   CUtil::InitRandomSeed();
 
@@ -401,6 +444,8 @@ void checkForAddonUpdates(CEvent& event, ADDON::AddonInfos& incompatibleAddons)
 
 bool CApplication::Initialize()
 {
+  GetComponent<CApplicationXbox>()->StartServices();
+
   // load the language and its translated strings
   if (!LoadLanguage(false))
     return false;
@@ -1296,6 +1341,8 @@ void CApplication::FrameMove(bool processEvents, bool processGUI)
       }
     }
 
+    GetComponent<CApplicationXbox>()->UpdateLCD();
+
     CServiceBroker::GetInputManager().Process(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog(), frameTime);
 
     if (processGUI)
@@ -1408,6 +1455,9 @@ bool CApplication::Cleanup()
     if (m_ServiceManager)
       m_ServiceManager->DeinitStageTwo();
 
+#ifdef HAS_OPTICAL_DRIVE
+    CLibcdio::ReleaseInstance();
+#endif
 #ifdef _CRTDBG_MAP_ALLOC
     _CrtDumpMemoryLeaks();
     while(1); // execution ends
@@ -1534,6 +1584,8 @@ bool CApplication::Stop(int exitCode)
     CGUIComponent *gui = CServiceBroker::GetGUI();
     if (gui)
       gui->GetAudioManager().DeInitialize(1);
+
+    GetComponent<CApplicationXbox>()->StopServices();
 
     CLog::Log(LOGINFO, "Application stopped");
   }
@@ -1857,6 +1909,9 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
   // reset VideoStartWindowed as it's a temp setting
   CMediaSettings::GetInstance().SetMediaStartWindowed(false);
 
+  // We have to stop parsing a cdg before mplayer is deallocated. WHY???
+  GetComponent<CApplicationXbox>()->StopKaraoke();
+
   {
     // for playing a new item, previous playing item's callback may already
     // pushed some delay message into the threadmessage list, they are not
@@ -1900,6 +1955,11 @@ void CApplication::PlaybackCleanup()
     CGUIComponent *gui = CServiceBroker::GetGUI();
     if (gui)
       CServiceBroker::GetGUI()->GetAudioManager().Enable(true);
+
+    GetComponent<CApplicationXbox>()->StartLEDControl(false);
+    GetComponent<CApplicationXbox>()->DimLCDOnPlayback(false);
+    GetComponent<CApplicationXbox>()->StopKaraoke();
+
     appPlayer->OpenNext(m_ServiceManager->GetPlayerCoreFactory());
   }
 
@@ -1971,6 +2031,8 @@ void CApplication::StopPlaying()
     const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
     if (appPlayer->IsPlaying())
     {
+      GetComponent<CApplicationXbox>()->StopKaraoke();
+
       appPlayer->ClosePlayer();
 
       // turn off visualisation window when stopping
@@ -2082,6 +2144,13 @@ bool CApplication::OnMessage(CGUIMessage& message)
       }
       CServiceBroker::GetGUI()->GetInfoManager().SetCurrentItem(*m_itemCurrentFile);
       g_partyModeManager.OnSongChange(true);
+
+      GetComponent<CApplicationXbox>()->CheckNetworkHDSpinDown(true);
+      GetComponent<CApplicationXbox>()->StartLEDControl(true);
+      GetComponent<CApplicationXbox>()->DimLCDOnPlayback(true);
+
+      // Start our Karaoke parser
+      GetComponent<CApplicationXbox>()->StartKaraoke(m_itemCurrentFile);
 
 #ifdef HAS_PYTHON
       // informs python script currently running playback has started
@@ -2448,6 +2517,22 @@ void CApplication::Process()
   CServiceBroker::GetAppMessenger()->ProcessMessages();
   if (m_bStop) return; //we're done, everything has been unloaded
 
+  // check for memory unit changes
+  if (g_memoryUnitManager.Update())
+  {
+    CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_REMOVED_MEDIA);
+    CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
+  }
+
+  CServiceBroker::GetGUI()->GetAudioManager().FreeUnused();
+
+  // update sound - removed in Kodi!
+  // https://github.com/xbmc/xbmc/pull/24262
+  GetComponent<CApplicationPlayer>()->DoAudioWork();
+
+  // process karaoke
+  GetComponent<CApplicationXbox>()->ProcessKaraoke();
+
   // do any processing that isn't needed on each run
   if( m_slowTimer.GetElapsedMilliseconds() > 500 )
   {
@@ -2497,6 +2582,10 @@ void CApplication::ProcessSlow()
 
   // check for any idle curl connections
   g_curlInterface.CheckIdle();
+
+  // check for any needed SNTP update
+  if (CNetworkServices::GetInstance().IsTimeServerRunning() && CNetworkServices::GetInstance().IsTimeServerUpdateNeeded())
+    CNetworkServices::GetInstance().UpdateTimeServer();
 
   CServiceBroker::GetGUI()->GetLargeTextureManager().CleanupUnusedImages();
 

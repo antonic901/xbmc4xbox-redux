@@ -28,13 +28,9 @@ typedef unsigned long HMODULE;
 
 class DllLoaderContainer
 {
-public:  
-  static void       Clear();
-  static HMODULE    GetModuleAddress(const char* sName);
-  static int        GetNrOfModules();
-  static LibraryLoader* GetModule(int iPos);
+public:
   static LibraryLoader* GetModule(const char* sName);
-  static LibraryLoader* GetModule(HMODULE hModule);  
+  static LibraryLoader* GetModule(HMODULE hModule);
   static LibraryLoader* LoadModule(const char* sName, const char* sCurrentDir=NULL, bool bLoadSymbols=false);
   static void       ReleaseModule(LibraryLoader*& pDll);
 

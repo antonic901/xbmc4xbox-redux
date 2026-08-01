@@ -37,6 +37,8 @@
 #include "utils/log.h"
 #include "xbox/Undocumented.h"
 
+#include "platform/xbox/lcd/LCD.h"
+
 #include "defs_from_settings.h"
 
 using namespace XFILE;
@@ -696,7 +698,7 @@ void CTrainer::SetOptions(unsigned char* options)
 
 bool CTrainer::ScanTrainers()
 {
-  CGUIDialogProgress* progress = (CGUIDialogProgress*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS);
+  CGUIDialogProgress* progress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
   if (!progress)
     return false;
 

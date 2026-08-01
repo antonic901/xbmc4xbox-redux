@@ -20,7 +20,7 @@
 
 #include "MemUnitDirectory.h"
 #include "DirectoryCache.h"
-#include "utils/MemoryUnitManager.h"
+#include "platform/xbox/filesystem/MemoryUnitManager.h"
 #include "MemoryUnits/IFileSystem.h"
 #include "MemoryUnits/IDevice.h"
 #include "FileItem.h"
@@ -39,7 +39,7 @@ bool CMemUnitDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   CStdString strPath = url.Get();
   IFileSystem *fileSystem = GetFileSystem(strPath);
   if (!fileSystem) return false;
-  
+
   g_directoryCache.ClearDirectory(strPath);
   CFileItemList cacheItems;
   if (!fileSystem->GetDirectory(strPath.Mid(7), cacheItems))

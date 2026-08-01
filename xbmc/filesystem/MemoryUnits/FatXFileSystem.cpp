@@ -20,7 +20,7 @@
 
 #include "FatXFileSystem.h"
 #include "FatXDevice.h"
-#include "utils/MemoryUnitManager.h"
+#include "platform/xbox/filesystem/MemoryUnitManager.h"
 #include "filesystem/HDDirectory.h"
 #include "URL.h"
 #include "FileItem.h"

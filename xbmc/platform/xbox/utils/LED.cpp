@@ -44,7 +44,6 @@ OFF/Green/Red/Orange/Cycle
 */
 #include "LED.h"
 
-#include "LCD.h"
 #include "ServiceBroker.h"
 #include "SystemInfo.h"
 #include "application/ApplicationComponents.h"
@@ -53,6 +52,8 @@ OFF/Green/Red/Orange/Cycle
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "xbox/XKUtils.h"
+
+#include "platform/xbox/lcd/LCD.h"
 
 #include <conio.h>
 
@@ -216,10 +217,9 @@ void ILEDSmartxxRGB::OnExit()
   // Restoring brightness value from the settings
   if ( g_sysinfo.SmartXXModCHIP().Equals("SmartXX OPX") )
   {
-    const CApplicationComponents &components = CServiceBroker::GetAppComponents();
-    const boost::shared_ptr<const CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
-    if (appXbox->HasLCD())
-      appXbox->GetLCD()->SetBackLight(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.backlight"));
+    CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
+    appXbox->SetLCDBacklight(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_LCD_BACKLIGHT));
   }
 
     CLog::Log(LOGDEBUG,"Stopping SmartXX RGB LED thread");
