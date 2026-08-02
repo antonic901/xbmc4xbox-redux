@@ -38,7 +38,8 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
-#include "xbox/IoSupport.h"
+
+#include "platform/xbox/storage/IoSupport.h"
 
 #define BACKGROUND_IMAGE       999
 #define GROUP_LIST             996

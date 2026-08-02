@@ -21,7 +21,9 @@
 
 #include "threads/CriticalSection.h"
 #include "guilib/DirtyRegion.h"
-#include "xbox/PlatformDefs.h" // uint32_t
+
+#include "platform/xbox/PlatformDefs.h" // uint32_t
+
 #include <string>
 
 typedef uint32_t color_t;

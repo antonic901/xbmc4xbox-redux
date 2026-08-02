@@ -24,12 +24,13 @@
 
 #ifdef HAS_OPTICAL_DRIVE
 #include "storage/MediaManager.h"
-#include "xbox/IoSupport.h"
 #endif
 
 #ifdef HAS_CDDA_RIPPER
 #include "cdrip/CDDARipper.h"
 #endif
+
+#include "platform/xbox/storage/IoSupport.h"
 
 /*! \brief Eject the tray of an optical drive.
  *  \param params (ignored)

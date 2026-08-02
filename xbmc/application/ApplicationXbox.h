@@ -10,7 +10,8 @@
 
 #include "application/IApplicationComponent.h"
 #include "storage/DetectDVDType.h"
-#include "utils/Idle.h"
+
+#include "platform/xbox/threads/Idle.h"
 
 class CCdgParser;
 class CGUITextLayout;

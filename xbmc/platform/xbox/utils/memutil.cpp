@@ -20,9 +20,8 @@
 
 #include "system.h"
 #include "memutil.h"
-#ifdef _XBOX
-#include "xbox/Undocumented.h"
-#endif
+
+#include "platform/xbox/Undocumented.h"
 
 void fast_memcpy(void* d, const void* s, unsigned n)
 {

@@ -51,8 +51,8 @@ OFF/Green/Red/Orange/Cycle
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
-#include "xbox/XKUtils.h"
 
+#include "platform/xbox/XKUtils.h"
 #include "platform/xbox/lcd/LCD.h"
 
 #include <conio.h>

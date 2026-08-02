@@ -20,7 +20,8 @@
 #include "utils/Trainer.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
-#include "xbox/xbeheader.h"
+
+#include "platform/xbox/xbeheader.h"
 
 using namespace LAUNCHERS;
 

@@ -1,9 +1,11 @@
-#include "threads/SystemClock.h"
 #include "system.h"
-#include "utils/log.h"
 #include "Fat32Device.h"
-#include "xbox/Undocumented.h"
+
 #include "threads/SingleLock.h"
+#include "threads/SystemClock.h"
+#include "utils/log.h"
+
+#include "platform/xbox/Undocumented.h"
 
 using namespace std;
 
@@ -161,9 +163,9 @@ void CFat32Device::FlushWriteCache()
 
 bool CFat32Device::ReadPage(unsigned long page, unsigned char *buffer)
 {
-	LARGE_INTEGER StartingOffset;
-	StartingOffset.QuadPart = (__int64)page * m_sectorsize;
-	NTSTATUS status = IoSynchronousFsdRequest(IRP_MJ_READ, (PDEVICE_OBJECT)m_device, buffer, FAT_PAGE_SIZE, &StartingOffset);
+    LARGE_INTEGER StartingOffset;
+    StartingOffset.QuadPart = (__int64)page * m_sectorsize;
+    NTSTATUS status = IoSynchronousFsdRequest(IRP_MJ_READ, (PDEVICE_OBJECT)m_device, buffer, FAT_PAGE_SIZE, &StartingOffset);
   if (NT_SUCCESS(status))
     return true;
   CLog::Log(LOGERROR, __FUNCTION__" Error reading page %d : %08x", page, status);
@@ -173,9 +175,9 @@ bool CFat32Device::ReadPage(unsigned long page, unsigned char *buffer)
 #ifdef FAT32_ALLOW_WRITING
 bool CFat32Device::WritePage(unsigned long page, unsigned char *buffer)
 {
-	LARGE_INTEGER StartingOffset;
-	StartingOffset.QuadPart = (__int64)page * m_sectorsize;
-	NTSTATUS status = IoSynchronousFsdRequest(IRP_MJ_WRITE, (PDEVICE_OBJECT)m_device, buffer, FAT_PAGE_SIZE, &StartingOffset);
+    LARGE_INTEGER StartingOffset;
+    StartingOffset.QuadPart = (__int64)page * m_sectorsize;
+    NTSTATUS status = IoSynchronousFsdRequest(IRP_MJ_WRITE, (PDEVICE_OBJECT)m_device, buffer, FAT_PAGE_SIZE, &StartingOffset);
   if (NT_SUCCESS(status))
     return true;
   CLog::Log(LOGERROR, __FUNCTION__" Error writing page %d : %08x", page, status);
@@ -235,10 +237,10 @@ void CFat32Device::ReadVolumeName()
   DIRENT de;
   BYTE buffer[FAT_PAGE_SIZE];
   di.scratch = (uint8_t*)&buffer;
-	if (DFS_OpenDir(&m_volume, (uint8_t*)"", &di))
-		return;
+    if (DFS_OpenDir(&m_volume, (uint8_t*)"", &di))
+        return;
 
-	while (!DFS_GetNext(&m_volume, &di, &de))
+    while (!DFS_GetNext(&m_volume, &di, &de))
   {
     if (de.attr == ATTR_VOLUME_ID)
     {
@@ -290,8 +292,8 @@ bool CFat32Device::Mount(const char *device)
   {
     CLog::Log(LOGDEBUG, __FUNCTION__" First sector failed LBR test (%i)", ret);
     // read the MBR
-	  uint32_t psize;
-	  uint8_t pactive, ptype;
+      uint32_t psize;
+      uint8_t pactive, ptype;
     // 0 is the partition number
     lbrSector = DFS_GetPtnStart((unsigned long)this, sector, 0, &pactive, &ptype, &psize);
     if (lbrSector == 0xFFFFFFFF)
@@ -337,9 +339,9 @@ int CFat32Device::CheckSectorForLBR(unsigned long offset)
 {
   BYTE sector[FAT_PAGE_SIZE];
 
-	PLBR lbr = (PLBR) sector;
+    PLBR lbr = (PLBR) sector;
 
-	if (ReadSector(sector,offset,1))
+    if (ReadSector(sector,offset,1))
     return -1;
 
   // ok, let's do some checks

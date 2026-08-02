@@ -29,7 +29,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "GUIPassword.h"
 #include "GUIUserMessages.h"
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "network/NetworkServices.h"
 #include "profiles/ProfileManager.h"
 #include "Util.h"

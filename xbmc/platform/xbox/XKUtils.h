@@ -64,7 +64,7 @@ Reason: Changed ReadEEPROMFromXBOX / WriteEEPROMToXbox parameter list.
 #include <xtl.h>
 #include "XKExports.h"
 
-#include "iosupport.h"
+#include "storage/IoSupport.h"
 class XKUtils
 {
 public:

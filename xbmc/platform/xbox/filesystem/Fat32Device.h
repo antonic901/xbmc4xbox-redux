@@ -2,8 +2,10 @@
 
 #include "IDevice.h"
 #include "dosfs.h"
-#include "memutil.h"
 #include "threads/CriticalSection.h"
+
+#include "platform/xbox/utils/memutil.h"
+
 #include <map>
 
 // structure for vfat name entries (unicode)

@@ -18,7 +18,7 @@
 #include "input/InputManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/python/XBPython.h"
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "profiles/ProfileManager.h"
 #include "storage/MediaManager.h"
 #include "utils/log.h"

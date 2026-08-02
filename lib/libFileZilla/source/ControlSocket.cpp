@@ -32,15 +32,15 @@
 #endif
 
 #if defined(_XBOX)
-#include "utils/Log.h"
-#include "xbox/IoSupport.h"
 #include "Util.h"
 #include "interfaces/builtins/Builtins.h"
-#include "Utils/log.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"
+#include "utils/log.h"
+
 #include "platform/xbox/filesystem/MemoryUnitManager.h"
+#include "platform/xbox/storage/IoSupport.h"
 #endif
 
 #ifdef _DEBUG

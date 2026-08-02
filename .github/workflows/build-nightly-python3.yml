@@ -43,11 +43,11 @@ jobs:
       - name: Generate svn_rev.h
         shell: powershell
         run: |
-          $template = Get-Content ".\xbmc\xbox\svn_rev.tmpl"
+          $template = Get-Content ".\xbmc\svn_rev.tmpl"
           $rev = git rev-parse --short origin/feature_python_3
           $date = Get-Date -Format "yyyy-MM-dd HH:mm"
           $output = $template -replace '\$WCREV\$', "$rev-py3" -replace '\$WCDATE\$', $date
-          $output | Set-Content ".\xbmc\xbox\svn_rev.h"
+          $output | Set-Content ".\xbmc\svn_rev.h"
 
       - name: Generate XBMC Python bindings
         run: |

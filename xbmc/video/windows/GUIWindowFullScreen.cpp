@@ -52,7 +52,7 @@
 #include "LocalizeStrings.h"
 #include "threads/SingleLock.h"
 #include "input/ButtonTranslator.h"
-#include "utils/SeekHandler.h"
+#include "SeekHandler.h"
 #include "guiinfo/GUIInfoLabels.h"
 #include "utils/MathUtils.h"
 

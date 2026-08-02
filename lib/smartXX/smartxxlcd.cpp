@@ -1,16 +1,17 @@
 
 #include "smartxxlcd.h"
-#include "conio.h"
-#include "utils/SystemInfo.h"
-#include "memutil.h"
+
 #include "ServiceBroker.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPowerHandling.h"
-#include "utils/LED.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"
+#include "utils/SystemInfo.h"
 #include "utils/log.h"
+
+#include "platform/xbox/utils/LED.h"
+#include "platform/xbox/utils/memutil.h"
 
 #include <conio.h>
 

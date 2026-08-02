@@ -19,12 +19,14 @@
  */
 
 #include "MemUnitDirectory.h"
-#include "DirectoryCache.h"
-#include "platform/xbox/filesystem/MemoryUnitManager.h"
-#include "MemoryUnits/IFileSystem.h"
-#include "MemoryUnits/IDevice.h"
+
 #include "FileItem.h"
 #include "URL.h"
+#include "filesystem/DirectoryCache.h"
+
+#include "platform/xbox/filesystem/IDevice.h"
+#include "platform/xbox/filesystem/IFileSystem.h"
+#include "platform/xbox/filesystem/MemoryUnitManager.h"
 
 using namespace XFILE;
 

@@ -47,7 +47,7 @@
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "LangInfo.h"
 #include "log.h"
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"

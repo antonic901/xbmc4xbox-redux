@@ -1,7 +1,9 @@
-#include "utils/log.h"
 #include "FatXDevice.h"
-#include "xbox/Undocumented.h"
+
 #include "utils/CharsetConverter.h"
+#include "utils/log.h"
+
+#include "platform/xbox/Undocumented.h"
 
 typedef STRING OBJECT_STRING;
 typedef PSTRING POBJECT_STRING;
@@ -12,7 +14,7 @@ typedef PSTRING POBJECT_STRING;
 struct FAT_VOLUME_HEADER {
     ULONG Signature;
     ULONG SerialNumber;
-    ULONG SectorsPerCluster;  
+    ULONG SectorsPerCluster;
     ULONG RootDirFirstCluster;
     WCHAR VolumeName[32];
 };
@@ -118,8 +120,8 @@ bool CFatXDevice::Mount(const char *device)
 
   OBJECT_STRING DeviceName;
   DeviceName.Length = strlen(device)+1;
-	DeviceName.MaximumLength = sizeof(name)/sizeof(CHAR)-1;
-	DeviceName.Buffer = name;
+    DeviceName.MaximumLength = sizeof(name)/sizeof(CHAR)-1;
+    DeviceName.Buffer = name;
 
   strcpy(name, device);
 

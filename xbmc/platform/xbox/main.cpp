@@ -13,7 +13,8 @@
 #include "XbmcContext.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
-#include "xbox/IoSupport.h"
+
+#include "platform/xbox/storage/IoSupport.h"
 
 #include <boost/make_shared.hpp>
 

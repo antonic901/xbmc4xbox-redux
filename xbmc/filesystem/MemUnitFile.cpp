@@ -18,12 +18,15 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 #include "MemUnitFile.h"
-#include <sys/stat.h>
-#include "platform/xbox/filesystem/MemoryUnitManager.h"
-#include "MemoryUnits/IFileSystem.h"
-#include "MemoryUnits/IDevice.h"
-#include "utils/StringUtils.h"
+
 #include "URL.h"
+#include "utils/StringUtils.h"
+
+#include "platform/xbox/filesystem/MemoryUnitManager.h"
+#include "platform/xbox/filesystem/IDevice.h"
+#include "platform/xbox/filesystem/IFileSystem.h"
+
+#include <sys/stat.h>
 
 using namespace XFILE;
 

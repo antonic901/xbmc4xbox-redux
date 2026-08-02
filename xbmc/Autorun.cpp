@@ -51,7 +51,7 @@
 #ifdef _XBOX
 #include "interfaces/builtins/Builtins.h"
 #include "programs/launchers/ProgramLauncher.h"
-#include "xbox/xbeheader.h"
+#include "platform/xbox/xbeheader.h"
 #endif
 
 #include "defs_from_settings.h"

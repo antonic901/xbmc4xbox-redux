@@ -20,8 +20,9 @@
  *
  */
 
-#include "utils/StdString.h"
 #include "threads/CriticalSection.h"
+
+#include <string>
 
 // Time to wait before we give up on network init
 #define WAIT_TIME 10000

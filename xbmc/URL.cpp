@@ -27,7 +27,7 @@
 #include "filesystem/File.h"
 #include "FileItem.h"
 #include "filesystem/StackDirectory.h"
-#include "xbox/Network.h"
+#include "network/Network.h"
 #ifndef TARGET_POSIX
 #include <sys\stat.h>
 #endif

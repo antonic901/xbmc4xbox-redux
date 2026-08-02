@@ -3,7 +3,7 @@
 REM Current directory including drive
 SET CWD=%~dp0
 
-SET REV_FILE="%CWD%xbmc\xbox\svn_rev.h"
+SET REV_FILE="%CWD%xbmc\svn_rev.h"
 
 REM Remove existing revision file if it exists
 IF EXIST %REV_FILE% del %REV_FILE%

@@ -1,8 +1,9 @@
-#include "xbox/PlatformDefs.h"
 #include "rar.hpp"
 #include "UnrarX.hpp"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
+
+#include "platform/xbox/PlatformDefs.h"
 
 #include "smallfn.cpp"
 
@@ -84,10 +85,10 @@ int main(int argc, char *argv[])
 #endif
 
 #ifdef ALLOW_EXCEPTIONS
-  try 
+  try
 #endif
   {
-  
+
     CommandData Cmd;
 #ifdef SFX_MODULE
     strcpy(Cmd.Command,"X");
@@ -218,9 +219,9 @@ int urarlib_get(char *rarfile, char *targetPath, char *fileToExtract, char *libp
         pCmd->Password[sizeof(pCmd->Password) - 1] = '\0';
       }
 
-    // Opent the archive    
+    // Opent the archive
     auto_ptr<Archive> pArc( new Archive(pCmd.get()) );
-    
+
     if( pArc.get() )
     {
       if (!pArc->WOpen(rarfile,NULL))
@@ -229,7 +230,7 @@ int urarlib_get(char *rarfile, char *targetPath, char *fileToExtract, char *libp
       if (pArc->IsOpened() && pArc->IsArchive(true))
       {
         auto_ptr<CmdExtract> pExtract( new CmdExtract );
-        
+
         if( pExtract.get() )
         {
           pExtract->GetDataIO().SetCurrentCommand(*(pCmd->Command));
@@ -248,7 +249,7 @@ int urarlib_get(char *rarfile, char *targetPath, char *fileToExtract, char *libp
             iOff = pArc->Tell();
             int Size=pArc->ReadHeader();
             int Type=pArc->GetHeaderType();
-          
+
             if (Type == ENDARC_HEAD)
               break;
 
@@ -257,15 +258,15 @@ int urarlib_get(char *rarfile, char *targetPath, char *fileToExtract, char *libp
               pArc->SeekToNext();
               continue;
             }
-            
-            bool Repeat=false;           
+
+            bool Repeat=false;
             if (!pExtract->ExtractCurrentFile(pCmd.get(),*pArc,Size,Repeat))
             {
                bRes = FALSE;
                 break;
             }
-            
-            if (pExtract->GetDataIO().bQuit) 
+
+            if (pExtract->GetDataIO().bQuit)
             {
               bRes = 2;
               break;
@@ -296,7 +297,7 @@ int urarlib_get(char *rarfile, char *targetPath, char *fileToExtract, char *libp
             }
           }
 
-          pExtract->GetDataIO().ProcessedArcSize+=FD.Size;         
+          pExtract->GetDataIO().ProcessedArcSize+=FD.Size;
         }
       }
     }
@@ -429,7 +430,7 @@ int urarlib_list(char *rarfile, ArchiveList_struct **ppList, char *libpassword, 
                     if (stricmp(arc.NewLhd.FileName,pPrev->item.Name)==0)
                     {
                       bBreak=true;
-                      break;  
+                      break;
                     }
 //                  iOffset = pArc->Tell();
                   arc.SeekToNext();
@@ -443,7 +444,7 @@ int urarlib_list(char *rarfile, ArchiveList_struct **ppList, char *libpassword, 
             if (MergeArchive(*pArc,NULL,false,*pCmd->Command))
             {
               iArchive++;
-              pArc->Seek(0,SEEK_SET); 
+              pArc->Seek(0,SEEK_SET);
             }
             else
               break;

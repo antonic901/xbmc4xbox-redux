@@ -46,7 +46,6 @@
 #include "filesystem/VirtualDirectory.h"
 #include "network/NetworkServices.h"
 #include "network/UdpClient.h"
-#include "xbox/XKHDD.h"
 #include "filesystem/Directory.h"
 #include "playlists/PlayList.h"
 #include "music/tags/MusicInfoTag.h"
@@ -68,6 +67,8 @@
 #include "music/MusicThumbLoader.h"
 #include "video/VideoThumbLoader.h"
 #include "utils/MathUtils.h"
+
+#include "platform/xbox/XKHDD.h"
 
 #ifdef _WIN32PC
 extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);

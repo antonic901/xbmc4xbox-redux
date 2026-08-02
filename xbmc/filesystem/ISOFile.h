@@ -31,8 +31,9 @@
 
 #include "IFile.h"
 #include "iso9660.h"
-#include "xbox/IoSupport.h"
 #include "utils/RingBuffer.h"
+
+#include "platform/xbox/storage/IoSupport.h"
 
 namespace XFILE
 {

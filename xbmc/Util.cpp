@@ -18,7 +18,7 @@
  *
  */
 
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "system.h"
 #include "application/Application.h"
 #include "application/ApplicationComponents.h"
@@ -27,12 +27,6 @@
 #include "AutoPtrHandle.h"
 #include "video/windows/GUIWindowVideoBase.h"
 #include "Util.h"
-#include "xbox/IoSupport.h"
-#include "xbox/xbeheader.h"
-#ifdef HAS_XBOX_HARDWARE
-#include "xbox/Undocumented.h"
-#include "xbresource.h"
-#endif
 #include "storage/DetectDVDType.h"
 #include "Autorun.h"
 #include "filesystem/HDDirectory.h"
@@ -64,18 +58,11 @@
 #include "guilib/TextureManager.h"
 #include "guilib/IGUIContainer.h"
 #include "utils/fstrcmp.h"
-#ifdef HAS_XBOX_HARDWARE
-#include "platform/xbox/filesystem/MemoryUnitManager.h"
-#include "platform/xbox/utils/LED.h"
-#include "utils/FilterFlickerPatch.h"
-#include "utils/FanController.h"
-#include "utils/SystemInfo.h"
-#endif
 #include "storage/MediaManager.h"
 #ifdef _XBOX
 #include <xbdm.h>
 #endif
-#include "xbox/network.h"
+#include "network/Network.h"
 #include "GUIPassword.h"
 #ifdef HAS_FTP_SERVER
 #include "libfilezilla/xbfilezilla.h"
@@ -109,6 +96,15 @@
 #include "utils/log.h"
 #include "video/VideoInfoTag.h"
 #include "programs/launchers/ProgramLauncher.h"
+
+#include "xbresource.h"
+#include "platform/xbox/Undocumented.h"
+#include "platform/xbox/filesystem/MemoryUnitManager.h"
+#include "platform/xbox/storage/IoSupport.h"
+#include "platform/xbox/utils/FanController.h"
+#include "platform/xbox/utils/FilterFlickerPatch.h"
+#include "platform/xbox/utils/LED.h"
+#include "platform/xbox/xbeheader.h"
 
 #include "defs_from_settings.h"
 

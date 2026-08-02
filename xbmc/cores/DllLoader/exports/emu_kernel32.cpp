@@ -23,7 +23,7 @@
 #include "emu_kernel32.h"
 #include "emu_dummy.h"
 
-#include "xbox/IoSupport.h"
+#include "platform/xbox/storage/IoSupport.h"
 
 #include <process.h>
 
@@ -107,12 +107,12 @@ struct SThreadWrapper
 
 #ifdef _DEBUG
 #define MS_VC_EXCEPTION 0x406d1388
-typedef struct tagTHREADNAME_INFO 
-{ 
-  DWORD dwType; // must be 0x1000 
-  LPCSTR szName; // pointer to name (in same addr space) 
-  DWORD dwThreadID; // thread ID (-1 caller thread) 
-  DWORD dwFlags; // reserved for future use, most be zero 
+typedef struct tagTHREADNAME_INFO
+{
+  DWORD dwType; // must be 0x1000
+  LPCSTR szName; // pointer to name (in same addr space)
+  DWORD dwThreadID; // thread ID (-1 caller thread)
+  DWORD dwFlags; // reserved for future use, most be zero
 } THREADNAME_INFO;
 #endif
 
@@ -121,19 +121,19 @@ unsigned int __stdcall dllThreadWrapper(LPVOID lpThreadParameter)
   SThreadWrapper *param = (SThreadWrapper*)lpThreadParameter;
   DWORD result;
 
-#ifdef _DEBUG  
-  THREADNAME_INFO info; 
-  info.dwType = 0x1000; 
-  info.szName = "DLL"; 
-  info.dwThreadID = ::GetCurrentThreadId(); 
-  info.dwFlags = 0; 
-  __try 
-  { 
-    RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(DWORD), (DWORD *)&info); 
-  } 
-  __except (EXCEPTION_CONTINUE_EXECUTION) 
-  { 
-  }  
+#ifdef _DEBUG
+  THREADNAME_INFO info;
+  info.dwType = 0x1000;
+  info.szName = "DLL";
+  info.dwThreadID = ::GetCurrentThreadId();
+  info.dwFlags = 0;
+  __try
+  {
+    RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(DWORD), (DWORD *)&info);
+  }
+  __except (EXCEPTION_CONTINUE_EXECUTION)
+  {
+  }
 #endif
 
   __try
@@ -141,7 +141,7 @@ unsigned int __stdcall dllThreadWrapper(LPVOID lpThreadParameter)
     result = param->lpStartAddress(param->lpParameter);
   }
   __except (EXCEPTION_EXECUTE_HANDLER)
-  {    
+  {
     CLog::Log(LOGERROR, "DLL:%s - Unhandled exception in thread created by dll", param->lpDLL );
     result = 0;
   }
@@ -161,7 +161,7 @@ extern "C" HANDLE WINAPI dllCreateThread(
 )
 {
   uintptr_t loc = (uintptr_t)_ReturnAddress();
-  
+
   SThreadWrapper *param = new SThreadWrapper;
   param->lpStartAddress = lpStartAddress;
   param->lpParameter = lpParameter;
@@ -205,7 +205,7 @@ extern "C" BOOL WINAPI dllGetProcessTimes(HANDLE hProcess, LPFILETIME lpCreation
   // since the xbox has only one process, we just take the current thread
   HANDLE h = GetCurrentThread();
   BOOL res = GetThreadTimes(h, lpCreationTime, lpExitTime, lpKernelTime, lpUserTime);
-  
+
   return res;
 }
 
@@ -309,8 +309,8 @@ extern "C" void WINAPI dllInitializeCriticalSection(LPCRITICAL_SECTION cs)
   LPCRITICAL_SECTION cs_new = new CRITICAL_SECTION;
   memset(cs_new, 0, sizeof(CRITICAL_SECTION));
   InitializeCriticalSection(cs_new);
-  
-  // just take the first member of the CRITICAL_SECTION to save ourdata in, this will be used to 
+
+  // just take the first member of the CRITICAL_SECTION to save ourdata in, this will be used to
   // get fast access to the new critial section in dllLeaveCriticalSection and dllEnterCriticalSection
   ((LPCRITICAL_SECTION*)cs)[0] = cs_new;
   g_mapCriticalSection[cs] = cs_new;
@@ -362,8 +362,8 @@ extern "C" BOOL WINAPI dllGetVersionExA(LPOSVERSIONINFO lpVersionInfo)
   lpVersionInfo->szCSDVersion[0] = 0;
 #ifdef API_DEBUG
   CLog::Log(LOGDEBUG, "  Major version: %d\n  Minor version: %d\n  Build number: %x\n"
-            "  Platform Id: %d\n Version string: '%s'\n", 
-            lpVersionInfo->dwMajorVersion, lpVersionInfo->dwMinorVersion, 
+            "  Platform Id: %d\n Version string: '%s'\n",
+            lpVersionInfo->dwMajorVersion, lpVersionInfo->dwMinorVersion,
             lpVersionInfo->dwBuildNumber, lpVersionInfo->dwPlatformId, lpVersionInfo->szCSDVersion);
 #endif
   return TRUE;
@@ -376,7 +376,7 @@ extern "C" BOOL WINAPI dllGetVersionExW(LPOSVERSIONINFOW lpVersionInfo)
 #endif
   if(!dllGetVersionExA((LPOSVERSIONINFO)lpVersionInfo))
     return FALSE;
-  
+
   lpVersionInfo->szCSDVersion[0] = 0;
   lpVersionInfo->szCSDVersion[1] = 0;
   return TRUE;
@@ -740,7 +740,7 @@ extern "C" BOOL WINAPI dllTlsFree(DWORD dwTlsIndex)
 
 extern "C" BOOL WINAPI dllTlsSetValue(int dwTlsIndex, LPVOID lpTlsValue)
 {
-  if (dwTlsIndex == -1) 
+  if (dwTlsIndex == -1)
     return FALSE;
   BOOL retval = TlsSetValue(dwTlsIndex, lpTlsValue);
 
@@ -752,7 +752,7 @@ extern "C" BOOL WINAPI dllTlsSetValue(int dwTlsIndex, LPVOID lpTlsValue)
 
 extern "C" LPVOID WINAPI dllTlsGetValue(DWORD dwTlsIndex)
 {
-  if(dwTlsIndex == (DWORD)(-1)) 
+  if(dwTlsIndex == (DWORD)(-1))
     return NULL;
   LPVOID retval = TlsGetValue(dwTlsIndex);
 
@@ -861,7 +861,7 @@ extern "C" int WINAPI dllGetLocaleInfoA(LCID Locale, LCTYPE LCType, LPTSTR lpLCD
       }
     }
   }
-  
+
   not_implement("kernel32.dll incomplete function GetLocaleInfoA called\n");  //warning
   SetLastError(ERROR_INVALID_FUNCTION);
   return 0;
@@ -869,12 +869,12 @@ extern "C" int WINAPI dllGetLocaleInfoA(LCID Locale, LCTYPE LCType, LPTSTR lpLCD
 
 extern "C" UINT WINAPI dllGetConsoleCP()
 {
-  return 437; // OEM - United States 
+  return 437; // OEM - United States
 }
 
 extern "C" UINT WINAPI dllGetConsoleOutputCP()
 {
-  return 437; // OEM - United States 
+  return 437; // OEM - United States
 }
 
 // emulated because windows expects different behaviour
@@ -892,7 +892,7 @@ extern "C" int WINAPI dllMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCST
     destinationBufferSize++;
     destinationBuffer = (LPWSTR)malloc(destinationBufferSize * sizeof(WCHAR));
   }
-  
+
   int ret = MultiByteToWideChar(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, destinationBuffer, destinationBufferSize);
 
   if (ret > 0)
@@ -902,18 +902,18 @@ extern "C" int WINAPI dllMultiByteToWideChar(UINT CodePage, DWORD dwFlags, LPCST
     if (cchWideChar == 0) {
       ret--;
     }
-    
+
     // revert the first fix again
     if (cbMultiByte > 0 && cbMultiByte == cchWideChar) {
       // the 0 termination character could never have been written on a windows machine
       // because of cchWideChar == cbMultiByte, again xbox added one for it.
       ret--;
-      
+
       memcpy(lpWideCharStr, destinationBuffer, ret * sizeof(WCHAR));
       free(destinationBuffer);
     }
   }
-  
+
   return ret;
 }
 
@@ -930,7 +930,7 @@ extern "C" int WINAPI dllWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWS
     destinationBufferSize++;
     destinationBuffer = (LPSTR)malloc(destinationBufferSize * sizeof(char));
   }
-  
+
   int ret = WideCharToMultiByte(CodePage, dwFlags, lpWideCharStr, cchWideChar, destinationBuffer, destinationBufferSize, lpDefaultChar, lpUsedDefaultChar);
 
   if (ret > 0)
@@ -940,18 +940,18 @@ extern "C" int WINAPI dllWideCharToMultiByte(UINT CodePage, DWORD dwFlags, LPCWS
     if (cbMultiByte == 0) {
       ret--;
     }
-    
+
     // revert the first fix again
     if (cchWideChar > 0 && cchWideChar == cbMultiByte) {
       // the 0 termination character could never have been written on a windows machine
       // because of cchWideChar == cbMultiByte, again xbox added one for it.
       ret--;
-      
+
       memcpy(lpMultiByteStr, destinationBuffer, ret);
       free(destinationBuffer);
     }
   }
-  
+
   return ret;
 }
 
@@ -1012,7 +1012,7 @@ extern "C" DWORD WINAPI dllGetTempPathA(DWORD nBufferLength, LPTSTR lpBuffer)
   // the return value is the size of the buffer required to hold the path.
   const char* tempPath = "Z:\\temp\\";
   unsigned int len = strlen(tempPath);
-  
+
   if (nBufferLength > len)
   {
     strcpy(lpBuffer, tempPath);

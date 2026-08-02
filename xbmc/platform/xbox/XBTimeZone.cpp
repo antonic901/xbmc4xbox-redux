@@ -20,6 +20,7 @@
 
 #include "system.h"
 #include "XBTimeZone.h"
+
 #include "LangInfo.h"
 #include "ServiceBroker.h"
 #include "settings/lib/Setting.h"
@@ -27,9 +28,9 @@
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
-#ifdef HAS_XBOX_HARDWARE
-#include "xbox/Undocumented.h"
-#endif
+
+#include "platform/xbox/Undocumented.h"
+
 // extracted and translated from xboxdash.xbe version 5960
 //   structures @ file offset 0x101F0-0x10A24 / VA 0x201F0 - 0x20A24
 //   strings @ file offset 0x142B8-0x14BFC / VA 0x242B8 - 0x24BFC

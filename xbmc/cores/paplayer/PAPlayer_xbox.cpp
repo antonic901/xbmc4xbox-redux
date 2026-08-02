@@ -23,7 +23,6 @@
 #include "CodecFactory.h"
 #include "GUIInfoManager.h"
 #include "AudioContext.h"
-#include "CdgParser.h"
 #include "music/tags/MusicInfoTag.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
@@ -31,6 +30,7 @@
 #include "application/Application.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationVolumeHandling.h"
+#include "karaoke/CdgParser.h"
 #include "FileItem.h"
 
 #define VOLUME_FFWD_MUTE 900 // 9dB

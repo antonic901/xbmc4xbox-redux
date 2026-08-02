@@ -20,12 +20,13 @@
 
 
 #include "ISO9660Directory.h"
-#include "xbox/IoSupport.h"
 #include "iso9660.h"
 #include "FileItem.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
+
+#include "platform/xbox/storage/IoSupport.h"
 
 using namespace XFILE;
 

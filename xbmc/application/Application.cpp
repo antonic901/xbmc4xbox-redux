@@ -42,7 +42,7 @@
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "music/MusicLibraryQueue.h"
 #include "music/tags/MusicInfoTag.h"
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "network/NetworkServices.h"
 #include "playlists/PlayListFactory.h"
 #include "threads/SystemClock.h"
@@ -126,8 +126,8 @@
 #include "pictures/GUIWindowSlideShow.h"
 #include "utils/CharsetConverter.h"
 
+#include "platform/xbox/XKHDD.h"
 #include "platform/xbox/filesystem/MemoryUnitManager.h"
-#include "xbox/XKHDD.h"
 
 #include <boost/bind.hpp>
 #include <boost/move/make_unique.hpp>

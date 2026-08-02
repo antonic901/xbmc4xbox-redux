@@ -20,6 +20,7 @@
 
 #include "PlayerBuiltins.h"
 
+#include "SeekHandler.h"
 #include "application/Application.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
@@ -38,7 +39,6 @@
 #include "storage/MediaManager.h"
 #include "system.h"
 #include "utils/log.h"
-#include "utils/SeekHandler.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "view/GUIViewState.h"

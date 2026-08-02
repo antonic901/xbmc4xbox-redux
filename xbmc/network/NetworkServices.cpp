@@ -27,8 +27,9 @@
 #include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogOK.h"
 #include "guilib/LocalizeStrings.h"
-#include "xbox/Network.h"
-#include "xbox/IoSupport.h"
+#include "network/Network.h"
+
+#include "platform/xbox/storage/IoSupport.h"
 
 #ifdef HAS_EVENT_SERVER
 #include "network/EventServer.h"

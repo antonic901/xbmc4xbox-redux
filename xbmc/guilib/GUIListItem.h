@@ -13,7 +13,7 @@
 \brief
 */
 
-#include "xbox/PlatformDefs.h" // int64_t
+#include "platform/xbox/PlatformDefs.h" // int64_t
 
 #include <map>
 #include <boost/move/unique_ptr.hpp>

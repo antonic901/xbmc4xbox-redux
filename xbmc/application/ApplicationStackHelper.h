@@ -10,7 +10,8 @@
 
 #include "application/IApplicationComponent.h"
 #include "threads/CriticalSection.h"
-#include "xbox/PlatformDefs.h" // uint64_t
+
+#include "platform/xbox/PlatformDefs.h" // uint64_t
 
 #include <map>
 #include <boost/shared_ptr.hpp>

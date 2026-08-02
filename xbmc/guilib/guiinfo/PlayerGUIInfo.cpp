@@ -26,7 +26,6 @@
 #include "settings/MediaSettings.h"
 #include "utils/MathUtils.h"
 #include "utils/StringUtils.h"
-#include "utils/SeekHandler.h"
 #include "utils/TimeUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
