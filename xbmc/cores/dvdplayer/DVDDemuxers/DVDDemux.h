@@ -20,9 +20,10 @@
  *
  */
 
-#include "utils/StdString.h"
 #include "system.h"
 #include "DVDDemuxPacket.h"
+
+#include <string>
 
 class CDVDInputStream;
 
@@ -41,7 +42,7 @@ enum StreamType
 
 enum StreamSource {
   STREAM_SOURCE_NONE          = 0x000,
-  STREAM_SOURCE_DEMUX         = 0x100, 
+  STREAM_SOURCE_DEMUX         = 0x100,
   STREAM_SOURCE_NAV           = 0x200,
   STREAM_SOURCE_DEMUX_SUB     = 0x300,
   STREAM_SOURCE_TEXT          = 0x400
@@ -110,7 +111,7 @@ public:
   int orig_type; // type of origininal source
 
   enum EFlags
-  { FLAG_NONE     = 0x0000 
+  { FLAG_NONE     = 0x0000
   , FLAG_DEFAULT  = 0x0001
   , FLAG_DUB      = 0x0002
   , FLAG_ORIGINAL = 0x0004
@@ -187,13 +188,13 @@ public:
 
   CDVDDemux() {}
   virtual ~CDVDDemux() {}
-  
-  
+
+
   /*
    * Reset the entire demuxer (same result as closing and opening it)
    */
   virtual void Reset() = 0;
-  
+
   /*
    * Aborts any internal reading that might be stalling main thread
    * NOTICE - this can be called from another thread
@@ -204,13 +205,13 @@ public:
    * Flush the demuxer, if any data is kept in buffers, this should be freed now
    */
   virtual void Flush() = 0;
-  
+
   /*
    * Read a packet, returns NULL on error
-   * 
+   *
    */
   virtual DemuxPacket* Read() = 0;
-  
+
   /*
    * Seek, time in msec calculated from stream start
    */
@@ -218,7 +219,7 @@ public:
 
   /*
    * Seek to a specified chapter.
-   * startpts can be updated to the point where display should start 
+   * startpts can be updated to the point where display should start
    */
   virtual bool SeekChapter(int chapter, double* startpts = NULL) { return false; }
 
@@ -228,7 +229,7 @@ public:
   virtual int GetChapterCount() { return 0; }
 
   /*
-   * Get current chapter 
+   * Get current chapter
    */
   virtual int GetChapter() { return 0; }
 
@@ -247,17 +248,17 @@ public:
    * returns the total time in msec
    */
   virtual int GetStreamLength() = 0;
-  
+
   /*
    * returns the stream or NULL on error, starting from 0
    */
   virtual CDemuxStream* GetStream(int iStreamId) = 0;
-  
+
   /*
    * return nr of streams, 0 if none
    */
   virtual int GetNrOfStreams() = 0;
-  
+
   /*
    * returns opened filename
    */
@@ -266,12 +267,12 @@ public:
    * return nr of audio streams, 0 if none
    */
   int GetNrOfAudioStreams();
-  
+
   /*
    * return nr of video streams, 0 if none
    */
   int GetNrOfVideoStreams();
-  
+
   /*
    * return nr of subtitle streams, 0 if none
    */
@@ -286,14 +287,14 @@ public:
    * return the video stream, or NULL if it does not exist
    */
   CDemuxStreamVideo* GetStreamFromVideoId(int iVideoIndex);
-  
+
   /*
    * return the subtitle stream, or NULL if it does not exist
    */
   CDemuxStreamSubtitle* GetStreamFromSubtitleId(int iSubtitleIndex);
-  
+
   /*
    * return a user-presentable codec name of the given stream
    */
-  virtual void GetStreamCodecName(int iStreamId, CStdString &strName) {};
+  virtual void GetStreamCodecName(int iStreamId, std::string &strName) {};
 };

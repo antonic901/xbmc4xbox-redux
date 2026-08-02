@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/StdString.h"
+#include <string>
 
 #ifdef HAS_XBOX_HARDWARE
 #include "Undocumented.h"
@@ -357,8 +357,8 @@ class CXBE
 public:
   CXBE();
   virtual ~CXBE();
-  bool ExtractIcon(const CStdString& strFilename, const CStdString& strIcon);
-  uint32 ExtractGameRegion(const CStdString& strFilename);
+  bool ExtractIcon(const std::string& strFilename, const std::string& strIcon);
+  uint32 ExtractGameRegion(const std::string& strFilename);
   static int FilterRegion(int iRegion, bool bForceAllModes=false);
 protected:
   XBE_INFO m_XBEInfo;

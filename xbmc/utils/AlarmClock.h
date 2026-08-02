@@ -20,19 +20,19 @@
  *
  */
 
-#include "utils/StdString.h"
 #include "Stopwatch.h"
 #include "threads/CriticalSection.h"
 #include "threads/Thread.h"
 #include "utils/log.h"
 
 #include <map>
+#include <string>
 
 struct SAlarmClockEvent
 {
   CStopWatch watch;
   double m_fSecs;
-  CStdString m_strCommand;
+  std::string m_strCommand;
   bool m_loop;
 };
 
@@ -41,13 +41,13 @@ class CAlarmClock : public CThread
 public:
   CAlarmClock();
   ~CAlarmClock();
-  void Start(const CStdString& strName, float n_secs, const CStdString& strCommand, bool bSilent = false, bool bLoop = false);
+  void Start(const std::string& strName, float n_secs, const std::string& strCommand, bool bSilent = false, bool bLoop = false);
   inline bool IsRunning() const
   {
     return m_bIsRunning;
   }
 
-  inline bool HasAlarm(const CStdString& strName)
+  inline bool HasAlarm(const std::string& strName)
   {
     // note: strName should be lower case only here
     //       No point checking it at the moment due to it only being called
@@ -56,9 +56,9 @@ public:
     return (m_event.find(strName) != m_event.end());
   }
 
-  double GetRemaining(const CStdString& strName)
+  double GetRemaining(const std::string& strName)
   {
-    std::map<CStdString,SAlarmClockEvent>::iterator iter;
+    std::map<std::string,SAlarmClockEvent>::iterator iter;
     if ((iter=m_event.find(strName)) != m_event.end())
     {
       return iter->second.m_fSecs-iter->second.watch.GetElapsedSeconds();
@@ -67,10 +67,10 @@ public:
     return 0.f;
   }
 
-  void Stop(const CStdString& strName, bool bSilent = false);
+  void Stop(const std::string& strName, bool bSilent = false);
   virtual void Process();
 private:
-  std::map<CStdString,SAlarmClockEvent> m_event;
+  std::map<std::string,SAlarmClockEvent> m_event;
   CCriticalSection m_events;
 
   bool m_bIsRunning;

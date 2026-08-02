@@ -383,8 +383,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
       {
         int channelNr = -1;
 
-        CStdString strChannel;
-        strChannel.Format("%i", action.GetID() - REMOTE_0);
+        std::string strChannel = StringUtils::Format("%i", action.GetID() - REMOTE_0);
         if (CGUIDialogNumeric::ShowAndGetNumber(strChannel, g_localizeStrings.Get(19000)))
           channelNr = atoi(strChannel.c_str());
 
@@ -551,7 +550,7 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
       {
         CSingleLock lock (m_fontLock);
 
-        CStdString fontPath = "special://xbmc/media/Fonts/";
+        std::string fontPath = "special://xbmc/media/Fonts/";
         fontPath += CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.font");
 
         // We scale based on PAL4x3 - this at least ensures all sizing is constant across resolutions.
@@ -702,10 +701,9 @@ void CGUIWindowFullScreen::RenderFullScreen()
     // show general info
     appPlayer->GetGeneralInfo(strGeneral);
     {
-      CStdString strGeneralFPS;
       float fCpuUsage = components.GetComponent<CApplicationXbox>()->GetCPUUsage();
 
-      strGeneralFPS.Format("%s\nW( fps:%02.2f cpu:%02.2f )", strGeneral.c_str(), CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetSystemInfoProvider().GetFPS(), fCpuUsage);
+      std::string strGeneralFPS = StringUtils::Format("%s\nW( fps:%02.2f cpu:%02.2f )", strGeneral.c_str(), CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetSystemInfoProvider().GetFPS(), fCpuUsage);
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW3);
       msg.SetLabel(strGeneralFPS);
       OnMessage(msg);
@@ -722,10 +720,9 @@ void CGUIWindowFullScreen::RenderFullScreen()
   {
     {
       // get the "View Mode" string
-      CStdString strTitle = g_localizeStrings.Get(629);
-      CStdString strMode = g_localizeStrings.Get(630 + CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode);
-      CStdString strInfo;
-      strInfo.Format("%s : %s", strTitle.c_str(), strMode.c_str());
+      std::string strTitle = g_localizeStrings.Get(629);
+      std::string strMode = g_localizeStrings.Get(630 + CMediaSettings::GetInstance().GetCurrentVideoSettings().m_ViewMode);
+      std::string strInfo = StringUtils::Format("%s : %s", strTitle.c_str(), strMode.c_str());
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW1);
       msg.SetLabel(strInfo);
       OnMessage(msg);
@@ -734,8 +731,7 @@ void CGUIWindowFullScreen::RenderFullScreen()
     SPlayerVideoStreamInfo info;
     appPlayer->GetVideoStreamInfo(-1, info);
     {
-      CStdString strSizing;
-      strSizing.Format("Sizing: (%i,%i)->(%i,%i) (Zoom x%2.2f) AR:%2.2f:1 (Pixels: %2.2f:1)",
+      std::string strSizing = StringUtils::Format("Sizing: (%i,%i)->(%i,%i) (Zoom x%2.2f) AR:%2.2f:1 (Pixels: %2.2f:1)",
                        info.SrcRect.Width(), info.SrcRect.Height(),
                        info.DestRect.Width(), info.DestRect.Height(), CDisplaySettings::GetInstance().GetZoomAmount(), info.videoAspectRatio*CDisplaySettings::GetInstance().GetPixelRatio(), CDisplaySettings::GetInstance().GetPixelRatio());
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW2);
@@ -745,15 +741,13 @@ void CGUIWindowFullScreen::RenderFullScreen()
     // show resolution information
     int iResolution = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
     {
-      CStdString strStatus;
-      strStatus.Format("%ix%i %s", CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).iWidth, CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).iHeight, CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).strMode.c_str());
+      std::string strStatus = StringUtils::Format("%ix%i %s", CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).iWidth, CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).iHeight, CDisplaySettings::GetInstance().GetResolutionInfo(iResolution).strMode.c_str());
       if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_VIDEOPLAYER_SOFTEN))
         strStatus += "  |  Soften";
       else
         strStatus += "  |  No Soften";
 
-      CStdString strFilter;
-      strFilter.Format("  |  Flicker Filter: %i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOPLAYER_FLICKER));
+      std::string strFilter = StringUtils::Format("  |  Flicker Filter: %i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOPLAYER_FLICKER));
       strStatus += strFilter;
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW3);
       msg.SetLabel(strStatus);
@@ -770,7 +764,7 @@ void CGUIWindowFullScreen::RenderFullScreen()
       m_timeCodeShow = false;
       m_timeCodePosition = 0;
     }
-    CStdString strDispTime = "00:00:00";
+    std::string strDispTime = "00:00:00";
 
     CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW1);
 
@@ -825,7 +819,7 @@ void CGUIWindowFullScreen::RenderTTFSubtitles()
     if(!m_subsLayout)
       return;
 
-    CStdString subtitleText = "How now brown cow";
+    std::string subtitleText = "How now brown cow";
     if (appPlayer->GetCurrentSubtitle(subtitleText))
     {
       // Remove HTML-like tags from the subtitles until
@@ -936,8 +930,7 @@ void CGUIWindowFullScreen::OnSliderChange(void *data, CGUISliderControl *slider)
   if (m_sliderAction == ACTION_ZOOM_OUT || m_sliderAction == ACTION_ZOOM_IN ||
       m_sliderAction == ACTION_INCREASE_PAR || m_sliderAction == ACTION_DECREASE_PAR)
   {
-    CStdString strValue;
-    strValue.Format("%1.2f",slider->GetFloatValue());
+    std::string strValue = StringUtils::Format("%1.2f",slider->GetFloatValue());
     slider->SetTextValue(strValue);
   }
   else

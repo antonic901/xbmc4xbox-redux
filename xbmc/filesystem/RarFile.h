@@ -34,15 +34,15 @@ class CommandData;
 class Archive;
 
 namespace XFILE
-{	
+{
   class CRarFileExtractThread : public CThread
   {
   public:
     CRarFileExtractThread();
     ~CRarFileExtractThread();
-    
-    void Start(Archive* pArc, CommandData* pCmd, CmdExtract* pExtract, int iSize); 
-    
+
+    void Start(Archive* pArc, CommandData* pCmd, CmdExtract* pExtract, int iSize);
+
     virtual void OnStartup();
     virtual void OnExit();
     virtual void Process();
@@ -58,10 +58,10 @@ namespace XFILE
     int m_iSize;
   };
 
-  class CRarFile : public IFile  
-	{
-	public:
-		CRarFile();
+  class CRarFile : public IFile
+    {
+    public:
+        CRarFile();
     CRarFile(bool bSeekable); // used for caching files
     virtual ~CRarFile();
     virtual int64_t       GetPosition();
@@ -79,16 +79,16 @@ namespace XFILE
     unsigned int          Write(void *lpBuf, int64_t uiBufSize);
 
   protected:
-    CStdString m_strCacheDir;
-    CStdString m_strRarPath;
-    CStdString m_strPassword;
-    CStdString m_strPathInRar;
+    std::string m_strCacheDir;
+    std::string m_strRarPath;
+    std::string m_strPassword;
+    std::string m_strPathInRar;
     BYTE m_bFileOptions;
     void Init();
     void InitFromUrl(const CURL& url);
     bool OpenInArchive();
     void CleanUp();
-    
+
     int64_t m_iFilePosition;
     int64_t m_iFileSize;
     // rar stuff
@@ -104,7 +104,7 @@ namespace XFILE
     byte* m_szStartOfBuffer;
     int64_t m_iDataInBuffer;
     int64_t m_iBufferStart;
-	};
+    };
 
 }
 

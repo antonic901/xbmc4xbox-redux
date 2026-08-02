@@ -49,17 +49,17 @@ DVDPlayerCodec::~DVDPlayerCodec()
   DeInit();
 }
 
-void DVDPlayerCodec::SetContentType(const CStdString &strContent)
+void DVDPlayerCodec::SetContentType(const std::string &strContent)
 {
   m_strContentType = strContent;
 }
 
-bool DVDPlayerCodec::Init(const CStdString &strFile, unsigned int filecache)
+bool DVDPlayerCodec::Init(const std::string &strFile, unsigned int filecache)
 {
   m_decoded = NULL;;
   m_nDecodedLen = 0;
 
-  CStdString strFileToOpen = strFile;
+  std::string strFileToOpen = strFile;
 
   CURL urlFile(strFile);
   if (urlFile.IsProtocol("shout") )

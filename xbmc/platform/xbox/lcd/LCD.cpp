@@ -29,7 +29,7 @@
 
 using namespace std;
 
-void ILCD::StringToLCDCharSet(CStdString& strText)
+void ILCD::StringToLCDCharSet(std::string& strText)
 {
   //0 = HD44780, 1=KS0073
   unsigned int iLCDContr = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("lcd.type") == LCD_TYPE_LCD_KS0073 ? 1 : 0;
@@ -163,9 +163,9 @@ unsigned char ILCD::GetLCDCharsetCharacter( UINT _nCharacter, int _nCharset )
 }
 
 
-CStdString ILCD::GetProgressBar(double tCurrent, double tTotal)
+std::string ILCD::GetProgressBar(double tCurrent, double tTotal)
 {
-  CStdString strProgressBar;
+  std::string strProgressBar;
   double tmpTest, dBlockSize, dBlockSizeRest;
   unsigned char cLCDsmallBlocks = 0xb0; //this char (0xAC-0xAF) will be translated in LCD.cpp to the smallBlock
   unsigned char cLCDbigBlock = 0xab;  //this char will be translated in LCD.cpp to the right bigBlock
@@ -214,15 +214,15 @@ void ILCD::SetCharset( UINT _nCharset )
 }
 
 
-CStdString ILCD::GetBigDigit( UINT _nCharset, int _nDigit, UINT _nLine, UINT _nMinSize, UINT _nMaxSize, bool _bSpacePadding )
+std::string ILCD::GetBigDigit( UINT _nCharset, int _nDigit, UINT _nLine, UINT _nMinSize, UINT _nMaxSize, bool _bSpacePadding )
   // Get the partial digit(s) for the given line
   // that is needed to build a big character
 {
   UINT nCurrentSize;
   UINT nCurrentValue;
   UINT nValue;
-  CStdString strDigits;
-  CStdString strCurrentDigit;
+  std::string strDigits;
+  std::string strCurrentDigit;
 
 
 
@@ -390,8 +390,7 @@ CStdString ILCD::GetBigDigit( UINT _nCharset, int _nDigit, UINT _nLine, UINT _nM
 
 void ILCD::Initialize()
 {
-  CStdString lcdPath;
-  lcdPath = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("LCD.xml");
+  std::string lcdPath = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("LCD.xml");
   LoadSkin(lcdPath);
   m_eCurrentCharset = CUSTOM_CHARSET_DEFAULT;
 
@@ -399,7 +398,7 @@ void ILCD::Initialize()
   // Note, the big block isn't here, it's in the LCD's ROM
 }
 
-void ILCD::LoadSkin(const CStdString &xmlFile)
+void ILCD::LoadSkin(const std::string &xmlFile)
 {
   Reset();
 
@@ -473,7 +472,7 @@ void ILCD::Render(LCD_MODE mode)
   unsigned int inLine = 0;
   while (outLine < 4 && inLine < m_lcdMode[mode].size())
   {
-    CStdString line = m_lcdMode[mode][inLine++].GetLabel(0);
+    std::string line = m_lcdMode[mode][inLine++].GetLabel(0);
     CGUITextLayout::Filter(line);
     if (!line.IsEmpty())
     {

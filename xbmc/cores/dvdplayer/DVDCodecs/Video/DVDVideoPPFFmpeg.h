@@ -27,16 +27,16 @@ class CDVDVideoPPFFmpeg
 {
 public:
 
-  CDVDVideoPPFFmpeg(const CStdString& mType);
+  CDVDVideoPPFFmpeg(const std::string& mType);
   ~CDVDVideoPPFFmpeg();
 
-  void SetType(const CStdString& mType);
+  void SetType(const std::string& mType);
   void SetTarget(DVDVideoPicture *pPicture){ m_pTarget = pPicture; };
   bool Process   (DVDVideoPicture *pPicture);
   bool GetPicture(DVDVideoPicture *pPicture);
 
 protected:
-  CStdString m_sType;
+  std::string m_sType;
 
   void *m_pContext;
   void *m_pMode;
@@ -46,11 +46,11 @@ protected:
   DVDVideoPicture *m_pTarget;
 
   void Dispose();
-  
+
   int m_iInitWidth, m_iInitHeight;
   bool CheckInit(int iWidth, int iHeight);
   bool CheckFrameBuffer(const DVDVideoPicture* pSource);
-  
+
   DllPostProc m_dll;
 };
 

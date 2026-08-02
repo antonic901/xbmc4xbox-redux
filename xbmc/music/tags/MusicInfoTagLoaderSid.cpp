@@ -47,22 +47,22 @@ CMusicInfoTagLoaderSid::~CMusicInfoTagLoaderSid()
 
 bool CMusicInfoTagLoaderSid::Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
-  CStdString strFileToLoad = strFileName;
+  std::string strFileToLoad = strFileName;
   int iTrack = 0;
   if (URIUtils::HasExtension(strFileName, ".sidstream"))
   {
     //  Extract the track to play
-    CStdString strFile=URIUtils::GetFileName(strFileName);
+    std::string strFile=URIUtils::GetFileName(strFileName);
     int iStart=strFile.ReverseFind("-")+1;
     iTrack = atoi(strFile.substr(iStart, strFile.size()-iStart-10).c_str());
     //  The directory we are in, is the file
     //  that contains the bitstream to play,
     //  so extract it
-    CStdString strPath=strFileName;
+    std::string strPath=strFileName;
     strFileToLoad = URIUtils::GetDirectory(strPath);
     URIUtils::RemoveSlashAtEnd(strFileToLoad);   // we want the filename
   }
-  CStdString strFileNameLower(strFileToLoad);
+  std::string strFileNameLower(strFileToLoad);
   strFileNameLower.MakeLower();
   int iHVSC = strFileNameLower.find("hvsc"); // need hvsc in path name since our lookupfile is based on hvsc paths
   if (iHVSC < 0)
@@ -79,7 +79,7 @@ bool CMusicInfoTagLoaderSid::Load(const std::string& strFileName, CMusicInfoTag&
     return( false );
   }
 
-  CStdString strHVSCpath = strFileToLoad.substr(iHVSC,strFileToLoad.length()-1);
+  std::string strHVSCpath = strFileToLoad.substr(iHVSC,strFileToLoad.length()-1);
 
   strHVSCpath.Replace('\\','/'); // unix paths
   strHVSCpath.MakeLower();
@@ -107,7 +107,7 @@ bool CMusicInfoTagLoaderSid::Load(const std::string& strFileName, CMusicInfoTag&
   while( !f.eof() && !szEnd )
   {
     f.read(temp,8191);
-    CStdString strLower = temp;
+    std::string strLower = temp;
     strLower.MakeLower();
 
     if (!szStart)
@@ -184,7 +184,7 @@ bool CMusicInfoTagLoaderSid::Load(const std::string& strFileName, CMusicInfoTag&
 
   while( !f2.eof() ) {
     f2.getline(temp,8191);
-    CStdString strTemp(temp);
+    std::string strTemp(temp);
     strTemp.MakeLower();
     unsigned int iFind = strTemp.find(strHVSCpath);
     if (iFind == string::npos)

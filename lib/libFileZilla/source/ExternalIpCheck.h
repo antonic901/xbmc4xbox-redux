@@ -27,34 +27,34 @@
 
 class CServerThread;
 
-class CExternalIpCheck : public CAsyncSocketEx  
+class CExternalIpCheck : public CAsyncSocketEx
 {
 public:
-	virtual void OnReceive(int nErrorCode);
-	virtual void OnConnect(int nErrorCode);
-	virtual void OnClose(int nErrorCode);
-	CExternalIpCheck(CServerThread *pOwner);
-	virtual ~CExternalIpCheck();
-	virtual void OnTimer();
-	virtual void TriggerUpdate();
+    virtual void OnReceive(int nErrorCode);
+    virtual void OnConnect(int nErrorCode);
+    virtual void OnClose(int nErrorCode);
+    CExternalIpCheck(CServerThread *pOwner);
+    virtual ~CExternalIpCheck();
+    virtual void OnTimer();
+    virtual void TriggerUpdate();
 
 protected:
-	virtual void Start();
+    virtual void Start();
 
 // Variables
 public:
-	virtual CStdString GetIP() const;
-	int m_nTimerID;
-	
+    virtual std::string GetIP() const;
+    int m_nTimerID;
+
 
 protected:
-	CStdString m_IP;
-	int m_nFailedConnections;
-	int m_nRetryCount;
-	int m_nElapsedSeconds;
-	CServerThread *m_pOwner;
-	BOOL m_bActive;
-	BOOL m_bTriggerUpdateCalled;
+    std::string m_IP;
+    int m_nFailedConnections;
+    int m_nRetryCount;
+    int m_nElapsedSeconds;
+    CServerThread *m_pOwner;
+    BOOL m_bActive;
+    BOOL m_bTriggerUpdateCalled;
 };
 
 #endif // !defined(AFX_EXTERNALIPCHECK_H__B077D8D7_6883_4DD9_9B0A_2C99562D0930__INCLUDED_)

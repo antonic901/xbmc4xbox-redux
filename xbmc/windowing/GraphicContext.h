@@ -30,6 +30,7 @@
 
 #include "Resolution.h"
 #include "utils/ColorUtils.h"
+#include <string>
 #include <vector>
 #include <stack>
 #include <map>
@@ -37,7 +38,6 @@
 #include "utils/TransformMatrix.h"        // for the members m_guiTransform etc.
 #include "utils/Geometry.h"               // for CRect/CPoint
 #include "gui3d.h"
-#include "utils/StdString.h"
 
 // required by clients
 #include "ServiceBroker.h"
@@ -76,8 +76,8 @@ public:
   int GetHeight() const { return m_iScreenHeight; }
   int GetFPS() const;
   DWORD GetNewID();
-  const CStdString& GetMediaDir() const { return m_strMediaDir; }
-  void SetMediaDir(const CStdString& strMediaDir);
+  const std::string& GetMediaDir() const { return m_strMediaDir; }
+  void SetMediaDir(const std::string& strMediaDir);
   bool IsWidescreen() const { return m_bWidescreen; }
   bool SetViewPort(float fx, float fy , float fwidth, float fheight, bool intersectPrevious = false);
   void RestoreViewPort();
@@ -227,7 +227,7 @@ protected:
   int m_iScreenWidth;
   int m_iBackBufferCount;
   bool m_bWidescreen;
-  CStdString m_strMediaDir;
+  std::string m_strMediaDir;
   CRect m_videoRect;
   bool m_bFullScreenVideo;
   bool m_bCalibrating;

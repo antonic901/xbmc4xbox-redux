@@ -132,14 +132,14 @@ BOOL CWindowManager::GetMessage(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT
     return FALSE;
 
   /*
-  CStdString str;
+  std::string str;
   str.Format(_T("0x%X : CWindowManager::GetMessage() waiting...\n"), GetCurrentThreadId());
   OutputDebugString(str);
   */
 
   WaitForSingleObject(sink->mEventMessageAvailable, INFINITE);
   BOOL result = PeekMessage(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, PM_REMOVE);
- 
+
   /*
   str.Format(_T("0x%X : CWindowManager::GetMessage() message 0x%X\n"), GetCurrentThreadId(), lpMsg->message);
   OutputDebugString(str);
@@ -147,10 +147,10 @@ BOOL CWindowManager::GetMessage(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT
 
   if (lpMsg->message == WM_QUIT)
     return FALSE;
-  
+
   return TRUE;
 }
- 
+
 
 BOOL CWindowManager::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
@@ -158,13 +158,13 @@ BOOL CWindowManager::PostMessage(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lPar
 
   if (!sink)
     return FALSE;
- 
+
   MSG msg;
   msg.hwnd = hWnd;
   msg.message = Msg;
   msg.wParam = wParam;
   msg.lParam = lParam;
-  
+
   return sink->AddMessage(msg);
 }
 
@@ -185,7 +185,7 @@ BOOL CWindowManager::PostThreadMessage(DWORD idThread, UINT Msg, WPARAM wParam, 
 
   if (!sink)
     return FALSE;
-  
+
   MSG msg;
   msg.hwnd = 0;
   msg.message = Msg;
@@ -194,7 +194,7 @@ BOOL CWindowManager::PostThreadMessage(DWORD idThread, UINT Msg, WPARAM wParam, 
 
   return sink->AddMessage(msg);
 }
- 
+
 
 
 BOOL CWindowManager::PeekMessage(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT wMsgFilterMax, UINT wRemoveMsg)
@@ -244,12 +244,12 @@ LONG CWindowManager::DispatchMessage(CONST MSG *lpmsg)
     return 0;
 
   LRESULT result = 0;
-  
+
   CWindow* window = GetWindow(lpmsg->hwnd);
-  
+
   if (window && window->mWindowProc)
     result = window->mWindowProc(lpmsg->hwnd, lpmsg->message, lpmsg->wParam, lpmsg->lParam);
-  
+
   return result;
 }
 
@@ -257,7 +257,7 @@ LONG CWindowManager::DispatchMessage(CONST MSG *lpmsg)
 BOOL CWindowManager::DestroyWindow(HWND hWnd)
 {
   mWindowListCS.Lock();
-  
+
   std::list<CWindow*>::iterator it;
   for (it = mWindowList.begin(); it != mWindowList.end(); ++it)
     if ((*it)->mHWnd == hWnd)
@@ -286,9 +286,9 @@ CWindow* CWindowManager::GetWindow(HWND hWnd)
     return NULL;
 
   CWindow* window = NULL;
-  
+
   mWindowListCS.Lock();
-  
+
   std::list<CWindow*>::iterator it;
   for (it = mWindowList.begin(); it != mWindowList.end(); ++it)
     if ((*it)->mHWnd == hWnd)
@@ -324,7 +324,7 @@ CMessageSink* CWindowManager::GetMessageSink(DWORD ThreadId)
   for (it = mMessageSinkList.begin(); it != mMessageSinkList.end(); ++it)
     if ((*it)->mThreadId == ThreadId)
       break;
-    
+
   if (it == mMessageSinkList.end())
   {
     sink = new CMessageSink(ThreadId);
@@ -338,14 +338,14 @@ CMessageSink* CWindowManager::GetMessageSink(DWORD ThreadId)
 }
 
 HWND CWindowManager::CreateWindow(LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle,
-                    int x, int y, int nWidth, int nHeight, HWND hWndParent, 
+                    int x, int y, int nWidth, int nHeight, HWND hWndParent,
                     HMENU hMenu, HANDLE hInstance, LPVOID lpParam)
 {
-  CStdString str(lpClassName);
+  std::string str(lpClassName);
   mRegisteredWindowClassMapCS.Lock();
 
   HWND hWnd = NULL;
-  std::map<CStdString, WNDCLASSEX>::iterator it = mRegisteredWindowClassMap.find(str);
+  std::map<std::string, WNDCLASSEX>::iterator it = mRegisteredWindowClassMap.find(str);
   if (it != mRegisteredWindowClassMap.end())
     hWnd = CreateWindow((*it).second.lpfnWndProc, 0);
 
@@ -360,9 +360,9 @@ ATOM CWindowManager::RegisterClassEx(CONST WNDCLASSEX *lpwcx)
   if (!lpwcx)
     return NULL;
 
-  CStdString str(lpwcx->lpszClassName);
+  std::string str(lpwcx->lpszClassName);
   mRegisteredWindowClassMapCS.Lock();
-  std::map<CStdString, WNDCLASSEX>::iterator it = mRegisteredWindowClassMap.find(str);
+  std::map<std::string, WNDCLASSEX>::iterator it = mRegisteredWindowClassMap.find(str);
   if (it == mRegisteredWindowClassMap.end())
     mRegisteredWindowClassMap[str] = *lpwcx;
 
@@ -426,7 +426,7 @@ BOOL CMessageSink::GetMessage(LPMSG lpMsg, UINT wRemoveMsg)
     mMessageQueueCS.Unlock();
     return FALSE;
   }
-  
+
   *lpMsg = mMessageQueue.front();
   if (wRemoveMsg == PM_REMOVE)
   {
@@ -453,7 +453,7 @@ BOOL DestroyWindow(HWND hWnd)
 
 
 
- 
+
 /////////////////////////////////////////////////
 
 
@@ -466,7 +466,7 @@ HMODULE GetModuleHandle(LPCTSTR lpModuleName)
 DWORD GetModuleFileName(HMODULE hModule, LPTSTR lpFilename, DWORD nSize)
 {
   // for now, only return full path
-  ASSERT(hModule == 0); 
+  ASSERT(hModule == 0);
 
   const char* path = XBFILEZILLA(GetConfigurationPath());
 
@@ -479,7 +479,7 @@ int MessageBox(HWND hWnd, LPCTSTR lpText, LPCTSTR lpCaption, UINT uType)
   // TODO
   return 0;
 }
-  
+
 ATOM RegisterClassEx(CONST WNDCLASSEX *lpwcx)
 {
   return gWindowManager.RegisterClassEx(lpwcx);
@@ -522,4 +522,4 @@ LONG GetWindowLong(HWND hWnd, int nIndex)
   return 0;
 }
 
- 
+

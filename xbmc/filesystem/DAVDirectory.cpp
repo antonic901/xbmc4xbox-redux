@@ -57,11 +57,11 @@ void CDAVDirectory::ParseResponse(const TiXmlElement *pElement, CFileItem &item)
   {
     if (CDAVCommon::ValueWithoutNamespace(pResponseChild, "href"))
     {
-      CStdString path(pResponseChild->ToElement()->GetText());
+      std::string path(pResponseChild->ToElement()->GetText());
       URIUtils::RemoveSlashAtEnd(path);
       item.SetPath(path);
     }
-    else 
+    else
     if (CDAVCommon::ValueWithoutNamespace(pResponseChild, "propstat"))
     {
       if (CDAVCommon::GetStatusTag(pResponseChild->ToElement()) == "HTTP/1.1 200 OK")
@@ -97,7 +97,7 @@ void CDAVDirectory::ParseResponse(const TiXmlElement *pElement, CFileItem &item)
                 strptime(pPropChild->ToElement()->GetText(), "%Y-%m-%dT%T", &timeDate);
                 item.m_dateTime = mktime(&timeDate);
               }
-              else 
+              else
               if (CDAVCommon::ValueWithoutNamespace(pPropChild, "resourcetype"))
               {
                 if (CDAVCommon::ValueWithoutNamespace(pPropChild->FirstChild(), "collection"))
@@ -116,7 +116,7 @@ void CDAVDirectory::ParseResponse(const TiXmlElement *pElement, CFileItem &item)
 bool CDAVDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   CCurlFile dav;
-  CStdString strRequest = "PROPFIND";
+  std::string strRequest = "PROPFIND";
 
   dav.SetCustomRequest(strRequest);
   dav.SetMimeType("text/xml; charset=\"utf-8\"");
@@ -140,7 +140,7 @@ bool CDAVDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     return false;
   }
 
-  CStdString strResponse;
+  std::string strResponse;
   dav.ReadData(strResponse);
 
   CXBMCTinyXML davResponse;
@@ -164,11 +164,11 @@ bool CDAVDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       CURL url2(url);
       CURL url3(item.GetPath());
 
-      CStdString itemPath(URIUtils::AddFileToFolder(url2.GetWithoutFilename(), url3.GetFileName()));
+      std::string itemPath(URIUtils::AddFileToFolder(url2.GetWithoutFilename(), url3.GetFileName()));
 
       if (item.GetLabel().empty())
       {
-        CStdString name(itemPath);
+        std::string name(itemPath);
         URIUtils::RemoveSlashAtEnd(name);
         CURL::Decode(name);
         item.SetLabel(URIUtils::GetFileName(name));
@@ -198,10 +198,10 @@ bool CDAVDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 bool CDAVDirectory::Create(const CURL& url)
 {
   CDAVFile dav;
-  CStdString strRequest = "MKCOL";
+  std::string strRequest = "MKCOL";
 
   dav.SetCustomRequest(strRequest);
- 
+
   if (!dav.Execute(url))
   {
     CLog::Log(LOGERROR, "%s - Unable to create dav directory (%s) - %d", __FUNCTION__, url.Get().c_str(), dav.GetLastResponseCode());
@@ -222,10 +222,10 @@ bool CDAVDirectory::Exists(const CURL& url)
 bool CDAVDirectory::Remove(const CURL& url)
 {
   CDAVFile dav;
-  CStdString strRequest = "DELETE";
+  std::string strRequest = "DELETE";
 
   dav.SetCustomRequest(strRequest);
- 
+
   if (!dav.Execute(url))
   {
     CLog::Log(LOGERROR, "%s - Unable to delete dav directory (%s) - %d", __FUNCTION__, url.Get().c_str(), dav.GetLastResponseCode());

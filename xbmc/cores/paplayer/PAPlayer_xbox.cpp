@@ -145,7 +145,7 @@ bool PAPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 
   m_decoder[m_currentDecoder].GetDataFormat(&m_Channels, &m_SampleRate, &m_BitsPerSample);
 
-  CStdString codecname;
+  std::string codecname;
   ICodec* codec = m_decoder[m_currentDecoder].GetCodec();
   if(codec)
     codecname = codec->m_CodecName;
@@ -243,7 +243,7 @@ bool PAPlayer::QueueNextFile(const CFileItem &file, bool checkCrossFading)
   unsigned int channels, samplerate, bitspersample;
   m_decoder[decoder].GetDataFormat(&channels, &samplerate, &bitspersample);
 
-  CStdString codecname;
+  std::string codecname;
   ICodec* codec = m_decoder[m_currentDecoder].GetCodec();
   if(codec)
     codecname = codec->m_CodecName;
@@ -329,7 +329,7 @@ void PAPlayer::SetupDirectSound(int channels)
     pDSound->SetMixBinHeadroom(i, DWORD(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_audioHeadRoom / 6));
 }
 
-bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersample, CStdString codecname)
+bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersample, std::string codecname)
 {
   FreeStream(num);
 
@@ -623,7 +623,7 @@ bool PAPlayer::ProcessPAP()
             unsigned int channels2, samplerate2, bitspersample2;
             m_decoder[1 - m_currentDecoder].GetDataFormat(&channels2, &samplerate2, &bitspersample2);
 
-            CStdString codecname;
+            std::string codecname;
             ICodec* codec = m_decoder[1 - m_currentDecoder].GetCodec();
             if(codec)
               codecname = codec->m_CodecName;
@@ -825,7 +825,7 @@ int PAPlayer::GetSampleRate()
   return 0;
 }
 
-CStdString PAPlayer::GetAudioCodecName()
+std::string PAPlayer::GetAudioCodecName()
 {
   ICodec* codec = m_decoder[m_currentDecoder].GetCodec();
   if (codec)
@@ -1108,7 +1108,7 @@ void CALLBACK StaticStreamCallback( VOID* pStreamContext, VOID* pPacketContext, 
   }
 }
 
-bool PAPlayer::HandlesType(const CStdString &type)
+bool PAPlayer::HandlesType(const std::string &type)
 {
   ICodec* codec=CodecFactory::CreateCodec(type);
 

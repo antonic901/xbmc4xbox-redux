@@ -158,7 +158,7 @@ bool File::Create(const char *Name,const wchar *NameW)
 #else
   hFile=fopen(Name,CREATEBINARY);
 #endif*/
-  CStdString strPath = URIUtils::GetDirectory(Name);
+  std::string strPath = URIUtils::GetDirectory(Name);
   CUtil::CreateDirectoryEx(strPath);
   m_File.OpenForWrite(Name,true);
   NewFile=true;
@@ -245,7 +245,7 @@ bool File::Close()
   return(success);
   //return(true);
 }
-  
+
 
 void File::Flush()
 {
@@ -388,7 +388,7 @@ int File::Read(void *Data,int Size)
     }
     break;
   }
-  
+
   return(ReadSize);
 }
 

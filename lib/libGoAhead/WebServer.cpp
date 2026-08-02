@@ -139,7 +139,7 @@ bool CWebServer::Start(int port, bool wait)
   end = sizeof(m_szRootWeb);
 
   AddonPtr addon;
-  CStdString strURL;
+  std::string strURL;
   ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::AddonType::WEB_INTERFACE, addon);
   if (addon)
   {
@@ -642,26 +642,26 @@ void XbmcWebConfigRelease()
 /*
  * wrappers for xbmcConfig
  */
-int XbmcWebsAspConfigBookmarkSize(int eid, webs_t wp, int argc, char_t **argv) { CStdString response; return pXbmcWebConfig ? pXbmcWebConfig->BookmarkSize(eid, wp, response, argc, argv) : -1; }
-int XbmcWebsAspConfigGetBookmark(int eid, webs_t wp, int argc, char_t **argv) { CStdString response; return pXbmcWebConfig ? pXbmcWebConfig->GetBookmark(eid, wp, response, argc, argv) : -1; }
-int XbmcWebsAspConfigAddBookmark(int eid, webs_t wp, int argc, char_t **argv) { CStdString response; return pXbmcWebConfig ? pXbmcWebConfig->AddBookmark(eid, wp, response, argc, argv) : -1; }
-int XbmcWebsAspConfigSaveBookmark(int eid, webs_t wp, int argc, char_t **argv) { CStdString response; return pXbmcWebConfig ? pXbmcWebConfig->SaveBookmark(eid, wp, response, argc, argv) : -1; }
-int XbmcWebsAspConfigRemoveBookmark(int eid, webs_t wp, int argc, char_t **argv) { CStdString response; return pXbmcWebConfig ? pXbmcWebConfig->RemoveBookmark(eid, wp, response, argc, argv) : -1; }
-int XbmcWebsAspConfigSaveConfiguration(int eid, webs_t wp, int argc, char_t **argv) { CStdString response; return pXbmcWebConfig ? pXbmcWebConfig->SaveConfiguration(eid, wp, response, argc, argv) : -1; }
-int XbmcWebsAspConfigGetOption(int eid, webs_t wp, int argc, char_t **argv) { CStdString response; return pXbmcWebConfig ? pXbmcWebConfig->GetOption(eid, wp, response, argc, argv) : -1; }
-int XbmcWebsAspConfigSetOption(int eid, webs_t wp, int argc, char_t **argv) { CStdString response; return pXbmcWebConfig ? pXbmcWebConfig->SetOption(eid, wp, response, argc, argv) : -1; }
+int XbmcWebsAspConfigBookmarkSize(int eid, webs_t wp, int argc, char_t **argv) { std::string response; return pXbmcWebConfig ? pXbmcWebConfig->BookmarkSize(eid, wp, response, argc, argv) : -1; }
+int XbmcWebsAspConfigGetBookmark(int eid, webs_t wp, int argc, char_t **argv) { std::string response; return pXbmcWebConfig ? pXbmcWebConfig->GetBookmark(eid, wp, response, argc, argv) : -1; }
+int XbmcWebsAspConfigAddBookmark(int eid, webs_t wp, int argc, char_t **argv) { std::string response; return pXbmcWebConfig ? pXbmcWebConfig->AddBookmark(eid, wp, response, argc, argv) : -1; }
+int XbmcWebsAspConfigSaveBookmark(int eid, webs_t wp, int argc, char_t **argv) { std::string response; return pXbmcWebConfig ? pXbmcWebConfig->SaveBookmark(eid, wp, response, argc, argv) : -1; }
+int XbmcWebsAspConfigRemoveBookmark(int eid, webs_t wp, int argc, char_t **argv) { std::string response; return pXbmcWebConfig ? pXbmcWebConfig->RemoveBookmark(eid, wp, response, argc, argv) : -1; }
+int XbmcWebsAspConfigSaveConfiguration(int eid, webs_t wp, int argc, char_t **argv) { std::string response; return pXbmcWebConfig ? pXbmcWebConfig->SaveConfiguration(eid, wp, response, argc, argv) : -1; }
+int XbmcWebsAspConfigGetOption(int eid, webs_t wp, int argc, char_t **argv) { std::string response; return pXbmcWebConfig ? pXbmcWebConfig->GetOption(eid, wp, response, argc, argv) : -1; }
+int XbmcWebsAspConfigSetOption(int eid, webs_t wp, int argc, char_t **argv) { std::string response; return pXbmcWebConfig ? pXbmcWebConfig->SetOption(eid, wp, response, argc, argv) : -1; }
 
 /*
  * wrappers for HttpAPI xbmcConfig
  */
-int XbmcWebsHttpAPIConfigBookmarkSize(CStdString& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->BookmarkSize(-1, NULL, response, argc, argv) : -1; }
-int XbmcWebsHttpAPIConfigGetBookmark(CStdString& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->GetBookmark(-1, NULL, response, argc, argv) : -1; }
-int XbmcWebsHttpAPIConfigAddBookmark(CStdString& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->AddBookmark(-1, NULL, response, argc, argv) : -1; }
-int XbmcWebsHttpAPIConfigSaveBookmark(CStdString& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->SaveBookmark(-1, NULL, response, argc, argv) : -1; }
-int XbmcWebsHttpAPIConfigRemoveBookmark(CStdString& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->RemoveBookmark(-1, NULL, response, argc, argv) : -1; }
-int XbmcWebsHttpAPIConfigSaveConfiguration(CStdString& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->SaveConfiguration(-1, NULL, response, argc, argv) : -1; }
-int XbmcWebsHttpAPIConfigGetOption(CStdString& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->GetOption(-1, NULL, response, argc, argv) : -1; }
-int XbmcWebsHttpAPIConfigSetOption(CStdString& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->SetOption(-1, NULL, response, argc, argv) : -1; }
+int XbmcWebsHttpAPIConfigBookmarkSize(std::string& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->BookmarkSize(-1, NULL, response, argc, argv) : -1; }
+int XbmcWebsHttpAPIConfigGetBookmark(std::string& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->GetBookmark(-1, NULL, response, argc, argv) : -1; }
+int XbmcWebsHttpAPIConfigAddBookmark(std::string& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->AddBookmark(-1, NULL, response, argc, argv) : -1; }
+int XbmcWebsHttpAPIConfigSaveBookmark(std::string& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->SaveBookmark(-1, NULL, response, argc, argv) : -1; }
+int XbmcWebsHttpAPIConfigRemoveBookmark(std::string& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->RemoveBookmark(-1, NULL, response, argc, argv) : -1; }
+int XbmcWebsHttpAPIConfigSaveConfiguration(std::string& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->SaveConfiguration(-1, NULL, response, argc, argv) : -1; }
+int XbmcWebsHttpAPIConfigGetOption(std::string& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->GetOption(-1, NULL, response, argc, argv) : -1; }
+int XbmcWebsHttpAPIConfigSetOption(std::string& response, int argc, char_t **argv) { return pXbmcWebConfig ? pXbmcWebConfig->SetOption(-1, NULL, response, argc, argv) : -1; }
 
 
 #if defined(__cplusplus)

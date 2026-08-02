@@ -60,19 +60,19 @@ bool IDirectory::IsAllowed(const CURL& url) const
   // We should ignore all non dvd/vcd related ifo and dat files.
   if (URIUtils::HasExtension(url, ".ifo"))
   {
-    CStdString fileName = URIUtils::GetFileName(url);
+    std::string fileName = URIUtils::GetFileName(url);
 
     // Allow filenames of the form video_ts.ifo or vts_##_0.ifo
-    
+
     return StringUtils::EqualsNoCase(fileName, "video_ts.ifo") ||
           (fileName.length() == 12 &&
            StringUtils::StartsWithNoCase(fileName, "vts_") &&
            StringUtils::EndsWithNoCase(fileName, "_0.ifo"));
   }
-  
+
   if (URIUtils::HasExtension(url, ".dat"))
   {
-    CStdString fileName = URIUtils::GetFileName(url);
+    std::string fileName = URIUtils::GetFileName(url);
 
     // Allow filenames of the form AVSEQ##(#).DAT, ITEM###(#).DAT
     // and MUSIC##(#).DAT
@@ -88,7 +88,7 @@ bool IDirectory::IsAllowed(const CURL& url) const
 /*!
  \brief Set a mask of extensions for the files in the directory.
  \param strMask Mask of file extensions that are allowed.
- 
+
  The mask has to look like the following: \n
  \verbatim
  .m4a|.flac|.aac|
@@ -115,10 +115,10 @@ void IDirectory::SetFlags(int flags)
 
 bool IDirectory::ProcessRequirements()
 {
-  CStdString type = m_requirements["type"].asString();
+  std::string type = m_requirements["type"].asString();
   if (type == "keyboard")
   {
-    CStdString input;
+    std::string input;
     if (CGUIKeyboardFactory::ShowAndGetInput(input, GetLocalized(m_requirements["heading"]), false))
     {
       m_requirements["input"] = input.c_str();
@@ -144,7 +144,7 @@ bool IDirectory::ProcessRequirements()
 
 bool IDirectory::GetKeyboardInput(const CVariant &heading, std::string &input)
 {
-  if (!CStdString(m_requirements["input"].asString()).IsEmpty())
+  if (!std::string(m_requirements["input"].asString()).IsEmpty())
   {
     input = m_requirements["input"].asString();
     return true;

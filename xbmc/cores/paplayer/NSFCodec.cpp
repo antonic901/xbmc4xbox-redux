@@ -41,19 +41,19 @@ NSFCodec::~NSFCodec()
   DeInit();
 }
 
-bool NSFCodec::Init(const CStdString &strFile, unsigned int filecache)
+bool NSFCodec::Init(const std::string &strFile, unsigned int filecache)
 {
   DeInit();
 
   if (!m_dll.Load())
     return false; // error logged previously
-  
-  CStdString strFileToLoad = strFile;
+
+  std::string strFileToLoad = strFile;
   m_iTrack = 0;
   if (URIUtils::HasExtension(strFile, ".nsfstream"))
   {
     //  Extract the track to play
-    CStdString strFileName=URIUtils::GetFileName(strFile);
+    std::string strFileName=URIUtils::GetFileName(strFile);
     int iStart=strFileName.ReverseFind('-')+1;
     m_iTrack = atoi(strFileName.substr(iStart, strFileName.size()-iStart-10).c_str());
     //  The directory we are in, is the file
@@ -62,7 +62,7 @@ bool NSFCodec::Init(const CStdString &strFile, unsigned int filecache)
     strFileToLoad = URIUtils::GetDirectory(strFile);
     URIUtils::RemoveSlashAtEnd(strFileToLoad); // we want the filename
   }
-  
+
   m_nsf = m_dll.LoadNSF(strFileToLoad.c_str());
   if (!m_nsf)
   {
@@ -100,7 +100,7 @@ __int64 NSFCodec::Seek(__int64 iSeekTime)
   while (m_iDataPos+2*48000/m_dll.GetPlaybackRate(m_nsf)*2 < iSeekTime/1000*48000*2)
   {
     m_dll.FrameAdvance(m_nsf);
-    
+
     m_iDataInBuffer = 48000/m_dll.GetPlaybackRate(m_nsf)*2;
     m_szStartOfBuffer = m_szBuffer;
     m_iDataPos += 48000/m_dll.GetPlaybackRate(m_nsf)*2;
@@ -121,10 +121,10 @@ int NSFCodec::ReadPCM(BYTE *pBuffer, int size, int *actualsize)
 {
   if (!m_nsf)
     return READ_ERROR;
-  
+
   if (m_iDataPos >= m_TotalTime/1000*48000*2)
     return READ_EOF;
-    
+
   if (!m_bIsPlaying)
   {
     m_dll.StartPlayback(m_nsf,m_iTrack);
@@ -137,7 +137,7 @@ int NSFCodec::ReadPCM(BYTE *pBuffer, int size, int *actualsize)
   if (m_iDataInBuffer <= 0)
   {
     m_iDataInBuffer = m_dll.FillBuffer(m_nsf,m_szBuffer,48000/m_dll.GetPlaybackRate(m_nsf)); // *2 since two channels
-    
+
     m_szStartOfBuffer = m_szBuffer;
   }
 
@@ -146,8 +146,8 @@ int NSFCodec::ReadPCM(BYTE *pBuffer, int size, int *actualsize)
   m_szStartOfBuffer += *actualsize;
   m_iDataInBuffer -= *actualsize;
   m_iDataPos += *actualsize;
-  
-  return READ_SUCCESS;    
+
+  return READ_SUCCESS;
 }
 
 bool NSFCodec::CanInit()

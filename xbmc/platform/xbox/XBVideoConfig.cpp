@@ -293,7 +293,7 @@ RESOLUTION XBVideoConfig::GetInitialMode(LPDIRECT3D8 pD3D, D3DPRESENT_PARAMETERS
   }
 }
 
-CStdString XBVideoConfig::GetAVPack() const
+std::string XBVideoConfig::GetAVPack() const
 {
 #ifdef HAS_XBOX_HARDWARE
   switch (XGetAVPack())
@@ -319,7 +319,7 @@ void XBVideoConfig::PrintInfo() const
 {
 #ifdef HAS_XBOX_D3D
   CLog::Log(LOGINFO, "AV Pack: %s", GetAVPack().c_str());
-  CStdString strAVFlags;
+  std::string strAVFlags;
   if (HasWidescreen()) strAVFlags += "Widescreen,";
   if (HasPAL60()) strAVFlags += "Pal60,";
   if (Has480p()) strAVFlags += "480p,";

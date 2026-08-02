@@ -239,7 +239,7 @@ IDevice *CMemoryUnitManager::GetDevice(unsigned char unit) const
   return m_memUnits[unit];
 }
 
-bool CMemoryUnitManager::IsDriveWriteable(const CStdString &path) const
+bool CMemoryUnitManager::IsDriveWriteable(const std::string &path) const
 {
   CURL url(path);
   IDevice *device = GetDevice(url.GetProtocol()[3] - '0');
@@ -253,7 +253,7 @@ void CMemoryUnitManager::GetMemoryUnitSources(VECSOURCES &shares)
   for (unsigned int i = 0; i < m_memUnits.size(); i++)
   {
     CMediaSource share;
-    CStdString volumeName = m_memUnits[i]->GetVolumeName();
+    std::string volumeName = m_memUnits[i]->GetVolumeName();
     volumeName.TrimRight(' ');
     // Memory Unit # (volumeName) (fs)
     if (volumeName.IsEmpty())
@@ -277,8 +277,7 @@ IFileSystem *CMemoryUnitManager::GetFileSystem(unsigned char unit)
 
 void CMemoryUnitManager::Notify(unsigned long port, unsigned long slot, bool success)
 {
-  CStdString portSlot;
-  portSlot.Format(g_localizeStrings.Get(20139).c_str(), port, slot);
+  std::string portSlot = StringUtils::Format(g_localizeStrings.Get(20139).c_str(), port, slot);
 
   if (success)
     CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(20137), portSlot);

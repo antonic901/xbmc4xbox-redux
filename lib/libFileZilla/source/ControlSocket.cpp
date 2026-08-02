@@ -53,7 +53,7 @@ using namespace KODI::MESSAGING;
 /////////////////////////////////////////////////////////////////////////////
 // CControlSocket
 
-std::map<CStdString, int> CControlSocket::m_UserCount;
+std::map<std::string, int> CControlSocket::m_UserCount;
 CCriticalSectionWrapper CControlSocket::m_Sync;
 
 CControlSocket::CControlSocket(CServerThread *pOwner)
@@ -203,17 +203,17 @@ void CControlSocket::OnReceive(int nErrorCode)
     delete [] buffer;
 }
 
-BOOL CControlSocket::GetCommand(CStdString &command, CStdString &args)
+BOOL CControlSocket::GetCommand(std::string &command, std::string &args)
 {
     //Get first command from input buffer
-    CStdString str;
+    std::string str;
     if (m_RecvLineBuffer.empty())
         return FALSE;
     str = m_RecvLineBuffer.front();
     m_RecvLineBuffer.pop_front();
 
     //Output command in status window
-    CStdString str2=str;
+    std::string str2=str;
     str2.MakeUpper();
 
     //Hide passwords if the server admin wants to.
@@ -250,14 +250,14 @@ BOOL CControlSocket::GetCommand(CStdString &command, CStdString &args)
 
 
 #if defined(_XBOX)
-BOOL CControlSocket::GetCommandFromString(const CStdString& source, CStdString &command,CStdString &args)
+BOOL CControlSocket::GetCommandFromString(const std::string& source, std::string &command,std::string &args)
 {
     //Get first command from input buffer
     if (source.empty())
         return FALSE;
 
     //Output command in status window
-    CStdString str2=source;
+    std::string str2=source;
     str2.MakeUpper();
 
   //SendStatus(source,2); // already done in GetCommand()
@@ -308,12 +308,12 @@ void CControlSocket::SendStatus(LPCTSTR status, int type)
 }
 
 #if defined(_XBOX)
-BOOL CControlSocket::SendCurDir(const CStdString command,CStdString curDir)
+BOOL CControlSocket::SendCurDir(const std::string command,std::string curDir)
 {
   return SendDir(command, curDir, " is current directory.");
 }
 
-BOOL CControlSocket::SendDir(const CStdString command,CStdString curDir,const CStdString prompt)
+BOOL CControlSocket::SendDir(const std::string command,std::string curDir,const std::string prompt)
 {
   if (1 /*g_settings.m_bFTPSingleCharDrives*/
     && (curDir.GetLength() >= 2)
@@ -327,7 +327,7 @@ BOOL CControlSocket::SendDir(const CStdString command,CStdString curDir,const CS
       curDir = curDir.Left(2).ToUpper();
   }
 
-  CStdString str;
+  std::string str;
   str.Format("%s \"%s\"%s", command, curDir, prompt);
     return Send(str);
 }
@@ -544,7 +544,7 @@ static const t_command site_commands[]={
 void CControlSocket::ParseCommand()
 {
     //Get command
-    CStdString command, args;
+    std::string command, args;
     if (!GetCommand(command, args))
         return;
 
@@ -665,7 +665,7 @@ void CControlSocket::ParseCommand()
 
                 else if (user.GetUserLimit() && GetUserCount(m_status.user)>=user.GetUserLimit())
                 {
-                    CStdString str;
+                    std::string str;
                     str.Format("Refusing connection. Reason: Max. connection count reached for the user \"%s\".",m_status.user);
                     SendStatus(str,1);
                     Send("421 Too many users logged in for this account. Try again later.");
@@ -673,7 +673,7 @@ void CControlSocket::ParseCommand()
                     break;
                 }
 
-                CStdString ip;
+                std::string ip;
                 unsigned int nPort;
 
                 SOCKADDR_IN sockAddr;
@@ -689,7 +689,7 @@ void CControlSocket::ParseCommand()
                 int count=m_pOwner->GetIpCount(ip);
                 if (user.nIpLimit && count>=user.GetIpLimit())
                 {
-                    CStdString str;
+                    std::string str;
                     if (count==1)
                         str.Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected once)",ip);
                     else
@@ -713,7 +713,7 @@ void CControlSocket::ParseCommand()
                 count = GetUserCount(user.user);
                 if (user.GetUserLimit() && count>=user.GetUserLimit())
                 {
-                    CStdString str;
+                    std::string str;
                     str.Format("Refusing connection. Reason: Maximum connection count (%d) reached for this user", user.GetUserLimit());
                     SendStatus(str,1);
                     str.Format("421 Refusing connection. Maximum connection count reached for the user '%s'", user.user);
@@ -804,19 +804,19 @@ void CControlSocket::ParseCommand()
             int res = m_pOwner->m_pPermissions->ChangeCurrentDir(m_status.user,m_CurrentDir,args);
             if (!res)
             {
-                CStdString str;
+                std::string str;
                 str.Format("250 CWD successful. \"%s\" is current directory.",m_CurrentDir);
                 Send(str);
             }
             else if (res & 1)
             {
-                CStdString str;
+                std::string str;
                 str.Format("550 CWD failed. \"%s\": Permission denied.",args);
                 Send(str);
             }
             else if (res)
             {
-                CStdString str;
+                std::string str;
                 str.Format("550 CWD failed. \"%s\": directory not found.",args);
                 Send(str);
             }
@@ -854,7 +854,7 @@ void CControlSocket::ParseCommand()
                 Send("501 Syntax error");
                 break;
             }
-            CStdString ip;
+            std::string ip;
             int port = 0;
             int i=args.ReverseFind('.');
             port=atoi(args.Right(args.GetLength()-(i+1))); //get ls byte of server socket
@@ -882,7 +882,7 @@ void CControlSocket::ParseCommand()
             m_transferstatus.socket=new CTransferSocket(this);
 
             unsigned int port = 0;
-            CStdString ip;
+            std::string ip;
             unsigned int retries = 3;
             if (m_pOwner->m_pOptions->GetOptionVal(OPTION_CUSTOMPASVIPTYPE))
                 ip = m_pOwner->GetExternalIP();
@@ -955,7 +955,7 @@ void CControlSocket::ParseCommand()
             //Reformat the ip
             ip.Replace(".",",");
             //Put the answer together
-            CStdString str;
+            std::string str;
             str.Format("227 Entering Passive Mode (%s,%d,%d)",ip,port/256,port%256);
             Send(str);
             m_transferstatus.pasv=1;
@@ -970,7 +970,7 @@ void CControlSocket::ParseCommand()
                 break;
             }
             m_transferstatus.type=(args[0]=='I')?0:1;
-            Send(CStdString("200 Type set to ") + (m_transferstatus.type ? "A" : "I"));
+            Send(std::string("200 Type set to ") + (m_transferstatus.type ? "A" : "I"));
         }
         break;
     case COMMAND_LIST:
@@ -985,7 +985,7 @@ void CControlSocket::ParseCommand()
         else
         {
             //Check args, currently only supported argument is the directory which will be listed.
-            CStdString dirToList=m_CurrentDir;
+            std::string dirToList=m_CurrentDir;
             args.TrimLeft(" ");
             args.TrimRight(" ");
             if (args!="")
@@ -1001,7 +1001,7 @@ void CControlSocket::ParseCommand()
                     }
 
                     int pos=args.Find(" ");
-                    CStdString params;
+                    std::string params;
                     if (pos!=-1)
                     {
                         params=args.Left(1);
@@ -1064,14 +1064,14 @@ void CControlSocket::ParseCommand()
                 pResult->len = 0;
                 pResult->pNext=NULL;
 
-                CStdString result;
+                std::string result;
                 result="";
 
                 t_directory dir;
                 for (std::vector<t_directory>::const_iterator iter=user.permissions.begin(); iter!=user.permissions.end(); iter++) {
                     if((iter->dir != "/") && (iter->dir != "\\")) {
 
-                        CStdString dirToList = iter->dir;
+                        std::string dirToList = iter->dir;
 
                         if (isalpha(iter->dir[0]) && iter->dir[1] == ':')
                         {
@@ -1177,7 +1177,7 @@ void CControlSocket::ParseCommand()
                 break;
             }
             m_transferstatus.rest=_atoi64(args);
-            CStdString str;
+            std::string str;
             str.Format("350 Rest supported. Restarting at %I64d",m_transferstatus.rest);
             Send(str);
         }
@@ -1185,7 +1185,7 @@ void CControlSocket::ParseCommand()
     case COMMAND_CDUP:
     case COMMAND_XCUP:
         {
-            CStdString dir="..";
+            std::string dir="..";
             int res = m_pOwner->m_pPermissions->ChangeCurrentDir(m_status.user,m_CurrentDir,dir);
 #if defined(_XBOX)
             // in case of xbox => cwd to "/"  && user's homedir == "/" just set the currentdir to "/"
@@ -1194,7 +1194,7 @@ void CControlSocket::ParseCommand()
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
             if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
-                CStdString str;
+                std::string str;
                 str.Format("200 CDUP successful. \"XBOX-ROOT(%s)\" is current directory.",m_CurrentDir);
                 Send(str);
             }
@@ -1206,13 +1206,13 @@ void CControlSocket::ParseCommand()
                 }
                 else if (res & 1)
                 {
-                    CStdString str;
+                    std::string str;
                     str.Format("550 CDUP failed. \"%s\": Permission denied.",dir);
                     Send(str);
                 }
                 else if (res)
                 {
-                    CStdString str;
+                    std::string str;
                     str.Format("550 CDUP failed. \"%s\": directory not found.",dir);
                     Send(str);
                 }
@@ -1220,19 +1220,19 @@ void CControlSocket::ParseCommand()
 #else
             if (!res)
             {
-                CStdString str;
+                std::string str;
                 str.Format("200 CDUP successful. \"%s\" is current directory.",m_CurrentDir);
                 Send(str);
             }
             else if (res & 1)
             {
-                CStdString str;
+                std::string str;
                 str.Format("550 CDUP failed. \"%s\": Permission denied.",dir);
                 Send(str);
             }
             else if (res)
             {
-                CStdString str;
+                std::string str;
                 str.Format("550 CDUP failed. \"%s\": directory not found.",dir);
                 Send(str);
             }
@@ -1261,7 +1261,7 @@ void CControlSocket::ParseCommand()
             }
 
 
-            CStdString result;
+            std::string result;
             int error = m_pOwner->m_pPermissions->GetFileName(m_status.user,args,m_CurrentDir,FOP_READ,result);
             if (error & 1)
             {
@@ -1328,7 +1328,7 @@ void CControlSocket::ParseCommand()
                 break;
             }
 
-            CStdString result;
+            std::string result;
             int error = m_pOwner->m_pPermissions->GetFileName(m_status.user,args,m_CurrentDir,m_transferstatus.rest?FOP_APPEND:FOP_WRITE,result);
             if (error & 1)
             {
@@ -1370,7 +1370,7 @@ void CControlSocket::ParseCommand()
                 break;
             }
 
-            CStdString result;
+            std::string result;
             int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, args, m_CurrentDir, FOP_READ, result);
             if (error & 1)
                 Send("550 Permission denied");
@@ -1378,7 +1378,7 @@ void CControlSocket::ParseCommand()
                 Send("550 File not found");
             else
             {
-                CStdString str;
+                std::string str;
                 _int64 length;
                 if (GetLength64(result, length))
                     str.Format("213 %I64d", length);
@@ -1407,7 +1407,7 @@ void CControlSocket::ParseCommand()
             }
 #endif
 
-            CStdString result;
+            std::string result;
             int error=m_pOwner->m_pPermissions->GetFileName(m_status.user,args,m_CurrentDir,FOP_DELETE,result);
             if (error & 1)
                 Send("550 Permission denied");
@@ -1441,7 +1441,7 @@ void CControlSocket::ParseCommand()
                 break;
             }
 #endif
-            CStdString result, logical;
+            std::string result, logical;
             int error = m_pOwner->m_pPermissions->GetDirName(m_status.user,args,m_CurrentDir,DOP_DELETE,result,logical);
             if (error & 1)
                 Send("550 Permission denied");
@@ -1480,7 +1480,7 @@ void CControlSocket::ParseCommand()
                 break;
             }
 #endif
-            CStdString result, logical;
+            std::string result, logical;
             int error=m_pOwner->m_pPermissions->GetDirName(m_status.user, args,m_CurrentDir, DOP_CREATE, result, logical);
             if (error & PERMISSION_DOESALREADYEXIST && (error & PERMISSION_FILENOTDIR)!=PERMISSION_FILENOTDIR)
                 Send("550 Directory already exists");
@@ -1491,12 +1491,12 @@ void CControlSocket::ParseCommand()
             else
             {
                 result+="\\";
-                CStdString str;
+                std::string str;
                 BOOL res = FALSE;
                 BOOL bReplySent = FALSE;
                 while (result!="")
                 {
-                    CStdString piece = result.Left(result.Find("\\")+1);
+                    std::string piece = result.Left(result.Find("\\")+1);
                     if (piece.Right(2) == ".\\")
                     {
                         Send("550 Directoryname not valid");
@@ -1536,7 +1536,7 @@ void CControlSocket::ParseCommand()
 #endif
             RenName = "";
 
-            CStdString result, logical;
+            std::string result, logical;
             int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, args, m_CurrentDir, FOP_DELETE, result);
             if (!error)
             {
@@ -1590,7 +1590,7 @@ void CControlSocket::ParseCommand()
 
             if (bRenFile)
             {
-                CStdString result;
+                std::string result;
                 int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, args, m_CurrentDir, FOP_CREATENEW, result);
 #if defined(_XBOX)
                 if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpautofatx"))
@@ -1614,7 +1614,7 @@ void CControlSocket::ParseCommand()
             }
             else
             {
-                CStdString result, logical;
+                std::string result, logical;
                 int error = m_pOwner->m_pPermissions->GetDirName(m_status.user, args, m_CurrentDir, DOP_CREATE, result, logical);
 #if defined(_XBOX)
                 if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpautofatx"))
@@ -1646,7 +1646,7 @@ void CControlSocket::ParseCommand()
                     Send("426 Connection closed; transfer aborted.");
             }
 #if defined(_XBOX)
-      CStdString prompt;
+      std::string prompt;
       if (XBFILEZILLA(GetFreeSpacePrompt(226, prompt)))
         Send(prompt.c_str());
 #endif
@@ -1691,7 +1691,7 @@ void CControlSocket::ParseCommand()
                 break;
             }
 #endif
-            CStdString result;
+            std::string result;
             int error = m_pOwner->m_pPermissions->GetFileName(m_status.user,args,m_CurrentDir,FOP_APPEND,result);
             if (error & 1)
             {
@@ -1720,7 +1720,7 @@ void CControlSocket::ParseCommand()
                     if (!CreateTransferSocket(transfersocket))
                         break;
 
-                    CStdString str;
+                    std::string str;
                     str.Format("150 Opening data channel for file transfer, restarting at offset %I64d",size);
                     Send(str);
                 }
@@ -1760,7 +1760,7 @@ void CControlSocket::ParseCommand()
                     }
 
                     int pos=args.Find(" ");
-                    CStdString params;
+                    std::string params;
                     if (pos!=-1)
                     {
                         params=args.Left(1);
@@ -1819,7 +1819,7 @@ void CControlSocket::ParseCommand()
                 pResult->len = 0;
                 pResult->pNext=NULL;
 
-                CStdString result;
+                std::string result;
                 result="";
 
                 t_directory dir;
@@ -1911,7 +1911,7 @@ void CControlSocket::ParseCommand()
                 break;
             }
 
-            CStdString result;
+            std::string result;
             int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, args, m_CurrentDir, FOP_READ, result);
             if (error & 1)
                 Send("550 Permission denied");
@@ -1922,7 +1922,7 @@ void CControlSocket::ParseCommand()
                 CFileStatus64 status;
                 GetStatus64(result,status);
                 status.m_mtime;
-                CStdString str;
+                std::string str;
                 SYSTEMTIME time;
                 FileTimeToSystemTime(&status.m_mtime, &time);
                 str.Format("213 %04d%02d%02d%02d%02d%02d",
@@ -1994,7 +1994,7 @@ void CControlSocket::ParseCommand()
             if (bResult)
                 port = ntohs(sockAddr.sin_port);
             //Put the answer together
-            CStdString str;
+            std::string str;
             str.Format("229 Entering Extended Passive Mode (|||%d|)", port);
             Send(str);
             m_transferstatus.pasv=1;
@@ -2035,7 +2035,7 @@ void CControlSocket::ParseCommand()
                 Send("501 Syntax error");
                 break;
             }
-            CStdString ip = args.Left(pos);
+            std::string ip = args.Left(pos);
             if (inet_addr(ip) == INADDR_NONE)
             {
                 Send("501 Syntax error");
@@ -2141,12 +2141,12 @@ void CControlSocket::ParseCommand()
   case COMMAND_SITE:
     {
       //Get command
-        CStdString sitecommand, siteargs;
+        std::string sitecommand, siteargs;
 
         if (!GetCommandFromString(args, sitecommand, siteargs))
             return;
 
-      CStdString fullcommand = sitecommand;
+      std::string fullcommand = sitecommand;
       if (siteargs.size() > 0) fullcommand += "(" + siteargs + ")";
 
       CLog::Log(LOGNOTICE, "200 FTP SITE command called [command=%s, args=%s]", sitecommand.c_str(), siteargs.c_str());
@@ -2178,7 +2178,7 @@ void CControlSocket::ParseCommand()
         if (nCommandID==-1)
         {
         // check for a built-in function
-        CStdString strBuiltIn = fullcommand;
+        std::string strBuiltIn = fullcommand;
         if (!CBuiltins::GetInstance().HasCommand(fullcommand))
           strBuiltIn = "XBMC." + fullcommand;
         if (!CBuiltins::GetInstance().HasCommand(strBuiltIn))
@@ -2188,13 +2188,13 @@ void CControlSocket::ParseCommand()
         }
         if (strBuiltIn.Equals("xbmc.help", false) || strBuiltIn.Equals("help", false))
         {
-          CStdString strHelp;
+          std::string strHelp;
           CBuiltins::GetInstance().GetHelp(strHelp);
           Send(_T("200-FTP SITE HELP"));
           int iReturn = strHelp.Find("\n");
           while (iReturn >= 0)
           {
-            CStdString helpline = "  " + strHelp.Left(iReturn);
+            std::string helpline = "  " + strHelp.Left(iReturn);
 
             // replace tab with spaces (tab position = 30)
             //   because ftp command line (at least on windows) does
@@ -2202,7 +2202,7 @@ void CControlSocket::ParseCommand()
             int iTabPos = helpline.Find("\t");
             if (iTabPos >= 0)
             {
-              helpline = helpline.Left(iTabPos) + CStdString(30 - iTabPos, ' ') + helpline.Mid(iTabPos + 1);
+              helpline = helpline.Left(iTabPos) + std::string(30 - iTabPos, ' ') + helpline.Mid(iTabPos + 1);
             }
 
             Send(_T(helpline.c_str()));
@@ -2226,12 +2226,12 @@ void CControlSocket::ParseCommand()
             // not recognized as a standard command, call ExecBuiltIn
           if (sitecommand.Find(".") != 5)
           {
-            CStdString prefix("XBOX.");
+            std::string prefix("XBOX.");
             sitecommand = prefix + sitecommand;
           }
 
           {
-              CStdString str;
+              std::string str;
               str.Format("200 FTP SITE - calling ExecBuiltIn [command=%s, args=%s]", sitecommand.c_str(), siteargs.c_str());
               //Send(str);
             CLog::Log(LOGNOTICE, str);
@@ -2240,7 +2240,7 @@ void CControlSocket::ParseCommand()
           int rtn = CBuiltins::GetInstance().Execute(siteargs);
 
           {
-              CStdString str;
+              std::string str;
               str.Format("200 FTP SITE - called ExecBuiltIn [command=%s, args=%s, rtn=%i]", sitecommand.c_str(), siteargs.c_str(), rtn);
               //Send(str);
             CLog::Log(LOGNOTICE, str);
@@ -2280,7 +2280,7 @@ void CControlSocket::ParseCommand()
                       break;
                   }
 
-                  CStdString filename;
+                  std::string filename;
                   int error=m_pOwner->m_pPermissions->GetFileName(m_status.user,siteargs,m_CurrentDir,FOP_READ,filename);
                   if (error&1)
                   {
@@ -2295,7 +2295,7 @@ void CControlSocket::ParseCommand()
                   else
                   {
               Send(_T("200- Please wait, calculating CRC..."));
-              CStdString prompt;
+              std::string prompt;
               unsigned long crc = 0;
               XFSTATUS result = XBFILEZILLA(GetFileCRC(filename, crc));
               if (result == XFS_OK)
@@ -2328,7 +2328,7 @@ void CControlSocket::ParseCommand()
                       break;
                   }
 
-                  CStdString result;
+                  std::string result;
                   int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, siteargs, m_CurrentDir, FOP_READ, result);
                   if (error&1)
                   {
@@ -2346,7 +2346,7 @@ void CControlSocket::ParseCommand()
               XFSTATUS status = XBFILEZILLA(LaunchXBE(result));
               if (status == XFS_OK)
               {
-                CStdString prompt;
+                std::string prompt;
                 prompt.Format(_T("200 Launching %s"), result);
                 Send(prompt.c_str());
               }
@@ -2442,7 +2442,7 @@ void CControlSocket::ProcessTransferMsg()
   }
 
   bool sendStats = (m_transferstatus.socket->m_nMode == TRANSFERMODE_RECEIVE);
-  CStdString filename = m_transferstatus.socket->m_Filename;
+  std::string filename = m_transferstatus.socket->m_Filename;
 #endif
 
     delete m_transferstatus.socket;
@@ -2457,7 +2457,7 @@ void CControlSocket::ProcessTransferMsg()
 {
 
 #if defined(_XBOX)
-    CStdString prompt;
+    std::string prompt;
 
     if (sendStats)
     {
@@ -2489,7 +2489,7 @@ void CControlSocket::ProcessTransferMsg()
             case CRC_BAD:
               {
                 crcCalculated = true;
-                CStdString renamedfile = filename + _T(".bad");
+                std::string renamedfile = filename + _T(".bad");
                 if (!rename(filename.c_str(), renamedfile.c_str()))
                   Send(_T("226- File has bad CRC, file has been renamed."));
                 else
@@ -2499,7 +2499,7 @@ void CControlSocket::ProcessTransferMsg()
             case CRC_MISSING:
               {
                 crcCalculated = false;
-                CStdString renamedfile = filename + _T(".missing");
+                std::string renamedfile = filename + _T(".missing");
                 if (!rename(filename.c_str(), renamedfile.c_str()))
                   Send(_T("226- File missing in SFV file, file has been renamed."));
                 else
@@ -2596,7 +2596,7 @@ void CControlSocket::ForceClose(int nReason)
 
 }
 
-void CControlSocket::IncUserCount(const CStdString &user)
+void CControlSocket::IncUserCount(const std::string &user)
 {
     int curcount=GetUserCount(user)+1;
     m_Sync.Lock();
@@ -2604,7 +2604,7 @@ void CControlSocket::IncUserCount(const CStdString &user)
     m_Sync.Unlock();
 }
 
-void CControlSocket::DecUserCount(const CStdString &user)
+void CControlSocket::DecUserCount(const std::string &user)
 {
     int curcount=GetUserCount(user)-1;
     if (curcount<0)
@@ -2614,11 +2614,11 @@ void CControlSocket::DecUserCount(const CStdString &user)
     m_Sync.Unlock();
 }
 
-int CControlSocket::GetUserCount(const CStdString &user)
+int CControlSocket::GetUserCount(const std::string &user)
 {
     m_Sync.Lock();
     int count=0;
-    std::map<CStdString, int>::iterator iter = m_UserCount.find(user);
+    std::map<std::string, int>::iterator iter = m_UserCount.find(user);
     if (iter!=m_UserCount.end())
         count = iter->second;
     m_Sync.Unlock();
@@ -2698,7 +2698,7 @@ void CControlSocket::ResetTransferstatus()
     m_transferstatus.type=-1;
 }
 
-BOOL CControlSocket::UnquoteArgs(CStdString &args)
+BOOL CControlSocket::UnquoteArgs(std::string &args)
 {
     args.TrimLeft( _T(" ") );
     args.TrimRight( _T(" ") );
@@ -2783,7 +2783,7 @@ BOOL CControlSocket::DoUserLogin(char* sendme)
 
         else if (user.GetUserLimit() && GetUserCount(m_status.user)>=user.GetUserLimit())
         {
-                CStdString str;
+                std::string str;
                 str.Format("Refusing connection. Reason: Max. connection count reached for the user \"%s\".",m_status.user);
                 SendStatus(str,1);
                 strcpy(sendme, "421 Too many users logged in for this account. Try again later.");
@@ -2791,7 +2791,7 @@ BOOL CControlSocket::DoUserLogin(char* sendme)
                 return FALSE;
         }
 
-        CStdString ip;
+        std::string ip;
         unsigned int nPort;
 
         SOCKADDR_IN sockAddr;
@@ -2807,7 +2807,7 @@ BOOL CControlSocket::DoUserLogin(char* sendme)
         int count=m_pOwner->GetIpCount(ip);
         if (user.nIpLimit && count>=user.GetIpLimit())
         {
-            CStdString str;
+            std::string str;
             if (count==1)
                 str.Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected once)",ip);
             else
@@ -2831,7 +2831,7 @@ BOOL CControlSocket::DoUserLogin(char* sendme)
         count=GetUserCount(user.user);
         if (user.GetUserLimit() && count>=user.GetUserLimit())
         {
-            CStdString str;
+            std::string str;
             str.Format("Refusing connection. Reason: Maximum connection count (%d) reached for this user", user.GetUserLimit());
             SendStatus(str,1);
             sprintf(sendme, "421 Refusing connection. Maximum connection count reached for the user '%s'", user.user);

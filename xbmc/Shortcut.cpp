@@ -40,7 +40,7 @@ CShortcut::~CShortcut()
 {
 }
 
-bool CShortcut::Create(const CStdString& szPath)
+bool CShortcut::Create(const std::string& szPath)
 {
   CXBMCTinyXML xmlDoc;
   if ( !xmlDoc.LoadFile( szPath ) )
@@ -49,7 +49,7 @@ bool CShortcut::Create(const CStdString& szPath)
   bool bPath = false;
 
   TiXmlElement* pRootElement = xmlDoc.RootElement();
-  CStdString strValue = pRootElement->Value();
+  std::string strValue = pRootElement->Value();
   if ( strValue != "shortcut")
     return false;
   const TiXmlNode *pChild = pRootElement->FirstChild();
@@ -57,7 +57,7 @@ bool CShortcut::Create(const CStdString& szPath)
   m_strCustomGame.Empty();
   while (pChild > 0)
   {
-    CStdString strValue = pChild->Value();
+    std::string strValue = pChild->Value();
     if (strValue == "path")
     {
       if (pChild->FirstChild())
@@ -82,7 +82,7 @@ bool CShortcut::Create(const CStdString& szPath)
         m_strParameters = pChild->FirstChild()->Value();
       }
     }
-    
+
     if (strValue == "thumb")
     {
       if (pChild->FirstChild())
@@ -104,7 +104,7 @@ bool CShortcut::Create(const CStdString& szPath)
       const TiXmlNode* pCustomElement = pChild->FirstChildElement();
       while (pCustomElement > 0)
       {
-        CStdString strCustomValue = pCustomElement->Value();
+        std::string strCustomValue = pCustomElement->Value();
         if (strCustomValue == "game")
           m_strCustomGame = pCustomElement->FirstChild()->Value();
 
@@ -119,10 +119,10 @@ bool CShortcut::Create(const CStdString& szPath)
   return bPath ? true : false;
 }
 
-bool CShortcut::Save(const CStdString& strFileName)
+bool CShortcut::Save(const std::string& strFileName)
 {
   // Make shortcut filename compatible
-  CStdString strTotalPath = CUtil::MakeLegalPath(strFileName);
+  std::string strTotalPath = CUtil::MakeLegalPath(strFileName);
 
   // Remove old file
   CFile::Delete(strTotalPath);

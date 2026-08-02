@@ -23,9 +23,10 @@
 #include "md5.h"
 #include "InfoLoader.h"
 #include "settings/ISubSettings.h"
-#include "utils/StdString.h"
 
 #include "platform/xbox/XKEEPROM.h"
+
+#include <string>
 
 #define KB  (1024)          // 1 KiloByte (1KB)   1024 Byte (2^10 Byte)
 #define MB  (1024*KB)       // 1 MegaByte (1MB)   1024 KB (2^10 KB)
@@ -74,38 +75,38 @@ public:
   };
 
   bool haveInternetState;
-  CStdString systemUptime;
-  CStdString systemTotalUptime;
-  CStdString internetState;
-  CStdString videoEncoder;
-  CStdString cpuFrequency;
-  CStdString kernelVersion;
-  CStdString macAddress;
+  std::string systemUptime;
+  std::string systemTotalUptime;
+  std::string internetState;
+  std::string videoEncoder;
+  std::string cpuFrequency;
+  std::string kernelVersion;
+  std::string macAddress;
 
 #ifdef _XBOX
   // info specific to xbox
-  CStdString xboxBios;
-  CStdString xboxModChip;
-  CStdString mplayerversion;
-  CStdString xboxversion;
-  CStdString avpackinfo;
-  CStdString xboxserial;
-  CStdString hddlockkey;
-  CStdString hddbootdate;
-  CStdString hddcyclecount;
-  CStdString videoxberegion;
-  CStdString videodvdzone;
-  CStdString produceinfo;
+  std::string xboxBios;
+  std::string xboxModChip;
+  std::string mplayerversion;
+  std::string xboxversion;
+  std::string avpackinfo;
+  std::string xboxserial;
+  std::string hddlockkey;
+  std::string hddbootdate;
+  std::string hddcyclecount;
+  std::string videoxberegion;
+  std::string videodvdzone;
+  std::string produceinfo;
 
-  CStdString HDDModel;
-  CStdString HDDSerial;
-  CStdString HDDFirmware;
-  CStdString HDDpw;
-  CStdString HDDLockState;
+  std::string HDDModel;
+  std::string HDDSerial;
+  std::string HDDFirmware;
+  std::string HDDpw;
+  std::string HDDLockState;
   signed char HDDTemp;
 
-  CStdString DVDModel;
-  CStdString DVDFirmware;
+  std::string DVDModel;
+  std::string DVDFirmware;
 #endif
 };
 
@@ -120,11 +121,11 @@ public:
 private:
   bool SystemUpTime(int iInputMinutes, int &iMinutes, int &iHours, int &iDays);
   double GetCPUFrequency();
-  CStdString GetInternetState();
-  CStdString GetSystemUpTime(bool bTotalUptime);
-  CStdString GetCPUFreqInfo();
-  CStdString GetMACAddress();
-  CStdString GetVideoEncoder();
+  std::string GetInternetState();
+  std::string GetSystemUpTime(bool bTotalUptime);
+  std::string GetCPUFreqInfo();
+  std::string GetMACAddress();
+  std::string GetVideoEncoder();
 
   CSysData m_info;
 };
@@ -140,37 +141,37 @@ public:
 
   char MD5_Sign[32 + 1];
 
-  bool GetDVDInfo(CStdString& strDVDModel, CStdString& strDVDFirmware);
-  bool GetHDDInfo(CStdString& strHDDModel, CStdString& strHDDSerial,CStdString& strHDDFirmware,CStdString& strHDDpw,CStdString& strHDDLockState);
-  static bool GetRefurbInfo(CStdString& rfi_FirstBootTime, CStdString& rfi_PowerCycleCount);
+  bool GetDVDInfo(std::string& strDVDModel, std::string& strDVDFirmware);
+  bool GetHDDInfo(std::string& strHDDModel, std::string& strHDDSerial,std::string& strHDDFirmware,std::string& strHDDpw,std::string& strHDDLockState);
+  static bool GetRefurbInfo(std::string& rfi_FirstBootTime, std::string& rfi_PowerCycleCount);
 
   bool CreateBiosBackup();
   bool CreateEEPROMBackup();
   void WriteTXTInfoFile();
 
 #ifdef _XBOX
-  static CStdString SmartXXModCHIP();
-  static CStdString GetAVPackInfo();
-  static CStdString GetMPlayerVersion();
-  CStdString GetUnits(int iFrontPort);
-  CStdString GetXBOXSerial();
-  CStdString GetXBProduceInfo();
-  CStdString GetVideoXBERegion();
-  CStdString GetDVDZone();
-  CStdString GetXBLiveKey();
-  CStdString GetHDDKey();
-  static CStdString GetModChipInfo();
-  CStdString GetBIOSInfo();
-  CStdString GetTrayState();
+  static std::string SmartXXModCHIP();
+  static std::string GetAVPackInfo();
+  static std::string GetMPlayerVersion();
+  std::string GetUnits(int iFrontPort);
+  std::string GetXBOXSerial();
+  std::string GetXBProduceInfo();
+  std::string GetVideoXBERegion();
+  std::string GetDVDZone();
+  std::string GetXBLiveKey();
+  std::string GetHDDKey();
+  static std::string GetModChipInfo();
+  std::string GetBIOSInfo();
+  std::string GetTrayState();
 #endif
 
-  static CStdString GetUserAgent();
+  static std::string GetUserAgent();
   bool HasInternet() const;
-  static CStdString GetKernelVersion();
-  static CStdString GetXBVerInfo();
-  bool GetDiskSpace(const CStdString drive,int& iTotal, int& iTotalFree, int& iTotalUsed, int& iPercentFree, int& iPercentUsed);
-  CStdString GetHddSpaceInfo(int& percent, int drive, bool shortText=false);
-  CStdString GetHddSpaceInfo(int drive, bool shortText=false);
+  static std::string GetKernelVersion();
+  static std::string GetXBVerInfo();
+  bool GetDiskSpace(const std::string drive,int& iTotal, int& iTotalFree, int& iTotalUsed, int& iPercentFree, int& iPercentUsed);
+  std::string GetHddSpaceInfo(int& percent, int drive, bool shortText=false);
+  std::string GetHddSpaceInfo(int drive, bool shortText=false);
 
   int GetTotalUptime() const { return m_iSystemTimeTotalUp; }
   void SetTotalUptime(int uptime) { m_iSystemTimeTotalUp = uptime; }
@@ -196,16 +197,16 @@ public:
   XBOX_VERSION  m_XBOXVersion;
 
   static double RDTSC(void);
-  static bool GetXBOXVersionDetected(CStdString& strXboxVer);
-  static CStdString GetModCHIPDetected();
+  static bool GetXBOXVersionDetected(std::string& strXboxVer);
+  static std::string GetModCHIPDetected();
 
   static struct Bios * LoadBiosSigns();
-  bool CheckBios(CStdString& strDetBiosNa);
+  bool CheckBios(std::string& strDetBiosNa);
   static char* ReturnBiosName(char *buffer, char *str);
   static char* ReturnBiosSign(char *buffer, char *str);
   char* CheckMD5 (struct Bios *Listone, char *Sign);
   char* MD5Buffer(char *filename,long PosizioneInizio,int KBytes);
-  static CStdString MD5BufferNew(char *filename,long PosizioneInizio,int KBytes);
+  static std::string MD5BufferNew(char *filename,long PosizioneInizio,int KBytes);
 #endif
 
 protected:

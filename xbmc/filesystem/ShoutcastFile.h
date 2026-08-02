@@ -26,9 +26,10 @@
 
 #include "IFile.h"
 #include "CurlFile.h"
-#include "utils/StdString.h"
 #include "music/tags/MusicInfoTag.h"
 #include "threads/Thread.h"
+
+#include <string>
 
 namespace XFILE
 {

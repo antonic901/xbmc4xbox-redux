@@ -25,7 +25,7 @@
 // it wont cause a linker circular dependency since it's just
 // a header.
 #include "utils/StringUtils.h"
-#include "utils/StdString.h"
+#include <string>
 //---------------------------------------------------------
 #include "ilog.h"
 
@@ -58,7 +58,7 @@ namespace XbmcCommons
   private:
 
     std::string classname;
-    CStdString message;
+    std::string message;
 
   protected:
     static ILogger* logger;
@@ -106,14 +106,14 @@ namespace XbmcCommons
    * This class forms the base class for unchecked exceptions. Unchecked exceptions
    * are those that really shouldn't be handled explicitly. For example, on windows
    * when a access violaton is converted to a win32_exception, there's nothing
-   * that can be done in most code. The outer most stack frame might try to 
+   * that can be done in most code. The outer most stack frame might try to
    * do some error logging prior to shutting down, but that's really it.
    */
   XBMCCOMMONS_STANDARD_EXCEPTION(UncheckedException);
 
 /**
- * In cases where you catch(...){} you will (may) inadvertently be 
- * catching UncheckedException's. Therefore this macro will allow 
+ * In cases where you catch(...){} you will (may) inadvertently be
+ * catching UncheckedException's. Therefore this macro will allow
  * you to do something equivalent to:
  *    catch (anything except UncheckedException) {}
  *

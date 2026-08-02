@@ -520,8 +520,8 @@ BOOL CNtpSocket::Connect(LPCTSTR pszHostAddress, int nPort)
   sockAddr.sin_family = AF_INET;
   sockAddr.sin_port = htons((u_short)nPort);
 
-  CStdString strHostName = lpszAscii;
-  CStdString strIpAdres;
+  std::string strHostName = lpszAscii;
+  std::string strIpAdres;
   if (!CDNSNameCache::Lookup(strHostName, strIpAdres))
   {
     return false;

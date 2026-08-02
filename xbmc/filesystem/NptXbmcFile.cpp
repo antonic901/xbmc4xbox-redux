@@ -108,7 +108,7 @@ NPT_XbmcFileStream::Flush()
 +---------------------------------------------------------------------*/
 class NPT_XbmcFileInputStream : public NPT_InputStream,
                                 private NPT_XbmcFileStream
-                                
+
 {
 public:
     // constructors and destructor
@@ -116,8 +116,8 @@ public:
         NPT_XbmcFileStream(file) {}
 
     // NPT_InputStream methods
-    NPT_Result Read(void*     buffer, 
-                    NPT_Size  bytes_to_read, 
+    NPT_Result Read(void*     buffer,
+                    NPT_Size  bytes_to_read,
                     NPT_Size* bytes_read);
     NPT_Result Seek(NPT_Position offset) {
         return NPT_XbmcFileStream::Seek(offset);
@@ -133,8 +133,8 @@ public:
 |   NPT_XbmcFileInputStream::Read
 +---------------------------------------------------------------------*/
 NPT_Result
-NPT_XbmcFileInputStream::Read(void*     buffer, 
-                              NPT_Size  bytes_to_read, 
+NPT_XbmcFileInputStream::Read(void*     buffer,
+                              NPT_Size  bytes_to_read,
                               NPT_Size* bytes_read)
 {
     unsigned int nb_read;
@@ -145,7 +145,7 @@ NPT_XbmcFileInputStream::Read(void*     buffer,
     }
 
     // read from the file
-    nb_read = m_FileReference->Read(buffer, bytes_to_read);    
+    nb_read = m_FileReference->Read(buffer, bytes_to_read);
     if (nb_read > 0) {
         if (bytes_read) *bytes_read = (NPT_Size)nb_read;
         return NPT_SUCCESS;
@@ -198,8 +198,8 @@ public:
         NPT_XbmcFileStream(file) {}
 
     // NPT_OutputStream methods
-    NPT_Result Write(const void* buffer, 
-                     NPT_Size    bytes_to_write, 
+    NPT_Result Write(const void* buffer,
+                     NPT_Size    bytes_to_write,
                      NPT_Size*   bytes_written);
     NPT_Result Seek(NPT_Position offset) {
         return NPT_XbmcFileStream::Seek(offset);
@@ -216,12 +216,12 @@ public:
 |   NPT_XbmcFileOutputStream::Write
 +---------------------------------------------------------------------*/
 NPT_Result
-NPT_XbmcFileOutputStream::Write(const void* buffer, 
-                                NPT_Size    bytes_to_write, 
+NPT_XbmcFileOutputStream::Write(const void* buffer,
+                                NPT_Size    bytes_to_write,
                                 NPT_Size*   bytes_written)
 {
     int nb_written;
-    nb_written = m_FileReference->Write(buffer, bytes_to_write);    
+    nb_written = m_FileReference->Write(buffer, bytes_to_write);
 
     if (nb_written > 0) {
         if (bytes_written) *bytes_written = (NPT_Size)nb_written;
@@ -308,7 +308,7 @@ NPT_XbmcFile::Open(NPT_File::OpenMode mode)
         /* path is not fully qualified so assume it's relative to home dir */
         if (url->GetFileName().empty()) {
             delete url;
-            CStdString homepath;
+            std::string homepath;
             CUtil::GetHomePath(homepath);
             url = new CURL(homepath + "/" + name);
         }
@@ -348,7 +348,7 @@ NPT_XbmcFile::Close()
 /*----------------------------------------------------------------------
 |   NPT_XbmcFile::GetInputStream
 +---------------------------------------------------------------------*/
-NPT_Result 
+NPT_Result
 NPT_XbmcFile::GetInputStream(NPT_InputStreamReference& stream)
 {
     // default value
@@ -371,7 +371,7 @@ NPT_XbmcFile::GetInputStream(NPT_InputStreamReference& stream)
 /*----------------------------------------------------------------------
 |   NPT_XbmcFile::GetOutputStream
 +---------------------------------------------------------------------*/
-NPT_Result 
+NPT_Result
 NPT_XbmcFile::GetOutputStream(NPT_OutputStreamReference& stream)
 {
     // default value
@@ -384,7 +384,7 @@ NPT_XbmcFile::GetOutputStream(NPT_OutputStreamReference& stream)
     if (!(m_Mode & NPT_FILE_OPEN_MODE_WRITE)) {
         return NPT_ERROR_FILE_NOT_WRITABLE;
     }
-    
+
     // create a stream
     stream = new NPT_XbmcFileOutputStream(m_FileReference);
 
@@ -402,7 +402,7 @@ NPT_File::NPT_File(const char* path) : m_Path(path)
 /*----------------------------------------------------------------------
 |   NPT_File::operator=
 +---------------------------------------------------------------------*/
-NPT_File& 
+NPT_File&
 NPT_File::operator=(const NPT_File& file)
 {
     if (this != &file) {

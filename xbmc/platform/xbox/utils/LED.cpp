@@ -244,7 +244,7 @@ bool ILEDSmartxxRGB::IsRunning()
   return (IsRunning());
 }
 
-void ILEDSmartxxRGB::getRGBValues(const CStdString &strRGBa, const CStdString &strRGBb, const CStdString &strWhiteA, const CStdString &strWhiteB, RGBVALUES* s_rgb)
+void ILEDSmartxxRGB::getRGBValues(const std::string &strRGBa, const std::string &strRGBb, const std::string &strWhiteA, const std::string &strWhiteB, RGBVALUES* s_rgb)
 {
     DWORD red=0,green=0,blue=0,white=0;
 
@@ -297,7 +297,7 @@ void ILEDSmartxxRGB::getRGBValues(const CStdString &strRGBa, const CStdString &s
     }
 }
 
-bool ILEDSmartxxRGB::SetRGBStatus(const CStdString &strStatus)
+bool ILEDSmartxxRGB::SetRGBStatus(const std::string &strStatus)
 {
   strLastStatus = strCurrentStatus;
   strCurrentStatus = strStatus;
@@ -321,7 +321,7 @@ bool ILEDSmartxxRGB::SetRGBLed(int red, int green, int blue, int white)
 //strWhiteB: to state in form: #FF  //I Hope this LED port can handle this ;)
 //strTransition: "none", "blink", "fade", "fadeloop", "faderepeat"
 //iTranTime: Transition time in ms between transitions e.g. 50
-bool ILEDSmartxxRGB::SetRGBState(const CStdString &strRGB1, const CStdString &strRGB2, const CStdString &strWhiteA, const CStdString &strWhiteB, const CStdString &strTransition, int iTranTime)
+bool ILEDSmartxxRGB::SetRGBState(const std::string &strRGB1, const std::string &strRGB2, const std::string &strWhiteA, const std::string &strWhiteB, const std::string &strTransition, int iTranTime)
 {
   // we have a new request: start reset
   strCurrentStatus = "NULL";

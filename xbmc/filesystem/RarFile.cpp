@@ -69,7 +69,7 @@ void CRarFileExtractThread::Start(Archive* pArc, CommandData* pCmd, CmdExtract* 
   m_pCmd = pCmd;
   m_pExtract = pExtract;
   m_iSize = iSize;
-  
+
   m_pExtract->GetDataIO().hBufferFilled = new CEvent;
   m_pExtract->GetDataIO().hBufferEmpty = new CEvent;
   m_pExtract->GetDataIO().hSeek = new CEvent(true);
@@ -138,11 +138,11 @@ CRarFile::~CRarFile()
 {
   if (!m_bOpen)
     return;
-  
+
   if (m_bUseFile)
   {
     m_File.Close();
-    g_RarManager.ClearCachedFile(m_strRarPath,m_strPathInRar); 
+    g_RarManager.ClearCachedFile(m_strRarPath,m_strPathInRar);
   }
   else
   {
@@ -176,7 +176,7 @@ bool CRarFile::Open(const CURL& url)
 
       m_iFileSize = items[i]->m_dwSize;
       m_bOpen = true;
-      
+
       // perform 'noidx' check
       CFileInfo* pFile = g_RarManager.GetFileInRar(m_strRarPath,m_strPathInRar);
       if (pFile)
@@ -194,7 +194,7 @@ bool CRarFile::Open(const CURL& url)
       }
       return true;
     }
-    else 
+    else
     {
       if (items[i]->m_dwSize > ((int64_t)4)*1024*1024*1024) // 4 gig limit of fat-x
       {
@@ -207,10 +207,10 @@ bool CRarFile::Open(const CURL& url)
       if ((!info || !CFile::Exists(info->m_strCachedPath)) && m_bFileOptions & EXFILE_NOCACHE)
         return false;
       m_bUseFile = true;
-      CStdString strPathInCache;
-      
-      if (!g_RarManager.CacheRarredFile(strPathInCache, m_strRarPath, m_strPathInRar, 
-                                        EXFILE_AUTODELETE | m_bFileOptions, m_strCacheDir, 
+      std::string strPathInCache;
+
+      if (!g_RarManager.CacheRarredFile(strPathInCache, m_strRarPath, m_strPathInRar,
+                                        EXFILE_AUTODELETE | m_bFileOptions, m_strCacheDir,
                                         items[i]->m_dwSize))
       {
         CLog::Log(LOGERROR,"filerar::open failed to cache file %s",m_strPathInRar.c_str());
@@ -222,7 +222,7 @@ bool CRarFile::Open(const CURL& url)
         CLog::Log(LOGERROR,"filerar::open failed to open file in cache: %s",strPathInCache.c_str());
         return false;
       }
-      
+
       m_bOpen = true;
       return true;
     }
@@ -233,12 +233,12 @@ bool CRarFile::Open(const CURL& url)
 bool CRarFile::Exists(const CURL& url)
 {
   InitFromUrl(url);
-  CStdString strPathInCache;
+  std::string strPathInCache;
   bool bResult;
-  
-  if (!g_RarManager.IsFileInRar(bResult, m_strRarPath, m_strPathInRar)) 
+
+  if (!g_RarManager.IsFileInRar(bResult, m_strRarPath, m_strPathInRar))
     return false;
-  
+
   return bResult;
 }
 //*********************************************************************************************
@@ -282,10 +282,10 @@ ssize_t CRarFile::Read(void *lpBuf, size_t uiBufSize)
 
   if (m_bUseFile)
     return m_File.Read(lpBuf,uiBufSize);
-  
+
   if (m_iFilePosition >= GetLength()) // we are done
     return 0;
-  
+
   if( !m_pExtract->GetDataIO().hBufferEmpty->WaitMSec(5000) )
   {
     CLog::Log(LOGERROR, "%s - Timeout waiting for buffer to empty", __FUNCTION__);
@@ -314,13 +314,13 @@ ssize_t CRarFile::Read(void *lpBuf, size_t uiBufSize)
       m_szStartOfBuffer = m_szBuffer;
       m_iBufferStart = m_iFilePosition;
     }
-    
+
     m_pExtract->GetDataIO().hBufferFilled->Set();
     m_pExtract->GetDataIO().hBufferEmpty->Wait();
 
     if (m_pExtract->GetDataIO().NextVolumeMissing)
       break;
-   
+
     m_iDataInBuffer = MAXWINMEMSIZE-m_pExtract->GetDataIO().UnpackToMemorySize;
 
     if (m_iDataInBuffer < 0 ||
@@ -333,7 +333,7 @@ ssize_t CRarFile::Read(void *lpBuf, size_t uiBufSize)
 
     if (m_iDataInBuffer == 0)
       break;
-    
+
     if (m_iDataInBuffer > uicBufSize)
     {
       memcpy(pBuf,m_szStartOfBuffer,int(uicBufSize));
@@ -353,9 +353,9 @@ ssize_t CRarFile::Read(void *lpBuf, size_t uiBufSize)
       m_iDataInBuffer = 0;
     }
   }
-  
+
   m_pExtract->GetDataIO().hBufferEmpty->Set();
-  
+
   return (ssize_t)(uiBufSize-uicBufSize);
 }
 
@@ -385,7 +385,7 @@ void CRarFile::Close()
 
 //*********************************************************************************************
 int64_t CRarFile::Seek(int64_t iFilePosition, int iWhence)
-{ 
+{
   if (!m_bOpen)
     return -1;
 
@@ -394,7 +394,7 @@ int64_t CRarFile::Seek(int64_t iFilePosition, int iWhence)
 
   if (m_bUseFile)
     return m_File.Seek(iFilePosition,iWhence);
-  
+
   if( !m_pExtract->GetDataIO().hBufferEmpty->WaitMSec(SEEKTIMOUT) )
   {
     CLog::Log(LOGERROR, "%s - Timeout waiting for buffer to empty", __FUNCTION__);
@@ -402,7 +402,7 @@ int64_t CRarFile::Seek(int64_t iFilePosition, int iWhence)
   }
 
   m_pExtract->GetDataIO().hBufferEmpty->Set();
- 
+
   switch (iWhence)
   {
     case SEEK_CUR:
@@ -413,11 +413,11 @@ int64_t CRarFile::Seek(int64_t iFilePosition, int iWhence)
       break;
     case SEEK_END:
       if (iFilePosition == 0) // do not seek to end
-      { 
+      {
         m_iFilePosition = this->GetLength();
         m_iDataInBuffer = 0;
         m_iBufferStart = this->GetLength();
-        
+
         return this->GetLength();
       }
 
@@ -427,29 +427,29 @@ int64_t CRarFile::Seek(int64_t iFilePosition, int iWhence)
     default:
       return -1;
   }
-  
-  if (iFilePosition > this->GetLength()) 
+
+  if (iFilePosition > this->GetLength())
     return -1;
-  
+
   if (iFilePosition == m_iFilePosition) // happens a lot
-    return m_iFilePosition; 
-  
-  if ((iFilePosition >= m_iBufferStart) && (iFilePosition < m_iBufferStart+MAXWINMEMSIZE) 
+    return m_iFilePosition;
+
+  if ((iFilePosition >= m_iBufferStart) && (iFilePosition < m_iBufferStart+MAXWINMEMSIZE)
                                         && (m_iDataInBuffer > 0)) // we are within current buffer
   {
     m_iDataInBuffer = MAXWINMEMSIZE-(iFilePosition-m_iBufferStart);
     m_szStartOfBuffer = m_szBuffer+MAXWINMEMSIZE-m_iDataInBuffer;
     m_iFilePosition = iFilePosition;
-    
+
     return m_iFilePosition;
   }
-  
+
   if (iFilePosition < m_iBufferStart )
   {
     CleanUp();
     if (!OpenInArchive())
       return -1;
-    
+
     if( !m_pExtract->GetDataIO().hBufferEmpty->WaitMSec(SEEKTIMOUT) )
     {
       CLog::Log(LOGERROR, "%s - Timeout waiting for buffer to empty", __FUNCTION__);
@@ -460,7 +460,7 @@ int64_t CRarFile::Seek(int64_t iFilePosition, int iWhence)
   }
   else
     m_pExtract->GetDataIO().m_iSeekTo = iFilePosition;
-  
+
   m_pExtract->GetDataIO().SetUnpackToMemory(m_szBuffer,MAXWINMEMSIZE);
   m_pExtract->GetDataIO().hSeek->Set();
   m_pExtract->GetDataIO().hBufferFilled->Set();
@@ -494,7 +494,7 @@ int64_t CRarFile::Seek(int64_t iFilePosition, int iWhence)
 
   m_szStartOfBuffer = m_szBuffer+MAXWINMEMSIZE-m_iDataInBuffer;
   m_iFilePosition = iFilePosition;
-  
+
   return m_iFilePosition;
 }
 
@@ -538,12 +538,12 @@ void CRarFile::InitFromUrl(const CURL& url)
   URIUtils::AddSlashAtEnd(m_strCacheDir);
   m_strRarPath = url.GetHostName();
   m_strPassword = url.GetUserName();
-  m_strPathInRar = url.GetFileName();  
+  m_strPathInRar = url.GetFileName();
 
   vector<std::string> options;
   if (!url.GetOptions().empty())
     StringUtils::Tokenize(url.GetOptions().substr(1), options, "&");
-  
+
   m_bFileOptions = 0;
 
   for( vector<std::string>::iterator it = options.begin();it != options.end(); it++)
@@ -551,8 +551,8 @@ void CRarFile::InitFromUrl(const CURL& url)
     int iEqual = (*it).find('=');
     if( iEqual >= 0 )
     {
-      CStdString strOption = StringUtils::Left((*it), iEqual);
-      CStdString strValue = StringUtils::Mid((*it), iEqual+1);
+      std::string strOption = StringUtils::Left((*it), iEqual);
+      std::string strValue = StringUtils::Mid((*it), iEqual+1);
 
       if( strOption.Equals("flags") )
         m_bFileOptions = atoi(strValue.c_str());
@@ -687,7 +687,7 @@ bool CRarFile::OpenInArchive()
 
       if (m_pArc->GetHeaderType() == FILE_HEAD)
       {
-        CStdString strFileName;
+        std::string strFileName;
 
         if (wcslen(m_pArc->NewLhd.FileNameW) > 0)
         {
@@ -707,21 +707,21 @@ bool CRarFile::OpenInArchive()
           break;
         }
       }
-    
+
       m_pArc->SeekToNext();
     }
-  
+
     m_szBuffer = new byte[MAXWINMEMSIZE];
     m_szStartOfBuffer = m_szBuffer;
     m_pExtract->GetDataIO().SetUnpackToMemory(m_szBuffer,0);
     m_iDataInBuffer = -1;
     m_iFilePosition = 0;
     m_iBufferStart = 0;
-  
+
     delete m_pExtractThread;
     m_pExtractThread = new CRarFileExtractThread();
     m_pExtractThread->Start(m_pArc,m_pCmd,m_pExtract,iHeaderSize);
-  
+
     return true;
   }
   catch (int rarErrCode)

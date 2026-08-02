@@ -29,7 +29,7 @@ CMusicInfoTagLoaderMPC::CMusicInfoTagLoaderMPC(void)
 CMusicInfoTagLoaderMPC::~CMusicInfoTagLoaderMPC()
 {}
 
-int CMusicInfoTagLoaderMPC::ReadDuration(const CStdString &strFileName)
+int CMusicInfoTagLoaderMPC::ReadDuration(const std::string &strFileName)
 {
   DVDPlayerCodec codec;
   if (codec.Init(strFileName, 4096))

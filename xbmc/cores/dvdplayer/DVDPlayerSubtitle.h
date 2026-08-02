@@ -41,7 +41,7 @@ public:
   void Process(double pts);
   void Flush();
   void FindSubtitles(const char* strFilename);
-  void GetCurrentSubtitle(CStdString& strSubtitle, double pts);
+  void GetCurrentSubtitle(std::string& strSubtitle, double pts);
   int GetSubtitleCount();
 
   void UpdateOverlayInfo(CDVDInputStreamNavigator* pStream, int iAction) { m_pOverlayContainer->UpdateOverlayInfo(pStream, &m_dvdspus, iAction); }
@@ -53,7 +53,7 @@ public:
 
   bool IsStalled() { return m_pOverlayContainer->GetSize() == 0; }
 private:
-  CDVDOverlayContainer* m_pOverlayContainer;  
+  CDVDOverlayContainer* m_pOverlayContainer;
 
   CDVDSubtitleStream* m_pSubtitleStream;
   CDVDSubtitleParser* m_pSubtitleFileParser;

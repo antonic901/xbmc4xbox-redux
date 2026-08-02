@@ -105,7 +105,7 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   {
     m_dllAvUtil.av_opt_set(m_pCodecContext, it->m_name.c_str(), it->m_value.c_str(), 0);
   }
-  
+
   if (m_dllAvCodec.avcodec_open2(m_pCodecContext, pCodec, NULL) < 0)
   {
     CLog::Log(LOGDEBUG,"CDVDVideoCodecFFmpeg::Open() Unable to open codec");
@@ -116,7 +116,7 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
   if (!m_pFrame) return false;
 
   if(pCodec->name)
-    m_name = CStdString("ff-") + pCodec->name;
+    m_name = std::string("ff-") + pCodec->name;
   else
     m_name = "ffmpeg";
 
@@ -226,7 +226,7 @@ int CDVDVideoCodecFFmpeg::Decode(BYTE* pData, int iSize, double dts, double pts)
       if(!m_dllSwScale.Load())
         return VC_ERROR;
 
-      m_dllSwScale.sws_rgb2rgb_init(SWS_CPU_CAPS_MMX2);    
+      m_dllSwScale.sws_rgb2rgb_init(SWS_CPU_CAPS_MMX2);
     }
 
     if (!m_pConvertFrame)

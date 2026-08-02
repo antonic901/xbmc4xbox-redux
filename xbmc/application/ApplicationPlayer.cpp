@@ -20,8 +20,8 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/SettingsComponent.h"
-#include "utils/StdString.h"
 
+#include <string>
 #include <boost/make_shared.hpp>
 
 boost::shared_ptr<const IPlayer> CApplicationPlayer::GetInternal() const
@@ -498,7 +498,7 @@ void CApplicationPlayer::GetAudioStreamInfo(int index, SPlayerAudioStreamInfo& i
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
   {
-    CStdString strName, strLanguage;
+    std::string strName, strLanguage;
     player->GetAudioStreamName(index, strName);
     player->GetAudioStreamLanguage(index, strLanguage);
 
@@ -543,7 +543,7 @@ void CApplicationPlayer::GetSubtitleStreamInfo(int index, SPlayerSubtitleStreamI
   const boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
   {
-    CStdString strName, strLanguage;
+    std::string strName, strLanguage;
     player->GetSubtitleName(index, strName);
     player->GetSubtitleLanguage(index, strLanguage);
 
@@ -796,7 +796,7 @@ void CApplicationPlayer::GetAudioInfo(std::string& strAudioInfo)
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
   {
-    CStdString temp;
+    std::string temp;
     player->GetAudioInfo(temp);
     strAudioInfo = temp;
   }
@@ -807,7 +807,7 @@ void CApplicationPlayer::GetVideoInfo(std::string& strVideoInfo)
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
   {
-    CStdString temp;
+    std::string temp;
     player->GetVideoInfo(temp);
     strVideoInfo = temp;
   }
@@ -818,7 +818,7 @@ void CApplicationPlayer::GetGeneralInfo(std::string& strVideoInfo)
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
   {
-    CStdString temp;
+    std::string temp;
     player->GetGeneralInfo(temp);
     strVideoInfo = temp;
   }
@@ -829,7 +829,7 @@ bool CApplicationPlayer::GetCurrentSubtitle(std::string& strSubtitle)
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
   {
-    CStdString temp;
+    std::string temp;
     bool ret = player->GetCurrentSubtitle(temp);
     strSubtitle = temp;
     return ret;

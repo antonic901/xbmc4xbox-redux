@@ -9790,7 +9790,7 @@ bool CMusicDatabase::GetAlbumFolder(const CAlbum& album,
   if (!strAlbumPath.empty())
   {
     // Get last folder from full path
-    CStdStringArray folders = URIUtils::SplitPath(strAlbumPath);
+    std::vector<std::string> folders = URIUtils::SplitPath(strAlbumPath);
     if (!folders.empty())
     {
       strFolder = folders.back();

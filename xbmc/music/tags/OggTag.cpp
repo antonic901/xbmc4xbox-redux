@@ -37,24 +37,24 @@ COggTag::~COggTag()
 {
 }
 
-bool COggTag::Read(const CStdString& strFile1)
+bool COggTag::Read(const std::string& strFile1)
 {
   if (!m_dll.Load())
     return false;
 
   CVorbisTag::Read(strFile1);
 
-  CStdString strFile=strFile1;
+  std::string strFile=strFile1;
   int currentStream=0;
 
   m_musicInfoTag.SetURL(strFile);
 
   if (URIUtils::HasExtension(strFile, ".oggstream"))
   {
-    CStdString strFileName=URIUtils::GetFileName(strFile);
+    std::string strFileName=URIUtils::GetFileName(strFile);
     int iStart=strFileName.ReverseFind("-")+1;
     currentStream = atoi(strFileName.substr(iStart, strFileName.size()-iStart-10).c_str())-1;
-    CStdString strPath=strFile;
+    std::string strPath=strFile;
     strFile = URIUtils::GetDirectory(strPath);
     URIUtils::RemoveSlashAtEnd(strFile);   // we want the filename
   }
@@ -86,7 +86,7 @@ bool COggTag::Read(const CStdString& strFile1)
   {
     for (int i=0; i<pComments->comments; ++i)
     {
-      CStdString strEntry=pComments->user_comments[i];
+      std::string strEntry=pComments->user_comments[i];
       ParseTagEntry(strEntry);
     }
   }
@@ -94,7 +94,7 @@ bool COggTag::Read(const CStdString& strFile1)
   return true;
 }
 
-int COggTag::GetStreamCount(const CStdString& strFile)
+int COggTag::GetStreamCount(const std::string& strFile)
 {
   if (!m_dll.Load())
     return 0;

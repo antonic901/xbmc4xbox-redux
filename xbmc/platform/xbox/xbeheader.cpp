@@ -27,7 +27,7 @@ CXBE::~CXBE()
   m_pImage = NULL;
 }
 
-bool CXBE::ExtractIcon(const CStdString& strFilename, const CStdString& strIcon)
+bool CXBE::ExtractIcon(const std::string& strFilename, const std::string& strIcon)
 {
   // Open the local file
   CAutoPtrHandle hFile( CreateFile( strFilename.c_str(),
@@ -119,7 +119,7 @@ bool CXBE::ExtractIcon(const CStdString& strFilename, const CStdString& strIcon)
 }
 
 // spiff
-uint32 CXBE::ExtractGameRegion(const CStdString& strFilename)
+uint32 CXBE::ExtractGameRegion(const std::string& strFilename)
 {
   // Open the local file
   CAutoPtrHandle hFile( CreateFile( strFilename.c_str(),
@@ -219,7 +219,7 @@ int CXBE::FilterRegion(int iRegion, bool bForceAllModes)
     else
       iRegion = iNTSCMode==1?VIDEO_NTSCM:VIDEO_PAL60;
   }
-  
+
   return iRegion;
 }
 

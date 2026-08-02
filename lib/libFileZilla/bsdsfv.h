@@ -26,7 +26,7 @@
 #include <vector>
 
 /*
-  Note: different buffer sizes may result in noticable 
+  Note: different buffer sizes may result in noticable
   different performance depending on system, so feel
   free to modify.
 */
@@ -63,8 +63,8 @@ protected:
   SfvTableEntry mSfvTable[MAXSFVFILE];
   int mNrEntries;
 
-  CStdString mSfvFile;
-  CStdString mSfvDir;
+  std::string mSfvFile;
+  std::string mSfvDir;
 };
 
 bool GetFileCRC(const char *filename, unsigned long& returnCrc);

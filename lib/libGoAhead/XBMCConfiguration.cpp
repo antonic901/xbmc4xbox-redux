@@ -14,7 +14,7 @@
 
 CXbmcConfiguration::CXbmcConfiguration()
 {
-	xbmcCfgLoaded = false;
+    xbmcCfgLoaded = false;
 }
 
 CXbmcConfiguration::~CXbmcConfiguration()
@@ -27,29 +27,29 @@ CXbmcConfiguration::~CXbmcConfiguration()
  */
 int CXbmcConfiguration::Load()
 {
-	if (!xbmcCfgLoaded)
-	{
+    if (!xbmcCfgLoaded)
+    {
     if (!xbmcCfg.LoadFile(CMediaSourceSettings::GetInstance().GetSourcesFile())) return -1;
-		xbmcCfgLoaded = true;
-	}
-	return 0;
+        xbmcCfgLoaded = true;
+    }
+    return 0;
 }
 
 /*
  * Retrieve size of bookmark type (type)
  * var type has to be set to a bookmark name (like video, music ...)
  */
-int CXbmcConfiguration::BookmarkSize( int eid, webs_t wp, CStdString& response, int argc, char_t **argv)
+int CXbmcConfiguration::BookmarkSize( int eid, webs_t wp, std::string& response, int argc, char_t **argv)
 {
-	char_t *type = NULL;
+    char_t *type = NULL;
 
-	// asp function is called within a script, get arguments
-	if (ejArgs(argc, argv, T("%s"),&type) < 1)
-	{
+    // asp function is called within a script, get arguments
+    if (ejArgs(argc, argv, T("%s"),&type) < 1)
+    {
            if (eid!=-1) websError(wp, 500, T("Insufficient args\n"));
               else response="Error:Insufficient args";
-		return -1;
-	}
+        return -1;
+    }
 
   VECSOURCES *pShares = CMediaSourceSettings::GetInstance().GetSources(type);
   if (pShares)
@@ -61,7 +61,7 @@ int CXbmcConfiguration::BookmarkSize( int eid, webs_t wp, CStdString& response, 
       ejSetResult( eid, buffer);
     else
     {
-      CStdString tmp;
+      std::string tmp;
       tmp.Format("%i", pShares->size());
       response="" + tmp;
     }
@@ -69,45 +69,45 @@ int CXbmcConfiguration::BookmarkSize( int eid, webs_t wp, CStdString& response, 
     return 0;
   }
 
-  if (eid!=-1) websError(wp, 500, T("Bookmark type does not exist\n")); 
+  if (eid!=-1) websError(wp, 500, T("Bookmark type does not exist\n"));
   else response="Error:Bookmark type does not exist";
   return -1;
 
-/*	// load sources.xml, write a messages if file could not be loaded
-	if (Load() == -1)
-	{
+/*    // load sources.xml, write a messages if file could not be loaded
+    if (Load() == -1)
+    {
     eid!=-1 ? websError(wp, 500, T("Could not load sources.xml\n")):
               response="Error:Could not load sources.xml";
-		return -1;
-	}
+        return -1;
+    }
 
-	// return number of
-	TiXmlElement *pRootElement = xbmcCfg.RootElement();
-	TiXmlNode *pNode = NULL;
+    // return number of
+    TiXmlElement *pRootElement = xbmcCfg.RootElement();
+    TiXmlNode *pNode = NULL;
 
-	pNode = pRootElement->FirstChild(type);
+    pNode = pRootElement->FirstChild(type);
 
-	if (!pNode)
-	{
+    if (!pNode)
+    {
     eid!=-1 ? websError(wp, 500, T("Bookmark type does not exist\n")):
               response="Error:Bookmark type does not exist";
-		return -1;
-	}
+        return -1;
+    }
 
-	TiXmlNode *pIt = NULL;
-	char buffer[10];
-	int counter = 0;
+    TiXmlNode *pIt = NULL;
+    char buffer[10];
+    int counter = 0;
 
-	while(pIt = pNode->IterateChildren("bookmark", pIt))	counter++;
-  if (eid!=-1) 
+    while(pIt = pNode->IterateChildren("bookmark", pIt))    counter++;
+  if (eid!=-1)
     ejSetResult( eid, itoa(counter, buffer, 10));
   else
   {
-    CStdString tmp;
+    std::string tmp;
     tmp.Format("%s", itoa(counter, buffer, 10));
     response="" + tmp;
   }
-	return 0;*/
+    return 0;*/
 }
 
 /*
@@ -116,16 +116,16 @@ int CXbmcConfiguration::BookmarkSize( int eid, webs_t wp, CStdString& response, 
  * var paramater = "name" or "path"
  * var id = position of bookmark
  */
-int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, CStdString& response, int argc, char_t **argv)
+int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, std::string& response, int argc, char_t **argv)
 {
-	char_t	*parameter, *type, *id = NULL;
+    char_t    *parameter, *type, *id = NULL;
 
-	// asp function is called within a script, get arguments
-	if (ejArgs(argc, argv, T("%s %s %s"), &type, &parameter, &id) < 3) {
+    // asp function is called within a script, get arguments
+    if (ejArgs(argc, argv, T("%s %s %s"), &type, &parameter, &id) < 3) {
           if (eid!=-1) websError(wp, 500, T("Insufficient args\n"));
             else response="Error:Insufficient args";
-		return -1;
-	}
+        return -1;
+    }
 
   int nr = 0;
   try { nr = atoi(id); }
@@ -146,31 +146,31 @@ int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, CStdString& response, i
   if (nr > 0 && nr <= (int)pShares->size())
   {
     const CMediaSource& share = (*pShares)[nr-1];
-    if (CStdString(parameter).Equals("path"))
+    if (std::string(parameter).Equals("path"))
     {
       if (eid!=-1)
         ejSetResult( eid, const_cast<char*>(share.strPath.c_str()));
       else
       {
-        CStdString tmp;
+        std::string tmp;
         tmp.Format("%s",share.strPath);
         response="" + tmp;
       }
     }
-    else if (CStdString(parameter).Equals("name"))
+    else if (std::string(parameter).Equals("name"))
     {
       if (eid!=-1)
         ejSetResult( eid, const_cast<char*>(share.strName.c_str()));
       else
       {
-        CStdString tmp;
+        std::string tmp;
         tmp.Format("%s",share.strName);
         response="" + tmp;
       }
     }
     else
     {
-      if (eid!=-1) websError(wp, 500, T("Parameter not known\n")); 
+      if (eid!=-1) websError(wp, 500, T("Parameter not known\n"));
         else response="Error:Parameter not known";
     }
     return 0;
@@ -181,76 +181,76 @@ int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, CStdString& response, i
   return -1;
 
 
-	/*// load sources.xml, write a messages if file could not be loaded
-	if (Load() == -1)
-	{
+    /*// load sources.xml, write a messages if file could not be loaded
+    if (Load() == -1)
+    {
     eid!=-1 ? websError(wp, 500, T("Could not load sources.xml\n")):
               response="Error:Could not load sources.xml";
-		return -1;
-	}
+        return -1;
+    }
 
-	// Return bookmark of
-	TiXmlElement *pRootElement = xbmcCfg.RootElement();
-	TiXmlNode *pNode = NULL;
-	TiXmlNode *pIt = NULL;
+    // Return bookmark of
+    TiXmlElement *pRootElement = xbmcCfg.RootElement();
+    TiXmlNode *pNode = NULL;
+    TiXmlNode *pIt = NULL;
 
-	int nr = 0;
-	try { nr = atoi(id); }
-	catch (...)
-	{
+    int nr = 0;
+    try { nr = atoi(id); }
+    catch (...)
+    {
     eid!=-1 ? websError(wp, 500, T("Id is not a number\n")):
               response="Error:Id is not a number";
-		return -1;
-	}
+        return -1;
+    }
 
-	pNode = pRootElement->FirstChild(type);
+    pNode = pRootElement->FirstChild(type);
 
-	// if valid bookmark, find child at pos (id)
-	if (pNode)
-		for (int i = 0; i < nr; i++) pIt = pNode->IterateChildren("bookmark", pIt);
-	if (pIt)
-	{
-		// user wants the name of the bookmark.
-		if (!strcmp(parameter, "name"))
-		{
-			if (pIt->FirstChild("name"))
-			{
+    // if valid bookmark, find child at pos (id)
+    if (pNode)
+        for (int i = 0; i < nr; i++) pIt = pNode->IterateChildren("bookmark", pIt);
+    if (pIt)
+    {
+        // user wants the name of the bookmark.
+        if (!strcmp(parameter, "name"))
+        {
+            if (pIt->FirstChild("name"))
+            {
         if (eid!=-1)
           ejSetResult( eid, (char*)pIt->FirstChild("name")->FirstChild()->Value());
         else
         {
-          CStdString tmp;
+          std::string tmp;
           tmp.Format("%s",(char*)pIt->FirstChild("name")->FirstChild()->Value());
           response="" + tmp;
         }
-			}
-		}
-		// user wants the path of the bookmark.
-		else if (!strcmp(parameter, "path"))
-		{
-			if (pIt->FirstChild("path"))
-			{
+            }
+        }
+        // user wants the path of the bookmark.
+        else if (!strcmp(parameter, "path"))
+        {
+            if (pIt->FirstChild("path"))
+            {
         if (eid!=-1)
           ejSetResult( eid, (char*)pIt->FirstChild("path")->FirstChild()->Value());
         else
         {
-          CStdString tmp;
+          std::string tmp;
           tmp.Format("%s",(char*)pIt->FirstChild("path")->FirstChild()->Value());
           response="" + tmp ;
         }
-			}
-		}
+            }
+        }
     else
       eid!=-1 ? websError(wp, 500, T("Parameter not known\n")):
                 response="Error:Parameter not known";
-	}
+    }
   else
   {
     eid!=-1 ? websError(wp, 500, T("Position not found\n")):
               response="Error:Position not found";
     return -1;
   }
-	return 0;*/
+    return 0;*/
 }
 
 /*
@@ -263,14 +263,14 @@ int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, CStdString& response, i
  * var thumbnail = thumbnail image (not required)
  * var postition = position where bookmark should be placed (not required)
  */
-int CXbmcConfiguration::AddBookmark( int eid, webs_t wp, CStdString& response, int argc, char_t **argv)
+int CXbmcConfiguration::AddBookmark( int eid, webs_t wp, std::string& response, int argc, char_t **argv)
 {
   char_t    *type, *name, *path, *thumbnail = NULL, *position = NULL;
   int numParas;
 
   // asp function is called within a script, get arguments
   numParas=ejArgs(argc, argv, T("%s %s %s %s %s"), &type, &name, &path, &thumbnail, &position);
-  if ( numParas< 3) 
+  if ( numParas< 3)
   {
     if (eid!=-1)
        websError(wp, 500, T("Insufficient args\n use: function(command, type, name, path, [thumbnail], [position])"));
@@ -283,12 +283,12 @@ int CXbmcConfiguration::AddBookmark( int eid, webs_t wp, CStdString& response, i
   share.strName = name;
   if (numParas==4)
   {
-	  position=thumbnail;
-	  thumbnail=NULL;
+      position=thumbnail;
+      thumbnail=NULL;
   }
   if (numParas==5)
     share.m_strThumbnailImage = thumbnail;
-  CStdString strPath=path;
+  std::string strPath=path;
   URIUtils::AddSlashAtEnd(strPath);
 
   share.strPath = strPath;
@@ -297,49 +297,49 @@ int CXbmcConfiguration::AddBookmark( int eid, webs_t wp, CStdString& response, i
 
   return 0;
 /*
-	// load sources.xml, write a messages if file could not be loaded
-	if (Load() == -1)
-	{
+    // load sources.xml, write a messages if file could not be loaded
+    if (Load() == -1)
+    {
     eid!=-1 ? websError(wp, 500, T("Could not load sources.xml\n")):
               response="Error:Could not load sources.xml";
     return -1;
-	}
+    }
 
-	TiXmlElement *pRootElement = xbmcCfg.RootElement();
-	TiXmlNode *pNode = NULL;
-	TiXmlNode *pIt = NULL;
+    TiXmlElement *pRootElement = xbmcCfg.RootElement();
+    TiXmlNode *pNode = NULL;
+    TiXmlNode *pIt = NULL;
 
-	pNode = pRootElement->FirstChild(type);
-	
-	// create a new Element
-	TiXmlText xmlName(name);
-	TiXmlText xmlPath(path);
-	TiXmlElement eName("name");
-	TiXmlElement ePath("path");
-	eName.InsertEndChild(xmlName);
-	ePath.InsertEndChild(xmlPath);
+    pNode = pRootElement->FirstChild(type);
 
-	TiXmlElement bookmark("bookmark");
-	bookmark.InsertEndChild(eName);
-	bookmark.InsertEndChild(ePath);
+    // create a new Element
+    TiXmlText xmlName(name);
+    TiXmlText xmlPath(path);
+    TiXmlElement eName("name");
+    TiXmlElement ePath("path");
+    eName.InsertEndChild(xmlName);
+    ePath.InsertEndChild(xmlPath);
 
-	//if postion == NULL add bookmark at end of the other bookmarks
-	if (position)
-	{
-		//isert after postion 'position'
-		int nr = 0;
-		try { nr = atoi(position); }
-		catch (...)
-		{
+    TiXmlElement bookmark("bookmark");
+    bookmark.InsertEndChild(eName);
+    bookmark.InsertEndChild(ePath);
+
+    //if postion == NULL add bookmark at end of the other bookmarks
+    if (position)
+    {
+        //isert after postion 'position'
+        int nr = 0;
+        try { nr = atoi(position); }
+        catch (...)
+        {
       eid!=-1 ? websError(wp, 500, T("position is not a number\n")):
                 response="Error:position is not a number";
-			return -1;
-		}
+            return -1;
+        }
 
-		// find bookmark at position
-		if (pNode)
-			for (int i = 0; i < nr; i++) pIt = pNode->IterateChildren("bookmark", pIt);
-		if (pIt)
+        // find bookmark at position
+        if (pNode)
+            for (int i = 0; i < nr; i++) pIt = pNode->IterateChildren("bookmark", pIt);
+        if (pIt)
       pNode->ToElement()->InsertAfterChild(pIt, bookmark);
     else
     {
@@ -347,12 +347,12 @@ int CXbmcConfiguration::AddBookmark( int eid, webs_t wp, CStdString& response, i
                 response="Error:Position not found";
       return -1;
     }
-	}
-	else
-	{
-		pNode->ToElement()->InsertEndChild(bookmark);
-	}
-	return 0;*/
+    }
+    else
+    {
+        pNode->ToElement()->InsertEndChild(bookmark);
+    }
+    return 0;*/
 }
 
 /*
@@ -362,25 +362,25 @@ int CXbmcConfiguration::AddBookmark( int eid, webs_t wp, CStdString& response, i
  * var path = new path
  * var postition = position where bookmark should be placed
  */
-int CXbmcConfiguration::SaveBookmark( int eid, webs_t wp, CStdString& response, int argc, char_t **argv)
+int CXbmcConfiguration::SaveBookmark( int eid, webs_t wp, std::string& response, int argc, char_t **argv)
 {
-	char_t	*type, *name, *path, *position = NULL;
+    char_t    *type, *name, *path, *position = NULL;
 
-	// asp function is called within a script, get arguments
-	if (ejArgs(argc, argv, T("%s %s %s %s"), &type, &name, &path, &position) < 4) {
+    // asp function is called within a script, get arguments
+    if (ejArgs(argc, argv, T("%s %s %s %s"), &type, &name, &path, &position) < 4) {
         if (eid!=-1) websError(wp, 500, T("Insufficient args\n use: function(command, type, name, path, postion)"));
           else response="Error:Insufficient args, use: function(command, type, name, path, postion)";
-		return -1;
-	}
+        return -1;
+    }
   VECSOURCES* pShares = CMediaSourceSettings::GetInstance().GetSources(type);
   int nr = 0;
-	try { nr = atoi(position); }
-	catch (...)
-	{
+    try { nr = atoi(position); }
+    catch (...)
+    {
           if (eid!=-1) websError(wp, 500, T("Id is not a number\n"));
               else response="Error:Id is not a number";
-	  return -1;
-	}
+      return -1;
+    }
 
   if (nr > 0 && nr <= (int)pShares->size()) // update share
   {
@@ -390,51 +390,51 @@ int CXbmcConfiguration::SaveBookmark( int eid, webs_t wp, CStdString& response, 
     CMediaSourceSettings::GetInstance().Save();
     return 0;
   }
-  
+
   if (eid!=-1) websError(wp, 500, T("Position not found\n"));
     else response="Error:Position not found";
   return -1;
 
 
-/*	// load sources.xml, write a messages if file could not be loaded
-	if (Load() == -1)
-	{
+/*    // load sources.xml, write a messages if file could not be loaded
+    if (Load() == -1)
+    {
     eid!=-1 ? websError(wp, 500, T("Could not load sources.xml\n")):
               response="Error:Could not load sources.xml";
     return -1;
-	}
+    }
 
-	TiXmlElement *pRootElement = xbmcCfg.RootElement();
-	TiXmlNode *pNode = NULL;
-	TiXmlNode *pIt = NULL;
+    TiXmlElement *pRootElement = xbmcCfg.RootElement();
+    TiXmlNode *pNode = NULL;
+    TiXmlNode *pIt = NULL;
 
-	pNode = pRootElement->FirstChild(type);
+    pNode = pRootElement->FirstChild(type);
 
-	int nr = 0;
-	try { nr = atoi(position); }
-	catch (...)
-	{
+    int nr = 0;
+    try { nr = atoi(position); }
+    catch (...)
+    {
     eid!=-1 ? websError(wp, 500, T("Id is not a number\n")):
               response="Error:Id is not a number";
-		return -1;
-	}
+        return -1;
+    }
 
-	// find bookmark at position
-	if (pNode)
-		for (int i = 0; i < nr; i++) pIt = pNode->IterateChildren("bookmark", pIt);
-	if (pIt)
-	{
-		pIt->FirstChild("name")->FirstChild()->SetValue(name);
-		pIt->FirstChild("path")->FirstChild()->SetValue(path);
-	}
+    // find bookmark at position
+    if (pNode)
+        for (int i = 0; i < nr; i++) pIt = pNode->IterateChildren("bookmark", pIt);
+    if (pIt)
+    {
+        pIt->FirstChild("name")->FirstChild()->SetValue(name);
+        pIt->FirstChild("path")->FirstChild()->SetValue(path);
+    }
   else
   {
     eid!=-1 ? websError(wp, 500, T("Position not found\n")):
               response="Error:Position not found";
     return -1;
   }*/
-  
-	return 0;
+
+    return 0;
 }
 
 /*
@@ -442,27 +442,27 @@ int CXbmcConfiguration::SaveBookmark( int eid, webs_t wp, CStdString& response, 
  * var type has to be set to a bookmark name (like video, music ...)
  * var postition = bookmark at position that should be removed
  */
-int CXbmcConfiguration::RemoveBookmark( int eid, webs_t wp, CStdString& response, int argc, char_t **argv)
+int CXbmcConfiguration::RemoveBookmark( int eid, webs_t wp, std::string& response, int argc, char_t **argv)
 {
-	char_t	*type, *position = NULL;
+    char_t    *type, *position = NULL;
 
-	// asp function is called within a script, get arguments
-	if (ejArgs(argc, argv, T("%s %s"), &type, &position) < 2) {
+    // asp function is called within a script, get arguments
+    if (ejArgs(argc, argv, T("%s %s"), &type, &position) < 2) {
           if(eid!=-1)
             websError(wp, 500, T("Insufficient args\n use: function(type, position)"));
           else
             response="Error:Insufficient args, use: function(type, position)";
-	  return -1;
-	}
+      return -1;
+    }
 
-	int nr = 0;
-	try { nr = atoi(position); }
-	catch (...)
-	{
+    int nr = 0;
+    try { nr = atoi(position); }
+    catch (...)
+    {
           if (eid!=-1) websError(wp, 500, T("Id is not a number\n"));
             else response="Error:position is not a number";
-  	  return -1;
-	}
+        return -1;
+    }
 
   VECSOURCES* pShares = CMediaSourceSettings::GetInstance().GetSources(type);
   const CMediaSource& share = (*pShares)[nr-1];
@@ -473,34 +473,34 @@ int CXbmcConfiguration::RemoveBookmark( int eid, webs_t wp, CStdString& response
     else response="Error:Position not found";
   return -1;
   /*
-	// load sources.xml, write a messages if file could not be loaded
-	if (Load() == -1)
-	{
+    // load sources.xml, write a messages if file could not be loaded
+    if (Load() == -1)
+    {
     eid!=-1 ? websError(wp, 500, T("Could not load sources.xml\n")):
               response="Error:Could not load sources.xml";
     return -1;
-	}
+    }
 
-	TiXmlElement *pRootElement = xbmcCfg.RootElement();
-	TiXmlNode *pNode = NULL;
-	TiXmlNode *pIt = NULL;
+    TiXmlElement *pRootElement = xbmcCfg.RootElement();
+    TiXmlNode *pNode = NULL;
+    TiXmlNode *pIt = NULL;
 
-	pNode = pRootElement->FirstChild(type);
+    pNode = pRootElement->FirstChild(type);
 
-	int nr = 0;
-	try { nr = atoi(position); }
-	catch (...)
-	{
+    int nr = 0;
+    try { nr = atoi(position); }
+    catch (...)
+    {
     eid!=-1 ? websError(wp, 500, T("Id is not a number\n")):
               response="Error:position is not a number";
-		return -1;
-	}
+        return -1;
+    }
 
-	// find bookmark at position
-	if (pNode)
-		for (int i = 0; i < nr; i++) pIt = pNode->IterateChildren("bookmark", pIt);
+    // find bookmark at position
+    if (pNode)
+        for (int i = 0; i < nr; i++) pIt = pNode->IterateChildren("bookmark", pIt);
 
-	if (pIt)
+    if (pIt)
     pNode->RemoveChild(pIt);
   else
   {
@@ -508,7 +508,7 @@ int CXbmcConfiguration::RemoveBookmark( int eid, webs_t wp, CStdString& response
               response="Error:Position not found";
     return -1;
   }
-	return 0;*/
+    return 0;*/
 }
 
 /*
@@ -517,114 +517,114 @@ int CXbmcConfiguration::RemoveBookmark( int eid, webs_t wp, CStdString& response
  * is only a filename is specified and no directory we save it in the same dir that
  * our executable is in.
  */
-int CXbmcConfiguration::SaveConfiguration( int eid, webs_t wp, CStdString& response, int argc, char_t **argv)
+int CXbmcConfiguration::SaveConfiguration( int eid, webs_t wp, std::string& response, int argc, char_t **argv)
 {
   if (eid!=-1) websError(wp, 500, T("Deprecated\n"));
     else response="Error:Functino is deprecated";
   return -1;
 
-  char_t	*filename = NULL;
+  char_t    *filename = NULL;
 
-	// asp function is called within a script, get arguments
-	if (ejArgs(argc, argv, T("%s"), &filename) < 1) {
+    // asp function is called within a script, get arguments
+    if (ejArgs(argc, argv, T("%s"), &filename) < 1) {
            if (eid!=-1) websError(wp, 500, T("Insufficient args\n use: function(filename)"));
               else response="Error:Insufficient args, use: function(filename)";
-  	   return -1;
-	}
+         return -1;
+    }
 
-	// load sources.xml, write a messages if file could not be loaded
-	if (Load() == -1) 
-	{
+    // load sources.xml, write a messages if file could not be loaded
+    if (Load() == -1)
+    {
           if (eid!=-1) websError(wp, 500, T((char*)"Could not load sources.xml\n"));
               else response="Error:Could not load sources.xml";
           return -1;
-	}
+    }
 
-	// Save configuration to file
-	CStdString strPath(filename);
+    // Save configuration to file
+    std::string strPath(filename);
   if (!CURL::IsFullPath(strPath))
-	{
-		// only filename specified, so use our homedir as base.
+    {
+        // only filename specified, so use our homedir as base.
     strPath = URIUtils::AddFileToFolder("special://home/", filename);
-	}
+    }
 
   if (!xbmcCfg.SaveFile(strPath))
-	{
+    {
           if (eid!=-1) websError(wp, 500, T("Could not save to file\n"));
             else response="Error:Could not save to file";
- 	  return -1;
-	}
-	return 0;
+       return -1;
+    }
+    return 0;
 }
 
 /*
  * Get value from configuration (name)
  * var name = option name
  */
-int CXbmcConfiguration::GetOption( int eid, webs_t wp, CStdString& response, int argc, char_t **argv)
+int CXbmcConfiguration::GetOption( int eid, webs_t wp, std::string& response, int argc, char_t **argv)
 {
   if (eid!=-1) websError(wp, 500, T("Deprecated\n"));
     else response="Error:Functino is deprecated";
 return -1;
 
- /* 
+ /*
   char_t* name = NULL;
 
-	// asp function is called within a script, get arguments
-	if (ejArgs(argc, argv, T("%s"), &name) < 1) {
+    // asp function is called within a script, get arguments
+    if (ejArgs(argc, argv, T("%s"), &name) < 1) {
     eid!=-1 ? websError(wp, 500, T("Insufficient args\n")):
               response="Error:Insufficient args";
-		return -1;
-	}
+        return -1;
+    }
 
-	// load sources.xml, write a messages if file could not be loaded
-	if (Load() == -1)
-	{
+    // load sources.xml, write a messages if file could not be loaded
+    if (Load() == -1)
+    {
     eid!=-1 ? websError(wp, 500, T("Could not load sources.xml\n")):
               response="Error:Could not load sources.xml";;
-		return -1;
-	}
+        return -1;
+    }
 
-	// get first option from xml file
-	// we have to check if there arent any other childs in this element
-	TiXmlElement *pRootElement = xbmcCfg.RootElement();
-	TiXmlElement *pElement = NULL;
-	pElement = pRootElement->FirstChildElement(name);
+    // get first option from xml file
+    // we have to check if there arent any other childs in this element
+    TiXmlElement *pRootElement = xbmcCfg.RootElement();
+    TiXmlElement *pElement = NULL;
+    pElement = pRootElement->FirstChildElement(name);
 
-	if (pElement)
-	{
-		if (pElement->FirstChild() && pElement->FirstChild()->FirstChild() == NULL)
-		{
-			char* value = (char*)pElement->FirstChild()->Value();
-			if (value) 
+    if (pElement)
+    {
+        if (pElement->FirstChild() && pElement->FirstChild()->FirstChild() == NULL)
+        {
+            char* value = (char*)pElement->FirstChild()->Value();
+            if (value)
         if (eid!=-1)
           ejSetResult(eid, value);
         else
         {
-          CStdString tmp;
+          std::string tmp;
           tmp.Format("%s",value);
           response="" + tmp;
         }
-		}
-		// option exist, but no value is set. Default is "-"
-		else 
+        }
+        // option exist, but no value is set. Default is "-"
+        else
                 {
-                   if (eid!=-1) 
+                   if (eid!=-1)
                       ejSetResult(eid, "-");
                    else
                       response="";
                 }
-	}
-	else
-	{
-		// option not found in xml file
-		// set value to "-"
-                if (eid!=-1) 
+    }
+    else
+    {
+        // option not found in xml file
+        // set value to "-"
+                if (eid!=-1)
                    ejSetResult(eid, "");
                 else
                    response="Error:Not found";
   }
-	return 0;
+    return 0;
 */
 }
 
@@ -633,7 +633,7 @@ return -1;
  * var name = option name
  * var value = new value
  */
-int CXbmcConfiguration::SetOption( int eid, webs_t wp, CStdString& response, int argc, char_t **argv)
+int CXbmcConfiguration::SetOption( int eid, webs_t wp, std::string& response, int argc, char_t **argv)
 {
   if (eid!=-1) websError(wp, 500, T((char*)"Deprecated\n"));
     else response="Error:Functino is deprecated";
@@ -646,11 +646,11 @@ int CXbmcConfiguration::SetOption( int eid, webs_t wp, CStdString& response, int
  */
 bool CXbmcConfiguration::IsValidOption(char* option)
 {
-	if (!strcmp("subtitles", option)) return true;
-	if (!strcmp("thumbnails", option)) return true;
-	if (!strcmp("shortcuts", option)) return true;
-	if (!strcmp("albums", option)) return true;
-	if (!strcmp("recordings", option)) return true;
-	if (!strcmp("screenshots", option)) return true;
-	return false;
+    if (!strcmp("subtitles", option)) return true;
+    if (!strcmp("thumbnails", option)) return true;
+    if (!strcmp("shortcuts", option)) return true;
+    if (!strcmp("albums", option)) return true;
+    if (!strcmp("recordings", option)) return true;
+    if (!strcmp("screenshots", option)) return true;
+    return false;
 }

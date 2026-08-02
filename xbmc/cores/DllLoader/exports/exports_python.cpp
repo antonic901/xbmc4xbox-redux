@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "system.h"
 #include "utils/log.h"
 #include <io.h>
@@ -178,8 +178,8 @@ int xbp_mkdir(const char *dirname)
 
 int xbp_open(const char *filename, int oflag, int pmode)
 {
-  CStdString strPath = CUtil::ValidatePath(CSpecialProtocol::TranslatePath(filename), true);
-  
+  std::string strPath = CUtil::ValidatePath(CSpecialProtocol::TranslatePath(filename), true);
+
   int res = open(strPath.c_str(), oflag, pmode);
   return res;
 }
@@ -190,9 +190,9 @@ FILE* xbp_fopen(const char *filename, const char *mode)
   char cName[1024];
   char* p;
 
-  CStdString strPath = CUtil::ValidatePath(CSpecialProtocol::TranslatePath(filename), true);
+  std::string strPath = CUtil::ValidatePath(CSpecialProtocol::TranslatePath(filename), true);
   strcpy(cName, strPath.c_str());
-  
+
   //for each "\\..\\" remove the directory before it
   while(p = strstr(cName, "\\..\\"))
   {
@@ -235,14 +235,14 @@ HANDLE xbp_FindFirstFile(LPCTSTR lpFileName, LPWIN32_FIND_DATA lpFindFileData)
 {
   char* p = strdup(lpFileName);
   CORRECT_SEP_STR(p);
-  
+
   // change default \\*.* into \\* which the xbox is using
   char* e = strrchr(p, '.');
   if (e != NULL && strlen(e) > 1 && e[1] == '*')
   {
     e[0] = '\0';
   }
-  
+
   HANDLE res = FindFirstFile(CSpecialProtocol::TranslatePath(p).c_str(), lpFindFileData);
   free(p);
   return res;

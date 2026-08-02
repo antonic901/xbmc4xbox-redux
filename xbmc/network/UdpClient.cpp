@@ -80,7 +80,7 @@ void CUdpClient::OnStartup()
   SetPriority( THREAD_PRIORITY_LOWEST );
 }
 
-bool CUdpClient::Broadcast(int aPort, CStdString& aMessage)
+bool CUdpClient::Broadcast(int aPort, std::string& aMessage)
 {
   CSingleLock lock(critical_section);
 
@@ -97,7 +97,7 @@ bool CUdpClient::Broadcast(int aPort, CStdString& aMessage)
 }
 
 
-bool CUdpClient::Send(CStdString aIpAddress, int aPort, CStdString& aMessage)
+bool CUdpClient::Send(std::string aIpAddress, int aPort, std::string& aMessage)
 {
   CSingleLock lock(critical_section);
 
@@ -113,7 +113,7 @@ bool CUdpClient::Send(CStdString aIpAddress, int aPort, CStdString& aMessage)
   return true;
 }
 
-bool CUdpClient::Send(SOCKADDR_IN aAddress, CStdString& aMessage)
+bool CUdpClient::Send(SOCKADDR_IN aAddress, std::string& aMessage)
 {
   CSingleLock lock(critical_section);
 
@@ -164,7 +164,7 @@ void CUdpClient::Process()
         messageLength = ret;
         messageBuffer[messageLength] = '\0';
 
-        CStdString message = messageBuffer;
+        std::string message = messageBuffer;
 
         CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT RX: %u\t\t<- '%s'",
                   XbmcThreads::SystemClockMillis(), message.c_str() );

@@ -58,8 +58,8 @@ stDriveMapping driveMapping[] =
     { 'Y', "Harddisk0\\Partition4", 4},
     { 'Z', "Harddisk0\\Partition5", 5},
   };
-char extendPartitionMapping[] = 
-  { 
+char extendPartitionMapping[] =
+  {
       'F','G','R','S','V','W','A','B'
   };
 #else
@@ -228,16 +228,16 @@ HRESULT CIoSupport::EjectTray()
     char* dvdDevice = CLibcdio::GetInstance()->GetDeviceFileName();
     cDL = dvdDevice[4];
   }
-  
-  CStdString strVolFormat; strVolFormat.Format( _T("\\\\.\\%c:" ), cDL);
-  HANDLE hDrive= CreateFile( strVolFormat, GENERIC_READ, FILE_SHARE_READ, 
+
+  std::string strVolFormat = StringUtils::Format( _T("\\\\.\\%c:" ), cDL);
+  HANDLE hDrive= CreateFile( strVolFormat, GENERIC_READ, FILE_SHARE_READ,
                              NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-  CStdString strRootFormat; strRootFormat.Format( _T("%c:\\"), cDL);
-  if( ( hDrive != INVALID_HANDLE_VALUE || GetLastError() == NO_ERROR) && 
+  std::string strRootFormat = StringUtils::Format( _T("%c:\\"), cDL);
+  if( ( hDrive != INVALID_HANDLE_VALUE || GetLastError() == NO_ERROR) &&
       ( GetDriveType( strRootFormat ) == DRIVE_CDROM ) )
   {
     DWORD dwDummy;
-    bRet= DeviceIoControl( hDrive, ( bEject ? IOCTL_STORAGE_EJECT_MEDIA : IOCTL_STORAGE_LOAD_MEDIA), 
+    bRet= DeviceIoControl( hDrive, ( bEject ? IOCTL_STORAGE_EJECT_MEDIA : IOCTL_STORAGE_LOAD_MEDIA),
                                     NULL, 0, NULL, 0, &dwDummy, NULL);
     CloseHandle( hDrive );
   }
@@ -631,35 +631,35 @@ bool CIoSupport::ReadPartitionTable()
 #endif
 }
 
-bool CIoSupport::ExtendedPartitionMappingExists(char mapLetter) 
-{ 
+bool CIoSupport::ExtendedPartitionMappingExists(char mapLetter)
+{
 #ifdef _XBOX
   int i;
-  for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++) 
-  { 
-    if (mapLetter == extendPartitionMapping[i]) 
-      return true; 
+  for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++)
+  {
+    if (mapLetter == extendPartitionMapping[i])
+      return true;
   }
 #endif
-  return false; 
-} 
- 
-INT CIoSupport::GetExtendedPartitionPosition(char mapLetter) 
-{ 
+  return false;
+}
+
+INT CIoSupport::GetExtendedPartitionPosition(char mapLetter)
+{
 #ifdef _XBOX
   int i;
-  for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++) 
-  { 
-    if (mapLetter == extendPartitionMapping[i]) 
-      return i; 
+  for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++)
+  {
+    if (mapLetter == extendPartitionMapping[i])
+      return i;
   }
 #endif
-  return 0; 
-} 
+  return 0;
+}
 
 
 char CIoSupport::GetExtendedPartitionDriveLetter(int pos)
-{ 
+{
 #ifdef _XBOX
   return extendPartitionMapping[pos];
 #else
@@ -690,7 +690,7 @@ void CIoSupport::MapExtendedPartitions()
       driveletter = 'A' + i - 1;
       extenddriveletter = extendPartitionMapping[driveletter-EXTEND_DRIVE_BEGIN];
       CLog::Log(LOGINFO, "  map drive %c:", driveletter);
-      CLog::Log(LOGINFO, "  map extended drive %c:", extenddriveletter); 
+      CLog::Log(LOGINFO, "  map extended drive %c:", extenddriveletter);
       szDevice[20] = '1' + i - 1;
       MapDriveLetter(extenddriveletter, szDevice);
     }

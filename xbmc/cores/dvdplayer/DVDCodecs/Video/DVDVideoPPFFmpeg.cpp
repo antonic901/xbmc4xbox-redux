@@ -22,7 +22,7 @@
 #include "utils/log.h"
 #include "DVDVideoPPFFmpeg.h"
 
-CDVDVideoPPFFmpeg::CDVDVideoPPFFmpeg(const CStdString& mType)
+CDVDVideoPPFFmpeg::CDVDVideoPPFFmpeg(const std::string& mType)
 {
   m_sType = mType;
   m_pMode = m_pContext = NULL;
@@ -46,7 +46,7 @@ void CDVDVideoPPFFmpeg::Dispose()
     m_dll.pp_free_context(m_pContext);
     m_pContext = NULL;
   }
-  
+
   if( m_FrameBuffer.iFlags & DVP_FLAG_ALLOCATED )
   {
     for( int i = 0; i<4; i++ )
@@ -70,7 +70,7 @@ void CDVDVideoPPFFmpeg::Dispose()
 bool CDVDVideoPPFFmpeg::CheckInit(int iWidth, int iHeight)
 {
   if (!m_dll.IsLoaded() && !m_dll.Load()) return false;
-  
+
   if(m_iInitWidth != iWidth || m_iInitHeight != iHeight)
   {
     if(m_pContext || m_pMode)
@@ -87,13 +87,13 @@ bool CDVDVideoPPFFmpeg::CheckInit(int iWidth, int iHeight)
   }
 
 
-  if(m_pMode) 
+  if(m_pMode)
     return true;
   else
     return false;
 }
 
-void CDVDVideoPPFFmpeg::SetType(const CStdString& mType)
+void CDVDVideoPPFFmpeg::SetType(const std::string& mType)
 {
   if (mType == m_sType)
     return;
@@ -132,11 +132,11 @@ bool CDVDVideoPPFFmpeg::Process(DVDVideoPicture* pPicture)
   int pict_type = (m_pSource->qscale_type != DVP_QSCALE_MPEG1) ?
                    PP_PICT_TYPE_QP2 : 0;
 
-  m_dll.pp_postprocess(m_pSource->data, m_pSource->iLineSize, 
-                m_pTarget->data, m_pTarget->iLineSize,        
+  m_dll.pp_postprocess(m_pSource->data, m_pSource->iLineSize,
+                m_pTarget->data, m_pTarget->iLineSize,
                 m_pSource->iWidth, m_pSource->iHeight,
                 m_pSource->qscale_table, m_pSource->qscale_stride,
-                m_pMode, m_pContext, 
+                m_pMode, m_pContext,
                 pict_type); //m_pSource->iFrameType);
 
   //Copy frame information over to target, but make sure it is set as allocated should decoder have forgotten
@@ -153,7 +153,7 @@ bool CDVDVideoPPFFmpeg::Process(DVDVideoPicture* pPicture)
   m_pTarget->format = DVDVideoPicture::FMT_YUV420P;
   return true;
 }
- 
+
 
 
 bool CDVDVideoPPFFmpeg::CheckFrameBuffer(const DVDVideoPicture* pSource)
@@ -180,7 +180,7 @@ bool CDVDVideoPPFFmpeg::CheckFrameBuffer(const DVDVideoPicture* pSource)
 
     m_FrameBuffer.iWidth = pSource->iWidth;
     m_FrameBuffer.iHeight = pSource->iHeight;
-    
+
     m_FrameBuffer.data[0] = (BYTE*)_aligned_malloc(m_FrameBuffer.iLineSize[0] * m_FrameBuffer.iHeight  , 16);
     m_FrameBuffer.data[1] = (BYTE*)_aligned_malloc(m_FrameBuffer.iLineSize[1] * m_FrameBuffer.iHeight/2, 16);
     m_FrameBuffer.data[2] = (BYTE*)_aligned_malloc(m_FrameBuffer.iLineSize[2] * m_FrameBuffer.iHeight/2, 16);

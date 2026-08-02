@@ -66,7 +66,7 @@ public:
     virtual void SetContrast(int iContrast);
 protected:
     virtual void        Process();
-    virtual void SetLine(int iLine, const CStdString& strLine);
+    virtual void SetLine(int iLine, const std::string& strLine);
     void    DisplayInit();
     void    DisplaySetBacklight(unsigned char level) ;
     void    DisplaySetContrast(unsigned char level);
@@ -87,7 +87,7 @@ protected:
     unsigned int m_iActualpos;            // actual cursor possition
     int          m_iBackLight;
     bool         m_bUpdate[MAX_ROWS];
-    CStdString   m_strLine[MAX_ROWS];
+    std::string   m_strLine[MAX_ROWS];
     int          m_iPos[MAX_ROWS];
     DWORD        m_dwSleep[MAX_ROWS];
     CEvent       m_event;

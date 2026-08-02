@@ -820,7 +820,7 @@ std::string CDVDInputStreamNavigator::GetSubtitleStreamLanguage(int iId)
 {
   if (!m_dvdnav) return NULL;
 
-  CStdString strLanguage;
+  std::string strLanguage;
 
   subp_attr_t subp_attributes;
   int streamId = ConvertSubtitleStreamId_XBMCToExternal(iId);
@@ -923,7 +923,7 @@ std::string CDVDInputStreamNavigator::GetAudioStreamLanguage(int iId)
 {
   if (!m_dvdnav) return NULL;
 
-  CStdString strLanguage;
+  std::string strLanguage;
 
   audio_attr_t audio_attributes;
   int streamId = ConvertAudioStreamId_XBMCToExternal(iId);

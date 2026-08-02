@@ -23,7 +23,7 @@
 
 void CDVDSubtitleTagMicroDVD::ConvertLine(CDVDOverlayText* pOverlay, const char* line, int len)
 {
-  CStdString strUTF8;
+  std::string strUTF8;
   strUTF8.assign(line, len);
 
   m_flag[FLAG_BOLD] = 0;
@@ -40,11 +40,11 @@ void CDVDSubtitleTagMicroDVD::ConvertLine(CDVDOverlayText* pOverlay, const char*
       if (strUTF8[pos] == '{')
       {
         size_t pos2, pos3;
-        if (((pos2 = strUTF8.find(':', pos)) != CStdString::npos) && \
-           ((pos3 = strUTF8.find('}', pos2)) != CStdString::npos))
+        if (((pos2 = strUTF8.find(':', pos)) != std::string::npos) && \
+           ((pos3 = strUTF8.find('}', pos2)) != std::string::npos))
         {
-          CStdString tagName = strUTF8.substr(pos + 1, pos2 - pos - 1);
-          CStdString tagValue = strUTF8.substr(pos2 + 1, pos3 - pos2 - 1);
+          std::string tagName = strUTF8.substr(pos + 1, pos2 - pos - 1);
+          std::string tagValue = strUTF8.substr(pos2 + 1, pos3 - pos2 - 1);
           tagValue.ToLower();
           strUTF8.erase(pos, pos3 - pos + 1);
           if ((tagName == "Y") || (tagName == "y"))
@@ -80,7 +80,7 @@ void CDVDSubtitleTagMicroDVD::ConvertLine(CDVDOverlayText* pOverlay, const char*
               }
               if( bHex && (m_flag[FLAG_COLOR] == 0))
               {
-                CStdString tempColorTag = "[COLOR ";
+                std::string tempColorTag = "[COLOR ";
                 tempColorTag += "FF";
                 tempColorTag += tagValue.substr(1, 6);
                 tempColorTag += "]";
@@ -111,7 +111,7 @@ void CDVDSubtitleTagMicroDVD::ConvertLine(CDVDOverlayText* pOverlay, const char*
     else if (machine_status == 2)
     {
       size_t pos4;
-      if ((pos4= strUTF8.find('|', pos)) != CStdString::npos)
+      if ((pos4= strUTF8.find('|', pos)) != std::string::npos)
       {
         pos = pos4;
         if (m_flag[FLAG_BOLD] == TAG_ONE_LINE)
@@ -148,7 +148,7 @@ void CDVDSubtitleTagMicroDVD::ConvertLine(CDVDOverlayText* pOverlay, const char*
       }
     }
   }
-    
+
   if (strUTF8.IsEmpty())
     return;
 

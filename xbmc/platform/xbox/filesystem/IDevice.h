@@ -1,6 +1,6 @@
 #pragma once
 
-#include "utils/StdString.h"
+#include <string>
 
 class IDevice
 {
@@ -12,7 +12,7 @@ public:
     m_device = device;
   };
 
-  const CStdString &GetVolumeName() { return m_volumeName; };
+  const std::string &GetVolumeName() { return m_volumeName; };
   bool IsInPort(unsigned long port, unsigned long slot)
   {
     return (m_port == port && m_slot == slot);
@@ -25,7 +25,7 @@ public:
 
 protected:
   void*          m_device;
-  CStdString     m_volumeName;
+  std::string    m_volumeName;
   unsigned long  m_port;
   unsigned long  m_slot;
 };

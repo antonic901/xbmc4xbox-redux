@@ -20,6 +20,7 @@
  *
  */
 
+#include <string>
 #include <vector>
 #include "MediaSource.h" // for VECSOURCES
 
@@ -40,7 +41,7 @@ public:
   IDevice *GetDevice(unsigned char unit) const;
   IFileSystem *GetFileSystem(unsigned char unit);
 
-  bool IsDriveWriteable(const CStdString &path) const;
+  bool IsDriveWriteable(const std::string &path) const;
 
   void GetMemoryUnitSources(VECSOURCES &shares);
 
@@ -51,13 +52,13 @@ private:
   bool HasDevice(unsigned long port, unsigned long slot);
   bool MountDevice(unsigned long port, unsigned long slot);
   bool UnMountDevice(unsigned long port, unsigned long slot);
-  
+
   void MountUnits(unsigned long device, bool notify);
   void UnMountUnits(unsigned long device);
 
   char DriveLetterFromPort(unsigned long port, unsigned long slot);
 
-  void DumpImage(const CStdString &path, unsigned char unit, unsigned long sectors);
+  void DumpImage(const std::string &path, unsigned char unit, unsigned long sectors);
 
   std::vector<IDevice *> m_memUnits;
 

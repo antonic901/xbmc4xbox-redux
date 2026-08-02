@@ -34,7 +34,7 @@ CMusicInfoTagLoaderNSF::~CMusicInfoTagLoaderNSF()
 {
 }
 
-int CMusicInfoTagLoaderNSF::GetStreamCount(const CStdString& strFileName)
+int CMusicInfoTagLoaderNSF::GetStreamCount(const std::string& strFileName)
 {
   if (!m_dll.Load())
     return 0;

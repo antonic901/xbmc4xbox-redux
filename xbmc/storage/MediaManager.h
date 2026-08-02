@@ -26,7 +26,7 @@ class CNetworkLocation
 public:
   CNetworkLocation() { id = 0; };
   int id;
-  CStdString path;
+  std::string path;
 };
 
 class CMediaManager
@@ -40,10 +40,10 @@ public:
   void GetLocalDrives(VECSOURCES &localDrives, bool includeQ = true);
   void GetNetworkLocations(VECSOURCES &locations);
 
-  bool AddNetworkLocation(const CStdString &path);
-  bool HasLocation(const CStdString& path) const;
-  bool RemoveLocation(const CStdString& path);
-  bool SetLocationPath(const CStdString& oldPath, const CStdString& newPath);
+  bool AddNetworkLocation(const std::string &path);
+  bool HasLocation(const std::string& path) const;
+  bool RemoveLocation(const std::string& path);
+  bool SetLocationPath(const std::string& oldPath, const std::string& newPath);
 protected:
   std::vector<CNetworkLocation> m_locations;
 };

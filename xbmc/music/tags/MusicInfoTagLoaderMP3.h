@@ -22,7 +22,7 @@
 #include "music/tags/ImusicInfoTagLoader.h"
 #include "cores/paplayer/ReplayGain.h"
 #include <math.h>
-#include "utils/StdString.h"
+#include <string>
 
 namespace MUSIC_INFO
 {
@@ -116,10 +116,10 @@ public:
   virtual bool Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
   void GetSeekInfo(CVBRMP3SeekHelper &info) const;
   bool GetReplayGain(CReplayGain &info) const;
-  bool ReadSeekAndReplayGainInfo(const CStdString &strFileName);
+  bool ReadSeekAndReplayGainInfo(const std::string &strFileName);
   static unsigned int IsID3v2Header(unsigned char* pBuf, size_t bufLen);
 protected:
-  virtual int ReadDuration(const CStdString& strFileName);
+  virtual int ReadDuration(const std::string& strFileName);
   bool ReadLAMETagInfo(BYTE *p);
   int IsMp3FrameHeader(unsigned long head);
   virtual bool PrioritiseAPETags() const;

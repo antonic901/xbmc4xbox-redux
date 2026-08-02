@@ -105,13 +105,13 @@ bool CTextureBundle::OpenBundle()
   if (m_hFile != INVALID_HANDLE_VALUE)
     Cleanup();
 
-  CStdString strPath;
+  std::string strPath;
 
   if (m_themeBundle)
   {
     // if we are the theme bundle, we only load if the user has chosen
     // a valid theme (or the skin has a default one)
-    CStdString themeXPR = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skintheme");
+    std::string themeXPR = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("lookandfeel.skintheme");
     if (!themeXPR.IsEmpty() && themeXPR.CompareNoCase("SKINDEFAULT"))
     {
       strPath = URIUtils::AddFileToFolder(CServiceBroker::GetWinSystem()->GetGfxContext().GetMediaDir(), "media");
@@ -209,7 +209,7 @@ bool CTextureBundle::OpenBundle()
   n = (HeaderSize - sizeof(XPR_HEADER)) / sizeof(DiskFileHeader_t);
   for (unsigned i = 0; i < n; ++i)
   {
-    std::pair<CStdString, FileHeader_t> entry;
+    std::pair<std::string, FileHeader_t> entry;
     entry.first = Normalize(FileHeader[i].Name);
     entry.second.Offset = FileHeader[i].Offset;
     entry.second.UnpackedSize = FileHeader[i].UnpackedSize;
@@ -267,7 +267,7 @@ bool CTextureBundle::HasFile(const std::string& Filename)
       return false;
   }
 
-  CStdString name = Normalize(Filename);
+  std::string name = Normalize(Filename);
   return m_FileHeaders.find(name) != m_FileHeaders.end();
 }
 
@@ -279,10 +279,10 @@ void CTextureBundle::GetTexturesFromPath(const std::string &path, std::vector<st
   if (m_hFile == INVALID_HANDLE_VALUE && !OpenBundle())
     return;
 
-  CStdString testPath = Normalize(path);
+  std::string testPath = Normalize(path);
   if (!URIUtils::HasSlashAtEnd(testPath))
     testPath += "\\";
-  std::map<CStdString, FileHeader_t>::iterator it;
+  std::map<std::string, FileHeader_t>::iterator it;
   for (it = m_FileHeaders.begin(); it != m_FileHeaders.end(); it++)
   {
     if (StringUtils::StartsWithNoCase(it->first, testPath))
@@ -290,9 +290,9 @@ void CTextureBundle::GetTexturesFromPath(const std::string &path, std::vector<st
   }
 }
 
-bool CTextureBundle::PreloadFile(const CStdString& Filename)
+bool CTextureBundle::PreloadFile(const std::string& Filename)
 {
-  CStdString name = Normalize(Filename);
+  std::string name = Normalize(Filename);
 
   if (m_PreLoadBuffer[m_PreloadIdx])
     free(m_PreLoadBuffer[m_PreloadIdx]);
@@ -345,9 +345,9 @@ bool CTextureBundle::PreloadFile(const CStdString& Filename)
   return false;
 }
 
-bool CTextureBundle::LoadFile(const CStdString& Filename, CAutoTexBuffer& UnpackedBuf)
+bool CTextureBundle::LoadFile(const std::string& Filename, CAutoTexBuffer& UnpackedBuf)
 {
-  CStdString name = Normalize(Filename);
+  std::string name = Normalize(Filename);
   if (m_CurFileHeader[0] != m_FileHeaders.end() && m_CurFileHeader[0]->first == name)
     m_LoadIdx = 0;
   else if (m_CurFileHeader[1] != m_FileHeaders.end() && m_CurFileHeader[1]->first == name)
@@ -608,7 +608,7 @@ void CTextureBundle::SetThemeBundle(bool themeBundle)
 // lower case + using \\ rather than /
 std::string CTextureBundle::Normalize(const std::string &name)
 {
-  CStdString newName(name);
+  std::string newName(name);
   newName.Normalize();
   newName.Replace('/','\\');
   return newName;

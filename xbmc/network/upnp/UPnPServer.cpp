@@ -28,11 +28,11 @@ NPT_String CUPnPServer::BuildSafeResourceUri(const char* host,
                                              const char* file_path)
 {
     CURL url(file_path);
-    CStdString md5;
+    std::string md5;
     XBMC::XBMC_MD5 md5state;
 
     // determine the filename to provide context to md5'd urls
-    CStdString filename;
+    std::string filename;
     if (url.IsProtocol("image"))
       filename = URIUtils::GetFileName(url.GetHostName());
     else
@@ -127,7 +127,7 @@ CUPnPServer::Build(CFileItemPtr                  item,
 
                 if (item->GetLabel().empty()) {
                     /* if no label try to grab it from node type */
-                    CStdString label;
+                    std::string label;
                     if (CMusicDatabaseDirectory::GetLabel((const char*)path, label)) {
                         item->SetLabel(label);
                         item->SetLabelPreformatted(true);
@@ -162,7 +162,7 @@ CUPnPServer::Build(CFileItemPtr                  item,
 
                 // try to grab it from the folder
                 if (item->GetLabel().empty()) {
-                    CStdString label;
+                    std::string label;
                     if (CVideoDatabaseDirectory::GetLabel((const char*)path, label)) {
                         item->SetLabel(label);
                         item->SetLabelPreformatted(true);
@@ -244,7 +244,7 @@ CUPnPServer::OnBrowseMetadata(PLT_ActionReference&          action,
     NPT_String                     didl;
     NPT_Reference<PLT_MediaObject> object;
     NPT_String                     id = TranslateWMPObjectId(object_id);
-    vector<CStdString>             paths;
+    vector<std::string>             paths;
     CFileItemPtr                   item;
 
     CLog::Log(LOGINFO, "Received UPnP Browse Metadata request for object '%s'", (const char*)object_id);
@@ -266,7 +266,7 @@ CUPnPServer::OnBrowseMetadata(PLT_ActionReference&          action,
 
         // determine parent id for shared paths only
         // otherwise let db find out
-        CStdString parent;
+        std::string parent;
         if (!URIUtils::GetParentPath((const char*)id, parent)) parent = "0";
 
 //#ifdef WMP_ID_MAPPING
@@ -320,7 +320,7 @@ CUPnPServer::OnBrowseDirectChildren(PLT_ActionReference&          action,
 
     CLog::Log(LOGINFO, "Received UPnP Browse DirectChildren request for object '%s'", (const char*)object_id);
 
-    items.SetPath(CStdString(parent_id));
+    items.SetPath(std::string(parent_id));
     if (!items.Load()) {
         // cache anything that takes more than a second to retrieve
         unsigned int time = XbmcThreads::SystemClockMillis();
@@ -513,7 +513,7 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
 
         if (genre.GetLength() > 0) {
             // all tracks by genre filtered by artist and/or album
-            CStdString strPath;
+            std::string strPath;
             strPath.Format("musicdb://genres/%ld/%ld/%ld/",
                 database.GetGenreByName((const char*)genre),
                 database.GetArtistByName((const char*)artist), // will return -1 if no artist
@@ -522,7 +522,7 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
             return OnBrowseDirectChildren(action, strPath.c_str(), filter, starting_index, requested_count, sort_criteria, context);
         } else if (artist.GetLength() > 0) {
             // all tracks by artist name filtered by album if passed
-            CStdString strPath;
+            std::string strPath;
             strPath.Format("musicdb://artists/%ld/%ld/",
                 database.GetArtistByName((const char*)artist),
                 database.GetAlbumByName((const char*)album)); // will return -1 if no album
@@ -530,7 +530,7 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
             return OnBrowseDirectChildren(action, strPath.c_str(), filter, starting_index, requested_count, sort_criteria, context);
         } else if (album.GetLength() > 0) {
             // all tracks by album name
-            CStdString strPath;
+            std::string strPath;
             strPath.Format("musicdb://albums/%ld/",
                 database.GetAlbumByName((const char*)album));
 
@@ -554,13 +554,13 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
         database.Open();
 
         if (genre.GetLength() > 0) {
-            CStdString strPath;
+            std::string strPath;
             strPath.Format("musicdb://genres/%ld/%ld/",
                 database.GetGenreByName((const char*)genre),
                 database.GetArtistByName((const char*)artist)); // no artist should return -1
             return OnBrowseDirectChildren(action, strPath.c_str(), filter, starting_index, requested_count, sort_criteria, context);
         } else if (artist.GetLength() > 0) {
-            CStdString strPath;
+            std::string strPath;
             strPath.Format("musicdb://artists/%ld/",
                 database.GetArtistByName((const char*)artist));
             return OnBrowseDirectChildren(action, strPath.c_str(), filter, starting_index, requested_count, sort_criteria, context);
@@ -574,7 +574,7 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
         if (genre.GetLength() > 0) {
             CMusicDatabase database;
             database.Open();
-            CStdString strPath;
+            std::string strPath;
             strPath.Format("musicdb://genres/%ld/", database.GetGenreByName((const char*)genre));
             return OnBrowseDirectChildren(action, strPath.c_str(), filter, starting_index, requested_count, sort_criteria, context);
         }
@@ -670,7 +670,7 @@ CUPnPServer::ServeFile(NPT_HttpRequest&              request,
 
     if(URIUtils::IsURL((const char*)file_path))
     {
-      CStdString disp = "inline; filename=\"" + URIUtils::GetFileName((const char*)file_path) + "\"";
+      std::string disp = "inline; filename=\"" + URIUtils::GetFileName((const char*)file_path) + "\"";
       response.GetHeaders().SetHeader("Content-Disposition", disp.c_str());
     }
 

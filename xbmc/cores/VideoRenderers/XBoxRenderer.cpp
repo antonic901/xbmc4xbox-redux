@@ -938,7 +938,7 @@ unsigned int CXBoxRenderer::DrawSlice(unsigned char *src[], int stride[], int w,
     return -1;
 
   if( WaitForSingleObject(m_eventTexturesDone[index], 500) == WAIT_TIMEOUT )
-    CLog::Log(LOGWARNING, CStdString(__FUNCTION__) + " - Timeout waiting for texture %d", index);
+    CLog::Log(LOGWARNING, std::string(__FUNCTION__) + " - Timeout waiting for texture %d", index);
 
   YV12Image &im = m_image[index];
   // copy Y
@@ -1295,7 +1295,7 @@ void CXBoxRenderer::RenderLowMem(DWORD flags)
   }
 
   if( WaitForSingleObject(m_eventTexturesDone[index], 500) == WAIT_TIMEOUT )
-    CLog::Log(LOGWARNING, CStdString(__FUNCTION__) + " - Timeout waiting for texture %d", index);
+    CLog::Log(LOGWARNING, std::string(__FUNCTION__) + " - Timeout waiting for texture %d", index);
 
   for (int i = 0; i < 3; ++i)
   {
@@ -1409,7 +1409,7 @@ void CXBoxRenderer::DeleteYV12Texture(int index)
 void CXBoxRenderer::ClearYV12Texture(int index)
 {
   if( WaitForSingleObject(m_eventTexturesDone[index], 1000) == WAIT_TIMEOUT )
-    CLog::Log(LOGWARNING, CStdString(__FUNCTION__) + " - Timeout waiting for texture %d", index);
+    CLog::Log(LOGWARNING, std::string(__FUNCTION__) + " - Timeout waiting for texture %d", index);
 
   YV12Image &im = m_image[index];
 

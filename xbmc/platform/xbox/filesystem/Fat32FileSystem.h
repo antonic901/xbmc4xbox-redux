@@ -31,22 +31,22 @@ namespace XFILE
   public:
     CFat32FileSystem(unsigned char unit);
 
-    virtual bool Open(const CStdString &file);
-    virtual bool OpenForWrite(const CStdString &file, bool overWrite);
+    virtual bool Open(const std::string &file);
+    virtual bool OpenForWrite(const std::string &file, bool overWrite);
     unsigned int Read(void *buffer, __int64 size);
     unsigned int Write(const void *buffer, __int64 size);
     virtual __int64 Seek(__int64 iFilePosition);
     virtual void Close();
     virtual __int64 GetLength();
     virtual __int64 GetPosition();
-    virtual bool GetDirectory(const CStdString &directory, CFileItemList &items);
-    virtual bool Delete(const CStdString &file);
-    virtual bool Rename(const CStdString &oldFile, const CStdString &newFile);
-    virtual bool MakeDir(const CStdString &path);
-    virtual bool RemoveDir(const CStdString &path);
+    virtual bool GetDirectory(const std::string &directory, CFileItemList &items);
+    virtual bool Delete(const std::string &file);
+    virtual bool Rename(const std::string &oldFile, const std::string &newFile);
+    virtual bool MakeDir(const std::string &path);
+    virtual bool RemoveDir(const std::string &path);
   protected:
-    bool GetDirectoryWithShortPaths(const CStdString &directory, CFileItemList &items);
-    bool GetShortFilePath(const CStdString &longPath, CStdString &shortPath);
+    bool GetDirectoryWithShortPaths(const std::string &directory, CFileItemList &items);
+    bool GetShortFilePath(const std::string &longPath, std::string &shortPath);
     FILEINFO m_file;
     OPEN_STATE m_opened;
   };

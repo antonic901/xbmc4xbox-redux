@@ -20,7 +20,7 @@
  *
  */
 #include <stdio.h>
-#include "utils/StdString.h"
+#include <string>
 
 #define FLAG_BOLD   0
 #define FLAG_ITALIC 1
@@ -51,10 +51,10 @@ public:
 
   typedef struct
   {
-    CStdString ID;
-    CStdString Name;
-    CStdString Lang;
-    CStdString SAMIType;
+    std::string ID;
+    std::string Name;
+    std::string Lang;
+    std::string SAMIType;
   } SLangclass;
 
   std::vector<SLangclass> m_Langclass;

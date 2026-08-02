@@ -40,7 +40,8 @@
 #include "IFile.h"
 #include "URL.h"
 #include "threads/SingleLock.h"
-#include "utils/StdString.h"
+
+#include <string>
 
 #define NT_STATUS_CONNECTION_REFUSED long(0xC0000000 | 0x0236)
 #define NT_STATUS_INVALID_HANDLE long(0xC0000000 | 0x0008)
@@ -60,15 +61,15 @@ public:
   void Deinit();
   void Purge();
   void PurgeEx(const CURL& url);
-  
-  CStdString URLEncode(const CStdString &value);
-  CStdString URLEncode(const CURL &url);
+
+  std::string URLEncode(const std::string &value);
+  std::string URLEncode(const CURL &url);
 
   DWORD ConvertUnixToNT(int error);
 private:
   SMBCCTX *m_context;
-  CStdString m_strLastHost;
-  CStdString m_strLastShare;
+  std::string m_strLastHost;
+  std::string m_strLastShare;
 };
 
 extern CSMB smb;
@@ -79,7 +80,7 @@ class CSmbFile : public IFile
 {
 public:
   CSmbFile();
-  int OpenFile(const CURL &url, CStdString& strAuth);
+  int OpenFile(const CURL &url, std::string& strAuth);
   virtual ~CSmbFile();
   virtual void Close();
   virtual int64_t Seek(int64_t iFilePosition, int iWhence = SEEK_SET);
@@ -100,8 +101,8 @@ public:
 
 protected:
   CURL m_url;
-  bool IsValidFile(const CStdString& strFileName);
-  CStdString GetAuthenticatedPath(const CURL &url);
+  bool IsValidFile(const std::string& strFileName);
+  std::string GetAuthenticatedPath(const CURL &url);
   int64_t m_fileSize;
   int m_fd;
 };

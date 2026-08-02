@@ -32,52 +32,52 @@ class CMarkupSTL;
 class COptionsHelperWindow;
 class COptions
 {
-	friend COptionsHelperWindow;
+    friend COptionsHelperWindow;
 // Konstruktion
 public:
-	BOOL GetAsCommand(char **pBuffer, DWORD *nBufferLength);
-	CStdString GetOption(int nOptionID);
-	_int64 GetOptionVal(int nOptionID);
-	COptions();   // Standardkonstruktor
-	virtual ~COptions();
-	static CMarkupSTL *GetXML();
-	static BOOL FreeXML(CMarkupSTL *pXML);
-	BOOL ParseOptionsCommand(unsigned char *pData, DWORD dwDataLength, BOOL bFromLocal = FALSE);
-	void SetOption(int nOptionID, LPCTSTR value);
-	void SetOption(int nOptionID, _int64 value);
-	int GetCurrentSpeedLimit(int nMode);
-	void ReloadConfig();
-	
+    BOOL GetAsCommand(char **pBuffer, DWORD *nBufferLength);
+    std::string GetOption(int nOptionID);
+    _int64 GetOptionVal(int nOptionID);
+    COptions();   // Standardkonstruktor
+    virtual ~COptions();
+    static CMarkupSTL *GetXML();
+    static BOOL FreeXML(CMarkupSTL *pXML);
+    BOOL ParseOptionsCommand(unsigned char *pData, DWORD dwDataLength, BOOL bFromLocal = FALSE);
+    void SetOption(int nOptionID, LPCTSTR value);
+    void SetOption(int nOptionID, _int64 value);
+    int GetCurrentSpeedLimit(int nMode);
+    void ReloadConfig();
+
 protected:
-	static CCriticalSectionWrapper m_Sync;
-	static std::list<COptions *> m_InstanceList;
-	static bool IsNumeric(LPCTSTR str);
+    static CCriticalSectionWrapper m_Sync;
+    static std::list<COptions *> m_InstanceList;
+    static bool IsNumeric(LPCTSTR str);
 
-	BOOL ReadSpeedLimits(CMarkupSTL *pXML);
-	BOOL SaveSpeedLimits();
+    BOOL ReadSpeedLimits(CMarkupSTL *pXML);
+    BOOL SaveSpeedLimits();
 
-	static SPEEDLIMITSLIST m_sDownloadSpeedLimits;
-	static SPEEDLIMITSLIST m_sUploadSpeedLimits;
-	SPEEDLIMITSLIST m_DownloadSpeedLimits;
-	SPEEDLIMITSLIST m_UploadSpeedLimits;
-	
-	struct t_OptionsCache
-	{
-		BOOL bCached;
-		int nType;
-		CStdString str;
-		_int64 value;
-	} m_OptionsCache[OPTIONS_NUM];
-	static t_OptionsCache m_sOptionsCache[OPTIONS_NUM];
-	void Init();
-	static BOOL m_bInitialized;
+    static SPEEDLIMITSLIST m_sDownloadSpeedLimits;
+    static SPEEDLIMITSLIST m_sUploadSpeedLimits;
+    SPEEDLIMITSLIST m_DownloadSpeedLimits;
+    SPEEDLIMITSLIST m_UploadSpeedLimits;
 
-	static void UpdateInstances();
-	COptionsHelperWindow *m_pOptionsHelperWindow;
+    struct t_OptionsCache
+    {
+        BOOL bCached;
+        int nType;
+        std::string str;
+        _int64 value;
+    } m_OptionsCache[OPTIONS_NUM];
+    static t_OptionsCache m_sOptionsCache[OPTIONS_NUM];
+    void Init();
+    static BOOL m_bInitialized;
+
+    static void UpdateInstances();
+    COptionsHelperWindow *m_pOptionsHelperWindow;
 };
 
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
+// Microsoft Visual C++ fï¿½gt unmittelbar vor der vorhergehenden Zeile zusï¿½tzliche Deklarationen ein.
 
 #endif // AFX_OPTIONS_H__3E60F2D3_99F3_4271_92A3_2CF71AF62731__INCLUDED_

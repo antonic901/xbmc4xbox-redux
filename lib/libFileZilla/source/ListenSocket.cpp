@@ -34,10 +34,10 @@ static char THIS_FILE[] = __FILE__;
 
 CListenSocket::CListenSocket(CServer *pServer)
 {
-	ASSERT(pServer);
-	m_pServer = pServer;
+    ASSERT(pServer);
+    m_pServer = pServer;
 
-	m_bLocked = FALSE;
+    m_bLocked = FALSE;
 }
 
 CListenSocket::~CListenSocket()
@@ -45,64 +45,64 @@ CListenSocket::~CListenSocket()
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Member-Funktion CListenSocket 
+// Member-Funktion CListenSocket
 
-void CListenSocket::OnAccept(int nErrorCode) 
+void CListenSocket::OnAccept(int nErrorCode)
 {
-	CAsyncSocketEx socket;
-	if (!Accept(socket))
-	{
-		int nError = WSAGetLastError();
-		CStdString str;
-		str.Format("Failure in CListenSocket::OnAccept(%d) - call to CAsyncSocketEx::Accept failed, errorcode %d", nErrorCode, nError);
-		SendStatus(str, 1);
-		SendStatus("If you use a firewall, please check your firewall configuration", 1);
-		return;
-	}
+    CAsyncSocketEx socket;
+    if (!Accept(socket))
+    {
+        int nError = WSAGetLastError();
+        std::string str;
+        str.Format("Failure in CListenSocket::OnAccept(%d) - call to CAsyncSocketEx::Accept failed, errorcode %d", nErrorCode, nError);
+        SendStatus(str, 1);
+        SendStatus("If you use a firewall, please check your firewall configuration", 1);
+        return;
+    }
 
-	if (m_bLocked)
-	{
-		CStdString str = "421 Server is locked, please try again later.\r\n";
-		socket.Send(str, str.GetLength());
-		return;
-	}
-	
-	int minnum = 255*255*255;
-	CServerThread *pBestThread=0;;
-	for (std::list<CServerThread *>::iterator iter=m_pThreadList->begin(); iter!=m_pThreadList->end(); iter++)
-	{
-		int num=(*iter)->GetNumConnections();
-		if (num<minnum && (*iter)->IsReady())
-		{
-			minnum=num;
-			pBestThread=*iter;
-			if (!num)
-				break;
-		}
-	}
-	if (!pBestThread)
-	{
-		char str[] = "421 Server offline.";
-		socket.Send(str, strlen(str)+1);
-		socket.Close();
-		return;
-	}
-	
-	/* Disable Nagle algorithm. Most of the time single short strings get 
-	 * transferred over the control connection. Waiting for additional data
-	 * where there will be most likely none affects performance.
-	 */
-	BOOL value = TRUE;
-	socket.SetSockOpt(TCP_NODELAY, &value, sizeof(value), IPPROTO_TCP);
+    if (m_bLocked)
+    {
+        std::string str = "421 Server is locked, please try again later.\r\n";
+        socket.Send(str, str.GetLength());
+        return;
+    }
 
-	SOCKET sockethandle = socket.Detach();
-	
-	pBestThread->AddSocket(sockethandle);
-		
-	CAsyncSocketEx::OnAccept(nErrorCode);
+    int minnum = 255*255*255;
+    CServerThread *pBestThread=0;;
+    for (std::list<CServerThread *>::iterator iter=m_pThreadList->begin(); iter!=m_pThreadList->end(); iter++)
+    {
+        int num=(*iter)->GetNumConnections();
+        if (num<minnum && (*iter)->IsReady())
+        {
+            minnum=num;
+            pBestThread=*iter;
+            if (!num)
+                break;
+        }
+    }
+    if (!pBestThread)
+    {
+        char str[] = "421 Server offline.";
+        socket.Send(str, strlen(str)+1);
+        socket.Close();
+        return;
+    }
+
+    /* Disable Nagle algorithm. Most of the time single short strings get
+     * transferred over the control connection. Waiting for additional data
+     * where there will be most likely none affects performance.
+     */
+    BOOL value = TRUE;
+    socket.SetSockOpt(TCP_NODELAY, &value, sizeof(value), IPPROTO_TCP);
+
+    SOCKET sockethandle = socket.Detach();
+
+    pBestThread->AddSocket(sockethandle);
+
+    CAsyncSocketEx::OnAccept(nErrorCode);
 }
 
-void CListenSocket::SendStatus(CStdString status, int type)
+void CListenSocket::SendStatus(std::string status, int type)
 {
-	m_pServer->ShowStatus(status, type);
+    m_pServer->ShowStatus(status, type);
 }

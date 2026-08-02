@@ -18,4 +18,4 @@
 
 #pragma once
 
-CStdString GetVersionString();
+std::string GetVersionString();

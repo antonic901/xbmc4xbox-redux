@@ -35,6 +35,6 @@ namespace XFILE
     virtual bool Exists(const CURL& url);
     virtual bool Remove(const CURL& url);
   protected:
-    IFileSystem *GetFileSystem(const CStdString &path);
+    IFileSystem *GetFileSystem(const std::string &path);
   };
 };

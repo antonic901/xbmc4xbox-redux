@@ -83,7 +83,7 @@ struct _env
 };
 
 #define EMU_MAX_ENVIRONMENT_ITEMS 50
-char *dll__environ[EMU_MAX_ENVIRONMENT_ITEMS + 1]; 
+char *dll__environ[EMU_MAX_ENVIRONMENT_ITEMS + 1];
 CCriticalSection dll_cs_environ;
 
 #define dll_environ    (*dll___p__environ())   /* pointer to environment table */
@@ -91,17 +91,17 @@ CCriticalSection dll_cs_environ;
 extern "C" void __stdcall init_emu_environ()
 {
   memset(dll__environ, 0, EMU_MAX_ENVIRONMENT_ITEMS + 1);
-  
+
   // libdvdnav
   dll_putenv("DVDREAD_NOKEYS=1");
   //dll_putenv("DVDREAD_VERBOSE=1");
   //dll_putenv("DVDREAD_USE_DIRECT=1");
-  
+
   // libdvdcss
   dll_putenv("DVDCSS_METHOD=key");
   dll_putenv("DVDCSS_VERBOSE=3");
   dll_putenv("DVDCSS_CACHE=T:\\cache");
-  
+
   // python
 #ifdef _XBOX
   dll_putenv("OS=xbox");
@@ -136,7 +136,7 @@ extern "C" void __stdcall update_emu_environ()
       && !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxyport").empty()
       && CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("network.httpproxytype") == 0)
   {
-    CStdString strProxy;
+    std::string strProxy;
     if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxyusername").empty() &&
         !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxypassword").empty())
     {
@@ -318,7 +318,7 @@ extern "C"
       CLog::Log(LOGDEBUG,"  msg: %s", szLine);
     else
       CLog::Log(LOGDEBUG,"  msg: %s\n", szLine);
-    
+
     // return a non negative value
     return 0;
   }
@@ -335,7 +335,7 @@ extern "C"
     update_cache_dialog(tmp);
 #endif
     CLog::Log(LOGDEBUG, "  msg: %s", tmp);
-    
+
     return strlen(tmp);
   }
 
@@ -402,7 +402,7 @@ extern "C"
       // let the operating system handle it
       return _fdopen(fd, mode);
     }
-    
+
     not_implement("msvcrt.dll incomplete function _fdopen(...) called\n");
     return NULL;
   }
@@ -446,7 +446,7 @@ extern "C"
       bResult = pFile->OpenForWrite(CUtil::ValidatePath(str, true), bOverwrite);
     else
       bResult = pFile->Open(CUtil::ValidatePath(str, true));
-    
+
     if (bResult)
     {
       EmuFileObject* object = g_emuFileWrapper.RegisterFileObject(pFile);
@@ -474,7 +474,7 @@ extern "C"
       // Translate the path
       return freopen(CSpecialProtocol::TranslatePath(path).c_str(), mode, stream);
     }
-    
+
     // error
     // close stream and return NULL
     dll_fclose(stream);
@@ -522,7 +522,7 @@ extern "C"
     if (pFile != NULL)
     {
       g_emuFileWrapper.UnRegisterFileObjectByDescriptor(fd);
-      
+
       pFile->Close();
       delete pFile;
       return 0;
@@ -638,10 +638,10 @@ extern "C"
       return _findfirst(CUtil::ValidatePath(CSpecialProtocol::TranslatePath(str), true), data);
     }
     // non-local files. handle through IDirectory-class - only supports '*.bah' or '*.*'
-    CStdString strMask;
+    std::string strMask;
     if (url.GetFileName().find("*.*") != string::npos)
     {
-      CStdString strReplaced = url.GetFileName();
+      std::string strReplaced = url.GetFileName();
       strReplaced.Replace("*.*","");
       url.SetFileName(strReplaced);
     }
@@ -659,9 +659,9 @@ extern "C"
       CURL url2(url.GetFileName());
       url = url2;
     }
-    CStdString fName = url.GetFileName();
+    std::string fName = url.GetFileName();
     url.SetFileName("");
-    CStdString strURL = url.Get();
+    std::string strURL = url.Get();
     bVecDirsInited = true;
     vecDirsOpen[iDirSlot].items.Clear();
     vecDirsOpen[iDirSlot].Directory = CFactoryDirectory::Create(url);
@@ -734,7 +734,7 @@ extern "C"
       // it might be something else than a file, or the file is not emulated
       // let the operating system handle it
       return fgets(pszString, num, stream);
-    } 
+    }
     CLog::Log(LOGERROR, "%s emulated function failed",  __FUNCTION__);
     return NULL;
   }
@@ -785,7 +785,7 @@ extern "C"
     {
       // it is a emulated file
       unsigned char buf;
-      
+
       if (dll_fread(&buf, 1, 1, stream) <= 0)
         return EOF;
 
@@ -817,11 +817,11 @@ extern "C"
     CLog::Log(LOGERROR, "%s emulated function failed",  __FUNCTION__);
     return EOF;
   }
-  
+
   FILE* dll_fopen(const char* filename, const char* mode)
   {
     FILE* file = NULL;
-    
+
     int iMode = O_BINARY;
     if (strstr(mode, "r+"))
       iMode |= O_RDWR;
@@ -831,13 +831,13 @@ extern "C"
       iMode |= O_RDWR | _O_TRUNC;
     else if (strchr(mode, 'w'))
       iMode |= _O_WRONLY  | O_CREAT;
-      
+
     int fd = dll_open(filename, iMode);
     if (fd >= 0)
     {
       file = g_emuFileWrapper.GetStreamByDescriptor(fd);;
     }
-    
+
     return file;
   }
 
@@ -858,7 +858,7 @@ extern "C"
   {
     return dll_putc(c, stdout);
   }
-  
+
   int dll_fputc(int character, FILE* stream)
   {
     if (IS_STDOUT_STREAM(stream) || IS_STDERR_STREAM(stream))
@@ -916,7 +916,7 @@ extern "C"
         return fputs(szLine, stream);
       }
     }
-    
+
     OutputDebugString(szLine);
     OutputDebugString("\n");
     CLog::Log(LOGERROR, "%s emulated function failed",  __FUNCTION__);
@@ -1044,9 +1044,9 @@ extern "C"
       {
         memcpy(buf, buffer, size * count);
         buf[size * count] = 0; // string termination
-        
+
         CLog::Log(LOGDEBUG, "%s", buf);
-        
+
         free(buf);
         return count;
       }
@@ -1088,7 +1088,7 @@ extern "C"
       // let the operating system handle it
       return fflush(stream);
     }
-    
+
     // std stream, no need to flush
     return 0;
   }
@@ -1112,7 +1112,7 @@ extern "C"
 
   int dllvprintf(const char *format, va_list va)
   {
-    CStdString buffer = StringUtils::FormatV(format, va);
+    std::string buffer = StringUtils::FormatV(format, va);
     CLog::Log(LOGDEBUG, "  msg: %s", buffer.c_str());
     return buffer.length();
   }
@@ -1126,7 +1126,7 @@ extern "C"
       CLog::Log(LOGWARNING, "dll_vfprintf: Data lost due to undersized buffer");
     }
     tmp[2048 - 1] = 0;
-    
+
     if (IS_STDOUT_STREAM(stream) || IS_STDERR_STREAM(stream))
     {
       CLog::Log(LOGINFO, "  msg: %s", tmp);
@@ -1172,7 +1172,7 @@ extern "C"
         return vfprintf(stream, format, va);
       }
     }
-    
+
     OutputDebugString(tmp);
     OutputDebugString("\n");
     CLog::Log(LOGERROR, "%s emulated function failed",  __FUNCTION__);
@@ -1188,7 +1188,7 @@ extern "C"
     va_end(va);
     return res;
   }
-  
+
   int dll_fgetpos(FILE* stream, fpos_t* pos)
   {
     fpos64_t tmpPos;
@@ -1334,7 +1334,7 @@ extern "C"
         buffer->st_ctime = 1000000000;
         return 0;
     }
-  
+
     if (!strnicmp(path, "shout://", 8)) // don't stat shoutcast
       return -1;
     if (!strnicmp(path, "http://", 7)
@@ -1342,7 +1342,7 @@ extern "C"
       return -1;
     if (!strnicmp(path, "mms://", 6)) // don't stat mms
       return -1;
-      
+
 #ifndef _LINUX
     // check for remaining letter drives
     if (path && isalpha(path[0]) && path[1] == ':' && ( strlen(path) == 2 || strlen(path) == 3 ) )
@@ -1398,7 +1398,7 @@ extern "C"
         buffer->st_ctime = 1000000000;
         return 0;
     }
-  
+
     if (!strnicmp(path, "shout://", 8)) // don't stat shoutcast
       return -1;
     if (!strnicmp(path, "http://", 7)
@@ -1433,7 +1433,7 @@ extern "C"
     if (pFile != NULL)
     {
       CLog::Log(LOGINFO, "Stating open file");
-    
+
       __int64 size = pFile->GetLength();
       if (size <= LONG_MAX)
         buffer->st_size = (_off_t)size;
@@ -1450,7 +1450,7 @@ extern "C"
     {
       return fstat(fd, buffer);
     }
-    
+
     // fstat on stdin, stdout or stderr should fail
     // this is what python expects
     return -1;
@@ -1462,7 +1462,7 @@ extern "C"
     if (pFile != NULL)
     {
       CLog::Log(LOGINFO, "Stating open file");
-      
+
       buffer->st_size = pFile->GetLength();
       buffer->st_mode = _S_IFREG;
       return 0;
@@ -1479,7 +1479,7 @@ extern "C"
       }
       return res;
     }
-    
+
     // fstat on stdin, stdout or stderr should fail
     // this is what python expects
     return -1;
@@ -1522,25 +1522,25 @@ extern "C"
   int dll_putenv(const char* envstring)
   {
     bool added = false;
-    
+
     if (envstring != NULL)
     {
       const char *value_start = strchr(envstring, '=');
-      
+
       if (value_start != NULL)
       {
         char var[64];
         int size = strlen(envstring) + 1;
         char *value = (char*)malloc(size);
-        
+
         if (!value)
           return -1;
         value[0] = 0;
-        
+
         memcpy(var, envstring, value_start - envstring);
         var[value_start - envstring] = 0;
         strupr(var);
-        
+
         strncpy(value, value_start + 1, size);
         if (size)
           value[size - 1] = '\0';
@@ -1567,7 +1567,7 @@ extern "C"
               free_position = &dll__environ[i];
             }
           }
-        
+
           if (free_position != NULL)
           {
             // free position, copy value
@@ -1582,13 +1582,13 @@ extern "C"
               added = true;
             }
           }
-        
+
         }
 
         free(value);
       }
     }
-    
+
     return added ? 0 : -1;
   }
 
@@ -1597,7 +1597,7 @@ extern "C"
   char *getenv(const char *s)
   {
     // some libs in the solution linked to getenv which was exported in python.lib
-    // now python is in a dll this needs the be fixed, or not 
+    // now python is in a dll this needs the be fixed, or not
     CLog::Log(LOGWARNING, "old getenv from python.lib called, library check needed");
     return NULL;
   }
@@ -1629,10 +1629,10 @@ extern "C"
     {
       return value;
     }
-    
+
     return NULL;
   }
-  
+
   int dll_ctype(int i)
   {
     not_implement("msvcrt.dll fake function dll_ctype() called\n");
@@ -1647,10 +1647,10 @@ extern "C"
 
   void (__cdecl * dll_signal(int sig, void (__cdecl *func)(int)))(int)
   {
-    // the xbox has a NSIG of 23 (+1), problem is when calling signal with 
+    // the xbox has a NSIG of 23 (+1), problem is when calling signal with
     // one of the signals below the xbox wil crash. Just return SIG_ERR
     if (sig == SIGILL || sig == SIGFPE || sig == SIGSEGV) return SIG_ERR;
-    
+
     return signal(sig, func);
   }
 
@@ -1658,7 +1658,7 @@ extern "C"
   {
     return 1;
   }
-  
+
   int dll__commit(int fd)
   {
     CFile* pFile = g_emuFileWrapper.GetFileXbmcByDescriptor(fd);
@@ -1673,11 +1673,11 @@ extern "C"
       // let the operating system handle it
       return _commit(fd);
     }
-    
+
     // std stream, no need to flush
     return 0;
   }
-  
+
   char*** dll___p__environ()
   {
     static char*** t = (char***)&dll__environ;

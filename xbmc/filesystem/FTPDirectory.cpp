@@ -38,7 +38,7 @@ bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList &items)
 
   CURL url(url2);
 
-  CStdString path = url.GetFileName();
+  std::string path = url.GetFileName();
   if( !path.IsEmpty() && !StringUtils::EndsWith(path, "/") )
   {
     path += "/";
@@ -52,7 +52,7 @@ bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList &items)
   char buffer[MAX_PATH + 1024];
   while( reader.ReadString(buffer, sizeof(buffer)) )
   {
-    CStdString strBuffer = buffer;
+    std::string strBuffer = buffer;
 
     StringUtils::RemoveCRLF(strBuffer);
 
@@ -66,7 +66,7 @@ bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList &items)
         continue;
 
       /* buffer name as it's not allways null terminated */
-      CStdString name;
+      std::string name;
       name.assign(lp.name, lp.namelen);
 
       if( name.Equals("..") || name.Equals(".") )
@@ -78,7 +78,7 @@ bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList &items)
 
       CFileItemPtr pItem(new CFileItem(name));
 
-      CStdString filePath = path + name;
+      std::string filePath = path + name;
       pItem->m_bIsFolder = (bool)(lp.flagtrycwd != 0);
       if (pItem->m_bIsFolder)
         URIUtils::AddSlashAtEnd(filePath);
@@ -101,7 +101,7 @@ bool CFTPDirectory::Exists(const CURL& url)
 {
   // make sure ftp dir ends with slash,
   // curl need to known it's a dir to check ftp directory existence.
-  CStdString file = url.Get();
+  std::string file = url.Get();
   URIUtils::AddSlashAtEnd(file);
 
   CCurlFile ftp;

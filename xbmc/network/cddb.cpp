@@ -54,7 +54,7 @@ bool Xcddb::openSocket()
   service.sin_family = AF_INET;
 
   // connect to site directly
-  CStdString strIpadres;
+  std::string strIpadres;
   CDNSNameCache::Lookup(m_cddb_ip_address, strIpadres);
   if (strIpadres == "")
   {

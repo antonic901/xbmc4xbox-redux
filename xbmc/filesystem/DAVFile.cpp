@@ -71,7 +71,7 @@ bool CDAVFile::Execute(const CURL& url)
 
   if (lastResponseCode == 207)
   {
-    CStdString strResponse;
+    std::string strResponse;
     ReadData(strResponse);
 
     CXBMCTinyXML davResponse;
@@ -90,9 +90,9 @@ bool CDAVFile::Execute(const CURL& url)
     {
       if (CDAVCommon::ValueWithoutNamespace(pChild, "response"))
       {
-        CStdString sRetCode = CDAVCommon::GetStatusTag(pChild->ToElement());
+        std::string sRetCode = CDAVCommon::GetStatusTag(pChild->ToElement());
         CRegExp rxCode;
-        rxCode.RegComp("HTTP/1\\.1\\s(\\d+)\\s.*"); 
+        rxCode.RegComp("HTTP/1\\.1\\s(\\d+)\\s.*");
         if (rxCode.RegFind(sRetCode) >= 0)
         {
           if (rxCode.GetSubCount())
@@ -116,10 +116,10 @@ bool CDAVFile::Delete(const CURL& url)
     return false;
 
   CDAVFile dav;
-  CStdString strRequest = "DELETE";
+  std::string strRequest = "DELETE";
 
   dav.SetCustomRequest(strRequest);
- 
+
   if (!dav.Execute(url))
   {
     CLog::Log(LOGERROR, "%s - Unable to delete dav resource (%s)", __FUNCTION__, url.Get().c_str());
@@ -139,10 +139,10 @@ bool CDAVFile::Rename(const CURL& url, const CURL& urlnew)
   CDAVFile dav;
 
   CURL url2(urlnew);
-  CStdString strProtocol = url2.GetTranslatedProtocol();
+  std::string strProtocol = url2.GetTranslatedProtocol();
   url2.SetProtocol(strProtocol);
 
-  CStdString strRequest = "MOVE";
+  std::string strRequest = "MOVE";
   dav.SetCustomRequest(strRequest);
   dav.SetRequestHeader("Destination", url2.GetWithoutUserDetails());
 

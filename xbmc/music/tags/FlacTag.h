@@ -37,7 +37,7 @@ class CFlacTag : public CVorbisTag
 public:
   CFlacTag(void);
   virtual ~CFlacTag(void);
-  virtual bool Read(const CStdString& strFile);
+  virtual bool Read(const std::string& strFile);
 
 protected:
   XFILE::CFile* m_file;

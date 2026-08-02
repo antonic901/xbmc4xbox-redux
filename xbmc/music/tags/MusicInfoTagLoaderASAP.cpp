@@ -40,11 +40,11 @@ bool CMusicInfoTagLoaderASAP::Load(const std::string &strFile, CMusicInfoTag &ta
   if (!m_dll.Load())
     return false;
 
-  CStdString strFileToLoad = strFile;
+  std::string strFileToLoad = strFile;
   int song = -1;
   if (URIUtils::HasExtension(strFile, ".asapstream"))
   {
-    CStdString strFileName = URIUtils::GetFileName(strFile);
+    std::string strFileName = URIUtils::GetFileName(strFile);
     int iStart = strFileName.ReverseFind('-') + 1;
     song = atoi(strFileName.substr(iStart, strFileName.size() - iStart - 11).c_str()) - 1;
     strFileToLoad = URIUtils::GetDirectory(strFile);

@@ -40,7 +40,7 @@ bool CDVDFactorySubtitle::GetSubtitles(VecSubtitleFiles& vecSubtitles, string& s
   vecSubtitles.clear();
   std::string subtitlePrefix = "special://temp/subtitle";
 
-  CStdString strExtensionCached;
+  std::string strExtensionCached;
 
   CUtil::CacheSubtitles(strFile, strExtensionCached);
   int iSize = strExtensionCached.size();

@@ -19,12 +19,10 @@
  *
  */
 
-#include "StreamUtils.h"
-
-#include "utils/StdString.h"
+#include <string>
 
 class StreamUtils
 {
 public:
-  static int GetCodecPriority(const CStdString &codec);
+  static int GetCodecPriority(const std::string &codec);
 };

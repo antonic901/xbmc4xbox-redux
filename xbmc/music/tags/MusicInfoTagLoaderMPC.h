@@ -30,6 +30,6 @@ public:
   CMusicInfoTagLoaderMPC(void);
   virtual ~CMusicInfoTagLoaderMPC();
 private:
-  virtual int ReadDuration(const CStdString& strFileName);
+  virtual int ReadDuration(const std::string& strFileName);
 };
 }

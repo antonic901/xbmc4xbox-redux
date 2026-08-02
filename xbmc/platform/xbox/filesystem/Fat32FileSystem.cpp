@@ -35,12 +35,12 @@ CFat32FileSystem::CFat32FileSystem(unsigned char unit) : IFileSystem(unit)
   m_opened = CLOSED;
 }
 
-bool CFat32FileSystem::Open(const CStdString &file)
+bool CFat32FileSystem::Open(const std::string &file)
 {
   CFat32Device *device = (CFat32Device *)g_memoryUnitManager.GetDevice(m_unit);
   if (!device) return false;
   // convert long path to short path
-  CStdString shortPath;
+  std::string shortPath;
   if(!GetShortFilePath(file, shortPath))
     return false;
 
@@ -54,7 +54,7 @@ bool CFat32FileSystem::Open(const CStdString &file)
   return true;
 }
 
-bool CFat32FileSystem::OpenForWrite(const CStdString &file, bool overWrite)
+bool CFat32FileSystem::OpenForWrite(const std::string &file, bool overWrite)
 {
   CFat32Device *device = (CFat32Device *)g_memoryUnitManager.GetDevice(m_unit);
   if (!device) return false;
@@ -97,13 +97,13 @@ unsigned int CFat32FileSystem::Read(void *buffer, __int64 size)
   return amountRead;
 }
 
-bool CFat32FileSystem::GetShortFilePath(const CStdString &path, CStdString &shortPath)
+bool CFat32FileSystem::GetShortFilePath(const std::string &path, std::string &shortPath)
 {
   shortPath.Empty();
   if (path.IsEmpty())
     return true;  // nothing to do
   // split the path up
-  CStdStringArray folders;
+  std::vector<std::string> folders;
   StringUtils::SplitString(path, "/", folders);
 
   bool isfolder = true;
@@ -170,7 +170,7 @@ __int64 CFat32FileSystem::GetPosition()
   return m_file.pointer;
 }
 
-bool CFat32FileSystem::Delete(const CStdString &file)
+bool CFat32FileSystem::Delete(const std::string &file)
 {
   return false;
 
@@ -186,31 +186,31 @@ bool CFat32FileSystem::Delete(const CStdString &file)
   return true;*/
 }
 
-bool CFat32FileSystem::Rename(const CStdString &oldFile, const CStdString &newFile)
+bool CFat32FileSystem::Rename(const std::string &oldFile, const std::string &newFile)
 {
   return false;
 }
 
-bool CFat32FileSystem::MakeDir(const CStdString &path)
+bool CFat32FileSystem::MakeDir(const std::string &path)
 {
   return false;
 }
 
-bool CFat32FileSystem::RemoveDir(const CStdString &path)
+bool CFat32FileSystem::RemoveDir(const std::string &path)
 {
   return Delete(path);
 }
 
-bool CFat32FileSystem::GetDirectory(const CStdString &directory, CFileItemList &items)
+bool CFat32FileSystem::GetDirectory(const std::string &directory, CFileItemList &items)
 {
   // first grab the shortened version of this directory
-  CStdString shortDirectory;
+  std::string shortDirectory;
   if (GetShortFilePath(directory, shortDirectory) && GetDirectoryWithShortPaths(shortDirectory, items))
   { // success - update our paths
     for (int i = 0; i < items.Size(); ++i)
     {
       CFileItemPtr item = items[i];
-      CStdString path;
+      std::string path;
       if (directory.IsEmpty())
         path.Format("mem%d://%s", m_unit, item->GetLabel().c_str());
       else
@@ -222,7 +222,7 @@ bool CFat32FileSystem::GetDirectory(const CStdString &directory, CFileItemList &
   return false;
 }
 
-bool CFat32FileSystem::GetDirectoryWithShortPaths(const CStdString &directory, CFileItemList &items)
+bool CFat32FileSystem::GetDirectoryWithShortPaths(const std::string &directory, CFileItemList &items)
 {
   CFat32Device *device = (CFat32Device *)g_memoryUnitManager.GetDevice(m_unit);
   if (!device) return false;
@@ -235,7 +235,7 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const CStdString &directory, C
         return false;
     }
   // vfat naming
-  CStdStringW vfatName;
+  std::wstring vfatName;
   unsigned short vfatSequence = 0;
   unsigned char vfatChecksum = 0;
   DIRENT de;
@@ -280,12 +280,12 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const CStdString &directory, C
       // ignore the volume descripter
       if ((de.attr & ATTR_VOLUME_ID) == ATTR_VOLUME_ID)
         continue;
-      CStdString shortPath;
+      std::string shortPath;
       if ((de.attr & ATTR_DIRECTORY) == 0)
       { // filename
         shortPath.Format("%-8.8s", de.name);
         shortPath.TrimRight(' ');
-        CStdString extension;
+        std::string extension;
         extension.Format(".%-3.3s", de.name + 8);
         shortPath += extension;
       }
@@ -297,7 +297,7 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const CStdString &directory, C
       // we don't want require the parent and current directory items
       if (shortPath.Equals(".") || shortPath.Equals(".."))
         continue;
-      CStdString longPath = shortPath;
+      std::string longPath = shortPath;
       // do we have a vfatName here?
       if (!vfatSequence && vfatName.size())
       { // yes, check the checksum

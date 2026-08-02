@@ -1,7 +1,7 @@
 /*
 * XBMC
 * 2003 by The Joker / Avalaunch team
-* 
+*
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,26 +18,26 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "system.h" 
+#include "system.h"
 /*
- Redbook   : CDDA 
+ Redbook   : CDDA
  Yellowbook : CDROM
 ISO9660
  CD-ROM Mode 1 divides the 2352 byte data area into:
-  -12  bytes of synchronisation 
-  -4  bytes of header information 
-  -2048 bytes of user information 
-  -288 bytes of error correction and detection codes. 
- 
- CD-ROM Mode 2 redefines the use of the 2352 byte data area as follows: 
-  -12 bytes of synchronisation 
-  -4 bytes of header information 
-  -2336 bytes of user data. 
- 
+  -12  bytes of synchronisation
+  -4  bytes of header information
+  -2048 bytes of user information
+  -288 bytes of error correction and detection codes.
+
+ CD-ROM Mode 2 redefines the use of the 2352 byte data area as follows:
+  -12 bytes of synchronisation
+  -4 bytes of header information
+  -2336 bytes of user data.
+
  ISO9660 specs:
  http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-119.pdf
- 
- 
+
+
 */
 #include "iso9660.h"
 #include "utils/CharsetConverter.h"
@@ -135,7 +135,7 @@ struct iso_dirtree *iso9660::ReadRecursiveDirFromSector( DWORD sector, const cha
 
 
 #ifdef _DEBUG_OUTPUT
-  CStdString strTmp;
+  std::string strTmp;
   strTmp.Format("******************   Adding dir : %s\r", path);
   OutputDebugString( strTmp.c_str() );
 #endif
@@ -303,7 +303,7 @@ struct iso_dirtree *iso9660::ReadRecursiveDirFromSector( DWORD sector, const cha
 
           strcpy( pFile_Pointer->name , temp_text.c_str());
 #ifdef _DEBUG_OUTPUT
-          //CStdString strTmp;
+          //std::string strTmp;
           //strTmp.Format("adding sector : %X, File : %s     size = %u     pos = %x\r",sector,temp_text.c_str(), isodir.dwFileLengthLE, isodir.dwFileLocationLE );
           //OutputDebugString( strTmp.c_str());
 #endif
@@ -396,7 +396,7 @@ struct iso_dirtree *iso9660::ReadRecursiveDirFromSector( DWORD sector, const cha
           strcpy( pFile_Pointer->name , temp_text.c_str());
 
 #ifdef _DEBUG_OUTPUT
-          CStdString strTmp;
+          std::string strTmp;
           strTmp.Format("adding directory sector : %X, File : %s     size = %u     pos = %x\r", sector, temp_text.c_str(), isodir.dwFileLengthLE, isodir.dwFileLocationLE );
           OutputDebugString( strTmp.c_str());
 #endif
@@ -470,7 +470,7 @@ void iso9660::Scan()
 
     // first check if first file in the current VD has a rock-ridge NM. if it has, disable joliet
     ::SetFilePointer( m_info.ISO_HANDLE, m_info.iso.wSectorSizeLE * ((iso9660_Directory*)(&m_info.iso.szRootDir))->dwFileLocationLE, 0, FILE_BEGIN );
-    
+
     DWORD lpNumberOfBytesRead;
     char* pCurr_dir_cache = (char*)malloc( 16*m_info.iso.wSectorSizeLE );
     iso9660_Directory isodir;
@@ -482,7 +482,7 @@ void iso9660::Scan()
       iso9660searchpointer += isodir.ucRecordLength;
     else
       iso9660searchpointer = (iso9660searchpointer - (iso9660searchpointer % m_info.iso.wSectorSizeLE)) + m_info.iso.wSectorSizeLE;
-    
+
     memcpy( &isodir, pCurr_dir_cache + iso9660searchpointer,min(sizeof(isodir), sizeof(m_info.isodir)));
     free(pCurr_dir_cache);
     if (bResult && lpNumberOfBytesRead == m_info.iso.wSectorSizeLE)
@@ -678,7 +678,7 @@ string iso9660::GetThinText(WCHAR* strTxt, int iLen )
 {
   // convert from "fat" text (UTF-16BE) to "thin" text (UTF-8)
   std::u16string strTxtUnicode((char16_t*)strTxt, iLen / 2);
-  CStdString utf8String;
+  std::string utf8String;
 
   g_charsetConverter.utf16BEtoUTF8(strTxtUnicode, utf8String);
 

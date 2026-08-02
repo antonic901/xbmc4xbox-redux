@@ -21,7 +21,7 @@
  */
 
 #include <stdio.h>
-#include "utils/StdString.h"
+#include <string>
 
 #include "commons/ilog.h"
 #include "threads/CriticalSection.h"

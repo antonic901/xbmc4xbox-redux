@@ -29,8 +29,8 @@ class CTag
 public:
   CTag(void) { m_art = NULL; }
   virtual ~CTag(void) {}
-  virtual bool Read(const CStdString& strFile) { m_musicInfoTag.SetURL(strFile); return false; }
-  virtual bool Write(const CStdString& strFile) { return false; }
+  virtual bool Read(const std::string& strFile) { m_musicInfoTag.SetURL(strFile); return false; }
+  virtual bool Write(const std::string& strFile) { return false; }
 
   const CReplayGain &GetReplayGain() const { return m_replayGain; }
   void GetMusicInfoTag(CMusicInfoTag& tag) const { tag=m_musicInfoTag; }

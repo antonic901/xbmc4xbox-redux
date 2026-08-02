@@ -97,7 +97,7 @@ bool CEncoderLame::Init(const char* strFile, int iInChannels, int iInRate, int i
   if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.quality") == CDDARIP_QUALITY_CBR)
   {
     // use cbr and specified bitrate from settings
-    CStdString strSettings;
+    std::string strSettings;
     strSettings.Format("%s%i", "--preset cbr ", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.bitrate"));
     parse_args_from_string(m_pGlobalFlags, strSettings.c_str(), m_inPath, m_outPath);
     //lame_set_mode(pGlobalFlags, JOINT_STEREO);
@@ -106,7 +106,7 @@ bool CEncoderLame::Init(const char* strFile, int iInChannels, int iInRate, int i
   else
   {
     // use presets (VBR)
-    CStdString strSettings;
+    std::string strSettings;
     switch (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.quality"))
     {
     case CDDARIP_QUALITY_MEDIUM: { strSettings = "--preset fast medium"; break;}  // 150-180kbps

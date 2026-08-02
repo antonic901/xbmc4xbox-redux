@@ -304,7 +304,7 @@ void CMPlayer::Options::SetEdl(const string& strEdl)
 
 void CMPlayer::Options::GetOptions(int& argc, char* argv[])
 {
-  CStdString strTmp;
+  std::string strTmp;
   m_vecOptions.erase(m_vecOptions.begin(), m_vecOptions.end());
   m_vecOptions.push_back("xbmc.exe");
 
@@ -466,7 +466,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
     // and if it fails try a52 filter (used for ac3 software decoding) and if that fails
     // try the other audio codecs (mp3, wma,...)
     m_vecOptions.push_back("-ac");
-    CStdString buf;
+    std::string buf;
 
     if (m_bDTSPassTru) buf += "hwdts,";
     if (m_bAC3PassTru) buf += "hwac3,";
@@ -499,7 +499,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
 
   { //Setup any video filter we want, ie postprocessing, noise...
     strTmp.Empty();
-    vector<CStdString> vecPPOptions;
+    vector<std::string> vecPPOptions;
 
     if ( m_bDeinterlace )
     {
@@ -520,7 +520,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
       else
       {
         // manual postprocessing
-        CStdString strOpt;
+        std::string strOpt;
 
         if ( CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("postprocessing.dering") )
         { // add dering filter
@@ -571,7 +571,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
 
   if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_FilmGrain > 0.0f)
   {
-    CStdString strOpt;
+    std::string strOpt;
     if (strTmp.size() > 0)
       strTmp += ",";
 
@@ -618,7 +618,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
 
   if (m_strDvdDevice.length() > 0)
   {
-    CStdString strDevice;
+    std::string strDevice;
     strDevice = """" + m_strDvdDevice;
 
     //Make sure we only use forward slashes for path
@@ -639,7 +639,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
   if (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay != 0.0f)
   {
     m_vecOptions.push_back("-subdelay");
-    CStdString strOpt;
+    std::string strOpt;
     strOpt.Format("%2.2f", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
     m_vecOptions.push_back(strOpt.c_str());
   }
@@ -747,13 +747,13 @@ void update_cache_dialog(const char* tmp)
   {
     try {
 
-    CStdString message = tmp;
+    std::string message = tmp;
     message.Trim();
     if (int i = message.Find("Cache fill:") >= 0)
     {
       if (int j = message.Find('%') >= 0)
       {
-        CStdString strPercentage = message.Mid(i + 11, j - i + 11);
+        std::string strPercentage = message.Mid(i + 11, j - i + 11);
 
         //filter percentage, update progressbar
         float fPercentage = 0;
@@ -772,7 +772,7 @@ void update_cache_dialog(const char* tmp)
     else if(int i = message.Find("VobSub parsing:") >= 0)
       if (int j = message.Find('%') >= 0)
       {
-        CStdString strPercentage = message.Mid(i + 15, j - i + 15);
+        std::string strPercentage = message.Mid(i + 15, j - i + 15);
 
         //filter percentage, update progressbar
         int iPercentage = 0;
@@ -822,7 +822,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
   bool bFileIsDVDIfoFile(false);
 
   starttime = 0;
-  CStdString strFile = file.GetPath();
+  std::string strFile = file.GetPath();
 
   /* use our own protocol for ftp to avoid using mplayer's builtin */
   // not working well with seeking.. curl locks up for some reason. think it's the thread handover
@@ -918,7 +918,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     }
     options.SetNoCache(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_NoCache);
 
-    CStdString strCharset=g_langInfo.GetSubtitleCharSet();
+    std::string strCharset=g_langInfo.GetSubtitleCharSet();
     if( CUtil::IsUsingTTFSubtitles() )
     {
       /* we only set this if we are using ttf, since the font itself, will handle the charset */
@@ -975,7 +975,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     }
     else if (bFileIsDVDIfoFile)
     {
-      CStdString strPath;
+      std::string strPath;
       URIUtils::GetParentPath(strFile, strPath);
       if (strPath.Equals("D:\\VIDEO_TS\\", false) || strPath.Equals("D:\\VIDEO_TS", false))
         options.SetDVDDevice("D:\\"); //Properly mastered dvd, lets mplayer open the dvd properly
@@ -984,7 +984,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
       CLog::Log(LOGINFO, " dvddevice: %s", strPath.c_str());
     }
 
-    CStdString strExtension = URIUtils::GetExtension(strFile);
+    std::string strExtension = URIUtils::GetExtension(strFile);
     strExtension.MakeLower();
 
 
@@ -1630,7 +1630,7 @@ bool CMPlayer::SeekScene(bool bPlus)
 
 void CMPlayer::SeekRelativeTime(int iSeconds)
 {
-  CStdString strCommand;
+  std::string strCommand;
   strCommand.Format("seek %+i 0",iSeconds);
   mplayer_SlaveCommand(strCommand.c_str());
   WaitOnCommand();
@@ -1646,7 +1646,7 @@ void CMPlayer::SetDynamicRangeCompression(long drc)
   mplayer_setDRC(drc);
 }
 
-void CMPlayer::GetAudioInfo( CStdString& strAudioInfo)
+void CMPlayer::GetAudioInfo( std::string& strAudioInfo)
 {
   char strFourCC[10];
   char strAudioCodec[128];
@@ -1669,7 +1669,7 @@ void CMPlayer::GetAudioInfo( CStdString& strAudioInfo)
                         strAudioCodec, lBitRate, fSampleRate, iChannels);
 }
 
-void CMPlayer::GetVideoInfo( CStdString& strVideoInfo)
+void CMPlayer::GetVideoInfo( std::string& strVideoInfo)
 {
 
   char strFourCC[10];
@@ -1690,7 +1690,7 @@ void CMPlayer::GetVideoInfo( CStdString& strVideoInfo)
 }
 
 
-void CMPlayer::GetGeneralInfo( CStdString& strVideoInfo)
+void CMPlayer::GetGeneralInfo( std::string& strVideoInfo)
 {
   long lFramesDropped;
   int iQuality;
@@ -1780,9 +1780,9 @@ int CMPlayer::GetSubtitleCount()
   return mplayer_getSubtitleCount();
 }
 
-int CMPlayer::AddSubtitle(const CStdString& strSubPath)
+int CMPlayer::AddSubtitle(const std::string& strSubPath)
 {
-  CStdString strFile = strSubPath;
+  std::string strFile = strSubPath;
   strFile.Replace("\\","\\\\");
   mplayer_SlaveCommand("sub_load \"%s\"", strFile.c_str());
   return 0;
@@ -1793,7 +1793,7 @@ int CMPlayer::GetSubtitle()
   return mplayer_getSubtitle();
 };
 
-void CMPlayer::GetSubtitleName(int iStream, CStdString &strStreamName)
+void CMPlayer::GetSubtitleName(int iStream, std::string &strStreamName)
 {
 
   xbmc_subtitle sub;
@@ -1857,14 +1857,14 @@ int CMPlayer::GetAudioStream()
   return mplayer_getAudioStream();
 }
 
-void CMPlayer::GetAudioStreamName(int iStream, CStdString& strStreamName)
+void CMPlayer::GetAudioStreamName(int iStream, std::string& strStreamName)
 {
   stream_language_t slt;
   memset(&slt, 0, sizeof(stream_language_t));
   mplayer_getAudioStreamInfo(iStream, &slt);
   if (slt.language != 0)
   {
-    CStdString strName;
+    std::string strName;
     if (!g_LangCodeExpander.Lookup(slt.language, strName))
     {
       strName = "UNKNOWN:";
@@ -1883,7 +1883,7 @@ void CMPlayer::GetAudioStreamName(int iStream, CStdString& strStreamName)
   }
 
   if(slt.channels>0)
-    strStreamName += CStdString("(") +  dvd_audio_stream_channels[slt.channels-1] + CStdString(")");
+    strStreamName += std::string("(") +  dvd_audio_stream_channels[slt.channels-1] + std::string(")");
 }
 
 void CMPlayer::SetAudioStream(int iStream)
@@ -2020,15 +2020,15 @@ int CMPlayer::GetCacheSize(bool bFileOnHD, bool bFileOnISO, bool bFileOnUDF, boo
   //return 4096;
 }
 
-CStdString CMPlayer::GetDVDArgument(const CStdString& strFile)
+std::string CMPlayer::GetDVDArgument(const std::string& strFile)
 {
 
   int iTitle = CUtil::GetDVDIfoTitle(strFile);
   if (iTitle == 0)
-    return CStdString("dvd://");
+    return std::string("dvd://");
   else
   {
-    CStdString strBuf;
+    std::string strBuf;
     strBuf.Format("dvd://%i", iTitle);
     return strBuf;
   }
@@ -2058,7 +2058,7 @@ float CMPlayer::GetActualFPS()
   return options.GetSpeed()*fFPS;
 }
 
-bool CMPlayer::GetCurrentSubtitle(CStdString& strSubtitle)
+bool CMPlayer::GetCurrentSubtitle(std::string& strSubtitle)
 {
   strSubtitle = "";
   subtitle* sub = NULL;

@@ -48,7 +48,7 @@
 struct CachedDirEntry
 {
   unsigned int type;
-  CStdString name;
+  std::string name;
 };
 
 using namespace XFILE;
@@ -72,8 +72,8 @@ bool CSMBDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   smb.Init();
 
   //Separate roots for the authentication and the containing items to allow browsing to work correctly
-  CStdString strRoot = url.Get();
-  CStdString strAuth;
+  std::string strRoot = url.Get();
+  std::string strAuth;
 
   lock.Leave(); // OpenDir is locked
   int fd = OpenDir(url, strAuth);
@@ -83,7 +83,7 @@ bool CSMBDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   if (!URIUtils::HasSlashAtEnd(strRoot)) strRoot += "/";
   if (!URIUtils::HasSlashAtEnd(strAuth)) strAuth += "/";
 
-  CStdString strFile;
+  std::string strFile;
 
   // need to keep the samba lock for as short as possible.
   // so we first cache all directory entries and then go over them again asking for stat
@@ -136,7 +136,7 @@ bool CSMBDirectory::GetDirectory(const CURL& url, CFileItemList &items)
         if ((m_flags & DIR_FLAG_NO_FILE_INFO)==0 && CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_sambastatfiles)
         {
           // make sure we use the authenticated path wich contains any default username
-          CStdString strFullName = strAuth + smb.URLEncode(strFile);
+          std::string strFullName = strAuth + smb.URLEncode(strFile);
 
           lock.Enter();
 
@@ -182,7 +182,7 @@ bool CSMBDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       if (bIsDir)
       {
         CFileItemPtr pItem(new CFileItem(strFile));
-        CStdString path(strRoot);
+        std::string path(strRoot);
 
         // needed for network / workgroup browsing
         // skip if root if we are given a server
@@ -223,14 +223,14 @@ bool CSMBDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 int CSMBDirectory::Open(const CURL &url)
 {
   smb.Init();
-  CStdString strAuth;
+  std::string strAuth;
   return OpenDir(url, strAuth);
 }
 
 /// \brief Checks authentication against SAMBA share and prompts for username and password if needed
 /// \param strAuth The SMB style path
 /// \return SMB file descriptor
-int CSMBDirectory::OpenDir(const CURL& url, CStdString& strAuth)
+int CSMBDirectory::OpenDir(const CURL& url, std::string& strAuth)
 {
   int fd = -1;
 #ifndef _LINUX
@@ -240,7 +240,7 @@ int CSMBDirectory::OpenDir(const CURL& url, CStdString& strAuth)
   /* make a writeable copy */
   CURL urlIn(url);
 
-  CStdString strPath;
+  std::string strPath;
 
   CPasswordManager::GetInstance().AuthenticateURL(urlIn);
   strAuth = smb.URLEncode(urlIn);
@@ -255,7 +255,7 @@ int CSMBDirectory::OpenDir(const CURL& url, CStdString& strAuth)
 
     // remove the / or \ at the end. the samba library does not strip them off
     // don't do this for smb:// !!
-    CStdString s = strPath;
+    std::string s = strPath;
     int len = s.length();
     if (len > 1 && s.at(len - 2) != '/' &&
         (s.at(len - 1) == '/' || s.at(len - 1) == '\\'))
@@ -294,7 +294,7 @@ int CSMBDirectory::OpenDir(const CURL& url, CStdString& strAuth)
       }
       else
       {
-        CStdString cError;
+        std::string cError;
 #ifndef _LINUX
         if (nt_error == NT_STATUS_OBJECT_NAME_NOT_FOUND)
           cError.Format(g_localizeStrings.Get(770).c_str(),nt_error);
@@ -335,7 +335,7 @@ bool CSMBDirectory::Create(const CURL& url2)
 
   CURL url(url2);
   CPasswordManager::GetInstance().AuthenticateURL(url);
-  CStdString strFileName = smb.URLEncode(url);
+  std::string strFileName = smb.URLEncode(url);
 
   int result = smbc_mkdir(strFileName.c_str(), 0);
   success = (result == 0 || EEXIST == errno);
@@ -356,7 +356,7 @@ bool CSMBDirectory::Remove(const CURL& url2)
 
   CURL url(url2);
   CPasswordManager::GetInstance().AuthenticateURL(url);
-  CStdString strFileName = smb.URLEncode(url);
+  std::string strFileName = smb.URLEncode(url);
 
   int result = smbc_rmdir(strFileName.c_str());
 
@@ -380,7 +380,7 @@ bool CSMBDirectory::Exists(const CURL& url2)
 
   CURL url(url2);
   CPasswordManager::GetInstance().AuthenticateURL(url);
-  CStdString strFileName = smb.URLEncode(url);
+  std::string strFileName = smb.URLEncode(url);
 
 #ifndef _LINUX
   SMB_STRUCT_STAT info;

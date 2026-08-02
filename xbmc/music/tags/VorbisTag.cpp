@@ -36,10 +36,10 @@ CVorbisTag::~CVorbisTag()
 
 }
 
-int CVorbisTag::ParseTagEntry(CStdString& strTagEntry)
+int CVorbisTag::ParseTagEntry(std::string& strTagEntry)
 {
-  CStdString strTagValue;
-  CStdString strTagType;
+  std::string strTagValue;
+  std::string strTagType;
 
   // Split tag entry like ARTIST=Sublime
   SplitEntry( strTagEntry, strTagType, strTagValue);
@@ -163,7 +163,7 @@ int CVorbisTag::ParseTagEntry(CStdString& strTagEntry)
   return 0;
 }
 
-void CVorbisTag::SplitEntry(const CStdString& strTagEntry, CStdString& strTagType, CStdString& strTagValue)
+void CVorbisTag::SplitEntry(const std::string& strTagEntry, std::string& strTagType, std::string& strTagValue)
 {
   int nPos = strTagEntry.Find( '=' );
 

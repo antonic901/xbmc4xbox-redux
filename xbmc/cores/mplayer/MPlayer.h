@@ -147,9 +147,9 @@ public:
   virtual bool SeekScene(bool bPlus = true);
   virtual void SetVolume(long nVolume);
   virtual void SetDynamicRangeCompression(long drc);
-  virtual void GetAudioInfo( CStdString& strAudioInfo);
-  virtual void GetVideoInfo( CStdString& strVideoInfo);
-  virtual void GetGeneralInfo( CStdString& strVideoInfo);
+  virtual void GetAudioInfo( std::string& strAudioInfo);
+  virtual void GetVideoInfo( std::string& strVideoInfo);
+  virtual void GetGeneralInfo( std::string& strVideoInfo);
   virtual void Update(bool bPauseDrawing = false);
   virtual void GetVideoRect(RECT& SrcRect, RECT& DestRect);
   virtual void GetVideoAspectRatio(float& fAR);
@@ -164,8 +164,8 @@ public:
 
   virtual int GetSubtitleCount();
   virtual int GetSubtitle();
-  virtual int AddSubtitle(const CStdString& strFileName);
-  virtual void GetSubtitleName(int iStream, CStdString &strStreamName);
+  virtual int AddSubtitle(const std::string& strFileName);
+  virtual void GetSubtitleName(int iStream, std::string &strStreamName);
   virtual void SetSubtitle(int iStream);
   virtual bool GetSubtitleVisible();
   virtual void SetSubtitleVisible(bool bVisible);
@@ -173,7 +173,7 @@ public:
 
   virtual int GetAudioStreamCount();
   virtual int GetAudioStream();
-  virtual void GetAudioStreamName(int iStream, CStdString& strStreamName);
+  virtual void GetAudioStreamName(int iStream, std::string& strStreamName);
   virtual void SetAudioStream(int iStream);
 
   virtual bool CanSeek() const;
@@ -186,13 +186,13 @@ public:
   virtual bool IsCaching() const {return m_bCaching;};
   virtual int GetCacheLevel() const {return m_CacheLevel;};
 
-  virtual bool GetCurrentSubtitle(CStdString& strSubtitle);
+  virtual bool GetCurrentSubtitle(std::string& strSubtitle);
   virtual bool OnAction(const CAction &action);
 
-  CStdString _SubtitleExtension;
+  std::string _SubtitleExtension;
 protected:
   int GetCacheSize(bool bFileOnHD, bool bFileOnISO, bool bFileOnUDF, bool bFileOnInternet, bool bFileOnLAN, bool bIsVideo, bool bIsAudio, bool bIsDVD);
-  CStdString GetDVDArgument(const CStdString& strFile);
+  std::string GetDVDArgument(const std::string& strFile);
   void WaitOnCommand();
   bool load();
   virtual void OnStartup();

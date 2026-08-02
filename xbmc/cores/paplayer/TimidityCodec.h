@@ -30,12 +30,12 @@ public:
   TimidityCodec();
   virtual ~TimidityCodec();
 
-  virtual bool Init(const CStdString &strFile, unsigned int filecache);
+  virtual bool Init(const std::string &strFile, unsigned int filecache);
   virtual void DeInit();
   virtual __int64 Seek(__int64 iSeekTime);
   virtual int ReadPCM(BYTE *pBuffer, int size, int *actualsize);
   virtual bool CanInit();
-  static bool IsSupportedFormat(const CStdString& strExt);
+  static bool IsSupportedFormat(const std::string& strExt);
 
 private:
   LibraryLoader* m_loader;
@@ -45,7 +45,7 @@ private:
   typedef void  (__cdecl *FreeMethod) ( int p1);
   typedef unsigned long (__cdecl *LengthMethod) ( int p1);
   typedef unsigned long (__cdecl *SeekMethod) ( int p1, unsigned long p2);
-  struct   
+  struct
   {
     InitMethod Init;
     LoadMethod LoadMID;

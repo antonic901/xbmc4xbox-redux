@@ -149,7 +149,7 @@ bool CMusicInfoTagLoaderMP3::Load(const std::string& strFileName, CMusicInfoTag&
   return false;
 }
 
-bool CMusicInfoTagLoaderMP3::ReadSeekAndReplayGainInfo(const CStdString &strFileName)
+bool CMusicInfoTagLoaderMP3::ReadSeekAndReplayGainInfo(const std::string &strFileName)
 {
   // First check for an APEv2 tag
   CAPEv2Tag apeTag;
@@ -225,7 +225,7 @@ int CMusicInfoTagLoaderMP3::IsMp3FrameHeader(unsigned long head)
 //TODO: merge duplicate, but slitely different implemented) code and consts in IsMp3FrameHeader(above) and ReadDuration (below).
 
 // Inspired by http://rockbox.haxx.se/ and http://www.xs4all.nl/~rwvtveer/scilla
-int CMusicInfoTagLoaderMP3::ReadDuration(const CStdString& strFileName)
+int CMusicInfoTagLoaderMP3::ReadDuration(const std::string& strFileName)
 {
 #define SCANSIZE  8192
 #define CHECKNUMFRAMES 5

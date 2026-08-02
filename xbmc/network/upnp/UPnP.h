@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "utils/StdString.h"
+#include <string>
 
 class PLT_UPnP;
 class PLT_SyncMediaBrowser;
@@ -82,7 +82,7 @@ public:
     PLT_SyncMediaBrowser*       m_MediaBrowser;
 
 private:
-    CStdString                  m_IP;
+    std::string                  m_IP;
     PLT_UPnP*                   m_UPnP;
     CDeviceHostReferenceHolder* m_ServerHolder;
     CRendererReferenceHolder*   m_RendererHolder;

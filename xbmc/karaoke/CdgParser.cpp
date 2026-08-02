@@ -55,7 +55,7 @@ CCdgLoader::~CCdgLoader()
   StopStream();
 }
 
-void CCdgLoader::StreamFile(CStdString strfilename)
+void CCdgLoader::StreamFile(std::string strfilename)
 {
   CSingleLock lock (m_CritSection);
   m_strFileName = strfilename;
@@ -98,7 +98,7 @@ errCode CCdgLoader::GetFileState()
   CSingleLock lock (m_CritSection);
   return m_CdgFileState;
 }
-CStdString CCdgLoader::GetFileName()
+std::string CCdgLoader::GetFileName()
 {
   CSingleLock lock (m_CritSection);
   return m_strFileName;
@@ -239,7 +239,7 @@ CCdg* CCdgReader::GetCdg()
   return (CCdg*) &m_Cdg;
 }
 
-CStdString CCdgReader::GetFileName()
+std::string CCdgReader::GetFileName()
 {
   CSingleLock lock (m_CritSection);
   if (m_pLoader)
@@ -287,7 +287,7 @@ void CCdgReader::Process()
   double fCurTime = 0.0f;
   bool bIsFirstPass = true;
   double fNewTime=0.f;
-  CStdString strExt = URIUtils::GetExtension(m_pLoader->GetFileName());
+  std::string strExt = URIUtils::GetExtension(m_pLoader->GetFileName());
   strExt = m_pLoader->GetFileName().substr(0,m_pLoader->GetFileName().size()-strExt.size());
 
   while (!CThread::m_bStop)
@@ -313,7 +313,7 @@ void CCdgReader::Process()
     }
     if (fDiff < -0.3f)
     {
-      CStdString strFile = m_pLoader->GetFileName();
+      std::string strFile = m_pLoader->GetFileName();
       m_pLoader->StopStream();
       while (m_pLoader->GetCurSubCode()) {}
       m_pLoader->StreamFile(strFile);
@@ -386,7 +386,7 @@ void CCdgRenderer::Render()
   }
   else
   {
-    CStdString strMessage, strFileName;
+    std::string strMessage, strFileName;
     strFileName = URIUtils::GetFileName(m_pReader->GetFileName());
     switch (m_FileState)
     {
@@ -546,7 +546,7 @@ void CCdgParser::FreeGraphics()
     SAFE_DELETE(m_pRenderer);
 }
 
-bool CCdgParser::Start(CStdString strSongPath)
+bool CCdgParser::Start(std::string strSongPath)
 {
   if (!StartLoader(strSongPath)) return false;
   if (!StartReader()) return false;
@@ -641,7 +641,7 @@ bool CCdgParser::AllocRenderer()
   if (!m_pRenderer) return false;
   return true;
 }
-bool CCdgParser::StartLoader(CStdString strSongPath)
+bool CCdgParser::StartLoader(std::string strSongPath)
 {
   CSingleLock lock (m_CritSection);
   if (!AllocLoader()) return false;
@@ -775,7 +775,7 @@ void CCdgParser::SettingOptionsVoiceMasksFiller(const SettingConstPtr& setting,
     current = strDefaultMask;
 }
 
-void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
+void CCdgParser::FillInVoiceMaskValues(unsigned int port, std::string strCurMask)
 {
     if (strCurMask.CompareNoCase("None") == 0 || strCurMask.CompareNoCase("Custom") == 0 )
     {
@@ -794,10 +794,10 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
 
     //find mask values in xml...
     CXBMCTinyXML xmlDoc;
-    CStdString fileName = "special://xbmc/system/voicemasks.xml";
+    std::string fileName = "special://xbmc/system/voicemasks.xml";
     if ( !xmlDoc.LoadFile( fileName ) ) return ;
     TiXmlElement* pRootElement = xmlDoc.RootElement();
-    CStdString strValue = pRootElement->Value();
+    std::string strValue = pRootElement->Value();
     if ( strValue != "VoiceMasks") return ;
     if (pRootElement)
     {
@@ -807,7 +807,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
       const TiXmlNode *pChild = pRootElement->FirstChild("Name");
       while (pChild)
       {
-        CStdString strMask = pChild->FirstChild()->Value();
+        std::string strMask = pChild->FirstChild()->Value();
         if (strMask.CompareNoCase(strCurMask) == 0)
         {
           for (int i = 0; i < 4;i++)
@@ -815,12 +815,12 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
             pChild = pChild->NextSibling();
             if (pChild)
             {
-              CStdString strValue = pChild->Value();
+              std::string strValue = pChild->Value();
               if (strValue.CompareNoCase("fSpecEnergyWeight") == 0)
               {
                 if (pChild->FirstChild())
                 {
-                  CStdString strName = pChild->FirstChild()->Value();
+                  std::string strName = pChild->FirstChild()->Value();
                   VOICE_MASK karaokeVoiceMask = appXbox->GetKaraokeVoiceMask(port);
                   karaokeVoiceMask.energy = (float) atof(strName.c_str());
                 }
@@ -829,7 +829,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
               {
                 if (pChild->FirstChild())
                 {
-                  CStdString strName = pChild->FirstChild()->Value();
+                  std::string strName = pChild->FirstChild()->Value();
                   VOICE_MASK karaokeVoiceMask = appXbox->GetKaraokeVoiceMask(port);
                   karaokeVoiceMask.pitch = (float) atof(strName.c_str());
                 }
@@ -838,7 +838,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
               {
                 if (pChild->FirstChild())
                 {
-                  CStdString strName = pChild->FirstChild()->Value();
+                  std::string strName = pChild->FirstChild()->Value();
                   VOICE_MASK karaokeVoiceMask = appXbox->GetKaraokeVoiceMask(port);
                   karaokeVoiceMask.whisper = (float) atof(strName.c_str());
                 }
@@ -847,7 +847,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
               {
                 if (pChild->FirstChild())
                 {
-                  CStdString strName = pChild->FirstChild()->Value();
+                  std::string strName = pChild->FirstChild()->Value();
                   VOICE_MASK karaokeVoiceMask = appXbox->GetKaraokeVoiceMask(port);
                   karaokeVoiceMask.robotic = (float) atof(strName.c_str());
                 }

@@ -215,7 +215,7 @@ void CCdgChatter::Shutdown()
 void CCdgChatter::LoadSettings()
 {
   // Get the Max volume
-  CStdString strSetting = "karaoke.volume";
+  std::string strSetting = "karaoke.volume";
   int iPercent = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(strSetting);
   if (iPercent < 0) iPercent = 0;
   if (iPercent > 100) iPercent = 100;

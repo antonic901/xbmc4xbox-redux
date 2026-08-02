@@ -39,7 +39,7 @@
 #include "URL.h"
 #include "DVDPlayerCodec.h"
 
-ICodec* CodecFactory::CreateCodec(const CStdString& strFileType)
+ICodec* CodecFactory::CreateCodec(const std::string& strFileType)
 {
   if (strFileType.Equals("mp3") || strFileType.Equals("mp2"))
     return new MP3Codec();
@@ -92,7 +92,7 @@ ICodec* CodecFactory::CreateCodec(const CStdString& strFileType)
   return NULL;
 }
 
-ICodec* CodecFactory::CreateCodecDemux(const CStdString& strFile, const CStdString& strContent, unsigned int filecache)
+ICodec* CodecFactory::CreateCodecDemux(const std::string& strFile, const std::string& strContent, unsigned int filecache)
 {
   CURL urlFile(strFile);
   if( strContent.Equals("audio/mpeg")
@@ -153,15 +153,15 @@ ICodec* CodecFactory::CreateCodecDemux(const CStdString& strFile, const CStdStri
   return CreateCodec(urlFile.GetFileType());
 }
 
-ICodec* CodecFactory::CreateOGGCodec(const CStdString& strFile,
+ICodec* CodecFactory::CreateOGGCodec(const std::string& strFile,
                                      unsigned int filecache)
 {
-  // oldnemesis: we want to use OGGCodec() for OGG music since unlike DVDCodec 
-  // it provides better timings for Karaoke. However OGGCodec() cannot handle 
+  // oldnemesis: we want to use OGGCodec() for OGG music since unlike DVDCodec
+  // it provides better timings for Karaoke. However OGGCodec() cannot handle
   // ogg-flac and ogg videos, that's why this block.
   ICodec* codec = new OGGCodec();
 
-  // hack - force DVDPlayer for now - there is a memory leak with our ogg player - 
+  // hack - force DVDPlayer for now - there is a memory leak with our ogg player -
   // http://redmine.exotica.org.uk/issues/228
   return new DVDPlayerCodec();
 
