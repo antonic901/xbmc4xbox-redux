@@ -35,82 +35,82 @@ class CExternalIpCheck;
 
 typedef struct
 {
-	CControlSocket *pSocket;
-	CServerThread *pThread;
+    CControlSocket *pSocket;
+    CServerThread *pThread;
 } t_socketdata;
 
 /////////////////////////////////////////////////////////////////////////////
-// Thread CServerThread 
+// Thread CServerThread
 
 class CServerThread : public CThread
 {
 public:
-	virtual CStdString GetExternalIP();
-	virtual void ExternalIPFailed();
-	void DontQuit();
-	CServerThread();
+    virtual std::string GetExternalIP();
+    virtual void ExternalIPFailed();
+    void DontQuit();
+    CServerThread();
 
-	CPermissions *m_pPermissions;
-	COptions *m_pOptions;
-	void IncRecvCount(int count);
-	void IncSendCount(int count);
-	void IncIpCount(const CStdString &ip);
-	void DecIpCount(const CStdString &ip);
-	int GetIpCount(const CStdString &ip) const;
-	BOOL IsReady();
-	static const int GetGlobalNumConnections();
-	void AddSocket(SOCKET sockethandle);
-	const int GetNumConnections();
+    CPermissions *m_pPermissions;
+    COptions *m_pOptions;
+    void IncRecvCount(int count);
+    void IncSendCount(int count);
+    void IncIpCount(const std::string &ip);
+    void DecIpCount(const std::string &ip);
+    int GetIpCount(const std::string &ip) const;
+    BOOL IsReady();
+    static const int GetGlobalNumConnections();
+    void AddSocket(SOCKET sockethandle);
+    const int GetNumConnections();
 
 // Implementierung
 
 protected:
-	void GatherTransferedBytes();
-	void ProcessNewSlQuota();
-	virtual BOOL InitInstance();
-	virtual DWORD ExitInstance();
+    void GatherTransferedBytes();
+    void ProcessNewSlQuota();
+    virtual BOOL InitInstance();
+    virtual DWORD ExitInstance();
 
-	virtual int OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam);
-	void OnTimer(WPARAM wParam, LPARAM lParam);	
-	
-	int m_nRecvCount;
-	int m_nSendCount;
-	UINT m_nRateTimer;
-	BOOL m_bQuit;
-	void ProcessControlMessage(t_controlmessage *msg);
-	CControlSocket * GetControlSocket(int userid);
-	std::map<int, CControlSocket *> m_LocalUserIDs;
-	void AddNewSocket(SOCKET sockethandle);
-	static int CalcUserID();
-	static std::map<int, t_socketdata> m_userids;
-	static std::map<CStdString, int> m_userIPs;
-	virtual ~CServerThread();
-	CCriticalSectionWrapper m_threadsync;
-	static CCriticalSectionWrapper m_GlobalThreadsync;
-	unsigned int m_timerid;
+    virtual int OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam);
+    void OnTimer(WPARAM wParam, LPARAM lParam);
 
-	//Speed limit code
-	static std::list<CServerThread *> m_sInstanceList; //First instance is the SL master
-	BOOL m_bIsMaster;
-	int m_nLoopCount;
-	int m_nLastDlLimit;
-	int m_nLastUlLimit;
-	typedef struct {
-		int nBytesAllowedToDl;
-		int nBytesAllowedToUl;
-		int nUploaded;
-		int nDownloaded;		
-	} t_Quota;
-	t_Quota m_SlQuota;
+    int m_nRecvCount;
+    int m_nSendCount;
+    UINT m_nRateTimer;
+    BOOL m_bQuit;
+    void ProcessControlMessage(t_controlmessage *msg);
+    CControlSocket * GetControlSocket(int userid);
+    std::map<int, CControlSocket *> m_LocalUserIDs;
+    void AddNewSocket(SOCKET sockethandle);
+    static int CalcUserID();
+    static std::map<int, t_socketdata> m_userids;
+    static std::map<std::string, int> m_userIPs;
+    virtual ~CServerThread();
+    CCriticalSectionWrapper m_threadsync;
+    static CCriticalSectionWrapper m_GlobalThreadsync;
+    unsigned int m_timerid;
 
-	CStdString m_RawWelcomeMessage;
-	std::list<CStdString> m_ParsedWelcomeMessage;
-	CExternalIpCheck *m_pExternalIpCheck;
+    //Speed limit code
+    static std::list<CServerThread *> m_sInstanceList; //First instance is the SL master
+    BOOL m_bIsMaster;
+    int m_nLoopCount;
+    int m_nLastDlLimit;
+    int m_nLastUlLimit;
+    typedef struct {
+        int nBytesAllowedToDl;
+        int nBytesAllowedToUl;
+        int nUploaded;
+        int nDownloaded;
+    } t_Quota;
+    t_Quota m_SlQuota;
+
+    std::string m_RawWelcomeMessage;
+    std::list<std::string> m_ParsedWelcomeMessage;
+    CExternalIpCheck *m_pExternalIpCheck;
 };
 
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
+// Microsoft Visual C++ fï¿½gt unmittelbar vor der vorhergehenden Zeile zusï¿½tzliche Deklarationen ein.
 
 #endif // AFX_SERVERTHREAD_H__4F566540_62DF_4338_85DE_EC699EB6640C__INCLUDED_

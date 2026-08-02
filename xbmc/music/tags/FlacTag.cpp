@@ -49,7 +49,7 @@ CFlacTag::~CFlacTag()
 {}
 
 // overridden from COggTag
-bool CFlacTag::Read(const CStdString& strFile)
+bool CFlacTag::Read(const std::string& strFile)
 {
   CVorbisTag::Read(strFile);
 
@@ -126,7 +126,7 @@ bool CFlacTag::Read(const CStdString& strFile)
     info[min(size, (unsigned int) 1023)] = 0;
     if (size > 1023)
       m_file->Seek(size - 1023, SEEK_CUR);
-    CStdString mimeType = info;
+    std::string mimeType = info;
 
     // now the description
     size = ReadUnsigned();
@@ -220,7 +220,7 @@ void CFlacTag::ProcessVorbisComment(const char *pBuffer, size_t bufsize)
     {
       strncpy(C1, pBuffer + Pos + 4, I1);
       C1[I1] = '\0';
-      CStdString strItem;
+      std::string strItem;
       strItem=C1;
       // Parse the tag entry
       ParseTagEntry( strItem );

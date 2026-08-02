@@ -38,6 +38,6 @@ public:
   int Open(const CURL &url);
 
 private:
-  int OpenDir(const CURL &url, CStdString& strAuth);
+  int OpenDir(const CURL &url, std::string& strAuth);
 };
 }

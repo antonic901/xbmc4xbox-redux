@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "DVDDemux.h"
 #include "DVDCodecs/DVDCodecs.h"
 #include "utils/LangCodeExpander.h"
@@ -25,12 +25,12 @@
 void CDemuxStreamAudio::GetStreamType(std::string& strInfo)
 {
   char sInfo[64];
-  
+
   if (codec == AV_CODEC_ID_AC3) strcpy(sInfo, "AC3 ");
   else if (codec == AV_CODEC_ID_DTS) strcpy(sInfo, "DTS ");
   else if (codec == AV_CODEC_ID_MP2) strcpy(sInfo, "MP2 ");
   else strcpy(sInfo, "");
-    
+
   if (iChannels == 1) strcat(sInfo, "Mono");
   else if (iChannels == 2) strcat(sInfo, "Stereo");
   else if (iChannels == 6) strcat(sInfo, "5.1");
@@ -52,7 +52,7 @@ int CDVDDemux::GetNrOfAudioStreams()
     CDemuxStream* pStream = GetStream(i);
     if (pStream->type == STREAM_AUDIO) iCounter++;
   }
-  
+
   return iCounter;
 }
 
@@ -65,7 +65,7 @@ int CDVDDemux::GetNrOfVideoStreams()
     CDemuxStream* pStream = GetStream(i);
     if (pStream->type == STREAM_VIDEO) iCounter++;
   }
-  
+
   return iCounter;
 }
 
@@ -78,7 +78,7 @@ int CDVDDemux::GetNrOfSubtitleStreams()
     CDemuxStream* pStream = GetStream(i);
     if (pStream->type == STREAM_SUBTITLE) iCounter++;
   }
-  
+
   return iCounter;
 }
 
@@ -125,12 +125,12 @@ CDemuxStreamSubtitle* CDVDDemux::GetStreamFromSubtitleId(int iSubtitleIndex)
 }
 
 void CDemuxStream::GetStreamName( std::string& strInfo )
-{   
+{
   if( language[0] == 0 )
     strInfo = "";
   else
   {
-    CStdString name;
+    std::string name;
     g_LangCodeExpander.Lookup( language, name );
     strInfo = name;
   }

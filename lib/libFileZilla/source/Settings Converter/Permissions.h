@@ -16,7 +16,7 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-// Permissions.h: Schnittstelle für die Klasse CPermissions.
+// Permissions.h: Schnittstelle fï¿½r die Klasse CPermissions.
 //
 //////////////////////////////////////////////////////////////////////
 
@@ -27,46 +27,46 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "misc\stdstring.h"
+#include <string>
 #include <vector>
 
 typedef struct
 {
-	CStdString dir;
-	BOOL bFileRead,bFileWrite,bFileDelete,bFileAppend;
-	BOOL bDirCreate,bDirDelete,bDirList,bDirSubdirs,bIsHome;
+    std::string dir;
+    BOOL bFileRead,bFileWrite,bFileDelete,bFileAppend;
+    BOOL bDirCreate,bDirDelete,bDirList,bDirSubdirs,bIsHome;
 } t_directory;
 
 class t_user
 {
 public:
-	CStdString user;
-	CStdString password;
-	std::vector<t_directory> permissions;
-	BOOL bLnk, bRelative, bBypassUserLimit;
-	int nUserLimit, nIpLimit;
-	t_user& t_user::operator=(const t_user &a);
+    std::string user;
+    std::string password;
+    std::vector<t_directory> permissions;
+    BOOL bLnk, bRelative, bBypassUserLimit;
+    int nUserLimit, nIpLimit;
+    t_user& t_user::operator=(const t_user &a);
 };
 
 class CMarkupSTL;
-class CPermissions  
+class CPermissions
 {
 public:
-	CPermissions(BOOL bCU = TRUE);
-	virtual ~CPermissions();
+    CPermissions(BOOL bCU = TRUE);
+    virtual ~CPermissions();
 
-	BOOL Convert(CMarkupSTL *pXML);
+    BOOL Convert(CMarkupSTL *pXML);
 
 protected:
-	CStdString GetKey(const CStdString &subkey, const CStdString &keyname);
-	void ReadPermissions(t_user &user);
-	void SetKey(CMarkupSTL *pXML, LPCTSTR name, LPCTSTR value);
-	void SavePermissions(CMarkupSTL *pXML, const t_user &user);
-		
-	typedef std::vector<t_user> t_UsersList; 
-	t_UsersList m_UsersList;
+    std::string GetKey(const std::string &subkey, const std::string &keyname);
+    void ReadPermissions(t_user &user);
+    void SetKey(CMarkupSTL *pXML, LPCTSTR name, LPCTSTR value);
+    void SavePermissions(CMarkupSTL *pXML, const t_user &user);
 
-	BOOL m_bCU;
+    typedef std::vector<t_user> t_UsersList;
+    t_UsersList m_UsersList;
+
+    BOOL m_bCU;
 };
 
 #endif // !defined(AFX_PERMISSIONS_H__33DEA50E_AA34_4190_9ACD_355BF3D72FE0__INCLUDED_)

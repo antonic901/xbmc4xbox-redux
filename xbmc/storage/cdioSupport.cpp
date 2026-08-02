@@ -234,7 +234,7 @@ HANDLE CCdIoSupport::OpenCDROM()
   return (HANDLE) cdio;
 }
 
-HANDLE CCdIoSupport::OpenIMAGE( CStdString& strFilename )
+HANDLE CCdIoSupport::OpenIMAGE( std::string& strFilename )
 {
   CSingleLock lock(*m_cdio);
 

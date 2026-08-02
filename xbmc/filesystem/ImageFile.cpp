@@ -39,9 +39,9 @@ CImageFile::~CImageFile(void)
 
 bool CImageFile::Open(const CURL& url)
 {
-  CStdString file = url.Get();
+  std::string file = url.Get();
   bool needsRecaching = false;
-  CStdString cachedFile = CServiceBroker::GetTextureCache()->CheckCachedImage(file, needsRecaching);
+  std::string cachedFile = CServiceBroker::GetTextureCache()->CheckCachedImage(file, needsRecaching);
   if (cachedFile.IsEmpty())
   { // not in the cache, so cache it
     cachedFile = CServiceBroker::GetTextureCache()->CacheImage(file);
@@ -57,15 +57,15 @@ bool CImageFile::Open(const CURL& url)
 bool CImageFile::Exists(const CURL& url)
 {
   bool needsRecaching = false;
-  CStdString cachedFile = CServiceBroker::GetTextureCache()->CheckCachedImage(url.Get(), needsRecaching);
+  std::string cachedFile = CServiceBroker::GetTextureCache()->CheckCachedImage(url.Get(), needsRecaching);
   if (!cachedFile.IsEmpty())
     return CFile::Exists(cachedFile);
 
-  // need to check if the original can be cached on demand and that the file exists 
+  // need to check if the original can be cached on demand and that the file exists
   if (!url.GetUserName().empty())
     return false; // not in the cache, and can't be cached on demand
 
-  CStdString image = url.GetHostName();
+  std::string image = url.GetHostName();
   CURL::Decode(image);
   return CFile::Exists(image);
 }
@@ -73,11 +73,11 @@ bool CImageFile::Exists(const CURL& url)
 int CImageFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   bool needsRecaching = false;
-  CStdString cachedFile = CServiceBroker::GetTextureCache()->CheckCachedImage(url.Get(), needsRecaching);
+  std::string cachedFile = CServiceBroker::GetTextureCache()->CheckCachedImage(url.Get(), needsRecaching);
   if (!cachedFile.IsEmpty())
     return CFile::Stat(cachedFile, buffer);
 
-  /* 
+  /*
    Doesn't exist in the cache yet. We have 3 options here:
    1. Cache the file and do the Stat() on the cached file.
    2. Do the Stat() on the original file.

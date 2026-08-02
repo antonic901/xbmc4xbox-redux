@@ -53,7 +53,7 @@ private:
     NPT_String m_Protocol;
 };
 
-static CStdString GetContentMapping(NPT_String& objectClass)
+static std::string GetContentMapping(NPT_String& objectClass)
 {
     struct SClassMapping
     {
@@ -164,8 +164,8 @@ bool CUPnPDirectory::GetResource(const CURL& path, CFileItem &item)
     if(!upnp)
         return false;
 
-    CStdString uuid   = path.GetHostName();
-    CStdString object = path.GetFileName();
+    std::string uuid   = path.GetHostName();
+    std::string object = path.GetFileName();
     object.TrimRight("/");
     CURL::Decode(object);
 
@@ -240,7 +240,7 @@ bool CUPnPDirectory::GetResource(const CURL& path, CFileItem &item)
         {
             if(info.Match(PLT_ProtocolInfo("*", "*", allowed[type], "*")))
             {
-                CStdString prop;
+                std::string prop;
                 prop.Format("upnp:subtitle:%d", ++subs);
                 item.SetProperty(prop, (const char*)res.m_Uri);
                 break;
@@ -283,7 +283,7 @@ CUPnPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
             NPT_String uuid = (*device)->GetUUID();
 
             CFileItemPtr pItem(new CFileItem((const char*)name));
-            pItem->SetPath(CStdString((const char*) "upnp://" + uuid + "/"));
+            pItem->SetPath(std::string((const char*) "upnp://" + uuid + "/"));
             pItem->m_bIsFolder = true;
             pItem->SetArt("thumb", (const char*)(*device)->GetIconUrl("image/jpeg"));
 
@@ -301,7 +301,7 @@ CUPnPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
         NPT_String object_id = (next_slash==-1)?"":path.SubString(next_slash+1);
         object_id.TrimRight("/");
         if (object_id.GetLength()) {
-            CStdString tmp = (char*) object_id;
+            std::string tmp = (char*) object_id;
             CURL::Decode(tmp);
             object_id = tmp;
         }
@@ -404,9 +404,9 @@ CUPnPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
             pItem->m_strTitle = (const char*)(*entry)->m_Title;
             pItem->m_bIsFolder = (*entry)->IsContainer();
 
-            CStdString id = (char*) (*entry)->m_ObjectID;
+            std::string id = (char*) (*entry)->m_ObjectID;
             CURL::Encode(id);
-            pItem->SetPath(CStdString((const char*) "upnp://" + uuid + "/" + id.c_str()));
+            pItem->SetPath(std::string((const char*) "upnp://" + uuid + "/" + id.c_str()));
 
             // if it's a container, format a string as upnp://uuid/object_id
             if (pItem->m_bIsFolder) {

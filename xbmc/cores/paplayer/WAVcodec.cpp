@@ -54,7 +54,7 @@ WAVCodec::~WAVCodec()
   DeInit();
 }
 
-bool WAVCodec::Init(const CStdString &strFile, unsigned int filecache)
+bool WAVCodec::Init(const std::string &strFile, unsigned int filecache)
 {
   if (!m_file.Open(strFile, XFILE::READ_CACHED))
     return false;

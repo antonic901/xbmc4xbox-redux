@@ -147,7 +147,7 @@ void CMediaManager::GetNetworkLocations(VECSOURCES &locations)
   }
 }
 
-bool CMediaManager::AddNetworkLocation(const CStdString &path)
+bool CMediaManager::AddNetworkLocation(const std::string &path)
 {
   CNetworkLocation location;
   location.path = path;
@@ -156,7 +156,7 @@ bool CMediaManager::AddNetworkLocation(const CStdString &path)
   return SaveSources();
 }
 
-bool CMediaManager::HasLocation(const CStdString& path) const
+bool CMediaManager::HasLocation(const std::string& path) const
 {
   for (unsigned int i=0;i<m_locations.size();++i)
   {
@@ -168,7 +168,7 @@ bool CMediaManager::HasLocation(const CStdString& path) const
 }
 
 
-bool CMediaManager::RemoveLocation(const CStdString& path)
+bool CMediaManager::RemoveLocation(const std::string& path)
 {
   for (unsigned int i=0;i<m_locations.size();++i)
   {
@@ -183,7 +183,7 @@ bool CMediaManager::RemoveLocation(const CStdString& path)
   return false;
 }
 
-bool CMediaManager::SetLocationPath(const CStdString& oldPath, const CStdString& newPath)
+bool CMediaManager::SetLocationPath(const std::string& oldPath, const std::string& newPath)
 {
   for (unsigned int i=0;i<m_locations.size();++i)
   {

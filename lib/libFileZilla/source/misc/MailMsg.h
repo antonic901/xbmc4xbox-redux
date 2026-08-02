@@ -21,7 +21,7 @@
 #ifndef TStrStrMap
 #include <map>
 
-typedef std::map<CStdString, CStdString> TStrStrMap;
+typedef std::map<std::string, std::string> TStrStrMap;
 #endif // !defined TStrStrMap
 
 //
@@ -47,14 +47,14 @@ typedef CMC_return_code (FAR PASCAL *LPCMCQUERY) \
 
 // ===========================================================================
 // CMailMsg
-// 
+//
 // See the module comment at top of file.
 //
-class CMailMsg  
+class CMailMsg
 {
 public:
-	CMailMsg();
-	virtual ~CMailMsg();
+    CMailMsg();
+    virtual ~CMailMsg();
 
    //-----------------------------------------------------------------------------
    // SetTo
@@ -71,10 +71,10 @@ public:
    //    Only one To address can be set.  If called more than once
    //    the last address will be used.
    //
-   CMailMsg& 
+   CMailMsg&
    SetTo(
-      CStdString sAddress, 
-      CStdString sName = _T("")
+      std::string sAddress,
+      std::string sName = _T("")
       );
 
    //-----------------------------------------------------------------------------
@@ -91,10 +91,10 @@ public:
    // Remarks
    //    Multiple Cc addresses can be set.
    //
-   CMailMsg& 
+   CMailMsg&
    SetCc(
-      CStdString sAddress, 
-      CStdString sName = _T("")
+      std::string sAddress,
+      std::string sName = _T("")
       );
 
    //-----------------------------------------------------------------------------
@@ -111,10 +111,10 @@ public:
    // Remarks
    //    Multiple Bcc addresses can be set.
    //
-   CMailMsg& 
+   CMailMsg&
    SetBc(
-      CStdString sAddress, 
-      CStdString sName = _T("")
+      std::string sAddress,
+      std::string sName = _T("")
       );
 
    //-----------------------------------------------------------------------------
@@ -132,10 +132,10 @@ public:
    //    Only one From address can be set.  If called more than once
    //    the last address will be used.
    //
-   CMailMsg& 
+   CMailMsg&
    SetFrom(
-      CStdString sAddress, 
-      CStdString sName = _T("")
+      std::string sAddress,
+      std::string sName = _T("")
       );
 
    //-----------------------------------------------------------------------------
@@ -151,9 +151,9 @@ public:
    // Remarks
    //    none
    //
-   CMailMsg& 
+   CMailMsg&
    SetSubject(
-      CStdString sSubject
+      std::string sSubject
       ) {m_sSubject = sSubject; return *this;};
 
    //-----------------------------------------------------------------------------
@@ -169,9 +169,9 @@ public:
    // Remarks
    //    none
    //
-   CMailMsg& 
+   CMailMsg&
    SetMessage(
-      CStdString sMessage
+      std::string sMessage
       ) {m_sMessage = sMessage; return *this;};
 
    //-----------------------------------------------------------------------------
@@ -188,10 +188,10 @@ public:
    // Remarks
    //    none
    //
-   CMailMsg& 
+   CMailMsg&
    AddAttachment(
-      CStdString sAttachment, 
-      CStdString sTitle = _T("")
+      std::string sAttachment,
+      std::string sTitle = _T("")
       );
 
    //-----------------------------------------------------------------------------
@@ -276,19 +276,19 @@ protected:
    TStrStrMap     m_cc;                         // Cc <address,name>
    TStrStrMap     m_bcc;                        // Bcc <address,name>
    TStrStrMap     m_attachments;                // Attachment <file,title>
-   CStdString     m_sSubject;                   // EMail subject
-   CStdString     m_sMessage;                   // EMail message
+   std::string     m_sSubject;                   // EMail subject
+   std::string     m_sMessage;                   // EMail message
 
    HMODULE        m_hMapi;                      // Handle to MAPI32.DLL
    LPCMCQUERY     m_lpCmcQueryConfiguration;    // Cmc func pointer
    LPCMCLOGON     m_lpCmcLogon;                 // Cmc func pointer
-   LPCMCSEND		m_lpCmcSend;                  // Cmc func pointer
-   LPCMCLOGOFF		m_lpCmcLogoff;                // Cmc func pointer
-   LPMAPILOGON		m_lpMapiLogon;                // Mapi func pointer
+   LPCMCSEND        m_lpCmcSend;                  // Cmc func pointer
+   LPCMCLOGOFF        m_lpCmcLogoff;                // Cmc func pointer
+   LPMAPILOGON        m_lpMapiLogon;                // Mapi func pointer
    LPMAPISENDMAIL m_lpMapiSendMail;             // Mapi func pointer
    LPMAPILOGOFF   m_lpMapiLogoff;               // Mapi func pointer
-   
+
    BOOL           m_bReady;                     // MAPI is loaded
 };
 
-#endif	// #ifndef _MAILMSG_H_
+#endif    // #ifndef _MAILMSG_H_

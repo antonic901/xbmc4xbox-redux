@@ -47,7 +47,7 @@ FLACCodec::~FLACCodec()
   DeInit();
 }
 
-bool FLACCodec::Init(const CStdString &strFile, unsigned int filecache)
+bool FLACCodec::Init(const std::string &strFile, unsigned int filecache)
 {
   if (!m_dll.Load())
     return false;

@@ -68,7 +68,7 @@ int CDVDOverlayCodecSSA::Decode(DemuxPacket *pPacket)
 {
   if(!pPacket)
     return OC_ERROR;
-  
+
   double pts = pPacket->dts != DVD_NOPTS_VALUE ? pPacket->dts : pPacket->pts;
   BYTE *data = pPacket->pData;
   int size = pPacket->iSize;
@@ -81,7 +81,7 @@ int CDVDOverlayCodecSSA::Decode(DemuxPacket *pPacket)
     int    sh, sm, ss, sc, eh, em, es, ec;
     double beg, end;
     size_t pos;
-    CStdString      line, line2;
+    std::string      line, line2;
     std::vector<std::string> lines;
     StringUtils::Tokenize((const char*)data, lines, "\r\n");
     for(size_t i=0; i<lines.size(); i++)
@@ -91,7 +91,7 @@ int CDVDOverlayCodecSSA::Decode(DemuxPacket *pPacket)
       auto_aptr<char> layer(new char[line.length()+1]);
 
       if(sscanf(line.c_str(), "%*[^:]:%[^,],%d:%d:%d%*c%d,%d:%d:%d%*c%d"
-                            , layer.get(), &sh, &sm, &ss, &sc, &eh,&em, &es, &ec) != 9) 
+                            , layer.get(), &sh, &sm, &ss, &sc, &eh,&em, &es, &ec) != 9)
         continue;
 
       end = 10000 * ((eh*360000.0)+(em*6000.0)+(es*100.0)+ec);
@@ -100,7 +100,7 @@ int CDVDOverlayCodecSSA::Decode(DemuxPacket *pPacket)
       pos = line.find_first_of(",", 0);
       pos = line.find_first_of(",", pos+1);
       pos = line.find_first_of(",", pos+1);
-      if(pos == CStdString::npos)
+      if(pos == std::string::npos)
         continue;
 
       line2.Format("%d,%s,%s", m_order++, layer.get(), line.Mid(pos+1));
@@ -119,7 +119,7 @@ int CDVDOverlayCodecSSA::Decode(DemuxPacket *pPacket)
 
   if(m_pOverlay)
   {
-    /* there will only ever be one active, so we 
+    /* there will only ever be one active, so we
      * must always make sure any new one overlap
      * include the full duration of the old one */
     if(m_pOverlay->iPTSStopTime > pts + duration)

@@ -21,11 +21,11 @@
  */
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "LockType.h"
 #include "settings/lib/ISettingCallback.h"
-#include "utils/StdString.h"
 #include "settings/lib/Setting.h"
 
 class CFileItem;
@@ -38,10 +38,10 @@ class CGUIPassword : public ISettingCallback
 public:
   CGUIPassword(void);
   virtual ~CGUIPassword(void);
-  bool IsItemUnlocked(CFileItem* pItem, const CStdString &strType);
-  bool IsItemUnlocked(CMediaSource* pItem, const CStdString &strType);
-  bool CheckLock(LockType btnType, const CStdString& strPassword, int iHeading);
-  bool CheckLock(LockType btnType, const CStdString& strPassword, int iHeading, bool& bCanceled);
+  bool IsItemUnlocked(CFileItem* pItem, const std::string &strType);
+  bool IsItemUnlocked(CMediaSource* pItem, const std::string &strType);
+  bool CheckLock(LockType btnType, const std::string& strPassword, int iHeading);
+  bool CheckLock(LockType btnType, const std::string& strPassword, int iHeading, bool& bCanceled);
   bool IsProfileLockUnlocked(int iProfile=-1);
   bool IsProfileLockUnlocked(int iProfile, bool& bCanceled, bool prompt = true);
   bool IsMasterLockUnlocked(bool bPromptUser);
@@ -49,8 +49,8 @@ public:
 
   void UpdateMasterLockRetryCount(bool bResetCount);
   bool GetSMBShareUserPassword();
-  void SetSMBShare(const CStdString &strShare);
-  CStdString GetSMBShare();
+  void SetSMBShare(const std::string &strShare);
+  std::string GetSMBShare();
   bool CheckStartUpLock();
   /*! \brief Checks if the current profile is allowed to access the given settings level
    \param level - The level to check
@@ -61,8 +61,8 @@ public:
   bool CheckSettingLevelLock(const SettingLevel::Type& level, bool enforce = false);
   bool CheckMenuLock(int iWindowID);
   bool SetMasterLockMode(bool bDetails=true);
-  CStdString GetSMBAuthFilename(const CStdString& strAuth);
-  bool LockSource(const CStdString& strType, const CStdString& strName, bool bState);
+  std::string GetSMBAuthFilename(const std::string& strAuth);
+  bool LockSource(const std::string& strType, const std::string& strName, bool bState);
   void LockSources(bool lock);
   void RemoveSourceLocks();
   bool IsDatabasePathUnlocked(std::string& strPath, VECSOURCES& VECSOURCES);
@@ -72,9 +72,9 @@ public:
   bool bMasterUser;
   int iMasterLockRetriesLeft;
 protected:
-  CStdString m_SMBShare;
+  std::string m_SMBShare;
 private:
-  int VerifyPassword(LockType btnType, const CStdString& strPassword, const CStdString& strHeading);
+  int VerifyPassword(LockType btnType, const std::string& strPassword, const std::string& strHeading);
 };
 
 extern CGUIPassword g_passwordManager;

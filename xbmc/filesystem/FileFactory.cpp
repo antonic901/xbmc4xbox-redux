@@ -56,7 +56,7 @@ CFileFactory::~CFileFactory()
 {
 }
 
-IFile* CFileFactory::CreateLoader(const CStdString& strFileName)
+IFile* CFileFactory::CreateLoader(const std::string& strFileName)
 {
   CURL url(strFileName);
   return CreateLoader(url);

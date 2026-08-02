@@ -39,7 +39,7 @@ CAsyncFileCopy::~CAsyncFileCopy()
   StopThread();
 }
 
-bool CAsyncFileCopy::Copy(const CStdString &from, const CStdString &to, const CStdString &heading)
+bool CAsyncFileCopy::Copy(const std::string &from, const std::string &to, const std::string &heading)
 {
   // reset the variables to their appropriate states
   m_from = from;
@@ -73,7 +73,7 @@ bool CAsyncFileCopy::Copy(const CStdString &from, const CStdString &to, const CS
     // and update the dialog as we go
     if (dlg && dlg->IsDialogRunning())
     {
-      CStdString speedString;
+      std::string speedString;
       speedString.Format("%2.2f KB/s", m_speed / 1024);
       dlg->SetHeading(heading);
       dlg->SetLine(0, url1.Get());

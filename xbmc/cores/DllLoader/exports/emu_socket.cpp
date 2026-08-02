@@ -142,7 +142,7 @@ extern "C"
 #ifdef _XBOX
   struct mphostent* __stdcall dllgethostbyname(const char* name)
   {
-    CStdString strIpAdres;
+    std::string strIpAdres;
 
     hbn_hostent.h_name = hbn_hostname;
     hbn_hostname[0] = '\0'; // clear hostname

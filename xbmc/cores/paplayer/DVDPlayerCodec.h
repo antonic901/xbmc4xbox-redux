@@ -33,21 +33,21 @@ public:
   DVDPlayerCodec();
   virtual ~DVDPlayerCodec();
 
-  virtual bool Init(const CStdString &strFile, unsigned int filecache);
+  virtual bool Init(const std::string &strFile, unsigned int filecache);
   virtual void DeInit();
   virtual __int64 Seek(__int64 iSeekTime);
   virtual int ReadPCM(BYTE *pBuffer, int size, int *actualsize);
   virtual bool CanInit();
   virtual bool CanSeek();
 
-  void SetContentType(const CStdString &strContent);
+  void SetContentType(const std::string &strContent);
 
 private:
   CDVDDemux* m_pDemuxer;
   CDVDInputStream* m_pInputStream;
   CDVDAudioCodec* m_pAudioCodec;
 
-  CStdString m_strContentType;
+  std::string m_strContentType;
 
   int m_nAudioStream;
 

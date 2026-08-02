@@ -24,7 +24,7 @@
 
 #ifndef _WIN32
 
-#include "../utils/StdString.h"
+#include "StdString.h"
 #include <SDL/SDL_mutex.h>
 #include <SDL/SDL_thread.h>
 

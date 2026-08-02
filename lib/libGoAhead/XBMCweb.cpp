@@ -156,7 +156,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
     // recursive
     if (pItem->IsParentFolder()) return;
 
-    CStdString strDirectory=pItem->GetPath();
+    std::string strDirectory=pItem->GetPath();
     CFileItemList items;
     directory->GetDirectory(CURL(strDirectory), items);
 
@@ -168,7 +168,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
   }
   else if (pItem->IsZIP())
   {
-    CStdString strDirectory;
+    std::string strDirectory;
     URIUtils::CreateArchivePath(strDirectory, "zip", pItem->GetPath(), "");
     CFileItemList items;
     directory->GetDirectory(CURL(strDirectory), items);
@@ -181,7 +181,7 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
   }
   else if (pItem->IsRAR())
   {
-    CStdString strDirectory;
+    std::string strDirectory;
     URIUtils::CreateArchivePath(strDirectory, "rar", pItem->GetPath(), "");
     CFileItemList items;
     directory->GetDirectory(CURL(strDirectory), items);
@@ -510,7 +510,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
     // have we requested the first catalog item?
     if( stricmp( parameter, XBMC_CAT_FIRST) == 0) {
       catalogItemCounter = 0;
-      CStdString name;
+      std::string name;
       if (navigatorState == WEB_NAV_MUSICPLAYLIST)
       {
         // we want the first music item form the music playlist
@@ -543,7 +543,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
     // have we requested the next catalog item?
     if( stricmp( parameter, XBMC_CAT_NEXT) == 0) {
       // are there items left to see
-      CStdString name;
+      std::string name;
       if (navigatorState == WEB_NAV_MUSICPLAYLIST || navigatorState == WEB_NAV_VIDEOPLAYLIST)
       {
         if(navigatorState == WEB_NAV_MUSICPLAYLIST && (catalogItemCounter + 1) < CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_MUSIC ).size())
@@ -608,7 +608,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
       selectionNumber = catalogNumber( parameter);
       if( selectionNumber < iItemCount)
       {
-        CStdString strAction = parameter;
+        std::string strAction = parameter;
         strAction = strAction.substr(0, strAction.find(','));
         if (strAction == XBMC_CAT_QUE)
         {
@@ -653,7 +653,7 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
           else if (itm->IsRAR()) // mount rar archive
           {
             CMediaSource shareRar;
-            CStdString strRarPath;
+            std::string strRarPath;
             URIUtils::CreateArchivePath(strRarPath,"rar",itm->GetPath(),"");
             shareRar.strPath = strRarPath;
 
@@ -674,8 +674,8 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
               if (stricmp(temp,"zip://") == 0) // unmount archive
                 g_ZipManager.release(currentDir);
             }
-            CStdString strDirectory = itm->GetPath();
-            CStdString strParentPath;
+            std::string strDirectory = itm->GetPath();
+            std::string strParentPath;
             webDirItems->Clear();
 
             //set new current directory for webserver
@@ -963,10 +963,10 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   if (iTrack >= 1)
   {
   //    Tracknumber
-  CStdString strText=g_localizeStrings.Get(554);    //    "Track"
+  std::string strText=g_localizeStrings.Get(554);    //    "Track"
   if (strText.GetAt(strText.size()-1) != ' ')
   strText+=" ";
-  CStdString strTrack;
+  std::string strTrack;
   strTrack.Format(strText+"%i", iTrack);
 
   }
@@ -977,19 +977,19 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   if (iYear >=1900)
   {
   //    Year
-  CStdString strText=g_localizeStrings.Get(562);    //    "Year:"
+  std::string strText=g_localizeStrings.Get(562);    //    "Year:"
   if (strText.GetAt(strText.size()-1) != ' ')
   strText+=" ";
-  CStdString strYear;
+  std::string strYear;
   strYear.Format(strText+"%i", iYear);
   }
 
   if (tag.GetDuration() > 0)
   {
   //    Duration
-  CStdString strDuration, strTime;
+  std::string strDuration, strTime;
 
-  CStdString strText=g_localizeStrings.Get(180);
+  std::string strText=g_localizeStrings.Get(180);
   if (strText.GetAt(strText.size()-1) != ' ')
   strText+=" ";
 
@@ -1008,19 +1008,19 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   int iTrack=tag.GetTrackNumber();
   if (iTrack >=1)
   {
-  CStdString strText=g_localizeStrings.Get(554);    //    "Track"
+  std::string strText=g_localizeStrings.Get(554);    //    "Track"
   if (strText.GetAt(strText.size()-1) != ' ')
   strText+=" ";
-  CStdString strTrack;
+  std::string strTrack;
   strTrack.Format(strText+"%i", iTrack);
   }
 
   //    ...and its duration for display.
   if (tag.GetDuration() > 0)
   {
-  CStdString strDuration, strTime;
+  std::string strDuration, strTime;
 
-  CStdString strText=g_localizeStrings.Get(180);
+  std::string strText=g_localizeStrings.Get(180);
   if (strText.GetAt(strText.size()-1) != ' ')
   strText+=" ";
 

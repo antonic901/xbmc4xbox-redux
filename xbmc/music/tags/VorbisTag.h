@@ -29,9 +29,9 @@ class CVorbisTag : public CTag
 public:
   CVorbisTag(void);
   virtual ~CVorbisTag(void);
-  int ParseTagEntry(CStdString& strTagEntry);
+  int ParseTagEntry(std::string& strTagEntry);
 
 private:
-  void SplitEntry(const CStdString& strTagEntry, CStdString& strTagType, CStdString& strTagValue);
+  void SplitEntry(const std::string& strTagEntry, std::string& strTagType, std::string& strTagValue);
 };
 }

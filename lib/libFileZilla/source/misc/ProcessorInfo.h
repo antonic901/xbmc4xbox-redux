@@ -5,7 +5,7 @@ class CProcessorInfo
 {
 protected:
 
-	SYSTEM_INFO m_sysInfo;
+    SYSTEM_INFO m_sysInfo;
 
 public:
    CProcessorInfo(void)
@@ -17,24 +17,24 @@ public:
    {
    }
 
-   CStdString GetProcessorName(void)
+   std::string GetProcessorName(void)
    {
-      CStdString sRC;
+      std::string sRC;
 
-      CStdString sSpeed;
-      CStdString sVendor;
+      std::string sSpeed;
+      std::string sVendor;
 
-   	// Get the processor speed info.
-   	HKEY hKey;
-   	LONG result = ::RegOpenKeyEx (HKEY_LOCAL_MACHINE, _T("Hardware\\Description\\System\\CentralProcessor\\0"), 0, KEY_QUERY_VALUE, &hKey);
+       // Get the processor speed info.
+       HKEY hKey;
+       LONG result = ::RegOpenKeyEx (HKEY_LOCAL_MACHINE, _T("Hardware\\Description\\System\\CentralProcessor\\0"), 0, KEY_QUERY_VALUE, &hKey);
 
-	   // Check if the function has succeeded.
-      if (result == ERROR_SUCCESS) 
+       // Check if the function has succeeded.
+      if (result == ERROR_SUCCESS)
       {
-      	DWORD data;
-		   DWORD dataSize = sizeof(data);
+          DWORD data;
+           DWORD dataSize = sizeof(data);
          result = ::RegQueryValueEx (hKey, _T("~MHz"), NULL, NULL, (LPBYTE)&data, &dataSize);
-		
+
          if (result == ERROR_SUCCESS)
          {
             sSpeed.Format ( _T("Speed: %dMHz "), data);
@@ -44,10 +44,10 @@ public:
             sSpeed = _T("Speed: Unknown ");
          }
 
-      	TCHAR vendorData [64];
-		   dataSize = sizeof (vendorData);
+          TCHAR vendorData [64];
+           dataSize = sizeof (vendorData);
 
-		   result = ::RegQueryValueEx (hKey, _T("VendorIdentifier"), NULL, NULL, (LPBYTE)vendorData, &dataSize);
+           result = ::RegQueryValueEx (hKey, _T("VendorIdentifier"), NULL, NULL, (LPBYTE)vendorData, &dataSize);
 
          if (result == ERROR_SUCCESS)
          {
@@ -57,13 +57,13 @@ public:
          {
             sVendor = _T("Vendor: Unknown ");
          }
-	   }
+       }
 
-	   // Make sure to close the reg key
+       // Make sure to close the reg key
       RegCloseKey (hKey);
 
-      CStdString sType;
-	   switch (m_sysInfo.dwProcessorType)
+      std::string sType;
+       switch (m_sysInfo.dwProcessorType)
       {
       case PROCESSOR_INTEL_386:
          sType = _T("Type: Intel 386 ");
@@ -83,55 +83,55 @@ public:
       default:
          sType = _T("Type: Unknown ");
          break;
-	   }
-      
-      CStdString sProcessors;
+       }
+
+      std::string sProcessors;
       sProcessors.Format( _T("Number Of Processors: %lu "), m_sysInfo.dwNumberOfProcessors);
 
-      CStdString sArchitecture;
-      CStdString sProcessorLevel;
-      CStdString sStepping;
+      std::string sArchitecture;
+      std::string sProcessorLevel;
+      std::string sStepping;
 
       switch(m_sysInfo.wProcessorArchitecture)
       {
       case PROCESSOR_ARCHITECTURE_INTEL:
          sArchitecture = _T("Architecture: Intel ");
-   		switch (m_sysInfo.wProcessorLevel) 
+           switch (m_sysInfo.wProcessorLevel)
          {
-			case 3:
+            case 3:
             sProcessorLevel = _T("Level: 80386");
             {
                int iSteppingLevel = m_sysInfo.wProcessorRevision / 100;
                int iStepping = m_sysInfo.wProcessorRevision % 100;
                sStepping.Format( _T("Stepping: %c%u "), iSteppingLevel, iStepping);
             }
-				break;
-			case 4:
+                break;
+            case 4:
             sProcessorLevel = _T("Level: 80486");
             {
                int iSteppingLevel = m_sysInfo.wProcessorRevision / 100;
                int iStepping = m_sysInfo.wProcessorRevision % 100;
                sStepping.Format( _T("Stepping: %c%u "), iSteppingLevel, iStepping);
             }
-				break;
-			case 5:
+                break;
+            case 5:
             sProcessorLevel = _T("Level: Pentium");
             {
                typedef BOOL (*PIPFP)(DWORD);
-				   PIPFP lpfn = (PIPFP)::GetProcAddress(GetModuleHandle( _T("kernel32.dll") ), "IsProcessorFeaturePresentA");
-				   if (lpfn)
-				   {
-				      if ((lpfn)(PF_MMX_INSTRUCTIONS_AVAILABLE)) 
-					   {
-					      sProcessorLevel += _T (" MMX");
+                   PIPFP lpfn = (PIPFP)::GetProcAddress(GetModuleHandle( _T("kernel32.dll") ), "IsProcessorFeaturePresentA");
+                   if (lpfn)
+                   {
+                      if ((lpfn)(PF_MMX_INSTRUCTIONS_AVAILABLE))
+                       {
+                          sProcessorLevel += _T (" MMX");
                   }
-				   }
+                   }
 
                int iModel = m_sysInfo.wProcessorRevision / 100;
                int iStepping = m_sysInfo.wProcessorRevision % 100;
                sStepping.Format( _T("Stepping: %u-%u "), iModel, iStepping);
             }
-				break;
+                break;
          case 6:
             sProcessorLevel = _T("Level: Pentium II/Pro");
             {
@@ -139,7 +139,7 @@ public:
                int iStepping = m_sysInfo.wProcessorRevision % 100;
                sStepping.Format( _T("Stepping: %u-%u "), iModel, iStepping);
             }
-				break;
+                break;
          default:
             sProcessorLevel.Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
             {
@@ -156,7 +156,7 @@ public:
          {
          case 0004:
             sProcessorLevel = "Level: R4000 ";
-				break;
+                break;
          default:
             sProcessorLevel.Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
             break;
@@ -176,24 +176,24 @@ public:
          sArchitecture = _T("Architecture: PowerPC ");
          switch(m_sysInfo.wProcessorLevel)
          {
-			case 1:
+            case 1:
             sProcessorLevel = _T("Level: 601 ");
-				break;
-			case 3:
+                break;
+            case 3:
             sProcessorLevel = _T("Level: 603 ");
-				break;
-			case 4:
+                break;
+            case 4:
             sProcessorLevel = _T("Level: 604 ");
-				break;
-			case 6:
+                break;
+            case 6:
             sProcessorLevel = _T("Level: 603+ ");
-				break;
-			case 9:
+                break;
+            case 9:
             sProcessorLevel = _T("Level: 604+ ");
-				break;
-			case 20:
+                break;
+            case 20:
             sProcessorLevel = _T("Level: 620 ");
-				break;
+                break;
          default:
             sProcessorLevel.Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
             break;
@@ -240,15 +240,15 @@ public:
    {
    }
 
-   CStdString GetMemoryInfo(void)
+   std::string GetMemoryInfo(void)
    {
-      CStdString sRC;
+      std::string sRC;
 
-	   MEMORYSTATUS memoryStatus;
+       MEMORYSTATUS memoryStatus;
 
-	   memset (&memoryStatus, sizeof (MEMORYSTATUS), 0);
-	   memoryStatus.dwLength = sizeof (MEMORYSTATUS);
-	   GlobalMemoryStatus (&memoryStatus);
+       memset (&memoryStatus, sizeof (MEMORYSTATUS), 0);
+       memoryStatus.dwLength = sizeof (MEMORYSTATUS);
+       GlobalMemoryStatus (&memoryStatus);
 
       DWORD dwMinWSSize;
       DWORD dwMaxWSSize;

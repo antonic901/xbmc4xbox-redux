@@ -31,25 +31,25 @@
 unsigned long GetLocalIPAddress()
 {
   static unsigned long ipaddress = 0;
-  
+
   if (ipaddress == 0)
   {
     char szIP[33];
 
     // get local ip address
     XNADDR xna;
-	  DWORD dwState;
-	  do
-	  {
-		  dwState = XNetGetTitleXnAddr(&xna);
-		  Sleep(1000);
-	  } while (dwState==XNET_GET_XNADDR_PENDING);
+      DWORD dwState;
+      do
+      {
+          dwState = XNetGetTitleXnAddr(&xna);
+          Sleep(1000);
+      } while (dwState==XNET_GET_XNADDR_PENDING);
 
-  
-	  XNetInAddrToString(xna.ina,szIP,32);
-	  OutputDebugString("Local address is ");
-	  OutputDebugString(szIP);
-	  OutputDebugString("\n");
+
+      XNetInAddrToString(xna.ina,szIP,32);
+      OutputDebugString("Local address is ");
+      OutputDebugString(szIP);
+      OutputDebugString("\n");
     ipaddress = inet_addr(szIP);
   }
 
@@ -73,7 +73,7 @@ struct hostent FAR * gethostbyname(const char FAR * name)
 
 // make sure the synchronised socket functions are used
 // 'using namespace SyncSocket' can give ambiguous call compiler errors
-#undef accept 
+#undef accept
 #undef bind
 #undef closesocket
 #undef connect
@@ -124,7 +124,7 @@ void CAsyncSelectHelper::SetParams(HWND hWnd, unsigned int wMsg, long lEvent)
 {
   if (lEvent == 0)
   {
-    // this will be deleted in CAsyncSelectManager::Run() if this->mSocket == INVALID_SOCKET 
+    // this will be deleted in CAsyncSelectManager::Run() if this->mSocket == INVALID_SOCKET
     mSocket = INVALID_SOCKET;
   }
 
@@ -132,7 +132,7 @@ void CAsyncSelectHelper::SetParams(HWND hWnd, unsigned int wMsg, long lEvent)
   mWnd = hWnd;
 
   mEvent = lEvent;
-  
+
   mIsConnecting = false; // only set if connect() is called
   mIsListening = false; // only set if listen() is called
   mAcceptEnabled = mEvent & FD_ACCEPT;
@@ -172,7 +172,7 @@ CAsyncSelectManager::CAsyncSelectManager()
 CAsyncSelectManager::~CAsyncSelectManager()
 {
   SetEvent(mEventStop);
-  
+
   // resume thread so that it can react to mEventStop
   if (mIsSuspended)
   {
@@ -183,7 +183,7 @@ CAsyncSelectManager::~CAsyncSelectManager()
 
   WaitForSingleObject(m_hEventStarted, INFINITE);
 
-  CAsyncSelectHelperList::iterator it; 
+  CAsyncSelectHelperList::iterator it;
   for (it = mAsyncSelectHelperList.begin(); it != mAsyncSelectHelperList.end(); ++it)
     delete *it;
 
@@ -209,7 +209,7 @@ CAsyncSelectHelper* CAsyncSelectManager::GetHelper(SOCKET s)
 int CAsyncSelectManager::WSAAsyncSelect(SOCKET s, HWND hWnd, unsigned int wMsg, long lEvent)
 {
   mAsyncSelectHelperListCS.Lock();
-  
+
   CAsyncSelectHelperList::iterator it = std::find_if(mAsyncSelectHelperList.begin(), mAsyncSelectHelperList.end(), CAsyncSelectFindFunctor(s));
   if (it != mAsyncSelectHelperList.end())
     (*it)->SetParams(hWnd, wMsg, lEvent);
@@ -236,7 +236,7 @@ int CAsyncSelectManager::Accept(SOCKET s, CAsyncSelectHelper* srcHelper)
   DWORD enableNonBlocking = 1;
   ioctlsocket(s, FIONBIO, &enableNonBlocking);
   // create helper for event notification
-  
+
   CAsyncSelectHelper* helper = new CAsyncSelectHelper(s, srcHelper->mWnd, srcHelper->mMsg, srcHelper->mEvent);
   helper->mAcceptEnabled = srcHelper->mAcceptEnabled;
   helper->mIsConnected = srcHelper->mIsConnected;
@@ -244,11 +244,11 @@ int CAsyncSelectManager::Accept(SOCKET s, CAsyncSelectHelper* srcHelper)
   helper->mIsListening = srcHelper->mIsListening;
   helper->mReceiveEnabled = srcHelper->mReceiveEnabled;
   helper->mSendEnabled = srcHelper->mSendEnabled;
-  
+
   mAsyncSelectHelperListCS.Lock();
-  
+
   AddHelper(helper);
-  
+
   mAsyncSelectHelperListCS.Unlock();
 
   return 0;
@@ -262,7 +262,7 @@ void CAsyncSelectManager::AddHelper(CAsyncSelectHelper* Helper)
   {
     mIsSuspended = false;
     OutputDebugString(_T("CAsyncSelectManager resumed\n"));
-	  SetEvent(m_hEventStarted);
+      SetEvent(m_hEventStarted);
     ResumeThread();
   }
 }
@@ -272,11 +272,11 @@ DWORD CAsyncSelectManager::Run()
 {
   TIMEVAL timeval;
   timeval.tv_sec = 0;
-  timeval.tv_usec = 100; 
+  timeval.tv_usec = 100;
 
   SetEvent(m_hEventStarted);
   ResetEvent(mEventStop);
-  
+
   CAsyncSelectHelperList::iterator it;
 
   while (WaitForSingleObject(mEventStop, 0) != WAIT_OBJECT_0)
@@ -294,7 +294,7 @@ DWORD CAsyncSelectManager::Run()
       // TODO: eliminate loop by using select() on more sockets.
 
       CAsyncSelectHelper* helper = *it;
-      
+
       SOCKET s = helper->mSocket;
       if (s == INVALID_SOCKET)
       {
@@ -327,7 +327,7 @@ DWORD CAsyncSelectManager::Run()
         FD_SET(s, &exceptfds);
 
         int result = select(0, &readfds, &writefds, &exceptfds, &timeval);
-     
+
         if (result == 0)
         {
           // time out
@@ -336,7 +336,7 @@ DWORD CAsyncSelectManager::Run()
         else
         if (result == SOCKET_ERROR)
         {
-          CStdString str;
+          std::string str;
           str.Format(_T("0x%X : Socket 0x%X select() result == SOCKET_ERROR\n"), GetCurrentThreadId(), helper->mSocket);
           OutputDebugString(str);
         }
@@ -347,7 +347,7 @@ DWORD CAsyncSelectManager::Run()
           {
             if (helper->mEvent & FD_CONNECT && helper->mIsConnecting)
             {
-              CStdString str;
+              std::string str;
               str.Format(_T("0x%X : Socket 0x%X select() exception received, FD_CONNECT\n"), GetCurrentThreadId(), helper->mSocket);
               OutputDebugString(str);
 
@@ -356,7 +356,7 @@ DWORD CAsyncSelectManager::Run()
             else
             if (helper->mEvent & FD_CLOSE && helper->mIsConnected)
             {
-              CStdString str;
+              std::string str;
               str.Format(_T("0x%X : Socket 0x%X select() exception received, FD_CLOSE\n"), GetCurrentThreadId(), helper->mSocket);
               OutputDebugString(str);
 
@@ -364,10 +364,10 @@ DWORD CAsyncSelectManager::Run()
             }
             else
             {
-              CStdString str;
+              std::string str;
               str.Format(_T("0x%X : Socket 0x%X select() exception received, but not handled\n"), GetCurrentThreadId(), helper->mSocket);
               OutputDebugString(str);
-              
+
               PostMessage(helper->mWnd, helper->mMsg, s, MAKELPARAM(FD_CLOSE, SOCKET_ERROR));
             }
 
@@ -390,7 +390,7 @@ DWORD CAsyncSelectManager::Run()
               }
               else
               {
-                CStdString str;
+                std::string str;
                 str.Format(_T("0x%X : Socket 0x%X select() FD_ACCEPT received, but not handled\n"), GetCurrentThreadId(), helper->mSocket);
                 OutputDebugString(str);
               }
@@ -400,7 +400,7 @@ DWORD CAsyncSelectManager::Run()
               if (helper->mIsConnected)
               {
                 DWORD nBytes;
-                
+
                 if (ioctlsocket(s, FIONREAD, &nBytes) == 0)
                   if (nBytes == 0)
                   {
@@ -414,7 +414,7 @@ DWORD CAsyncSelectManager::Run()
                       }
                       else
                       {
-                        CStdString str;
+                        std::string str;
                         str.Format(_T("0x%X : Socket 0x%X select() FD_CLOSE received, but mIsConnected == false\n"), GetCurrentThreadId(), helper->mSocket);
                         OutputDebugString(str);
                       }
@@ -430,7 +430,7 @@ DWORD CAsyncSelectManager::Run()
                     }
                     else
                     {
-                      CStdString str;
+                      std::string str;
                       str.Format(_T("0x%X : Socket 0x%X select() FD_READ received, but not handled\n"), GetCurrentThreadId(), helper->mSocket);
                       //OutputDebugString(str);
                     }
@@ -446,7 +446,7 @@ DWORD CAsyncSelectManager::Run()
           {
             if (helper->mIsConnecting)
             {
-              if (helper->mEvent & FD_CONNECT)  
+              if (helper->mEvent & FD_CONNECT)
               {
                 helper->mIsListening = false;
                 helper->mIsConnecting = false;
@@ -459,7 +459,7 @@ DWORD CAsyncSelectManager::Run()
               }
               else
               {
-                CStdString str;
+                std::string str;
                 str.Format(_T("0x%X : Socket 0x%X select() FD_CONNECT received, but not handled\n"), GetCurrentThreadId(), helper->mSocket);
                 OutputDebugString(str);
               }
@@ -478,7 +478,7 @@ DWORD CAsyncSelectManager::Run()
               else
               {
                 /*
-                CStdString str;
+                std::string str;
                 str.Format(_T("0x%X : Socket 0x%X select() FD_WRITE received, but not handled\n"), GetCurrentThreadId(), helper->mSocket);
                 OutputDebugString(str);
                 */
@@ -488,13 +488,13 @@ DWORD CAsyncSelectManager::Run()
           }
           else
           {
-            CStdString str;
+            std::string str;
             str.Format(_T("0x%X : Socket 0x%X select() unknown event\n"), GetCurrentThreadId(), helper->mSocket);
             OutputDebugString(str);
           }
         }
       }
- 
+
     } // for
   } // while
 
@@ -548,7 +548,7 @@ SOCKET fz_accept(IN SOCKET s, OUT struct sockaddr FAR * addr, IN OUT int FAR * a
 int fz_bind(IN SOCKET s, IN const struct sockaddr FAR * name, IN int namelen)
 {
   CSocketLock lock(s);
-  
+
   // Bind to INADDR_ANY
   SOCKADDR_IN sa = *((SOCKADDR_IN*)name);
 
@@ -614,11 +614,11 @@ int fz_listen(IN SOCKET s, IN int backlog)
   CSocketLock lock(s);
 
   int result = ::listen(s, backlog);
-  
+
   if (lock.mHelper)
     lock.mHelper->mIsListening = true;
-  
-  return result; 
+
+  return result;
 }
 
 int fz_recv(IN SOCKET s, OUT char FAR * buf, IN int len, IN int flags)
@@ -646,7 +646,7 @@ int fz_recvfrom(IN SOCKET s, OUT char FAR * buf, IN int len, IN int flags, OUT s
 }
 
 
-// synchronisation of select() is being done in another way, 
+// synchronisation of select() is being done in another way,
 // see CAsyncSelectManager::Run()
 int fz_select(IN int nfds, IN OUT fd_set FAR * readfds, IN OUT fd_set FAR * writefds, IN OUT fd_set FAR *exceptfds, IN const struct timeval FAR * timeout)
 {

@@ -328,7 +328,7 @@ bool CButtonTranslator::Load(bool AlwaysLoad)
   bool success = false;
   // Load the config file(s)
   //first from system/keymaps/ directory
-  const CStdString systemKeymapDirPath = "special://xbmc/system/keymaps/";
+  const std::string systemKeymapDirPath = "special://xbmc/system/keymaps/";
   if( XFILE::CDirectory::Exists(systemKeymapDirPath) )
   {
     CFileItemList files;
@@ -339,7 +339,7 @@ bool CButtonTranslator::Load(bool AlwaysLoad)
       success |= LoadKeymap(files[i]->GetPath());
   }
   //load from user's keymaps/ directory
-  const CStdString userKeymapDirPath = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("keymaps/");
+  const std::string userKeymapDirPath = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("keymaps/");
   if( XFILE::CDirectory::Exists(userKeymapDirPath) )
   {
     CFileItemList files;
@@ -351,7 +351,7 @@ bool CButtonTranslator::Load(bool AlwaysLoad)
   }
 
   //try to load userdata/Keymap.xml for backward compatibility
-  const CStdString oldKeymapPath = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("Keymap.xml");
+  const std::string oldKeymapPath = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("Keymap.xml");
   if( CFile::Exists(oldKeymapPath) )
   {
     CLog::Log(LOGINFO, "CButtonTranslator::Load - old Keymap.xml in userdata found (%s). Please consider moving it to the \"keymaps/\" folder", oldKeymapPath.c_str());
@@ -368,7 +368,7 @@ bool CButtonTranslator::Load(bool AlwaysLoad)
   return true;
 }
 
-bool CButtonTranslator::LoadKeymap(const CStdString &keymapPath)
+bool CButtonTranslator::LoadKeymap(const std::string &keymapPath)
 {
   CXBMCTinyXML xmlDoc;
 
@@ -379,7 +379,7 @@ bool CButtonTranslator::LoadKeymap(const CStdString &keymapPath)
     return false;
   }
   TiXmlElement* pRoot = xmlDoc.RootElement();
-  CStdString strValue = pRoot->Value();
+  std::string strValue = pRoot->Value();
   if ( strValue != "keymap")
   {
     CLog::Log(LOGERROR, "%s Doesn't contain <keymap>", keymapPath.c_str());
@@ -509,7 +509,7 @@ void CButtonTranslator::MapJoystickActions(int windowID, TiXmlNode *pJoystick)
   return;
 }
 
-bool CButtonTranslator::TranslateJoystickString(int window, const char* szDevice, int id, bool axis, int& action, CStdString& strAction, bool &fullrange)
+bool CButtonTranslator::TranslateJoystickString(int window, const char* szDevice, int id, bool axis, int& action, std::string& strAction, bool &fullrange)
 {
   fullrange = false;
 
@@ -546,7 +546,7 @@ bool CButtonTranslator::TranslateJoystickString(int window, const char* szDevice
 /*
  * Translates a joystick input to an action code
  */
-int CButtonTranslator::GetActionCode(int window, int id, const JoystickMap &wmap, CStdString &strAction, bool &fullrange) const
+int CButtonTranslator::GetActionCode(int window, int id, const JoystickMap &wmap, std::string &strAction, bool &fullrange) const
 {
   int action = 0;
   bool found = false;
@@ -598,7 +598,7 @@ int CButtonTranslator::GetFallbackWindow(int windowID)
 
 CAction CButtonTranslator::GetAction(int window, const CKey &key)
 {
-  CStdString strAction;
+  std::string strAction;
   // try to get the action from the current window
   int actionID = GetActionCode(window, key, strAction);
   // if it's invalid, try to get it from the global map
@@ -609,7 +609,7 @@ CAction CButtonTranslator::GetAction(int window, const CKey &key)
   return action;
 }
 
-int CButtonTranslator::GetActionCode(int window, const CKey &key, CStdString &strAction)
+int CButtonTranslator::GetActionCode(int window, const CKey &key, std::string &strAction)
 {
   int code = key.GetButtonCode();
   map<int, buttonMap>::iterator it = translatorMap.find(window);
@@ -673,7 +673,7 @@ void CButtonTranslator::MapWindowActions(TiXmlNode *pWindow, int windowID)
   { // map remote actions
     bool bUseMCE = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("system.mceremote");
     TiXmlElement *pRemote;
-    CStdString remoteName;
+    std::string remoteName;
     while (pDevice)
     {
       remoteName = "";
@@ -740,7 +740,7 @@ void CButtonTranslator::MapWindowActions(TiXmlNode *pWindow, int windowID)
 bool CButtonTranslator::TranslateActionString(const char *szAction, int &action)
 {
   action = ACTION_NONE;
-  CStdString strAction = szAction;
+  std::string strAction = szAction;
   strAction.ToLower();
   if (CBuiltins::GetInstance().HasCommand(strAction)) action = ACTION_BUILT_IN_FUNCTION;
 
@@ -762,7 +762,7 @@ bool CButtonTranslator::TranslateActionString(const char *szAction, int &action)
   return true;
 }
 
-CStdString CButtonTranslator::TranslateWindow(int windowID)
+std::string CButtonTranslator::TranslateWindow(int windowID)
 {
   for (unsigned int index = 0; index < sizeof(windows) / sizeof(windows[0]); ++index)
   {
@@ -772,9 +772,9 @@ CStdString CButtonTranslator::TranslateWindow(int windowID)
   return "";
 }
 
-int CButtonTranslator::TranslateWindow(const CStdString &window)
+int CButtonTranslator::TranslateWindow(const std::string &window)
 {
-  CStdString strWindow(window);
+  std::string strWindow(window);
   if (strWindow.IsEmpty()) return WINDOW_INVALID;
   strWindow.ToLower();
   // eliminate .xml
@@ -810,7 +810,7 @@ int CButtonTranslator::TranslateGamepadString(const char *szButton)
 {
   if (!szButton) return 0;
   int buttonCode = 0;
-  CStdString strButton = szButton;
+  std::string strButton = szButton;
   strButton.ToLower();
   if (strButton.Equals("a")) buttonCode = KEY_BUTTON_A;
   else if (strButton.Equals("b")) buttonCode = KEY_BUTTON_B;
@@ -848,7 +848,7 @@ int CButtonTranslator::TranslateRemoteString(const char *szButton)
 {
   if (!szButton) return 0;
   int buttonCode = 0;
-  CStdString strButton = szButton;
+  std::string strButton = szButton;
   strButton.ToLower();
   if (strButton.Equals("left")) buttonCode = XINPUT_IR_REMOTE_LEFT;
   else if (strButton.Equals("right")) buttonCode = XINPUT_IR_REMOTE_RIGHT;
@@ -925,7 +925,7 @@ int CButtonTranslator::TranslateKeyboardString(const char *szButton)
   }
   else
   { // for keys such as return etc. etc.
-    CStdString strKey = szButton;
+    std::string strKey = szButton;
     strKey.ToLower();
     if (strKey.Equals("return")) buttonCode = 0xF00D;
     else if (strKey.Equals("enter")) buttonCode = 0xF06C;
@@ -1006,7 +1006,7 @@ int CButtonTranslator::TranslateKeyboardButton(TiXmlElement *pButton)
   const char *szButton = pButton->Value();
 
   if (!szButton) return 0;
-  CStdString strKey = szButton;
+  std::string strKey = szButton;
   if (strKey.Equals("key"))
   {
     int id = 0;

@@ -313,7 +313,7 @@ void PAPlayer::SetupDirectSound(int channels)
 #endif
 }
 
-bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersample, CStdString codec)
+bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersample, std::string codec)
 {
   FreeStream(num);
 
@@ -839,7 +839,7 @@ int PAPlayer::GetSampleRate()
   return 0;
 }
 
-CStdString PAPlayer::GetAudioCodecName()
+std::string PAPlayer::GetAudioCodecName()
 {
   ICodec* codec = m_decoder[m_currentDecoder].GetCodec();
   if (codec)
@@ -1182,7 +1182,7 @@ void CALLBACK StaticStreamCallback( VOID* pStreamContext, VOID* pPacketContext, 
   }
 }
 
-bool PAPlayer::HandlesType(const CStdString &type)
+bool PAPlayer::HandlesType(const std::string &type)
 {
   ICodec* codec=CodecFactory::CreateCodec(type);
 

@@ -30,7 +30,7 @@ class CServerThread;
 class CServer;
 
 /////////////////////////////////////////////////////////////////////////////
-// Befehlsziel CListenSocket 
+// Befehlsziel CListenSocket
 
 class CListenSocket : public CAsyncSocketEx
 {
@@ -39,34 +39,34 @@ public:
 
 // Operationen
 public:
-	CListenSocket(CServer *pServer);
-	virtual ~CListenSocket();
+    CListenSocket(CServer *pServer);
+    virtual ~CListenSocket();
 
-// Überschreibungen
+// ï¿½berschreibungen
 public:
-	BOOL m_bLocked;
-	std::list<CServerThread*> *m_pThreadList;
-	// Vom Klassen-Assistenten generierte virtuelle Funktionsüberschreibungen
-	//{{AFX_VIRTUAL(CListenSocket)
-	public:
-	virtual void OnAccept(int nErrorCode);
-	//}}AFX_VIRTUAL
+    BOOL m_bLocked;
+    std::list<CServerThread*> *m_pThreadList;
+    // Vom Klassen-Assistenten generierte virtuelle Funktionsï¿½berschreibungen
+    //{{AFX_VIRTUAL(CListenSocket)
+    public:
+    virtual void OnAccept(int nErrorCode);
+    //}}AFX_VIRTUAL
 
-	// Generierte Nachrichtenzuordnungsfunktionen
-	//{{AFX_MSG(CListenSocket)
-		// HINWEIS - Der Klassen-Assistent fügt hier Member-Funktionen ein und entfernt diese.
-	//}}AFX_MSG
+    // Generierte Nachrichtenzuordnungsfunktionen
+    //{{AFX_MSG(CListenSocket)
+        // HINWEIS - Der Klassen-Assistent fï¿½gt hier Member-Funktionen ein und entfernt diese.
+    //}}AFX_MSG
 
 // Implementierung
 protected:
-	void SendStatus(CStdString status, int type);
+    void SendStatus(std::string status, int type);
 
-	CServer *m_pServer;
+    CServer *m_pServer;
 };
 
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
+// Microsoft Visual C++ fï¿½gt unmittelbar vor der vorhergehenden Zeile zusï¿½tzliche Deklarationen ein.
 
 #endif // AFX_LISTENSOCKET_H__9740B48D_6F4D_4C3B_B751_BC0BC65208C5__INCLUDED_

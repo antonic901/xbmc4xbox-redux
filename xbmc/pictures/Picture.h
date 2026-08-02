@@ -19,14 +19,14 @@
  *
  */
 
-#include "utils/StdString.h"
+#include <string>
 
 class CTexture;
 
 class CPicture
 {
 public:
-  static bool CreateThumbnailFromSurface(const unsigned char* buffer, int width, int height, int stride, const CStdString &thumbFile);
+  static bool CreateThumbnailFromSurface(const unsigned char* buffer, int width, int height, int stride, const std::string &thumbFile);
 
   /*! \brief Create a tiled thumb of the given files
    \param files the files to create the thumb from

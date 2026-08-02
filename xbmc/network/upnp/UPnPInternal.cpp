@@ -107,7 +107,7 @@ NPT_String
 GetMimeType(const CFileItem& item,
             const PLT_HttpRequestContext* context /* = NULL */)
 {
-    CStdString path = item.GetPath();
+    std::string path = item.GetPath();
     if (item.HasVideoInfoTag() && !item.GetVideoInfoTag()->GetPath().empty()) {
         path = item.GetVideoInfoTag()->GetPath();
     } else if (item.HasMusicInfoTag() && !item.GetMusicInfoTag()->GetURL().empty()) {
@@ -238,7 +238,7 @@ PopulateObjectFromTag(CVideoInfoTag&         tag,
                       EClientQuirks          quirks)
 {
     // some usefull buffers
-    CStdStringArray strings;
+    std::vector<std::string> strings;
 
     if (!tag.m_strFileNameAndPath.empty() && file_path)
       *file_path = tag.m_strFileNameAndPath.c_str();
@@ -404,7 +404,7 @@ BuildObject(const CFileItem&              item,
         container->m_ObjectClass.type = "object.container";
         container->m_ChildrenCount = -1;
 
-        CStdStringArray strings;
+        std::vector<std::string> strings;
 
         /* this might be overkill, but hey */
         if (item.IsMusicDb()) {
@@ -518,11 +518,11 @@ BuildObject(const CFileItem&              item,
     // set a title for the object
     if (object->m_Title.IsEmpty()) {
         if (!item.GetLabel().empty()) {
-            CStdString title = item.GetLabel();
+            std::string title = item.GetLabel();
             if (item.IsPlayList() || !item.m_bIsFolder) URIUtils::RemoveExtension(title);
             object->m_Title = title;
         } else {
-            CStdString title, volumeNumber;
+            std::string title, volumeNumber;
             CUtil::GetVolumeFromFileName(item.GetPath(), title, volumeNumber);
             if (!item.m_bIsFolder) URIUtils::RemoveExtension(title);
             object->m_Title = title;
@@ -558,8 +558,8 @@ failure:
 /*----------------------------------------------------------------------
 |   CUPnPServer::CorrectAllItemsSortHack
 +---------------------------------------------------------------------*/
-const CStdString&
-CorrectAllItemsSortHack(const CStdString &item)
+const std::string&
+CorrectAllItemsSortHack(const std::string &item)
 {
     // This is required as in order for the "* All Albums" etc. items to sort
     // correctly, they must have fake artist/album etc. information generated.
@@ -626,7 +626,7 @@ PopulateTagFromObject(CVideoInfoTag&         tag,
     tag.SetYear(date.GetYear());
     for (unsigned int index = 0; index < object.m_Affiliation.genre.GetItemCount(); index++)
       tag.m_genre.push_back(object.m_Affiliation.genre.GetItem(index)->GetChars());
-    tag.m_director = StringUtils::Split((CStdString)object.m_People.director, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
+    tag.m_director = StringUtils::Split((std::string)object.m_People.director, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoItemSeparator);
     tag.m_strTagLine  = object.m_Description.description;
     tag.m_strPlot     = object.m_Description.long_description;
     tag.m_strShowTitle = object.m_Recorded.series_title;

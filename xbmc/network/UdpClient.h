@@ -20,10 +20,11 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "utils/StdString.h"
 #include "threads/Thread.h"
 #include "threads/CriticalSection.h"
 #include "system.h"
+
+#include <string>
 
 class CUdpClient : CThread
 {
@@ -39,19 +40,19 @@ protected:
   void OnStartup();
   void Process();
 
-  bool Broadcast(int aPort, CStdString& aMessage);
-  bool Send(CStdString aIpAddress, int aPort, CStdString& aMessage);
-  bool Send(SOCKADDR_IN aAddress, CStdString& aMessage);
+  bool Broadcast(int aPort, std::string& aMessage);
+  bool Send(std::string aIpAddress, int aPort, std::string& aMessage);
+  bool Send(SOCKADDR_IN aAddress, std::string& aMessage);
   bool Send(SOCKADDR_IN aAddress, LPBYTE pMessage, DWORD dwSize);
 
-  virtual void OnMessage(SOCKADDR_IN& aRemoteAddress, CStdString& aMessage, LPBYTE pMessage, DWORD dwMessageLength){};
+  virtual void OnMessage(SOCKADDR_IN& aRemoteAddress, std::string& aMessage, LPBYTE pMessage, DWORD dwMessageLength){};
 
 protected:
 
   struct UdpCommand
   {
     SOCKADDR_IN address;
-    CStdString message;
+    std::string message;
     LPBYTE binary;
     DWORD binarySize;
   };

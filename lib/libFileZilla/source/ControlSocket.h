@@ -30,7 +30,7 @@
 class CAsyncGssSocketLayer;
 class CTransferSocket;
 /////////////////////////////////////////////////////////////////////////////
-// Befehlsziel CControlSocket 
+// Befehlsziel CControlSocket
 
 class CControlSocket : public CAsyncSocketEx
 {
@@ -39,100 +39,100 @@ public:
 
 // Operationen
 public:
-	CControlSocket(CServerThread *pOwner);
-	virtual ~CControlSocket();
+    CControlSocket(CServerThread *pOwner);
+    virtual ~CControlSocket();
 
-// Überschreibungen
+// ï¿½berschreibungen
 public:
-	CServerThread * m_pOwner;
-	CStdString m_RemoteIP;
-	void WaitGoOffline();
-	BOOL m_bWaitGoOffline;
-	void CheckForTimeout();
-	void ForceClose(int nReason);
-	CTransferSocket* GetTransferSocket();
-	void ProcessTransferMsg();
-	void ParseCommand();
-	int m_userid;
-	BOOL Send(LPCTSTR str);
-	void SendStatus(LPCTSTR status,int type);
-	BOOL GetCommand(CStdString &command,CStdString &args);
+    CServerThread * m_pOwner;
+    std::string m_RemoteIP;
+    void WaitGoOffline();
+    BOOL m_bWaitGoOffline;
+    void CheckForTimeout();
+    void ForceClose(int nReason);
+    CTransferSocket* GetTransferSocket();
+    void ProcessTransferMsg();
+    void ParseCommand();
+    int m_userid;
+    BOOL Send(LPCTSTR str);
+    void SendStatus(LPCTSTR status,int type);
+    BOOL GetCommand(std::string &command,std::string &args);
 #if defined(_XBOX)
-	BOOL SendCurDir(const CStdString command,CStdString curDir);
-	BOOL SendDir(const CStdString command,CStdString curDir,const CStdString prompt);
-	BOOL GetCommandFromString(const CStdString& source, CStdString &command,CStdString &args);
+    BOOL SendCurDir(const std::string command,std::string curDir);
+    BOOL SendDir(const std::string command,std::string curDir,const std::string prompt);
+    BOOL GetCommandFromString(const std::string& source, std::string &command,std::string &args);
 #endif
-	virtual void OnReceive(int nErrorCode);
-	virtual void OnClose(int nErrorCode);
-	virtual void OnSend(int nErrorCode);
+    virtual void OnReceive(int nErrorCode);
+    virtual void OnClose(int nErrorCode);
+    virtual void OnSend(int nErrorCode);
 
-	void Continue();
-	
+    void Continue();
+
 // Implementierung
 protected:
-	BOOL DoUserLogin(char* sendme);
-	BOOL UnquoteArgs(CStdString &args);
-	static int GetUserCount(const CStdString &user);
-	static void IncUserCount(const CStdString &user);
-	static void DecUserCount(const CStdString &user);
-	void ResetTransferstatus();
-	BOOL CreateTransferSocket(CTransferSocket *pTransferSocket);
+    BOOL DoUserLogin(char* sendme);
+    BOOL UnquoteArgs(std::string &args);
+    static int GetUserCount(const std::string &user);
+    static void IncUserCount(const std::string &user);
+    static void DecUserCount(const std::string &user);
+    void ResetTransferstatus();
+    BOOL CreateTransferSocket(CTransferSocket *pTransferSocket);
 
-	CAsyncGssSocketLayer *m_pGssLayer;
+    CAsyncGssSocketLayer *m_pGssLayer;
 
-	std::list<CStdString> m_RecvLineBuffer;
-	char m_RecvBuffer[2048];
-	int m_nRecvBufferPos;
-	char *m_pSendBuffer;
-	int m_nSendBufferLen;
+    std::list<std::string> m_RecvLineBuffer;
+    char m_RecvBuffer[2048];
+    int m_nRecvBufferPos;
+    char *m_pSendBuffer;
+    int m_nSendBufferLen;
 
-	int m_nTelnetSkip;
-	BOOL m_bQuitCommand;
-	SYSTEMTIME m_LastCmdTime, m_LastTransferTime, m_LoginTime;
-	static std::map<CStdString, int> m_UserCount;
-	CStdString m_CurrentDir;
-	static CCriticalSectionWrapper m_Sync;
-	struct t_status
-	{
-		BOOL loggedon;
-		CStdString user;
-		CStdString ip;
-	} m_status;
-	struct t_transferstatus
-	{
-		int pasv;
-		_int64 rest;
-		int type;
-		CStdString ip;
-		int port;
-		CTransferSocket *socket;
-	} m_transferstatus;
-		
-	CStdString RenName;
-	BOOL bRenFile;
+    int m_nTelnetSkip;
+    BOOL m_bQuitCommand;
+    SYSTEMTIME m_LastCmdTime, m_LastTransferTime, m_LoginTime;
+    static std::map<std::string, int> m_UserCount;
+    std::string m_CurrentDir;
+    static CCriticalSectionWrapper m_Sync;
+    struct t_status
+    {
+        BOOL loggedon;
+        std::string user;
+        std::string ip;
+    } m_status;
+    struct t_transferstatus
+    {
+        int pasv;
+        _int64 rest;
+        int type;
+        std::string ip;
+        int port;
+        CTransferSocket *socket;
+    } m_transferstatus;
 
-#if defined(_XBOX)  
+    std::string RenName;
+    BOOL bRenFile;
+
+#if defined(_XBOX)
   CSfvFile mSfvFile;
 #endif
 
 public:
-	int GetSpeedLimit(int nMode);
-	typedef struct {
-		BOOL bContinueDownload;
-		BOOL bContinueUpload;
-		int nBytesAllowedToDl;
-		int nBytesAllowedToUl;
-		int nUploaded;
-		int nDownloaded;
-		BOOL bDownloadBypassed;
-		BOOL bUploadBypassed;
-	} t_Quota;
-	t_Quota m_SlQuota;
+    int GetSpeedLimit(int nMode);
+    typedef struct {
+        BOOL bContinueDownload;
+        BOOL bContinueUpload;
+        int nBytesAllowedToDl;
+        int nBytesAllowedToUl;
+        int nUploaded;
+        int nDownloaded;
+        BOOL bDownloadBypassed;
+        BOOL bUploadBypassed;
+    } t_Quota;
+    t_Quota m_SlQuota;
 };
 
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
+// Microsoft Visual C++ fï¿½gt unmittelbar vor der vorhergehenden Zeile zusï¿½tzliche Deklarationen ein.
 
 #endif // AFX_CONTROLSOCKET_H__17DD46FD_8A4A_4394_9F90_C14BA65F6BF6__INCLUDED_

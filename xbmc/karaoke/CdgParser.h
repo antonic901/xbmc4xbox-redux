@@ -50,15 +50,15 @@ class CCdgLoader : public CThread
 public:
   CCdgLoader();
   ~CCdgLoader();
-  void StreamFile(CStdString strFileName);
+  void StreamFile(std::string strFileName);
   void StopStream();
   SubCode* GetCurSubCode();
   bool SetNextSubCode();
   errCode GetFileState();
-  CStdString GetFileName();
+  std::string GetFileName();
 protected:
   XFILE::CFile m_File;
-  CStdString m_strFileName;
+  std::string m_strFileName;
   BYTE *m_pBuffer;
   SubCode *m_pSubCode;
   errCode m_CdgFileState;
@@ -97,7 +97,7 @@ public:
   void SetAVDelay(float fDelay);
   float GetAVDelay();
   errCode GetFileState();
-  CStdString GetFileName();
+  std::string GetFileName();
   CCdg* GetCdg();
 
 protected:
@@ -174,7 +174,7 @@ public:
   ~CCdgParser();
   bool AllocGraphics();
   void FreeGraphics();
-  bool Start(CStdString strSongPath);
+  bool Start(std::string strSongPath);
   void Stop();
   void Free();
   void SetAVDelay(float fDelay);
@@ -193,7 +193,7 @@ public:
                                              std::vector<StringSettingOption>& list,
                                              std::string& current,
                                              void* data);
-  void static FillInVoiceMaskValues(unsigned int port, CStdString strCurMask);
+  void static FillInVoiceMaskValues(unsigned int port, std::string strCurMask);
 
 protected:
   bool m_bIsRunning;
@@ -208,7 +208,7 @@ protected:
   bool AllocReader();
   void FreeLoader();
   void FreeReader();
-  bool StartLoader(CStdString strSongPath);
+  bool StartLoader(std::string strSongPath);
   void StopLoader();
   bool StartReader();
   void StopReader();

@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "utils/log.h"
 #include "GYMCodec.h"
 #include "cores/DllLoader/DllLoader.h"
@@ -28,7 +28,7 @@ GYMCodec::GYMCodec()
   m_iDataInBuffer = 0;
   m_szBuffer = NULL;
   m_gym = 0;
-  m_iDataPos = 0; 
+  m_iDataPos = 0;
 }
 
 GYMCodec::~GYMCodec()
@@ -36,20 +36,20 @@ GYMCodec::~GYMCodec()
   DeInit();
 }
 
-bool GYMCodec::Init(const CStdString &strFile, unsigned int filecache)
+bool GYMCodec::Init(const std::string &strFile, unsigned int filecache)
 {
   if (!m_dll.Load())
     return false; // error logged previously
-  
+
   m_iBufferSize = m_dll.Init();
-  
+
   m_gym = m_dll.LoadGYM(strFile.c_str());
   if (!m_gym)
   {
     CLog::Log(LOGERROR,"GYMCodec: error opening file %s!",strFile.c_str());
     return false;
   }
-  
+
   m_Channels = 2;
   m_SampleRate = 48000;
   m_BitsPerSample = 16;
@@ -65,7 +65,7 @@ void GYMCodec::DeInit()
   if (m_gym)
     m_dll.FreeGYM(m_gym);
   m_gym = 0;
-  
+
   if (m_szBuffer)
     delete[] m_szBuffer;
   m_szBuffer = NULL;
@@ -83,7 +83,7 @@ int GYMCodec::ReadPCM(BYTE *pBuffer, int size, int *actualsize)
 {
   if (m_iDataPos >= m_TotalTime/1000*48000*4)
     return READ_EOF;
-  
+
   if (m_iDataInBuffer <= 0)
   {
     if (!m_dll.FillBuffer(m_gym,m_szBuffer))
@@ -98,7 +98,7 @@ int GYMCodec::ReadPCM(BYTE *pBuffer, int size, int *actualsize)
   m_iDataInBuffer -= *actualsize;
   m_iDataPos += *actualsize;
 
-  return READ_SUCCESS;    
+  return READ_SUCCESS;
 }
 
 bool GYMCodec::CanInit()

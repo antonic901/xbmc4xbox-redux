@@ -180,9 +180,9 @@ public:
 
   virtual void SetVolume(long nVolume)                          { m_dvdPlayerAudio.SetVolume(nVolume); }
   virtual void SetDynamicRangeCompression(long drc)             { m_dvdPlayerAudio.SetDynamicRangeCompression(drc); }
-  virtual void GetAudioInfo(CStdString& strAudioInfo);
-  virtual void GetVideoInfo(CStdString& strVideoInfo);
-  virtual void GetGeneralInfo( CStdString& strVideoInfo);
+  virtual void GetAudioInfo(std::string& strAudioInfo);
+  virtual void GetVideoInfo(std::string& strVideoInfo);
+  virtual void GetGeneralInfo( std::string& strVideoInfo);
   virtual void Update(bool bPauseDrawing)                       { m_dvdPlayerVideo.Update(bPauseDrawing); }
   virtual void GetVideoRect(RECT& SrcRect, RECT& DestRect)      { m_dvdPlayerVideo.GetVideoRect(SrcRect, DestRect); }
   virtual void GetVideoAspectRatio(float& fAR)                  { fAR = m_dvdPlayerVideo.GetAspectRatio(); }
@@ -197,17 +197,17 @@ public:
   virtual float GetSubTitleDelay();
   virtual int GetSubtitleCount();
   virtual int GetSubtitle();
-  virtual void GetSubtitleName(int iStream, CStdString &strStreamName);
-  virtual void GetSubtitleLanguage(int iStream, CStdString &strStreamLang);
+  virtual void GetSubtitleName(int iStream, std::string &strStreamName);
+  virtual void GetSubtitleLanguage(int iStream, std::string &strStreamLang);
   virtual void SetSubtitle(int iStream);
   virtual bool GetSubtitleVisible();
   virtual void SetSubtitleVisible(bool bVisible);
   virtual bool GetSubtitleExtension(std::string &strSubtitleExtension) { return false; }
-  virtual int  AddSubtitle(const CStdString& strSubPath);
+  virtual int  AddSubtitle(const std::string& strSubPath);
 
   virtual int GetAudioStreamCount();
   virtual int GetAudioStream();
-  virtual void GetAudioStreamName(int iStream, CStdString &strStreamName);
+  virtual void GetAudioStreamName(int iStream, std::string &strStreamName);
   virtual void SetAudioStream(int iStream);
 
   virtual int  GetChapterCount() const;
@@ -226,16 +226,16 @@ public:
   virtual int GetVideoBitrate();
   virtual int GetSourceBitrate();
   virtual int GetChannels();
-  virtual CStdString GetAudioCodecName();
-  virtual CStdString GetVideoCodecName();
+  virtual std::string GetAudioCodecName();
+  virtual std::string GetVideoCodecName();
   virtual int GetPictureWidth();
   virtual int GetPictureHeight();
   virtual bool GetStreamDetails(CStreamDetails &details);
 
-  virtual bool GetCurrentSubtitle(CStdString& strSubtitle);
+  virtual bool GetCurrentSubtitle(std::string& strSubtitle);
 
-  virtual CStdString GetPlayerState();
-  virtual bool SetPlayerState(CStdString state);
+  virtual std::string GetPlayerState();
+  virtual bool SetPlayerState(std::string state);
 
   enum ECacheState
   { CACHESTATE_DONE = 0
@@ -351,7 +351,7 @@ protected:
   CDVDDemux* m_pDemuxer;            // demuxer for current playing file
   CDVDDemux* m_pSubtitleDemuxer;
 
-  CStdString m_lastSub;
+  std::string m_lastSub;
 
   struct SDVDInfo
   {

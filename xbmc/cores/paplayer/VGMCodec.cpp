@@ -29,7 +29,7 @@ VGMCodec::VGMCodec()
 {
   m_CodecName = "VGM";
   m_vgm = 0;
-  m_iDataPos = -1; 
+  m_iDataPos = -1;
 }
 
 VGMCodec::~VGMCodec()
@@ -37,14 +37,14 @@ VGMCodec::~VGMCodec()
   DeInit();
 }
 
-bool VGMCodec::Init(const CStdString &strFile, unsigned int filecache)
+bool VGMCodec::Init(const std::string &strFile, unsigned int filecache)
 {
   if (!m_dll.Load())
     return false; // error logged previously
-  
+
   m_dll.Init();
 
-  //CStdString strFileToLoad = "filereader://"+strFile;
+  //std::string strFileToLoad = "filereader://"+strFile;
   XFILE::CFile::Copy(strFile,"special://temp/"+URIUtils::GetFileName(strFile));
 
   //m_vgm = m_dll.LoadVGM(strFileToLoad.c_str(),&m_SampleRate,&m_BitsPerSample,&m_Channels);
@@ -54,7 +54,7 @@ bool VGMCodec::Init(const CStdString &strFile, unsigned int filecache)
     CLog::Log(LOGERROR,"%s: error opening file %s!",__FUNCTION__,strFile.c_str());
     return false;
   }
-  
+
   m_TotalTime = (__int64)m_dll.GetLength(m_vgm);
 
   return true;
@@ -71,7 +71,7 @@ __int64 VGMCodec::Seek(__int64 iSeekTime)
 {
   __int64 result = (__int64)m_dll.Seek(m_vgm,(unsigned long)iSeekTime);
   m_iDataPos = result/1000*m_SampleRate*m_BitsPerSample*m_Channels/8;
-  
+
   return result;
 }
 
@@ -86,7 +86,7 @@ int VGMCodec::ReadPCM(BYTE *pBuffer, int size, int *actualsize)
   {
     return READ_EOF;
   }
-  
+
   if ((*actualsize=m_dll.FillBuffer(m_vgm,(char*)pBuffer,size))> 0)
   {
     m_iDataPos += *actualsize;
@@ -101,7 +101,7 @@ bool VGMCodec::CanInit()
   return m_dll.CanLoad();
 }
 
-bool VGMCodec::IsSupportedFormat(const CStdString& strExt)
+bool VGMCodec::IsSupportedFormat(const std::string& strExt)
 {
   if (strExt == "acm" ||
       strExt == "adp" ||
@@ -146,7 +146,7 @@ bool VGMCodec::IsSupportedFormat(const CStdString& strExt)
       strExt == "leg" ||
       strExt == "logg" ||
       strExt == "lwav" ||
-	  strExt == "matx" ||
+      strExt == "matx" ||
       strExt == "mi4" ||
       strExt == "mib" ||
       strExt == "mic" ||
@@ -179,7 +179,7 @@ bool VGMCodec::IsSupportedFormat(const CStdString& strExt)
       strExt == "sli" ||
       strExt == "sng" ||
       strExt == "ss2" ||
-	  strExt == "stma" ||
+      strExt == "stma" ||
       strExt == "str" ||
       strExt == "strm" ||
       strExt == "sts" ||
@@ -204,6 +204,6 @@ bool VGMCodec::IsSupportedFormat(const CStdString& strExt)
       strExt == "xwav" ||
       strExt == "xwb")
     return true;
-  
+
   return false;
 }

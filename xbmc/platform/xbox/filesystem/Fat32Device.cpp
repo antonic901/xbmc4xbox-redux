@@ -63,7 +63,7 @@ void CFat32Device::CachePage(unsigned long page, unsigned char *buffer)
   if (m_cache.size() >= CACHE_SIZE)
   { // remove the last used cache
     FATCACHE::iterator lastUsed = m_cache.begin();
-    //CStdString usage;
+    //std::string usage;
     unsigned long smallest = 0;
     for (FATCACHE::iterator it = m_cache.begin(); it != m_cache.end(); ++it)
     {
@@ -71,7 +71,7 @@ void CFat32Device::CachePage(unsigned long page, unsigned char *buffer)
         lastUsed = it;
       if ((*it).second->Usage(time) < smallest)
         smallest = (*it).second->Usage(time);
-/*      CStdString log;
+/*      std::string log;
       if ((*it).second->Usage(time) > 0xFF)
         log = "FF ";
       else

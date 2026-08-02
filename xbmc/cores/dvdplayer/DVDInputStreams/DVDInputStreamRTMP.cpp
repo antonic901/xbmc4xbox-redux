@@ -34,7 +34,7 @@ using namespace XFILE;
 using namespace std;
 
 static int RTMP_level=0;
-extern "C" 
+extern "C"
 {
   static void CDVDInputStreamRTMP_Log(int level, const char *fmt, va_list args)
   {
@@ -43,7 +43,7 @@ extern "C"
     if (level > RTMP_level)
       return;
 
-    switch(level) 
+    switch(level)
     {
       default:
       case RTMP_LOGCRIT:    level = LOGFATAL;   break;
@@ -81,7 +81,7 @@ CDVDInputStreamRTMP::CDVDInputStreamRTMP(CFileItem &fileitem)
 
     m_libRTMP.LogSetLevel(level);
     RTMP_level = level;
-    
+
     m_rtmp = m_libRTMP.Alloc();
     m_libRTMP.Init(m_rtmp);
   }
@@ -161,7 +161,7 @@ bool CDVDInputStreamRTMP::Open()
   m_optionvalues.clear();
   for (int i=0; options[i].name; i++)
   {
-    CStdString tmp = m_item.GetProperty(options[i].name).asString();
+    std::string tmp = m_item.GetProperty(options[i].name).asString();
     if (!tmp.empty())
     {
       m_optionvalues.push_back(tmp);

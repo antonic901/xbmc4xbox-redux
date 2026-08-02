@@ -198,7 +198,7 @@ CUPnPRenderer::UpdateState()
     const CApplicationComponents &components = CServiceBroker::GetAppComponents();
     const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
 
-    CStdString buffer;
+    std::string buffer;
     int volume;
     if (appVolume->IsMuted()) {
         rct->SetStateVariable("Mute", "1");
@@ -276,7 +276,7 @@ CUPnPRenderer::GetMetadata(NPT_String& meta)
     PLT_MediaObject* object = BuildObject(item, file_path, false);
     if (object) {
         // fetch the path to the thumbnail
-        CStdString thumb = CServiceBroker::GetGUI()->GetInfoManager().GetImage(MUSICPLAYER_COVER, -1); //TODO: Only audio for now
+        std::string thumb = CServiceBroker::GetGUI()->GetInfoManager().GetImage(MUSICPLAYER_COVER, -1); //TODO: Only audio for now
 
         NPT_String ip = CServiceBroker::GetNetwork().m_networkinfo.ip;
 
@@ -433,7 +433,7 @@ CUPnPRenderer::PlayMedia(const char* uri, const char* meta, PLT_Action* action)
         for(NPT_Cardinal i = 0; i < object->m_Resources.GetItemCount(); i++) {
             if(object->m_Resources[i].m_ProtocolInfo.ToString().StartsWith("xbmc-get:")) {
             res = &object->m_Resources[i];
-            item.SetPath(CStdString(res->m_Uri));
+            item.SetPath(std::string(res->m_Uri));
             break;
           }
         }

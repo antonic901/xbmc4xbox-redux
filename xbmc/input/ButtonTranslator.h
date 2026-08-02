@@ -22,10 +22,10 @@
  */
 
 #include <map>
+#include <string>
 #ifdef HAS_EVENT_SERVER
 #include "network/EventClient.h"
 #endif
-#include "utils/StdString.h"
 
 class CKey;
 class CAction;
@@ -35,7 +35,7 @@ class TiXmlElement;
 struct CButtonAction
 {
   int id;
-  CStdString strID; // needed for "XBMC.ActivateWindow()" type actions
+  std::string strID; // needed for "XBMC.ActivateWindow()" type actions
 };
 ///
 /// singleton class to map from buttons to actions
@@ -69,29 +69,29 @@ public:
    \param window name of the window
    \return id of the window, or WINDOW_INVALID if not found
    */
-  static int TranslateWindow(const CStdString &window);
+  static int TranslateWindow(const std::string &window);
 
   /*! \brief Translate between a window id and it's name
    \param window id of the window
    \return name of the window, or an empty string if not found
    */
-  static CStdString TranslateWindow(int window);
+  static std::string TranslateWindow(int window);
 
   static bool TranslateActionString(const char *szAction, int &action);
 
 #if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
   bool TranslateJoystickString(int window, const char* szDevice, int id,
-                               bool axis, int& action, CStdString& strAction,
+                               bool axis, int& action, std::string& strAction,
                                bool &fullrange);
 #endif
 
 private:
   typedef std::multimap<int, CButtonAction> buttonMap; // our button map to fill in
   std::map<int, buttonMap> translatorMap;       // mapping of windows to button maps
-  int GetActionCode(int window, const CKey &key, CStdString &strAction);
+  int GetActionCode(int window, const CKey &key, std::string &strAction);
 #if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
   typedef std::map<int, std::map<int, std::string> > JoystickMap; // <window, <button/axis, action> >
-  int GetActionCode(int window, int id, const JoystickMap &wmap, CStdString &strAction, bool &fullrange) const;
+  int GetActionCode(int window, int id, const JoystickMap &wmap, std::string &strAction, bool &fullrange) const;
 #endif
   int GetFallbackWindow(int windowID);
 
@@ -104,7 +104,7 @@ private:
   void MapWindowActions(TiXmlNode *pWindow, int wWindowID);
   void MapAction(int buttonCode, const char *szAction, buttonMap &map);
 
-  bool LoadKeymap(const CStdString &keymapPath);
+  bool LoadKeymap(const std::string &keymapPath);
 #if defined(HAS_SDL_JOYSTICK) || defined(HAS_EVENT_SERVER)
   void MapJoystickActions(int windowID, TiXmlNode *pJoystick);
 

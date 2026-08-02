@@ -20,8 +20,9 @@
  *
  */
 
-#include "utils/StdString.h"
 #include "threads/Thread.h"
+
+#include <string>
 
 #define SMARTXX_PWD_RED       0xf70c   //PWM1: SmartXX V3 port for RGB red output
 #define SMARTXX_PWD_GREEN     0xf70d   //PWM2: SmartXX V3 port for RGB green output
@@ -32,10 +33,10 @@
 #define SMARTXX_OPX_PWD_GREEN 0xf70c    //PWM2: SmartXX OPX port for RGB green
 #define SMARTXX_OPX_PWD_BLUE  0xf70d    //PWM3: SmartXX OPX port for RGB blue
 
-//#define SMARTXX_PWM_LIGHT	    0xF701	 //PWM5: Display Port brightness control
-//#define SMARTXX_PWM_CONTRAST  0xF703	 //PWM6: Display Port contrast control
+//#define SMARTXX_PWM_LIGHT        0xF701     //PWM5: Display Port brightness control
+//#define SMARTXX_PWM_CONTRAST  0xF703     //PWM6: Display Port contrast control
 
-enum LED_COLOURS 
+enum LED_COLOURS
 {
  LED_COLOUR_NO_CHANGE = 0,
  LED_COLOUR_GREEN,
@@ -47,25 +48,25 @@ enum LED_COLOURS
 
 struct RGBVALUE
 {
-	unsigned short red;
-	unsigned short green;
-	unsigned short blue;
+    unsigned short red;
+    unsigned short green;
+    unsigned short blue;
   unsigned short white;
 };
 
 struct RGBVALUES
 {
-	CStdString strTransition;
-	DWORD iTime;
+    std::string strTransition;
+    DWORD iTime;
 
-	unsigned short red1;
-	unsigned short green1;
-	unsigned short blue1;
+    unsigned short red1;
+    unsigned short green1;
+    unsigned short blue1;
   unsigned short white1;
 
-	unsigned short red2;
-	unsigned short green2;
-	unsigned short blue2;
+    unsigned short red2;
+    unsigned short green2;
+    unsigned short blue2;
   unsigned short white2;
 };
 
@@ -80,30 +81,30 @@ protected:
   RGBVALUE  s_CurRGB;
   RGBVALUES s_RGBs;
 
-  CStdString  strCurrentStatus;
-  CStdString  strLastStatus;
-	CStdString  strLastTransition;
-	
-	DWORD	dwLastTime;
-	DWORD dwFrameTime;
-	bool bRepeat;
+  std::string  strCurrentStatus;
+  std::string  strLastStatus;
+    std::string  strLastTransition;
 
-	void getRGBValues(const CStdString &strRGBa, const CStdString &strRGBb, const CStdString &strWhiteA, const CStdString &strWhiteB, RGBVALUES* s_rgb);
-  bool SetRGBStatus(const CStdString &strStatus);
-  
+    DWORD    dwLastTime;
+    DWORD dwFrameTime;
+    bool bRepeat;
+
+    void getRGBValues(const std::string &strRGBa, const std::string &strRGBb, const std::string &strWhiteA, const std::string &strWhiteB, RGBVALUES* s_rgb);
+  bool SetRGBStatus(const std::string &strStatus);
+
 public:
-	ILEDSmartxxRGB();
-	~ILEDSmartxxRGB();
+    ILEDSmartxxRGB();
+    ~ILEDSmartxxRGB();
 
-	virtual void OnStartup();
-	virtual void OnExit();
-	virtual void Process();
+    virtual void OnStartup();
+    virtual void OnExit();
+    virtual void Process();
   virtual bool IsRunning();
   virtual bool Start();
   virtual void Stop();
-  bool SetRGBState(const CStdString &strRGB1, const CStdString &strRGB2, const CStdString &strWhiteA, const CStdString &strWhiteB, const CStdString &strTransition, int iTranTime);
-  
-  //can used outsite to pass the values directly to the RGB port! 
+  bool SetRGBState(const std::string &strRGB1, const std::string &strRGB2, const std::string &strWhiteA, const std::string &strWhiteB, const std::string &strTransition, int iTranTime);
+
+  //can used outsite to pass the values directly to the RGB port!
   //Don't forget to check if there is a SmartXX V3/OPX! -> CSysInfo::SmartXXModCHIP()
   bool SetRGBLed(int red, int green, int blue, int white);
 

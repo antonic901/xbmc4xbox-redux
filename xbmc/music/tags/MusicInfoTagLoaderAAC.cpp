@@ -20,13 +20,13 @@
 
 #include "music/tags/MusicInfoTagLoaderAAC.h"
 #include "filesystem/File.h"
- 
+
 #define PACK_UINT32(a,b,c,d) \
   ((((uint32_t)a) << 24) | \
    (((uint32_t)b) << 16) | \
    (((uint32_t)c) <<  8) | \
    (((uint32_t)d)))
-   
+
 #define PACK_UINT64(a,b,c,d,e,f,g,h) \
   ((((uint64_t)PACK_UINT32(a,b,c,d)) << 32) | \
    (((uint64_t)PACK_UINT32(e,f,g,h))))
@@ -42,7 +42,7 @@ CMusicInfoTagLoaderAAC::CMusicInfoTagLoaderAAC(void)
 CMusicInfoTagLoaderAAC::~CMusicInfoTagLoaderAAC()
 {}
 
-int CMusicInfoTagLoaderAAC::ReadDuration(const CStdString& strFileName)
+int CMusicInfoTagLoaderAAC::ReadDuration(const std::string& strFileName)
 {
   int duration  = 0;
   XFILE::CFile file;
@@ -59,7 +59,7 @@ int CMusicInfoTagLoaderAAC::ReadDuration(const CStdString& strFileName)
 
     file.Close();
   }
-  
+
   return duration;
 }
 
@@ -74,7 +74,7 @@ int CMusicInfoTagLoaderAAC::ReadID3Length(XFILE::CFile& file)
     tagLength += ((buf[6] << 21) | (buf[7] << 14) | (buf[8] << 7) | buf[9]) + 10;
     file.Seek(tagLength);
   }
-  
+
   return 0;
 }
 
@@ -86,7 +86,7 @@ int CMusicInfoTagLoaderAAC::ReadADTSDuration(XFILE::CFile& file, int offset)
   float framesPerSec    = 0.f;
 
   file.Seek(offset);
-  
+
   while (file.Read(buf, 10) == 10)
   {
     if ((buf[0] == 0xFF) && ((buf[1] & 0xF6) == 0xF0))
@@ -112,7 +112,7 @@ int CMusicInfoTagLoaderAAC::ReadADIFDuration(XFILE::CFile& file, int offset)
   int skip          = 0;
   uint32_t bitrate  = 0;
   int64_t fileLen  = 0;
-  
+
   file.Seek(offset);
 
   if (file.Read(buf, 17) == 17)

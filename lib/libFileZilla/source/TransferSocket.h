@@ -36,7 +36,7 @@ class CControlSocket;
 struct t_dirlisting;
 
 /////////////////////////////////////////////////////////////////////////////
-// Befehlsziel CTransferSocket 
+// Befehlsziel CTransferSocket
 #ifndef NOLAYERS
 class CAsyncGssSocketLayer;
 #endif
@@ -48,62 +48,62 @@ public:
 
 // Operationen
 public:
-	CTransferSocket(CControlSocket *pOwner);
-	void Init(t_dirlisting *pDir, int nMode);
-	void Init(CStdString filename, int nMode, _int64 rest, BOOL bBinary=TRUE);
+    CTransferSocket(CControlSocket *pOwner);
+    void Init(t_dirlisting *pDir, int nMode);
+    void Init(std::string filename, int nMode, _int64 rest, BOOL bBinary=TRUE);
 #ifndef NOLAYERS
-	void UseGSS(CAsyncGssSocketLayer *pGssLayer);
+    void UseGSS(CAsyncGssSocketLayer *pGssLayer);
 #endif
-	virtual ~CTransferSocket();
+    virtual ~CTransferSocket();
 
-// Überschreibungen
+// ï¿½berschreibungen
 public:
-	int GetMode() const;
-	BOOL Started() const;
-	BOOL CheckForTimeout();
-	void PasvTransfer();
-	int GetStatus();
+    int GetMode() const;
+    BOOL Started() const;
+    BOOL CheckForTimeout();
+    void PasvTransfer();
+    int GetStatus();
 
-	BOOL pasv;
+    BOOL pasv;
 // Implementierung
 #if defined(_XBOX)
   public:
 #else
   protected:
 #endif
-	virtual void OnSend(int nErrorCode);
-	virtual void OnConnect(int nErrorCode);
-	virtual void OnClose(int nErrorCode);
-	virtual void OnAccept(int nErrorCode);
-	virtual void OnReceive(int nErrorCode);
+    virtual void OnSend(int nErrorCode);
+    virtual void OnConnect(int nErrorCode);
+    virtual void OnClose(int nErrorCode);
+    virtual void OnAccept(int nErrorCode);
+    virtual void OnReceive(int nErrorCode);
 
 #ifndef NOLAYERS
-	virtual int OnLayerCallback(const CAsyncSocketExLayer *pLayer, int nType, int nParam1, int nParam2);
+    virtual int OnLayerCallback(const CAsyncSocketExLayer *pLayer, int nType, int nParam1, int nParam2);
 #endif
 
-	t_dirlisting *m_pDirListing;
-	BOOL m_bSentClose;
-	CStdString m_Filename;
-	BOOL m_bReady;
-	BOOL m_bStarted;
-	BOOL InitTransfer(BOOL bCalledFromSend);
-	int m_nMode;
-	int m_status;
-	CControlSocket *m_pOwner;
-	_int64 m_nRest;
-	BOOL m_bBinary;
-	HANDLE m_hFile;
-	char *m_pBuffer;
-	int m_nBufferPos;
-	BOOL bAccepted;
-	SYSTEMTIME m_LastActiveTime;
+    t_dirlisting *m_pDirListing;
+    BOOL m_bSentClose;
+    std::string m_Filename;
+    BOOL m_bReady;
+    BOOL m_bStarted;
+    BOOL InitTransfer(BOOL bCalledFromSend);
+    int m_nMode;
+    int m_status;
+    CControlSocket *m_pOwner;
+    _int64 m_nRest;
+    BOOL m_bBinary;
+    HANDLE m_hFile;
+    char *m_pBuffer;
+    int m_nBufferPos;
+    BOOL bAccepted;
+    SYSTEMTIME m_LastActiveTime;
 #ifndef NOLAYERS
-	CAsyncGssSocketLayer *m_pGssLayer;
+    CAsyncGssSocketLayer *m_pGssLayer;
 #endif
-	int m_nBufSize;
+    int m_nBufSize;
 #if defined(_XBOX)
-	int m_nPreAlloc;
-	int m_nAlign;
+    int m_nPreAlloc;
+    int m_nAlign;
 #endif
 };
 
@@ -111,6 +111,6 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
+// Microsoft Visual C++ fï¿½gt unmittelbar vor der vorhergehenden Zeile zusï¿½tzliche Deklarationen ein.
 
 #endif // AFX_TRANSFERSOCKET_H__38ADA982_DD96_4607_B7D2_982011F162FE__INCLUDED_

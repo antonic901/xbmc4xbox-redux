@@ -34,7 +34,7 @@ CDNSNameCache::CDNSNameCache(void)
 CDNSNameCache::~CDNSNameCache(void)
 {}
 
-bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres)
+bool CDNSNameCache::Lookup(const std::string& strHostName, std::string& strIpAdres)
 {
   // first see if this is already an ip address
   unsigned long ulHostIp = inet_addr( strHostName.c_str() );
@@ -42,7 +42,7 @@ bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres
   if ( ulHostIp != 0xFFFFFFFF )
   {
     // yes it is, just return it
-    strIpAdres.Format("%d.%d.%d.%d", (ulHostIp & 0xFF), (ulHostIp & 0xFF00) >> 8, (ulHostIp & 0xFF0000) >> 16, (ulHostIp & 0xFF000000) >> 24 );
+    strIpAdres = StringUtils::Format("%d.%d.%d.%d", (ulHostIp & 0xFF), (ulHostIp & 0xFF00) >> 8, (ulHostIp & 0xFF0000) >> 16, (ulHostIp & 0xFF000000) >> 24 );
     return true;
   }
 
@@ -126,8 +126,8 @@ bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres
     return true;
   }
 #else
-  CStdString suffix = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.dnssuffix");
-  CStdString fqdn;
+  std::string suffix = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.dnssuffix");
+  std::string fqdn;
   if( suffix.length() > 0 && strHostName.Find(".") < 0)
     fqdn = strHostName + "." + suffix;
   else
@@ -164,7 +164,7 @@ bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres
   return false;
 }
 
-bool CDNSNameCache::GetCached(const CStdString& strHostName, CStdString& strIpAdres)
+bool CDNSNameCache::GetCached(const std::string& strHostName, std::string& strIpAdres)
 {
   CSingleLock lock(m_critical);
 
@@ -183,7 +183,7 @@ bool CDNSNameCache::GetCached(const CStdString& strHostName, CStdString& strIpAd
   return false;
 }
 
-void CDNSNameCache::Add(const CStdString &strHostName, const CStdString &strIpAddress)
+void CDNSNameCache::Add(const std::string &strHostName, const std::string &strIpAddress)
 {
   CDNSName dnsName;
 

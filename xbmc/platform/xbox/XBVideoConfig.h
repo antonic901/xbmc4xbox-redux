@@ -49,7 +49,7 @@ public:
   bool Has1080i() const;
 
   bool HasHDPack() const;
-  CStdString GetAVPack() const;
+  std::string GetAVPack() const;
 
   void GetModes(LPDIRECT3D8 pD3D);
   RESOLUTION GetSafeMode() const;

@@ -28,7 +28,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#include "utils/StdString.h"
+#include <string>
 
 class CShortcut
 {
@@ -36,15 +36,15 @@ public:
   CShortcut();
   virtual ~CShortcut();
 
-  bool Create(const CStdString& szPath);
-  bool Save(const CStdString& strFileName);
+  bool Create(const std::string& szPath);
+  bool Save(const std::string& strFileName);
 
-  CStdString m_strPath;
-  CStdString m_strVideo;
-  CStdString m_strParameters;
-  CStdString m_strCustomGame;
-  CStdString m_strThumb;
-  CStdString m_strLabel;
+  std::string m_strPath;
+  std::string m_strVideo;
+  std::string m_strParameters;
+  std::string m_strCustomGame;
+  std::string m_strThumb;
+  std::string m_strLabel;
 };
 
 #endif // !defined(AFX_SHORTCUT_H__641CCF68_6D2A_426E_9204_C0E4BEF12D00__INCLUDED_)

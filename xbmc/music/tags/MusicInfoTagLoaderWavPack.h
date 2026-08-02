@@ -31,6 +31,6 @@ public:
   virtual ~CMusicInfoTagLoaderWAVPack();
 private:
   virtual bool PrioritiseAPETags() const;
-  virtual int ReadDuration(const CStdString& strFileName);
+  virtual int ReadDuration(const std::string& strFileName);
 };
 }

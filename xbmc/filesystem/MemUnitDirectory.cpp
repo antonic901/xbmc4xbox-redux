@@ -38,7 +38,7 @@ CMemUnitDirectory::~CMemUnitDirectory(void)
 
 bool CMemUnitDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
-  CStdString strPath = url.Get();
+  std::string strPath = url.Get();
   IFileSystem *fileSystem = GetFileSystem(strPath);
   if (!fileSystem) return false;
 
@@ -85,7 +85,7 @@ bool CMemUnitDirectory::Exists(const CURL& url)
   return false;
 }
 
-IFileSystem *CMemUnitDirectory::GetFileSystem(const CStdString &path)
+IFileSystem *CMemUnitDirectory::GetFileSystem(const std::string &path)
 {
   // format is mem#://folder/file
   if (!path.Left(3).Equals("mem") || path.size() < 7)

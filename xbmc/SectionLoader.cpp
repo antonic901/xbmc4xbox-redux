@@ -43,7 +43,7 @@ CSectionLoader::~CSectionLoader(void)
   UnloadAll();
 }
 
-bool CSectionLoader::IsLoaded(const CStdString& strSection)
+bool CSectionLoader::IsLoaded(const std::string& strSection)
 {
   CSingleLock lock(g_sectionLoader.m_critSection);
 
@@ -55,7 +55,7 @@ bool CSectionLoader::IsLoaded(const CStdString& strSection)
   return false;
 }
 
-bool CSectionLoader::Load(const CStdString& strSection)
+bool CSectionLoader::Load(const std::string& strSection)
 {
   CSingleLock lock(g_sectionLoader.m_critSection);
 
@@ -92,7 +92,7 @@ bool CSectionLoader::Load(const CStdString& strSection)
   return true;
 }
 
-void CSectionLoader::Unload(const CStdString& strSection)
+void CSectionLoader::Unload(const std::string& strSection)
 {
   CSingleLock lock(g_sectionLoader.m_critSection);
   if (!CSectionLoader::IsLoaded(strSection)) return ;
@@ -118,7 +118,7 @@ void CSectionLoader::Unload(const CStdString& strSection)
   }
 }
 
-LibraryLoader *CSectionLoader::LoadDLL(const CStdString &dllname, bool bDelayUnload /*=true*/, bool bLoadSymbols /*=false*/)
+LibraryLoader *CSectionLoader::LoadDLL(const std::string &dllname, bool bDelayUnload /*=true*/, bool bLoadSymbols /*=false*/)
 {
   CSingleLock lock(g_sectionLoader.m_critSection);
 
@@ -150,7 +150,7 @@ LibraryLoader *CSectionLoader::LoadDLL(const CStdString &dllname, bool bDelayUnl
   return newDLL.m_pDll;
 }
 
-void CSectionLoader::UnloadDLL(const CStdString &dllname)
+void CSectionLoader::UnloadDLL(const std::string &dllname)
 {
   CSingleLock lock(g_sectionLoader.m_critSection);
 

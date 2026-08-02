@@ -16,9 +16,9 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-// stdafx.h : Include-Datei für Standard-System-Include-Dateien,
-//  oder projektspezifische Include-Dateien, die häufig benutzt, aber
-//      in unregelmäßigen Abständen geändert werden.
+// stdafx.h : Include-Datei fï¿½r Standard-System-Include-Dateien,
+//  oder projektspezifische Include-Dateien, die hï¿½ufig benutzt, aber
+//      in unregelmï¿½ï¿½igen Abstï¿½nden geï¿½ndert werden.
 //
 
 #if !defined(AFX_STDAFX_H__0D7D6CEC_E1AA_4287_BB10_A97FA4D444B6__INCLUDED_)
@@ -28,7 +28,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define WIN32_LEAN_AND_MEAN		// Selten verwendete Teile der Windows-Header nicht einbinden
+#define WIN32_LEAN_AND_MEAN        // Selten verwendete Teile der Windows-Header nicht einbinden
 
 #pragma warning (disable : 4786)
 
@@ -48,7 +48,7 @@
 #include "config.h"
 
 #ifdef _XBOX
-#include "utils/StdString.h"
+#include <string>
 #endif
 
 #include "MFC64bitFix.h"
@@ -101,34 +101,34 @@ const UINT WM_FILEZILLA_THREADMSG = ::RegisterWindowMessage(FILEZILLA_THREAD_MES
 
 typedef struct
 {
-	int command;
-	int socketid;
+    int command;
+    int socketid;
 } t_controlmessage;
 
 typedef struct
 {
-	TCHAR ip[16];
-	char *user;
-	SYSTEMTIME time;
-	UINT userid;
-	int type;
-	char *status;
+    TCHAR ip[16];
+    char *user;
+    SYSTEMTIME time;
+    UINT userid;
+    int type;
+    char *status;
 } t_statusmsg;
 
 class CServerThread;
 typedef struct
 {
-	int userid;
-	CStdString user;
-	TCHAR ip[16];
-	unsigned int port;
-	CServerThread *pThread;
+    int userid;
+    std::string user;
+    TCHAR ip[16];
+    unsigned int port;
+    CServerThread *pThread;
 } t_connectiondata;
 
 typedef struct
 {
-	t_connectiondata *data;
-	int op;
+    t_connectiondata *data;
+    int op;
 } t_connop;
 
 extern HWND hMainWnd;
@@ -136,21 +136,21 @@ extern HWND hMainWnd;
 class CCriticalSectionWrapper
 {
 public:
-	CCriticalSectionWrapper();
-	~CCriticalSectionWrapper();
-	
-	void Lock();
-	void Unlock();
+    CCriticalSectionWrapper();
+    ~CCriticalSectionWrapper();
+
+    void Lock();
+    void Unlock();
 
 protected:
-	CRITICAL_SECTION m_criticalSection;
-	BOOL m_bInitialized;
+    CRITICAL_SECTION m_criticalSection;
+    BOOL m_bInitialized;
 };
 #define CCRITICALSECTIONWRAPPERINCLUDED
 #endif
 
 
 //{{AFX_INSERT_LOCATION}}
-// Microsoft Visual C++ fügt unmittelbar vor der vorhergehenden Zeile zusätzliche Deklarationen ein.
+// Microsoft Visual C++ fï¿½gt unmittelbar vor der vorhergehenden Zeile zusï¿½tzliche Deklarationen ein.
 
 #endif // !defined(AFX_STDAFX_H__0D7D6CEC_E1AA_4287_BB10_A97FA4D444B6__INCLUDED_)

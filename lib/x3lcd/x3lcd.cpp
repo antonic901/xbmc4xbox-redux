@@ -64,12 +64,12 @@ void CX3LCD::Stop()
 }
 
 //*************************************************************************************************************
-void CX3LCD::SetLine(int iLine, const CStdString& strLine)
+void CX3LCD::SetLine(int iLine, const std::string& strLine)
 {
     if (iLine < 0 || iLine >= (int)m_iRows)
         return;
 
-    CStdString strLineLong=strLine;
+    std::string strLineLong=strLine;
     //strLineLong.Trim();
     StringToLCDCharSet(strLineLong);
 
@@ -394,7 +394,7 @@ void CX3LCD::Process()
         {
             if (m_bUpdate[iLine])
             {
-                CStdString strTmp = m_strLine[iLine];
+                std::string strTmp = m_strLine[iLine];
                 if (strTmp.size() > m_iColumns)
                 {
                     strTmp=m_strLine[iLine].Left(m_iColumns);
@@ -411,13 +411,13 @@ void CX3LCD::Process()
                 if (iSize > (int)m_iColumns)
                 {
                     //scroll line
-                    CStdString strRow = m_strLine[iLine]+"   -   ";
+                    std::string strRow = m_strLine[iLine]+"   -   ";
                     int iSize = strRow.size();
                     m_iPos[iLine]++;
                     if (m_iPos[iLine] >= iSize)
                         m_iPos[iLine] = 0;
                     int iPos = m_iPos[iLine];
-                    CStdString strLine = "";
+                    std::string strLine = "";
                     for (int iCol = 0; iCol < (int)m_iColumns; ++iCol)
                     {
                         strLine += strRow.GetAt(iPos);

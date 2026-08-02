@@ -448,7 +448,7 @@ bool CNetworkServices::StartFtpServer()
   CLog::Log(LOGNOTICE, "XBFileZilla: Starting...");
   if (!IsFtpServerRunning())
   {
-    CStdString xmlpath = "special://xbmc/system/";
+    std::string xmlpath = "special://xbmc/system/";
     // if user didn't upgrade properly,
     // check whether UserData/FileZilla Server.xml exists
     if (XFILE::CFile::Exists(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("FileZilla Server.xml")))
@@ -563,7 +563,7 @@ bool CNetworkServices::SetFTPServerUserPass()
 
   // TODO: Read the FileZilla Server XML and Set it here!
   // Get GUI USER and pass and set pass to FTP Server
-  CStdString strFtpUserName, strFtpUserPassword;
+  std::string strFtpUserName, strFtpUserPassword;
   strFtpUserName      = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SERVICES_FTPSERVER_USER);
   strFtpUserPassword  = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SERVICES_FTPSERVER_PASSWORD);
 
@@ -573,7 +573,7 @@ bool CNetworkServices::SetFTPServerUserPass()
     return false;
   }
 
-  CStdString strTempUserName;
+  std::string strTempUserName;
   class CXFUser* p_ftpUser;
   vector<CXFUser*> v_ftpusers;
   m_filezilla->GetAllUsers(v_ftpusers);

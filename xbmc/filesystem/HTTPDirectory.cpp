@@ -42,8 +42,8 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   CCurlFile http;
 
-  CStdString strName, strLink;
-  CStdString strBasePath = url.GetFileName();
+  std::string strName, strLink;
+  std::string strBasePath = url.GetFileName();
 
   if(!http.Open(url))
   {
@@ -56,7 +56,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
   CRegExp reDateTime(true);
   reDateTime.RegComp("<td align=\"right\">([0-9]{2})-([A-Z]{3})-([0-9]{4}) ([0-9]{2}):([0-9]{2}) +</td>");
-  
+
   CRegExp reDateTimeLighttp(true);
   reDateTimeLighttp.RegComp("<td class=\"m\">([0-9]{4})-([A-Z]{3})-([0-9]{2}) ([0-9]{2}):([0-9]{2}):([0-9]{2})</td>");
 
@@ -73,7 +73,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   char buffer[MAX_PATH + 1024];
   while(http.ReadString(buffer, sizeof(buffer)-1))
   {
-    CStdString strBuffer = buffer;
+    std::string strBuffer = buffer;
     StringUtils::RemoveCRLF(strBuffer);
 
     if (reItem.RegFind(strBuffer.c_str()) >= 0)
@@ -84,17 +84,17 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       if(strLink[0] == '/')
         strLink = strLink.Mid(1);
 
-      CStdString strNameTemp = strName.Trim();
+      std::string strNameTemp = strName.Trim();
 
-      CStdStringW wName, wLink, wConverted;
+      std::wstring wName, wLink, wConverted;
       g_charsetConverter.unknownToUTF8(strNameTemp);
       g_charsetConverter.utf8ToW(strNameTemp, wName, false);
       HTML::CHTMLUtil::ConvertHTMLToW(wName, wConverted);
       g_charsetConverter.wToUTF8(wConverted, strNameTemp);
       URIUtils::RemoveSlashAtEnd(strNameTemp);
 
-      CStdString strLinkBase = strLink;
-      CStdString strLinkOptions;
+      std::string strLinkBase = strLink;
+      std::string strLinkOptions;
 
       // split link with url options
       int pos = strLinkBase.Find('?');
@@ -102,7 +102,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
         strLinkOptions = strLinkBase.Mid(pos);
         strLinkBase.erase(pos);
       }
-      CStdString strLinkTemp = strLinkBase;
+      std::string strLinkTemp = strLinkBase;
 
       URIUtils::RemoveSlashAtEnd(strLinkTemp);
       CURL::Decode(strLinkTemp);
@@ -111,7 +111,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       HTML::CHTMLUtil::ConvertHTMLToW(wLink, wConverted);
       g_charsetConverter.wToUTF8(wConverted, strLinkTemp);
 
-      if (StringUtils::EndsWith(strNameTemp, "..>") && 
+      if (StringUtils::EndsWith(strNameTemp, "..>") &&
           strLinkTemp.Left(strNameTemp.GetLength()-3).Equals(strNameTemp.Left(strNameTemp.GetLength()-3)))
         strName = strNameTemp = strLinkTemp;
 
@@ -129,7 +129,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
         if(URIUtils::HasSlashAtEnd(pItem->GetPath(), true))
           pItem->m_bIsFolder = true;
 
-        CStdString day, month, year, hour, minute;
+        std::string day, month, year, hour, minute;
 
         if (reDateTime.RegFind(strBuffer.c_str()) >= 0)
         {
@@ -166,7 +166,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
           if (reSize.RegFind(strBuffer.c_str()) >= 0)
           {
             double Size = atof(reSize.GetReplaceString("\\1").c_str());
-            CStdString strUnit = reSize.GetReplaceString("\\2");
+            std::string strUnit = reSize.GetReplaceString("\\2");
 
             if (strUnit == "K")
               Size = Size * 1024;
@@ -180,7 +180,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
           else if (reSizeNginx.RegFind(strBuffer.c_str()) >= 0)
           {
             double Size = atof(reSizeNginx.GetReplaceString("\\1").c_str());
-            CStdString strUnit = reSizeNginx.GetReplaceString("\\2");
+            std::string strUnit = reSizeNginx.GetReplaceString("\\2");
 
             if (strUnit == "K")
               Size = Size * 1024;
@@ -222,7 +222,7 @@ bool CHTTPDirectory::Exists(const CURL &url)
   }
 
   if (buffer.st_mode == _S_IFDIR)
-	  return true;
+      return true;
 
   return false;
 }

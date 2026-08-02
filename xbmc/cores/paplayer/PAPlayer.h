@@ -66,9 +66,9 @@ public:
   virtual float GetPercentage() const;
   virtual void SetVolume(long nVolume);
   virtual void SetDynamicRangeCompression(long drc);
-  virtual void GetAudioInfo( CStdString& strAudioInfo) {}
-  virtual void GetVideoInfo( CStdString& strVideoInfo) {}
-  virtual void GetGeneralInfo( CStdString& strVideoInfo) {}
+  virtual void GetAudioInfo( std::string& strAudioInfo) {}
+  virtual void GetVideoInfo( std::string& strVideoInfo) {}
+  virtual void GetGeneralInfo( std::string& strVideoInfo) {}
   virtual void Update(bool bPauseDrawing = false) {}
   virtual void GetVideoRect(RECT& SrcRect, RECT& DestRect){}
   virtual void GetVideoAspectRatio(float& fAR) {}
@@ -80,7 +80,7 @@ public:
   virtual int GetChannels();
   virtual int GetBitsPerSample();
   virtual int GetSampleRate();
-  virtual CStdString GetAudioCodecName();
+  virtual std::string GetAudioCodecName();
   virtual __int64 GetTime() const;
   virtual void ResetTime();
   virtual void SeekTime(__int64 iTime = 0);
@@ -92,7 +92,7 @@ public:
   virtual void RegisterAudioCallback(IAudioCallback *pCallback);
   virtual void UnRegisterAudioCallback();
 
-  static bool HandlesType(const CStdString &type);
+  static bool HandlesType(const std::string &type);
   virtual void DoAudioWork();
 
 protected:
@@ -136,7 +136,7 @@ private:
   bool AddPacketsToStream(int stream, CAudioDecoder &dec);
   bool FindFreePacket(int stream, DWORD *pdwPacket );     // Looks for a free packet
   void FreeStream(int stream);
-  bool CreateStream(int stream, int channels, int samplerate, int bitspersample, CStdString codec = "");
+  bool CreateStream(int stream, int channels, int samplerate, int bitspersample, std::string codec = "");
   void FlushStreams();
   void WaitForStream();
   void SetStreamVolume(int stream, long nVolume);

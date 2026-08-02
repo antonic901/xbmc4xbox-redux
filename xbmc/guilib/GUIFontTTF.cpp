@@ -533,7 +533,7 @@ void CGUIFontTTF::DrawTextInternal(CGraphicContext& context,
     for (vecText::const_iterator itGlyph = glyphBegin; itGlyph != text.end(); ++itGlyph)
     {
       // If starting text on a new line, determine justification effects
-      // Get the current letter in the CStdString
+      // Get the current letter in the std::string
       UTILS::COLOR::Color color = (*itGlyph & 0xff0000) >> 16;
       if (color >= colors.size())
         color = 0;

@@ -34,8 +34,8 @@ class COggTag : public CVorbisTag
 public:
   COggTag(void);
   virtual ~COggTag(void);
-  virtual bool Read(const CStdString& strFile);
-          int  GetStreamCount(const CStdString& strFile);
+  virtual bool Read(const std::string& strFile);
+          int  GetStreamCount(const std::string& strFile);
 protected:
   DllVorbisfile m_dll;
 };

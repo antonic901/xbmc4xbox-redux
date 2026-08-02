@@ -28,7 +28,7 @@
 #include "thread.h"
 #include <vector>
 
-class CFreeSpace 
+class CFreeSpace
 {
 public:
   CFreeSpace();
@@ -36,7 +36,7 @@ public:
   ULARGE_INTEGER GetFreeSpace();
 
 public:
-  CStdString    mDrive;
+  std::string    mDrive;
   unsigned long mMinimumSpace; // in MB
   bool          mDisplay;
 };
@@ -48,12 +48,12 @@ class CXBFileZillaImp : public CThread
 {
 public:
 
-	virtual BOOL InitInstance();
-	virtual DWORD ExitInstance();
+    virtual BOOL InitInstance();
+    virtual DWORD ExitInstance();
 
   static CXBFileZillaImp* GetInstance();
   void DestructInstance();
-  
+
   //////////////////////////////////////////////////
   // server runtime control
 
@@ -79,20 +79,20 @@ public:
 
   void SetCriticalOperationCallback(CriticalOperationCallback Callback);
 
-  XFSTATUS LaunchXBE(CStdString& Filename);
+  XFSTATUS LaunchXBE(std::string& Filename);
   XFSTATUS Reboot();
   XFSTATUS Shutdown();
 
-  
-  XFSTATUS GetFileCRC(const CStdString& Filename, unsigned long& Crc);
+
+  XFSTATUS GetFileCRC(const std::string& Filename, unsigned long& Crc);
 
   void SetCrcEnabled(bool CrcEnabled);
   bool GetCrcEnabled();
   void SetSfvEnabled(bool SfvEnabled);
   bool GetSfvEnabled();
 
-  bool GetFreeSpacePrompt(unsigned ReplyCode, CStdString& Prompt);
-  
+  bool GetFreeSpacePrompt(unsigned ReplyCode, std::string& Prompt);
+
   void     SetFreeSpace(LPCTSTR Drivename, bool DisplayAtPrompt);
   XFSTATUS GetFreeSpace(LPCTSTR Drivename, bool& DisplayAtPrompt);
 
@@ -102,12 +102,12 @@ public:
 
 protected:
   // returns the driveletter from a directory path
-  // e.g. f:\media\movies will become f:\ 
-  CStdString ConvertToDrivename(LPCTSTR Dirname);
+  // e.g. f:\media\movies will become f:\
+  std::string ConvertToDrivename(LPCTSTR Dirname);
 
 protected:
-	CXBServer* mServer;
-  CStdString mConfigurationPath;
+    CXBServer* mServer;
+  std::string mConfigurationPath;
   CriticalOperationCallback mCriticalOperationCallback;
   bool mCrcEnabled;
   bool mSfvEnabled;
@@ -118,7 +118,7 @@ protected:
 
 private:
   CXBFileZillaImp();
-	virtual ~CXBFileZillaImp();
+    virtual ~CXBFileZillaImp();
 
   static CXBFileZillaImp* mInstance;
 };
@@ -194,7 +194,7 @@ public:
   using CPermissions::GetUser;
   XFSTATUS GetUser(int index, t_user& user);
 
-  CStdString GetUsername(int index);
+  std::string GetUsername(int index);
 };
 
 

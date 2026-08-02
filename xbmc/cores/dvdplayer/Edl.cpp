@@ -59,7 +59,7 @@ void CEdl::Clear()
   m_iTotalCutTime = 0;
 }
 
-bool CEdl::ReadEditDecisionLists(const CStdString& strMovie, const float fFrameRate, const int iHeight)
+bool CEdl::ReadEditDecisionLists(const std::string& strMovie, const float fFrameRate, const int iHeight)
 {
   /*
    * The frame rate hints returned from ffmpeg for the video stream do not appear to take into
@@ -137,11 +137,11 @@ bool CEdl::ReadEditDecisionLists(const CStdString& strMovie, const float fFrameR
   return bFound;
 }
 
-bool CEdl::ReadEdl(const CStdString& strMovie, const float fFramesPerSecond)
+bool CEdl::ReadEdl(const std::string& strMovie, const float fFramesPerSecond)
 {
   Clear();
 
-  CStdString edlFilename(URIUtils::ReplaceExtension(strMovie, ".edl"));
+  std::string edlFilename(URIUtils::ReplaceExtension(strMovie, ".edl"));
   if (!CFile::Exists(edlFilename))
     return false;
 
@@ -154,7 +154,7 @@ bool CEdl::ReadEdl(const CStdString& strMovie, const float fFramesPerSecond)
 
   bool bError = false;
   int iLine = 0;
-  CStdString strBuffer;
+  std::string strBuffer;
   while (edlFile.ReadString(strBuffer.GetBuffer(1024), 1024))
   {
     strBuffer.ReleaseBuffer();
@@ -165,7 +165,7 @@ bool CEdl::ReadEdl(const CStdString& strMovie, const float fFramesPerSecond)
 
     iLine++;
 
-    CStdStringArray strFields(2);
+    std::vector<std::string> strFields(2);
     int iAction;
     int iFieldsRead = sscanf(strBuffer, "%512s %512s %i", strFields[0].GetBuffer(512),
                              strFields[1].GetBuffer(512), &iAction);
@@ -193,7 +193,7 @@ bool CEdl::ReadEdl(const CStdString& strMovie, const float fFramesPerSecond)
     {
       if (strFields[i].Find(":") != -1) // HH:MM:SS.sss format
       {
-        CStdStringArray fieldParts;
+        std::vector<std::string> fieldParts;
         StringUtils::SplitString(strFields[i], ".", fieldParts);
         if (fieldParts.size() == 1) // No ms
         {
@@ -306,11 +306,11 @@ bool CEdl::ReadEdl(const CStdString& strMovie, const float fFramesPerSecond)
   }
 }
 
-bool CEdl::ReadComskip(const CStdString& strMovie, const float fFramesPerSecond)
+bool CEdl::ReadComskip(const std::string& strMovie, const float fFramesPerSecond)
 {
   Clear();
 
-  CStdString comskipFilename(URIUtils::ReplaceExtension(strMovie, ".txt"));
+  std::string comskipFilename(URIUtils::ReplaceExtension(strMovie, ".txt"));
   if (!CFile::Exists(comskipFilename))
     return false;
 
@@ -386,7 +386,7 @@ bool CEdl::ReadComskip(const CStdString& strMovie, const float fFramesPerSecond)
   }
 }
 
-bool CEdl::ReadVideoReDo(const CStdString& strMovie)
+bool CEdl::ReadVideoReDo(const std::string& strMovie)
 {
   /*
    * VideoReDo file is strange. Tags are XML like, but it isn't an XML file.
@@ -395,7 +395,7 @@ bool CEdl::ReadVideoReDo(const CStdString& strMovie)
    */
 
   Clear();
-  CStdString videoReDoFilename(URIUtils::ReplaceExtension(strMovie, ".Vprj"));
+  std::string videoReDoFilename(URIUtils::ReplaceExtension(strMovie, ".Vprj"));
   if (!CFile::Exists(videoReDoFilename))
     return false;
 
@@ -477,11 +477,11 @@ bool CEdl::ReadVideoReDo(const CStdString& strMovie)
   }
 }
 
-bool CEdl::ReadBeyondTV(const CStdString& strMovie)
+bool CEdl::ReadBeyondTV(const std::string& strMovie)
 {
   Clear();
 
-  CStdString beyondTVFilename(URIUtils::ReplaceExtension(strMovie, URIUtils::GetExtension(strMovie) + ".chapters.xml"));
+  std::string beyondTVFilename(URIUtils::ReplaceExtension(strMovie, URIUtils::GetExtension(strMovie) + ".chapters.xml"));
   if (!CFile::Exists(beyondTVFilename))
     return false;
 
@@ -680,7 +680,7 @@ bool CEdl::WriteMPlayerEdl()
     return false;
   }
 
-  CStdString strBuffer;
+  std::string strBuffer;
   for (int i = 0; i < (int)m_vecCuts.size(); i++)
   {
     /*
@@ -703,7 +703,7 @@ bool CEdl::WriteMPlayerEdl()
   return true;
 }
 
-CStdString CEdl::GetMPlayerEdl()
+std::string CEdl::GetMPlayerEdl()
 {
   return MPLAYER_EDL_FILENAME;
 }
@@ -762,9 +762,9 @@ bool CEdl::HasSceneMarker()
   return !m_vecSceneMarkers.empty();
 }
 
-CStdString CEdl::GetInfo()
+std::string CEdl::GetInfo()
 {
-  CStdString strInfo = "";
+  std::string strInfo = "";
   if (HasCut())
   {
     int cutCount = 0, muteCount = 0, commBreakCount = 0;
@@ -860,9 +860,9 @@ bool CEdl::GetNextSceneMarker(bool bPlus, const int64_t iClock, int64_t *iSceneM
   return bFound;
 }
 
-CStdString CEdl::MillisecondsToTimeString(const int64_t iMilliseconds)
+std::string CEdl::MillisecondsToTimeString(const int64_t iMilliseconds)
 {
-  CStdString strTimeString = StringUtils::SecondsToTimeString((long)(iMilliseconds / 1000), TIME_FORMAT_HH_MM_SS); // milliseconds to seconds
+  std::string strTimeString = StringUtils::SecondsToTimeString((long)(iMilliseconds / 1000), TIME_FORMAT_HH_MM_SS); // milliseconds to seconds
   strTimeString.AppendFormat(".%03i", iMilliseconds % 1000);
   return strTimeString;
 }

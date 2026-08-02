@@ -24,8 +24,9 @@
 #include "IAudioCallback.h"
 #include "utils/Geometry.h"
 #include "input/keyboard/Key.h"
-#include "utils/StdString.h"
 #include "VideoSettings.h"
+
+#include <string>
 
 class TiXmlElement;
 class CStreamDetails;
@@ -47,7 +48,7 @@ public:
   double  starttime; /* start time in seconds */
   double  startpercent; /* start time in percent */
   bool    identify;  /* identify mode, used for checking format and length of a file */
-  CStdString state;  /* potential playerstate to restore to */
+  std::string state;  /* potential playerstate to restore to */
   bool    fullscreen; /* player is allowed to switch to fullscreen */
   bool    video_only; /* player is not allowed to play audio streams, video streams only */
 };
@@ -130,9 +131,9 @@ public:
   virtual void SetMute(bool bOnOff){}
   virtual void SetVolume(long nVolume){}
   virtual void SetDynamicRangeCompression(long drc){}
-  virtual void GetAudioInfo( CStdString& strAudioInfo) = 0;
-  virtual void GetVideoInfo( CStdString& strVideoInfo) = 0;
-  virtual void GetGeneralInfo( CStdString& strVideoInfo) = 0;
+  virtual void GetAudioInfo( std::string& strAudioInfo) = 0;
+  virtual void GetVideoInfo( std::string& strVideoInfo) = 0;
+  virtual void GetGeneralInfo( std::string& strVideoInfo) = 0;
   virtual void Update(bool bPauseDrawing = false) = 0;
   virtual void GetVideoRect(RECT& SrcRect, RECT& DestRect) = 0;
   virtual void GetVideoAspectRatio(float& fAR) = 0;
@@ -147,19 +148,19 @@ public:
   virtual float GetSubTitleDelay()    { return 0.0f; }
   virtual int GetSubtitleCount() { return 0; }
   virtual int  GetSubtitle()          { return -1; }
-  virtual void GetSubtitleName(int iStream, CStdString &strStreamName){};
-  virtual void GetSubtitleLanguage(int iStream, CStdString &strStreamLang){};
+  virtual void GetSubtitleName(int iStream, std::string &strStreamName){};
+  virtual void GetSubtitleLanguage(int iStream, std::string &strStreamLang){};
   virtual void SetSubtitle(int iStream){};
   virtual bool GetSubtitleVisible() { return false; }
   virtual void SetSubtitleVisible(bool bVisible){};
   virtual bool GetSubtitleExtension(std::string &strSubtitleExtension){ return false;};
-  virtual int  AddSubtitle(const CStdString& strSubPath) {return -1;};
+  virtual int  AddSubtitle(const std::string& strSubPath) {return -1;};
 
   virtual int GetAudioStreamCount() { return 0; }
   virtual int  GetAudioStream()       { return -1; }
-  virtual void GetAudioStreamName(int iStream, CStdString &strStreamName){};
+  virtual void GetAudioStreamName(int iStream, std::string &strStreamName){};
   virtual void SetAudioStream(int iStream){};
-  virtual void GetAudioStreamLanguage(int iStream, CStdString &strLanguage){};
+  virtual void GetAudioStreamLanguage(int iStream, std::string &strLanguage){};
 
   virtual std::string GetRadioText(unsigned int line) { return ""; };
 
@@ -193,8 +194,8 @@ public:
   virtual int GetChannels(){ return 0;};
   virtual int GetBitsPerSample(){ return 0;};
   virtual int GetSampleRate(){ return 0;};
-  virtual CStdString GetAudioCodecName(){ return "";}
-  virtual CStdString GetVideoCodecName(){ return "";}
+  virtual std::string GetAudioCodecName(){ return "";}
+  virtual std::string GetVideoCodecName(){ return "";}
   virtual int GetPictureWidth(){ return 0;}
   virtual int GetPictureHeight(){ return 0;}
   virtual bool GetStreamDetails(CStreamDetails &details){ return false;}
@@ -213,10 +214,10 @@ public:
   virtual void DoAudioWork(){};
   virtual bool OnAction(const CAction &action) { return false; }
 
-  virtual bool GetCurrentSubtitle(CStdString& strSubtitle) { strSubtitle = ""; return false; }
+  virtual bool GetCurrentSubtitle(std::string& strSubtitle) { strSubtitle = ""; return false; }
   //returns a state that is needed for resuming from a specific time
-  virtual CStdString GetPlayerState() { return ""; };
-  virtual bool SetPlayerState(CStdString state) { return false;};
+  virtual std::string GetPlayerState() { return ""; };
+  virtual bool SetPlayerState(std::string state) { return false;};
 
   virtual std::string GetPlayingTitle() { return ""; };
 

@@ -24,6 +24,7 @@
 
 #include "guilib/GUILabelControl.h"  // for CInfoPortion
 
+#include <string>
 #include <vector>
 
 class TiXmlNode;
@@ -68,17 +69,17 @@ public:
   virtual void Stop() = 0;
   virtual void SetBackLight(int iLight) = 0;
   virtual void SetContrast(int iContrast) = 0;
-  virtual void SetLine(int iLine, const CStdString& strLine) = 0;
-  CStdString GetProgressBar(double tCurrent, double tTotal);
+  virtual void SetLine(int iLine, const std::string& strLine) = 0;
+  std::string GetProgressBar(double tCurrent, double tTotal);
   void SetCharset( UINT nCharset );
-  CStdString GetBigDigit( UINT _nCharset, int _nDigit, UINT _nLine, UINT _nMinSize, UINT _nMaxSize, bool _bSpacePadding );
-  void LoadSkin(const CStdString &xmlFile);
+  std::string GetBigDigit( UINT _nCharset, int _nDigit, UINT _nLine, UINT _nMinSize, UINT _nMaxSize, bool _bSpacePadding );
+  void LoadSkin(const std::string &xmlFile);
   void Reset();
   void Render(LCD_MODE mode);
   ILCD() : CThread("ILCD") {}
 protected:
   virtual void Process() = 0;
-  void StringToLCDCharSet(CStdString& strText);
+  void StringToLCDCharSet(std::string& strText);
   unsigned char GetLCDCharsetCharacter( UINT _nCharacter, int _nCharset=-1);
   void LoadMode(TiXmlNode *node, LCD_MODE mode);
 private:

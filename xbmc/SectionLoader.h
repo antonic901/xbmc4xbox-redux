@@ -19,9 +19,10 @@
  *
  */
 
-#include "utils/StdString.h"
 #include "threads/CriticalSection.h"
 #include "utils/GlobalsHandling.h"
+
+#include <string>
 
 //  forward
 class LibraryLoader;
@@ -32,14 +33,14 @@ public:
   class CSection
   {
   public:
-    CStdString m_strSectionName;
+    std::string m_strSectionName;
     long m_lReferenceCount;
     unsigned int m_unloadDelayStartTick;
   };
   class CDll
   {
   public:
-    CStdString m_strDllName;
+    std::string m_strDllName;
     long m_lReferenceCount;
     LibraryLoader *m_pDll;
     unsigned int m_unloadDelayStartTick;
@@ -48,11 +49,11 @@ public:
   CSectionLoader(void);
   virtual ~CSectionLoader(void);
 
-  static bool IsLoaded(const CStdString& strSection);
-  static bool Load(const CStdString& strSection);
-  static void Unload(const CStdString& strSection);
-  static LibraryLoader* LoadDLL(const CStdString& strSection, bool bDelayUnload=true, bool bLoadSymbols=false);
-  static void UnloadDLL(const CStdString& strSection);
+  static bool IsLoaded(const std::string& strSection);
+  static bool Load(const std::string& strSection);
+  static void Unload(const std::string& strSection);
+  static LibraryLoader* LoadDLL(const std::string& strSection, bool bDelayUnload=true, bool bLoadSymbols=false);
+  static void UnloadDLL(const std::string& strSection);
   static void UnloadDelayed();
 protected:
   std::vector<CSection> m_vecLoadedSections;

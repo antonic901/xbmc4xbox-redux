@@ -24,7 +24,7 @@
 //  Purpose:   ATL split string utility
 //  Author:    Paul J. Weiss
 //
-//  Modified to support J O'Leary's CStdString class by kraqh3d
+//  Modified to support J O'Leary's std::string class by kraqh3d
 //
 //------------------------------------------------------------------------
 
@@ -40,7 +40,6 @@
 
 #include "LangInfo.h"
 #include "XBDateTime.h"
-#include "StdString.h"
 #include "utils/params_check_macros.h"
 
 #include "platform/xbox/PlatformDefs.h"
@@ -342,25 +341,6 @@ public:
    */
   static std::string CreateFromCString(const char* cstr);
 
-/* ####################################################################################################################### */
-
-  static void ToCapitalize(CStdString &str);
-  static void ToCapitalize(CStdStringW &str);
-
-  static void JoinString(const CStdStringArray &strings, const CStdString& delimiter, CStdString& result);
-  static CStdString JoinString(const CStdStringArray &strings, const CStdString& delimiter);
-  static int SplitString(const CStdString& input, const CStdString& delimiter, CStdStringArray &results, unsigned int iMaxStrings = 0);
-  static CStdStringArray SplitString(const CStdString& input, const CStdString& delimiter, unsigned int iMaxStrings = 0);
-  static int FindNumber(const CStdString& strInput, const CStdString &strFind);
-  static long TimeStringToSeconds(const CStdString &timeString);
-  static void RemoveCRLF(CStdString& strLine);
-
-  static const CStdString EmptyString;
-  static int FindEndBracket(const CStdString &str, char opener, char closer, int startPos = 0);
-  static int DateStringToYYYYMMDD(const CStdString &dateString);
-  static void WordToDigits(CStdString &word);
-  static float GetFloat(const char* str); // ignores locale
-  static bool ValidateUUID(const CStdString &uuid); // NB only validates syntax
 private:
   static std::string m_lastUUID;
 };

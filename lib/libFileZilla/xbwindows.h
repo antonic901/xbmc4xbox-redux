@@ -29,28 +29,28 @@
 #include <deque>
 #include <list>
 #include <map>
+#include <string>
 
-#include "utils/StdString.h"
 #include "xbdefines.h"
 
 
 typedef LRESULT (CALLBACK WindowProcCallback)( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 typedef WindowProcCallback* WNDPROC;
 
-typedef struct _WNDCLASSEX { 
-    UINT    cbSize; 
-    UINT    style; 
-    WNDPROC lpfnWndProc; 
-    int     cbClsExtra; 
-    int     cbWndExtra; 
-    HANDLE  hInstance; 
-    HICON   hIcon; 
-    HCURSOR hCursor; 
-    HBRUSH  hbrBackground; 
-    LPCTSTR lpszMenuName; 
-    LPCTSTR lpszClassName; 
-    HICON   hIconSm; 
-} WNDCLASSEX; 
+typedef struct _WNDCLASSEX {
+    UINT    cbSize;
+    UINT    style;
+    WNDPROC lpfnWndProc;
+    int     cbClsExtra;
+    int     cbWndExtra;
+    HANDLE  hInstance;
+    HICON   hIcon;
+    HCURSOR hCursor;
+    HBRUSH  hbrBackground;
+    LPCTSTR lpszMenuName;
+    LPCTSTR lpszClassName;
+    HICON   hIconSm;
+} WNDCLASSEX;
 
 /*
  * Message structure
@@ -80,21 +80,21 @@ BOOL GetMessage(
   UINT wMsgFilterMin,  // first message
   UINT wMsgFilterMax   // last message
 );
- 
+
 BOOL PostMessage(
   HWND hWnd,      // handle of destination window
   UINT Msg,       // message to post
   WPARAM wParam,  // first message parameter
   LPARAM lParam   // second message parameter
 );
- 
+
 BOOL PostThreadMessage(
   DWORD idThread, // thread identifier
   UINT Msg,       // message to post
   WPARAM wParam,  // first message parameter
   LPARAM lParam   // second message parameter
 );
- 
+
 BOOL TranslateMessage(
   CONST MSG *lpMsg   // address of structure with message
 );
@@ -131,7 +131,7 @@ public:
   ~CMessageSink();
 
   DWORD mThreadId;
-  
+
   BOOL AddMessage(MSG Msg);
   BOOL GetMessage(LPMSG lpMsg, UINT wRemoveMsg);
   BOOL GetWndMessage(LPMSG lpMsg, HWND hWnd, UINT wRemoveMsg);
@@ -146,10 +146,10 @@ class CWindow
 {
 public:
   CWindow(WindowProcCallback* WindowProc, LONG UserData);
-  
+
   HWND mHWnd;
   DWORD mThreadId;
-  
+
   WindowProcCallback* mWindowProc;
   LONG mUserData;
 
@@ -183,10 +183,10 @@ public:
   CMessageSink* GetMessageSink(HWND hWnd);
   CMessageSink* GetMessageSink(DWORD ThreadId);
 
-    
+
   ATOM RegisterClassEx(CONST WNDCLASSEX *lpwcx);
   HWND CreateWindow(LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle,
-                    int x, int y, int nWidth, int nHeight, HWND hWndParent, 
+                    int x, int y, int nWidth, int nHeight, HWND hWndParent,
                     HMENU hMenu, HANDLE hInstance, LPVOID lpParam);
 
   std::list<CWindow*> mWindowList;
@@ -195,7 +195,7 @@ public:
   std::list<CMessageSink*> mMessageSinkList;
   CCriticalSectionWrapper mMessageSinkListCS;
 
-  std::map<CStdString, WNDCLASSEX> mRegisteredWindowClassMap;
+  std::map<std::string, WNDCLASSEX> mRegisteredWindowClassMap;
   CCriticalSectionWrapper mRegisteredWindowClassMapCS;
 };
 
@@ -211,16 +211,16 @@ LRESULT DefWindowProc(
 
 int WSAAsyncSelect(
   SOCKET s,
-  HWND hWnd,          
-  unsigned int wMsg,  
-  long lEvent         
+  HWND hWnd,
+  unsigned int wMsg,
+  long lEvent
 );
 
 
 
 //////////////////////////////////////////////////////////////
 HMODULE GetModuleHandle(
-  LPCTSTR lpModuleName   // address of module name to return handle 
+  LPCTSTR lpModuleName   // address of module name to return handle
                          // for
 );
 
@@ -230,7 +230,7 @@ DWORD GetModuleFileName(
   LPTSTR lpFilename,  // pointer to buffer to receive module path
   DWORD nSize         // size of buffer, in characters
 );
- 
+
 
 
 
@@ -273,7 +273,7 @@ LONG GetWindowLong(
   HWND hWnd,  // handle of window
   int nIndex  // offset of value to retrieve
 );
- 
+
 #define MB_ICONEXCLAMATION          0x00000030L
 
 int MessageBox(
@@ -282,7 +282,7 @@ int MessageBox(
   LPCTSTR lpCaption,  // address of title of message box
   UINT uType          // style of message box
 );
- 
+
 
 
 #endif // __XBWINDOWS_H__

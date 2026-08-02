@@ -16,7 +16,7 @@ public:
 
 protected:
     virtual void        Process();
-  virtual void SetLine(int iLine, const CStdString& strLine);
+  virtual void SetLine(int iLine, const std::string& strLine);
   void    DisplayInit();
   void    DisplaySetBacklight(unsigned char level) ;
   void    DisplaySetContrast(unsigned char level) ;
@@ -38,7 +38,7 @@ protected:
   int          m_iBackLight;
   int          m_iContrast;
   bool         m_bUpdate[MAX_ROWS];
-  CStdString   m_strLine[MAX_ROWS];
+  std::string   m_strLine[MAX_ROWS];
   int          m_iPos[MAX_ROWS];
   DWORD        m_dwSleep[MAX_ROWS];
   CEvent       m_event;

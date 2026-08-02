@@ -20,7 +20,6 @@
  *
  */
 
-#include "utils/StdString.h"
 #include <string>
 #include <vector>
 #include "gui3d.h"
@@ -43,15 +42,15 @@ class CTextureBundle
   HANDLE m_hFile;
   FILETIME m_TimeStamp;
   OVERLAPPED m_Ovl[2];
-  std::map<CStdString, FileHeader_t> m_FileHeaders;
-  std::map<CStdString, FileHeader_t>::iterator m_CurFileHeader[2];
+  std::map<std::string, FileHeader_t> m_FileHeaders;
+  std::map<std::string, FileHeader_t>::iterator m_CurFileHeader[2];
   BYTE* m_PreLoadBuffer[2];
   int m_PreloadIdx;
   int m_LoadIdx;
   bool m_themeBundle;
 
   bool OpenBundle();
-  bool LoadFile(const CStdString& Filename, CAutoTexBuffer& UnpackedBuf);
+  bool LoadFile(const std::string& Filename, CAutoTexBuffer& UnpackedBuf);
 
 public:
   CTextureBundle(void);
@@ -62,7 +61,7 @@ public:
   void SetThemeBundle(bool themeBundle);
   bool HasFile(const std::string& Filename);
   void GetTexturesFromPath(const std::string &path, std::vector<std::string> &textures);
-  bool PreloadFile(const CStdString& Filename);
+  bool PreloadFile(const std::string& Filename);
   static std::string Normalize(const std::string &name);
 
   bool LoadTexture(const std::string& Filename, CTexture** ppTexture, int &width, int &height);
