@@ -27,6 +27,13 @@
 // Time to wait before we give up on network init
 #define WAIT_TIME 10000
 
+enum NetworkConfigurations
+{
+  NETWORK_DASH = 0,
+  NETWORK_DHCP,
+  NETWORK_STATIC
+};
+
 struct network_info
 {
   char ip[32];

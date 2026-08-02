@@ -29,8 +29,6 @@
 #include "XBAudioConfig.h"
 #include "utils/log.h"
 
-#include "defs_from_settings.h"
-
 #ifndef _XBOX
 extern HWND g_hWnd;
 #endif

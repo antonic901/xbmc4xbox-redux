@@ -35,8 +35,6 @@
 #include "settings/SettingsComponent.h"
 #include "settings/MediaSettings.h"
 
-#include "defs_from_settings.h"
-
 CXBoxRenderManager g_renderManager;
 
 using namespace KODI::MESSAGING;

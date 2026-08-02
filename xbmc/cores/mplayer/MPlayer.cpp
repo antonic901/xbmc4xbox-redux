@@ -27,8 +27,6 @@
 #include "utils/CharsetConverter.h"
 #include "filesystem/File.h"
 
-#include "defs_from_settings.h"
-
 using namespace std;
 using namespace XFILE;
 using namespace KODI::MESSAGING;

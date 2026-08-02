@@ -54,8 +54,6 @@
 #include "platform/xbox/xbeheader.h"
 #endif
 
-#include "defs_from_settings.h"
-
 using namespace std;
 using namespace XFILE;
 using namespace PLAYLIST;

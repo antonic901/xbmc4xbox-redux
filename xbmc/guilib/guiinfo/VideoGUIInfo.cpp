@@ -16,6 +16,7 @@
 #include "application/Application.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
+#include "cores/VideoRenderers/XBoxRenderer.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
@@ -35,8 +36,6 @@
 #include "utils/log.h"
 #include "video/VideoInfoTag.h"
 #include "video/VideoThumbLoader.h"
-
-#include "defs_from_settings.h"
 
 #include <math.h>
 
