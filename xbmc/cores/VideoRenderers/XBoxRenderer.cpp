@@ -36,8 +36,6 @@
 #include "utils/log.h"
 #include "video/windows/GUIWindowFullScreen.h"
 
-#include "defs_from_settings.h"
-
 // http://www.martinreddy.net/gfx/faqs/colorconv.faq
 
 YUVRANGE yuv_range_lim =  { 16, 235, 16, 240, 16, 240 };

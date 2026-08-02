@@ -37,6 +37,14 @@
 #define ALIGN(value, alignment) (((value)+((alignment)-1))&~((alignment)-1))
 #define CLAMP(a, min, max) ((a) > (max) ? (max) : ( (a) < (min) ? (min) : a ))
 
+enum RenderMethods
+{
+  RENDER_LQ_RGB_SHADER = 0,
+  RENDER_OVERLAYS,
+  RENDER_HQ_RGB_SHADER,
+  RENDER_HQ_RGB_SHADERV2
+};
+
 typedef struct YV12Image
 {
   BYTE *   plane[MAX_PLANES];

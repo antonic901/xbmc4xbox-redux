@@ -31,8 +31,6 @@
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
 
-#include "defs_from_settings.h"
-
 using namespace KODI::MESSAGING;
 
 #ifdef _XBOX

@@ -39,8 +39,6 @@
 #include "platform/xbox/Undocumented.h"
 #include "platform/xbox/lcd/LCD.h"
 
-#include "defs_from_settings.h"
-
 using namespace XFILE;
 
 // header offsets etm

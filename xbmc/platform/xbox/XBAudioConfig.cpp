@@ -29,8 +29,6 @@
 
 #include "platform/xbox/Undocumented.h"
 
-#include "defs_from_settings.h"
-
 XBAudioConfig g_audioConfig;
 
 XBAudioConfig::XBAudioConfig()

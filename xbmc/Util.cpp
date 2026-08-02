@@ -106,8 +106,6 @@
 #include "platform/xbox/utils/LED.h"
 #include "platform/xbox/xbeheader.h"
 
-#include "defs_from_settings.h"
-
 using namespace std;
 
 #define clamp(x) (x) > 255.f ? 255 : ((x) < 0 ? 0 : (BYTE)(x+0.5f)) // Valid ranges: brightness[-1 -> 1 (0 is default)] contrast[0 -> 2 (1 is default)]  gamma[0.5 -> 3.5 (1 is default)] default[ramp is linear]

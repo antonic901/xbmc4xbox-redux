@@ -27,8 +27,6 @@
 
 #include "platform/xbox/Undocumented.h"
 
-#include "defs_from_settings.h"
-
 XBVideoConfig g_videoConfig;
 
 XBVideoConfig::XBVideoConfig()
