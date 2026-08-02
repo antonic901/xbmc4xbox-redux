@@ -40,7 +40,8 @@
 #include "utils/TimeUtils.h"
 #include "windowing/WinSystem.h"
 #include "windows/GUIMediaWindow.h"
-#include "xbox/PlatformDefs.h"
+
+#include "platform/xbox/PlatformDefs.h"
 
 using namespace KODI::GUILIB;
 using namespace KODI::GUILIB::GUIINFO;

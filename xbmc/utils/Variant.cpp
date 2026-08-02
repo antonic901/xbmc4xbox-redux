@@ -7,7 +7,8 @@
  */
 
 #include "Variant.h"
-#include "xbox/PlatformDefs.h" // nullptr, strtoll
+
+#include "platform/xbox/PlatformDefs.h" // nullptr, strtoll
 
 #include <stdlib.h>
 #include <string.h>

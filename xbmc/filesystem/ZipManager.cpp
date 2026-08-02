@@ -26,11 +26,12 @@
 #include "File.h"
 #include "system.h"
 #include "URL.h"
-#include "xbox/PlatformDefs.h"
 #include "utils/CharsetConverter.h"
 #include "utils/log.h"
 #include "utils/RegExp.h"
 #include "utils/URIUtils.h"
+
+#include "platform/xbox/PlatformDefs.h"
 
 #ifdef _XBOX
 #define Endian_SwapLE16(X) (X)

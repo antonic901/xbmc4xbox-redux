@@ -8,7 +8,6 @@
 
 #include "ApplicationXbox.h"
 
-#include "CdgParser.h"
 #include "FileItem.h"
 #include "GUIInfoManager.h"
 #include "ServiceBroker.h"
@@ -24,6 +23,7 @@
 #include "guilib/GUITextLayout.h"
 #include "guilib/GUIWindowManager.h"
 #include "input/ButtonTranslator.h"
+#include "karaoke/CdgParser.h"
 #include "music/tags/MusicInfoTag.h"
 #include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "settings/AdvancedSettings.h"
@@ -38,14 +38,13 @@
 #include "utils/XMLUtils.h"
 #include "video/dialogs/GUIDialogVideoOSD.h"
 #include "windowing/GraphicContext.h"
-#include "xbox/XKHDD.h"
 
+#include "platform/xbox/XKHDD.h"
 #include "platform/xbox/lcd/LCD.h"
 #include "platform/xbox/lcd/LCDFactory.h"
 #include "platform/xbox/utils/LED.h"
 #include "platform/xbox/utils/FanController.h"
 #include "platform/xbox/utils/Trainer.h"
-#include "xbox/XKHDD.h"
 
 #include <xtl.h>
 

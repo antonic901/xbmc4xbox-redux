@@ -21,7 +21,7 @@
 
 
 #include "IDirectory.h"
-#include "MemoryUnits/IFileSystem.h"
+#include "platform/xbox/filesystem/IFileSystem.h"
 
 namespace XFILE
 {

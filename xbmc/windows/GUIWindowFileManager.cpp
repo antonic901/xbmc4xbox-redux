@@ -36,7 +36,7 @@
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "playlists/PlayListFactory.h"
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
@@ -71,8 +71,8 @@
 #include "linux/XFileUtils.h"
 #endif
 #ifdef _XBOX
-#include "xbox/xbeheader.h"
 #include "programs/launchers/ProgramLauncher.h"
+#include "platform/xbox/xbeheader.h"
 #endif
 
 using namespace XFILE;

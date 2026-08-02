@@ -26,7 +26,8 @@
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
-#include "xbox/xbeheader.h"
+
+#include "platform/xbox/xbeheader.h"
 
 
 #define SETTING_EXECUTABLE            "programexecutable"

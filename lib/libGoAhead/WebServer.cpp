@@ -18,7 +18,7 @@
 #include "filesystem/SpecialProtocol.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
-#include "xbox/Network.h"
+#include "network/Network.h"
 
 #ifdef SPYCE_SUPPORT
 #include "SpyceModule.h"

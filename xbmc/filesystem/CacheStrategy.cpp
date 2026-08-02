@@ -22,13 +22,11 @@
 #include "CacheStrategy.h"
 #include "IFile.h"
 #ifdef TARGET_POSIX
-#include "PlatformInclude.h"
 #include "ConvUtils.h"
 #endif
 #include "Util.h"
 #include "utils/log.h"
 #include "SpecialProtocol.h"
-#include "xbox/PlatformDefs.h" //for PRIdS, PRId64
 #include "URL.h"
 #if defined(TARGET_POSIX)
 #include "posix/PosixFile.h"
@@ -40,6 +38,8 @@
 #include "filesystem/HDFile.h"
 #define CacheLocalFile CHDFile
 #endif // TARGET_WINDOWS
+
+#include "platform/xbox/PlatformDefs.h"
 
 #include <cassert>
 #include <algorithm>

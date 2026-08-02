@@ -21,7 +21,8 @@
 
 #include "filesystem/File.h"
 #include "filesystem/IFile.h"
-#include "xbox/PlatformDefs.h" // ssize_t
+
+#include "platform/xbox/PlatformDefs.h" // ssize_t
 
 namespace XFILE
 {

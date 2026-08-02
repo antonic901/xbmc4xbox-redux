@@ -30,8 +30,8 @@
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationVolumeHandling.h"
 #include "application/ApplicationXbox.h"
+#include "karaoke/CdgParser.h"
 #include "AudioContext.h"
-#include "CdgParser.h"
 #include "MPlayer.h"
 
 #define CALC_DELAY_START   0

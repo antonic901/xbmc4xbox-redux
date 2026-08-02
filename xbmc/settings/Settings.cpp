@@ -9,12 +9,8 @@
 #include "Settings.h"
 
 #include "Autorun.h"
-#include "CdgParser.h"
 #include "GUIPassword.h"
 #include "LangInfo.h"
-#include "XBAudioConfig.h"
-#include "XBTimeZone.h"
-#include "XBVideoConfig.h"
 #include "addons/AddonSystemSettings.h"
 #include "addons/Skin.h"
 #include "cores/VideoRenderers/XBoxRenderer.h"
@@ -22,6 +18,7 @@
 #include "guilib/GUIFontManager.h"
 #include "input/KeyboardLayoutManager.h"
 
+#include "karaoke/CdgParser.h"
 #include "network/NetworkServices.h"
 #include "network/upnp/UPnPSettings.h"
 #include "SeekHandler.h"
@@ -43,6 +40,10 @@
 #include "utils/XBMCTinyXML.h"
 #include "utils/log.h"
 #include "view/ViewStateSettings.h"
+
+#include "platform/xbox/XBAudioConfig.h"
+#include "platform/xbox/XBTimeZone.h"
+#include "platform/xbox/XBVideoConfig.h"
 
 #define SETTINGS_XML_FOLDER "special://xbmc/system/settings/"
 

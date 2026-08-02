@@ -1,6 +1,3 @@
-#ifndef __PLATFORM_INCLUDE__H__
-#define __PLATFORM_INCLUDE__H__
-
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
@@ -20,9 +17,15 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+#ifndef XBTF_H_
+#define XBTF_H_
 
-#include "svn_rev.h" // generated file
-#include "PlatformDefs.h"
+#define XB_FMT_DXT1        1
+#define XB_FMT_DXT3        2
+#define XB_FMT_DXT5        4
+#define XB_FMT_DXT5_YCoCg  8
+#define XB_FMT_A8R8G8B8   16
+#define XB_FMT_A8         32
+#define XB_FMT_RGB8      128
 
 #endif
-

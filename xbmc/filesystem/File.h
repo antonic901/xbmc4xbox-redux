@@ -30,9 +30,10 @@
 #include <stdio.h>
 #include <string>
 #include "utils/auto_buffer.h"
-#include "xbox/PlatformDefs.h"
 #include "IFileTypes.h"
 #include "URL.h"
+
+#include "platform/xbox/PlatformDefs.h"
 
 #include <boost/move/unique_ptr.hpp>
 

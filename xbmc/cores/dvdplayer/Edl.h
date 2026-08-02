@@ -23,7 +23,8 @@
 
 #include <vector>
 #include "utils/StdString.h"
-#include "xbox/PlatformDefs.h"
+
+#include "platform/xbox/PlatformDefs.h"
 
 class CEdl
 {

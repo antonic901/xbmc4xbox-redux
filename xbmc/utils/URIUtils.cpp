@@ -18,7 +18,7 @@
  *
  */
 
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "URIUtils.h"
 #include "application/Application.h"
 #include "FileItem.h"

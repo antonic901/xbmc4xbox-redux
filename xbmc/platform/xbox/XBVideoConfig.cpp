@@ -20,12 +20,12 @@
 
 #include "system.h"
 #include "XBVideoConfig.h"
+
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
-#ifdef HAS_XBOX_HARDWARE
-#include "xbox/Undocumented.h"
-#endif
+
+#include "platform/xbox/Undocumented.h"
 
 #include "defs_from_settings.h"
 

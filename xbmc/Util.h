@@ -23,11 +23,8 @@
 #include "utils/StringUtils.h"
 #include "MediaSource.h"
 #include "utils/Digest.h"
-#ifdef HAS_XBOX_HARDWARE
-#include "xbox/custom_launch_params.h"
-#else
-typedef void CUSTOM_LAUNCH_DATA;
-#endif
+
+#include "platform/xbox/custom_launch_params.h"
 
 #define ARRAY_SIZE(X)         (sizeof(X)/sizeof((X)[0]))
 

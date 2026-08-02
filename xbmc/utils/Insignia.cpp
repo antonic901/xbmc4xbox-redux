@@ -20,7 +20,7 @@
 #include "Insignia.h"
 
 #include "application/Application.h"
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "filesystem/CurlFile.h"
 #include "guilib/GUIBaseContainer.h"
 #include "guilib/GUIStaticItem.h"

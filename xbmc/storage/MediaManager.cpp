@@ -19,11 +19,12 @@
  */
 
 #include "storage/MediaManager.h"
-#include "xbox/IoSupport.h"
 #include "URL.h"
 #include "LocalizeStrings.h"
 #include "utils/log.h"
 #include "utils/XBMCTinyXML.h"
+
+#include "platform/xbox/storage/IoSupport.h"
 
 using namespace std;
 
@@ -173,7 +174,7 @@ bool CMediaManager::RemoveLocation(const CStdString& path)
   {
     if (m_locations[i].path == path)
     {
-      // prompt for sources, remove, cancel, 
+      // prompt for sources, remove, cancel,
       m_locations.erase(m_locations.begin()+i);
       return SaveSources();
     }

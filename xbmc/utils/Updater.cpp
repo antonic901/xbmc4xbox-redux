@@ -17,7 +17,8 @@
 #include "guilib/LocalizeStrings.h"
 #include "messaging/ApplicationMessenger.h"
 #include "utils/log.h"
-#include "xbox/custom_launch_params.h"
+
+#include "platform/xbox/custom_launch_params.h"
 
 #define VERSION_STRING SVN_APP_VERSION_SHORT"-"SVN_REV
 

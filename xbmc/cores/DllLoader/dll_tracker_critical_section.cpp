@@ -17,14 +17,15 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "dll_tracker_critical_section.h"
 #include "dll_tracker.h"
 #include "dll.h"
 #include "DllLoader.h"
 #include "threads/SingleLock.h"
 #include "utils/log.h"
-#include "xbox/PlatformDefs.h"
+
+#include "platform/xbox/PlatformDefs.h"
 
 #include "exports/emu_kernel32.h"
 
@@ -68,16 +69,16 @@ extern "C" void tracker_critical_section_free_all(DllTrackInfo* pInfo)
       dllDeleteCriticalSection(cs);
     }
   }
-  
+
   pInfo->criticalSectionList.erase(pInfo->criticalSectionList.begin(), pInfo->criticalSectionList.end());
 }
 
 extern "C" void __stdcall track_InitializeCriticalSection(LPCRITICAL_SECTION cs)
 {
   uintptr_t loc = (uintptr_t)_ReturnAddress();
-  
+
   dllInitializeCriticalSection(cs);
-  
+
   tracker_critical_section_track(loc, cs);
 }
 

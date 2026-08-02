@@ -19,7 +19,7 @@
  */
 
 #include <stdlib.h>
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "system.h"
 #include "DirectoryFactory.h"
 #include "HDDirectory.h"
@@ -66,7 +66,7 @@
 #ifdef HAS_UPNP
 #include "UPnPDirectory.h"
 #endif
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "ZipDirectory.h"
 #include "RarDirectory.h"
 #include "FileItem.h"

@@ -24,7 +24,6 @@
 #include "system.h"
 #include "SystemInfo.h"
 #include "ServiceBroker.h"
-#include <conio.h>
 #include "LangInfo.h"
 #include "cores/DllLoader/DllLoader.h"
 #include "GUIInfoManager.h"
@@ -40,13 +39,16 @@
 #include "utils/log.h"
 #include "utils/XMLUtils.h"
 #ifdef HAS_XBOX_HARDWARE
-#include "xbox/Undocumented.h"
-#include "xbox/XKUtils.h"
-#include "xbox/XKHDD.h"
-#include "xbox/XKflash.h"
-#include "xbox/XKRC4.h"
 extern "C" XPP_DEVICE_TYPE XDEVICE_TYPE_IR_REMOTE_TABLE;
 #endif
+
+#include "platform/xbox/Undocumented.h"
+#include "platform/xbox/XKHDD.h"
+#include "platform/xbox/XKRC4.h"
+#include "platform/xbox/XKUtils.h"
+#include "platform/xbox/XKflash.h"
+
+#include <conio.h>
 
 CSysInfo g_sysinfo;
 

@@ -22,7 +22,7 @@
 				AdditionalOptions="/EHa"
 				Optimization="0"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;_DEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				MinimalRebuild="FALSE"
 				ExceptionHandling="FALSE"
@@ -89,7 +89,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="NDEBUG;_XBOX;_XBMC;PROFILE;HAVE_MSWINDOWS;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -152,7 +152,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="NDEBUG;_XBOX;_XBMC;PROFILE;FASTCAP;HAVE_MSWINDOWS;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -214,7 +214,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;NDEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -280,7 +280,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;NDEBUG;HAVE_MSWINDOWS;LTCG;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -335,7 +335,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				AdditionalOptions="/EHa"
 				Optimization="0"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./xbmc/xbox;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;_DEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="FALSE"
@@ -425,6 +425,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\PlayListPlayer.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\SeekHandler.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\SeekHandler.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\ServiceBroker.cpp">
 			</File>
 			<File
@@ -438,9 +444,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\Socket.cpp">
-			</File>
-			<File
-				RelativePath=".\xbmc\stdafx.cpp">
 			</File>
 			<File
 				RelativePath=".\xbmc\SystemGlobals.cpp">
@@ -855,15 +858,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\BooleanLogic.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\Cdg.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\CdgParser.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\CdgVoiceManager.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\CharsetConverter.cpp">
 				</File>
 				<File
@@ -927,9 +921,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\FileOperationJob.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\FilterFlickerPatch.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\FontUtils.cpp">
 				</File>
 				<File
@@ -948,16 +939,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\GUIPassword.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\HTMLTable.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\HTMLUtil.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\HttpHeader.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Idle.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\InfoLoader.cpp">
@@ -1021,9 +1006,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\MediaSource.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\memutil.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\Mime.cpp">
@@ -1116,12 +1098,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\SectionLoader.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\SeekHandler.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\SeekHandler.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\Shortcut.cpp">
 				</File>
 				<File
@@ -1206,9 +1182,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Temperature.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\ThumbnailCache.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\TimeUtils.cpp">
 				</File>
 				<File
@@ -1251,9 +1224,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Weather.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\XBAudioConfig.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\XBDateTime.cpp">
 				</File>
 				<File
@@ -1267,15 +1237,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\XBMCTinyXML.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\XBTF.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\XBTimeZone.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\XBVideoConfig.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\XMLUtils.cpp">
@@ -2115,46 +2076,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 				</Filter>
 				<Filter
-					Name="MemoryUnits"
-					Filter="">
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\dosfs.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\dosfs.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\Fat32Device.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\Fat32Device.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\Fat32FileSystem.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\Fat32FileSystem.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\FatXDevice.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\FatXDevice.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\FatXFileSystem.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\FatXFileSystem.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\IDevice.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\FileSystem\MemoryUnits\IFileSystem.h">
-					</File>
-				</Filter>
-				<Filter
 					Name="VideoDatabaseDirectory"
 					Filter="">
 					<File
@@ -2495,46 +2416,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 			</Filter>
 			<Filter
-				Name="common"
-				Filter="">
-				<File
-					RelativePath=".\xbmc\xbox\IoSupport.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\Network.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\Network.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\xbeheader.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\xbeheader.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\XKCRC.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\XKEEPROM.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\XKGeneral.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\XKHDD.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\XKRC4.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\XKSHA1.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\XKUtils.cpp">
-				</File>
-			</Filter>
-			<Filter
 				Name="network"
 				Filter="">
 				<File
@@ -2572,6 +2453,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\network\GUIDialogNetworkSetup.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\network\Network.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\network\Network.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\network\NetworkServices.cpp">
@@ -3645,31 +3532,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\addons\interfaces\AddonBase.h">
 					</File>
 				</Filter>
-			</Filter>
-			<Filter
-				Name="xbox"
-				Filter="">
-				<File
-					RelativePath=".\xbmc\xbox\PlatformDefs.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\stat_utf8.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\stat_utf8.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\stdio_utf8.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\stdio_utf8.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\strptime.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\xbox\strverscmp.cpp">
-				</File>
 			</Filter>
 			<Filter
 				Name="threads"
@@ -5191,13 +5053,130 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\platform\xbox\atomic.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\platform\xbox\custom_launch_params.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\inttypes.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\platform\xbox\main.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\ntddcdrm.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\ntddstor.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\PlatformDefs.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\stat_utf8.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\stat_utf8.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\stdafx.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\stdafx.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\stdint.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\stdio_utf8.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\stdio_utf8.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\strptime.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\strverscmp.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\Undocumented.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XBAudioConfig.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XBAudioConfig.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\xbeheader.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\xbeheader.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\platform\xbox\XBInputEx.cpp">
 					</File>
 					<File
 						RelativePath=".\xbmc\platform\xbox\XBInputEx.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XBTimeZone.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XBTimeZone.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XBVideoConfig.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XBVideoConfig.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKCRC.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKCRC.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKEEPROM.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKEEPROM.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKExports.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKflash.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKGeneral.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKGeneral.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKHDD.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKHDD.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKRC4.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKRC4.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKSHA1.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKSHA1.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKUtils.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\XKUtils.h">
 					</File>
 					<Filter
 						Name="utils"
@@ -5215,10 +5194,22 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 							RelativePath=".\xbmc\platform\xbox\utils\FanController.h">
 						</File>
 						<File
+							RelativePath=".\xbmc\platform\xbox\utils\FilterFlickerPatch.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\utils\FilterFlickerPatch.h">
+						</File>
+						<File
 							RelativePath=".\xbmc\platform\xbox\utils\LED.cpp">
 						</File>
 						<File
 							RelativePath=".\xbmc\platform\xbox\utils\LED.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\utils\memutil.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\utils\memutil.h">
 						</File>
 						<File
 							RelativePath=".\xbmc\platform\xbox\utils\Trainer.cpp">
@@ -5287,10 +5278,66 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						Name="filesystem"
 						Filter="">
 						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\dosfs.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\dosfs.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\Fat32Device.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\Fat32Device.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\Fat32FileSystem.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\Fat32FileSystem.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\FatXDevice.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\FatXDevice.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\FatXFileSystem.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\FatXFileSystem.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\IDevice.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\filesystem\IFileSystem.h">
+						</File>
+						<File
 							RelativePath=".\xbmc\platform\xbox\filesystem\MemoryUnitManager.cpp">
 						</File>
 						<File
 							RelativePath=".\xbmc\platform\xbox\filesystem\MemoryUnitManager.h">
+						</File>
+					</Filter>
+					<Filter
+						Name="storage"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\platform\xbox\storage\IoSupport.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\storage\IoSupport.h">
+						</File>
+					</Filter>
+					<Filter
+						Name="threads"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\platform\xbox\threads\Idle.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\platform\xbox\threads\Idle.h">
 						</File>
 					</Filter>
 				</Filter>
@@ -5314,6 +5361,28 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\rendering\xbox\RenderSystemXbox.h">
 					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="karaoke"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\karaoke\Cdg.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\karaoke\Cdg.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\karaoke\CdgParser.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\karaoke\CdgParser.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\karaoke\CdgVoiceManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\karaoke\CdgVoiceManager.h">
+				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -5357,15 +5426,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\AutoSwitch.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\Cdg.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\CdgParser.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\CdgVoiceManager.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\utils\CharsetConverter.h">
 			</File>
 			<File
@@ -5376,9 +5436,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\CueDocument.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\xbox\custom_launch_params.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\DatabaseUtils.h">
@@ -5402,13 +5459,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\EventStreamDetail.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\FastDelegate.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\FileSystem\File.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\FilterFlickerPatch.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\fstrcmp.h">
@@ -5474,9 +5525,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\windows\GUIWindowScreensaver.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIWindowSettingsUICalibration.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\pictures\GUIWindowSlideShow.h">
 			</File>
 			<File
@@ -5492,9 +5540,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\FileSystem\HDFile.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\HTMLTable.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\utils\HTMLUtil.h">
 			</File>
 			<File
@@ -5502,9 +5547,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\FileSystem\IDirectory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Idle.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\FileSystem\IFile.h">
@@ -5520,12 +5562,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\InfoScanner.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\inttypes.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\xbox\IoSupport.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\cores\IPlayer.h">
@@ -5562,9 +5598,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\md5.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\memutil.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\NfoFile.h">
@@ -5615,12 +5648,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\lib\libSpeex\speex_bits.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\stdafx.h">
-			</File>
-			<File
-				RelativePath="..\..\xbmc\stdint.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\utils\StringUtils.h">
 			</File>
 			<File
@@ -5631,12 +5658,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\SystemInfo.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\ThumbnailCache.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\xbox\Undocumented.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\URL.h">
@@ -5654,9 +5675,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\utils\Weather.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\XBAudioConfig.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\XBDateTime.h">
 			</File>
 			<File
@@ -5664,36 +5682,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\cores\mplayer\xbox_video.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\XBTimeZone.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\XBVideoConfig.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\xbox\XKCRC.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\xbox\XKEEPROM.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\xbox\XKExports.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\xbox\XKGeneral.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\xbox\XKHDD.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\xbox\XKRC4.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\xbox\XKSHA1.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\xbox\XKUtils.h">
 			</File>
 		</Filter>
 		<Filter

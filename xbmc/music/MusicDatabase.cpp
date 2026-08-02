@@ -41,7 +41,7 @@
 #include "music/MusicDbUrl.h"
 #include "music/MusicLibraryQueue.h"
 #include "music/tags/MusicInfoTag.h"
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "network/cddb.h"
 #include "playlists/SmartPlayList.h"
 #include "profiles/ProfileManager.h"

@@ -42,7 +42,8 @@
 #include "XBDateTime.h"
 #include "StdString.h"
 #include "utils/params_check_macros.h"
-#include "xbox/PlatformDefs.h"
+
+#include "platform/xbox/PlatformDefs.h"
 
 class StringUtils
 {

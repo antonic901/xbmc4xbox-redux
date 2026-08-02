@@ -24,9 +24,6 @@
 #include "DetectDVDType.h"
 #include "filesystem/iso9660.h"
 #include "threads/SingleLock.h"
-#ifdef HAS_UNDOCUMENTED
-#include "xbox/Undocumented.h"
-#endif
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
 #include "GUIUserMessages.h"
@@ -39,6 +36,8 @@
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
 #include "Util.h"
+
+#include "platform/xbox/Undocumented.h"
 
 using namespace XFILE;
 using namespace MEDIA_DETECT;

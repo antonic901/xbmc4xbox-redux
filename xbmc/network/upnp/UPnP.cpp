@@ -21,7 +21,7 @@
 */
 
 
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "system.h"
 #include "Util.h"
 #include "application/Application.h"

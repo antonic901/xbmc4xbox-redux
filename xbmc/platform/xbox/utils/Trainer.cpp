@@ -35,8 +35,8 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
-#include "xbox/Undocumented.h"
 
+#include "platform/xbox/Undocumented.h"
 #include "platform/xbox/lcd/LCD.h"
 
 #include "defs_from_settings.h"
@@ -260,8 +260,8 @@ bool CTrainer::InstallTrainer(CTrainer& trainer)
       and eax, 0FFFEFFFFh
       mov cr0, eax // disable memory write prot
 
-      mov	edi, patchlocation // address of call to xbe entry point in kernel
-      mov	dword ptr [edi], KERNEL_STORE_ADDRESS // patch with address of where we store loaderdata+trainer buffer address
+      mov    edi, patchlocation // address of call to xbe entry point in kernel
+      mov    dword ptr [edi], KERNEL_STORE_ADDRESS // patch with address of where we store loaderdata+trainer buffer address
 
       pop eax
       mov cr0, eax // restore memory write prot
@@ -341,7 +341,7 @@ cleanup:
         mov ebx, 0x16
         add eax, ebx
         mov ecx, DWORD PTR [eax]
-        pop	eax
+        pop    eax
         add eax, ecx
         mov dwSection, eax // get address of xbtf_section
 
@@ -543,8 +543,8 @@ bool CTrainer::RemoveTrainer()
         and eax, 0FFFEFFFFh
         mov cr0, eax // disable memory write prot
 
-        mov	edi, patchlocation // address of call to xbe entry point in kernel
-        mov	dword ptr [edi], 0x00010128 // patch with address of where we store loaderdata+trainer buffer address
+        mov    edi, patchlocation // address of call to xbe entry point in kernel
+        mov    dword ptr [edi], 0x00010128 // patch with address of where we store loaderdata+trainer buffer address
 
         pop eax
         mov cr0, eax // restore memory write prot
@@ -593,7 +593,7 @@ bool CTrainer::Load(const std::string& strPath)
       add al, byte ptr [esi+027h]
       add al, byte ptr [esi+02Fh]
       add al, byte ptr [esi+037h]
-      mov	ecx, 0FFFFFFh
+      mov    ecx, 0FFFFFFh
       imul ecx
       xor dword ptr [esi], eax
       mov ebx, dword ptr [esi]

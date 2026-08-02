@@ -8,7 +8,7 @@
 
 //! @todo Need a uniform way of returning an error status
 
-#include "xbox/Network.h"
+#include "network/Network.h"
 
 #include "ModuleXbmc.h"
 

@@ -34,7 +34,7 @@
 #include "guilib/LocalizeStrings.h"
 #include "input/ButtonTranslator.h"
 #include "music/MusicLibraryQueue.h"
-#include "xbox/Network.h" //! @todo Remove me
+#include "network/Network.h" //! @todo Remove me
 #include "network/NetworkServices.h" //! @todo Remove me
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"

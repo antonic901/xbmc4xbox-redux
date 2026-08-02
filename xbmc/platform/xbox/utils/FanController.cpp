@@ -18,17 +18,20 @@
  *
  */
 
-#include <ConIo.h>
 #include "FanController.h"
+
 #include "ServiceBroker.h"
 #include "guilib/LocalizeStrings.h"
-#include "xbox/Undocumented.h"
-#include "xbox/XKExports.h"
 #include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"
+
+#include "platform/xbox/Undocumented.h"
+#include "platform/xbox/XKExports.h"
+
+#include <conio.h>
 
 #define PIC_ADDRESS      0x20
 #define XCALIBUR_ADDRESS 0xE0 // XCalibur/1.6 videochip

@@ -40,7 +40,7 @@
 #include "input/actions/ActionIDs.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "messaging/helpers/DialogOKHelper.h"
-#include "xbox/Network.h"
+#include "network/Network.h"
 #include "playlists/PlayList.h"
 #include "profiles/ProfileManager.h"
 #include "settings/AdvancedSettings.h"
