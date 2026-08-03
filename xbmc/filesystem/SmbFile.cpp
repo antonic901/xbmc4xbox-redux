@@ -288,7 +288,7 @@ bool CSmbFile::Open(const CURL& url)
 
   CSingleLock lock(smb);
   struct __stat64 tmpBuffer = {0};
-  if (smbc_stat(strFileName, &tmpBuffer) < 0)
+  if (smbc_stat(strFileName.c_str(), &tmpBuffer) < 0)
   {
     smbc_close(m_fd);
     m_fd = -1;
@@ -394,7 +394,7 @@ bool CSmbFile::Exists(const CURL& url)
   struct __stat64 info;
 
   CSingleLock lock(smb);
-  int iResult = smbc_stat(strFileName, &info);
+  int iResult = smbc_stat(strFileName.c_str(), &info);
 
   if (iResult < 0) return false;
   return true;
@@ -433,7 +433,7 @@ int CSmbFile::Stat(const CURL& url, struct __stat64* buffer)
   CSingleLock lock(smb);
 
   struct __stat64 tmpBuffer = {0};
-  int iResult = smbc_stat(strFileName, &tmpBuffer);
+  int iResult = smbc_stat(strFileName.c_str(), &tmpBuffer);
 
   memset(buffer, 0, sizeof(struct __stat64));
   buffer->st_dev = tmpBuffer.st_dev;

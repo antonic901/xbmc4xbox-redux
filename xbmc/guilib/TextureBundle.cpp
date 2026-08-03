@@ -141,7 +141,7 @@ bool CTextureBundle::OpenBundle()
         CompareFileTime(&FindData[0].ftLastWriteTime, &FindData[1].ftLastWriteTime))
     {
       SetFileAttributes("Z:\\Textures.xpr", FILE_ATTRIBUTE_NORMAL); //must set readable before overwriting
-      if (!CopyFile(strPath, "Z:\\Textures.xpr", FALSE))
+      if (!CopyFile(strPath.c_str(), "Z:\\Textures.xpr", FALSE))
       {
         CLog::Log(LOGERROR, "Unable to open file: %s: %x", strPath.c_str(), GetLastError());
         return false;

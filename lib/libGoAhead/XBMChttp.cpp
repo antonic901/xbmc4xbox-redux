@@ -412,9 +412,9 @@ int CXbmcHttp::displayDir(int numParas, std::string paras[])
   if (numParas>2)
     option = paras[2].ToLower();
   if (numParas>3)
-    lineStart = atoi(paras[3]);
+    lineStart = atoi(paras[3].c_str());
   if (numParas>4)
-    numLines = atoi(paras[4]);
+    numLines = atoi(paras[4].c_str());
   if (!CDirectory::GetDirectory(folder, dirItems, mask, DIR_FLAG_DEFAULTS))
   {
     return SetResponse(openTag+"Error:Not folder");
@@ -662,12 +662,12 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, std::string paras[])
         bSize = true;
       else if (StringUtils::IsNaturalNumber(paras[i]))
       {
-        lineStart=atoi(paras[i]);
+        lineStart=atoi(paras[i].c_str());
         i++;
         if (i<numParas)
           if (StringUtils::IsNaturalNumber(paras[i]))
           {
-            numLines=atoi(paras[i]);
+            numLines=atoi(paras[i].c_str());
             i++;
           }
       }
@@ -1073,7 +1073,7 @@ int CXbmcHttp::xbmcAddToPlayList(int numParas, std::string paras[])
       playList=CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
     else
     {
-      playList=atoi(paras[1]);
+      playList=atoi(paras[1].c_str());
       if (playList==-1)
         playList=CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
       if(numParas>2) //includes mask
@@ -1197,7 +1197,7 @@ int CXbmcHttp::xbmcClearPlayList(int numParas, std::string paras[])
   if (numParas==0)
     playList = CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() ;
   else
-    playList=atoi(paras[0]) ;
+    playList=atoi(paras[0].c_str()) ;
   CServiceBroker::GetPlaylistPlayer().ClearPlaylist( playList );
   return SetResponse(openTag+"OK");
 }
@@ -1209,17 +1209,17 @@ int CXbmcHttp::xbmcSwapPlayListItems(int numParas, std::string paras[])
     return SetResponse(openTag+"Error: Not enough parameters");
   iPlayList=CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
   if (numParas > 2)
-    iPlayList = atoi(paras[2]);
+    iPlayList = atoi(paras[2].c_str());
   CPlayList& playlist = CServiceBroker::GetPlaylistPlayer().GetPlaylist(iPlayList);
 
   int item1;
   if (StringUtils::IsNaturalNumber(paras[0]))
-    item1 = atoi(paras[0]);
+    item1 = atoi(paras[0].c_str());
   else
     item1=FindPathInPlayList(iPlayList,paras[0]);
   int item2;
   if (StringUtils::IsNaturalNumber(paras[1]))
-    item2 = atoi(paras[1]);
+    item2 = atoi(paras[1].c_str());
   else
     item2=FindPathInPlayList(iPlayList,paras[1]);
 
@@ -1691,7 +1691,7 @@ int CXbmcHttp::xbmcSetPlaySpeed(int numParas, std::string paras[])
   if (numParas>0) {
     CApplicationComponents &components = CServiceBroker::GetAppComponents();
     const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
-    appPlayer->SetPlaySpeed(atoi(paras[0]));
+    appPlayer->SetPlaySpeed(atoi(paras[0].c_str()));
     return SetResponse(openTag+"OK");
   }
   else
@@ -1836,7 +1836,7 @@ int CXbmcHttp::xbmcPlayerPlayFile(int numParas, std::string paras[])
   if (numParas<1)
     return SetResponse(openTag+"Error:Missing file parameter");
   if (numParas>1)
-    iPlaylist = atoi(paras[1]);
+    iPlaylist = atoi(paras[1].c_str());
   CFileItem item(paras[0], FALSE);
   if (iPlaylist == PLAYLIST::TYPE_NONE)
     iPlaylist = PLAYLIST::TYPE_MUSIC;
@@ -1897,7 +1897,7 @@ int CXbmcHttp::xbmcGetPlayListContents(int numParas, std::string paras[])
     else if (paras[i].Equals("showduration"))
       bShowDuration = true;
     else if (StringUtils::IsNaturalNumber(paras[i]))
-      playList = atoi(paras[i]);
+      playList = atoi(paras[i].c_str());
   }
   CPlayList& thePlayList = CServiceBroker::GetPlaylistPlayer().GetPlaylist(playList);
   if (thePlayList.size()==0)
@@ -1934,7 +1934,7 @@ int CXbmcHttp::xbmcGetPlayListLength(int numParas, std::string paras[])
   if (numParas<1)
     playList=CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
   else
-    playList=atoi(paras[0]);
+    playList=atoi(paras[0].c_str());
   CPlayList& thePlayList = CServiceBroker::GetPlaylistPlayer().GetPlaylist(playList);
 
   std::string tmp;
@@ -1974,7 +1974,7 @@ int CXbmcHttp::xbmcGetPlayListSong(int numParas, std::string paras[])
   }
   else {
     CPlayList thePlayList;
-    iSong=atoi(paras[0]);
+    iSong=atoi(paras[0].c_str());
     if (iSong!=-1){
       thePlayList=CServiceBroker::GetPlaylistPlayer().GetPlaylist( CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist() );
       if (thePlayList.size()>iSong) {
@@ -2017,9 +2017,9 @@ int CXbmcHttp::xbmcRemoveFromPlayList(int numParas, std::string paras[])
     std::string strItem = paras[0];
     int itemToRemove;
     if (numParas > 1)
-      iPlaylist = atoi(paras[1]);
+      iPlaylist = atoi(paras[1].c_str());
     if (StringUtils::IsNaturalNumber(strItem))
-      itemToRemove=atoi(strItem);
+      itemToRemove=atoi(strItem.c_str());
     else
       itemToRemove=FindPathInPlayList(iPlaylist, strItem);
     // The current playing song can't be removed
@@ -2085,19 +2085,19 @@ int CXbmcHttp::xbmcSetKey(int numParas, std::string paras[])
 
   else
   {
-    buttonCode=(int) strtol(paras[0], NULL, 0);
+    buttonCode=(int) strtol(paras[0].c_str(), NULL, 0);
     if (numParas>1) {
-      leftTrigger=(uint8_t) atoi(paras[1]) ;
+      leftTrigger=(uint8_t) atoi(paras[1].c_str()) ;
       if (numParas>2) {
-        rightTrigger=(uint8_t) atoi(paras[2]) ;
+        rightTrigger=(uint8_t) atoi(paras[2].c_str()) ;
         if (numParas>3) {
-          fLeftThumbX=(float) atof(paras[3]) ;
+          fLeftThumbX=(float) atof(paras[3].c_str()) ;
           if (numParas>4) {
-            fLeftThumbY=(float) atof(paras[4]) ;
+            fLeftThumbY=(float) atof(paras[4].c_str()) ;
             if (numParas>5) {
-              fRightThumbX=(float) atof(paras[5]) ;
+              fRightThumbX=(float) atof(paras[5].c_str()) ;
               if (numParas>6)
-                fRightThumbY=(float) atof(paras[6]) ;
+                fRightThumbY=(float) atof(paras[6].c_str()) ;
             }
           }
         }
@@ -2117,7 +2117,7 @@ int CXbmcHttp::xbmcSetKeyRepeat(int numParas, std::string paras[])
     return SetResponse(openTag+"Error:Should be only one parameter");
   else
   {
-    repeatKeyRate = atoi(paras[0]);
+    repeatKeyRate = atoi(paras[0].c_str());
     return SetResponse(openTag+"OK");
   }
 }
@@ -2189,7 +2189,7 @@ int CXbmcHttp::xbmcAction(int numParas, std::string paras[], int theAction)
       CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
       if (pSlideShow) {
         if (numParas>1) {
-          CAction action(ACTION_ANALOG_MOVE, (float)atof(paras[0]), (float)atof(paras[1]));
+          CAction action(ACTION_ANALOG_MOVE, (float)atof(paras[0].c_str()), (float)atof(paras[1].c_str()));
           pSlideShow->OnAction(action);
           return SetResponse(openTag+"OK");
         }
@@ -2209,7 +2209,7 @@ int CXbmcHttp::xbmcAction(int numParas, std::string paras[], int theAction)
       if (pSlideShow) {
         if (numParas>0)
         {
-          pSlideShow->OnAction(CAction(ACTION_ZOOM_LEVEL_NORMAL+atoi(paras[0])));
+          pSlideShow->OnAction(CAction(ACTION_ZOOM_LEVEL_NORMAL+atoi(paras[0].c_str())));
           return SetResponse(openTag+"OK");
         }
         else
@@ -2557,7 +2557,7 @@ int CXbmcHttp::xbmcGUISetting(int numParas, std::string paras[])
   {
     std::string tmp;
     if (numParas<3)
-      switch (atoi(paras[0]))
+      switch (atoi(paras[0].c_str()))
       {
         case 0:  //  int
           tmp = StringUtils::Format("%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(paras[1]));
@@ -2583,10 +2583,10 @@ int CXbmcHttp::xbmcGUISetting(int numParas, std::string paras[])
       }
     else
     {
-      switch (atoi(paras[0]))
+      switch (atoi(paras[0].c_str()))
       {
         case 0:  //  int
-          CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(paras[1], atoi(paras[2]));
+          CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(paras[1], atoi(paras[2].c_str()));
           return SetResponse(openTag+"OK");
           break;
         case 1: // bool
@@ -2594,7 +2594,7 @@ int CXbmcHttp::xbmcGUISetting(int numParas, std::string paras[])
           return SetResponse(openTag+"OK");
           break;
         case 2: // float
-          CServiceBroker::GetSettingsComponent()->GetSettings()->SetNumber(paras[1], (double)atof(paras[2]));
+          CServiceBroker::GetSettingsComponent()->GetSettings()->SetNumber(paras[1], (double)atof(paras[2].c_str()));
           return SetResponse(openTag+"OK");
           break;
         case 3: // string
@@ -2752,7 +2752,7 @@ int CXbmcHttp::xbmcGetSystemInfo(int numParas, std::string paras[])
     int i;
     for (i=0; i<numParas; i++)
     {
-      std::string strTemp = (std::string) CServiceBroker::GetGUI()->GetInfoManager().GetLabel(atoi(paras[i]), INFO::DEFAULT_CONTEXT);
+      std::string strTemp = (std::string) CServiceBroker::GetGUI()->GetInfoManager().GetLabel(atoi(paras[i].c_str()), INFO::DEFAULT_CONTEXT);
       if (strTemp.IsEmpty())
         strTemp = "Error:No information retrieved for " + paras[i];
       strInfo += openTag + strTemp;
@@ -2799,8 +2799,7 @@ bool CXbmcHttp::xbmcBroadcast(std::string message, int level)
   {
     if (!pUdpBroadcast)
       pUdpBroadcast = new CUdpBroadcast();
-    std::string msg;
-    msg = StringUtils::Format(openBroadcast+message+";%i"+closeBroadcast, level);
+    std::string msg = StringUtils::Format("%s%s;%i%s", openBroadcast.c_str(), message.c_str(), level, closeBroadcast.c_str());
     return pUdpBroadcast->broadcast(msg, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastport"));
   }
   else
@@ -2815,7 +2814,7 @@ int CXbmcHttp::xbmcBroadcast(int numParas, std::string paras[])
       pUdpBroadcast = new CUdpBroadcast();
     bool succ;
     if (numParas>1)
-      succ=pUdpBroadcast->broadcast(paras[0], atoi(paras[1]));
+      succ=pUdpBroadcast->broadcast(paras[0], atoi(paras[1].c_str()));
     else
       succ=pUdpBroadcast->broadcast(paras[0], CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.httpapibroadcastport"));
     if (succ)
@@ -2831,9 +2830,9 @@ int CXbmcHttp::xbmcSetBroadcast(int numParas, std::string paras[])
 {
   if (numParas>0)
   {
-    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("services.httpapibroadcastlevel", atoi(paras[0]));
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("services.httpapibroadcastlevel", atoi(paras[0].c_str()));
     if (numParas>1)
-      CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("services.httpapibroadcastport", atoi(paras[1]));
+      CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt("services.httpapibroadcastport", atoi(paras[1].c_str()));
     return SetResponse(openTag+"OK");
   }
   else
@@ -2855,7 +2854,7 @@ int CXbmcHttp::xbmcGetSkinSetting(int numParas, std::string paras[])
     return SetResponse(openTag+"Error:Missing parameters");
   else
   {
-    if (atoi(paras[0]) == 0)
+    if (atoi(paras[0].c_str()) == 0)
     {
       int string = CSkinSettings::GetInstance().TranslateBool(paras[1]);
       bool value = CSkinSettings::GetInstance().GetBool(string);
@@ -2902,7 +2901,7 @@ int CXbmcHttp::xbmcOnAction(int numParas, std::string paras[])
 {
   if (numParas!=1)
     return SetResponse(openTag+"Error:There must be one and only one parameter");
-  g_application.OnAction(CAction(atoi(paras[0])));
+  g_application.OnAction(CAction(atoi(paras[0].c_str())));
   return SetResponse(openTag+"OK");
 }
 
@@ -2932,7 +2931,7 @@ int CXbmcHttp::xbmcSetLogLevel(int numParas, std::string paras[])
     return SetResponse(openTag+"Error:Must have one parameter");
   else
   {
-    CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel=atoi(paras[0]);
+    CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel=atoi(paras[0].c_str());
     return SetResponse(openTag+"OK");
   }
 }
@@ -3142,7 +3141,7 @@ int CXbmcHttp::xbmcCommand(const std::string &parameter)
       //only callable internally
       else if (command == "broadcastlevel")
       {
-        retVal = xbmcBroadcast(paras[0], atoi(paras[1]));
+        retVal = xbmcBroadcast(paras[0], atoi(paras[1].c_str()));
         retVal = 0;
       }
 

@@ -2,9 +2,9 @@
 #include "settings/Settings.h"
 #include "XBMCConfiguration.h"
 #include "utils/URIUtils.h"
-#include "includes.h"
 #include "URL.h"
 #include "utils/StringUtils.h"
+#include "includes.h"
 
 #ifndef __GNUC__
 #pragma code_seg("WEB_TEXT")

@@ -458,7 +458,7 @@ bool CNetworkServices::StartFtpServer()
     XFILE::CFile xml;
     if (xml.Open(xmlpath+"FileZilla Server.xml") && xml.GetLength() > 0)
     {
-      m_filezilla = new CXBFileZilla(CSpecialProtocol::TranslatePath(xmlpath));
+      m_filezilla = new CXBFileZilla(CSpecialProtocol::TranslatePath(xmlpath).c_str());
       m_filezilla->Start(false);
     }
     else

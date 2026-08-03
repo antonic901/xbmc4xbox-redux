@@ -520,12 +520,12 @@ BuildObject(const CFileItem&              item,
         if (!item.GetLabel().empty()) {
             std::string title = item.GetLabel();
             if (item.IsPlayList() || !item.m_bIsFolder) URIUtils::RemoveExtension(title);
-            object->m_Title = title;
+            object->m_Title = title.c_str();
         } else {
             std::string title, volumeNumber;
             CUtil::GetVolumeFromFileName(item.GetPath(), title, volumeNumber);
             if (!item.m_bIsFolder) URIUtils::RemoveExtension(title);
-            object->m_Title = title;
+            object->m_Title = title.c_str();
         }
     }
     // set a thumbnail if we have one

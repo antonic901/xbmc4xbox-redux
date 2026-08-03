@@ -59,7 +59,7 @@ bool CMusicInfoTagLoaderApe::Load(const std::string& strFileName, CMusicInfoTag&
       tag.SetMusicBrainzArtistID(StringUtils::Split(myTag.GetMusicBrainzArtistID(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
       tag.SetMusicBrainzTrackID(myTag.GetMusicBrainzTrackID());
       tag.SetRating(myTag.GetRating());
-      tag.SetYear(atoi(myTag.GetYear()));
+      tag.SetYear(atoi(myTag.GetYear().c_str()));
       tag.SetLoaded();
       return true;
     }

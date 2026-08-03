@@ -388,12 +388,12 @@ unsigned long VobSubPFOpen(int id)
   if (id >= 256)
   {
     sprintf(filename + 16, "hdr%d", id - 256);
-    hFile = CreateFile(CSpecialProtocol::TranslatePath(filename), GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_SEQUENTIAL_SCAN, 0);
+    hFile = CreateFile(CSpecialProtocol::TranslatePath(filename).c_str(), GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_SEQUENTIAL_SCAN, 0);
   }
   else
   {
     sprintf(filename + 16, "data%d", id);
-    hFile = CreateFile(CSpecialProtocol::TranslatePath(filename), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_NO_BUFFERING, 0);
+    hFile = CreateFile(CSpecialProtocol::TranslatePath(filename).c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_NO_BUFFERING, 0);
   }
   if (hFile != INVALID_HANDLE_VALUE)
   {
@@ -422,7 +422,7 @@ void VobSubPFClose(unsigned long pf)
 /***********************************************************************
  *           CoCreateInstance [COMPOBJ.13]
  *           CoCreateInstance [OLE32.@]
- */ 
+ */
 /*HRESULT WINAPI CoCreateInstance(
  REFCLSID rclsid,
  LPUNKNOWN pUnkOuter,
@@ -432,37 +432,37 @@ void VobSubPFClose(unsigned long pf)
 {
  HRESULT hres;
  LPCLASSFACTORY lpclf = 0;
- 
+
    // Sanity check
    if (ppv==0)
   return E_POINTER;
- 
+
    // Initialize the "out" parameter
    *ppv = 0;
- 
+
   //Get a class factory to construct the object we want.
   hres = CoGetClassObject(rclsid,
      dwClsContext,
      NULL,
      IID_IClassFactory,//&IID_IClassFactory,
      (LPVOID *)&lpclf);
- 
+
   if (FAILED(hres)) {
     //FIXME("no classfactory created for CLSID %s, hres is 0x%08lx\n",debugstr_guid(rclsid),hres);
     return hres;
   }
- 
+
    //Create the object and don't forget to release the factory
-   
+
  //hres = IClassFactory_CreateInstance(lpclf, pUnkOuter, iid, ppv);
  //IClassFactory_Release(lpclf);
- 
+
  //hres = lpclf->CreateInstance(pUnkOuter, iid, ppv);
  //lpclf->Release();
- 
+
  //if(FAILED(hres))
    //FIXME("no instance created for interface %s of class %s, hres is 0x%08lx\n",debugstr_guid(iid), debugstr_guid(rclsid),hres);
- 
+
  //return hres;
   return REGDB_E_CLASSNOTREG;
 }*/
@@ -865,7 +865,7 @@ extern "C" UINT WINAPI dllRegisterWindowMessageA(LPCSTR lpString)
   return 0;
 }
 
-extern "C" HBRUSH WINAPI dllGetSysColorBrush(int nIndex) 
+extern "C" HBRUSH WINAPI dllGetSysColorBrush(int nIndex)
 {
   CLog::Log(LOGDEBUG, "GetSysColorBrush() -> NULL");
   return NULL;

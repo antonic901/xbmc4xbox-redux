@@ -51,12 +51,12 @@ CExternalIpCheck::CExternalIpCheck(CServerThread *pOwner)
         memset(&sockAddr,0,sizeof(sockAddr));
 
         sockAddr.sin_family = AF_INET;
-        sockAddr.sin_addr.s_addr = inet_addr(hostname);
+        sockAddr.sin_addr.s_addr = inet_addr(hostname.c_str());
 
         if (sockAddr.sin_addr.s_addr == INADDR_NONE)
         {
             LPHOSTENT lphost;
-            lphost = gethostbyname(hostname);
+            lphost = gethostbyname(hostname.c_str());
             if (lphost != NULL)
                 sockAddr.sin_addr.s_addr = ((LPIN_ADDR)lphost->h_addr)->s_addr;
             else
@@ -228,12 +228,12 @@ void CExternalIpCheck::OnTimer()
         memset(&sockAddr,0,sizeof(sockAddr));
 
         sockAddr.sin_family = AF_INET;
-        sockAddr.sin_addr.s_addr = inet_addr(hostname);
+        sockAddr.sin_addr.s_addr = inet_addr(hostname.c_str());
 
         if (sockAddr.sin_addr.s_addr == INADDR_NONE)
         {
             LPHOSTENT lphost;
-            lphost = gethostbyname(hostname);
+            lphost = gethostbyname(hostname.c_str());
             if (lphost != NULL)
                 sockAddr.sin_addr.s_addr = ((LPIN_ADDR)lphost->h_addr)->s_addr;
             else

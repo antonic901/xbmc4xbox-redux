@@ -248,7 +248,7 @@ void ILEDSmartxxRGB::getRGBValues(const std::string &strRGBa, const std::string 
 {
     DWORD red=0,green=0,blue=0,white=0;
 
-  int ret = sscanf(strRGBa,"#%2X%2X%2X",&red,&green,&blue);
+  int ret = sscanf(strRGBa.c_str(),"#%2X%2X%2X",&red,&green,&blue);
     if(ret == 3)
     {
         s_rgb->red1 = int(red/2);
@@ -262,7 +262,7 @@ void ILEDSmartxxRGB::getRGBValues(const std::string &strRGBa, const std::string 
         s_rgb->blue1 = 0;
     }
 
-    ret = sscanf(strRGBb,"#%2X%2X%2X",&red,&green,&blue);
+    ret = sscanf(strRGBb.c_str(),"#%2X%2X%2X",&red,&green,&blue);
     if(ret == 3)
     {
         s_rgb->red2 = int(red/2);
@@ -276,7 +276,7 @@ void ILEDSmartxxRGB::getRGBValues(const std::string &strRGBa, const std::string 
         s_rgb->blue2 = 0;
     }
 
-  ret = sscanf(strWhiteA,"#%2X",&white);
+  ret = sscanf(strWhiteA.c_str(),"#%2X",&white);
     if(ret == 1)
     {
     s_rgb->white1 = int(white/2);
@@ -286,7 +286,7 @@ void ILEDSmartxxRGB::getRGBValues(const std::string &strRGBa, const std::string 
     s_rgb->white1 = 0;
     }
 
-  ret = sscanf(strWhiteB,"#%2X",&white);
+  ret = sscanf(strWhiteB.c_str(),"#%2X",&white);
     if(ret == 1)
     {
     s_rgb->white2 = int(white/2);

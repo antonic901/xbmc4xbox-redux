@@ -279,7 +279,7 @@ bool CApplication::Create()
   CUtil::CopyUserDataIfNeeded("special://masterprofile/", "favourites.xml");
   CUtil::CopyUserDataIfNeeded("special://masterprofile/", "Lircmap.xml");
 
-  CLog::Init(CSpecialProtocol::TranslatePath("special://logpath"));
+  CLog::Init(CSpecialProtocol::TranslatePath("special://logpath").c_str());
 
   CDirectory::Create("special://xbmc/addons");
 

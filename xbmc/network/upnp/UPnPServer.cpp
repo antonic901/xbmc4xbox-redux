@@ -44,7 +44,7 @@ NPT_String CUPnPServer::BuildSafeResourceUri(const char* host,
     { NPT_AutoLock lock(m_FileMutex);
       NPT_CHECK(m_FileMap.Put(md5.c_str(), file_path));
     }
-    return PLT_FileMediaServer::BuildSafeResourceUri(m_FileBaseUri, host, md5);
+    return PLT_FileMediaServer::BuildSafeResourceUri(m_FileBaseUri, host, md5.c_str());
 }
 
 /*----------------------------------------------------------------------
@@ -654,7 +654,7 @@ CUPnPServer::ServeFile(NPT_HttpRequest&              request,
 
         NPT_List<NPT_String>::Iterator url = files.GetFirstItem();
         for (;url;url++) {
-            output += "#EXTINF:-1," + URIUtils::GetFileName((const char*)*url);
+            output += ("#EXTINF:-1," + URIUtils::GetFileName((const char*)*url)).c_str();
             output += "\r\n";
             output += BuildSafeResourceUri(
                           context.GetLocalAddress().GetIpAddress().ToString(),

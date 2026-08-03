@@ -129,8 +129,8 @@ void CRssReader::Process()
     int iFeed = m_vecQueue.front();
     m_vecQueue.erase(m_vecQueue.begin());
 
-    m_strFeed[iFeed] = "";
-    m_strColors[iFeed] = "";
+    m_strFeed[iFeed].clear();
+    m_strColors[iFeed].clear();
 
     CCurlFile http;
     http.SetUserAgent(m_userAgent);
@@ -307,7 +307,7 @@ void CRssReader::GetNewsItems(TiXmlElement* channelXmlNode, int iFeed)
       std::wstring& text = j->second;
       AddString(text, rsscolour, iFeed);
       rsscolour = RSS_COLOR_BODY;
-      text = " - ";
+      text = L" - ";
       AddString(text, rsscolour, iFeed);
     }
     itemNode = itemNode->NextSiblingElement("item");
@@ -373,8 +373,8 @@ bool CRssReader::Parse(int iFeed)
       fromRSSToUTF16(strChannel, strChannelUnicode);
       AddString(strChannelUnicode, RSS_COLOR_CHANNEL, iFeed);
 
-      AddString(":", RSS_COLOR_CHANNEL, iFeed);
-      AddString(" ", RSS_COLOR_CHANNEL, iFeed);
+      AddString(L":", RSS_COLOR_CHANNEL, iFeed);
+      AddString(L" ", RSS_COLOR_CHANNEL, iFeed);
     }
 
     GetNewsItems(channelXmlNode,iFeed);
