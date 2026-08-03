@@ -147,7 +147,7 @@ bool CWebServer::Start(int port, bool wait)
     URIUtils::RemoveSlashAtEnd(strURL);
   }
 
-  strncpy(m_szRootWeb, CSpecialProtocol::TranslatePath(strURL.c_str()), end);
+  strncpy(m_szRootWeb, CSpecialProtocol::TranslatePath(strURL.c_str()).c_str(), end);
   if (end)
     m_szRootWeb[end - 1] = '\0';
   m_port = port;

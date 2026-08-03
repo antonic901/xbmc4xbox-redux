@@ -242,7 +242,7 @@ bool CMusicInfoTagLoaderWMA::Load(const std::string& strFileName, CMusicInfoTag&
         iOffset += 2;
 
         // Get frame name
-        std::string strFrameName((LPWSTR)(pData.get() + iOffset));
+        std::string strFrameName((LPSTR)(pData.get() + iOffset));
         iOffset += iFrameNameSize;
 
         // Get datatype of frame
@@ -329,7 +329,7 @@ bool CMusicInfoTagLoaderWMA::Load(const std::string& strFileName, CMusicInfoTag&
         iOffset += 4;
 
         // Get frame name
-        std::string strFrameName((LPWSTR)(pData.get() + iOffset));
+        std::string strFrameName((LPSTR)(pData.get() + iOffset));
         iOffset += iFrameNameSize;
 
         // Sanity check for buffer size

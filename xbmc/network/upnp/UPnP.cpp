@@ -428,7 +428,7 @@ CUPnP::CreateServer(int port /* = 0 */)
     // trying to set optional upnp values for XP UPnP UI Icons to detect us
     // but it doesn't work anyways as it requires multicast for XP to detect us
     device->m_PresentationURL =
-        NPT_HttpUrl(m_IP,
+        NPT_HttpUrl(m_IP.c_str(),
                     CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.webserverport"),
                     "/").ToString();
 
@@ -526,7 +526,7 @@ CUPnP::CreateRenderer(int port /* = 0 */)
                           port);
 
     device->m_PresentationURL =
-        NPT_HttpUrl(m_IP,
+        NPT_HttpUrl(m_IP.c_str(),
                     CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.webserverport"),
                     "/").ToString();
     device->m_ModelName = "XBMC";

@@ -635,7 +635,7 @@ extern "C"
       }
 
       // Make sure the slashes are correct & translate the path
-      return _findfirst(CUtil::ValidatePath(CSpecialProtocol::TranslatePath(str), true), data);
+      return _findfirst(CUtil::ValidatePath(CSpecialProtocol::TranslatePath(str), true).c_str(), data);
     }
     // non-local files. handle through IDirectory-class - only supports '*.bah' or '*.*'
     std::string strMask;

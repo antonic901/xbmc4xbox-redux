@@ -192,8 +192,8 @@ bool CMusicInfoTagLoaderSid::Load(const std::string& strFileName, CMusicInfoTag&
 
     char temp2[1024];
     char temp3[1024];
-    strncpy(temp3,temp+iFind,strlen(strHVSCpath));
-    temp3[strlen(strHVSCpath)] = '\0';
+    strncpy(temp3,temp+iFind,strlen(strHVSCpath.c_str()));
+    temp3[strlen(strHVSCpath.c_str())] = '\0';
     sprintf(temp2,"\"%s\",\"[^\"]*\",\"[^\"]*\",\"([^\"]*)\",\"([^\"]*)\",\"([0-9]*)[^\"]*\",\"[0-9]*\",\"[0-9]*\",\"",temp3);
     for (int i=0;i<iTrack-1;++i)
       strcat(temp2,"[0-9]*:[0-9]* ");

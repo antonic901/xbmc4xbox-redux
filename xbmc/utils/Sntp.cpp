@@ -527,7 +527,7 @@ BOOL CNtpSocket::Connect(LPCTSTR pszHostAddress, int nPort)
     return false;
   }
 
-  sockAddr.sin_addr.s_addr = inet_addr(strIpAdres);
+  sockAddr.sin_addr.s_addr = inet_addr(strIpAdres.c_str());
 
   //Call the protected version which takes an address
   //in the form of a standard C style struct.

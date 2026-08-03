@@ -134,7 +134,7 @@ bool CID3Tag::Parse()
   if (!tag.GetTitle().empty() || !tag.GetArtist().empty() || !tag.GetAlbum().empty())
     tag.SetLoaded();
 
-  tag.SetYear(atoi(GetYear()));
+  tag.SetYear(atoi(GetYear().c_str()));
 
   id3_length_t length;
   const LPCSTR pb=(LPCSTR)GetUniqueFileIdentifier("http://musicbrainz.org", &length);
@@ -250,14 +250,14 @@ int CID3Tag::GetTrack() const
 {
   id3_field_textencoding encoding=ID3_FIELD_TEXTENCODING_ISO_8859_1;
   const id3_ucs4_t* ucs4=m_dll.id3_metadata_gettrack(m_tag, &encoding);
-  return atoi(ToStringCharset(ucs4, encoding));
+  return atoi(ToStringCharset(ucs4, encoding).c_str());
 }
 
 int CID3Tag::GetPartOfSet() const
 {
   id3_field_textencoding encoding=ID3_FIELD_TEXTENCODING_ISO_8859_1;
   const id3_ucs4_t* ucs4=m_dll.id3_metadata_getpartofset(m_tag, &encoding);
-  return atoi(ToStringCharset(ucs4, encoding));
+  return atoi(ToStringCharset(ucs4, encoding).c_str());
 }
 
 std::string CID3Tag::GetYear() const

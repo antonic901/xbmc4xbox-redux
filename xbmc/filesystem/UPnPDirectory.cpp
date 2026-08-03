@@ -303,7 +303,7 @@ CUPnPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
         if (object_id.GetLength()) {
             std::string tmp = (char*) object_id;
             CURL::Decode(tmp);
-            object_id = tmp;
+            object_id = tmp.c_str();
         }
 
         // try to find the device with wait on startup

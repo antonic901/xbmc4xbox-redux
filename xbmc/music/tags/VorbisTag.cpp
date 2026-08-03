@@ -74,17 +74,17 @@ int CVorbisTag::ParseTagEntry(std::string& strTagEntry)
 
   if ( strTagType == "TRACKNUMBER" )
   {
-    tag.SetTrackNumber(atoi(strTagValue));
+    tag.SetTrackNumber(atoi(strTagValue.c_str()));
   }
 
   if ( strTagType == "DISCNUMBER" )
   {
-    tag.SetDiscNumber(atoi(strTagValue));
+    tag.SetDiscNumber(atoi(strTagValue.c_str()));
   }
 
   if ( strTagType == "DATE" )
   {
-    tag.SetYear(atoi(strTagValue));
+    tag.SetYear(atoi(strTagValue.c_str()));
   }
 
   if ( strTagType == "GENRE" )

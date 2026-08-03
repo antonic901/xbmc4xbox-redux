@@ -153,7 +153,7 @@ LibraryLoader* DllLoaderContainer::FindModule(const char* sName, const char* sCu
     std::string newName = "special://temp/";
     newName += url.GetFileName();
     CFile::Copy(sName, newName);
-    return FindModule(newName, sCurrentDir, bLoadSymbols);
+    return FindModule(newName.c_str(), sCurrentDir, bLoadSymbols);
   }
 
   if (CURL::IsFullPath(sName))
