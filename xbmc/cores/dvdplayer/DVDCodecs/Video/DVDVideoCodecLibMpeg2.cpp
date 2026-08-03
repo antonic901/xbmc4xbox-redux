@@ -23,6 +23,8 @@
 #include "DVDStreamInfo.h"
 #include "utils/log.h"
 
+#include <malloc.h>
+
 enum MPEGProfile
 {
   MPEG_422_HL = 0x82,
@@ -353,33 +355,33 @@ int CDVDVideoCodecLibMpeg2::Decode(uint8_t* pData, int iSize, double dts, double
             { //We have a progressive frame in a nonprogressive sequence
 
                 if(!m_bFilm
-						  && ( ((m_irffpattern & 0xff) == 0xaa || (m_irffpattern & 0xff) == 0x55) ) )
-						    {
+                          && ( ((m_irffpattern & 0xff) == 0xaa || (m_irffpattern & 0xff) == 0x55) ) )
+                            {
                   //We are not in film mode but we did find a repeat first frame
                   //Usually means material is in film and 3:2 pullup has been used
                   //to generate the full ntsc format.
                   //This also means the frames we get are usually progressive
 
                   CLog::Log(LOGDEBUG,"CDVDVideoCodecLibMpeg2::m_bFilm = true\n");
-							    m_bFilm = true;
-						    }
-						    else if(m_bFilm
-						  && !( ((m_irffpattern & 0xff) == 0xaa || (m_irffpattern & 0xff) == 0x55) ) )
-						    {
+                                m_bFilm = true;
+                            }
+                            else if(m_bFilm
+                          && !( ((m_irffpattern & 0xff) == 0xaa || (m_irffpattern & 0xff) == 0x55) ) )
+                            {
                   //Crap a progressive frame in a nonprogressive sequence that
                   //doesn't have hte repeat flag set. No idea what format the
                   //material is in
 
-							    CLog::Log(LOGDEBUG,"CDVDVideoCodecLibMpeg2::m_bFilm = false\n");
-							    m_bFilm = false;
-						    }
+                                CLog::Log(LOGDEBUG,"CDVDVideoCodecLibMpeg2::m_bFilm = false\n");
+                                m_bFilm = false;
+                            }
               }
 
             // Quoted from MPC Source (Mpeg2DecFilter.cpp)
-						//// big trouble here, the progressive_frame bit is not reliable :'(
-						//// frames without temporal field diffs can be only detected when ntsc
-						//// uses the repeat field flag (signaled with m_fFilm), if it's not set
-						//// or we have pal then we might end up blending the fields unnecessarily...
+                        //// big trouble here, the progressive_frame bit is not reliable :'(
+                        //// frames without temporal field diffs can be only detected when ntsc
+                        //// uses the repeat field flag (signaled with m_fFilm), if it's not set
+                        //// or we have pal then we might end up blending the fields unnecessarily...
 
             if( m_pInfo->sequence->flags & SEQ_FLAG_PROGRESSIVE_SEQUENCE )
             { //We've got a progressive sequence

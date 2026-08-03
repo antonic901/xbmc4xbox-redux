@@ -19,7 +19,10 @@
  *
  */
 
+#include "system.h" // <xtl.h>, PlatformDefs.h
+
 #include <string>
+#include <vector>
 
 class CTexture;
 

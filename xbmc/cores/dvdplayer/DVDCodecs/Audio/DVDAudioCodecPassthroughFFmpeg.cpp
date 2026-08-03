@@ -27,6 +27,8 @@
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
 
+#include <malloc.h>
+
 //These values are forced to allow spdif out
 #define OUT_SAMPLESIZE 16
 #define OUT_CHANNELS   2

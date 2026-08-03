@@ -24,6 +24,7 @@
  *
  */
 
+#include "PlatformDefs.h"
 #include "threads/CriticalSection.h"
 #include <map>
 #include <string>

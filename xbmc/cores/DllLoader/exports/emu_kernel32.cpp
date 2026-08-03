@@ -26,6 +26,7 @@
 #include "platform/xbox/storage/IoSupport.h"
 
 #include <process.h>
+#include <vector>
 
 #include "../dll_tracker.h"
 #include "filesystem/SpecialProtocol.h"

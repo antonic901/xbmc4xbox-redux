@@ -566,7 +566,7 @@ CorrectAllItemsSortHack(const std::string &item)
     // This looks nasty if we attempt to render it to the GUI, thus this (further)
     // workaround
     if ((item.size() == 1 && item[0] == 0x01) || (item.size() > 1 && ((unsigned char) item[1]) == 0xff))
-        return StringUtils::EmptyString;
+        return StringUtils::Empty;
 
     return item;
 }

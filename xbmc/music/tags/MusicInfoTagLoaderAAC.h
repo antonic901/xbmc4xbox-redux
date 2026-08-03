@@ -19,6 +19,7 @@
  *
  */
 
+#include "PlatformDefs.h"
 #include "music/tags/MusicInfoTagLoaderMP3.h"
 
 namespace XFILE

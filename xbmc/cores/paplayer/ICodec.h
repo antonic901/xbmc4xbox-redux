@@ -20,6 +20,7 @@
  *
  */
 
+#include "system.h" // <xtl.h>
 #include "ReplayGain.h"
 #include "filesystem/File.h"
 

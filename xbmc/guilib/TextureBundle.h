@@ -22,10 +22,12 @@
 
 #include <string>
 #include <vector>
-#include "gui3d.h"
 
 #include <stdint.h>
 #include <map>
+#include <xtl.h>
+
+#include "gui3d.h"
 
 class CAutoTexBuffer;
 class CTexture;

@@ -28,6 +28,7 @@
 #include "filesystem/FatXFileSystem.h"
 #include "filesystem/Fat32Device.h"
 #include "filesystem/Fat32FileSystem.h"
+#include "utils/StringUtils.h"
 #include "utils/log.h"
 
 #include "platform/xbox/Undocumented.h"

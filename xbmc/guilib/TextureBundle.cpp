@@ -3,7 +3,6 @@
 #include "TextureBundle.h"
 #include "Texture.h"
 #include "windowing/GraphicContext.h"
-#include <XGraphics.h>
 #include "utils/CharsetConverter.h"
 #include "liblzo/LZO1X.H"
 #include "addons/Skin.h"

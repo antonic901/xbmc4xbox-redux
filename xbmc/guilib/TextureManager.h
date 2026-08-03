@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "system.h" // <xtl.h>
 #include "GUIComponent.h"
 #include "TextureBundle.h"
 #include "threads/CriticalSection.h"
