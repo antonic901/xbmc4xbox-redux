@@ -26,6 +26,7 @@
 #include "application/ApplicationXbox.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "utils/StringUtils.h"
 
 //CdgChatter
 CCdgChatter::CCdgChatter()
@@ -224,7 +225,7 @@ void CCdgChatter::LoadSettings()
   //Load the voice mask
   strSetting = StringUtils::Format("karaoke.port%ivoicemask", m_dwPort);
   strSetting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(strSetting);
-  if (strSetting.CompareNoCase("None") == 0)
+  if (StringUtils::CompareNoCase(strSetting, "None") == 0)
   {
     if (m_pVoiceMask)
       delete m_pVoiceMask;

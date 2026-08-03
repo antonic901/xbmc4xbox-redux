@@ -219,17 +219,17 @@ BOOL CControlSocket::GetCommand(std::string &command, std::string &args)
     //Hide passwords if the server admin wants to.
     if (str2.Left(5)=="PASS ")
     {    if (m_pOwner->m_pOptions->GetOptionVal(OPTION_LOGSHOWPASS))
-            SendStatus(str,2);
+            SendStatus(str.c_str(),2);
         else
         {
             str2=str.Left(5);
             for (int i=0;i<str.GetLength()-5;i++)
                 str2+="*";
-            SendStatus(str2,2);
+            SendStatus(str2.c_str(),2);
         }
     }
     else
-        SendStatus(str,2);
+        SendStatus(str.c_str(),2);
 
     //Split command and arguments
     int pos = str.Find(" ");
@@ -283,7 +283,7 @@ BOOL CControlSocket::GetCommandFromString(const std::string& source, std::string
 void CControlSocket::SendStatus(LPCTSTR status, int type)
 {
     t_statusmsg *msg=new t_statusmsg;
-    strcpy(msg->ip, m_RemoteIP);
+    strcpy(msg->ip, m_RemoteIP.c_str());
     GetSystemTime(&msg->time);
     if (!m_status.loggedon)
     {
@@ -292,8 +292,8 @@ void CControlSocket::SendStatus(LPCTSTR status, int type)
     }
     else
     {
-        msg->user = new char[strlen(m_status.user)+1];
-        strcpy(msg->user, m_status.user);
+        msg->user = new char[strlen(m_status.user.c_str())+1];
+        strcpy(msg->user, m_status.user.c_str());
     }
     msg->userid=m_userid;
     msg->type=type;
@@ -329,7 +329,7 @@ BOOL CControlSocket::SendDir(const std::string command,std::string curDir,const 
 
   std::string str;
   str = StringUtils::Format("%s \"%s\"%s", command.c_str(), curDir.c_str(), prompt.c_str());
-    return Send(str);
+    return Send(str.c_str());
 }
 #endif
 
@@ -630,7 +630,7 @@ void CControlSocket::ParseCommand()
             }
             else
 #endif
-                Send("331 Password required for "+args);
+                Send(("331 Password required for "+args).c_str());
         }
         break;
     case COMMAND_PASS:
@@ -649,7 +649,7 @@ void CControlSocket::ParseCommand()
         else
         {
             CUser user;
-            if (m_pOwner->m_pPermissions->Lookup(m_status.user, args, user))
+            if (m_pOwner->m_pPermissions->Lookup(m_status.user.c_str(), args.c_str(), user))
             {
                 if (!user.BypassUserLimit())
                 {
@@ -667,7 +667,7 @@ void CControlSocket::ParseCommand()
                 {
                     std::string str;
                     str = StringUtils::Format("Refusing connection. Reason: Max. connection count reached for the user \"%s\".",m_status.user.c_str());
-                    SendStatus(str,1);
+                    SendStatus(str.c_str(),1);
                     Send("421 Too many users logged in for this account. Try again later.");
                     ForceClose(-1);
                     break;
@@ -694,13 +694,13 @@ void CControlSocket::ParseCommand()
                         str = StringUtils::Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected once)",ip.c_str());
                     else
                         str = StringUtils::Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected %d times)", ip.c_str(), count);
-                    SendStatus(str,1);
+                    SendStatus(str.c_str(),1);
                     Send("421 Refusing connection. No more connections allowed from your IP.");
                     ForceClose(-1);
                     break;
                 }
 
-                m_CurrentDir = m_pOwner->m_pPermissions->GetHomeDir(m_status.user);
+                m_CurrentDir = m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str());
                 if (m_CurrentDir=="")
                 {
                     Send("550 Could not get home dir!");
@@ -715,9 +715,9 @@ void CControlSocket::ParseCommand()
                 {
                     std::string str;
                     str = StringUtils::Format("Refusing connection. Reason: Maximum connection count (%d) reached for this user", user.GetUserLimit());
-                    SendStatus(str,1);
+                    SendStatus(str.c_str(),1);
                     str = StringUtils::Format("421 Refusing connection. Maximum connection count reached for the user '%s'", user.user.c_str());
-                    Send(str);
+                    Send(str.c_str());
                     ForceClose(-1);
                     break;
                 }
@@ -727,7 +727,7 @@ void CControlSocket::ParseCommand()
                 m_status.loggedon=TRUE;
                 Send("230 Logged on");
                 GetSystemTime(&m_LastTransferTime);
-                m_pOwner->m_pPermissions->AutoCreateDirs(m_status.user);
+                m_pOwner->m_pPermissions->AutoCreateDirs(m_status.user.c_str());
 
                 t_connectiondata *conndata = new t_connectiondata;
                 t_connop *op = new t_connop;
@@ -779,14 +779,14 @@ void CControlSocket::ParseCommand()
             CUser user;
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
-            if((args == "/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")){
+            if((args == "/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")){
                 m_CurrentDir="/";
                 SendCurDir("250 CWD successful.",m_CurrentDir);
             }
             else
             { // check for real permissions
 
-                int res = m_pOwner->m_pPermissions->ChangeCurrentDir(m_status.user,m_CurrentDir,args);
+                int res = m_pOwner->m_pPermissions->ChangeCurrentDir(m_status.user.c_str(),m_CurrentDir,args);
                 if (!res)
                 {
                     SendCurDir("250 CWD successful.",m_CurrentDir);
@@ -863,7 +863,7 @@ void CControlSocket::ParseCommand()
             port+=256*atoi(args.Right(args.GetLength()-(i+1))); // add ms byte to server socket
             ip=args.Left(i);
 
-            if (inet_addr(ip)==INADDR_NONE || port<1 || port>65535)
+            if (inet_addr(ip.c_str())==INADDR_NONE || port<1 || port>65535)
             {
                 Send("501 Syntax error");
                 break;
@@ -957,7 +957,7 @@ void CControlSocket::ParseCommand()
             //Put the answer together
             std::string str;
             str = StringUtils::Format("227 Entering Passive Mode (%s,%d,%d)",ip.c_str(),port/256,port%256);
-            Send(str);
+            Send(str.c_str());
             m_transferstatus.pasv=1;
             break;
         }
@@ -970,7 +970,7 @@ void CControlSocket::ParseCommand()
                 break;
             }
             m_transferstatus.type=(args[0]=='I')?0:1;
-            Send(std::string("200 Type set to ") + (m_transferstatus.type ? "A" : "I"));
+            Send((std::string("200 Type set to ") + (m_transferstatus.type ? "A" : "I")).c_str());
         }
         break;
     case COMMAND_LIST:
@@ -1056,7 +1056,7 @@ void CControlSocket::ParseCommand()
             CUser user;
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
-            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
+            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")) {
 
                 t_dirlisting *pCurrent = NULL;
 
@@ -1113,7 +1113,7 @@ void CControlSocket::ParseCommand()
                         result+=dirToList;
                         result+="\r\n";
 
-                        strcpy(pCurrent->buffer, result);
+                        strcpy(pCurrent->buffer, result.c_str());
                         pCurrent->len = result.length();
                     }
                 }
@@ -1125,8 +1125,8 @@ void CControlSocket::ParseCommand()
                 pResult->len = result.length();*/
             } else
             {
-                //error=m_pOwner->m_pPermissions->GetDirectoryListing( m_status.user, dirToList, result );
-                error = m_pOwner->m_pPermissions->GetDirectoryListing(m_status.user, dirToList, pResult);
+                //error=m_pOwner->m_pPermissions->GetDirectoryListing( m_status.user.c_str(), dirToList, result );
+                error = m_pOwner->m_pPermissions->GetDirectoryListing(m_status.user.c_str(), dirToList, pResult);
             }
 #else
             int error = m_pOwner->m_pPermissions->GetDirectoryListing(m_status.user, dirToList, pResult);
@@ -1176,27 +1176,27 @@ void CControlSocket::ParseCommand()
                 Send("501 Bad parameter. Numeric value required");
                 break;
             }
-            m_transferstatus.rest=_atoi64(args);
+            m_transferstatus.rest=_atoi64(args.c_str());
             std::string str;
             str = StringUtils::Format("350 Rest supported. Restarting at %I64d",m_transferstatus.rest);
-            Send(str);
+            Send(str.c_str());
         }
         break;
     case COMMAND_CDUP:
     case COMMAND_XCUP:
         {
             std::string dir="..";
-            int res = m_pOwner->m_pPermissions->ChangeCurrentDir(m_status.user,m_CurrentDir,dir);
+            int res = m_pOwner->m_pPermissions->ChangeCurrentDir(m_status.user.c_str(),m_CurrentDir,dir);
 #if defined(_XBOX)
             // in case of xbox => cwd to "/"  && user's homedir == "/" just set the currentdir to "/"
             // => ignore an eventual error that res returned !!! FIXME !!!
             CUser user;
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
-            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
+            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")) {
                 std::string str;
                 str = StringUtils::Format("200 CDUP successful. \"XBOX-ROOT(%s)\" is current directory.",m_CurrentDir.c_str());
-                Send(str);
+                Send(str.c_str());
             }
             else
             {
@@ -1208,13 +1208,13 @@ void CControlSocket::ParseCommand()
                 {
                     std::string str;
                     str = StringUtils::Format("550 CDUP failed. \"%s\": Permission denied.",dir.c_str());
-                    Send(str);
+                    Send(str.c_str());
                 }
                 else if (res)
                 {
                     std::string str;
                     str = StringUtils::Format("550 CDUP failed. \"%s\": directory not found.",dir.c_str());
-                    Send(str);
+                    Send(str.c_str());
                 }
             }
 #else
@@ -1262,7 +1262,7 @@ void CControlSocket::ParseCommand()
 
 
             std::string result;
-            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user,args,m_CurrentDir,FOP_READ,result);
+            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user.c_str(),args,m_CurrentDir,FOP_READ,result);
             if (error & 1)
             {
                 Send("550 Permission denied");
@@ -1315,7 +1315,7 @@ void CControlSocket::ParseCommand()
             CUser user;
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
-            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
+            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")) {
                 Send( _T("550 Permission denied - Storing in XBOX Root not allowed.") );
                 break;
             }
@@ -1329,7 +1329,7 @@ void CControlSocket::ParseCommand()
             }
 
             std::string result;
-            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user,args,m_CurrentDir,m_transferstatus.rest?FOP_APPEND:FOP_WRITE,result);
+            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user.c_str(),args,m_CurrentDir,m_transferstatus.rest?FOP_APPEND:FOP_WRITE,result);
             if (error & 1)
             {
                 Send("550 Permission denied");
@@ -1371,7 +1371,7 @@ void CControlSocket::ParseCommand()
             }
 
             std::string result;
-            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, args, m_CurrentDir, FOP_READ, result);
+            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user.c_str(), args, m_CurrentDir, FOP_READ, result);
             if (error & 1)
                 Send("550 Permission denied");
             else if (error)
@@ -1380,11 +1380,11 @@ void CControlSocket::ParseCommand()
             {
                 std::string str;
                 _int64 length;
-                if (GetLength64(result, length))
+                if (GetLength64(result.c_str(), length))
                     str = StringUtils::Format("213 %I64d", length);
                 else
                     str="550 File not found";
-                Send(str);
+                Send(str.c_str());
             }
         }
         break;
@@ -1401,21 +1401,21 @@ void CControlSocket::ParseCommand()
             CUser user;
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
-            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
+            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")) {
                 Send( _T("550 Permission denied - Deleting in XBOX Root not allowed.") );
                 break;
             }
 #endif
 
             std::string result;
-            int error=m_pOwner->m_pPermissions->GetFileName(m_status.user,args,m_CurrentDir,FOP_DELETE,result);
+            int error=m_pOwner->m_pPermissions->GetFileName(m_status.user.c_str(),args,m_CurrentDir,FOP_DELETE,result);
             if (error & 1)
                 Send("550 Permission denied");
             else if (error)
                 Send("550 File not found");
             else
             {
-                if (!DeleteFile(result))
+                if (!DeleteFile(result.c_str()))
                     Send(_T("450 Internal error deleting the file."));
                 else
                     Send(_T("250 File deleted successfully"));
@@ -1436,20 +1436,20 @@ void CControlSocket::ParseCommand()
             CUser user;
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
-            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
+            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")) {
                 Send( _T("550 Permission denied - Directory Deleting in XBOX Root not allowed.") );
                 break;
             }
 #endif
             std::string result, logical;
-            int error = m_pOwner->m_pPermissions->GetDirName(m_status.user,args,m_CurrentDir,DOP_DELETE,result,logical);
+            int error = m_pOwner->m_pPermissions->GetDirName(m_status.user.c_str(),args,m_CurrentDir,DOP_DELETE,result,logical);
             if (error & 1)
                 Send("550 Permission denied");
             else if (error)
                 Send("550 Directory not found");
             else
             {
-                if (!RemoveDirectory(result))
+                if (!RemoveDirectory(result.c_str()))
                 {
                     if (GetLastError()==ERROR_DIR_NOT_EMPTY)
                         Send("550 Directory not empty.");
@@ -1475,13 +1475,13 @@ void CControlSocket::ParseCommand()
             CUser user;
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
-            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
+            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")) {
                 Send( _T("550 Permission denied - Creating directories in XBOX Root not allowed.") );
                 break;
             }
 #endif
             std::string result, logical;
-            int error=m_pOwner->m_pPermissions->GetDirName(m_status.user, args,m_CurrentDir, DOP_CREATE, result, logical);
+            int error=m_pOwner->m_pPermissions->GetDirName(m_status.user.c_str(), args,m_CurrentDir, DOP_CREATE, result, logical);
             if (error & PERMISSION_DOESALREADYEXIST && (error & PERMISSION_FILENOTDIR)!=PERMISSION_FILENOTDIR)
                 Send("550 Directory already exists");
             else if (error & PERMISSION_DENIED)
@@ -1506,7 +1506,7 @@ void CControlSocket::ParseCommand()
 
           str += piece;
                     result = result.Mid(result.Find("\\")+1);
-                    res = CreateDirectory(str,0);
+                    res = CreateDirectory(str.c_str(),0);
                 }
                 if (!bReplySent)
                     if (!res)
@@ -1529,7 +1529,7 @@ void CControlSocket::ParseCommand()
             CUser user;
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
-            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
+            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")) {
                 Send( _T("550 Permission denied - Renaming in XBOX Root not allowed.") );
                 break;
             }
@@ -1537,7 +1537,7 @@ void CControlSocket::ParseCommand()
             RenName = "";
 
             std::string result, logical;
-            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, args, m_CurrentDir, FOP_DELETE, result);
+            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user.c_str(), args, m_CurrentDir, FOP_DELETE, result);
             if (!error)
             {
                 RenName = result;
@@ -1549,7 +1549,7 @@ void CControlSocket::ParseCommand()
                 Send("550 Permission denied");
             else
             {
-                int error2 = m_pOwner->m_pPermissions->GetDirName(m_status.user, args,m_CurrentDir, DOP_DELETE, result, logical);
+                int error2 = m_pOwner->m_pPermissions->GetDirName(m_status.user.c_str(), args,m_CurrentDir, DOP_DELETE, result, logical);
                 if (!error2)
                 {
                     RenName=result;
@@ -1576,7 +1576,7 @@ void CControlSocket::ParseCommand()
             CUser user;
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
-            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
+            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")) {
                 Send( _T("550 Permission denied - Renaming in XBOX Root not allowed.") );
                 break;
             }
@@ -1591,7 +1591,7 @@ void CControlSocket::ParseCommand()
             if (bRenFile)
             {
                 std::string result;
-                int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, args, m_CurrentDir, FOP_CREATENEW, result);
+                int error = m_pOwner->m_pPermissions->GetFileName(m_status.user.c_str(), args, m_CurrentDir, FOP_CREATENEW, result);
 #if defined(_XBOX)
                 if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpautofatx"))
                     CUtil::GetFatXQualifiedPath(result);
@@ -1606,7 +1606,7 @@ void CControlSocket::ParseCommand()
                     Send("550 Filename invalid");
                 else
                 {
-                    if (!MoveFile(RenName, result))
+                    if (!MoveFile(RenName.c_str(), result.c_str()))
                         Send("450 Internal error renaming the file");
                     else
                         Send("250 file renamed successfully");
@@ -1615,7 +1615,7 @@ void CControlSocket::ParseCommand()
             else
             {
                 std::string result, logical;
-                int error = m_pOwner->m_pPermissions->GetDirName(m_status.user, args, m_CurrentDir, DOP_CREATE, result, logical);
+                int error = m_pOwner->m_pPermissions->GetDirName(m_status.user.c_str(), args, m_CurrentDir, DOP_CREATE, result, logical);
 #if defined(_XBOX)
                 if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpautofatx"))
                     CUtil::GetFatXQualifiedPath(result);
@@ -1630,7 +1630,7 @@ void CControlSocket::ParseCommand()
                     Send("550 Filename invalid");
                 else
                 {
-                    if (!MoveFile(RenName, result))
+                    if (!MoveFile(RenName.c_str(), result.c_str()))
                         Send("450 Internal error renaming the file");
                     else
                         Send("250 file renamed successfully");
@@ -1686,13 +1686,13 @@ void CControlSocket::ParseCommand()
             CUser user;
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
-            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
+            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")) {
                 Send( _T("550 Permission denied - Append in XBOX Root not allowed.") );
                 break;
             }
 #endif
             std::string result;
-            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user,args,m_CurrentDir,FOP_APPEND,result);
+            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user.c_str(),args,m_CurrentDir,FOP_APPEND,result);
             if (error & 1)
             {
                 Send("550 Permission denied");
@@ -1706,7 +1706,7 @@ void CControlSocket::ParseCommand()
             else
             {
                 _int64 size = 0;
-                if (!GetLength64(result, size))
+                if (!GetLength64(result.c_str(), size))
                     size = 0;
 
                 m_transferstatus.rest = size;
@@ -1722,7 +1722,7 @@ void CControlSocket::ParseCommand()
 
                     std::string str;
                     str = StringUtils::Format("150 Opening data channel for file transfer, restarting at offset %I64d",size);
-                    Send(str);
+                    Send(str.c_str());
                 }
                 else
                 {
@@ -1811,7 +1811,7 @@ void CControlSocket::ParseCommand()
 
             CUser user;
             m_pOwner->m_pPermissions->GetUser(m_status.user,user);
-            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
+            if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")) {
 
                 t_dirlisting *pCurrent = NULL;
 
@@ -1850,7 +1850,7 @@ void CControlSocket::ParseCommand()
             }
                         result+="\r\n";
 
-                        strcpy(pCurrent->buffer, result);
+                        strcpy(pCurrent->buffer, result.c_str());
                         pCurrent->len = result.length();
                     }
                 }
@@ -1865,7 +1865,7 @@ void CControlSocket::ParseCommand()
             } else
             {
                 //error=m_pOwner->m_pPermissions->GetShortDirectoryListing( m_status.user, dirToList, result );
-                error = m_pOwner->m_pPermissions->GetShortDirectoryListing(m_status.user, m_CurrentDir, args, pResult);
+                error = m_pOwner->m_pPermissions->GetShortDirectoryListing(m_status.user.c_str(), m_CurrentDir, args, pResult);
             }
 #else
             int error = m_pOwner->m_pPermissions->GetShortDirectoryListing(m_status.user, m_CurrentDir, args, pResult);
@@ -1912,7 +1912,7 @@ void CControlSocket::ParseCommand()
             }
 
             std::string result;
-            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, args, m_CurrentDir, FOP_READ, result);
+            int error = m_pOwner->m_pPermissions->GetFileName(m_status.user.c_str(), args, m_CurrentDir, FOP_READ, result);
             if (error & 1)
                 Send("550 Permission denied");
             else if (error & 2)
@@ -1920,7 +1920,7 @@ void CControlSocket::ParseCommand()
             else
             {
                 CFileStatus64 status;
-                GetStatus64(result,status);
+                GetStatus64(result.c_str(),status);
                 status.m_mtime;
                 std::string str;
                 SYSTEMTIME time;
@@ -1932,7 +1932,7 @@ void CControlSocket::ParseCommand()
                             time.wHour,
                             time.wMinute,
                             time.wSecond);
-                Send(str);
+                Send(str.c_str());
             }
         }
         break;
@@ -1996,7 +1996,7 @@ void CControlSocket::ParseCommand()
             //Put the answer together
             std::string str;
             str = StringUtils::Format("229 Entering Extended Passive Mode (|||%d|)", port);
-            Send(str);
+            Send(str.c_str());
             m_transferstatus.pasv=1;
             break;
         }
@@ -2036,7 +2036,7 @@ void CControlSocket::ParseCommand()
                 break;
             }
             std::string ip = args.Left(pos);
-            if (inet_addr(ip) == INADDR_NONE)
+            if (inet_addr(ip.c_str()) == INADDR_NONE)
             {
                 Send("501 Syntax error");
                 break;
@@ -2233,8 +2233,8 @@ void CControlSocket::ParseCommand()
           {
               std::string str;
               str = StringUtils::Format("200 FTP SITE - calling ExecBuiltIn [command=%s, args=%s]", sitecommand.c_str(), siteargs.c_str());
-              //Send(str);
-            CLog::Log(LOGNOTICE, str);
+              //Send(str.c_str());
+            CLog::Log(LOGNOTICE, str.c_str());
           }
 
           int rtn = CBuiltins::GetInstance().Execute(siteargs);
@@ -2242,8 +2242,8 @@ void CControlSocket::ParseCommand()
           {
               std::string str;
               str = StringUtils::Format("200 FTP SITE - called ExecBuiltIn [command=%s, args=%s, rtn=%i]", sitecommand.c_str(), siteargs.c_str(), rtn);
-              //Send(str);
-            CLog::Log(LOGNOTICE, str);
+              //Send(str.c_str());
+            CLog::Log(LOGNOTICE, str.c_str());
           }
 
           if (rtn == 0)
@@ -2281,7 +2281,7 @@ void CControlSocket::ParseCommand()
                   }
 
                   std::string filename;
-                  int error=m_pOwner->m_pPermissions->GetFileName(m_status.user,siteargs,m_CurrentDir,FOP_READ,filename);
+                  int error=m_pOwner->m_pPermissions->GetFileName(m_status.user.c_str(),siteargs,m_CurrentDir,FOP_READ,filename);
                   if (error&1)
                   {
                       Send("550 Permission denied");
@@ -2329,7 +2329,7 @@ void CControlSocket::ParseCommand()
                   }
 
                   std::string result;
-                  int error = m_pOwner->m_pPermissions->GetFileName(m_status.user, siteargs, m_CurrentDir, FOP_READ, result);
+                  int error = m_pOwner->m_pPermissions->GetFileName(m_status.user.c_str(), siteargs, m_CurrentDir, FOP_READ, result);
                   if (error&1)
                   {
                       Send("550 Permission denied");
@@ -2466,7 +2466,7 @@ void CControlSocket::ProcessTransferMsg()
 
       if (XBFILEZILLA(GetSfvEnabled()))
       {
-        if (!filename.Right(4).CompareNoCase(_T(".sfv")))
+        if (!StringUtils::CompareNoCase(filename.substr(filename.size() - 4), _T(".sfv")))
         {
           // this is a sfv file, so don't check
           //mSfvFile.SetSfvFile(filename);
@@ -2475,7 +2475,7 @@ void CControlSocket::ProcessTransferMsg()
         else
         {
           Send(_T("226- Please wait, checking SFV..."));
-          CRCSTATUS crcresult = mSfvFile.CheckFile(filename, crc);
+          CRCSTATUS crcresult = mSfvFile.CheckFile(filename.c_str(), crc);
           switch (crcresult)
           {
             case CRC_OK:

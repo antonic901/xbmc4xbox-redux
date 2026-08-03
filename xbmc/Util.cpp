@@ -1499,7 +1499,7 @@ bool CUtil::CacheRarSubtitles(const std::string& strRarPath,
     if (strFileNameNoCase.Find(strCompare) >= 0)
       while (sub_exts[iPos])
       {
-        if (strExt.CompareNoCase(sub_exts[iPos]) == 0)
+        if (StringUtils::CompareNoCase(strExt, sub_exts[iPos]) == 0)
         {
           std::string strSourceUrl;
           if (URIUtils::GetExtension(strRarPath).Equals(".rar"))

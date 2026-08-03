@@ -31,6 +31,7 @@
 #include "misc\MarkupSTL.h"
 
 #include "bsdsfv.h"
+#include "utils/StringUtils.h"
 #include "utils/log.h"
 
 #pragma warning (disable:4244)
@@ -233,7 +234,7 @@ XFSTATUS CXBFileZillaImp::GetAllUsers(std::vector<CXFUser*>& UserVector)
     if (!username.IsEmpty())
     {
       CXFUserImp* user = new CXFUserImp();
-      if (user->Init(username) == XFS_OK)
+      if (user->Init(username.c_str()) == XFS_OK)
         UserVector.push_back(user);
       else
         delete user;
@@ -380,7 +381,7 @@ void CXBFileZillaImp::SetFreeSpace(LPCTSTR Drivename, bool DisplayAtPrompt)
 {
   std::string drive = ConvertToDrivename(Drivename);
   for (int i = 0; i < mFreeSpaceDrives.size(); i++)
-    if (!mFreeSpaceDrives[i].mDrive.CompareNoCase(drive))
+    if (!StringUtils::CompareNoCase(mFreeSpaceDrives[i].mDrive, drive))
     {
       mFreeSpaceDrives[i].mDisplay = DisplayAtPrompt;
       break;
@@ -400,7 +401,7 @@ XFSTATUS CXBFileZillaImp::GetFreeSpace(LPCTSTR Drivename, bool& DisplayAtPrompt)
 {
   std::string drive = ConvertToDrivename(Drivename);
   for (int i = 0; i < mFreeSpaceDrives.size(); i++)
-    if (!mFreeSpaceDrives[i].mDrive.CompareNoCase(drive))
+    if (!StringUtils::CompareNoCase(mFreeSpaceDrives[i].mDrive, drive))
     {
       DisplayAtPrompt = mFreeSpaceDrives[i].mDisplay;
       return XFS_OK;
@@ -463,25 +464,25 @@ XFSTATUS CXBFileZillaImp::ReadXBoxSettings()
     {
       std::string tag = pXML->GetChildTagName();
 
-      if (!tag.CompareNoCase(_T("Option")))
+      if (!StringUtils::CompareNoCase(tag, (_T("Option"))))
       {
         std::string value = pXML->GetChildData();
         std::string name  = pXML->GetChildAttrib( _T("Name") );
         if (name == _T("SfvEnabled"))
-          mSfvEnabled = _ttoi(value);
+          mSfvEnabled = _ttoi(value.c_str());
         else
         if (name == _T("CrcEnabled"))
-          mCrcEnabled = _ttoi(value);
+          mCrcEnabled = _ttoi(value.c_str());
       }
       else
-      if (!tag.CompareNoCase(_T("FreeSpace")))
+      if (!StringUtils::CompareNoCase(tag, (_T("FreeSpace"))))
       {
         pXML->IntoElem();
 
         while (pXML->FindChildElem())
         {
           tag = pXML->GetChildTagName();
-          if (!tag.CompareNoCase(_T("Drive")))
+          if (!StringUtils::CompareNoCase(tag, _T("Drive")))
           {
             pXML->IntoElem();
             CFreeSpace freespace;
@@ -489,19 +490,19 @@ XFSTATUS CXBFileZillaImp::ReadXBoxSettings()
             while (pXML->FindChildElem())
             {
               tag = pXML->GetChildTagName();
-              if (!tag.CompareNoCase(_T("Name")))
-                freespace.mDrive = ConvertToDrivename(pXML->GetChildData());
+              if (!StringUtils::CompareNoCase(tag, _T("Name")))
+                freespace.mDrive = ConvertToDrivename(pXML->GetChildData().c_str());
               else
-              if (!tag.CompareNoCase(_T("Minimum")))
+              if (!StringUtils::CompareNoCase(tag, _T("Minimum")))
               {
                 std::string value = pXML->GetChildData();
-                freespace.mMinimumSpace = _ttoi(value);
+                freespace.mMinimumSpace = _ttoi(value.c_str());
               }
               else
-              if (!tag.CompareNoCase(_T("Display")))
+              if (!StringUtils::CompareNoCase(tag, _T("Display")))
               {
                 std::string value = pXML->GetChildData();
-                freespace.mDisplay = _ttoi(value);
+                freespace.mDisplay = _ttoi(value.c_str());
               }
             }
 
@@ -556,10 +557,10 @@ XFSTATUS CXBFileZillaImp::WriteXBoxSettings()
     {
       pXML->AddChildElem(_T("Drive"));
       pXML->IntoElem();
-      pXML->AddChildElem(_T("Name"), mFreeSpaceDrives[i].mDrive);
+      pXML->AddChildElem(_T("Name"), mFreeSpaceDrives[i].mDrive.c_str());
       std::string str;
       str = StringUtils::Format(_T("%u"), mFreeSpaceDrives[i].mMinimumSpace);
-      pXML->AddChildElem(_T("Minimum"), str);
+      pXML->AddChildElem(_T("Minimum"), str.c_str());
       pXML->AddChildElem(_T("Display"), mFreeSpaceDrives[i].mDisplay?_T("1"):_T("0"));
       pXML->OutOfElem();
     }
@@ -932,7 +933,7 @@ XFSTATUS CXFUserImp::SetName(LPCTSTR Name)
   if (permissions.GetUser(Name, user))
     return XFS_ALREADY_EXISTS;
 
-  if (permissions.RemoveUser(mUser.user) != XFS_OK)
+  if (permissions.RemoveUser(mUser.user.c_str()) != XFS_OK)
   {
     // todo: log/notify ?
   }
@@ -1029,7 +1030,7 @@ DWORD CXFUserImp::GetDirectoryPermissions(t_directory& Dir)
 DWORD CXFUserImp::GetDirectoryPermissions(LPCTSTR DirName)
 {
   for (unsigned i = 0; i < mUser.permissions.size(); i++)
-    if (!mUser.permissions[i].dir.CompareNoCase(DirName))
+    if (!StringUtils::CompareNoCase(mUser.permissions[i].dir, DirName))
       return GetDirectoryPermissions(mUser.permissions[i]);
 
   return XBPERMISSION_DENIED;
@@ -1051,7 +1052,7 @@ void CXFUserImp::SetDirectoryPermissions(t_directory& Dir, DWORD Permissions)
 XFSTATUS CXFUserImp::SetDirectoryPermissions(LPCTSTR DirName, DWORD Permissions)
 {
   for (unsigned i = 0; i < mUser.permissions.size(); i++)
-    if (!mUser.permissions[i].dir.CompareNoCase(DirName))
+    if (!StringUtils::CompareNoCase(mUser.permissions[i].dir, DirName))
     {
       if (Permissions & XBDIR_HOME)
         for (unsigned j = 0; j < mUser.permissions.size(); j++)
@@ -1068,7 +1069,7 @@ XFSTATUS CXFUserImp::SetDirectoryPermissions(LPCTSTR DirName, DWORD Permissions)
 XFSTATUS CXFUserImp::AddDirectory(LPCTSTR DirName, DWORD Permissions)
 {
   for (unsigned i = 0; i < mUser.permissions.size(); i++)
-    if (!mUser.permissions[i].dir.CompareNoCase(DirName))
+    if (!StringUtils::CompareNoCase(mUser.permissions[i].dir, DirName))
       return XFS_ALREADY_EXISTS;
 
   t_directory newDir;
@@ -1091,7 +1092,7 @@ XFSTATUS CXFUserImp::RemoveDirectory(LPCTSTR DirName)
   std::vector<t_directory>::iterator it;
 
   for (it = mUser.permissions.begin(); it != mUser.permissions.end(); ++it)
-    if (!(*it).dir.CompareNoCase(DirName))
+    if (!StringUtils::CompareNoCase((*it).dir, DirName))
     {
       mUser.permissions.erase(it);
       return XFS_OK;
@@ -1167,7 +1168,7 @@ XFSTATUS CXFPermissions::AddUser(const CUser& user)
 
   t_UsersList::iterator iter;
   for (iter = m_sUsersList.begin(); iter != m_sUsersList.end(); ++iter)
-    if (!(*iter).user.CompareNoCase(user.user))
+    if (!StringUtils::CompareNoCase((*iter).user, user.user))
     {
       m_sync.Unlock();
       return XFS_ALREADY_EXISTS;
@@ -1187,17 +1188,17 @@ XFSTATUS CXFPermissions::AddUser(const CUser& user)
 
         //Save the user details
     pXML->AddChildElem(_T("User"));
-    pXML->AddChildAttrib(_T("Name"), user.user);
+    pXML->AddChildAttrib(_T("Name"), user.user.c_str());
     pXML->IntoElem();
-    SetKey(pXML, "Pass", user.password);
+    SetKey(pXML, "Pass", user.password.c_str());
     SetKey(pXML, "Resolve Shortcuts", user.nLnk?"1":"0");
     SetKey(pXML, "Relative", user.nRelative?"1":"0");
     SetKey(pXML, "Bypass server userlimit", user.nBypassUserLimit?"1":"0");
     std::string str;
     str = StringUtils::Format(_T("%d"), user.nUserLimit);
-    SetKey(pXML, "User Limit", str);
+    SetKey(pXML, "User Limit", str.c_str());
     str = StringUtils::Format(_T("%d"), user.nIpLimit);
-    SetKey(pXML, "IP Limit", str);
+    SetKey(pXML, "IP Limit", str.c_str());
 
     SavePermissions(pXML, user);
     pXML->OutOfElem();
@@ -1218,7 +1219,7 @@ XFSTATUS CXFPermissions::RemoveUser(LPCTSTR username)
 
   t_UsersList::iterator iter;
   for (iter = m_sUsersList.begin(); iter != m_sUsersList.end(); ++iter)
-    if (!(*iter).user.CompareNoCase(username))
+    if (!StringUtils::CompareNoCase((*iter).user, username))
     {
       m_sUsersList.erase(iter);
       UpdateInstances();
@@ -1255,7 +1256,7 @@ XFSTATUS CXFPermissions::RemoveUser(LPCTSTR username)
 
 XFSTATUS CXFPermissions::ModifyUser(const CUser& user)
 {
-    RemoveUser(user.user);
+    RemoveUser(user.user.c_str());
   return AddUser(user);
 }
 
@@ -1264,7 +1265,7 @@ BOOL CXFPermissions::UserExists(LPCTSTR username)
 {
   t_UsersList::iterator iter;
   for (iter = m_sUsersList.begin(); iter != m_sUsersList.end(); ++iter)
-    if (!(*iter).user.CompareNoCase(username))
+    if (!StringUtils::CompareNoCase((*iter).user, username))
       return TRUE;
 
   return FALSE;
