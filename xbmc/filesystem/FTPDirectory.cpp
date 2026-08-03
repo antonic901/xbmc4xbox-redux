@@ -69,7 +69,7 @@ bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList &items)
       std::string name;
       name.assign(lp.name, lp.namelen);
 
-      if( name.Equals("..") || name.Equals(".") )
+      if( name == ".." || name == "." )
         continue;
 
       /* this should be conditional if we ever add    */

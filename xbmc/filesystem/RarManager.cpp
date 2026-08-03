@@ -240,7 +240,7 @@ bool CRarManager::CacheRarredFile(std::string& strPathInCache, const std::string
           g_charsetConverter.wToUTF8(pIterator->item.NameW, strName);
         else
           g_charsetConverter.unknownToUTF8(pIterator->item.Name, strName);
-        if (strName.Equals(strPath))
+        if (strName == strPath)
         {
           iOffset = pIterator->item.iOffset;
           break;

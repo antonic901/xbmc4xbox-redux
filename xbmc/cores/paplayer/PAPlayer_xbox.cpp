@@ -376,7 +376,7 @@ bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersa
 
   if ((channels == 2) && (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers")))
     g_audioContext.GetMixBin(dsmbvp8, &iMixBinCount, &dwCMask, DSMIXBINTYPE_STEREOALL, channels);
-  else if( codecname.Equals("wav") || codecname.Equals("wma") || codecname.Equals("flac") )
+  else if( codecname == "wav" || codecname == "wma" || codecname == "flac" )
     g_audioContext.GetMixBin(dsmbvp8, &iMixBinCount, &dwCMask, 0, channels);
   else
     g_audioContext.GetMixBin(dsmbvp8, &iMixBinCount, &dwCMask, DSMIXBINTYPE_STANDARD, channels);

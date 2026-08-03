@@ -948,7 +948,7 @@ bool CGUIDialogFileBrowser::OnPopupMenu(int iItem)
         CURL url(newPath);
         for (unsigned int i=0;i<shares.size();++i)
         {
-          if (URIUtils::CompareWithoutSlashAtEnd(shares[i].strPath, strOldPath))//getPath().Equals(strOldPath))
+          if (URIUtils::CompareWithoutSlashAtEnd(shares[i].strPath, strOldPath))//getPath() == strOldPath)
           {
             shares[i].strName = url.GetWithoutUserDetails();
             shares[i].strPath = newPath;
@@ -980,7 +980,7 @@ bool CGUIDialogFileBrowser::OnPopupMenu(int iItem)
 
       for (unsigned int i=0;i<m_shares.size();++i)
       {
-        if (URIUtils::CompareWithoutSlashAtEnd(m_shares[i].strPath, m_selectedPath) && !m_shares[i].m_ignore) // getPath().Equals(m_selectedPath))
+        if (URIUtils::CompareWithoutSlashAtEnd(m_shares[i].strPath, m_selectedPath) && !m_shares[i].m_ignore) // getPath() == m_selectedPath)
         {
           m_shares.erase(m_shares.begin()+i);
           break;

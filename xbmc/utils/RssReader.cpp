@@ -282,7 +282,7 @@ void CRssReader::GetNewsItems(TiXmlElement* channelXmlNode, int iFeed)
           // <title>
           //        <div dir="RTL">òìå áøùú: ùîøå òì òöîëí</div>
           // </title>
-          if (htmlText.Equals("div") || htmlText.Equals("span"))
+          if (htmlText == "div" || htmlText == "span")
             htmlText = childNode->FirstChild()->FirstChild()->Value();
 
           std::wstring unicodeText, unicodeText2;

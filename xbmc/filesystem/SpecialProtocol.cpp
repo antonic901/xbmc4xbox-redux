@@ -126,36 +126,36 @@ std::string CSpecialProtocol::TranslatePath(const CURL &url)
   else
     RootDir = FullFileName;
 
-  if (RootDir.Equals("subtitles"))
+  if (RootDir == "subtitles")
     translatedPath = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.custompath"), FileName);
-  else if (RootDir.Equals("userdata"))
+  else if (RootDir == "userdata")
     translatedPath = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(), FileName);
-  else if (RootDir.Equals("database"))
+  else if (RootDir == "database")
     translatedPath = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetDatabaseFolder(), FileName);
-  else if (RootDir.Equals("thumbnails"))
+  else if (RootDir == "thumbnails")
     translatedPath = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetThumbnailsFolder(), FileName);
-  else if (RootDir.Equals("recordings") || RootDir.Equals("cdrips"))
+  else if (RootDir == "recordings" || RootDir == "cdrips")
     translatedPath = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("audiocds.recordingpath"), FileName);
-  else if (RootDir.Equals("screenshots"))
+  else if (RootDir == "screenshots")
     translatedPath = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("debug.screenshotpath"), FileName);
-  else if (RootDir.Equals("musicplaylists"))
+  else if (RootDir == "musicplaylists")
     translatedPath = URIUtils::AddFileToFolder(CUtil::MusicPlaylistsLocation(), FileName);
-  else if (RootDir.Equals("videoplaylists"))
+  else if (RootDir == "videoplaylists")
     translatedPath = URIUtils::AddFileToFolder(CUtil::VideoPlaylistsLocation(), FileName);
-  else if (RootDir.Equals("skin"))
+  else if (RootDir == "skin")
     translatedPath = URIUtils::AddFileToFolder(CServiceBroker::GetWinSystem()->GetGfxContext().GetMediaDir(), FileName);
 
   // from here on, we have our "real" special paths
-  else if (RootDir.Equals("xbmc") ||
-           RootDir.Equals("xbmcbin") ||
-           RootDir.Equals("xbmcbinaddons") ||
-           RootDir.Equals("home") ||
-           RootDir.Equals("userhome") ||
-           RootDir.Equals("temp") ||
-           RootDir.Equals("profile") ||
-           RootDir.Equals("masterprofile") ||
-           RootDir.Equals("frameworks") ||
-           RootDir.Equals("logpath"))
+  else if (RootDir == "xbmc" ||
+           RootDir == "xbmcbin" ||
+           RootDir == "xbmcbinaddons" ||
+           RootDir == "home" ||
+           RootDir == "userhome" ||
+           RootDir == "temp" ||
+           RootDir == "profile" ||
+           RootDir == "masterprofile" ||
+           RootDir == "frameworks" ||
+           RootDir == "logpath")
   {
     std::string basePath = GetPath(RootDir);
     if (!basePath.IsEmpty())

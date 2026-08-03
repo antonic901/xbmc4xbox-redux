@@ -110,7 +110,7 @@ ILEDSmartxxRGB::~ILEDSmartxxRGB()
 }
 void ILEDSmartxxRGB::OnStartup()
 {
-  if (g_sysinfo.SmartXXModCHIP().Equals("SmartXX V3") || g_sysinfo.SmartXXModCHIP().Equals("SmartXX OPX"))
+  if (g_sysinfo.SmartXXModCHIP() == "SmartXX V3" || g_sysinfo.SmartXXModCHIP() == "SmartXX OPX")
   {
       SetThreadPriority(GetCurrentThread(),THREAD_PRIORITY_LOWEST);
       CLog::Log(LOGDEBUG,"Starting SmartXX RGB LED thread");
@@ -123,7 +123,7 @@ void ILEDSmartxxRGB::Process()
     {
         dwFrameTime = timeGetTime() - dwLastTime;
 
-    if( (s_RGBs.strTransition.IsEmpty() || s_RGBs.strTransition.Equals("none")) && !strLastTransition.Equals("none") )
+    if( (s_RGBs.strTransition.IsEmpty() || s_RGBs.strTransition == "none") && strLastTransition != "none" )
         {
             strLastTransition = "none";
       s_CurRGB.red = s_RGBs.red1;
@@ -133,7 +133,7 @@ void ILEDSmartxxRGB::Process()
 
             SetRGBLed(s_CurRGB.red,s_CurRGB.green,s_CurRGB.blue, s_CurRGB.white);
         }
-    else if(s_RGBs.strTransition.Equals("switch") && !strLastTransition.Equals("switch"))
+    else if(s_RGBs.strTransition == "switch" && strLastTransition != "switch")
         {
       if(dwFrameTime >= s_RGBs.iTime )
             {
@@ -154,7 +154,7 @@ void ILEDSmartxxRGB::Process()
       }
 
         }
-    else if(s_RGBs.strTransition.Equals("blink"))
+    else if(s_RGBs.strTransition == "blink")
         {
             strLastTransition = "blink";
             if(dwFrameTime >= s_RGBs.iTime )
@@ -167,11 +167,11 @@ void ILEDSmartxxRGB::Process()
         SetRGBLed(s_CurRGB.red,s_CurRGB.green,s_CurRGB.blue,s_CurRGB.white);
             }
         }
-    else if(s_RGBs.strTransition.Equals("fade") || s_RGBs.strTransition.Equals("fadeloop") || s_RGBs.strTransition.Equals("faderepeat"))
+    else if(s_RGBs.strTransition == "fade" || s_RGBs.strTransition == "fadeloop" || s_RGBs.strTransition == "faderepeat")
         {
       static double distanceR,distanceG,distanceB,distanceW;
 
-      if(!strLastTransition.Equals("fade"))
+      if(strLastTransition != "fade")
             {
         distanceR = bRepeat ? s_RGBs.red1-s_RGBs.red2 : s_RGBs.red2-s_RGBs.red1;
         distanceG = bRepeat ? s_RGBs.green1-s_RGBs.green2 : s_RGBs.green2-s_RGBs.green1;
@@ -180,7 +180,7 @@ void ILEDSmartxxRGB::Process()
 
                 strLastTransition = "fade";
 
-        if(s_RGBs.strTransition.Equals("faderepeat"))bRepeat=!bRepeat;
+        if(s_RGBs.strTransition == "faderepeat")bRepeat=!bRepeat;
             }
 
             if(dwFrameTime <= s_RGBs.iTime )
@@ -197,7 +197,7 @@ void ILEDSmartxxRGB::Process()
 
         SetRGBLed(s_CurRGB.red,s_CurRGB.green,s_CurRGB.blue,s_CurRGB.white);
             }
-            else if(s_RGBs.strTransition.Equals("fadeloop") || s_RGBs.strTransition.Equals("faderepeat"))
+            else if(s_RGBs.strTransition == "fadeloop" || s_RGBs.strTransition == "faderepeat")
       {
         strLastTransition="none";
         dwFrameTime = 0;
@@ -215,7 +215,7 @@ void ILEDSmartxxRGB::OnExit()
 
   // SmartXX OPX port for RGB-Red is the same port for display brightness control
   // Restoring brightness value from the settings
-  if ( g_sysinfo.SmartXXModCHIP().Equals("SmartXX OPX") )
+  if ( g_sysinfo.SmartXXModCHIP() == "SmartXX OPX" )
   {
     CApplicationComponents &components = CServiceBroker::GetAppComponents();
     const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
@@ -227,7 +227,7 @@ void ILEDSmartxxRGB::OnExit()
 
 bool ILEDSmartxxRGB::Start()
 {
-  if (g_sysinfo.SmartXXModCHIP().Equals("SmartXX V3") || g_sysinfo.SmartXXModCHIP().Equals("SmartXX OPX"))
+  if (g_sysinfo.SmartXXModCHIP() == "SmartXX V3" || g_sysinfo.SmartXXModCHIP() == "SmartXX OPX")
   {
     Create();
     return true;
@@ -306,9 +306,9 @@ bool ILEDSmartxxRGB::SetRGBStatus(const std::string &strStatus)
 
 bool ILEDSmartxxRGB::SetRGBLed(int red, int green, int blue, int white)
 {
-  _outp( g_sysinfo.SmartXXModCHIP().Equals("SmartXX V3") ? SMARTXX_PWD_RED:SMARTXX_OPX_PWD_RED, red);
-  _outp( g_sysinfo.SmartXXModCHIP().Equals("SmartXX V3") ? SMARTXX_PWD_GREEN:SMARTXX_OPX_PWD_GREEN, green);
-  _outp( g_sysinfo.SmartXXModCHIP().Equals("SmartXX V3") ? SMARTXX_PWD_BLUE:SMARTXX_OPX_PWD_BLUE, blue);
+  _outp( g_sysinfo.SmartXXModCHIP() == "SmartXX V3" ? SMARTXX_PWD_RED:SMARTXX_OPX_PWD_RED, red);
+  _outp( g_sysinfo.SmartXXModCHIP() == "SmartXX V3" ? SMARTXX_PWD_GREEN:SMARTXX_OPX_PWD_GREEN, green);
+  _outp( g_sysinfo.SmartXXModCHIP() == "SmartXX V3" ? SMARTXX_PWD_BLUE:SMARTXX_OPX_PWD_BLUE, blue);
 
   _outp( SMARTXX_PWM_STATUS, white);
 
@@ -340,7 +340,7 @@ bool ILEDSmartxxRGB::SetRGBState(const std::string &strRGB1, const std::string &
   // end reset
 
   getRGBValues(strRGB1,strRGB2,strWhiteA,strWhiteB,&s_RGBs);
-  if(!strTransition.Equals("none") || !strTransition.IsEmpty())
+  if(strTransition != "none" || !strTransition.IsEmpty())
     s_RGBs.strTransition = strTransition;
   else
     s_RGBs.strTransition = "none";

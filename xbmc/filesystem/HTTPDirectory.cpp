@@ -112,7 +112,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       g_charsetConverter.wToUTF8(wConverted, strLinkTemp);
 
       if (StringUtils::EndsWith(strNameTemp, "..>") &&
-          strLinkTemp.Left(strNameTemp.GetLength()-3).Equals(strNameTemp.Left(strNameTemp.GetLength()-3)))
+          strLinkTemp.Left(strNameTemp.GetLength()-3) == strNameTemp.Left(strNameTemp.GetLength(-3)))
         strName = strNameTemp = strLinkTemp;
 
       // we detect http directory items by its display name and its stripped link

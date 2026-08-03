@@ -41,52 +41,52 @@
 
 ICodec* CodecFactory::CreateCodec(const std::string& strFileType)
 {
-  if (strFileType.Equals("mp3") || strFileType.Equals("mp2"))
+  if (strFileType == "mp3" || strFileType == "mp2")
     return new MP3Codec();
-  else if (strFileType.Equals("ape") || strFileType.Equals("mac"))
+  else if (strFileType == "ape" || strFileType == "mac")
     return new DVDPlayerCodec();
-  else if (strFileType.Equals("cdda"))
+  else if (strFileType == "cdda")
     return new DVDPlayerCodec();
-  else if (strFileType.Equals("mpc") || strFileType.Equals("mp+") || strFileType.Equals("mpp"))
+  else if (strFileType == "mpc" || strFileType == "mp+" || strFileType == "mpp")
     return new DVDPlayerCodec();
-  else if (strFileType.Equals("shn"))
+  else if (strFileType == "shn")
     return new DVDPlayerCodec();
-  else if (strFileType.Equals("mka"))
+  else if (strFileType == "mka")
     return new DVDPlayerCodec();
-  else if (strFileType.Equals("flac"))
+  else if (strFileType == "flac")
     return new FLACCodec();
-  else if (strFileType.Equals("wav"))
+  else if (strFileType == "wav")
     return new DVDPlayerCodec();
-  else if (strFileType.Equals("dts") || strFileType.Equals("ac3") ||
-           strFileType.Equals("m4a") || strFileType.Equals("aac"))
+  else if (strFileType == "dts" || strFileType == "ac3" ||
+           strFileType == "m4a" || strFileType == "aac")
     return new DVDPlayerCodec();
-  else if (strFileType.Equals("wv"))
+  else if (strFileType == "wv")
     return new DVDPlayerCodec();
   else if (ModuleCodec::IsSupportedFormat(strFileType))
     return new ModuleCodec();
-  else if (strFileType.Equals("nsf") || strFileType.Equals("nsfstream"))
+  else if (strFileType == "nsf" || strFileType == "nsfstream")
     return new NSFCodec();
-  else if (strFileType.Equals("spc"))
+  else if (strFileType == "spc")
     return new SPCCodec();
-  else if (strFileType.Equals("gym"))
+  else if (strFileType == "gym")
     return new GYMCodec();
-  else if (strFileType.Equals("sid") || strFileType.Equals("sidstream"))
+  else if (strFileType == "sid" || strFileType == "sidstream")
     return new SIDCodec();
   else if (AdplugCodec::IsSupportedFormat(strFileType))
     return new AdplugCodec();
   else if (VGMCodec::IsSupportedFormat(strFileType))
     return new VGMCodec();
-  else if (strFileType.Equals("ym"))
+  else if (strFileType == "ym")
     return new YMCodec();
-  else if (strFileType.Equals("wma"))
+  else if (strFileType == "wma")
     return new DVDPlayerCodec();
-  else if (strFileType.Equals("aiff") || strFileType.Equals("aif"))
+  else if (strFileType == "aiff" || strFileType == "aif")
     return new DVDPlayerCodec();
-  else if (strFileType.Equals("xwav"))
+  else if (strFileType == "xwav")
     return new ADPCMCodec();
   else if (TimidityCodec::IsSupportedFormat(strFileType))
     return new TimidityCodec();
-  else if (ASAPCodec::IsSupportedFormat(strFileType) || strFileType.Equals("asapstream"))
+  else if (ASAPCodec::IsSupportedFormat(strFileType) || strFileType == "asapstream")
     return new ASAPCodec();
 
   return NULL;
@@ -95,22 +95,22 @@ ICodec* CodecFactory::CreateCodec(const std::string& strFileType)
 ICodec* CodecFactory::CreateCodecDemux(const std::string& strFile, const std::string& strContent, unsigned int filecache)
 {
   CURL urlFile(strFile);
-  if( strContent.Equals("audio/mpeg")
-  ||  strContent.Equals("audio/mp3") )
+  if( strContent == "audio/mpeg"
+  ||  strContent == "audio/mp3" )
     return new MP3Codec();
-  else if( strContent.Equals("audio/aac")
-    || strContent.Equals("audio/aacp") )
+  else if( strContent == "audio/aac"
+    || strContent == "audio/aacp" )
   {
     DVDPlayerCodec *pCodec = new DVDPlayerCodec;
     if (urlFile.GetProtocol() == "shout" )
       pCodec->SetContentType(strContent);
     return pCodec;
   }
-  else if( strContent.Equals("audio/x-ms-wma") )
+  else if( strContent == "audio/x-ms-wma" )
     return new DVDPlayerCodec();
-  else if( strContent.Equals("application/ogg") || strContent.Equals("audio/ogg"))
+  else if( strContent == "application/ogg" || strContent == "audio/ogg")
     return CreateOGGCodec(strFile,filecache);
-   else if (strContent.Equals("audio/flac") || strContent.Equals("audio/x-flac") || strContent.Equals("application/x-flac"))
+   else if (strContent == "audio/flac" || strContent == "audio/x-flac" || strContent == "application/x-flac")
      return new FLACCodec();
 
   if (urlFile.IsProtocol("shout"))

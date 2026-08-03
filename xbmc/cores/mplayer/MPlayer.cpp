@@ -827,7 +827,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
   /* use our own protocol for ftp to avoid using mplayer's builtin */
   // not working well with seeking.. curl locks up for some reason. think it's the thread handover
   // thus any requests to ftpx in curl will now be non seekable
-  if( strFile.Left(6).Equals("ftp://") )
+  if( strFile.Left(6) == "ftp://" )
     strFile.replace(0, 6, "ftpx://");
 
   CURL url(strFile);
@@ -977,7 +977,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     {
       std::string strPath;
       URIUtils::GetParentPath(strFile, strPath);
-      if (strPath.Equals("D:\\VIDEO_TS\\", false) || strPath.Equals("D:\\VIDEO_TS", false))
+      if (strPath == "D:\\VIDEO_TS\\" || strPath == "D:\\VIDEO_TS")
         options.SetDVDDevice("D:\\"); //Properly mastered dvd, lets mplayer open the dvd properly
       else
         options.SetDVDDevice(strPath);
@@ -988,7 +988,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     strExtension.MakeLower();
 
 
-    if (strExtension.Equals(".avi", false))
+    if (strExtension == ".avi")
     {
       // check length of file, as mplayer can't handle opendml very well
       CFile* pFile = new CFile();
@@ -1022,8 +1022,8 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
 
     // libavformats demuxer is better than the internal mplayers
     // this however also causes errors if mplayer.dll doesn't have libavformat
-    if (file.GetContentType().Equals("video/nsv", false)
-      || url.GetOptions().Equals(";stream.nsv", false))
+    if (file.GetContentType() == "video/nsv"
+      || url.GetOptions() == ";stream.nsv")
     {
       options.SetDemuxer("35"); // libavformat
       options.SetSyncSpeed(1); // number of seconds per frame mplayer is allowed to correct

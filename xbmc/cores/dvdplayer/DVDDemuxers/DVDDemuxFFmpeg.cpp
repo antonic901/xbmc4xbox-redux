@@ -595,9 +595,9 @@ AVDictionary *CDVDDemuxFFmpeg::GetFFMpegOptionsFromInput()
       const std::string &name = it->first;
       const std::string &value = it->second;
 
-      if (name.Equals("seekable"))
+      if (name == "seekable")
         m_dllAvUtil.av_dict_set(&options, "seekable", value.c_str(), 0);
-      else if (name.Equals("User-Agent"))
+      else if (name == "User-Agent")
       {
         m_dllAvUtil.av_dict_set(&options, "user-agent", value.c_str(), 0);
         hasUserAgent = true;
