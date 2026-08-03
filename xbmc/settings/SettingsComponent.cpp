@@ -40,6 +40,7 @@ void CSettingsComponent::Initialize()
     m_settings->Initialize();
 
     m_advancedSettings->Initialize(*m_settings->GetSettingsManager());
+    URIUtils::RegisterAdvancedSettings(*m_advancedSettings);
 
     m_profileManager->Initialize(m_settings);
 
@@ -88,6 +89,7 @@ void CSettingsComponent::Deinitialize()
     }
     m_profileManager->Uninitialize();
 
+    URIUtils::UnregisterAdvancedSettings();
     m_advancedSettings->Uninitialize(*m_settings->GetSettingsManager());
 
     m_settings->Uninitialize();
