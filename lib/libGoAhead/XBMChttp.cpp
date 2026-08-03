@@ -629,13 +629,13 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, std::string paras[])
     return SetResponse(openTag+"Error: must supply media type at minimum");
   else
   {
-    if (paras[0].Equals("music"))
+    if (paras[0] == "music")
       iType = 0;
-    else if (paras[0].Equals("video"))
+    else if (paras[0] == "video")
       iType = 1;
-    else if (paras[0].Equals("pictures"))
+    else if (paras[0] == "pictures")
       iType = 2;
-    else if (paras[0].Equals("files"))
+    else if (paras[0] == "files")
       iType = 3;
     if (iType < 0)
       return SetResponse(openTag+"Error: invalid media type; valid options are music, video, pictures");
@@ -654,11 +654,11 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, std::string paras[])
   {
     for (int i = 2; i < numParas; ++i)
     {
-      if (paras[i].Equals("showdate"))
+      if (paras[i] == "showdate")
         bShowDate = true;
-      else if (paras[i].Equals("pathsonly"))
+      else if (paras[i] == "pathsonly")
         bPathsOnly = true;
-      else if (paras[i].Equals("size"))
+      else if (paras[i] == "size")
         bSize = true;
       else if (StringUtils::IsNaturalNumber(paras[i]))
       {
@@ -726,19 +726,19 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, std::string paras[])
   CURL url(strLocation);
   if (url.GetProtocol() == "rar" || url.GetProtocol() == "zip")
     bSpecial = true;
-  if (strType.Equals("music"))
+  if (strType == "music")
   {
     if (url.GetProtocol() == "musicdb")
       bSpecial = true;
-    else if (strLocation.Equals("$playlists"))
+    else if (strLocation == "$playlists")
     {
       strLocation = "special://musicplaylists/";
       bSpecial = true;
     }
   }
-  else if (strType.Equals("video"))
+  else if (strType == "video")
   {
-    if (strLocation.Equals("$playlists"))
+    if (strLocation == "$playlists")
     {
       strLocation = "special://videoplaylists/";
       bSpecial = true;
@@ -868,31 +868,31 @@ int CXbmcHttp::xbmcGetSources(int numParas, std::string paras[])
 
   if (numParas > 0)
   {
-    if (paras[0].Equals("music"))
+    if (paras[0] == "music")
     {
       iStart = 0;
       iEnd   = 1;
       bShowType = false;
     }
-    else if (paras[0].Equals("video"))
+    else if (paras[0] == "video")
     {
       iStart = 1;
       iEnd   = 2;
       bShowType = false;
     }
-    else if (paras[0].Equals("pictures"))
+    else if (paras[0] == "pictures")
     {
       iStart = 2;
       iEnd   = 3;
       bShowType = false;
     }
-    else if (paras[0].Equals("files"))
+    else if (paras[0] == "files")
     {
       iStart = 3;
       iEnd   = 4;
       bShowType = false;
     }
-    else if (paras[0].Equals("programs"))
+    else if (paras[0] == "programs")
     {
       iStart = 4;
       iEnd   = 5;
@@ -906,9 +906,9 @@ int CXbmcHttp::xbmcGetSources(int numParas, std::string paras[])
   if (numParas > 1)
   {
     // special case where getmedialocation calls getshares
-    if (paras[1].Equals("appendone"))
+    if (paras[1] == "appendone")
       bAppendOne = true;
-    else if (paras[1].Equals("pathsonly"))
+    else if (paras[1] == "pathsonly")
       bShowName = false;
   }
 
@@ -1020,7 +1020,7 @@ int CXbmcHttp::xbmcAddToPlayListFromDB(int numParas, std::string paras[])
 
   int playList;
   CFileItemList filelist;
-  if (type.Equals("songs"))
+  if (type == "songs")
   {
     playList = PLAYLIST::TYPE_MUSIC;
 
@@ -1030,9 +1030,9 @@ int CXbmcHttp::xbmcAddToPlayListFromDB(int numParas, std::string paras[])
     musicdatabase.GetSongsByWhere("musicdb://songs/", filter, filelist);
     musicdatabase.Close();
   }
-  else if (type.Equals("movies") ||
-           type.Equals("episodes") ||
-           type.Equals("musicvideos"))
+  else if (type == "movies" ||
+           type == "episodes" ||
+           type == "musicvideos")
   {
     playList = PLAYLIST::TYPE_VIDEO;
 
@@ -1040,11 +1040,11 @@ int CXbmcHttp::xbmcAddToPlayListFromDB(int numParas, std::string paras[])
     if (!videodatabase.Open())
       return SetResponse(openTag+"Error: Could not open video database");
 
-    if (type.Equals("movies"))
+    if (type == "movies")
       videodatabase.GetMoviesByWhere("videodb://movies/titles/", filter, filelist);
-    else if (type.Equals("episodes"))
+    else if (type == "episodes")
       videodatabase.GetEpisodesByWhere("videodb://tvshows/titles/", filter, filelist);
-    else if (type.Equals("musicvideos"))
+    else if (type == "musicvideos")
       videodatabase.GetMusicVideosByWhere("videodb://musicvideos/titles/", filter, filelist);
     videodatabase.Close();
   }
@@ -1630,7 +1630,7 @@ int CXbmcHttp::xbmcPlaySlideshow(int numParas, std::string paras[])
 { // (filename(;1)) -> 1 indicates recursive
   // TODO: add suoport for new random and notrandom options
   unsigned int recursive = 0;
-  if (numParas>1 && paras[1].Equals("1"))
+  if (numParas>1 && paras[1] == "1")
     recursive=1;
   CGUIMessage msg(GUI_MSG_START_SLIDESHOW, 0, 0, recursive);
   if (numParas==0)
@@ -1775,7 +1775,7 @@ int CXbmcHttp::xbmcGetThumb(int numParas, std::string paras[], bool bGetThumb)
     return SetResponse(openTag+"Error:Missing parameter");
   bool bImgTag=false;
   // only allow the old GetThumb command to accept "imgtag"
-  if (bGetThumb && numParas==2 && paras[1].Equals("imgtag"))
+  if (bGetThumb && numParas==2 && paras[1] == "imgtag")
   {
     bImgTag=true;
     thumb="<img src=\"data:image/jpg;base64,";
@@ -1890,11 +1890,11 @@ int CXbmcHttp::xbmcGetPlayListContents(int numParas, std::string paras[])
   bool bShowDuration = false;
   for (int i = 0; i < numParas; ++i)
   {
-    if (paras[i].Equals("showindex"))
+    if (paras[i] == "showindex")
       bShowIndex = true;
-    else if (paras[i].Equals("showtitle"))
+    else if (paras[i] == "showtitle")
       bShowTitle = true;
-    else if (paras[i].Equals("showduration"))
+    else if (paras[i] == "showduration")
       bShowDuration = true;
     else if (StringUtils::IsNaturalNumber(paras[i]))
       playList = atoi(paras[i].c_str());
@@ -2945,7 +2945,7 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, std::string paras[])
     else
       return SetResponse(openTag+"Off");
   }
-  else if (paras[0].ToLower().Equals("on"))
+  else if (paras[0].ToLower() == "on")
   {
     if (CNetworkServices::GetInstance().IsWebserverRunning())
       return SetResponse(openTag+"Already on");
@@ -2956,7 +2956,7 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, std::string paras[])
     }
   }
   else
-    if (paras[0].ToLower().Equals("off"))
+    if (paras[0].ToLower() == "off")
       if (!CNetworkServices::GetInstance().IsWebserverRunning())
         return SetResponse(openTag+"Already off");
       else

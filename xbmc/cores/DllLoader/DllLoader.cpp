@@ -939,7 +939,7 @@ void DllLoader::UnloadSymbols()
         while (entry)
         {
           std::wstring baseName=(wchar_t*)((LDR_DATA_TABLE_ENTRY*)entry)->BaseDllName.Buffer;
-          if (baseName.Equals(strNameW))
+          if (baseName == strNameW)
           {
             // ...and remove it from the LoadedModuleList and free its memory.
             LIST_ENTRY* back=entry->Blink;

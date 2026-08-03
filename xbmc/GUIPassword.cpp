@@ -318,7 +318,7 @@ bool CGUIPassword::CheckLock(LockType btnType, const std::string& strPassword, i
 bool CGUIPassword::CheckLock(LockType btnType, const std::string& strPassword, int iHeading, bool& bCanceled)
 {
   bCanceled = false;
-  if (btnType == LOCK_MODE_EVERYONE || strPassword.Equals("-")        ||
+  if (btnType == LOCK_MODE_EVERYONE || strPassword == "-"        ||
       CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE || g_passwordManager.bMasterUser)
     return true;
 

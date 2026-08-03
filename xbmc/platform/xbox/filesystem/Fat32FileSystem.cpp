@@ -295,7 +295,7 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const std::string &directory, 
       }
       shortPath.TrimRight(' ');
       // we don't want require the parent and current directory items
-      if (shortPath.Equals(".") || shortPath.Equals(".."))
+      if (shortPath == "." || shortPath == "..")
         continue;
       std::string longPath = shortPath;
       // do we have a vfatName here?

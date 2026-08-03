@@ -854,7 +854,7 @@ bool CFileItem::IsPythonScript() const
 
 bool CFileItem::IsXBE() const
 {
-  return URIUtils::GetExtension(m_strPath).Equals(".xbe", false);
+  return URIUtils::HasExtension(m_strPath, ".xbe");
 }
 
 bool CFileItem::IsDefaultXBE() const

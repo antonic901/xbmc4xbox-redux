@@ -66,7 +66,7 @@ void CMediaSource::FromNameAndPaths(const std::string &category, const std::stri
     m_iDriveType = SOURCE_TYPE_VIRTUAL_DVD;
     strPath = "D:\\";
   }
-  else if (strPath.Left(11).Equals("soundtrack:"))
+  else if (strPath.Left(11) == "soundtrack:")
     m_iDriveType = SOURCE_TYPE_LOCAL;
   else if (URIUtils::IsISO9660(strPath))
     m_iDriveType = SOURCE_TYPE_VIRTUAL_DVD;
@@ -102,7 +102,7 @@ void AddOrReplace(VECSOURCES& sources, const VECSOURCES& extras)
     unsigned int j;
     for ( j=0;j<sources.size();++j)
     {
-      if (sources[j].strPath.Equals(extras[i].strPath))
+      if (sources[j].strPath == extras[i].strPath)
       {
         sources[j] = extras[i];
         break;
@@ -118,7 +118,7 @@ void AddOrReplace(VECSOURCES& sources, const CMediaSource& source)
   unsigned int i;
   for( i=0;i<sources.size();++i )
   {
-    if (sources[i].strPath.Equals(source.strPath))
+    if (sources[i].strPath == source.strPath)
     {
       sources[i] = source;
       break;

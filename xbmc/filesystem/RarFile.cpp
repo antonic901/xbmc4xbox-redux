@@ -554,9 +554,9 @@ void CRarFile::InitFromUrl(const CURL& url)
       std::string strOption = StringUtils::Left((*it), iEqual);
       std::string strValue = StringUtils::Mid((*it), iEqual+1);
 
-      if( strOption.Equals("flags") )
+      if( strOption == "flags" )
         m_bFileOptions = atoi(strValue.c_str());
-      else if( strOption.Equals("cache") )
+      else if( strOption == "cache" )
         m_strCacheDir = strValue;
     }
   }

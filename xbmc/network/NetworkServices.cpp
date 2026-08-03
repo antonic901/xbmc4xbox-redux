@@ -585,7 +585,7 @@ bool CNetworkServices::SetFTPServerUserPass()
     {
       p_ftpUser = v_ftpusers[i-1];
       strTempUserName = p_ftpUser->GetName();
-      if (strTempUserName.Equals(strFtpUserName.c_str()) )
+      if (strTempUserName == strFtpUserName.c_str() )
       {
         if (p_ftpUser->SetPassword(strFtpUserPassword.c_str()) != XFS_INVALID_PARAMETERS)
         {

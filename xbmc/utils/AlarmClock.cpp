@@ -57,7 +57,7 @@ void CAlarmClock::Start(const std::string& strName, float n_secs, const std::str
 
   std::string strAlarmClock;
   std::string strStarted;
-  if (event.m_strCommand.Equals("xbmc.shutdown") || event.m_strCommand.Equals("xbmc.shutdown()"))
+  if (event.m_strCommand == "xbmc.shutdown" || event.m_strCommand == "xbmc.shutdown()")
   {
     strAlarmClock = g_localizeStrings.Get(20144);
     strStarted = g_localizeStrings.Get(20146);
@@ -95,7 +95,7 @@ void CAlarmClock::Stop(const std::string& strName, bool bSilent /* false */)
   SAlarmClockEvent& event = iter->second;
 
   std::string strAlarmClock;
-  if (event.m_strCommand.Equals("xbmc.shutdown") || event.m_strCommand.Equals("xbmc.shutdown()"))
+  if (event.m_strCommand == "xbmc.shutdown" || event.m_strCommand == "xbmc.shutdown()")
     strAlarmClock = g_localizeStrings.Get(20144);
   else
     strAlarmClock = g_localizeStrings.Get(13208);

@@ -445,7 +445,7 @@ void CUtil::CleanString(const std::string& strFileName, std::string& strTitle, s
 {
   strTitleAndYear = strFileName;
 
-  if (strFileName.Equals(".."))
+  if (strFileName == "..")
    return;
 
   const std::vector<std::string> &regexps = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_videoCleanStringRegExps;
@@ -734,7 +734,7 @@ void CUtil::GetFileAndProtocol(const std::string& strURL, std::string& strDir)
 int CUtil::GetDVDIfoTitle(const std::string& strFile)
 {
   std::string strFilename = URIUtils::GetFileName(strFile);
-  if (strFilename.Equals("video_ts.ifo")) return 0;
+  if (strFilename == "video_ts.ifo") return 0;
   //VTS_[TITLE]_0.IFO
   return atoi(strFilename.Mid(4, 2).c_str());
 }
@@ -1373,7 +1373,7 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
 
           unsigned int iPos = strMovie.substr(0,6)=="rar://"?1:0;
           iPos = strMovie.substr(0,6)=="zip://"?1:0;
-          if ((step != iPos) || (strFileNameNoExtNoCase+".rar").Equals(strItem) || (strFileNameNoExtNoCase+".zip").Equals(strItem))
+          if ((step != iPos) || (strFileNameNoExtNoCase+".rar") == strItem || (strFileNameNoExtNoCase+".zip") == strItem)
             CacheRarSubtitles(items[j]->GetPath(), strFileNameNoExtNoCase);
         }
         else
@@ -1420,7 +1420,7 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
     std::string filename = URIUtils::GetFileName(items[i]->GetPath());
     strLExt = filename.Right(filename.size()-8);
     vecExtensionsCached.push_back(strLExt);
-    if (URIUtils::GetExtension(filename).Equals(".smi"))
+    if (URIUtils::GetExtension(filename) == ".smi")
     {
       //Cache multi-language sami subtitle
       CDVDSubtitleStream* pStream = new CDVDSubtitleStream();
@@ -1459,7 +1459,7 @@ bool CUtil::CacheRarSubtitles(const std::string& strRarPath,
   CFileItemList ItemList;
 
   // zip only gets the root dir
-  if (URIUtils::GetExtension(strRarPath).Equals(".zip"))
+  if (URIUtils::GetExtension(strRarPath) == ".zip")
   {
     std::string strZipPath;
     URIUtils::CreateArchivePath(strZipPath,"zip",strRarPath,"");
@@ -1484,7 +1484,7 @@ bool CUtil::CacheRarSubtitles(const std::string& strRarPath,
     if (URIUtils::IsRAR(strPathInRar) || URIUtils::IsZIP(strPathInRar))
     {
       std::string strRarInRar;
-      if (URIUtils::GetExtension(strPathInRar).Equals(".rar"))
+      if (URIUtils::GetExtension(strPathInRar) == ".rar")
         URIUtils::CreateArchivePath(strRarInRar, "rar", strRarPath, strPathInRar);
       else
         URIUtils::CreateArchivePath(strRarInRar, "zip", strRarPath, strPathInRar);
@@ -1502,7 +1502,7 @@ bool CUtil::CacheRarSubtitles(const std::string& strRarPath,
         if (StringUtils::CompareNoCase(strExt, sub_exts[iPos]) == 0)
         {
           std::string strSourceUrl;
-          if (URIUtils::GetExtension(strRarPath).Equals(".rar"))
+          if (URIUtils::GetExtension(strRarPath) == ".rar")
             URIUtils::CreateArchivePath(strSourceUrl, "rar", strRarPath, strPathInRar);
           else
             strSourceUrl = strPathInRar;
@@ -2237,7 +2237,7 @@ int CUtil::GetMatchingSource(const std::string& strPath1, VECSOURCES& VECSOURCES
         strName = strName.Mid(0, iPos - 1);
     }
     //CLog::Log(LOGDEBUG,"CUtil::GetMatchingSource, comparing name [%s]", strName.c_str());
-    if (strPath.Equals(strName))
+    if (strPath == strName)
     {
       bIsSourceName = true;
       return i;
@@ -2729,7 +2729,7 @@ bool CUtil::AutoDetectionPing(std::string strFTPUserName, std::string strFTPPass
     {
       std::string strTmp;
       // do we received a new Client info or just a "ping" request
-      if(strReceiveMessage.Equals(sztmp))
+      if(strReceiveMessage == sztmp)
       {
         // we received a "ping" request, sending our informations
         strTmp.Format("%s;%s;%s;%d;%d\r\n\0",
@@ -2760,7 +2760,7 @@ bool CUtil::AutoDetectionPing(std::string strFTPUserName, std::string strFTPPass
         ); //this is the client IP
 
         //Is this our Local IP ?
-        if ( !strIP.Equals(strLocalIP) )
+        if ( !strIP == strLocalIP )
         {
           //is our list empty?
           if(v_xboxclients.client_ip.size() <= 0 )
@@ -2781,7 +2781,7 @@ bool CUtil::AutoDetectionPing(std::string strFTPUserName, std::string strFTPPass
             bFoundNewClient = true;
             for (i=0; i<v_xboxclients.client_ip.size(); i++)
             {
-              if(strIP.Equals(v_xboxclients.client_ip[i].c_str()))
+              if(strIP == v_xboxclients.client_ip[i].c_str())
                 bFoundNewClient=false;
             }
             if(bFoundNewClient)
@@ -2802,7 +2802,7 @@ bool CUtil::AutoDetectionPing(std::string strFTPUserName, std::string strFTPPass
 
               for (i=0; i<v_xboxclients.client_ip.size(); i++)
               {
-                if(strIP.Equals(v_xboxclients.client_ip[i].c_str()))
+                if(strIP == v_xboxclients.client_ip[i].c_str())
                 {
                   // found client in list, reset looup_Count and the client_info
                   v_xboxclients.client_info[i]=strInfo;
@@ -2913,7 +2913,7 @@ bool CUtil::SetXBOXNickName(std::string strXboxNickNameIn, std::string &strXboxN
   { do
       {
         strXboxNickNameOut = StringUtils::Format("%ls",pszNickName );
-        if (strXboxNickNameIn.Equals(strXboxNickNameOut))
+        if (strXboxNickNameIn == strXboxNickNameOut)
         {
           bfound = true;
           break;
@@ -3346,7 +3346,7 @@ bool CUtil::RunFFPatchedXBE(std::string szPath1, std::string& szNewPath)
     return false;
   }
   std::string strIsPMode = CDisplaySettings::GetInstance().GetCurrentResolutionInfo().strMode;
-  if ( strIsPMode.Equals("480p 16:9") || strIsPMode.Equals("480p 4:3") || strIsPMode.Equals("720p 16:9"))
+  if ( strIsPMode == "480p 16:9" || strIsPMode == "480p 4:3" || strIsPMode == "720p 16:9")
   {
     CLog::Log(LOGDEBUG, "%s - Progressive Mode detected: Skipping Auto Filter Flicker Patching!", __FUNCTION__);
     return false;

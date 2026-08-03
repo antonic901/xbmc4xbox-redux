@@ -940,7 +940,7 @@ bool CSysInfo::GetDiskSpace(const std::string drive,int& iTotal, int& iTotalFree
   std::string driveName = drive + ":\\";
   ULARGE_INTEGER total, totalFree, totalUsed;
 
-  if (drive.IsEmpty() || drive.Equals("*")) //All Drives
+  if (drive.IsEmpty() || drive == "*") //All Drives
   {
     ULARGE_INTEGER totalC, totalFreeC;
     ULARGE_INTEGER totalE, totalFreeE;
@@ -1510,14 +1510,14 @@ std::string CSysInfo::GetModChipInfo()
   std::string SmartXX = SmartXXModCHIP();
 
   // Check if it is a SmartXX
-  if (!SmartXX.Equals("None"))
+  if (SmartXX != "None")
   {
     strModChipInfo = StringUtils::Format("%s %s", g_localizeStrings.Get(38741).c_str(), SmartXX.c_str());
     CLog::Log(LOGDEBUG, "- Detected ModChip: %s",SmartXX.c_str());
   }
   else
   {
-    if ( !ModChip.Equals("Unknown/Onboard TSOP (protected)"))
+    if ( ModChip != "Unknown/Onboard TSOP (protected)")
     {
       strModChipInfo = StringUtils::Format("%s %s", g_localizeStrings.Get(38741).c_str(), ModChip.c_str());
     }

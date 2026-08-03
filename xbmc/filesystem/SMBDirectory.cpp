@@ -109,8 +109,8 @@ bool CSMBDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     // We use UTF-8 internally, as does SMB
     strFile = aDir.name;
 
-    if (!strFile.Equals(".") && !strFile.Equals("..")
-      && !strFile.Equals("lost+found")
+    if (strFile != "." && strFile != ".."
+      && strFile != "lost+found"
       && aDir.type != SMBC_PRINTER_SHARE && aDir.type != SMBC_IPC_SHARE)
     {
      int64_t iSize = 0;

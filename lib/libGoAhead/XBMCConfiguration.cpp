@@ -147,7 +147,7 @@ int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, std::string& response, 
   if (nr > 0 && nr <= (int)pShares->size())
   {
     const CMediaSource& share = (*pShares)[nr-1];
-    if (std::string(parameter).Equals("path"))
+    if (std::string(parameter) == "path")
     {
       if (eid!=-1)
         ejSetResult( eid, const_cast<char*>(share.strPath.c_str()));
@@ -158,7 +158,7 @@ int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, std::string& response, 
         response="" + tmp;
       }
     }
-    else if (std::string(parameter).Equals("name"))
+    else if (std::string(parameter) == "name")
     {
       if (eid!=-1)
         ejSetResult( eid, const_cast<char*>(share.strName.c_str()));
