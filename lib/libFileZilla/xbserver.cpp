@@ -42,14 +42,14 @@ XFSTATUS CXBServer::SetThreadNum(int ThreadNum)
             }
         }
         std::string str;
-        str.Format("Number of threads increased to %d.", ThreadNum);
+        str = StringUtils::Format("Number of threads increased to %d.", ThreadNum);
         ShowStatus(str, 0);
     }
     else
   if (ThreadNum < m_ThreadArray.size())
     {
         std::string str;
-        str.Format("Decreasing number of threads to %d.", ThreadNum);
+        str = StringUtils::Format("Decreasing number of threads to %d.", ThreadNum);
         ShowStatus(str, 0);
         int removethreads = m_ThreadArray.size() - ThreadNum;
         int i = 0;
@@ -75,16 +75,16 @@ XFSTATUS CXBServer::SetServerPort(int ServerPort)
     if (m_pListenSocket)
     {
         std::string str;
-        str.Format("Closing listen socket on port %d", ServerPort);
+        str = StringUtils::Format("Closing listen socket on port %d", ServerPort);
         ShowStatus(str, 0);
         m_pListenSocket->Close();
-        str.Format("Creating listen socket on port %d...", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
+        str = StringUtils::Format("Creating listen socket on port %d...", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
         ShowStatus(str, 0);
         if (!m_pListenSocket->Create(m_pOptions->GetOptionVal(OPTION_SERVERPORT), SOCK_STREAM,FD_ACCEPT,0) || !m_pListenSocket->Listen())
         {
             delete m_pListenSocket;
             m_pListenSocket = 0;
-            str.Format("Failed to create listen socket on port %d. Server is not online!", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
+            str = StringUtils::Format("Failed to create listen socket on port %d. Server is not online!", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
             ShowStatus(str,1);
             m_nServerState = 0;
       return XFS_ERROR;
@@ -120,7 +120,7 @@ XFSTATUS CXBServer::SetAdminPort(int AdminPort)
         {
             delete pSocket;
             std::string str;
-            str.Format(_T("Failed to change admin listen port to %d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
+            str = StringUtils::Format(_T("Failed to change admin listen port to %d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
             m_pOptions->SetOption(OPTION_ADMINPORT, AdminPort);
             ShowStatus(str, 1);
         }
@@ -138,7 +138,7 @@ XFSTATUS CXBServer::SetAdminPort(int AdminPort)
             if (AdminPort != m_pOptions->GetOptionVal(OPTION_ADMINPORT))
             {
                 std::string str;
-                str.Format(_T("Admin listen port changed to %d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
+                str = StringUtils::Format(_T("Admin listen port changed to %d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
                 ShowStatus(str, 0);
             }
 

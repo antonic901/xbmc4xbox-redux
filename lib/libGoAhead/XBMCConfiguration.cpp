@@ -62,7 +62,7 @@ int CXbmcConfiguration::BookmarkSize( int eid, webs_t wp, std::string& response,
     else
     {
       std::string tmp;
-      tmp.Format("%i", pShares->size());
+      tmp = StringUtils::Format("%i", pShares->size());
       response="" + tmp;
     }
 
@@ -104,7 +104,7 @@ int CXbmcConfiguration::BookmarkSize( int eid, webs_t wp, std::string& response,
   else
   {
     std::string tmp;
-    tmp.Format("%s", itoa(counter, buffer, 10));
+    tmp = StringUtils::Format("%s", itoa(counter, buffer, 10));
     response="" + tmp;
   }
     return 0;*/
@@ -153,7 +153,7 @@ int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, std::string& response, 
       else
       {
         std::string tmp;
-        tmp.Format("%s",share.strPath);
+        tmp = StringUtils::Format("%s",share.strPath.c_str());
         response="" + tmp;
       }
     }
@@ -164,7 +164,7 @@ int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, std::string& response, 
       else
       {
         std::string tmp;
-        tmp.Format("%s",share.strName);
+        tmp = StringUtils::Format("%s",share.strName.c_str());
         response="" + tmp;
       }
     }
@@ -220,7 +220,7 @@ int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, std::string& response, 
         else
         {
           std::string tmp;
-          tmp.Format("%s",(char*)pIt->FirstChild("name")->FirstChild()->Value());
+          tmp = StringUtils::Format("%s",(char*)pIt->FirstChild("name")->FirstChild()->Value());
           response="" + tmp;
         }
             }
@@ -235,7 +235,7 @@ int CXbmcConfiguration::GetBookmark( int eid, webs_t wp, std::string& response, 
         else
         {
           std::string tmp;
-          tmp.Format("%s",(char*)pIt->FirstChild("path")->FirstChild()->Value());
+          tmp = StringUtils::Format("%s",(char*)pIt->FirstChild("path")->FirstChild()->Value());
           response="" + tmp ;
         }
             }
@@ -602,7 +602,7 @@ return -1;
         else
         {
           std::string tmp;
-          tmp.Format("%s",value);
+          tmp = StringUtils::Format("%s",value);
           response="" + tmp;
         }
         }

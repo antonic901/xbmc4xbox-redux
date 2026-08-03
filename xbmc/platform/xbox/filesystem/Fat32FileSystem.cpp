@@ -212,9 +212,9 @@ bool CFat32FileSystem::GetDirectory(const std::string &directory, CFileItemList 
       CFileItemPtr item = items[i];
       std::string path;
       if (directory.IsEmpty())
-        path.Format("mem%d://%s", m_unit, item->GetLabel().c_str());
+        path = StringUtils::Format("mem%d://%s", m_unit, item->GetLabel().c_str());
       else
-        path.Format("mem%d://%s/%s", m_unit, directory.c_str(), item->GetLabel().c_str());
+        path = StringUtils::Format("mem%d://%s/%s", m_unit, directory.c_str(), item->GetLabel().c_str());
       item->SetPath(path);
     }
     return true;
@@ -283,15 +283,15 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const std::string &directory, 
       std::string shortPath;
       if ((de.attr & ATTR_DIRECTORY) == 0)
       { // filename
-        shortPath.Format("%-8.8s", de.name);
+        shortPath = StringUtils::Format("%-8.8s", de.name);
         shortPath.TrimRight(' ');
         std::string extension;
-        extension.Format(".%-3.3s", de.name + 8);
+        extension = StringUtils::Format(".%-3.3s", de.name + 8);
         shortPath += extension;
       }
       else
       { // folders with a period in them must be catered for
-        shortPath.Format("%-11.11s", de.name);
+        shortPath = StringUtils::Format("%-11.11s", de.name);
       }
       shortPath.TrimRight(' ');
       // we don't want require the parent and current directory items

@@ -140,7 +140,7 @@ extern "C" void __stdcall update_emu_environ()
     if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxyusername").empty() &&
         !CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxypassword").empty())
     {
-      strProxy.Format("%s:%s@", CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxyusername").c_str(),
+      strProxy = StringUtils::Format("%s:%s@", CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxyusername").c_str(),
                                 CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.httpproxypassword").c_str());
     }
 

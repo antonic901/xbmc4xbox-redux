@@ -99,7 +99,7 @@ void CMediaManager::GetLocalDrives(VECSOURCES &localDrives, bool includeQ)
   // Local shares
   CMediaSource share;
   share.strPath = "C:\\";
-  share.strName.Format(g_localizeStrings.Get(21438).c_str(),'C');
+  share.strName = StringUtils::Format(g_localizeStrings.Get(21438).c_str(),'C');
   share.m_ignore = true;
   share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
   localDrives.push_back(share);
@@ -109,16 +109,16 @@ void CMediaManager::GetLocalDrives(VECSOURCES &localDrives, bool includeQ)
   localDrives.push_back(share);
   share.strPath = "E:\\";
   share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
-  share.strName.Format(g_localizeStrings.Get(21438).c_str(),'E');
+  share.strName = StringUtils::Format(g_localizeStrings.Get(21438).c_str(),'E');
   localDrives.push_back(share);
   for (int driveCount=EXTEND_PARTITION_BEGIN;driveCount<=(EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT-1);driveCount++)
   {
     if (CIoSupport::DriveExists(CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN)))
     {
       CMediaSource share;
-      share.strPath.Format("%c:\\", CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
+      share.strPath = StringUtils::Format("%c:\\", CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
       CLog::Log(LOGNOTICE, "  Local Source Drive %c:", CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
-      share.strName.Format(g_localizeStrings.Get(21438).c_str(),CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
+      share.strName = StringUtils::Format(g_localizeStrings.Get(21438).c_str(),CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
       share.m_ignore = true;
       localDrives.push_back(share);
     }
@@ -127,7 +127,7 @@ void CMediaManager::GetLocalDrives(VECSOURCES &localDrives, bool includeQ)
   {
     CMediaSource share;
     share.strPath = "Q:\\";
-    share.strName.Format(g_localizeStrings.Get(21438).c_str(),'Q');
+    share.strName = StringUtils::Format(g_localizeStrings.Get(21438).c_str(),'Q');
     share.m_ignore = true;
     localDrives.push_back(share);
   }

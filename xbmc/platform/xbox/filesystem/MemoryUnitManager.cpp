@@ -257,10 +257,10 @@ void CMemoryUnitManager::GetMemoryUnitSources(VECSOURCES &shares)
     volumeName.TrimRight(' ');
     // Memory Unit # (volumeName) (fs)
     if (volumeName.IsEmpty())
-      share.strName.Format("%s %i (%s)", g_localizeStrings.Get(20136).c_str(), i + 1, m_memUnits[i]->GetFileSystem());
+      share.strName = StringUtils::Format("%s %i (%s)", g_localizeStrings.Get(20136).c_str(), i + 1, m_memUnits[i]->GetFileSystem());
     else
-      share.strName.Format("%s %i (%s) (%s)", g_localizeStrings.Get(20136).c_str(), i + 1, volumeName.c_str(), m_memUnits[i]->GetFileSystem());
-    share.strPath.Format("mem%i://", i);
+      share.strName = StringUtils::Format("%s %i (%s) (%s)", g_localizeStrings.Get(20136).c_str(), i + 1, volumeName.c_str(), m_memUnits[i]->GetFileSystem());
+    share.strPath = StringUtils::Format("mem%i://", i);
     shares.push_back(share);
   }
 }

@@ -86,7 +86,7 @@ public:
        }
 
       std::string sProcessors;
-      sProcessors.Format( _T("Number Of Processors: %lu "), m_sysInfo.dwNumberOfProcessors);
+      sProcessors = StringUtils::Format( _T("Number Of Processors: %lu "), m_sysInfo.dwNumberOfProcessors);
 
       std::string sArchitecture;
       std::string sProcessorLevel;
@@ -103,7 +103,7 @@ public:
             {
                int iSteppingLevel = m_sysInfo.wProcessorRevision / 100;
                int iStepping = m_sysInfo.wProcessorRevision % 100;
-               sStepping.Format( _T("Stepping: %c%u "), iSteppingLevel, iStepping);
+               sStepping = StringUtils::Format( _T("Stepping: %c%u "), iSteppingLevel, iStepping);
             }
                 break;
             case 4:
@@ -111,7 +111,7 @@ public:
             {
                int iSteppingLevel = m_sysInfo.wProcessorRevision / 100;
                int iStepping = m_sysInfo.wProcessorRevision % 100;
-               sStepping.Format( _T("Stepping: %c%u "), iSteppingLevel, iStepping);
+               sStepping = StringUtils::Format( _T("Stepping: %c%u "), iSteppingLevel, iStepping);
             }
                 break;
             case 5:
@@ -129,7 +129,7 @@ public:
 
                int iModel = m_sysInfo.wProcessorRevision / 100;
                int iStepping = m_sysInfo.wProcessorRevision % 100;
-               sStepping.Format( _T("Stepping: %u-%u "), iModel, iStepping);
+               sStepping = StringUtils::Format( _T("Stepping: %u-%u "), iModel, iStepping);
             }
                 break;
          case 6:
@@ -137,15 +137,15 @@ public:
             {
                int iModel = m_sysInfo.wProcessorRevision / 100;
                int iStepping = m_sysInfo.wProcessorRevision % 100;
-               sStepping.Format( _T("Stepping: %u-%u "), iModel, iStepping);
+               sStepping = StringUtils::Format( _T("Stepping: %u-%u "), iModel, iStepping);
             }
                 break;
          default:
-            sProcessorLevel.Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
+            sProcessorLevel = StringUtils::Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
             {
                int iModel = m_sysInfo.wProcessorRevision / 100;
                int iStepping = m_sysInfo.wProcessorRevision % 100;
-               sStepping.Format( _T("Stepping: %u-%u "), iModel, iStepping);
+               sStepping = StringUtils::Format( _T("Stepping: %u-%u "), iModel, iStepping);
             }
             break;
          }
@@ -158,18 +158,18 @@ public:
             sProcessorLevel = "Level: R4000 ";
                 break;
          default:
-            sProcessorLevel.Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
+            sProcessorLevel = StringUtils::Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
             break;
          }
-         sStepping.Format( _T("Stepping: 00%u"), m_sysInfo.wProcessorRevision);
+         sStepping = StringUtils::Format( _T("Stepping: 00%u"), m_sysInfo.wProcessorRevision);
          break;
       case PROCESSOR_ARCHITECTURE_ALPHA:
          sArchitecture = "Architecture: Alpha ";
-         sProcessorLevel.Format( _T("Level: %u "), m_sysInfo.wProcessorLevel);
+         sProcessorLevel = StringUtils::Format( _T("Level: %u "), m_sysInfo.wProcessorLevel);
          {
             int iModel = m_sysInfo.wProcessorRevision / 100;
             int iStepping = m_sysInfo.wProcessorRevision % 100;
-            sStepping.Format( _T("Stepping: %c%u "), iModel, iStepping);
+            sStepping = StringUtils::Format( _T("Stepping: %c%u "), iModel, iStepping);
          }
          break;
       case PROCESSOR_ARCHITECTURE_PPC:
@@ -195,31 +195,31 @@ public:
             sProcessorLevel = _T("Level: 620 ");
                 break;
          default:
-            sProcessorLevel.Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
+            sProcessorLevel = StringUtils::Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
             break;
          }
          {
             int iModel = m_sysInfo.wProcessorRevision / 100;
             int iStepping = m_sysInfo.wProcessorRevision % 100;
-            sStepping.Format( _T("Stepping: %u.%u "), iModel, iStepping);
+            sStepping = StringUtils::Format( _T("Stepping: %u.%u "), iModel, iStepping);
          }
          break;
       case PROCESSOR_ARCHITECTURE_UNKNOWN:
          sArchitecture = "Architecture: Unknown ";
-         sProcessorLevel.Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
+         sProcessorLevel = StringUtils::Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
          {
             int iModel = m_sysInfo.wProcessorRevision / 100;
             int iStepping = m_sysInfo.wProcessorRevision % 100;
-            sStepping.Format( _T("Stepping: %u-%u "), iModel, iStepping);
+            sStepping = StringUtils::Format( _T("Stepping: %u-%u "), iModel, iStepping);
          }
          break;
       default:
-         sArchitecture.Format( _T("Architecture: Unknown %u "), m_sysInfo.wProcessorArchitecture);
-         sProcessorLevel.Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
+         sArchitecture = StringUtils::Format( _T("Architecture: Unknown %u "), m_sysInfo.wProcessorArchitecture);
+         sProcessorLevel = StringUtils::Format( _T("Level: Unknown %u "), m_sysInfo.wProcessorLevel);
          {
             int iModel = m_sysInfo.wProcessorRevision / 100;
             int iStepping = m_sysInfo.wProcessorRevision % 100;
-            sStepping.Format( _T("Stepping: %u-%u "), iModel, iStepping);
+            sStepping = StringUtils::Format( _T("Stepping: %u-%u "), iModel, iStepping);
          }
          break;
       }
@@ -255,7 +255,7 @@ public:
 
       ::GetProcessWorkingSetSize(GetCurrentProcess(), &dwMinWSSize, &dwMaxWSSize);
 
-      sRC.Format( _T("Memory Used %lu%%, Total Physical Memory %luKB, Physical Memory Available %luKB, Total Virtual Memory %luKB, Available Virtual Memory %luKB, Working Set Min : %luKB Max : %luKB .\r\n"), memoryStatus.dwMemoryLoad, memoryStatus.dwTotalPhys / 1024, memoryStatus.dwAvailPhys / 1024, memoryStatus.dwTotalVirtual / 1024, memoryStatus.dwAvailVirtual / 1024, dwMinWSSize/1024, dwMaxWSSize/1024);
+      sRC = StringUtils::Format( _T("Memory Used %lu%%, Total Physical Memory %luKB, Physical Memory Available %luKB, Total Virtual Memory %luKB, Available Virtual Memory %luKB, Working Set Min : %luKB Max : %luKB .\r\n"), memoryStatus.dwMemoryLoad, memoryStatus.dwTotalPhys / 1024, memoryStatus.dwAvailPhys / 1024, memoryStatus.dwTotalVirtual / 1024, memoryStatus.dwAvailVirtual / 1024, dwMinWSSize/1024, dwMaxWSSize/1024);
 
       return sRC;
    }

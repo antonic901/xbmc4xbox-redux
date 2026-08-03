@@ -331,7 +331,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
 
   if (m_fPrefil >= 0.0)
   {
-    strTmp.Format("%2.4f", m_fPrefil);
+    strTmp = StringUtils::Format("%2.4f", m_fPrefil);
     m_vecOptions.push_back("-cache-min");
     m_vecOptions.push_back(strTmp);
     m_vecOptions.push_back("-cache-prefill");
@@ -356,7 +356,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
       /* try to autodetect any multicharacter charset */
       /* then fallback to user specified charset */
       m_vecOptions.push_back("-subcp");
-      strTmp.Format("enca:__:%s", m_subcp.c_str());
+      strTmp = StringUtils::Format("enca:__:%s", m_subcp.c_str());
       m_vecOptions.push_back(strTmp);
       CLog::Log(LOGINFO, "Using -subcp %s to detect the subtitle charset", strTmp.c_str());
     }
@@ -381,7 +381,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
   if (m_synccomp >= 0.0f)
   {
     m_vecOptions.push_back("-mc");
-    strTmp.Format("%2.4f", m_synccomp);
+    strTmp = StringUtils::Format("%2.4f", m_synccomp);
     m_vecOptions.push_back(strTmp);
   }
   // smooth out audio driver timer (audio drivers arent perect)
@@ -395,7 +395,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
   {
     // set playback speed
     m_vecOptions.push_back("-speed");
-    strTmp.Format("%f", m_fSpeed);
+    strTmp = StringUtils::Format("%f", m_fSpeed);
     m_vecOptions.push_back(strTmp);
   }
   //This shouldn't be set as then the speed adjustment will be applied to this new fps, and not original.
@@ -404,12 +404,12 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
   if( m_fFPS != 0.0f )
   {
     m_vecOptions.push_back("-fps");
-    strTmp.Format("%f", m_fFPS);
+    strTmp = StringUtils::Format("%f", m_fFPS);
     m_vecOptions.push_back(strTmp);
 
     // set subtitle fps
     m_vecOptions.push_back("-subfps");
-    strTmp.Format("%f", m_fFPS);
+    strTmp = StringUtils::Format("%f", m_fFPS);
     m_vecOptions.push_back(strTmp);
   }
 
@@ -417,7 +417,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
   {
     CLog::Log(LOGINFO, " Playing audio stream: %d", m_iAudioStream);
     m_vecOptions.push_back("-aid");
-    strTmp.Format("%i", m_iAudioStream);
+    strTmp = StringUtils::Format("%i", m_iAudioStream);
     m_vecOptions.push_back(strTmp);
   }
 
@@ -425,7 +425,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
   {
     CLog::Log(LOGINFO, " Playing subtitle stream: %d", m_iSubtitleStream);
     m_vecOptions.push_back("-sid");
-    strTmp.Format("%i", m_iSubtitleStream);
+    strTmp = StringUtils::Format("%i", m_iSubtitleStream);
     m_vecOptions.push_back(strTmp);
   }
   //MOVED TO mplayer.conf to allow it to be overridden on a per file basis
@@ -442,7 +442,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
   {
     // set number of audio channels
     m_vecOptions.push_back("-channels");
-    strTmp.Format("%i", m_iChannels);
+    strTmp = StringUtils::Format("%i", m_iChannels);
     m_vecOptions.push_back(strTmp);
   }
   if ( m_strChannelMapping.size())
@@ -456,7 +456,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
   {
     // Enable autosync
     m_vecOptions.push_back("-autosync");
-    strTmp.Format("%i", m_iAutoSync);
+    strTmp = StringUtils::Format("%i", m_iAutoSync);
     m_vecOptions.push_back(strTmp);
   }
 
@@ -530,7 +530,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
         {
           // add vertical deblocking filter
           if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.verticaldeblocklevel") > 0)
-            strOpt.Format("vb:%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.verticaldeblocklevel"));
+            strOpt = StringUtils::Format("vb:%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.verticaldeblocklevel"));
           else
             strOpt = "vb:a";
 
@@ -540,7 +540,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
         {
           // add horizontal deblocking filter
           if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.horizontaldeblocklevel") > 0)
-            strOpt.Format("hb:%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.horizontaldeblocklevel"));
+            strOpt = StringUtils::Format("hb:%i", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("postprocessing.horizontaldeblocklevel"));
           else
             strOpt = "hb:a";
 
@@ -575,7 +575,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
     if (strTmp.size() > 0)
       strTmp += ",";
 
-    strOpt.Format("noise=%dta:%dta", (int) CMediaSettings::GetInstance().GetCurrentVideoSettings().m_FilmGrain, (int) CMediaSettings::GetInstance().GetCurrentVideoSettings().m_FilmGrain);
+    strOpt = StringUtils::Format("noise=%dta:%dta", (int) CMediaSettings::GetInstance().GetCurrentVideoSettings().m_FilmGrain, (int) CMediaSettings::GetInstance().GetCurrentVideoSettings().m_FilmGrain);
     strTmp += strOpt;
   }
 
@@ -590,7 +590,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
   if (m_fVolumeAmplification > 0.1f || m_fVolumeAmplification < -0.1f)
   {
     //add volume amplification audio filter
-    strTmp.Format("volume=%2.2f:0", m_fVolumeAmplification);
+    strTmp = StringUtils::Format("volume=%2.2f:0", m_fVolumeAmplification);
     m_vecOptions.push_back("-af");
     m_vecOptions.push_back(strTmp);
   }
@@ -640,7 +640,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
   {
     m_vecOptions.push_back("-subdelay");
     std::string strOpt;
-    strOpt.Format("%2.2f", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
+    strOpt = StringUtils::Format("%2.2f", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
     m_vecOptions.push_back(strOpt.c_str());
   }
 
@@ -1631,7 +1631,7 @@ bool CMPlayer::SeekScene(bool bPlus)
 void CMPlayer::SeekRelativeTime(int iSeconds)
 {
   std::string strCommand;
-  strCommand.Format("seek %+i 0",iSeconds);
+  strCommand = StringUtils::Format("seek %+i 0",iSeconds);
   mplayer_SlaveCommand(strCommand.c_str());
   WaitOnCommand();
 }
@@ -1662,10 +1662,10 @@ void CMPlayer::GetAudioInfo( std::string& strAudioInfo)
   mplayer_GetAudioInfo(strFourCC, strAudioCodec, &lBitRate, &lSampleRate, &iChannels, &bVBR);
   float fSampleRate = ((float)lSampleRate) / 1000.0f;
   if (strstr(strAudioCodec, "SPDIF")) // don't state channels if passthrough (we don't know them!)
-    strAudioInfo.Format("audio:(%s) br:%i sr:%02.2f khz",
+    strAudioInfo = StringUtils::Format("audio:(%s) br:%i sr:%02.2f khz",
                         strAudioCodec, lBitRate, fSampleRate);
   else
-    strAudioInfo.Format("audio:(%s) br:%i sr:%02.2f khz chns:%i",
+    strAudioInfo = StringUtils::Format("audio:(%s) br:%i sr:%02.2f khz chns:%i",
                         strAudioCodec, lBitRate, fSampleRate, iChannels);
 }
 
@@ -1872,7 +1872,7 @@ void CMPlayer::GetAudioStreamName(int iStream, std::string& strStreamName)
       strName += (char)(slt.language & 255);
     }
 
-    strStreamName.Format("%s", strName.c_str());
+    strStreamName = StringUtils::Format("%s", strName.c_str());
   }
 
   if(slt.type>=0)
@@ -2029,7 +2029,7 @@ std::string CMPlayer::GetDVDArgument(const std::string& strFile)
   else
   {
     std::string strBuf;
-    strBuf.Format("dvd://%i", iTitle);
+    strBuf = StringUtils::Format("dvd://%i", iTitle);
     return strBuf;
   }
 }

@@ -98,7 +98,7 @@ bool CEncoderLame::Init(const char* strFile, int iInChannels, int iInRate, int i
   {
     // use cbr and specified bitrate from settings
     std::string strSettings;
-    strSettings.Format("%s%i", "--preset cbr ", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.bitrate"));
+    strSettings = StringUtils::Format("%s%i", "--preset cbr ", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.bitrate"));
     parse_args_from_string(m_pGlobalFlags, strSettings.c_str(), m_inPath, m_outPath);
     //lame_set_mode(pGlobalFlags, JOINT_STEREO);
     //lame_set_brate(pGlobalFlags, g_settings.m_iRipBitRate);

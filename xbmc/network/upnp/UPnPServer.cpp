@@ -575,7 +575,7 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
             CMusicDatabase database;
             database.Open();
             std::string strPath;
-            strPath.Format("musicdb://genres/%ld/", database.GetGenreByName((const char*)genre));
+            strPath = StringUtils::Format("musicdb://genres/%ld/", database.GetGenreByName((const char*)genre));
             return OnBrowseDirectChildren(action, strPath.c_str(), filter, starting_index, requested_count, sort_criteria, context);
         }
         return OnBrowseDirectChildren(action, "musicdb://artists/", filter, starting_index, requested_count, sort_criteria, context);

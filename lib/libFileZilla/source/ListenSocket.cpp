@@ -54,7 +54,7 @@ void CListenSocket::OnAccept(int nErrorCode)
     {
         int nError = WSAGetLastError();
         std::string str;
-        str.Format("Failure in CListenSocket::OnAccept(%d) - call to CAsyncSocketEx::Accept failed, errorcode %d", nErrorCode, nError);
+        str = StringUtils::Format("Failure in CListenSocket::OnAccept(%d) - call to CAsyncSocketEx::Accept failed, errorcode %d", nErrorCode, nError);
         SendStatus(str, 1);
         SendStatus("If you use a firewall, please check your firewall configuration", 1);
         return;

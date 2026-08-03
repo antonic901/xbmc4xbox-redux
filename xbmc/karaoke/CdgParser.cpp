@@ -391,13 +391,13 @@ void CCdgRenderer::Render()
     switch (m_FileState)
     {
     case FILE_ERR_NOT_FOUND:
-      strMessage.Format("%s not found", strFileName.c_str());
+      strMessage = StringUtils::Format("%s not found", strFileName.c_str());
       break;
     case FILE_ERR_OPENING:
-      strMessage.Format("Error opening %s", strFileName.c_str());
+      strMessage = StringUtils::Format("Error opening %s", strFileName.c_str());
       break;
     case FILE_ERR_LOADING:
-      strMessage.Format("Error loading %s", strFileName.c_str());
+      strMessage = StringUtils::Format("Error loading %s", strFileName.c_str());
       break;
     case FILE_ERR_NO_MEM:
       strMessage = "Out of memory";

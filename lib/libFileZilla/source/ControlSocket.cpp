@@ -328,7 +328,7 @@ BOOL CControlSocket::SendDir(const std::string command,std::string curDir,const 
   }
 
   std::string str;
-  str.Format("%s \"%s\"%s", command, curDir, prompt);
+  str = StringUtils::Format("%s \"%s\"%s", command.c_str(), curDir.c_str(), prompt.c_str());
     return Send(str);
 }
 #endif
@@ -666,7 +666,7 @@ void CControlSocket::ParseCommand()
                 else if (user.GetUserLimit() && GetUserCount(m_status.user)>=user.GetUserLimit())
                 {
                     std::string str;
-                    str.Format("Refusing connection. Reason: Max. connection count reached for the user \"%s\".",m_status.user);
+                    str = StringUtils::Format("Refusing connection. Reason: Max. connection count reached for the user \"%s\".",m_status.user.c_str());
                     SendStatus(str,1);
                     Send("421 Too many users logged in for this account. Try again later.");
                     ForceClose(-1);
@@ -691,9 +691,9 @@ void CControlSocket::ParseCommand()
                 {
                     std::string str;
                     if (count==1)
-                        str.Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected once)",ip);
+                        str = StringUtils::Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected once)",ip.c_str());
                     else
-                        str.Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected %d times)", ip, count);
+                        str = StringUtils::Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected %d times)", ip.c_str(), count);
                     SendStatus(str,1);
                     Send("421 Refusing connection. No more connections allowed from your IP.");
                     ForceClose(-1);
@@ -714,9 +714,9 @@ void CControlSocket::ParseCommand()
                 if (user.GetUserLimit() && count>=user.GetUserLimit())
                 {
                     std::string str;
-                    str.Format("Refusing connection. Reason: Maximum connection count (%d) reached for this user", user.GetUserLimit());
+                    str = StringUtils::Format("Refusing connection. Reason: Maximum connection count (%d) reached for this user", user.GetUserLimit());
                     SendStatus(str,1);
-                    str.Format("421 Refusing connection. Maximum connection count reached for the user '%s'", user.user);
+                    str = StringUtils::Format("421 Refusing connection. Maximum connection count reached for the user '%s'", user.user.c_str());
                     Send(str);
                     ForceClose(-1);
                     break;
@@ -805,19 +805,19 @@ void CControlSocket::ParseCommand()
             if (!res)
             {
                 std::string str;
-                str.Format("250 CWD successful. \"%s\" is current directory.",m_CurrentDir);
+                str = StringUtils::Format("250 CWD successful. \"%s\" is current directory.",m_CurrentDir.c_str());
                 Send(str);
             }
             else if (res & 1)
             {
                 std::string str;
-                str.Format("550 CWD failed. \"%s\": Permission denied.",args);
+                str = StringUtils::Format("550 CWD failed. \"%s\": Permission denied.",args.c_str());
                 Send(str);
             }
             else if (res)
             {
                 std::string str;
-                str.Format("550 CWD failed. \"%s\": directory not found.",args);
+                str = StringUtils::Format("550 CWD failed. \"%s\": directory not found.",args.c_str());
                 Send(str);
             }
 #endif
@@ -956,7 +956,7 @@ void CControlSocket::ParseCommand()
             ip.Replace(".",",");
             //Put the answer together
             std::string str;
-            str.Format("227 Entering Passive Mode (%s,%d,%d)",ip,port/256,port%256);
+            str = StringUtils::Format("227 Entering Passive Mode (%s,%d,%d)",ip.c_str(),port/256,port%256);
             Send(str);
             m_transferstatus.pasv=1;
             break;
@@ -1178,7 +1178,7 @@ void CControlSocket::ParseCommand()
             }
             m_transferstatus.rest=_atoi64(args);
             std::string str;
-            str.Format("350 Rest supported. Restarting at %I64d",m_transferstatus.rest);
+            str = StringUtils::Format("350 Rest supported. Restarting at %I64d",m_transferstatus.rest);
             Send(str);
         }
         break;
@@ -1195,7 +1195,7 @@ void CControlSocket::ParseCommand()
 
             if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
                 std::string str;
-                str.Format("200 CDUP successful. \"XBOX-ROOT(%s)\" is current directory.",m_CurrentDir);
+                str = StringUtils::Format("200 CDUP successful. \"XBOX-ROOT(%s)\" is current directory.",m_CurrentDir.c_str());
                 Send(str);
             }
             else
@@ -1207,13 +1207,13 @@ void CControlSocket::ParseCommand()
                 else if (res & 1)
                 {
                     std::string str;
-                    str.Format("550 CDUP failed. \"%s\": Permission denied.",dir);
+                    str = StringUtils::Format("550 CDUP failed. \"%s\": Permission denied.",dir.c_str());
                     Send(str);
                 }
                 else if (res)
                 {
                     std::string str;
-                    str.Format("550 CDUP failed. \"%s\": directory not found.",dir);
+                    str = StringUtils::Format("550 CDUP failed. \"%s\": directory not found.",dir.c_str());
                     Send(str);
                 }
             }
@@ -1221,19 +1221,19 @@ void CControlSocket::ParseCommand()
             if (!res)
             {
                 std::string str;
-                str.Format("200 CDUP successful. \"%s\" is current directory.",m_CurrentDir);
+                str = StringUtils::Format("200 CDUP successful. \"%s\" is current directory.",m_CurrentDir.c_str());
                 Send(str);
             }
             else if (res & 1)
             {
                 std::string str;
-                str.Format("550 CDUP failed. \"%s\": Permission denied.",dir);
+                str = StringUtils::Format("550 CDUP failed. \"%s\": Permission denied.",dir.c_str());
                 Send(str);
             }
             else if (res)
             {
                 std::string str;
-                str.Format("550 CDUP failed. \"%s\": directory not found.",dir);
+                str = StringUtils::Format("550 CDUP failed. \"%s\": directory not found.",dir.c_str());
                 Send(str);
             }
 #endif
@@ -1381,7 +1381,7 @@ void CControlSocket::ParseCommand()
                 std::string str;
                 _int64 length;
                 if (GetLength64(result, length))
-                    str.Format("213 %I64d", length);
+                    str = StringUtils::Format("213 %I64d", length);
                 else
                     str="550 File not found";
                 Send(str);
@@ -1721,7 +1721,7 @@ void CControlSocket::ParseCommand()
                         break;
 
                     std::string str;
-                    str.Format("150 Opening data channel for file transfer, restarting at offset %I64d",size);
+                    str = StringUtils::Format("150 Opening data channel for file transfer, restarting at offset %I64d",size);
                     Send(str);
                 }
                 else
@@ -1995,7 +1995,7 @@ void CControlSocket::ParseCommand()
                 port = ntohs(sockAddr.sin_port);
             //Put the answer together
             std::string str;
-            str.Format("229 Entering Extended Passive Mode (|||%d|)", port);
+            str = StringUtils::Format("229 Entering Extended Passive Mode (|||%d|)", port);
             Send(str);
             m_transferstatus.pasv=1;
             break;
@@ -2232,7 +2232,7 @@ void CControlSocket::ParseCommand()
 
           {
               std::string str;
-              str.Format("200 FTP SITE - calling ExecBuiltIn [command=%s, args=%s]", sitecommand.c_str(), siteargs.c_str());
+              str = StringUtils::Format("200 FTP SITE - calling ExecBuiltIn [command=%s, args=%s]", sitecommand.c_str(), siteargs.c_str());
               //Send(str);
             CLog::Log(LOGNOTICE, str);
           }
@@ -2241,7 +2241,7 @@ void CControlSocket::ParseCommand()
 
           {
               std::string str;
-              str.Format("200 FTP SITE - called ExecBuiltIn [command=%s, args=%s, rtn=%i]", sitecommand.c_str(), siteargs.c_str(), rtn);
+              str = StringUtils::Format("200 FTP SITE - called ExecBuiltIn [command=%s, args=%s, rtn=%i]", sitecommand.c_str(), siteargs.c_str(), rtn);
               //Send(str);
             CLog::Log(LOGNOTICE, str);
           }
@@ -2299,9 +2299,9 @@ void CControlSocket::ParseCommand()
               unsigned long crc = 0;
               XFSTATUS result = XBFILEZILLA(GetFileCRC(filename, crc));
               if (result == XFS_OK)
-                prompt.Format(_T("200 File \"%s\", CRC 0x%08X"), filename.c_str(), crc);
+                prompt = StringUtils::Format(_T("200 File \"%s\", CRC 0x%08X"), filename.c_str(), crc);
               else
-                prompt.Format(_T("200 File \"%s\", CRC Fatal error: cannot read file"), filename.c_str());
+                prompt = StringUtils::Format(_T("200 File \"%s\", CRC Fatal error: cannot read file"), filename.c_str());
 
               Send(prompt.c_str());
             }
@@ -2347,7 +2347,7 @@ void CControlSocket::ParseCommand()
               if (status == XFS_OK)
               {
                 std::string prompt;
-                prompt.Format(_T("200 Launching %s"), result);
+                prompt = StringUtils::Format(_T("200 Launching %s"), result.c_str());
                 Send(prompt.c_str());
               }
               else
@@ -2527,9 +2527,9 @@ void CControlSocket::ProcessTransferMsg()
           result = XBFILEZILLA(GetFileCRC(filename, crc));
 
         if (result == XFS_OK)
-          prompt.Format(_T("226- File \"%s\", CRC 0x%08X"), filename.c_str(), crc);
+          prompt = StringUtils::Format(_T("226- File \"%s\", CRC 0x%08X"), filename.c_str(), crc);
         else
-          prompt.Format(_T("226- File \"%s\", CRC Fatal error: cannot read file"), filename.c_str());
+          prompt = StringUtils::Format(_T("226- File \"%s\", CRC Fatal error: cannot read file"), filename.c_str());
 
         Send(prompt.c_str());
       }
@@ -2784,7 +2784,7 @@ BOOL CControlSocket::DoUserLogin(char* sendme)
         else if (user.GetUserLimit() && GetUserCount(m_status.user)>=user.GetUserLimit())
         {
                 std::string str;
-                str.Format("Refusing connection. Reason: Max. connection count reached for the user \"%s\".",m_status.user);
+                str = StringUtils::Format("Refusing connection. Reason: Max. connection count reached for the user \"%s\".",m_status.user.c_str());
                 SendStatus(str,1);
                 strcpy(sendme, "421 Too many users logged in for this account. Try again later.");
                 ForceClose(-1);
@@ -2809,9 +2809,9 @@ BOOL CControlSocket::DoUserLogin(char* sendme)
         {
             std::string str;
             if (count==1)
-                str.Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected once)",ip);
+                str = StringUtils::Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected once)",ip.c_str());
             else
-                str.Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected %d times)",ip,count);
+                str = StringUtils::Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected %d times)",ip.c_str(),count);
             SendStatus(str,1);
             strcpy(sendme, "421 Refusing connection. No more connections allowed from your IP.");
             ForceClose(-1);
@@ -2832,7 +2832,7 @@ BOOL CControlSocket::DoUserLogin(char* sendme)
         if (user.GetUserLimit() && count>=user.GetUserLimit())
         {
             std::string str;
-            str.Format("Refusing connection. Reason: Maximum connection count (%d) reached for this user", user.GetUserLimit());
+            str = StringUtils::Format("Refusing connection. Reason: Maximum connection count (%d) reached for this user", user.GetUserLimit());
             SendStatus(str,1);
             sprintf(sendme, "421 Refusing connection. Maximum connection count reached for the user '%s'", user.user);
             Send(str);

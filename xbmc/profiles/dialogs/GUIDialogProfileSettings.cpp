@@ -123,7 +123,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
         return false;
 
       /*std::string strLabel;
-      strLabel.Format(g_localizeStrings.Get(20047),dialog->m_strName);
+      strLabel = StringUtils::Format(g_localizeStrings.Get(20047).c_str(),dialog->m_strName.c_str());
       if (!CGUIDialogYesNo::ShowAndGetInput(20058, strLabel, dialog->m_strDirectory, ""))
       {
         CDirectory::Remove(URIUtils::AddFileToFolder(profileManager.GetUserDataFolder(), dialog->m_strDirectory));

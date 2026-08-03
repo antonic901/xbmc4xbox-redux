@@ -207,10 +207,10 @@ CUPnPRenderer::UpdateState()
     }
     volume = appVolume->GetVolumeRatio();
 
-    buffer.Format("%d", volume);
+    buffer = StringUtils::Format("%d", volume);
     rct->SetStateVariable("Volume", buffer.c_str());
 
-    buffer.Format("%d", 256 * (volume * 60 - 60) / 100);
+    buffer = StringUtils::Format("%d", 256 * (volume * 60 - 60) / 100);
     rct->SetStateVariable("VolumeDb", buffer.c_str());
 
     const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();

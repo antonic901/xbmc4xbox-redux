@@ -127,7 +127,7 @@ std::string CFatXFileSystem::GetLocal(const std::string &file)
   CFatXDevice *device = (CFatXDevice *)g_memoryUnitManager.GetDevice(m_unit);
   if (device)
   {
-    path.Format("%c:\\%s", device->GetDrive(), file);
+    path = StringUtils::Format("%c:\\%s", device->GetDrive(), file.c_str());
     path.Replace("/", "\\");
   }
   return path;

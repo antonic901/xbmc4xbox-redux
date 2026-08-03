@@ -33,58 +33,58 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// Dialogfeld COptionsMisc 
+// Dialogfeld COptionsMisc
 
 
 COptionsMiscPage::COptionsMiscPage(COptionsDlg *pOptionsDlg, CWnd* pParent /*=NULL*/)
-	: COptionsPage(pOptionsDlg, COptionsMiscPage::IDD, pParent)
+    : COptionsPage(pOptionsDlg, COptionsMiscPage::IDD, pParent)
 {
-	//{{AFX_DATA_INIT(COptionsMiscPage)
-	m_bDontShowPass = FALSE;
-	m_bStartMinimized = FALSE;
-	m_TransferBufferSize = _T("");
-	//}}AFX_DATA_INIT
+    //{{AFX_DATA_INIT(COptionsMiscPage)
+    m_bDontShowPass = FALSE;
+    m_bStartMinimized = FALSE;
+    m_TransferBufferSize = _T("");
+    //}}AFX_DATA_INIT
 }
 
 
 void COptionsMiscPage::DoDataExchange(CDataExchange* pDX)
 {
-	COptionsPage::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(COptionsMiscPage)
-	DDX_Check(pDX, IDC_OPTIONS_MISC_DONTSHOWPASS, m_bDontShowPass);
-	DDX_Check(pDX, IDC_OPTIONS_MISC_STARTMINIMIZED, m_bStartMinimized);
-	DDX_Text(pDX, IDC_OPTIONS_TRANSFERBUFFERSIZE, m_TransferBufferSize);
-	DDV_MaxChars(pDX, m_TransferBufferSize, 6);
-	//}}AFX_DATA_MAP
+    COptionsPage::DoDataExchange(pDX);
+    //{{AFX_DATA_MAP(COptionsMiscPage)
+    DDX_Check(pDX, IDC_OPTIONS_MISC_DONTSHOWPASS, m_bDontShowPass);
+    DDX_Check(pDX, IDC_OPTIONS_MISC_STARTMINIMIZED, m_bStartMinimized);
+    DDX_Text(pDX, IDC_OPTIONS_TRANSFERBUFFERSIZE, m_TransferBufferSize);
+    DDV_MaxChars(pDX, m_TransferBufferSize, 6);
+    //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(COptionsMiscPage, COptionsPage)
-	//{{AFX_MSG_MAP(COptionsMiscPage)
-	//}}AFX_MSG_MAP
+    //{{AFX_MSG_MAP(COptionsMiscPage)
+    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// Behandlungsroutinen für Nachrichten COptionsMiscPage
+// Behandlungsroutinen fï¿½r Nachrichten COptionsMiscPage
 
-BOOL COptionsMiscPage::OnInitDialog() 
+BOOL COptionsMiscPage::OnInitDialog()
 {
-	COptionsPage::OnInitDialog();
-	
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX-Eigenschaftenseiten sollten FALSE zurückgeben
+    COptionsPage::OnInitDialog();
+
+    return TRUE;  // return TRUE unless you set the focus to a control
+                  // EXCEPTION: OCX-Eigenschaftenseiten sollten FALSE zurï¿½ckgeben
 }
 
 void COptionsMiscPage::LoadData()
 {
-	m_bDontShowPass = m_pOptionsDlg->GetOptionVal(OPTION_LOGSHOWPASS)?FALSE:TRUE;
-	m_bStartMinimized = m_pOptionsDlg->m_pInterfaceOptions->GetOptionVal(IOPTION_STARTMINIMIZED);
-	m_TransferBufferSize.Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_BUFFERSIZE));
+    m_bDontShowPass = m_pOptionsDlg->GetOptionVal(OPTION_LOGSHOWPASS)?FALSE:TRUE;
+    m_bStartMinimized = m_pOptionsDlg->m_pInterfaceOptions->GetOptionVal(IOPTION_STARTMINIMIZED);
+    m_TransferBufferSize = StringUtils::Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_BUFFERSIZE));
 }
 
 void COptionsMiscPage::SaveData()
 {
-	m_pOptionsDlg->SetOption(OPTION_LOGSHOWPASS, m_bDontShowPass?0:1);
-	m_pOptionsDlg->m_pInterfaceOptions->SetOption(IOPTION_STARTMINIMIZED, m_bStartMinimized);
-	m_pOptionsDlg->SetOption(OPTION_BUFFERSIZE, _ttoi(m_TransferBufferSize));
+    m_pOptionsDlg->SetOption(OPTION_LOGSHOWPASS, m_bDontShowPass?0:1);
+    m_pOptionsDlg->m_pInterfaceOptions->SetOption(IOPTION_STARTMINIMIZED, m_bStartMinimized);
+    m_pOptionsDlg->SetOption(OPTION_BUFFERSIZE, _ttoi(m_TransferBufferSize));
 }

@@ -54,7 +54,7 @@ bool CISO9660Directory::GetDirectory(const CURL& url, CFileItemList &items)
   std::string strDirectory = url.GetFileName();
   if (strDirectory != "")
   {
-    strSearchMask.Format("\\%s", strDirectory.c_str());
+    strSearchMask = StringUtils::Format("\\%s", strDirectory.c_str());
   }
   else
   {
