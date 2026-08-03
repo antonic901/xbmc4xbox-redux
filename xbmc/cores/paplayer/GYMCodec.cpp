@@ -24,7 +24,7 @@
 
 GYMCodec::GYMCodec()
 {
-  m_CodecName = L"GYM";
+  m_CodecName = "GYM";
   m_iDataInBuffer = 0;
   m_szBuffer = NULL;
   m_gym = 0;

@@ -24,6 +24,8 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 
+#include <ctime>
+
 CEncoderVorbis::CEncoderVorbis()
 {
   m_pBuffer = NULL;

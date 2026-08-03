@@ -24,6 +24,7 @@
 #include "utils/auto_buffer.h"
 #include "utils/log.h"
 
+#include <ctime>
 #include <sys/stat.h>
 
 #if defined (TARGET_WINDOWS)

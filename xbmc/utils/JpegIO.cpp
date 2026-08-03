@@ -29,6 +29,7 @@
 #include "filesystem/File.h"
 #include "JpegIO.h"
 #include "XBTF.h"
+#include "utils/StringUtils.h"
 #include "utils/log.h"
 
 #include <setjmp.h>

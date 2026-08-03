@@ -22,6 +22,7 @@
 #include "utils/URIUtils.h"
 #include "ModuleCodec.h"
 #include "filesystem/File.h"
+#include "utils/StringUtils.h"
 
 using namespace XFILE;
 

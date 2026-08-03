@@ -23,6 +23,7 @@
 #include "utils/GlobalsHandling.h"
 
 #include <string>
+#include <vector>
 
 //  forward
 class LibraryLoader;

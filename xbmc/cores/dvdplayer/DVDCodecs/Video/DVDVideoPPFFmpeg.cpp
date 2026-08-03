@@ -22,6 +22,8 @@
 #include "utils/log.h"
 #include "DVDVideoPPFFmpeg.h"
 
+#include <malloc.h>
+
 CDVDVideoPPFFmpeg::CDVDVideoPPFFmpeg(const std::string& mType)
 {
   m_sType = mType;

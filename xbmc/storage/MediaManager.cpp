@@ -21,6 +21,7 @@
 #include "storage/MediaManager.h"
 #include "URL.h"
 #include "LocalizeStrings.h"
+#include "utils/StringUtils.h"
 #include "utils/log.h"
 #include "utils/XBMCTinyXML.h"
 

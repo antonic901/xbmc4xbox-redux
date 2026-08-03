@@ -21,6 +21,7 @@
  *
  */
 
+#include "system.h" // <xtl.h>
 #include "ICodec.h"
 #include "filesystem/DllASAP.h"
 
