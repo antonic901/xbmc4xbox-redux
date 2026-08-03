@@ -53,7 +53,7 @@ void COptions::SetOptionVal(int nOptionID)
         xml.AddChildElem( _T("Settings") );
 
     std::string valuestr;
-    valuestr.Format( _T("%d"), m_OptionsCache[nOptionID].value);
+    valuestr = StringUtils::Format( _T("%d"), m_OptionsCache[nOptionID].value);
     xml.IntoElem();
     BOOL res=xml.FindChildElem();
     while (res)

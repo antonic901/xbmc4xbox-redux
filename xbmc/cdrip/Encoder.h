@@ -21,7 +21,7 @@
  *
  */
 
-#include <string
+#include <string>
 
 #define ENC_ARTIST  11
 #define ENC_TITLE   12

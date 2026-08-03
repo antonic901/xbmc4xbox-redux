@@ -133,7 +133,7 @@ BOOL CWindowManager::GetMessage(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT
 
   /*
   std::string str;
-  str.Format(_T("0x%X : CWindowManager::GetMessage() waiting...\n"), GetCurrentThreadId());
+  str = StringUtils::Format(_T("0x%X : CWindowManager::GetMessage() waiting...\n"), GetCurrentThreadId());
   OutputDebugString(str);
   */
 
@@ -141,7 +141,7 @@ BOOL CWindowManager::GetMessage(LPMSG lpMsg, HWND hWnd, UINT wMsgFilterMin, UINT
   BOOL result = PeekMessage(lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, PM_REMOVE);
 
   /*
-  str.Format(_T("0x%X : CWindowManager::GetMessage() message 0x%X\n"), GetCurrentThreadId(), lpMsg->message);
+  str = StringUtils::Format(_T("0x%X : CWindowManager::GetMessage() message 0x%X\n"), GetCurrentThreadId(), lpMsg->message);
   OutputDebugString(str);
   */
 

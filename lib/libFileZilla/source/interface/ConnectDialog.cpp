@@ -31,78 +31,78 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
-// Dialogfeld CConnectDialog 
+// Dialogfeld CConnectDialog
 
 
 CConnectDialog::CConnectDialog(COptions *pOptions)
-	: CDialog(CConnectDialog::IDD, NULL)
+    : CDialog(CConnectDialog::IDD, NULL)
 {
-	ASSERT(pOptions);
-	m_pOptions = pOptions;
-	//{{AFX_DATA_INIT(CConnectDialog)
-	m_ServerAddress = _T("");
-	m_ServerPassword = _T("");
-	m_ServerPort = _T("");
-	m_bAlways = FALSE;
-	//}}AFX_DATA_INIT
+    ASSERT(pOptions);
+    m_pOptions = pOptions;
+    //{{AFX_DATA_INIT(CConnectDialog)
+    m_ServerAddress = _T("");
+    m_ServerPassword = _T("");
+    m_ServerPort = _T("");
+    m_bAlways = FALSE;
+    //}}AFX_DATA_INIT
 }
 
 
 void CConnectDialog::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CConnectDialog)
-	DDX_Text(pDX, IDC_CONNECTDIALOG_ADDRESS, m_ServerAddress);
-	DDX_Text(pDX, IDC_CONNECTDIALOG_PASSWORD, m_ServerPassword);
-	DDX_Text(pDX, IDC_CONNECTDIALOG_PORT, m_ServerPort);
-	DDV_MaxChars(pDX, m_ServerPort, 5);
-	DDX_Check(pDX, IDC_CONNECTDIALOG_ALWAYS, m_bAlways);
-	//}}AFX_DATA_MAP
+    CDialog::DoDataExchange(pDX);
+    //{{AFX_DATA_MAP(CConnectDialog)
+    DDX_Text(pDX, IDC_CONNECTDIALOG_ADDRESS, m_ServerAddress);
+    DDX_Text(pDX, IDC_CONNECTDIALOG_PASSWORD, m_ServerPassword);
+    DDX_Text(pDX, IDC_CONNECTDIALOG_PORT, m_ServerPort);
+    DDV_MaxChars(pDX, m_ServerPort, 5);
+    DDX_Check(pDX, IDC_CONNECTDIALOG_ALWAYS, m_bAlways);
+    //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CConnectDialog, CDialog)
-	//{{AFX_MSG_MAP(CConnectDialog)
-	//}}AFX_MSG_MAP
+    //{{AFX_MSG_MAP(CConnectDialog)
+    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
-// Behandlungsroutinen für Nachrichten CConnectDialog 
+// Behandlungsroutinen fï¿½r Nachrichten CConnectDialog
 
-BOOL CConnectDialog::OnInitDialog() 
+BOOL CConnectDialog::OnInitDialog()
 {
-	CDialog::OnInitDialog();
-	
-	m_ServerAddress	= m_pOptions->GetOption(IOPTION_LASTSERVERADDRESS);
-	m_ServerPort.Format(_T("%d"), m_pOptions->GetOptionVal(IOPTION_LASTSERVERPORT));
-	m_ServerPassword	= m_pOptions->GetOption(IOPTION_LASTSERVERPASS);
-	m_bAlways = m_pOptions->GetOptionVal(IOPTION_ALWAYS);
-	UpdateData(FALSE);
+    CDialog::OnInitDialog();
 
-	return TRUE;  // return TRUE unless you set the focus to a control
-	              // EXCEPTION: OCX-Eigenschaftenseiten sollten FALSE zurückgeben
+    m_ServerAddress    = m_pOptions->GetOption(IOPTION_LASTSERVERADDRESS);
+    m_ServerPort = StringUtils::Format(_T("%d"), m_pOptions->GetOptionVal(IOPTION_LASTSERVERPORT));
+    m_ServerPassword    = m_pOptions->GetOption(IOPTION_LASTSERVERPASS);
+    m_bAlways = m_pOptions->GetOptionVal(IOPTION_ALWAYS);
+    UpdateData(FALSE);
+
+    return TRUE;  // return TRUE unless you set the focus to a control
+                  // EXCEPTION: OCX-Eigenschaftenseiten sollten FALSE zurï¿½ckgeben
 }
 
-void CConnectDialog::OnOK() 
+void CConnectDialog::OnOK()
 {
-	UpdateData();
+    UpdateData();
 
-	if (m_ServerAddress == _T(""))
-	{
-		AfxMessageBox(_T("Please enter a server address."), MB_ICONEXCLAMATION);
-		return;
-	}
+    if (m_ServerAddress == _T(""))
+    {
+        AfxMessageBox(_T("Please enter a server address."), MB_ICONEXCLAMATION);
+        return;
+    }
 
-	if (_ttoi(m_ServerPort)<1 || _ttoi(m_ServerPort)>65535)
-	{
-		AfxMessageBox(_T("Please enter a server port in the range from 1 to 65535."), MB_ICONEXCLAMATION);
-		return;
-	}
+    if (_ttoi(m_ServerPort)<1 || _ttoi(m_ServerPort)>65535)
+    {
+        AfxMessageBox(_T("Please enter a server port in the range from 1 to 65535."), MB_ICONEXCLAMATION);
+        return;
+    }
 
-	m_pOptions->SetOption(IOPTION_LASTSERVERADDRESS, m_ServerAddress);
-	m_pOptions->SetOption(IOPTION_LASTSERVERPORT, _ttoi(m_ServerPort));
-	m_pOptions->SetOption(IOPTION_LASTSERVERPASS, m_ServerPassword);
-	m_pOptions->SetOption(IOPTION_ALWAYS, m_bAlways);
+    m_pOptions->SetOption(IOPTION_LASTSERVERADDRESS, m_ServerAddress);
+    m_pOptions->SetOption(IOPTION_LASTSERVERPORT, _ttoi(m_ServerPort));
+    m_pOptions->SetOption(IOPTION_LASTSERVERPASS, m_ServerPassword);
+    m_pOptions->SetOption(IOPTION_ALWAYS, m_bAlways);
 
-	CDialog::OnOK();
+    CDialog::OnOK();
 }

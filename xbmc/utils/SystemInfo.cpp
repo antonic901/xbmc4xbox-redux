@@ -109,7 +109,7 @@ std::string CSysInfoJob::GetCPUFreqInfo()
 {
   std::string strCPUFreq;
   double CPUFreq = GetCPUFrequency();
-  strCPUFreq.Format("%4.2fMHz", CPUFreq);
+  strCPUFreq = StringUtils::Format("%4.2fMHz", CPUFreq);
   return strCPUFreq;
 }
 
@@ -145,7 +145,7 @@ std::string CSysInfoJob::GetMACAddress()
   g_sysinfo.m_XKEEPROM->GetMACAddressString((LPSTR)&macaddress, ':');
 
   std::string strMacAddress;
-  strMacAddress.Format("%s", macaddress);
+  strMacAddress = StringUtils::Format("%s", macaddress);
   return strMacAddress;
 }
 
@@ -781,7 +781,7 @@ bool CSysInfo::GetXBOXVersionDetected(std::string& strXboxVer)
     else {  strXboxVer = "v1.2/v1.3";   return true;}
   }
   else if ( strcmp(Ver,("P2L")) == NULL){ strXboxVer = "v1.6";  return true;}
-  else  { strXboxVer.Format("UNKNOWN: Please report this --> %s",Ver); return true;
+  else  { strXboxVer = StringUtils::Format("UNKNOWN: Please report this --> %s",Ver); return true;
   }
 }
 
@@ -803,14 +803,14 @@ bool CSysInfo::GetDVDInfo(std::string& strDVDModel, std::string& strDVDFirmware)
     ZeroMemory(&lpsDVDModel,100);
     XKHDD::GetIDEModel(hddcommand.DATA_BUFFER, lpsDVDModel);
     CLog::Log(LOGDEBUG, "DVD Model: %s",lpsDVDModel);
-    strDVDModel.Format("%s",lpsDVDModel);
+    strDVDModel = StringUtils::Format("%s",lpsDVDModel);
 
     //Get DVD FirmWare...
     CHAR lpsDVDFirmware[100];
     ZeroMemory(&lpsDVDFirmware,100);
     XKHDD::GetIDEFirmWare(hddcommand.DATA_BUFFER, lpsDVDFirmware);
     CLog::Log(LOGDEBUG, "DVD Firmware: %s",lpsDVDFirmware);
-    strDVDFirmware.Format("%s",lpsDVDFirmware);
+    strDVDFirmware = StringUtils::Format("%s",lpsDVDFirmware);
     m_dvdRequest= true;
   }
   //check if the requested values are empty to reset the request..
@@ -833,24 +833,24 @@ bool CSysInfo::GetHDDInfo(std::string& strHDDModel, std::string& strHDDSerial,st
     //Get Model Name
     CHAR lpsHDDModel[100] = "";
     XKHDD::GetIDEModel(hddcommand.DATA_BUFFER, lpsHDDModel);
-    strHDDModel.Format("%s",lpsHDDModel);
+    strHDDModel = StringUtils::Format("%s",lpsHDDModel);
 
     //Get Serial...
     CHAR lpsHDDSerial[100] = "";
     XKHDD::GetIDESerial(hddcommand.DATA_BUFFER, lpsHDDSerial);
-    strHDDSerial.Format("%s", lpsHDDSerial);
+    strHDDSerial = StringUtils::Format("%s", lpsHDDSerial);
 
     //Get HDD FirmWare...
     CHAR lpsHDDFirmware[100] = "";
     XKHDD::GetIDEFirmWare(hddcommand.DATA_BUFFER, lpsHDDFirmware);
-    strHDDFirmware.Format("%s", lpsHDDFirmware);
+    strHDDFirmware = StringUtils::Format("%s", lpsHDDFirmware);
 
     //Print HDD Password...
     BYTE pbHDDPassword[32] = "";
     CHAR lpsHDDPassword[65] = "";
     XKHDD::GenerateHDDPwd((UCHAR *)XboxHDKey, hddcommand.DATA_BUFFER, pbHDDPassword);
     XKGeneral::BytesToHexStr(pbHDDPassword, 20, lpsHDDPassword);
-    strHDDpw.Format("%s", lpsHDDPassword);
+    strHDDpw = StringUtils::Format("%s", lpsHDDPassword);
 
     //Get ATA Locked State
     DWORD SecStatus = XKHDD::GetIDESecurityStatus(hddcommand.DATA_BUFFER);
@@ -900,7 +900,7 @@ bool CSysInfo::GetRefurbInfo(std::string& rfi_FirstBootTime, std::string& rfi_Po
     sys_time.wHour,
     sys_time.wMinute);
 
-  rfi_PowerCycleCount.Format("%d", xri.PowerCycleCount);
+  rfi_PowerCycleCount = StringUtils::Format("%d", xri.PowerCycleCount);
   return true;
 }
 #endif
@@ -1210,7 +1210,7 @@ std::string CSysInfo::GetModCHIPDetected()
   {
     CLog::Log(LOGDEBUG, "- Detected TSOP/MOdCHIP: Detection does not match! (%s != %s)",strTemp1.c_str(),strTemp2.c_str());
     CLog::Log(LOGDEBUG, "- Detected TSOP/ModChip: Using -> %s",strTemp1.c_str());
-    strTemp.Format("%s",strTemp1.c_str());
+    strTemp = StringUtils::Format("%s",strTemp1.c_str());
   }
   else strTemp = strTemp2;
 
@@ -1286,11 +1286,11 @@ std::string CSysInfo::GetMPlayerVersion()
       btime = pMplayerGetCompileTime();
     if (version && date && btime)
     {
-      strVersion.Format("%s (%s - %s)",version, date, btime);
+      strVersion = StringUtils::Format("%s (%s - %s)",version, date, btime);
     }
     else if (version)
     {
-      strVersion.Format("%s",version);
+      strVersion = StringUtils::Format("%s",version);
     }
   }
   delete mplayerDll;
@@ -1303,7 +1303,7 @@ std::string CSysInfo::GetKernelVersion()
   CLog::Log(LOGDEBUG, "- XBOX Kernel Qfe= %i", XboxKrnlVersion->Qfe);
   CLog::Log(LOGDEBUG, "- XBOX Kernel Drive FG result= %i", ikrnl);
   std::string strKernel;
-  strKernel.Format("%u.%u.%u.%u", XboxKrnlVersion->VersionMajor,XboxKrnlVersion->VersionMinor,XboxKrnlVersion->Build,XboxKrnlVersion->Qfe);
+  strKernel = StringUtils::Format("%u.%u.%u.%u", XboxKrnlVersion->VersionMajor,XboxKrnlVersion->VersionMinor,XboxKrnlVersion->Build,XboxKrnlVersion->Qfe);
   return strKernel;
 }
 bool CSysInfo::HasInternet() const
@@ -1392,7 +1392,7 @@ std::string CSysInfo::GetXBOXSerial()
   m_XKEEPROM->GetSerialNumberString(serial);
 
   std::string strXBOXSerial;
-  strXBOXSerial.Format("%s", serial);
+  strXBOXSerial = StringUtils::Format("%s", serial);
   return strXBOXSerial;
 }
 
@@ -1652,7 +1652,7 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
         case LCD_FREE_SPACE_E:
         case LCD_FREE_SPACE_F:
         case LCD_FREE_SPACE_G:
-          strRet.Format("%iMB", totalFree);
+          strRet = StringUtils::Format("%iMB", totalFree);
           break;
         case SYSTEM_FREE_SPACE:
         case SYSTEM_FREE_SPACE_C:
@@ -1689,9 +1689,9 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
       case SYSTEM_FREE_SPACE_Y:
       case SYSTEM_FREE_SPACE_Z:
         if (strDrive.IsEmpty())
-          strRet.Format("%i MB %s", totalFree, g_localizeStrings.Get(160));
+          strRet = StringUtils::Format("%i MB %s", totalFree, g_localizeStrings.Get(160).c_str());
         else
-          strRet.Format("%s: %i MB %s", strDrive, totalFree, g_localizeStrings.Get(160));
+          strRet = StringUtils::Format("%s: %i MB %s", strDrive.c_str(), totalFree, g_localizeStrings.Get(160).c_str());
         break;
       case SYSTEM_USED_SPACE:
       case SYSTEM_USED_SPACE_C:
@@ -1702,9 +1702,9 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
       case SYSTEM_USED_SPACE_Y:
       case SYSTEM_USED_SPACE_Z:
         if (strDrive.IsEmpty())
-          strRet.Format("%i MB %s", totalUsed, g_localizeStrings.Get(20162));
+          strRet = StringUtils::Format("%i MB %s", totalUsed, g_localizeStrings.Get(20162).c_str());
         else
-          strRet.Format("%s: %i MB %s", strDrive, totalUsed, g_localizeStrings.Get(20162));
+          strRet = StringUtils::Format("%s: %i MB %s", strDrive.c_str(), totalUsed, g_localizeStrings.Get(20162).c_str());
         break;
       case SYSTEM_TOTAL_SPACE:
       case SYSTEM_TOTAL_SPACE_C:
@@ -1712,9 +1712,9 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
       case SYSTEM_TOTAL_SPACE_F:
       case SYSTEM_TOTAL_SPACE_G:
         if (strDrive.IsEmpty())
-          strRet.Format("%i MB %s", total, g_localizeStrings.Get(20161));
+          strRet = StringUtils::Format("%i MB %s", total, g_localizeStrings.Get(20161).c_str());
         else
-          strRet.Format("%s: %i MB %s", strDrive, total, g_localizeStrings.Get(20161));
+          strRet = StringUtils::Format("%s: %i MB %s", strDrive.c_str(), total, g_localizeStrings.Get(20161).c_str());
         break;
       case SYSTEM_FREE_SPACE_PERCENT:
       case SYSTEM_FREE_SPACE_PERCENT_C:
@@ -1722,9 +1722,9 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
       case SYSTEM_FREE_SPACE_PERCENT_F:
       case SYSTEM_FREE_SPACE_PERCENT_G:
         if (strDrive.IsEmpty())
-          strRet.Format("%i %% %s", percentFree, g_localizeStrings.Get(160));
+          strRet = StringUtils::Format("%i %% %s", percentFree, g_localizeStrings.Get(160).c_str());
         else
-          strRet.Format("%s: %i %% %s", strDrive, percentFree, g_localizeStrings.Get(160));
+          strRet = StringUtils::Format("%s: %i %% %s", strDrive.c_str(), percentFree, g_localizeStrings.Get(160).c_str());
         break;
       case SYSTEM_USED_SPACE_PERCENT:
       case SYSTEM_USED_SPACE_PERCENT_C:
@@ -1732,9 +1732,9 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
       case SYSTEM_USED_SPACE_PERCENT_F:
       case SYSTEM_USED_SPACE_PERCENT_G:
         if (strDrive.IsEmpty())
-          strRet.Format("%i %% %s", percentused, g_localizeStrings.Get(20162));
+          strRet = StringUtils::Format("%i %% %s", percentused, g_localizeStrings.Get(20162).c_str());
         else
-          strRet.Format("%s: %i %% %s", strDrive, percentused, g_localizeStrings.Get(20162));
+          strRet = StringUtils::Format("%s: %i %% %s", strDrive.c_str(), percentused, g_localizeStrings.Get(20162).c_str());
         break;
       }
     }
@@ -1746,7 +1746,7 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
     else if (strDrive.IsEmpty())
       strRet = g_localizeStrings.Get(161);
     else
-      strRet.Format("%s: %s", strDrive, g_localizeStrings.Get(161));
+      strRet = StringUtils::Format("%s: %s", strDrive.c_str(), g_localizeStrings.Get(161).c_str());
   }
   return strRet;
 }

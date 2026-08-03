@@ -140,18 +140,18 @@ bool CServer::Create()
     //TODO Start on startup check
     int nPort = (int)m_pOptions->GetOptionVal(OPTION_SERVERPORT);
     std::string str;
-    str.Format("Creating listen socket on port %d...", nPort);
+    str = StringUtils::Format("Creating listen socket on port %d...", nPort);
     ShowStatus(str, 0);
     if (!m_pListenSocket->Create(nPort, SOCK_STREAM, FD_ACCEPT, 0) || !m_pListenSocket->Listen())
     {
-        str.Format("Failed to create listen socket on port %d. Server is not online!", nPort);
+        str = StringUtils::Format("Failed to create listen socket on port %d. Server is not online!", nPort);
         ShowStatus(str, 1);
         delete m_pListenSocket;
         m_pListenSocket = NULL;
     }
     else
     {
-        str.Format("Server online.");
+        str = "Server online.";
         ShowStatus(str, 0);
         m_nServerState = 1;
     }
@@ -232,7 +232,7 @@ LRESULT CServer::OnServerMessage(WPARAM wParam, LPARAM lParam)
         SystemTimeToFileTime(&msg->time, &fFileTime);
         _int64 time = ((_int64)fFileTime.dwHighDateTime<<32) + fFileTime.dwLowDateTime;
 
-        str.Format("(%06d)- %s (%s)> %s", msg->userid, (LPCTSTR)msg->user, (LPCTSTR)msg->ip, (LPCTSTR)msg->status);
+        str = StringUtils::Format("(%06d)- %s (%s)> %s", msg->userid, (LPCTSTR)msg->user.c_str(), (LPCTSTR)msg->ip.c_str(), (LPCTSTR)msg->status.c_str());
         ShowStatus(time, str, msg->type);
         delete [] msg->user;
         delete [] msg->status;
@@ -487,13 +487,13 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
                         }
                     }
                     std::string str;
-                    str.Format("Number of threads increased to %d.", threadnum);
+                    str = StringUtils::Format("Number of threads increased to %d.", threadnum);
                     ShowStatus(str, 0);
                 }
                 else if (threadnum<m_ThreadArray.size())
                 {
                     std::string str;
-                    str.Format("Decreasing number of threads to %d.", threadnum);
+                    str = StringUtils::Format("Decreasing number of threads to %d.", threadnum);
                     ShowStatus(str, 0);
                     unsigned int i=0;
                     for (std::list<CServerThread *>::iterator iter=m_ThreadArray.begin(); iter!=m_ThreadArray.end(); iter++,i++)
@@ -505,16 +505,16 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
                     if (m_pListenSocket)
                     {
                         std::string str;
-                        str.Format("Closing listen socket on port %d", nListenPort);
+                        str = StringUtils::Format("Closing listen socket on port %d", nListenPort);
                         ShowStatus(str, 0);
                         m_pListenSocket->Close();
-                        str.Format("Creating listen socket on port %I64d...", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
+                        str = StringUtils::Format("Creating listen socket on port %I64d...", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
                         ShowStatus(str, 0);
                         if (!m_pListenSocket->Create((int)m_pOptions->GetOptionVal(OPTION_SERVERPORT), SOCK_STREAM,FD_ACCEPT,0) || !m_pListenSocket->Listen())
                         {
                             delete m_pListenSocket;
                             m_pListenSocket = NULL;
-                            str.Format("Failed to create listen socket on port %I64d. Server is not online!", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
+                            str = StringUtils::Format("Failed to create listen socket on port %I64d. Server is not online!", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
                             ShowStatus(str,1);
                             m_nServerState = 0;
                         }
@@ -538,7 +538,7 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
                     {
                         delete pSocket;
                         std::string str;
-                        str.Format(_T("Failed to change admin listen port to %I64d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
+                        str = StringUtils::Format(_T("Failed to change admin listen port to %I64d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
                         m_pOptions->SetOption(OPTION_ADMINPORT, nAdminListenPort);
                         ShowStatus(str, 1);
                     }
@@ -556,7 +556,7 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
                         if (nAdminListenPort != m_pOptions->GetOptionVal(OPTION_ADMINPORT))
                         {
                             std::string str;
-                            str.Format(_T("Admin listen port changed to %I64d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
+                            str = StringUtils::Format(_T("Admin listen port changed to %I64d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
                             ShowStatus(str, 0);
                         }
 
@@ -631,7 +631,7 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
     default:
         {
             std::string str;
-            str.Format("\001Protocol error: Unknown command (%d).", nID);
+            str = StringUtils::Format("\001Protocol error: Unknown command (%d).", nID);
             pAdminSocket->SendCommand(1, 1, str.c_str(), str.GetLength());
         }
         break;
@@ -690,13 +690,13 @@ BOOL CServer::ToggleActive(int nServerState)
 
             int nPort = (m_pOptions ? (int)m_pOptions->GetOptionVal(OPTION_SERVERPORT) : 21);
             std::string str;
-            str.Format("Creating listen socket on port %d...", nPort);
+            str = StringUtils::Format("Creating listen socket on port %d...", nPort);
             ShowStatus(str, 0);
             if (!m_pListenSocket->Create(nPort, SOCK_STREAM, FD_ACCEPT, 0) || !m_pListenSocket->Listen())
             {
                 delete m_pListenSocket;
                 m_pListenSocket = NULL;
-                str.Format("Failed to create listen socket on port %d. Server is not online!", nPort);
+                str = StringUtils::Format("Failed to create listen socket on port %d. Server is not online!", nPort);
                 ShowStatus(str, 1);
             }
             else
@@ -831,7 +831,7 @@ BOOL CServer::CreateAdminListenSocket()
         {
             delete pAdminListenSocket;
             pAdminListenSocket = NULL;
-            str.Format(_T("Failed to create listen socket for admin interface on port %d, the admin interface has been disabled."), nAdminPort);
+            str = StringUtils::Format(_T("Failed to create listen socket for admin interface on port %d, the admin interface has been disabled."), nAdminPort);
         }
         else
         {
@@ -842,14 +842,14 @@ BOOL CServer::CreateAdminListenSocket()
             if (bResult)
             {
                 int nPort = ntohs(sockAddr.sin_port);
-                str.Format(_T("Failed to create listen socket for admin interface on port %d, for this session the admin interface is available on port %d."), nAdminPort, nPort);
+                str = StringUtils::Format(_T("Failed to create listen socket for admin interface on port %d, for this session the admin interface is available on port %d."), nAdminPort, nPort);
                 nAdminPort = nPort;
             }
             else
             {
                 delete pAdminListenSocket;
                 pAdminListenSocket = NULL;
-                str.Format(_T("Failed to create listen socket for admin interface on port %d, the admin interface has been disabled."), nAdminPort);
+                str = StringUtils::Format(_T("Failed to create listen socket for admin interface on port %d, the admin interface has been disabled."), nAdminPort);
             }
         }
         MessageBox(0, str, _T("FileZilla Server Error"), MB_ICONEXCLAMATION | MB_SERVICE_NOTIFICATION);

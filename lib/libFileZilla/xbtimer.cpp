@@ -86,7 +86,7 @@ UINT SetTimer(HWND hWnd, UINT nIDEvent, UINT uElapse, TIMERPROC lpTimerFunc)
   gTimerEntryListCS.Unlock();
 
   //std::string str;
-  //str.Format(_T("0x%X : SetTimer() hWnd 0x%X, mTimerId 0x%X\n"), GetCurrentThreadId(), hWnd, id);
+  //str = StringUtils::Format(_T("0x%X : SetTimer() hWnd 0x%X, mTimerId 0x%X\n"), GetCurrentThreadId(), hWnd, id);
   //OutputDebugString(str);
 
   return id;
@@ -102,7 +102,7 @@ BOOL KillTimer(HWND hWnd, UINT uIDEvent)
     if ((*it)->mTimerId == uIDEvent)
     {
       //std::string str;
-      //str.Format(_T("0x%X : KillTimer() hWnd 0x%X, mTimerId 0x%X\n"), GetCurrentThreadId(), hWnd, uIDEvent);
+      //str = StringUtils::Format(_T("0x%X : KillTimer() hWnd 0x%X, mTimerId 0x%X\n"), GetCurrentThreadId(), hWnd, uIDEvent);
       //OutputDebugString(str);
 
       delete *it;

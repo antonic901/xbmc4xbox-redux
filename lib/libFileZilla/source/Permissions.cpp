@@ -1766,15 +1766,15 @@ BOOL CPermissions::ParseUsersCommand(unsigned char *pData, DWORD dwDataLength)
             pXML->IntoElem();
 
             std::string str;
-            str.Format(_T("%d"), groupiter->nLnk);
+            str = StringUtils::Format(_T("%d"), groupiter->nLnk);
             SetKey(pXML, "Resolve Shortcuts", str);
-            str.Format(_T("%d"), groupiter->nRelative);
+            str = StringUtils::Format(_T("%d"), groupiter->nRelative);
             SetKey(pXML, "Relative", str);
-            str.Format(_T("%d"), groupiter->nBypassUserLimit);
+            str = StringUtils::Format(_T("%d"), groupiter->nBypassUserLimit);
             SetKey(pXML, "Bypass server userlimit", str);
-            str.Format(_T("%d"), groupiter->nUserLimit);
+            str = StringUtils::Format(_T("%d"), groupiter->nUserLimit);
             SetKey(pXML, "User Limit", str);
-            str.Format(_T("%d"), groupiter->nIpLimit);
+            str = StringUtils::Format(_T("%d"), groupiter->nIpLimit);
             SetKey(pXML, "IP Limit", str);
 
             SavePermissions(pXML, *groupiter);
@@ -1800,15 +1800,15 @@ BOOL CPermissions::ParseUsersCommand(unsigned char *pData, DWORD dwDataLength)
             std::string str;
             SetKey(pXML, "Pass", iter->password);
             SetKey(pXML, "Group", iter->group);
-            str.Format(_T("%d"), iter->nLnk);
+            str = StringUtils::Format(_T("%d"), iter->nLnk);
             SetKey(pXML, "Resolve Shortcuts", str);
-            str.Format(_T("%d"), iter->nRelative);
+            str = StringUtils::Format(_T("%d"), iter->nRelative);
             SetKey(pXML, "Relative", str);
-            str.Format(_T("%d"), iter->nBypassUserLimit);
+            str = StringUtils::Format(_T("%d"), iter->nBypassUserLimit);
             SetKey(pXML, "Bypass server userlimit", str);
-            str.Format(_T("%d"), iter->nUserLimit);
+            str = StringUtils::Format(_T("%d"), iter->nUserLimit);
             SetKey(pXML, "User Limit", str);
-            str.Format(_T("%d"), iter->nIpLimit);
+            str = StringUtils::Format(_T("%d"), iter->nIpLimit);
             SetKey(pXML, "IP Limit", str);
 
             SavePermissions(pXML, *iter);
@@ -2355,7 +2355,7 @@ void CPermissions::SaveSpeedLimits(CMarkupSTL *pXML, const t_group &group)
 
         pXML->IntoElem();
 
-        str.Format("%d", limit.m_Day);
+        str = StringUtils::Format("%d", limit.m_Day);
         pXML->AddChildElem(_T("Days"), str);
 
         if (limit.m_DateCheck)
@@ -2397,7 +2397,7 @@ void CPermissions::SaveSpeedLimits(CMarkupSTL *pXML, const t_group &group)
 
         pXML->IntoElem();
 
-        str.Format("%d", limit.m_Day);
+        str = StringUtils::Format("%d", limit.m_Day);
         pXML->AddChildElem(_T("Days"), str);
 
         if (limit.m_DateCheck)

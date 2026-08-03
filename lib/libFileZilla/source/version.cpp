@@ -41,6 +41,6 @@
 std::string GetVersionString()
 {
   std::string str;
-  str.Format("XBMC:FileZilla version %s, (based on FileZilla Server %s)", XBFILEZILLA_VERSION, FILEZILLA_VERSION);
+  str = StringUtils::Format("XBMC:FileZilla version %s, (based on FileZilla Server %s)", XBFILEZILLA_VERSION, FILEZILLA_VERSION);
   return str;
 }

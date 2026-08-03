@@ -116,7 +116,7 @@ bool CDNSNameCache::Lookup(const std::string& strHostName, std::string& strIpAdr
     /* Print out all IP addresses of name */
     if (host->h_addr_list[0])
     {
-      strIpAdres.Format("%d.%d.%d.%d", (unsigned char)host->h_addr_list[0][0], (unsigned char)host->h_addr_list[0][1], (unsigned char)host->h_addr_list[0][2], (unsigned char)host->h_addr_list[0][3]);
+      strIpAdres = StringUtils::Format("%d.%d.%d.%d", (unsigned char)host->h_addr_list[0][0], (unsigned char)host->h_addr_list[0][1], (unsigned char)host->h_addr_list[0][2], (unsigned char)host->h_addr_list[0][3]);
       g_DNSCache.Add(strHostName, strIpAdres);
     }
 
@@ -144,7 +144,7 @@ bool CDNSNameCache::Lookup(const std::string& strHostName, std::string& strIpAdr
     unsigned long ulHostIp;
     memcpy(&ulHostIp, &(pDns->aina[0].s_addr), 4);
 
-    strIpAdres.Format("%d.%d.%d.%d", (ulHostIp & 0xFF), (ulHostIp & 0xFF00) >> 8, (ulHostIp & 0xFF0000) >> 16, (ulHostIp & 0xFF000000) >> 24 );
+    strIpAdres = StringUtils::Format("%d.%d.%d.%d", (ulHostIp & 0xFF), (ulHostIp & 0xFF00) >> 8, (ulHostIp & 0xFF0000) >> 16, (ulHostIp & 0xFF000000) >> 24 );
 
     g_DNSCache.Add(fqdn, strIpAdres);
 

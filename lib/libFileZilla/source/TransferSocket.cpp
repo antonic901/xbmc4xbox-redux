@@ -785,7 +785,7 @@ BOOL CTransferSocket::InitTransfer(BOOL bCalledFromSend)
     {
         std::string str="150 Connection accepted";
         if (m_nRest)
-            str.Format("150 Connection accepted, restarting at offset %I64d",m_nRest);
+            str = StringUtils::Format("150 Connection accepted, restarting at offset %I64d",m_nRest);
         m_pOwner->Send(str);
     }
 

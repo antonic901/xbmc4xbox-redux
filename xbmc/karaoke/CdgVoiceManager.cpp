@@ -222,7 +222,7 @@ void CCdgChatter::LoadSettings()
   float fHardwareVolume = ((float)iPercent) / 100.0f * (CApplicationVolumeHandling::VOLUME_MAXIMUM - CApplicationVolumeHandling::VOLUME_MINIMUM) + CApplicationVolumeHandling::VOLUME_MINIMUM;
   m_lVolume = (long)fHardwareVolume;
   //Load the voice mask
-  strSetting.Format("karaoke.port%ivoicemask", m_dwPort);
+  strSetting = StringUtils::Format("karaoke.port%ivoicemask", m_dwPort);
   strSetting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(strSetting);
   if (strSetting.CompareNoCase("None") == 0)
   {

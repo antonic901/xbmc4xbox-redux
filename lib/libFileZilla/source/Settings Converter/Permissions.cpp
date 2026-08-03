@@ -197,9 +197,9 @@ BOOL CPermissions::Convert(CMarkupSTL *pXML)
         SetKey(pXML, "Relative", iter->bRelative?"1":"0");
         SetKey(pXML, "Bypass server userlimit", iter->bBypassUserLimit?"1":"0");
         std::string str;
-        str.Format(_T("%d"), iter->nUserLimit);
+        str = StringUtils::Format(_T("%d"), iter->nUserLimit);
         SetKey(pXML, "User Limit", str);
-        str.Format(_T("%d"), iter->nIpLimit);
+        str = StringUtils::Format(_T("%d"), iter->nIpLimit);
         SetKey(pXML, "IP Limit", str);
 
         SavePermissions(pXML, *iter);

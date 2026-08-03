@@ -75,7 +75,7 @@ void CFat32Device::CachePage(unsigned long page, unsigned char *buffer)
       if ((*it).second->Usage(time) > 0xFF)
         log = "FF ";
       else
-        log.Format("%02x ", (*it).second->Usage());
+        log = StringUtils::Format("%02x ", (*it).second->Usage());
       usage += log;*/
     }
     //CLog::Log(LOGDEBUG, "%s", usage.c_str());

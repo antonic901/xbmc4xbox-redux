@@ -256,7 +256,7 @@ void COptions::SetOption(int nOptionID, _int64 value)
         xml.AddChildElem( _T("Settings") );
 
     std::string valuestr;
-    valuestr.Format( _T("%I64d"), value);
+    valuestr = StringUtils::Format( _T("%I64d"), value);
     xml.IntoElem();
     BOOL res=xml.FindChildElem();
     while (res)
@@ -992,7 +992,7 @@ BOOL COptions::SaveSpeedLimits()
 
         xml.IntoElem();
 
-        str.Format("%d", limit.m_Day);
+        str = StringUtils::Format("%d", limit.m_Day);
         xml.AddChildElem(_T("Days"), str);
 
         if (limit.m_DateCheck)
@@ -1034,7 +1034,7 @@ BOOL COptions::SaveSpeedLimits()
 
         xml.IntoElem();
 
-        str.Format("%d", limit.m_Day);
+        str = StringUtils::Format("%d", limit.m_Day);
         xml.AddChildElem(_T("Days"), str);
 
         if (limit.m_DateCheck)

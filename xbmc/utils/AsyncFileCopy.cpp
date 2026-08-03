@@ -74,7 +74,7 @@ bool CAsyncFileCopy::Copy(const std::string &from, const std::string &to, const 
     if (dlg && dlg->IsDialogRunning())
     {
       std::string speedString;
-      speedString.Format("%2.2f KB/s", m_speed / 1024);
+      speedString = StringUtils::Format("%2.2f KB/s", m_speed / 1024);
       dlg->SetHeading(heading);
       dlg->SetLine(0, url1.Get());
       dlg->SetLine(1, url2.Get());

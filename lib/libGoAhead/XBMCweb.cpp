@@ -967,7 +967,7 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   if (strText.GetAt(strText.size()-1) != ' ')
   strText+=" ";
   std::string strTrack;
-  strTrack.Format(strText+"%i", iTrack);
+  strTrack = StringUtils::Format(strText+"%i", iTrack);
 
   }
 
@@ -981,7 +981,7 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   if (strText.GetAt(strText.size()-1) != ' ')
   strText+=" ";
   std::string strYear;
-  strYear.Format(strText+"%i", iYear);
+  strYear = StringUtils::Format(strText+"%i", iYear);
   }
 
   if (tag.GetDuration() > 0)
@@ -1012,7 +1012,7 @@ void CXbmcWeb::SetCurrentMediaItem(CFileItem& newItem)
   if (strText.GetAt(strText.size()-1) != ' ')
   strText+=" ";
   std::string strTrack;
-  strTrack.Format(strText+"%i", iTrack);
+  strTrack = StringUtils::Format(strText+"%i", iTrack);
   }
 
   //    ...and its duration for display.

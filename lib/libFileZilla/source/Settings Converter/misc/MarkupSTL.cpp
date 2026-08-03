@@ -354,7 +354,7 @@ int CMarkupSTL::x_ReleasePos()
 int CMarkupSTL::x_ParseError( const char * szError, const char * szName )
 {
     if ( szName )
-        m_csError.Format( szError, szName );
+        m_csError = StringUtils::Format( szError, szName );
     else
         m_csError = szError;
     x_ReleasePos();

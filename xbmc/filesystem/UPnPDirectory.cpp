@@ -241,7 +241,7 @@ bool CUPnPDirectory::GetResource(const CURL& path, CFileItem &item)
             if(info.Match(PLT_ProtocolInfo("*", "*", allowed[type], "*")))
             {
                 std::string prop;
-                prop.Format("upnp:subtitle:%d", ++subs);
+                prop = StringUtils::Format("upnp:subtitle:%d", ++subs);
                 item.SetProperty(prop, (const char*)res.m_Uri);
                 break;
             }

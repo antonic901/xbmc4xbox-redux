@@ -292,7 +292,7 @@ XFSTATUS CXBFileZillaImp::Shutdown()
 
 bool CXBFileZillaImp::GetFreeSpacePrompt(unsigned ReplyCode, std::string& Prompt)
 {
-  Prompt.Format(_T("%d- Free space: "), ReplyCode);
+  Prompt = StringUtils::Format(_T("%d- Free space: "), ReplyCode);
 
   for (unsigned i = 0; i < mFreeSpaceDrives.size(); ++i)
     if (mFreeSpaceDrives[i].mDisplay)
@@ -323,7 +323,7 @@ bool CXBFileZillaImp::GetFreeSpacePrompt(unsigned ReplyCode, std::string& Prompt
         freespacedouble = freespace.QuadPart;
       }
 
-      Prompt.AppendFormat(_T("[%s %.2f %s] "), mFreeSpaceDrives[i].mDrive.c_str(), freespacedouble, Unit.c_str());
+      Prompt += StringUtils::Format(_T("[%s %.2f %s] "), mFreeSpaceDrives[i].mDrive.c_str(), freespacedouble, Unit.c_str());
     }
 
   return !mFreeSpaceDrives.empty();
@@ -558,7 +558,7 @@ XFSTATUS CXBFileZillaImp::WriteXBoxSettings()
       pXML->IntoElem();
       pXML->AddChildElem(_T("Name"), mFreeSpaceDrives[i].mDrive);
       std::string str;
-      str.Format(_T("%u"), mFreeSpaceDrives[i].mMinimumSpace);
+      str = StringUtils::Format(_T("%u"), mFreeSpaceDrives[i].mMinimumSpace);
       pXML->AddChildElem(_T("Minimum"), str);
       pXML->AddChildElem(_T("Display"), mFreeSpaceDrives[i].mDisplay?_T("1"):_T("0"));
       pXML->OutOfElem();
@@ -1194,9 +1194,9 @@ XFSTATUS CXFPermissions::AddUser(const CUser& user)
     SetKey(pXML, "Relative", user.nRelative?"1":"0");
     SetKey(pXML, "Bypass server userlimit", user.nBypassUserLimit?"1":"0");
     std::string str;
-    str.Format(_T("%d"), user.nUserLimit);
+    str = StringUtils::Format(_T("%d"), user.nUserLimit);
     SetKey(pXML, "User Limit", str);
-    str.Format(_T("%d"), user.nIpLimit);
+    str = StringUtils::Format(_T("%d"), user.nIpLimit);
     SetKey(pXML, "IP Limit", str);
 
     SavePermissions(pXML, user);

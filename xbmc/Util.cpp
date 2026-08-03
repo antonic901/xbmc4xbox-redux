@@ -728,7 +728,7 @@ void CUtil::GetFileAndProtocol(const std::string& strURL, std::string& strDir)
   if (URIUtils::IsDVD(strURL)) return ;
 
   CURL url(strURL);
-  strDir.Format("%s://%s", url.GetProtocol().c_str(), url.GetFileName().c_str());
+  strDir = StringUtils::Format("%s://%s", url.GetProtocol().c_str(), url.GetFileName().c_str());
 }
 
 int CUtil::GetDVDIfoTitle(const std::string& strFile)
@@ -1386,7 +1386,7 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
             if (strItem.Left(9).ToLower() == "subtitle." && strItem.Right(l).ToLower() == sub_exts[i])
             {
               strLExt = strItem.Right(strItem.GetLength() - 9);
-              strDest.Format("special://temp/subtitle.alt-%s", strLExt);
+              strDest = StringUtils::Format("special://temp/subtitle.alt-%s", strLExt.c_str());
               if (CFile::Copy(items[j]->GetPath(), strDest, pCallback, NULL))
               {
                 CLog::Log(LOGINFO, " cached subtitle %s->%s\n", strItem.c_str(), strDest.c_str());
@@ -1398,7 +1398,7 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
             if (strItem.Right(l).ToLower() == sub_exts[i] && strItem.Left(fnl).ToLower() == strFileNameNoExt.ToLower())
             {
               strLExt = strItem.Right(strItem.size() - fnl);
-              strDest.Format("special://temp/subtitle%s", strLExt);
+              strDest = StringUtils::Format("special://temp/subtitle%s", strLExt.c_str());
               if (CFile::Copy(items[j]->GetPath(), strDest, pCallback, NULL))
                 CLog::Log(LOGINFO, " cached subtitle %s->%s\n", strItem.c_str(), strDest.c_str());
             }
@@ -1432,11 +1432,11 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
         {
           for (unsigned int k = 0; k < TagConv.m_Langclass.size(); k++)
           {
-            strDest.Format("special://temp/subtitle.%s%s", TagConv.m_Langclass[k].Name, strLExt);
+            strDest = StringUtils::Format("special://temp/subtitle.%s%s", TagConv.m_Langclass[k].Name.c_str(), strLExt.c_str());
             if (CFile::Copy(items[i]->GetPath(), strDest, pCallback, NULL))
               CLog::Log(LOGINFO, " cached subtitle %s->%s\n", filename.c_str(), strDest.c_str());
             std::string strTemp;
-            strTemp.Format(".%s%s", TagConv.m_Langclass[k].Name, strLExt);
+            strTemp = StringUtils::Format(".%s%s", TagConv.m_Langclass[k].Name.c_str(), strLExt.c_str());
             vecExtensionsCached.push_back(strTemp);
           }
         }
@@ -1508,7 +1508,7 @@ bool CUtil::CacheRarSubtitles(const std::string& strRarPath,
             strSourceUrl = strPathInRar;
 
           std::string strDestFile;
-          strDestFile.Format("special://temp/subtitle%s", sub_exts[iPos]);
+          strDestFile = StringUtils::Format("special://temp/subtitle%s", sub_exts[iPos]);
 
           if (CFile::Copy(strSourceUrl,strDestFile))
           {
@@ -1596,7 +1596,7 @@ void CUtil::PlayDVD(const std::string& strProtocol, bool restart)
     CIoSupport::Dismount("Cdrom0");
     CIoSupport::RemapDriveLetter('D', "Cdrom0");
     std::string strPath;
-    strPath.Format("%s://1", strProtocol.c_str());
+    strPath = StringUtils::Format("%s://1", strProtocol.c_str());
     CFileItem item(strPath, false);
     item.SetLabel(CDetectDVDMedia::GetDVDLabel());
     item.GetVideoInfoTag()->m_strFileNameAndPath = "removable://"; // need to put volume label for resume point in videoInfoTag
@@ -1615,7 +1615,7 @@ std::string CUtil::GetNextFilename(const std::string &fn_template, int max)
   std::string mask = URIUtils::GetExtension(fn_template);
 
   std::string name;
-  name.Format(fn_template.c_str(), 0);
+  name = StringUtils::Format(fn_template.c_str(), 0);
 
   CFileItemList items;
   if (!CDirectory::GetDirectory(searchPath, items, mask, DIR_FLAG_NO_FILE_DIRS))
@@ -1625,7 +1625,7 @@ std::string CUtil::GetNextFilename(const std::string &fn_template, int max)
   for (int i = 0; i <= max; i++)
   {
     std::string name;
-    name.Format(fn_template.c_str(), i);
+    name = StringUtils::Format(fn_template.c_str(), i);
     if (!items.Get(name))
       return name;
   }
@@ -1640,7 +1640,7 @@ std::string CUtil::GetNextPathname(const std::string &path_template, int max)
   for (int i = 0; i <= max; i++)
   {
     std::string name;
-    name.Format(path_template.c_str(), i);
+    name = StringUtils::Format(path_template.c_str(), i);
     if (!CFile::Exists(name))
       return name;
   }
@@ -2560,11 +2560,11 @@ bool CUtil::AutoDetection()
         strFtpPassword  = arSplit[2].c_str();
         strFtpPort      = arSplit[3].c_str();
         strBoosMode     = arSplit[4].c_str();
-        strFTPPath.Format("ftp://%s:%s@%s:%s/",strFtpUserName.c_str(),strFtpPassword.c_str(),v_xboxclients.client_ip[i],strFtpPort.c_str());
+        strFTPPath = StringUtils::Format("ftp://%s:%s@%s:%s/",strFtpUserName.c_str(),strFtpPassword.c_str(),v_xboxclients.client_ip[i].c_str(),strFtpPort.c_str());
 
         //Do Notification for this Client
         std::string strtemplbl;
-        strtemplbl.Format("%s %s",strNickName, v_xboxclients.client_ip[i]);
+        strtemplbl = StringUtils::Format("%s %s",strNickName.c_str(), v_xboxclients.client_ip[i].c_str());
         CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(38703), strtemplbl);
 
         //Debug Log
@@ -2619,7 +2619,7 @@ bool CUtil::AutoDetectionPing(std::string strFTPUserName, std::string strFTPPass
         if((hostinfo = gethostbyname(hostname)) != NULL)
         {
           strLocalIP = inet_ntoa (*(struct in_addr *)*hostinfo->h_addr_list);
-          strNickName.Format("%s",hostname);
+          strNickName = StringUtils::Format("%s",hostname);
         }
       }
       WSACleanup();
@@ -2744,7 +2744,7 @@ bool CUtil::AutoDetectionPing(std::string strFTPUserName, std::string strFTPPass
       {
         //We received new client information, extracting information
         std::string strInfo, strIP;
-        strInfo.Format("%s",sztmp); //this is the client info
+        strInfo = StringUtils::Format("%s",sztmp); //this is the client info
         strIP.Format("%d.%d.%d.%d",
 #ifndef _LINUX
           cliAddr.sin_addr.S_un.S_un_b.s_b1,
@@ -2885,15 +2885,15 @@ void CUtil::AutoDetectionGetSource(VECSOURCES &shares)
         strFtpPassword  = arSplit[2].c_str();
         strFtpPort      = arSplit[3].c_str();
         strBoosMode     = arSplit[4].c_str();
-        strFTPPath.Format("ftp://%s:%s@%s:%s/",strFtpUserName.c_str(),strFtpPassword.c_str(),v_xboxclients.client_ip[i].c_str(),strFtpPort.c_str());
+        strFTPPath = StringUtils::Format("ftp://%s:%s@%s:%s/",strFtpUserName.c_str(),strFtpPassword.c_str(),v_xboxclients.client_ip[i].c_str(),strFtpPort.c_str());
 
         strNickName.TrimRight(' ');
 #ifdef HAS_XBOX_HARDWARE
-        share.strName.Format("FTP XBMC (%s)", strNickName.c_str());
+        share.strName = StringUtils::Format("FTP XBMC (%s)", strNickName.c_str());
 #else
-        share.strName.Format("FTP XBMC_PC (%s)", strNickName.c_str());
+        share.strName = StringUtils::Format("FTP XBMC_PC (%s)", strNickName.c_str());
 #endif
-        share.strPath.Format("%s",strFTPPath.c_str());
+        share.strPath = StringUtils::Format("%s",strFTPPath.c_str());
         shares.push_back(share);
       }
     }
@@ -2912,13 +2912,13 @@ bool CUtil::SetXBOXNickName(std::string strXboxNickNameIn, std::string &strXboxN
   if (hNickName != INVALID_HANDLE_VALUE)
   { do
       {
-        strXboxNickNameOut.Format("%ls",pszNickName );
+        strXboxNickNameOut = StringUtils::Format("%ls",pszNickName );
         if (strXboxNickNameIn.Equals(strXboxNickNameOut))
         {
           bfound = true;
           break;
         }
-        else if (strXboxNickNameIn.IsEmpty()) strXboxNickNameOut.Format("XbMediaCenter");
+        else if (strXboxNickNameIn.IsEmpty()) strXboxNickNameOut = "XbMediaCenter";
       }while(XFindNextNickname(hNickName,pszNickName,uiSize) != false);
     XFindClose(hNickName);
   }
@@ -2938,7 +2938,7 @@ bool CUtil::GetXBOXNickName(std::string &strXboxNickNameOut)
   HANDLE hNickName = XFindFirstNickname( FALSE, wszXboxNickname, MAX_NICKNAME );
     if ( hNickName != INVALID_HANDLE_VALUE )
     {
-    strXboxNickNameOut.Format("%ls",wszXboxNickname);
+    strXboxNickNameOut = StringUtils::Format("%ls",wszXboxNickname);
         XFindClose( hNickName );
     return true;
     }
@@ -2946,7 +2946,7 @@ bool CUtil::GetXBOXNickName(std::string &strXboxNickNameOut)
 #endif
   {
     // it seems to be empty? should we create one? or the user
-    strXboxNickNameOut.Format("");
+    strXboxNickNameOut = "";
     return false;
   }
 }
