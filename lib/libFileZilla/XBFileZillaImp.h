@@ -102,7 +102,6 @@ public:
 
 protected:
   // returns the driveletter from a directory path
-  // e.g. f:\media\movies will become f:\
   std::string ConvertToDrivename(LPCTSTR Dirname);
 
 protected:

@@ -167,7 +167,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
     unsigned int index;
     for (index=0; index<m_UsersList.size(); index++)
     {
-        if (!m_UsersList[index].user.CompareNoCase(user))
+        if (!StringUtils::CompareNoCase(m_UsersList[index].user, user))
             break;
     }
     if (index==m_UsersList.size())
@@ -217,7 +217,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
         bIncludeLinks = TRUE;
     else
         bIncludeLinks = FALSE;
-    hFind = FindFirstFile(directory.dir+"\\" + sFileSpec, &NextFindFileData);
+    hFind = FindFirstFile((directory.dir+"\\" + sFileSpec).c_str(), &NextFindFileData);
     while (hFind != INVALID_HANDLE_VALUE)
     {
         FindFileData=NextFindFileData;
@@ -268,7 +268,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
             }
             else
             {
-                std::string lnkpath = GetShortcutTarget(directory.dir+"\\"+FindFileData.cFileName);
+                std::string lnkpath = GetShortcutTarget((directory.dir+"\\"+FindFileData.cFileName).c_str());
                 lnkpath.Replace(":u", m_UsersList[index].user);
                 lnkpath.Replace(":U", m_UsersList[index].user);
                 if (lnkpath == "")
@@ -365,7 +365,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
     }
 
     // Now repeat the search with .lnk added
-    hFind = FindFirstFile(directory.dir+"\\" + sFileSpec + ".lnk", &NextFindFileData);
+    hFind = FindFirstFile((directory.dir+"\\" + sFileSpec + ".lnk").c_str(), &NextFindFileData);
     while (hFind != INVALID_HANDLE_VALUE)
     {
         FindFileData=NextFindFileData;
@@ -408,7 +408,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
         }
         else
         {
-            std::string lnkpath = GetShortcutTarget(directory.dir+"\\"+FindFileData.cFileName);
+            std::string lnkpath = GetShortcutTarget((directory.dir+"\\"+FindFileData.cFileName).c_str());
             lnkpath.Replace(":u", m_UsersList[index].user);
             lnkpath.Replace(":U", m_UsersList[index].user);
             if (lnkpath=="")
@@ -562,7 +562,7 @@ int CPermissions::GetDirName(LPCTSTR user, std::string dirname, std::string curr
     unsigned int index;
     for (index=0; index<m_UsersList.size(); index++)
     {
-        if (!m_UsersList[index].user.CompareNoCase(user))
+        if (!StringUtils::CompareNoCase(m_UsersList[index].user, user))
             break;
     }
     if (index==m_UsersList.size())
@@ -635,7 +635,7 @@ int CPermissions::GetFileName(LPCTSTR user, std::string filename, std::string cu
     unsigned int index;
     for (index=0; index<m_UsersList.size(); index++)
     {
-        if (!m_UsersList[index].user.CompareNoCase(user))
+        if (!StringUtils::CompareNoCase(m_UsersList[index].user, user))
             break;
     }
     if (index==m_UsersList.size())
@@ -1063,7 +1063,7 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
     unsigned int index;
     for (index=0; index<m_UsersList.size(); index++)
     {
-        if (!m_UsersList[index].user.CompareNoCase(user))
+        if (!StringUtils::CompareNoCase(m_UsersList[index].user, user))
             break;
     }
     if (index==m_UsersList.size())
@@ -1281,7 +1281,7 @@ BOOL CPermissions::GetUser(std::string user, CUser &userdata) const
 {
     for (unsigned int i=0; i<m_UsersList.size(); i++)
     {
-        if (!user.CompareNoCase(m_UsersList[i].user))
+        if (!StringUtils::CompareNoCase(user, m_UsersList[i].user))
         {
             userdata = m_UsersList[i];
             return TRUE;
@@ -1295,7 +1295,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
     unsigned int index;
     for (index=0; index<m_UsersList.size(); index++)
     {
-        if (!m_UsersList[index].user.CompareNoCase(user))
+        if (!StringUtils::CompareNoCase(m_UsersList[index].user, user))
             break;
     }
     if (index == m_UsersList.size())

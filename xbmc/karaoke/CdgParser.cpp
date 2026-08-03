@@ -777,7 +777,7 @@ void CCdgParser::SettingOptionsVoiceMasksFiller(const SettingConstPtr& setting,
 
 void CCdgParser::FillInVoiceMaskValues(unsigned int port, std::string strCurMask)
 {
-    if (strCurMask.CompareNoCase("None") == 0 || strCurMask.CompareNoCase("Custom") == 0 )
+    if (StringUtils::CompareNoCase(strCurMask, "None") == 0 || StringUtils::CompareNoCase(strCurMask, "Custom") == 0 )
     {
   #ifndef HAS_XBOX_AUDIO
   #define XVOICE_MASK_PARAM_DISABLED (-1.0f)
@@ -808,7 +808,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, std::string strCurMask
       while (pChild)
       {
         std::string strMask = pChild->FirstChild()->Value();
-        if (strMask.CompareNoCase(strCurMask) == 0)
+        if (StringUtils::CompareNoCase(strMask, strCurMask) == 0)
         {
           for (int i = 0; i < 4;i++)
           {
@@ -816,7 +816,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, std::string strCurMask
             if (pChild)
             {
               std::string strValue = pChild->Value();
-              if (strValue.CompareNoCase("fSpecEnergyWeight") == 0)
+              if (StringUtils::CompareNoCase(strValue, "fSpecEnergyWeight") == 0)
               {
                 if (pChild->FirstChild())
                 {
@@ -825,7 +825,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, std::string strCurMask
                   karaokeVoiceMask.energy = (float) atof(strName.c_str());
                 }
               }
-              else if (strValue.CompareNoCase("fPitchScale") == 0)
+              else if (StringUtils::CompareNoCase(strValue, "fPitchScale") == 0)
               {
                 if (pChild->FirstChild())
                 {
@@ -834,7 +834,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, std::string strCurMask
                   karaokeVoiceMask.pitch = (float) atof(strName.c_str());
                 }
               }
-              else if (strValue.CompareNoCase("fWhisperValue") == 0)
+              else if (StringUtils::CompareNoCase(strValue, "fWhisperValue") == 0)
               {
                 if (pChild->FirstChild())
                 {
@@ -843,7 +843,7 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, std::string strCurMask
                   karaokeVoiceMask.whisper = (float) atof(strName.c_str());
                 }
               }
-              else if (strValue.CompareNoCase("fRoboticValue") == 0)
+              else if (StringUtils::CompareNoCase(strValue, "fRoboticValue") == 0)
               {
                 if (pChild->FirstChild())
                 {

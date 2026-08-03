@@ -126,6 +126,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "stdafx.h"
 
 #include "bsdsfv.h"
+#include "utils/StringUtils.h"
 
 
 /////////////////////////////////////////////////////////////////////////
@@ -195,7 +196,7 @@ int CSfvFile::SetSfvDir(LPCTSTR dirname)
   dirstr += _T("\\");
   std::string newsfvname = dirstr;
   dirstr += _T("*");
-  HANDLE handle = FindFirstFile(dirstr, &finddata);
+  HANDLE handle = FindFirstFile(dirstr.c_str(), &finddata);
   if (handle != INVALID_HANDLE_VALUE)
   {
     TCHAR drive[_MAX_DRIVE];
@@ -211,7 +212,7 @@ int CSfvFile::SetSfvDir(LPCTSTR dirname)
         newsfvname += fname;
         newsfvname += ext;
 
-        SetSfvFile(newsfvname);
+        SetSfvFile(newsfvname.c_str());
         break;
       }
     }
@@ -236,8 +237,8 @@ int CSfvFile::CheckFile(LPCTSTR filename, unsigned long& returnCrc)
   std::string filestr = fname;
   filestr += ext;
 
-  if (sfvdir.CompareNoCase(mSfvDir) != 0)
-    SetSfvDir(sfvdir);
+  if (StringUtils::CompareNoCase(sfvdir, mSfvDir) != 0)
+    SetSfvDir(sfvdir.c_str());
 
   if (mNrEntries == 0)
     return CRC_NO_SFV;
@@ -249,7 +250,7 @@ int CSfvFile::CheckFile(LPCTSTR filename, unsigned long& returnCrc)
   name += ext;
   int index = 0;
     for (index = 0; index < mNrEntries; index++)
-        if (strncmp (filestr, mSfvTable[index].filename, strlen (name)) == 0)
+        if (strncmp (filestr.c_str(), mSfvTable[index].filename, strlen (name.c_str())) == 0)
         {
       mSfvTable[index].found = true;
         if (!GetFileCRC (filename, returnCrc))
