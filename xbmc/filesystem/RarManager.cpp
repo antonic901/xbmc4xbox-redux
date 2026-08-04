@@ -49,7 +49,7 @@ CRarManager g_RarManager;
 
 CFileInfo::CFileInfo()
 {
-  m_strCachedPath.Empty();
+  m_strCachedPath.clear();
   m_bAutoDel = true;
   m_iUsed = 0;
   m_iIsSeekable = -1;

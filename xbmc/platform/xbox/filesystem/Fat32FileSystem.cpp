@@ -99,7 +99,7 @@ unsigned int CFat32FileSystem::Read(void *buffer, __int64 size)
 
 bool CFat32FileSystem::GetShortFilePath(const std::string &path, std::string &shortPath)
 {
-  shortPath.Empty();
+  shortPath.clear();
   if (path.empty())
     return true;  // nothing to do
   // split the path up
@@ -260,7 +260,7 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const std::string &directory, 
             CLog::Log(LOGWARNING, __FUNCTION__" Last entry signaled, but sequence and checksum still match, ignoring");
           else
           {
-            vfatName.Empty();
+            vfatName.clear();
             vfatSequence = (vfat->sequence & 0x1f);
             vfatChecksum = vfat->checksum;
           }
@@ -303,7 +303,7 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const std::string &directory, 
       { // yes, check the checksum
         g_charsetConverter.wToUTF8(vfatName, longPath);
         vfatSequence = 0;
-        vfatName.Empty();
+        vfatName.clear();
       }
       CFileItemPtr item(new CFileItem(longPath));
       item->SetPath(shortPath);

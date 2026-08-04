@@ -121,7 +121,7 @@ unsigned char * t_group::ParseBuffer(unsigned char *pBuffer, int length)
 
     if ((p-pBuffer+len)>length)
         return NULL;
-    char *pStr = group.GetBuffer(len);
+    char *pStr = &group[0];
     if (!pStr)
         return NULL;
     memcpy(pStr, p, len);
@@ -157,7 +157,7 @@ unsigned char * t_group::ParseBuffer(unsigned char *pBuffer, int length)
         p+=2;
         if ((p-pBuffer+len)>length)
             return NULL;
-        char *pStr = dir.dir.GetBuffer(len);
+        char *pStr = &dir.dir[0];
         if (!pStr)
             return NULL;
         memcpy(pStr, p, len);
@@ -235,10 +235,10 @@ unsigned char * t_group::ParseBuffer(unsigned char *pBuffer, int length)
 
 char * t_group::FillBuffer(char *p) const
 {
-    *p++ = group.GetLength() / 256;
-    *p++ = group.GetLength() % 256;
+    *p++ = group.length() / 256;
+    *p++ = group.length() % 256;
     memcpy(p, group.c_str(), group.length());
-    p += group.GetLength();
+    p += group.length();
 
     memcpy(p, &nIpLimit, 4);
     p+=4;
@@ -256,10 +256,10 @@ char * t_group::FillBuffer(char *p) const
     *p++ = permissions.size() % 256;
     for (std::vector<t_directory>::const_iterator permissioniter = permissions.begin(); permissioniter!=permissions.end(); permissioniter++)
     {
-        *p++ = permissioniter->dir.GetLength() / 256;
-        *p++ = permissioniter->dir.GetLength() % 256;
+        *p++ = permissioniter->dir.length() / 256;
+        *p++ = permissioniter->dir.length() % 256;
         memcpy(p, permissioniter->dir.c_str(), permissioniter->dir.length());
-        p += permissioniter->dir.GetLength();
+        p += permissioniter->dir.length();
 
         int rights = 0;
         rights |= permissioniter->bDirCreate    ? 0x0001:0;
@@ -303,14 +303,14 @@ char * t_group::FillBuffer(char *p) const
 int t_group::GetRequiredBufferLen() const
 {
     int len = 9;
-    len += group.GetLength() + 2;
+    len += group.length() + 2;
 
     len += 2;
     for (std::vector<t_directory>::const_iterator permissioniter = permissions.begin(); permissioniter!=permissions.end(); permissioniter++)
     {
         t_directory directory = *permissioniter;
         len += 2;
-        len += directory.dir.GetLength() + 2;
+        len += directory.dir.length() + 2;
     }
 
     //Speed limits
@@ -420,7 +420,7 @@ unsigned char * t_user::ParseBuffer(unsigned char *pBuffer, int length)
     p+=2;
     if ((p-pBuffer+len)>length)
         return NULL;
-    char *pStr = user.GetBuffer(len);
+    char *pStr = &user[0];
     if (!pStr)
         return NULL;
     memcpy(pStr, p, len);
@@ -433,7 +433,7 @@ unsigned char * t_user::ParseBuffer(unsigned char *pBuffer, int length)
     p+=2;
     if ((p-pBuffer+len)>length)
         return NULL;
-    pStr = password.GetBuffer(len);
+    pStr = &password[0];
     if (!pStr)
         return NULL;
     memcpy(pStr, p, len);
@@ -449,15 +449,15 @@ char * t_user::FillBuffer(char *p) const
     if (!p)
         return NULL;
 
-    *p++ = user.GetLength() / 256;
-    *p++ = user.GetLength() % 256;
+    *p++ = user.length() / 256;
+    *p++ = user.length() % 256;
     memcpy(p, user.c_str(), user.length());
-    p += user.GetLength();
+    p += user.length();
 
-    *p++ = password.GetLength() / 256;
-    *p++ = password.GetLength() % 256;
+    *p++ = password.length() / 256;
+    *p++ = password.length() % 256;
     memcpy(p, password.c_str(), password.length());
-    p += password.GetLength();
+    p += password.length();
 
     return p;
 }
@@ -465,7 +465,7 @@ char * t_user::FillBuffer(char *p) const
 int t_user::GetRequiredBufferLen() const
 {
     int len = t_group::GetRequiredBufferLen();
-    len += user.GetLength() + 2;
-    len += password.GetLength() + 2;
+    len += user.length() + 2;
+    len += password.length() + 2;
     return len;
 }

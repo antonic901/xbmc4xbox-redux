@@ -53,7 +53,7 @@ bool CMusicInfoTagLoaderSid::Load(const std::string& strFileName, CMusicInfoTag&
   {
     //  Extract the track to play
     std::string strFile=URIUtils::GetFileName(strFileName);
-    int iStart=strFile.ReverseFind("-")+1;
+    int iStart=strFile.rfind("-")+1;
     iTrack = atoi(strFile.substr(iStart, strFile.size()-iStart-10).c_str());
     //  The directory we are in, is the file
     //  that contains the bitstream to play,

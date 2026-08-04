@@ -129,7 +129,7 @@ bool CDNSNameCache::Lookup(const std::string& strHostName, std::string& strIpAdr
 #else
   std::string suffix = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("network.dnssuffix");
   std::string fqdn;
-  if( suffix.length() > 0 && strHostName.Find(".") < 0)
+  if( suffix.length() > 0 && strHostName.find(".") < 0)
     fqdn = strHostName + "." + suffix;
   else
     fqdn = strHostName;

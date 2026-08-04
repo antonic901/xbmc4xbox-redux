@@ -514,7 +514,7 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
         if (genre.GetLength() > 0) {
             // all tracks by genre filtered by artist and/or album
             std::string strPath;
-            strPath.Format("musicdb://genres/%ld/%ld/%ld/",
+            strPath = StringUtils::Format("musicdb://genres/%ld/%ld/%ld/",
                 database.GetGenreByName((const char*)genre),
                 database.GetArtistByName((const char*)artist), // will return -1 if no artist
                 database.GetAlbumByName((const char*)album));  // will return -1 if no album
@@ -523,7 +523,7 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
         } else if (artist.GetLength() > 0) {
             // all tracks by artist name filtered by album if passed
             std::string strPath;
-            strPath.Format("musicdb://artists/%ld/%ld/",
+            strPath = StringUtils::Format("musicdb://artists/%ld/%ld/",
                 database.GetArtistByName((const char*)artist),
                 database.GetAlbumByName((const char*)album)); // will return -1 if no album
 
@@ -531,7 +531,7 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
         } else if (album.GetLength() > 0) {
             // all tracks by album name
             std::string strPath;
-            strPath.Format("musicdb://albums/%ld/",
+            strPath = StringUtils::Format("musicdb://albums/%ld/",
                 database.GetAlbumByName((const char*)album));
 
             return OnBrowseDirectChildren(action, strPath.c_str(), filter, starting_index, requested_count, sort_criteria, context);
@@ -555,13 +555,13 @@ CUPnPServer::OnSearchContainer(PLT_ActionReference&          action,
 
         if (genre.GetLength() > 0) {
             std::string strPath;
-            strPath.Format("musicdb://genres/%ld/%ld/",
+            strPath = StringUtils::Format("musicdb://genres/%ld/%ld/",
                 database.GetGenreByName((const char*)genre),
                 database.GetArtistByName((const char*)artist)); // no artist should return -1
             return OnBrowseDirectChildren(action, strPath.c_str(), filter, starting_index, requested_count, sort_criteria, context);
         } else if (artist.GetLength() > 0) {
             std::string strPath;
-            strPath.Format("musicdb://artists/%ld/",
+            strPath = StringUtils::Format("musicdb://artists/%ld/",
                 database.GetArtistByName((const char*)artist));
             return OnBrowseDirectChildren(action, strPath.c_str(), filter, starting_index, requested_count, sort_criteria, context);
         }

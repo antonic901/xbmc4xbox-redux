@@ -54,7 +54,7 @@ bool CShortcut::Create(const std::string& szPath)
     return false;
   const TiXmlNode *pChild = pRootElement->FirstChild();
 
-  m_strCustomGame.Empty();
+  m_strCustomGame.clear();
   while (pChild > 0)
   {
     std::string strValue = pChild->Value();
