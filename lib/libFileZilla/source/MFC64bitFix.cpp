@@ -18,66 +18,68 @@
 
 #include "stdafx.h"
 
+#include <assert.h>
+
 #include "MFC64bitFix.h"
 
 /*__int64 GetLength64(CFile &file)
 {
-	DWORD low;
-	DWORD high;
-	low=GetFileSize((void *)file.m_hFile, &high);
-	_int64 size=((_int64)high<<32)+low;
-	return size;
+    DWORD low;
+    DWORD high;
+    low=GetFileSize((void *)file.m_hFile, &high);
+    _int64 size=((_int64)high<<32)+low;
+    return size;
 }*/
 
 BOOL GetLength64(LPCTSTR filename, _int64 &size)
 {
-	WIN32_FIND_DATA findFileData;
-	HANDLE hFind = FindFirstFile(filename, &findFileData);
-	if (hFind == INVALID_HANDLE_VALUE)
-		return FALSE;
-	VERIFY(FindClose(hFind));
+    WIN32_FIND_DATA findFileData;
+    HANDLE hFind = FindFirstFile(filename, &findFileData);
+    if (hFind == INVALID_HANDLE_VALUE)
+        return FALSE;
+    VERIFY(FindClose(hFind));
 
-	size=((_int64)findFileData.nFileSizeHigh<<32)+findFileData.nFileSizeLow;
-	
-	return TRUE;	
+    size=((_int64)findFileData.nFileSizeHigh<<32)+findFileData.nFileSizeLow;
+
+    return TRUE;
 }
 
 BOOL PASCAL GetStatus64(LPCTSTR lpszFileName, CFileStatus64& rStatus)
 {
-	WIN32_FIND_DATA findFileData;
-	HANDLE hFind = FindFirstFile((LPTSTR)lpszFileName, &findFileData);
-	if (hFind == INVALID_HANDLE_VALUE)
-		return FALSE;
-	VERIFY(FindClose(hFind));
+    WIN32_FIND_DATA findFileData;
+    HANDLE hFind = FindFirstFile((LPTSTR)lpszFileName, &findFileData);
+    if (hFind == INVALID_HANDLE_VALUE)
+        return FALSE;
+    VERIFY(FindClose(hFind));
 
-	// strip attribute of NORMAL bit, our API doesn't have a "normal" bit.
-	rStatus.m_attribute = (BYTE)
-		(findFileData.dwFileAttributes & ~FILE_ATTRIBUTE_NORMAL);
+    // strip attribute of NORMAL bit, our API doesn't have a "normal" bit.
+    rStatus.m_attribute = (BYTE)
+        (findFileData.dwFileAttributes & ~FILE_ATTRIBUTE_NORMAL);
 
-	rStatus.m_size = ((_int64)findFileData.nFileSizeHigh<<32)+findFileData.nFileSizeLow;
+    rStatus.m_size = ((_int64)findFileData.nFileSizeHigh<<32)+findFileData.nFileSizeLow;
 
-	// convert times as appropriate
-	rStatus.m_ctime = findFileData.ftCreationTime;
-	rStatus.m_atime = findFileData.ftLastAccessTime;
-	rStatus.m_mtime = findFileData.ftLastWriteTime;
+    // convert times as appropriate
+    rStatus.m_ctime = findFileData.ftCreationTime;
+    rStatus.m_atime = findFileData.ftLastAccessTime;
+    rStatus.m_mtime = findFileData.ftLastWriteTime;
 
-	if (rStatus.m_ctime.dwHighDateTime == rStatus.m_ctime.dwLowDateTime == 0)
-		rStatus.m_ctime = rStatus.m_mtime;
+    if (rStatus.m_ctime.dwHighDateTime == rStatus.m_ctime.dwLowDateTime == 0)
+        rStatus.m_ctime = rStatus.m_mtime;
 
-	if (rStatus.m_atime.dwHighDateTime == rStatus.m_atime.dwLowDateTime == 0)
-		rStatus.m_atime = rStatus.m_mtime;
+    if (rStatus.m_atime.dwHighDateTime == rStatus.m_atime.dwLowDateTime == 0)
+        rStatus.m_atime = rStatus.m_mtime;
 
-	return TRUE;
+    return TRUE;
 }
 
 _int64 GetPosition64(HANDLE hFile)
 {
-	if (!hFile || hFile==INVALID_HANDLE_VALUE)
-		return -1;
-	LONG low=0;
-	LONG high=0;
-	low=SetFilePointer(hFile, low, &high, FILE_CURRENT);
-	if (low==0xFFFFFFFF && GetLastError!=NO_ERROR)
-		return -1;
-	return ((_int64)high<<32)+low;
+    if (!hFile || hFile==INVALID_HANDLE_VALUE)
+        return -1;
+    LONG low=0;
+    LONG high=0;
+    low=SetFilePointer(hFile, low, &high, FILE_CURRENT);
+    if (low==0xFFFFFFFF && GetLastError!=NO_ERROR)
+        return -1;
+    return ((_int64)high<<32)+low;
 }

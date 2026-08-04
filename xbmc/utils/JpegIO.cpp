@@ -20,7 +20,6 @@
 *
 */
 
-#include "include.h"
 #include "ServiceBroker.h"
 #include "libexif/libexif.h"
 #include "settings/Settings.h"
