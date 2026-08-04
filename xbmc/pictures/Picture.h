@@ -22,6 +22,7 @@
 #include "system.h" // <xtl.h>, PlatformDefs.h
 
 #include <string>
+#include <boost/move/unique_ptr.hpp>
 #include <vector>
 
 class CTexture;
@@ -36,6 +37,8 @@ public:
    \param thumb the filename of the thumb
    */
   static bool CreateTiledThumb(const std::vector<std::string> &files, const std::string &thumb);
+
+  static boost::movelib::unique_ptr<CTexture> CreateTiledThumb(const std::vector<std::string>& files);
 
   /*! \brief Cache a texture, resizing, rotating and flipping as needed, and saving as a JPG or PNG
    \param texture a pointer to a CTexture

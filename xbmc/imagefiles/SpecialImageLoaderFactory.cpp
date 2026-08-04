@@ -9,12 +9,21 @@
 #include "SpecialImageLoaderFactory.h"
 
 #include "guilib/Texture.h"
+#include "music/MusicEmbeddedImageFileLoader.h"
+#include "pictures/PictureFolderImageFileLoader.h"
+#include "video/VideoChapterImageFileLoader.h"
+#include "video/VideoEmbeddedImageFileLoader.h"
+#include "video/VideoGeneratedImageFileLoader.h"
 
 using namespace IMAGE_FILES;
 
 CSpecialImageLoaderFactory::CSpecialImageLoaderFactory()
 {
-  // TODO: add image loaders
+  m_specialImageLoaders[0] = boost::movelib::unique_ptr<ISpecialImageFileLoader>(new VIDEO::CVideoEmbeddedImageFileLoader);
+  m_specialImageLoaders[1] = boost::movelib::unique_ptr<ISpecialImageFileLoader>(new MUSIC_INFO::CMusicEmbeddedImageFileLoader);
+  m_specialImageLoaders[2] = boost::movelib::unique_ptr<ISpecialImageFileLoader>(new VIDEO::CVideoGeneratedImageFileLoader);
+  m_specialImageLoaders[3] = boost::movelib::unique_ptr<ISpecialImageFileLoader>(new CPictureFolderImageFileLoader);
+  m_specialImageLoaders[4] = boost::movelib::unique_ptr<ISpecialImageFileLoader>(new VIDEO::CVideoChapterImageFileLoader);
 }
 
 boost::movelib::unique_ptr<CTexture> CSpecialImageLoaderFactory::Load(const std::string& specialType,

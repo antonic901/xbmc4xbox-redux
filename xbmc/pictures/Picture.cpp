@@ -36,6 +36,8 @@
 #include "TextureManager.h"
 #include "XBTF.h"
 
+#include <boost/move/make_unique.hpp>
+
 using namespace XFILE;
 
 bool CPicture::CreateThumbnailFromSurface(const unsigned char *buffer, int width, int height, int stride, const std::string &thumbFile)
@@ -109,6 +111,76 @@ bool CPicture::CacheTexture(uint8_t *pixels, uint32_t width, uint32_t height, ui
     return CreateThumbnailFromSurface(pixels, width, height, pitch, dest);
   }
   return false;
+}
+
+boost::movelib::unique_ptr<CTexture> CPicture::CreateTiledThumb(const std::vector<std::string>& files)
+{
+  if (!files.size())
+    return boost::movelib::unique_ptr<CTexture>();
+
+  unsigned int num_across =
+      static_cast<unsigned int>(std::ceil(std::sqrt(static_cast<float>(files.size()))));
+  unsigned int num_down = (files.size() + num_across - 1) / num_across;
+
+  unsigned int imageRes = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_imageRes;
+
+  unsigned int tile_width = imageRes / num_across;
+  unsigned int tile_height = imageRes / num_down;
+  unsigned int tile_gap = 1;
+  bool success = false; // Flag that we at least had one successful image processed
+
+  // create a buffer for the resulting thumb
+  boost::movelib::unique_ptr<uint32_t[]> buffer = boost::movelib::make_unique<uint32_t[]>(imageRes * imageRes);
+  if (!buffer)
+    return boost::movelib::unique_ptr<CTexture>();
+  std::string strMimeType("image/jpeg");
+  for (unsigned int i = 0; i < files.size(); ++i)
+  {
+    if (strMimeType == "image/jpeg" && !URIUtils::HasExtension(files[i], ".jpg|.jpeg"))
+      strMimeType = "image/" + URIUtils::GetExtension(files[i]).substr(1);
+
+    int x = i % num_across;
+    int y = i / num_across;
+    // load in the image
+    unsigned int width = tile_width - 2 * tile_gap, height = tile_height - 2 * tile_gap;
+    boost::movelib::unique_ptr<CTexture> texture = CTexture::LoadFromFile(files[i], width, height, true);
+    if (texture && texture->GetWidth() && texture->GetHeight())
+    {
+      GetScale(texture->GetWidth(), texture->GetHeight(), width, height);
+
+      // scale appropriately
+      boost::movelib::unique_ptr<uint32_t[]> scaled = boost::movelib::make_unique<uint32_t[]>(width * height);
+      if (ScaleImage(texture->GetPixels(), texture->GetWidth(), texture->GetHeight(),
+                     texture->GetPitch(), reinterpret_cast<uint8_t*>(scaled.get()),
+                     width, height, width * 4))
+      {
+        uint32_t* scaledL = scaled.get();
+        if (!texture->GetOrientation() ||
+            OrientateImage(scaledL, width, height, texture->GetOrientation()))
+        {
+          success = true;
+          // drop into the texture
+          unsigned int posX = x * tile_width + (tile_width - width) / 2;
+          unsigned int posY = y * tile_height + (tile_height - height) / 2;
+          uint32_t* dest = buffer.get() + posX + posY * imageRes;
+          const uint32_t* src = scaled.get();
+          for (unsigned int y = 0; y < height; ++y)
+          {
+            memcpy(dest, src, width * 4);
+            dest += imageRes;
+            src += width;
+          }
+        }
+      }
+    }
+  }
+
+  boost::movelib::unique_ptr<CTexture> result = boost::movelib::make_unique<CTexture>();
+  if (success)
+    result->LoadFromFileInMemory(reinterpret_cast<unsigned char*>(buffer.get()), imageRes * imageRes,
+                           strMimeType, imageRes, imageRes);
+
+  return boost::move(result);
 }
 
 bool CPicture::CreateTiledThumb(const std::vector<std::string> &files, const std::string &thumb)
