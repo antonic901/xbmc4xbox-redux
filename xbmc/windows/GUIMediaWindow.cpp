@@ -1271,7 +1271,7 @@ bool CGUIMediaWindow::GoParentFolder()
     return false;
 
   // No items to show so go another level up
-  if (!m_vecItems->GetPath().empty() && (m_filter.IsEmpty() ? m_vecItems->Size() : m_unfilteredItems->Size()) <= 0)
+  if (!m_vecItems->GetPath().IsEmpty() && (m_filter.IsEmpty() ? m_vecItems->Size() : m_unfilteredItems->Size()) <= 0)
   {
     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(2080), g_localizeStrings.Get(2081));
     return GoParentFolder();

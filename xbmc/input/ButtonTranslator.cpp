@@ -775,7 +775,7 @@ std::string CButtonTranslator::TranslateWindow(int windowID)
 int CButtonTranslator::TranslateWindow(const std::string &window)
 {
   std::string strWindow(window);
-  if (strWindow.IsEmpty()) return WINDOW_INVALID;
+  if (strWindow.empty()) return WINDOW_INVALID;
   strWindow.ToLower();
   // eliminate .xml
   if (strWindow.Mid(strWindow.GetLength() - 4) == ".xml" )

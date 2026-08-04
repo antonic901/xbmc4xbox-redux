@@ -1877,7 +1877,7 @@ void CMPlayer::GetAudioStreamName(int iStream, std::string& strStreamName)
 
   if(slt.type>=0)
   {
-    if(!strStreamName.IsEmpty())
+    if(!strStreamName.empty())
       strStreamName += " - ";
     strStreamName += dvd_audio_stream_types[slt.type];
   }
@@ -2042,7 +2042,7 @@ void CMPlayer::DoAudioWork()
 bool CMPlayer::GetSubtitleExtension(std::string &strSubtitleExtension)
 {
   strSubtitleExtension = _SubtitleExtension;
-  return (!_SubtitleExtension.IsEmpty());
+  return (!_SubtitleExtension.empty());
 }
 
 float CMPlayer::GetActualFPS()

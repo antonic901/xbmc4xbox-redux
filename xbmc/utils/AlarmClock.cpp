@@ -109,7 +109,7 @@ void CAlarmClock::Stop(const std::string& strName, bool bSilent /* false */)
     std::string strStarted = g_localizeStrings.Get(13212);
     strMessage = StringUtils::Format(strStarted.c_str(),static_cast<int>(remaining)/60,static_cast<int>(remaining)%60);
   }
-  if (iter->second.m_strCommand.IsEmpty() || iter->second.m_fSecs > iter->second.watch.GetElapsedSeconds())
+  if (iter->second.m_strCommand.empty() || iter->second.m_fSecs > iter->second.watch.GetElapsedSeconds())
   {
     if(!bSilent)
       CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, strAlarmClock, strMessage);

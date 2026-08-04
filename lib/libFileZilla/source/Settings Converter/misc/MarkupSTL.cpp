@@ -382,7 +382,7 @@ int CMarkupSTL::x_ParseElem( int iPosParent )
     TokenPos token( m_csDoc );
     token.nNext = m_aPos[iPosParent].nEndL;
     std::string csName;
-    while ( csName.IsEmpty() )
+    while ( csName.empty() )
     {
         // Look for left angle bracket of start tag
         m_aPos[iPos].nStartL = token.nNext;

@@ -403,7 +403,7 @@ int CXbmcHttp::displayDir(int numParas, std::string paras[])
     return SetResponse(openTag+"Error:Missing folder");
   }
   folder = paras[0];
-  if (folder.IsEmpty())
+  if (folder.empty())
   {
     return SetResponse(openTag+"Error:Missing folder");
   }
@@ -446,7 +446,7 @@ int CXbmcHttp::displayDir(int numParas, std::string paras[])
     else if (!itm->m_bIsFolder)
       aLine = closeTag + openTag + itm->GetPath().c_str();
 
-    if (!aLine.IsEmpty())
+    if (!aLine.empty())
     {
       if (option=="1" || option=="showdate")
         output += aLine + "  ;" + itm->m_dateTime.GetAsLocalizedDateTime().c_str();
@@ -745,7 +745,7 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, std::string paras[])
     }
   }
 
-  if (!strLocation.IsEmpty() && !bSpecial)
+  if (!strLocation.empty() && !bSpecial)
   {
     VECSOURCES VECSOURCES = *pShares;
     bool bIsShareName = false;
@@ -760,7 +760,7 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, std::string paras[])
   }
 
   CFileItemList items;
-  if (strLocation.IsEmpty())
+  if (strLocation.empty())
   {
     std::string params[2];
     params[0] = strType;
@@ -1327,7 +1327,7 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, std::string paras[])
     std::string thumbURL = CTextureUtils::GetWrappedThumbURL(item.GetPath());
     if (autoGetPictureThumbs || CServiceBroker::GetTextureCache()->HasCachedImage(thumbURL))
       thumb = thumbURL;
-    if (thumb.IsEmpty())
+    if (thumb.empty())
     {
       thumb = "[None]";
       copyThumb("DefaultPicture.png",thumbFn);
@@ -1482,9 +1482,9 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, std::string paras[])
       std::string bitRate(CServiceBroker::GetGUI()->GetInfoManager().GetItemLabel(&fileItem, INFO::DEFAULT_CONTEXT, MUSICPLAYER_BITRATE));
       // TODO: This should be a static tag item
       std::string sampleRate(CServiceBroker::GetGUI()->GetInfoManager().GetItemLabel(&fileItem, INFO::DEFAULT_CONTEXT, MUSICPLAYER_SAMPLERATE));
-      if (!bitRate.IsEmpty())
+      if (!bitRate.empty())
         output+=closeTag+openTag+"Bitrate"+tag+":"+bitRate;
-      if (!sampleRate.IsEmpty())
+      if (!sampleRate.empty())
         output+=closeTag+openTag+"Samplerate"+tag+":"+sampleRate;
       thumb=CServiceBroker::GetGUI()->GetInfoManager().GetImage(MUSICPLAYER_COVER, (DWORD)-1);
       copyThumb(thumb,thumbFn);
@@ -2753,7 +2753,7 @@ int CXbmcHttp::xbmcGetSystemInfo(int numParas, std::string paras[])
     for (i=0; i<numParas; i++)
     {
       std::string strTemp = (std::string) CServiceBroker::GetGUI()->GetInfoManager().GetLabel(atoi(paras[i].c_str()), INFO::DEFAULT_CONTEXT);
-      if (strTemp.IsEmpty())
+      if (strTemp.empty())
         strTemp = "Error:No information retrieved for " + paras[i];
       strInfo += openTag + strTemp;
     }
@@ -2772,7 +2772,7 @@ int CXbmcHttp::xbmcGetSystemInfoByName(int numParas, std::string paras[])
     for (i=0; i<numParas; i++)
     {
       std::string strTemp = (std::string) CServiceBroker::GetGUI()->GetInfoManager().GetLabel(CServiceBroker::GetGUI()->GetInfoManager().TranslateString(paras[i]), INFO::DEFAULT_CONTEXT);
-      if (strTemp.IsEmpty())
+      if (strTemp.empty())
         strTemp = "Error:No information retrieved for " + paras[i];
       strInfo += openTag + strTemp;
     }

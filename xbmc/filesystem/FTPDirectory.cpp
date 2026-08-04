@@ -39,7 +39,7 @@ bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList &items)
   CURL url(url2);
 
   std::string path = url.GetFileName();
-  if( !path.IsEmpty() && !StringUtils::EndsWith(path, "/") )
+  if( !path.empty() && !StringUtils::EndsWith(path, "/") )
   {
     path += "/";
     url.SetFileName(path);

@@ -474,7 +474,7 @@ void ILCD::Render(LCD_MODE mode)
   {
     std::string line = m_lcdMode[mode][inLine++].GetLabel(0);
     CGUITextLayout::Filter(line);
-    if (!line.IsEmpty())
+    if (!line.empty())
     {
       g_charsetConverter.utf8ToStringCharset(line);
       SetLine(outLine++, line);

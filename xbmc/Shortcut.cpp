@@ -143,7 +143,7 @@ bool CShortcut::Save(const std::string& strFileName)
   TiXmlText value(m_strPath);
   pNewNode->InsertEndChild(value);
 
-  if (!m_strThumb.IsEmpty())
+  if (!m_strThumb.empty())
   {
     TiXmlElement newElement("thumb");
     TiXmlNode *pNewNode = pRootNode->InsertEndChild(newElement);
@@ -152,7 +152,7 @@ bool CShortcut::Save(const std::string& strFileName)
     TiXmlText thumbValue(m_strThumb);
     pNewNode->InsertEndChild(thumbValue);
   }
-  if (!m_strLabel.IsEmpty())
+  if (!m_strLabel.empty())
   {
     TiXmlElement newElement("label");
     TiXmlNode *pNewNode = pRootNode->InsertEndChild(newElement);
@@ -161,7 +161,7 @@ bool CShortcut::Save(const std::string& strFileName)
     TiXmlText labelValue(m_strLabel);
     pNewNode->InsertEndChild(labelValue);
   }
-  if (!m_strVideo.IsEmpty())
+  if (!m_strVideo.empty())
   {
     TiXmlElement newElement("video");
     TiXmlNode *pNewNode = pRootNode->InsertEndChild(newElement);
@@ -170,7 +170,7 @@ bool CShortcut::Save(const std::string& strFileName)
     TiXmlText labelValue(m_strVideo);
     pNewNode->InsertEndChild(labelValue);
   }
-  if (!m_strParameters.IsEmpty())
+  if (!m_strParameters.empty())
   {
     TiXmlElement newElement("parameters");
     TiXmlNode *pNewNode = pRootNode->InsertEndChild(newElement);
@@ -179,7 +179,7 @@ bool CShortcut::Save(const std::string& strFileName)
     TiXmlText labelValue(m_strParameters);
     pNewNode->InsertEndChild(labelValue);
   }
-  if (!m_strCustomGame.IsEmpty())
+  if (!m_strCustomGame.empty())
   {
     TiXmlElement customElement("custom");
     TiXmlNode* pCustomNode = pRootNode->InsertEndChild(customElement);
