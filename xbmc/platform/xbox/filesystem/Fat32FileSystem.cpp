@@ -100,7 +100,7 @@ unsigned int CFat32FileSystem::Read(void *buffer, __int64 size)
 bool CFat32FileSystem::GetShortFilePath(const std::string &path, std::string &shortPath)
 {
   shortPath.Empty();
-  if (path.IsEmpty())
+  if (path.empty())
     return true;  // nothing to do
   // split the path up
   std::vector<std::string> folders;
@@ -112,7 +112,7 @@ bool CFat32FileSystem::GetShortFilePath(const std::string &path, std::string &sh
     if(!isfolder)
       return false;
 
-    if (folders[i].IsEmpty())
+    if (folders[i].empty())
       continue; // ignore empty portions (eg at the start of the url)
     CFileItemList items;
     if (GetDirectoryWithShortPaths(shortPath, items))
@@ -211,7 +211,7 @@ bool CFat32FileSystem::GetDirectory(const std::string &directory, CFileItemList 
     {
       CFileItemPtr item = items[i];
       std::string path;
-      if (directory.IsEmpty())
+      if (directory.empty())
         path = StringUtils::Format("mem%d://%s", m_unit, item->GetLabel().c_str());
       else
         path = StringUtils::Format("mem%d://%s/%s", m_unit, directory.c_str(), item->GetLabel().c_str());

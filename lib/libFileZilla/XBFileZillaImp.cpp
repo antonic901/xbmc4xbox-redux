@@ -231,7 +231,7 @@ XFSTATUS CXBFileZillaImp::GetAllUsers(std::vector<CXFUser*>& UserVector)
   for (i = 0; i < permissions.GetUserCount(); i++)
   {
     username = permissions.GetUsername(i);
-    if (!username.IsEmpty())
+    if (!username.empty())
     {
       CXFUserImp* user = new CXFUserImp();
       if (user->Init(username.c_str()) == XFS_OK)
@@ -506,7 +506,7 @@ XFSTATUS CXBFileZillaImp::ReadXBoxSettings()
               }
             }
 
-            if (!freespace.mDrive.IsEmpty())
+            if (!freespace.mDrive.empty())
               mFreeSpaceDrives.push_back(freespace);
             pXML->OutOfElem();
           }
@@ -1288,7 +1288,7 @@ ULARGE_INTEGER CFreeSpace::GetFreeSpace()
   ULARGE_INTEGER FreeBytesAvailable;    // bytes available
   FreeBytesAvailable.QuadPart = 0;
 
-  if (mDrive.IsEmpty())
+  if (mDrive.empty())
     return FreeBytesAvailable;
 
   ULARGE_INTEGER TotalNumberOfBytes;    // bytes on disk

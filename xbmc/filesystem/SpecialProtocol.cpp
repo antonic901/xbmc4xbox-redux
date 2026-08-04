@@ -158,7 +158,7 @@ std::string CSpecialProtocol::TranslatePath(const CURL &url)
            RootDir == "logpath")
   {
     std::string basePath = GetPath(RootDir);
-    if (!basePath.IsEmpty())
+    if (!basePath.empty())
       translatedPath = URIUtils::AddFileToFolder(basePath, FileName);
     else
       translatedPath.clear();

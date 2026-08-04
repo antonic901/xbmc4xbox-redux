@@ -285,7 +285,7 @@ bool CUtil::GetVolumeFromFileName(const std::string& strFileName, std::string& s
       if (iCount == 1)
       {
         strVolumeNumber = reg.GetMatch(1);
-        if (strVolumeNumber.IsEmpty()) return false;
+        if (strVolumeNumber.empty()) return false;
 
         // Remove the extension (if any).  We do this on the base filename, as the regexp
         // match may include some of the extension (eg the "." in particular).
@@ -306,7 +306,7 @@ bool CUtil::GetVolumeFromFileName(const std::string& strFileName, std::string& s
       {
         // second subpatten contains the stacking volume
         strVolumeNumber = reg.GetMatch(2);
-        if (strVolumeNumber.IsEmpty()) return false;
+        if (strVolumeNumber.empty()) return false;
 
         // everything before the regexp match
         strFileTitle = strFileName.Left(iFoundToken);
@@ -697,7 +697,7 @@ bool CUtil::IsPicture(const std::string& strFile)
 
 bool CUtil::ExcludeFileOrFolder(const std::string& strFileOrFolder, const std::vector<std::string>& regexps)
 {
-  if (strFileOrFolder.IsEmpty())
+  if (strFileOrFolder.empty())
     return false;
 
   std::string strExclude = strFileOrFolder;
@@ -1779,7 +1779,7 @@ void CUtil::TakeScreenshot()
   bool promptUser = false;
   // check to see if we have a screenshot folder yet
   std::string strDir/* = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("debug.screenshotpath", false)*/;
-  if (strDir.IsEmpty())
+  if (strDir.empty())
   {
     strDir = "special://temp/";
     if (!savingScreenshots)
@@ -1791,11 +1791,11 @@ void CUtil::TakeScreenshot()
   }
   URIUtils::RemoveSlashAtEnd(strDir);
 
-  if (!strDir.IsEmpty())
+  if (!strDir.empty())
   {
     std::string file = CUtil::GetNextFilename(URIUtils::AddFileToFolder(strDir, "screenshot%03d.bmp"), 999);
 
-    if (!file.IsEmpty())
+    if (!file.empty())
     {
       TakeScreenshot(file.c_str(), true);
       if (savingScreenshots)
@@ -1803,7 +1803,7 @@ void CUtil::TakeScreenshot()
       if (promptUser)
       { // grab the real directory
         std::string newDir = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("debug.screenshotpath");
-        if (!newDir.IsEmpty())
+        if (!newDir.empty())
         {
           for (unsigned int i = 0; i < screenShots.size(); i++)
           {
@@ -2191,7 +2191,7 @@ void CUtil::SplitParams(const std::string &paramString, std::vector<std::string>
 
 int CUtil::GetMatchingSource(const std::string& strPath1, VECSOURCES& VECSOURCES, bool& bIsSourceName)
 {
-  if (strPath1.IsEmpty())
+  if (strPath1.empty())
     return -1;
 
   //CLog::Log(LOGDEBUG,"CUtil::GetMatchingSource, testing original path/name [%s]", strPath1.c_str());
@@ -2337,7 +2337,7 @@ int CUtil::GetMatchingSource(const std::string& strPath1, VECSOURCES& VECSOURCES
 
 std::string CUtil::TranslateSpecialSource(const std::string &strSpecial)
 {
-  if (!strSpecial.IsEmpty() && strSpecial[0] == '$')
+  if (!strSpecial.empty() && strSpecial[0] == '$')
   {
     if (StringUtils::StartsWithNoCase(strSpecial, "$home"))
       return URIUtils::AddFileToFolder("special://home/", strSpecial.Mid(5));
@@ -2760,7 +2760,7 @@ bool CUtil::AutoDetectionPing(std::string strFTPUserName, std::string strFTPPass
         ); //this is the client IP
 
         //Is this our Local IP ?
-        if ( !strIP == strLocalIP )
+        if ( strIP != strLocalIP )
         {
           //is our list empty?
           if(v_xboxclients.client_ip.size() <= 0 )
@@ -2918,13 +2918,14 @@ bool CUtil::SetXBOXNickName(std::string strXboxNickNameIn, std::string &strXboxN
           bfound = true;
           break;
         }
-        else if (strXboxNickNameIn.IsEmpty()) strXboxNickNameOut = "XbMediaCenter";
+        else if (strXboxNickNameIn.empty()) strXboxNickNameOut = "XbMediaCenter";
       }while(XFindNextNickname(hNickName,pszNickName,uiSize) != false);
     XFindClose(hNickName);
   }
   if(!bfound)
   {
-    std::wstring wstrName = strXboxNickNameIn.c_str();
+    std::wstring wstrName;
+    g_charsetConverter.utf8ToW(strXboxNickNameIn, wstrName);
     XSetNickname(wstrName.c_str(), false);
   }
 #endif
@@ -3000,7 +3001,7 @@ double CUtil::AlbumRelevance(const std::string& strAlbumTemp1, const std::string
   strAlbum.MakeLower();
   double fAlbumPercentage = fstrcmp(strAlbumTemp, strAlbum, 0.0f);
   double fArtistPercentage = 0.0f;
-  if (!strArtist1.IsEmpty())
+  if (!strArtist1.empty())
   {
     std::string strArtistTemp = strArtistTemp1;
     strArtistTemp.MakeLower();
@@ -3163,7 +3164,7 @@ void CUtil::WipeDir(const std::string& strPath) // DANGEROUS!!!!
 bool CUtil::PWMControl(const std::string &strRGBa, const std::string &strRGBb, const std::string &strWhiteA, const std::string &strWhiteB, const std::string &strTransition, int iTrTime)
 {
 #ifdef HAS_XBOX_HARDWARE
-    if (strRGBa.IsEmpty() && strRGBb.IsEmpty() && strWhiteA.IsEmpty() && strWhiteB.IsEmpty()) // no color, return false!
+    if (strRGBa.empty() && strRGBb.empty() && strWhiteA.empty() && strWhiteB.empty()) // no color, return false!
       return false;
   if(g_iledSmartxxrgb.IsRunning())
   {
@@ -3297,7 +3298,7 @@ void CUtil::RunShortcut(const char* szShortcutPath)
 
 #ifdef HAS_XBOX_HARDWARE
     CUSTOM_LAUNCH_DATA data;
-    if (!shortcut.m_strCustomGame.IsEmpty())
+    if (!shortcut.m_strCustomGame.empty())
     {
       char remap_path[MAX_PATH] = "";
       char remap_xbe[MAX_PATH] = "";
@@ -3324,7 +3325,7 @@ void CUtil::RunShortcut(const char* szShortcutPath)
       data.magic = GetXbeID(szPath);
     }
 
-    CUtil::RunXBE(szPath,strcmp(szParameters,"")?szParameters:NULL,video,COUNTRY_NULL,shortcut.m_strCustomGame.IsEmpty()?NULL:&data);
+    CUtil::RunXBE(szPath,strcmp(szParameters,"")?szParameters:NULL,video,COUNTRY_NULL,shortcut.m_strCustomGame.empty()?NULL:&data);
 #endif
   }
 }
@@ -3390,7 +3391,7 @@ bool CUtil::RunFFPatchedXBE(std::string szPath1, std::string& szNewPath)
     return false;
   }
 #endif
-  if(szNewPath.IsEmpty())
+  if(szNewPath.empty())
   {
     CLog::Log(LOGDEBUG, "%s - ERROR NO Patchfile Path is empty! Falling back to the original source.", __FUNCTION__);
     return false;

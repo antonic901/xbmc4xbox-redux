@@ -3302,7 +3302,7 @@ bool CDVDPlayer::GetCurrentSubtitle(std::string& strSubtitle)
   else
     m_lastSub = strSubtitle;
 
-  return !strSubtitle.IsEmpty();
+  return !strSubtitle.empty();
 }
 
 std::string CDVDPlayer::GetPlayerState()

@@ -129,7 +129,7 @@ class IdleUserConfParser(IdleConfParser):
         to disk. If config is empty, remove the file from disk if it exists.
 
         """
-        if not self.IsEmpty():
+        if not self.empty():
             fname = self.file
             try:
                 cfgFile = open(fname, 'w')

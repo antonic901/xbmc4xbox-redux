@@ -123,7 +123,7 @@ void ILEDSmartxxRGB::Process()
     {
         dwFrameTime = timeGetTime() - dwLastTime;
 
-    if( (s_RGBs.strTransition.IsEmpty() || s_RGBs.strTransition == "none") && strLastTransition != "none" )
+    if( (s_RGBs.strTransition.empty() || s_RGBs.strTransition == "none") && strLastTransition != "none" )
         {
             strLastTransition = "none";
       s_CurRGB.red = s_RGBs.red1;
@@ -340,7 +340,7 @@ bool ILEDSmartxxRGB::SetRGBState(const std::string &strRGB1, const std::string &
   // end reset
 
   getRGBValues(strRGB1,strRGB2,strWhiteA,strWhiteB,&s_RGBs);
-  if(strTransition != "none" || !strTransition.IsEmpty())
+  if(strTransition != "none" || !strTransition.empty())
     s_RGBs.strTransition = strTransition;
   else
     s_RGBs.strTransition = "none";

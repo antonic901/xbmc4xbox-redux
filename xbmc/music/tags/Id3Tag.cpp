@@ -277,9 +277,9 @@ std::string CID3Tag::GetGenre() const
     for (unsigned int i = 0; i < list->nstrings; i++)
     {
       std::string strGenre=ToStringCharset(list->strings[i], encoding);
-      if (!strGenre.IsEmpty())
+      if (!strGenre.empty())
       {
-        if (!genre.IsEmpty())
+        if (!genre.empty())
           genre += CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator;
         genre += ParseMP3Genre(strGenre);
       }
@@ -466,12 +466,12 @@ std::string CID3Tag::ParseMP3Genre(const std::string& str) const
   std::string strTemp = str;
   set<std::string> setGenres;
 
-  while (!strTemp.IsEmpty())
+  while (!strTemp.empty())
   {
     // remove any leading spaces
     strTemp.TrimLeft();
 
-    if (strTemp.IsEmpty())
+    if (strTemp.empty())
       break;
 
     // start off looking for (something)
@@ -544,7 +544,7 @@ std::string CID3Tag::ParseMP3Genre(const std::string& str) const
   for (it = setGenres.begin(); it != setGenres.end(); it++)
   {
     std::string strTemp = *it;
-    if (!strGenre.IsEmpty())
+    if (!strGenre.empty())
       strGenre += CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator;
     strGenre += strTemp;
   }
@@ -555,25 +555,25 @@ std::string CID3Tag::ParseMP3Genre(const std::string& str) const
 void CID3Tag::ParseReplayGainInfo()
 {
   std::string strGain = GetUserText("replaygain_track_gain");
-  if (!strGain.IsEmpty())
+  if (!strGain.empty())
   {
     m_replayGain.iTrackGain = (int)(atof(strGain.c_str()) * 100 + 0.5);
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_TRACK_INFO;
   }
   strGain = GetUserText("replaygain_album_gain");
-  if (!strGain.IsEmpty())
+  if (!strGain.empty())
   {
     m_replayGain.iAlbumGain = (int)(atof(strGain.c_str()) * 100 + 0.5);
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_ALBUM_INFO;
   }
   strGain = GetUserText("replaygain_track_peak");
-  if (!strGain.IsEmpty())
+  if (!strGain.empty())
   {
     m_replayGain.fTrackPeak = (float)atof(strGain.c_str());
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_TRACK_PEAK;
   }
   strGain = GetUserText("replaygain_album_peak");
-  if (!strGain.IsEmpty())
+  if (!strGain.empty())
   {
     m_replayGain.fAlbumPeak = (float)atof(strGain.c_str());
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_ALBUM_PEAK;

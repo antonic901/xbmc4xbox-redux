@@ -11,13 +11,13 @@
 | as published by the Free Software Foundation; either version 2
 | of the License, or (at your option) any later version.
 |
-| OEMs, ISVs, VARs and other distributors that combine and 
+| OEMs, ISVs, VARs and other distributors that combine and
 | distribute commercially licensed software with Platinum software
 | and do not wish to distribute the source code for the commercially
 | licensed software under version 2, or (at your option) any later
 | version, of the GNU General Public License (the "GPL") must enter
 | into a commercial license agreement with Plutinosoft, LLC.
-| 
+|
 | This program is distributed in the hope that it will be useful,
 | but WITHOUT ANY WARRANTY; without even the implied warranty of
 | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -25,7 +25,7 @@
 |
 | You should have received a copy of the GNU General Public License
 | along with this program; see the file LICENSE.txt. If not, write to
-| the Free Software Foundation, Inc., 
+| the Free Software Foundation, Inc.,
 | 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 | http://www.gnu.org/licenses/gpl-2.0.html
 |
@@ -63,13 +63,13 @@ class PLT_HttpCustomRequestHandler : public NPT_HttpRequestHandler
 {
 public:
     // constructors
-    PLT_HttpCustomRequestHandler(NPT_InputStreamReference& body, 
+    PLT_HttpCustomRequestHandler(NPT_InputStreamReference& body,
                                  const char*               mime_type) :
         m_Body(body),
         m_MimeType(mime_type) {}
 
     // NPT_HttpRequetsHandler methods
-    virtual NPT_Result SetupResponse(NPT_HttpRequest&              request, 
+    virtual NPT_Result SetupResponse(NPT_HttpRequest&              request,
                                      const NPT_HttpRequestContext& context,
                                      NPT_HttpResponse&             response) {
         NPT_COMPILER_UNUSED(request);
@@ -124,7 +124,7 @@ Test1(PLT_TaskManager* task_manager, const char* url, NPT_Size& size)
 /*----------------------------------------------------------------------
 |   DumpBody
 +---------------------------------------------------------------------*/
- static NPT_Result 
+ static NPT_Result
 ReadBody(PLT_Downloader& downloader, NPT_InputStreamReference& stream, NPT_Size& size)
 {
     NPT_LargeSize avail;
@@ -160,7 +160,7 @@ ReadBody(PLT_Downloader& downloader, NPT_InputStreamReference& stream, NPT_Size&
                  break;
          }
      }
- 
+
      return NPT_SUCCESS;
 }
 
@@ -283,7 +283,7 @@ ParseCommandLine(char** args)
                 exit(1);
             }
             Options.port = port;
-        } else if (Options.path.IsEmpty() && !strcmp(arg, "-f")) {
+        } else if (Options.path.empty() && !strcmp(arg, "-f")) {
             Options.path = *tmp++;
         } else {
             fprintf(stderr, "ERROR: too many arguments\n");
@@ -314,7 +314,7 @@ main(int argc, char** argv)
     NPT_String url = "http://127.0.0.1:" + NPT_String::FromInteger(http_server.GetPort());
     NPT_String custom_url = url;
 
-    if (!Options.path.IsEmpty()) {
+    if (!Options.path.empty()) {
         /* extract folder path */
         int index1 = Options.path.ReverseFind('\\');
         int index2 = Options.path.ReverseFind('/');
@@ -328,7 +328,7 @@ main(int argc, char** argv)
 
         /* add file request handler */
         handler = new NPT_HttpFileRequestHandler(
-            Options.path.Left(index1>index2?index1:index2), 
+            Options.path.Left(index1>index2?index1:index2),
             "/");
         http_server.AddRequestHandler(handler, "/", true);
 
@@ -364,7 +364,7 @@ main(int argc, char** argv)
 
     /* small delay to let the server start */
     NPT_System::Sleep(NPT_TimeInterval(1, 0));
-    
+
     /* execute tests */
     result = Test1(&task_manager, url.GetChars(), size);
     if (!result) return -1;

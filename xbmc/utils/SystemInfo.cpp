@@ -814,7 +814,7 @@ bool CSysInfo::GetDVDInfo(std::string& strDVDModel, std::string& strDVDFirmware)
     m_dvdRequest= true;
   }
   //check if the requested values are empty to reset the request..
-  if(m_dvdRequest && strDVDModel.IsEmpty() && strDVDFirmware.IsEmpty())
+  if(m_dvdRequest && strDVDModel.empty() && strDVDFirmware.empty())
     m_dvdRequest=false;
 
   return m_dvdRequest;
@@ -880,7 +880,7 @@ bool CSysInfo::GetHDDInfo(std::string& strHDDModel, std::string& strHDDSerial,st
     m_hddRequest = true;
   }
   //check if the requested values are empty to reset the request..
-  if(m_hddRequest && strHDDModel.IsEmpty() && strHDDSerial.IsEmpty())
+  if(m_hddRequest && strHDDModel.empty() && strHDDSerial.empty())
     m_hddRequest = false;
 
   return m_hddRequest;
@@ -940,7 +940,7 @@ bool CSysInfo::GetDiskSpace(const std::string drive,int& iTotal, int& iTotalFree
   std::string driveName = drive + ":\\";
   ULARGE_INTEGER total, totalFree, totalUsed;
 
-  if (drive.IsEmpty() || drive == "*") //All Drives
+  if (drive.empty() || drive == "*") //All Drives
   {
     ULARGE_INTEGER totalC, totalFreeC;
     ULARGE_INTEGER totalE, totalFreeE;
@@ -1688,7 +1688,7 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
       case SYSTEM_FREE_SPACE_X:
       case SYSTEM_FREE_SPACE_Y:
       case SYSTEM_FREE_SPACE_Z:
-        if (strDrive.IsEmpty())
+        if (strDrive.empty())
           strRet = StringUtils::Format("%i MB %s", totalFree, g_localizeStrings.Get(160).c_str());
         else
           strRet = StringUtils::Format("%s: %i MB %s", strDrive.c_str(), totalFree, g_localizeStrings.Get(160).c_str());
@@ -1701,7 +1701,7 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
       case SYSTEM_USED_SPACE_X:
       case SYSTEM_USED_SPACE_Y:
       case SYSTEM_USED_SPACE_Z:
-        if (strDrive.IsEmpty())
+        if (strDrive.empty())
           strRet = StringUtils::Format("%i MB %s", totalUsed, g_localizeStrings.Get(20162).c_str());
         else
           strRet = StringUtils::Format("%s: %i MB %s", strDrive.c_str(), totalUsed, g_localizeStrings.Get(20162).c_str());
@@ -1711,7 +1711,7 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
       case SYSTEM_TOTAL_SPACE_E:
       case SYSTEM_TOTAL_SPACE_F:
       case SYSTEM_TOTAL_SPACE_G:
-        if (strDrive.IsEmpty())
+        if (strDrive.empty())
           strRet = StringUtils::Format("%i MB %s", total, g_localizeStrings.Get(20161).c_str());
         else
           strRet = StringUtils::Format("%s: %i MB %s", strDrive.c_str(), total, g_localizeStrings.Get(20161).c_str());
@@ -1721,7 +1721,7 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
       case SYSTEM_FREE_SPACE_PERCENT_E:
       case SYSTEM_FREE_SPACE_PERCENT_F:
       case SYSTEM_FREE_SPACE_PERCENT_G:
-        if (strDrive.IsEmpty())
+        if (strDrive.empty())
           strRet = StringUtils::Format("%i %% %s", percentFree, g_localizeStrings.Get(160).c_str());
         else
           strRet = StringUtils::Format("%s: %i %% %s", strDrive.c_str(), percentFree, g_localizeStrings.Get(160).c_str());
@@ -1731,7 +1731,7 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
       case SYSTEM_USED_SPACE_PERCENT_E:
       case SYSTEM_USED_SPACE_PERCENT_F:
       case SYSTEM_USED_SPACE_PERCENT_G:
-        if (strDrive.IsEmpty())
+        if (strDrive.empty())
           strRet = StringUtils::Format("%i %% %s", percentused, g_localizeStrings.Get(20162).c_str());
         else
           strRet = StringUtils::Format("%s: %i %% %s", strDrive.c_str(), percentused, g_localizeStrings.Get(20162).c_str());
@@ -1743,7 +1743,7 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
   {
     if (shortText)
       strRet = "N/A";
-    else if (strDrive.IsEmpty())
+    else if (strDrive.empty())
       strRet = g_localizeStrings.Get(161);
     else
       strRet = StringUtils::Format("%s: %s", strDrive.c_str(), g_localizeStrings.Get(161).c_str());

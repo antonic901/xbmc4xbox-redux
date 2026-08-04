@@ -146,7 +146,7 @@ static void ff_flush_avutil_log_buffers(void)
      add a new buffer next time it writes to the log */
   std::map<DWORD, std::string>::iterator it;
   for (it = g_logbuffer.begin(); it != g_logbuffer.end(); )
-    if ((*it).second.IsEmpty())
+    if ((*it).second.empty())
       g_logbuffer.erase(it++);
     else
       ++it;
