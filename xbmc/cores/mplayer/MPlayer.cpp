@@ -565,7 +565,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
         strTmp += vecPPOptions[i];
         strTmp += "/";
       }
-      strTmp.TrimRight("/");
+      StringUtils::TrimRight(strTmp, "/");
     }
   }
 
@@ -624,8 +624,8 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
     //Make sure we only use forward slashes for path
     //since mplayer is manly *nix based this causes less problems.
     //Our standard file system handles this aswell.
-    strDevice.Replace("\\", "/");
-    strDevice.TrimRight("/");
+    StringUtils::Replace(strDevice, "\\", "/");
+    StringUtils::TrimRight(strDevice, "/");
     strDevice += """";
 
     m_vecOptions.push_back("-dvd-device");
@@ -748,7 +748,7 @@ void update_cache_dialog(const char* tmp)
     try {
 
     std::string message = tmp;
-    message.Trim();
+    StringUtils::Trim(message);
     if (int i = message.find("Cache fill:") >= 0)
     {
       if (int j = message.find('%') >= 0)
@@ -792,7 +792,7 @@ void update_cache_dialog(const char* tmp)
     }
     bWroteOutput = false;
     //Escape are identifiers for infovalues
-    message.Replace("$", "$$");
+    StringUtils::Replace(message, "$", "$$");
 
     m_dlgCache->SetMessage(message);
 
@@ -827,7 +827,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
   /* use our own protocol for ftp to avoid using mplayer's builtin */
   // not working well with seeking.. curl locks up for some reason. think it's the thread handover
   // thus any requests to ftpx in curl will now be non seekable
-  if( strFile.Left(6) == "ftp://" )
+  if( strFile.substr(0, 6) == "ftp://" )
     strFile.replace(0, 6, "ftpx://");
 
   CURL url(strFile);
@@ -985,7 +985,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     }
 
     std::string strExtension = URIUtils::GetExtension(strFile);
-    strExtension.MakeLower();
+    StringUtils::ToLower(strExtension);
 
 
     if (strExtension == ".avi")
@@ -1783,7 +1783,7 @@ int CMPlayer::GetSubtitleCount()
 int CMPlayer::AddSubtitle(const std::string& strSubPath)
 {
   std::string strFile = strSubPath;
-  strFile.Replace("\\","\\\\");
+  StringUtils::Replace(strFile, "\\","\\\\");
   mplayer_SlaveCommand("sub_load \"%s\"", strFile.c_str());
   return 0;
 }

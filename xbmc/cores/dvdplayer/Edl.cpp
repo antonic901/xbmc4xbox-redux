@@ -193,8 +193,7 @@ bool CEdl::ReadEdl(const std::string& strMovie, const float fFramesPerSecond)
     {
       if (strFields[i].find(":") != -1) // HH:MM:SS.sss format
       {
-        std::vector<std::string> fieldParts;
-        StringUtils::SplitString(strFields[i], ".", fieldParts);
+        std::vector<std::string> fieldParts = StringUtils::Split(strFields[i], ".");
         if (fieldParts.size() == 1) // No ms
         {
           iCutStartEnd[i] = StringUtils::TimeStringToSeconds(fieldParts[0]) * (int64_t)1000; // seconds to ms
@@ -214,7 +213,7 @@ bool CEdl::ReadEdl(const std::string& strMovie, const float fFramesPerSecond)
           }
           else if (fieldParts[1].length() > 3)
           {
-            fieldParts[1] = fieldParts[1].Left(3);
+            fieldParts[1] = fieldParts[1].substr(0, 3);
           }
           iCutStartEnd[i] = StringUtils::TimeStringToSeconds(fieldParts[0]) * 1000 + atoi(fieldParts[1].c_str()); // seconds to ms
         }
@@ -224,7 +223,7 @@ bool CEdl::ReadEdl(const std::string& strMovie, const float fFramesPerSecond)
           continue;
         }
       }
-      else if (strFields[i].Left(1) == "#") // #12345 format for frame number
+      else if (strFields[i].substr(0, 1) == "#") // #12345 format for frame number
       {
         iCutStartEnd[i] = (int64_t)(atol(strFields[i].Mid(1)) / fFramesPerSecond * 1000); // frame number to ms
       }

@@ -63,7 +63,7 @@ bool DVDPlayerCodec::Init(const std::string &strFile, unsigned int filecache)
 
   CURL urlFile(strFile);
   if (urlFile.IsProtocol("shout") )
-    strFileToOpen.Replace("shout://","http://");
+    StringUtils::Replace(strFileToOpen, "shout://","http://");
 
   CFileItem fileitem(urlFile, false);
   fileitem.SetMimeType(m_strContentType);

@@ -34,6 +34,7 @@
 #include "DVDCodecs/DVDFactoryCodec.h"
 #include "DVDDemuxers/DVDDemuxUtils.h"
 #include "threads/SingleLock.h"
+#include "utils/StringUtils.h"
 
 using namespace std;
 
@@ -242,5 +243,5 @@ void CDVDPlayerSubtitle::GetCurrentSubtitle(std::string& strSubtitle, double pts
       }
     }
   }
-  strSubtitle.TrimRight('\n');
+  StringUtils::TrimRight(strSubtitle, "\n");
 }

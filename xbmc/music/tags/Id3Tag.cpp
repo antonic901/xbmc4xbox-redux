@@ -469,7 +469,7 @@ std::string CID3Tag::ParseMP3Genre(const std::string& str) const
   while (!strTemp.empty())
   {
     // remove any leading spaces
-    strTemp.TrimLeft();
+    StringUtils::TrimLeft(strTemp);
 
     if (strTemp.empty())
       break;
@@ -499,7 +499,7 @@ std::string CID3Tag::ParseMP3Genre(const std::string& str) const
       size_t i = strTemp.find_first_of("),;");
       if (i != std::string::npos)
       {
-        t = strTemp.Left(i);
+        t = strTemp.substr(0, i);
         strTemp.erase(0, i + 1);
       } else {
         t = strTemp;
@@ -508,7 +508,7 @@ std::string CID3Tag::ParseMP3Genre(const std::string& str) const
 
       // remove any leading or trailing white space
       // from temp string
-      t.Trim();
+      StringUtils::Trim(t);
       if (!t.length()) continue;
 
       // if the temp string is natural number try to convert it to a genre string

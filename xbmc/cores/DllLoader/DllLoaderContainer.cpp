@@ -170,8 +170,7 @@ LibraryLoader* DllLoaderContainer::FindModule(const char* sName, const char* sCu
   }
 
   //  in environment variable?
-  std::vector<std::string> vecEnv;
-  StringUtils::SplitString(ENV_PATH, ";", vecEnv);
+  std::vector<std::string> vecEnv = StringUtils::Split(ENV_PATH, ";");
 
   for (int i=0; i<(int)vecEnv.size(); ++i)
   {

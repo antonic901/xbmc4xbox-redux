@@ -255,7 +255,7 @@ void CMemoryUnitManager::GetMemoryUnitSources(VECSOURCES &shares)
   {
     CMediaSource share;
     std::string volumeName = m_memUnits[i]->GetVolumeName();
-    volumeName.TrimRight(' ');
+    StringUtils::TrimRight(volumeName, " ");
     // Memory Unit # (volumeName) (fs)
     if (volumeName.empty())
       share.strName = StringUtils::Format("%s %i (%s)", g_localizeStrings.Get(20136).c_str(), i + 1, m_memUnits[i]->GetFileSystem());

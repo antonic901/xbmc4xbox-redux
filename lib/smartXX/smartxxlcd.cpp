@@ -569,7 +569,7 @@ void CSmartXXLCD::Process()
         std::string strTmp=m_strLine[iLine];
         if (strTmp.size() > m_iColumns)
         {
-          strTmp=m_strLine[iLine].Left(m_iColumns);
+          strTmp=m_strLine[iLine].substr(0, m_iColumns);
         }
         m_iPos[iLine]=0;
         DisplaySetPos(0,iLine);

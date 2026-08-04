@@ -66,7 +66,7 @@ void CMediaSource::FromNameAndPaths(const std::string &category, const std::stri
     m_iDriveType = SOURCE_TYPE_VIRTUAL_DVD;
     strPath = "D:\\";
   }
-  else if (strPath.Left(11) == "soundtrack:")
+  else if (strPath.substr(0, 11) == "soundtrack:")
     m_iDriveType = SOURCE_TYPE_LOCAL;
   else if (URIUtils::IsISO9660(strPath))
     m_iDriveType = SOURCE_TYPE_VIRTUAL_DVD;

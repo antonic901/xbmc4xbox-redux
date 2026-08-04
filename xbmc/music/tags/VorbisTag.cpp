@@ -170,8 +170,8 @@ void CVorbisTag::SplitEntry(const std::string& strTagEntry, std::string& strTagT
   if ( nPos > -1 )
   {
     // we use UTF-8 internally
-    strTagValue = strTagEntry.Mid( nPos + 1 );
-    strTagType = strTagEntry.Left( nPos );
-    strTagType.ToUpper();
+    strTagValue = strTagEntry.substr( nPos + 1 );
+    strTagType = strTagEntry.substr( 0, nPos );
+    StringUtils::ToUpper(strTagType);
   }
 }

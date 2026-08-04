@@ -741,7 +741,7 @@ bool CButtonTranslator::TranslateActionString(const char *szAction, int &action)
 {
   action = ACTION_NONE;
   std::string strAction = szAction;
-  strAction.ToLower();
+  StringUtils::ToLower(strAction);
   if (CBuiltins::GetInstance().HasCommand(strAction)) action = ACTION_BUILT_IN_FUNCTION;
 
   for (unsigned int index=0;index < sizeof(actions)/sizeof(actions[0]);++index)
@@ -776,16 +776,19 @@ int CButtonTranslator::TranslateWindow(const std::string &window)
 {
   std::string strWindow(window);
   if (strWindow.empty()) return WINDOW_INVALID;
-  strWindow.ToLower();
+  StringUtils::ToLower(strWindow);
   // eliminate .xml
   if (StringUtils::EndsWith(strWindow, ".xml"))
     strWindow.resize(strWindow.size() - 4);
 
   // window12345, for custom window to be keymapped
-  if (strWindow.length() > 6 && StringUtils::StartsWithNoCase(strWindow, "window"))
-    strWindow = strWindow.Mid(6);
-  if (strWindow.Left(2) == "my")  // drop "my" prefix
-    strWindow = strWindow.Mid(2);
+  if (strWindow.length() > 6 && StringUtils::StartsWith(strWindow, "window"))
+    strWindow = strWindow.substr(6);
+
+  // Drop "my" prefix
+  if (StringUtils::StartsWith(strWindow, "my"))
+    strWindow = strWindow.substr(2);
+
   if (StringUtils::IsNaturalNumber(strWindow))
   {
     // allow a full window id or a delta id
@@ -811,7 +814,7 @@ int CButtonTranslator::TranslateGamepadString(const char *szButton)
   if (!szButton) return 0;
   int buttonCode = 0;
   std::string strButton = szButton;
-  strButton.ToLower();
+  StringUtils::ToLower(strButton);
   if (strButton == "a") buttonCode = KEY_BUTTON_A;
   else if (strButton == "b") buttonCode = KEY_BUTTON_B;
   else if (strButton == "x") buttonCode = KEY_BUTTON_X;
@@ -849,7 +852,7 @@ int CButtonTranslator::TranslateRemoteString(const char *szButton)
   if (!szButton) return 0;
   int buttonCode = 0;
   std::string strButton = szButton;
-  strButton.ToLower();
+  StringUtils::ToLower(strButton);
   if (strButton == "left") buttonCode = XINPUT_IR_REMOTE_LEFT;
   else if (strButton == "right") buttonCode = XINPUT_IR_REMOTE_RIGHT;
   else if (strButton == "up") buttonCode = XINPUT_IR_REMOTE_UP;
@@ -926,7 +929,7 @@ int CButtonTranslator::TranslateKeyboardString(const char *szButton)
   else
   { // for keys such as return etc. etc.
     std::string strKey = szButton;
-    strKey.ToLower();
+    StringUtils::ToLower(strKey);
     if (strKey == "return") buttonCode = 0xF00D;
     else if (strKey == "enter") buttonCode = 0xF06C;
     else if (strKey == "escape") buttonCode = 0xF01B;

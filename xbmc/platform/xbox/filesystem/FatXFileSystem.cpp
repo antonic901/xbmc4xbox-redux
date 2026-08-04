@@ -113,7 +113,7 @@ bool CFatXFileSystem::GetDirectory(const std::string &directory, CFileItemList &
     {
       CFileItemPtr item = items[i];
       std::string path = StringUtils::Format("mem%d://%s", m_unit, item->GetPath().substr(3).c_str());
-      path.Replace("\\","/");
+      StringUtils::Replace(path, "\\","/");
       item->SetPath(path);
     }
     return true;
@@ -128,7 +128,7 @@ std::string CFatXFileSystem::GetLocal(const std::string &file)
   if (device)
   {
     path = StringUtils::Format("%c:\\%s", device->GetDrive(), file.c_str());
-    path.Replace("/", "\\");
+    StringUtils::Replace(path, "/", "\\");
   }
   return path;
 }

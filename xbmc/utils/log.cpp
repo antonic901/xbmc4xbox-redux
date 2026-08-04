@@ -109,9 +109,9 @@ void CLog::Log(int loglevel, const char *format, ... )
     while ( length != strData.length() )
     {
       length = strData.length();
-      strData.TrimRight(" ");
-      strData.TrimRight('\n');
-      strData.TrimRight("\r");
+      StringUtils::TrimRight(strData, " ");
+      StringUtils::TrimRight(strData, "\n");
+      StringUtils::TrimRight(strData, "\r");
     }
 
     if (!length)
@@ -120,7 +120,7 @@ void CLog::Log(int loglevel, const char *format, ... )
     OutputDebugString(strData);
 
     /* fixup newline alignment, number of spaces should equal prefix length */
-    strData.Replace("\n", LINE_ENDING"                                            ");
+    StringUtils::Replace(strData, "\n", LINE_ENDING"                                            ");
     strData += LINE_ENDING;
 
     strPrefix = StringUtils::Format(prefixFormat, time.wHour, time.wMinute, time.wSecond, (uint64_t)CThread::GetCurrentThreadId(), levelNames[loglevel]);
