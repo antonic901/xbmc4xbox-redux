@@ -45,12 +45,12 @@ HANDLE FindFirstFile(LPCSTR szPath,LPWIN32_FIND_DATA lpFindData) {
   if (lpFindData == NULL || szPath == NULL)
     return NULL;
 
-  CStdString strPath(szPath);
+  std::string strPath(szPath);
 
   if (strPath.empty())
     return INVALID_HANDLE_VALUE;
 
-   strPath.Replace("\\","/");
+   StringUtils::Replace(strPath, "\\","/");
 
   // if the file name is a directory then we add a * to look for all files in this directory
   DIR *testDir = opendir(szPath);
@@ -59,10 +59,10 @@ HANDLE FindFirstFile(LPCSTR szPath,LPWIN32_FIND_DATA lpFindData) {
     closedir(testDir);
   }
 
-  int nFilePos = strPath.ReverseFind(XBMC_FILE_SEP);
+  int nFilePos = strPath.rfind(XBMC_FILE_SEP);
 
-  CStdString strDir = ".";
-  CStdString strFiles = strPath;
+  std::string strDir = ".";
+  std::string strFiles = strPath;
 
   if (nFilePos > 0) {
     strDir = strPath.substr(0,nFilePos);
@@ -72,28 +72,28 @@ HANDLE FindFirstFile(LPCSTR szPath,LPWIN32_FIND_DATA lpFindData) {
         if (strFiles == "*.*")
            strFiles = "*";
 
-  strFiles = CStdString("^") + strFiles + "$";
-  strFiles.Replace(".","\\.");
-  strFiles.Replace("*",".*");
-  strFiles.Replace("?",".");
+  strFiles = std::string("^") + strFiles + "$";
+  StringUtils::Replace(strFiles, ".","\\.");
+  StringUtils::Replace(strFiles, "*",".*");
+  StringUtils::Replace(strFiles, "?",".");
 
-  strFiles.MakeLower();
+  StringUtils::ToLower(strFiles);
 
   int status;
   regex_t re;
-  if (regcomp(&re, strFiles, REG_EXTENDED|REG_NOSUB) != 0) {
+  if (regcomp(&re, strFiles.c_str(), REG_EXTENDED|REG_NOSUB) != 0) {
     return(INVALID_HANDLE_VALUE);
   }
 
   struct dirent **namelist = NULL;
-  int n = scandir(strDir, &namelist, 0, alphasort);
+  int n = scandir(strDir.c_str(), &namelist, 0, alphasort);
 
   CXHandle *pHandle = new CXHandle(CXHandle::HND_FIND_FILE);
     pHandle->m_FindFileDir = strDir;
 
   while (n-- > 0) {
-    CStdString strComp(namelist[n]->d_name);
-    strComp.MakeLower();
+    std::string strComp(namelist[n]->d_name);
+    StringUtils::ToLower(strComp);
 
     status = regexec(&re, strComp.c_str(), (size_t) 0, NULL, 0);
     if (status == 0) {
@@ -124,15 +124,15 @@ BOOL   FindNextFile(HANDLE hHandle, LPWIN32_FIND_DATA lpFindData) {
   if ((unsigned int) hHandle->m_nFindFileIterator >= hHandle->m_FindFileResults.size())
     return FALSE;
 
-  CStdString strFileName = hHandle->m_FindFileResults[hHandle->m_nFindFileIterator++];
-        CStdString strFileNameTest = hHandle->m_FindFileDir + '/' + strFileName;
+  std::string strFileName = hHandle->m_FindFileResults[hHandle->m_nFindFileIterator++];
+        std::string strFileNameTest = hHandle->m_FindFileDir + '/' + strFileName;
 
   struct stat64 fileStat;
-  if (stat64(strFileNameTest, &fileStat) != 0)
+  if (stat64(strFileNameTest.c_str(), &fileStat) != 0)
     return FALSE;
 
   bool bIsDir = false;
-  DIR *testDir = opendir(strFileNameTest);
+  DIR *testDir = opendir(strFileNameTest.c_str());
   if (testDir) {
     bIsDir = true;
     closedir(testDir);
@@ -149,7 +149,7 @@ BOOL   FindNextFile(HANDLE hHandle, LPWIN32_FIND_DATA lpFindData) {
   if (strFileName[0] == '.')
     lpFindData->dwFileAttributes |= FILE_ATTRIBUTE_HIDDEN;
 
-  if (access(strFileName, R_OK) == 0 && access(strFileName, W_OK) != 0)
+  if (access(strFileName.c_str(), R_OK) == 0 && access(strFileName.c_str(), W_OK) != 0)
     lpFindData->dwFileAttributes |= FILE_ATTRIBUTE_READONLY;
 
   TimeTToFileTime(fileStat.st_ctime, &lpFindData->ftCreationTime);
