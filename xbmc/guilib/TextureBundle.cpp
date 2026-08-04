@@ -128,7 +128,7 @@ bool CTextureBundle::OpenBundle()
   m_TimeStamp.dwLowDateTime = m_TimeStamp.dwHighDateTime = 0;
 
 #ifdef _XBOX
-  if (ALIGN % XGetDiskSectorSize(strPath.Left(3).c_str()))
+  if (ALIGN % XGetDiskSectorSize(strPath.substr(0, 3).c_str()))
   {
     CLog::Log(LOGWARNING, "Disk sector size is not supported, caching textures.xpr");
 
@@ -608,7 +608,7 @@ void CTextureBundle::SetThemeBundle(bool themeBundle)
 std::string CTextureBundle::Normalize(const std::string &name)
 {
   std::string newName(name);
-  newName.Normalize();
-  newName.Replace('/','\\');
+  StringUtils::ToLower(newName);
+  StringUtils::Replace(newName, '/','\\');
   return newName;
 }

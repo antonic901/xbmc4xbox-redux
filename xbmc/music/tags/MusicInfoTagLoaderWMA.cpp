@@ -45,7 +45,7 @@ std::string fixString(std::string &ansiString)
   if (halfLen > 0)
     if (*(ansiString.Mid(halfLen, 1).c_str()) == 0 &&
         *(ansiString.Mid(halfLen + 1, 1).c_str()) == 0)
-      out = ansiString.Left(halfLen);
+      out = ansiString.substr(0, halfLen);
   if (out == "")
     return ansiString ;
   else

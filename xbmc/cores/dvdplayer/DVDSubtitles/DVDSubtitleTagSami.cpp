@@ -22,6 +22,7 @@
 #include "DVDSubtitleStream.h"
 #include "DVDCodecs/Overlay/DVDOverlayText.h"
 #include "utils/RegExp.h"
+#include "utils/StringUtils.h"
 
 CDVDSubtitleTagSami::~CDVDSubtitleTagSami()
 {
@@ -46,7 +47,7 @@ void CDVDSubtitleTagSami::ConvertLine(CDVDOverlayText* pOverlay, const char* lin
 {
   std::string strUTF8;
   strUTF8.assign(line, len);
-  strUTF8.Trim();
+  StringUtils::Trim(strUTF8);
 
   int pos = 0;
   int del_start = 0;
@@ -54,7 +55,7 @@ void CDVDSubtitleTagSami::ConvertLine(CDVDOverlayText* pOverlay, const char* lin
   {
     // Parse Tags
     std::string fullTag = m_tags->GetMatch(0);
-    fullTag.ToLower();
+    StringUtils::ToLower(fullTag);
     strUTF8.erase(pos, fullTag.length());
     if (fullTag == "<b>" || fullTag == "{\\b1}")
     {
@@ -86,12 +87,12 @@ void CDVDSubtitleTagSami::ConvertLine(CDVDOverlayText* pOverlay, const char* lin
       strUTF8.insert(pos, "[/COLOR]");
       pos += 8;
     }
-    else if (fullTag.Left(5) == "{\\c&h" || fullTag.Left(6) == "{\\1c&h")
+    else if (fullTag.substr(0, 5) == "{\\c&h" || fullTag.substr(0, 6) == "{\\1c&h")
     {
       m_flag[FLAG_COLOR] = true;
       std::string tempColorTag = "[COLOR FF";
       std::string tagOptionValue;
-      if (fullTag.Left(5) == "{\\c&h")
+      if (fullTag.substr(0, 5) == "{\\c&h")
          tagOptionValue = fullTag.substr(5,6);
       else
          tagOptionValue = fullTag.substr(6,6);
@@ -102,7 +103,7 @@ void CDVDSubtitleTagSami::ConvertLine(CDVDOverlayText* pOverlay, const char* lin
       strUTF8.insert(pos, tempColorTag);
       pos += tempColorTag.length();
     }
-    else if (fullTag.Left(5) == "<font")
+    else if (fullTag.substr(0, 5) == "<font")
     {
       int pos2 = 5;
       while ((pos2 = m_tagOptions->RegFind(fullTag.c_str(), pos2)) >= 0)
@@ -142,7 +143,7 @@ void CDVDSubtitleTagSami::ConvertLine(CDVDOverlayText* pOverlay, const char* lin
         }
       }
     }
-    else if (lang && (fullTag.Left(3) == "<p "))
+    else if (lang && (fullTag.substr(0, 3) == "<p "))
     {
       int pos2 = 3;
       while ((pos2 = m_tagOptions->RegFind(fullTag.c_str(), pos2)) >= 0)
@@ -241,9 +242,9 @@ void CDVDSubtitleTagSami::LoadHead(CDVDSubtitleStream* samiStream)
           lc.Name = reg.GetMatch(2);
           lc.Lang = reg.GetMatch(3);
           lc.SAMIType = reg.GetMatch(4);
-          lc.Name.Trim();
-          lc.Lang.Trim();
-          lc.SAMIType.Trim();
+          StringUtils::Trim(lc.Name);
+          StringUtils::Trim(lc.Lang);
+          StringUtils::Trim(lc.SAMIType);
           m_Langclass.push_back(lc);
         }
       }

@@ -280,7 +280,7 @@ void CXbmcHttp::resetTags()
 
 std::string CXbmcHttp::procMask(std::string mask)
 {
-  mask=mask.ToLower();
+  StringUtils::ToLower(mask);
   if(mask=="[music]")
     return CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicExtensions;
   if(mask=="[video]")
@@ -302,11 +302,11 @@ int CXbmcHttp::splitParameter(const std::string &parameter, std::string& command
   paras[0]="";
   for (p=0; p<parameter.length(); p++)
   {
-    if (parameter.Mid(p,1)==sep)
+    if (parameter.substr(p,1)==sep)
     {
       if (p<parameter.length()-1)
       {
-        if (parameter.Mid(p+1,1)==sep)
+        if (parameter.substr(p+1,1)==sep)
         {
           paras[num]+=sep;
           p+=1;
@@ -315,7 +315,7 @@ int CXbmcHttp::splitParameter(const std::string &parameter, std::string& command
         {
           if (command!="")
           {
-            paras[num]=paras[num].Trim();
+            StringUtils::Trim(paras[num]);
             num++;
             if (num==MAX_PARAS)
               return -2;
@@ -332,7 +332,7 @@ int CXbmcHttp::splitParameter(const std::string &parameter, std::string& command
       {
         if (command!="")
         {
-          paras[num]=paras[num].Trim();
+          StringUtils::Trim(paras[num]);
           num++;
           if (num==MAX_PARAS)
             return -2;
@@ -346,7 +346,7 @@ int CXbmcHttp::splitParameter(const std::string &parameter, std::string& command
     }
     else
     {
-      paras[num]+=parameter.Mid(p,1);
+      paras[num]+=parameter.substr(p,1);
     }
   }
   if (command=="")
@@ -359,7 +359,7 @@ int CXbmcHttp::splitParameter(const std::string &parameter, std::string& command
       return -1;
   else
   {
-    paras[num]=paras[num].Trim();
+    StringUtils::Trim(paras[num]);
     return num+1;
   }
 }
@@ -375,7 +375,7 @@ int CXbmcHttp::SetResponse(const std::string &response)
 {
   if (response.length()>=closeTag.length())
   {
-    if ((response.Right(closeTag.length())!=closeTag) && closeFinalTag)
+    if ((response.substr(response.length() - closeTag.length())!=closeTag) && closeFinalTag)
       return CServiceBroker::GetAppMessenger()->SetResponse(response+closeTag);
   }
   else
@@ -410,7 +410,10 @@ int CXbmcHttp::displayDir(int numParas, std::string paras[])
   if (numParas>1)
     mask = procMask(paras[1]);
   if (numParas>2)
-    option = paras[2].ToLower();
+  {
+    option = paras[2];
+    StringUtils::ToLower(option);
+  }
   if (numParas>3)
     lineStart = atoi(paras[3].c_str());
   if (numParas>4)
@@ -640,7 +643,8 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, std::string paras[])
     if (iType < 0)
       return SetResponse(openTag+"Error: invalid media type; valid options are music, video, pictures");
 
-    strType = paras[0].ToLower();
+    strType = paras[0];
+    StringUtils::ToLower(strType);
     if (numParas > 1)
       strLocation = paras[1];
   }
@@ -792,9 +796,9 @@ int CXbmcHttp::xbmcGetMediaLocation(int numParas, std::string paras[])
   {
     CFileItemPtr item = items[i];
     std::string strLabel = item->GetLabel();
-    strLabel.Replace(";",";;");
+    StringUtils::Replace(strLabel, ";",";;");
     std::string strPath = item->GetPath();
-    strPath.Replace(";",";;");
+    StringUtils::Replace(strPath, ";",";;");
     std::string strFolder = "0";
     if (item->m_bIsFolder)
     {
@@ -960,9 +964,9 @@ int CXbmcHttp::xbmcGetSources(int numParas, std::string paras[])
     {
       CMediaSource share = VECSOURCES.at(j);
       std::string strName = share.strName;
-      strName.Replace(";", ";;");
+      StringUtils::Replace(strName, ";", ";;");
       std::string strPath = share.strPath;
-      strPath.Replace(";", ";;");
+      StringUtils::Replace(strPath, ";", ";;");
       URIUtils::AddSlashAtEnd(strPath);
       std::string strLine = openTag;
       if (bShowType)
@@ -1305,7 +1309,10 @@ int CXbmcHttp::xbmcGetCurrentlyPlaying(int numParas, std::string paras[])
   if (numParas>1)
     thumbNothingPlaying=paras[1];
   if (numParas>2)
-    justChange=paras[2].ToLower()=="true";
+  {
+    StringUtils::ToLower(paras[2]);
+    justChange=paras[2]=="true";
+  }
   CGUIWindowSlideShow *pSlideShow = (CGUIWindowSlideShow *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_SLIDESHOW);
   if (CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow() == WINDOW_SLIDESHOW && pSlideShow)
   {
@@ -1782,9 +1789,15 @@ int CXbmcHttp::xbmcGetThumb(int numParas, std::string paras[], bool bGetThumb)
     linesize=0;
   }
   if (numParas>1)
-     tempSkipWebFooterHeader=paras[1].ToLower() == "bare";
+  {
+    StringUtils::ToLower(paras[1]);
+    tempSkipWebFooterHeader=paras[1] == "bare";
+  }
   if (numParas>2)
-     tempSkipWebFooterHeader=paras[2].ToLower() == "bare";
+  {
+    StringUtils::ToLower(paras[2]);
+    tempSkipWebFooterHeader=paras[2] == "bare";
+  }
   if (URIUtils::IsRemote(paras[0]))
   {
     std::string strDest="special://temp/xbmcDownloadFile.tmp";
@@ -2355,9 +2368,15 @@ int CXbmcHttp::xbmcDownloadInternetFile(int numParas, std::string paras[])
       try
       {
         if (numParas>1)
-          tempSkipWebFooterHeader=paras[1].ToLower() == "bare";
+        {
+          StringUtils::ToLower(paras[1]);
+          tempSkipWebFooterHeader=paras[1] == "bare";
+        }
         if (numParas>2)
-          tempSkipWebFooterHeader=paras[2].ToLower() == "bare";
+        {
+          StringUtils::ToLower(paras[2]);
+          tempSkipWebFooterHeader=paras[2] == "bare";
+        }
         XFILE::CCurlFile http;
         http.Download(src, dest);
         std::string encoded="";
@@ -2398,15 +2417,16 @@ int CXbmcHttp::xbmcSetFile(int numParas, std::string paras[])
     return SetResponse(openTag+"Error:Missing parameter");
   else
   {
-    paras[1].Replace(" ","+");
+    StringUtils::Replace(paras[1], " ","+");
     std::string tmpFile = "special://temp/xbmcTemp.tmp";
     if (numParas>2)
     {
-      if (paras[2].ToLower() == "first")
+      StringUtils::ToLower(paras[2]);
+      if (paras[2] == "first")
         decodeBase64ToFile(paras[1], tmpFile);
-      else if (paras[2].ToLower() == "continue")
+      else if (paras[2] == "continue")
         decodeBase64ToFile(paras[1], tmpFile, true);
-      else if (paras[2].ToLower() == "last")
+      else if (paras[2] == "last")
       {
         decodeBase64ToFile(paras[1], tmpFile, true);
         CFile::Copy(tmpFile, paras[0].c_str(), NULL, NULL) ;
@@ -2588,7 +2608,8 @@ int CXbmcHttp::xbmcGUISetting(int numParas, std::string paras[])
           return SetResponse(openTag+"OK");
           break;
         case 1: // bool
-          CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(paras[1], (paras[2].ToLower()=="true"));
+          StringUtils::ToLower(paras[2]);
+          CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(paras[1], (paras[2]=="true"));
           return SetResponse(openTag+"OK");
           break;
         case 2: // float
@@ -2780,7 +2801,7 @@ int CXbmcHttp::xbmcGetSystemInfoByName(int numParas, std::string paras[])
       // which is the right value for the GUI!
       // A length depending fix in CCharsetConverter::stringCharsetToUtf8() will couse a wrong char in GUI.
       // So just for http, we remove the "Â", to fix BUG ID:[1586251]
-      strInfo.Replace("Â","");
+      StringUtils::Replace(strInfo, "Â","");
     }
     return SetResponse(strInfo);
   }
@@ -2890,7 +2911,8 @@ int CXbmcHttp::xbmcAutoGetPictureThumbs(int numParas, std::string paras[])
     return SetResponse(openTag+"Error:Missing parameter");
   else
   {
-    autoGetPictureThumbs = (paras[0].ToLower()=="true");
+    StringUtils::ToLower(paras[0]);
+    autoGetPictureThumbs = (paras[0]=="true");
     return SetResponse(openTag+"OK");
   }
 }
@@ -2943,7 +2965,9 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, std::string paras[])
     else
       return SetResponse(openTag+"Off");
   }
-  else if (paras[0].ToLower() == "on")
+
+  StringUtils::ToLower(paras[0]);
+  if (paras[0] == "on")
   {
     if (CNetworkServices::GetInstance().IsWebserverRunning())
       return SetResponse(openTag+"Already on");
@@ -2954,7 +2978,8 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, std::string paras[])
     }
   }
   else
-    if (paras[0].ToLower() == "off")
+  {
+    if (paras[0] == "off")
       if (!CNetworkServices::GetInstance().IsWebserverRunning())
         return SetResponse(openTag+"Already off");
       else
@@ -2964,6 +2989,7 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, std::string paras[])
       }
     else
         return SetResponse(openTag+"Error:Unknown parameter");
+  }
 }
 
 int CXbmcHttp::xbmcSetResponseFormat(int numParas, std::string paras[])
@@ -2980,11 +3006,18 @@ int CXbmcHttp::xbmcSetResponseFormat(int numParas, std::string paras[])
     std::string para;
     for (int i=0; i<numParas; i+=2)
     {
-      para=paras[i].ToLower();
+      para=paras[i];
+      StringUtils::ToLower(para);
       if (para=="webheader")
-        incWebHeader=(paras[i+1].ToLower()=="true");
+      {
+        StringUtils::ToLower(paras[i+1]);
+        incWebHeader=(paras[i+1]=="true");
+      }
       else if (para=="webfooter")
-        incWebFooter=(paras[i+1].ToLower()=="true");
+      {
+        StringUtils::ToLower(paras[i+1]);
+        incWebFooter=(paras[i+1]=="true");
+      }
       else if (para=="header")
         userHeader=paras[i+1];
       else if (para=="footer")
@@ -2994,7 +3027,10 @@ int CXbmcHttp::xbmcSetResponseFormat(int numParas, std::string paras[])
       else if (para=="closetag")
         closeTag=paras[i+1];
       else if (para=="closefinaltag")
-        closeFinalTag=(paras[i+1].ToLower()=="true");
+      {
+        StringUtils::ToLower(paras[i+1]);
+        closeFinalTag=(paras[i+1]=="true");
+      }
       else if (para=="openrecordset")
         openRecordSet=paras[i+1];
       else if (para=="closerecordset")
@@ -3043,7 +3079,7 @@ int CXbmcHttp::xbmcCommand(const std::string &parameter)
   else
     CLog::Log(LOGDEBUG, "HttpApi Start command: %s  paras: [not recorded]", command.c_str());
   tempSkipWebFooterHeader=false;
-  command=command.ToLower();
+  StringUtils::ToLower(command);
   if (numParas>=0)
   {
     if (command == "clearplaylist")                   retVal = xbmcClearPlayList(numParas, paras);
@@ -3183,12 +3219,12 @@ bool CXbmcHttpShim::checkForFunctionTypeParas(std::string &cmd, std::string &par
   if (open>0)
   {
     close=cmd.length();
-    while (close>open && cmd.Mid(close,1)!=")")
+    while (close>open && cmd.substr(close,1)!=")")
       close--;
     if (close>open)
     {
-      paras = cmd.Mid(open + 1, close - open - 1);
-      cmd = cmd.Left(open);
+      paras = cmd.substr(open + 1, close - open - 1);
+      cmd = cmd.substr(0, open);
       return (close-open)>1;
     }
   }
@@ -3215,17 +3251,17 @@ std::string CXbmcHttpShim::xbmcExternalCall(char *command)
       return "";
   int open, close;
   std::string parameter="", cmd=command, execute;
-  open = cmd.Find("(");
+  open = cmd.find("(");
   if (open>0)
   {
     close=cmd.length();
-    while (close>open && cmd.Mid(close,1)!=")")
+    while (close>open && cmd.substr(close,1)!=")")
       close--;
     if (close>open)
     {
-      parameter = cmd.Mid(open + 1, close - open - 1);
-      parameter.Replace(",",";");
-      execute = cmd.Left(open);
+      parameter = cmd.substr(open + 1, close - open - 1);
+      StringUtils::Replace(parameter, ",",";");
+      execute = cmd.substr(0, open);
     }
     else //open bracket but no close
       return "";

@@ -103,8 +103,7 @@ bool CFat32FileSystem::GetShortFilePath(const std::string &path, std::string &sh
   if (path.empty())
     return true;  // nothing to do
   // split the path up
-  std::vector<std::string> folders;
-  StringUtils::SplitString(path, "/", folders);
+  std::vector<std::string> folders = StringUtils::Split(path, "/");
 
   bool isfolder = true;
   for (unsigned int i = 0; i < folders.size(); ++i)
@@ -284,7 +283,7 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const std::string &directory, 
       if ((de.attr & ATTR_DIRECTORY) == 0)
       { // filename
         shortPath = StringUtils::Format("%-8.8s", de.name);
-        shortPath.TrimRight(' ');
+        StringUtils::TrimRight(shortPath, " ");
         std::string extension;
         extension = StringUtils::Format(".%-3.3s", de.name + 8);
         shortPath += extension;
@@ -293,7 +292,7 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const std::string &directory, 
       { // folders with a period in them must be catered for
         shortPath = StringUtils::Format("%-11.11s", de.name);
       }
-      shortPath.TrimRight(' ');
+      StringUtils::TrimRight(shortPath, " ");
       // we don't want require the parent and current directory items
       if (shortPath == "." || shortPath == "..")
         continue;

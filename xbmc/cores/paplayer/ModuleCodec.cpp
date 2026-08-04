@@ -56,7 +56,7 @@ bool ModuleCodec::Init(const std::string &strFile, unsigned int filecache)
   // set correct codec name
   m_CodecName = URIUtils::GetExtension(strFile);
   m_CodecName.erase(0,1);
-  m_CodecName.ToUpper();
+  StringUtils::ToUpper(m_CodecName);
 
   std::string strLoadFile = "Z:\\cachedmod";
   if (!URIUtils::IsHD(strFile))

@@ -88,7 +88,7 @@ bool CMemUnitDirectory::Exists(const CURL& url)
 IFileSystem *CMemUnitDirectory::GetFileSystem(const std::string &path)
 {
   // format is mem#://folder/file
-  if (!path.Left(3) == "mem" || path.size() < 7)
+  if (path.substr(0, 3) != "mem" || path.size() < 7)
     return NULL;
 
   char unit = path[3] - '0';

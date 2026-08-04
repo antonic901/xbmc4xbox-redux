@@ -63,7 +63,7 @@ bool CMusicInfoTagLoaderSid::Load(const std::string& strFileName, CMusicInfoTag&
     URIUtils::RemoveSlashAtEnd(strFileToLoad);   // we want the filename
   }
   std::string strFileNameLower(strFileToLoad);
-  strFileNameLower.MakeLower();
+  StringUtils::ToLower(strFileNameLower);
   int iHVSC = strFileNameLower.find("hvsc"); // need hvsc in path name since our lookupfile is based on hvsc paths
   if (iHVSC < 0)
   {
@@ -81,8 +81,8 @@ bool CMusicInfoTagLoaderSid::Load(const std::string& strFileName, CMusicInfoTag&
 
   std::string strHVSCpath = strFileToLoad.substr(iHVSC,strFileToLoad.length()-1);
 
-  strHVSCpath.Replace('\\','/'); // unix paths
-  strHVSCpath.MakeLower();
+  StringUtils::Replace(strHVSCpath, '\\','/'); // unix paths
+  StringUtils::ToLower(strHVSCpath);
 
   char temp[8192];
   CRegExp reg;
@@ -108,7 +108,7 @@ bool CMusicInfoTagLoaderSid::Load(const std::string& strFileName, CMusicInfoTag&
   {
     f.read(temp,8191);
     std::string strLower = temp;
-    strLower.MakeLower();
+    StringUtils::ToLower(strLower);
 
     if (!szStart)
       szStart= (char *)strstr(strLower.c_str(),strHVSCpath.c_str());
@@ -185,7 +185,7 @@ bool CMusicInfoTagLoaderSid::Load(const std::string& strFileName, CMusicInfoTag&
   while( !f2.eof() ) {
     f2.getline(temp,8191);
     std::string strTemp(temp);
-    strTemp.MakeLower();
+    StringUtils::ToLower(strTemp);
     unsigned int iFind = strTemp.find(strHVSCpath);
     if (iFind == string::npos)
       continue;

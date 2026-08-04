@@ -250,7 +250,7 @@ bool CUtil::GetVolumeFromFileName(const std::string& strFileName, std::string& s
 
   std::string strFileNameTemp = strFileName;
   std::string strFileNameLower = strFileName;
-  strFileNameLower.MakeLower();
+  StringUtils::ToLower(strFileNameLower);
 
   CRegExp reg;
 
@@ -294,9 +294,9 @@ bool CUtil::GetVolumeFromFileName(const std::string& strFileName, std::string& s
         // the settings to hide extensions are turned on.
         std::string strFileNoExt = strFileNameTemp;
         URIUtils::RemoveExtension(strFileNoExt);
-        std::string strFileExt = strFileNameTemp.Right(strFileNameTemp.length() - strFileNoExt.length());
-        std::string strFileRight = strFileNoExt.Mid(iFoundToken + iRegLength);
-        strFileTitle = strFileName.Left(iFoundToken) + strFileRight + strFileExt;
+        std::string strFileExt = strFileNameTemp.substr(strFileNameTemp.length() - strFileNoExt.length());
+        std::string strFileRight = strFileNoExt.substr(iFoundToken + iRegLength);
+        strFileTitle = strFileName.substr(0, iFoundToken) + strFileRight + strFileExt;
 
         return true;
       }
@@ -309,7 +309,7 @@ bool CUtil::GetVolumeFromFileName(const std::string& strFileName, std::string& s
         if (strVolumeNumber.empty()) return false;
 
         // everything before the regexp match
-        strFileTitle = strFileName.Left(iFoundToken);
+        strFileTitle = strFileName.substr(0, iFoundToken);
 
         // first subpattern contains prefix
         strFileTitle += reg.GetMatch(1);
@@ -318,7 +318,7 @@ bool CUtil::GetVolumeFromFileName(const std::string& strFileName, std::string& s
         strFileTitle += reg.GetMatch(3);
 
         // everything after the regexp match
-        strFileTitle += strFileNameTemp.Mid(iFoundToken + iRegLength);
+        strFileTitle += strFileNameTemp.substr(iFoundToken + iRegLength);
 
         return true;
       }
@@ -701,7 +701,7 @@ bool CUtil::ExcludeFileOrFolder(const std::string& strFileOrFolder, const std::v
     return false;
 
   std::string strExclude = strFileOrFolder;
-  strExclude.MakeLower();
+  StringUtils::ToLower(strExclude);
 
   CRegExp regExExcludes;
 
@@ -734,9 +734,9 @@ void CUtil::GetFileAndProtocol(const std::string& strURL, std::string& strDir)
 int CUtil::GetDVDIfoTitle(const std::string& strFile)
 {
   std::string strFilename = URIUtils::GetFileName(strFile);
-  if (strFilename == "video_ts.ifo") return 0;
+  if (StringUtils::EqualsNoCase(strFilename, "video_ts.ifo")) return 0;
   //VTS_[TITLE]_0.IFO
-  return atoi(strFilename.Mid(4, 2).c_str());
+  return atoi(strFilename.substr(4, 2).c_str());
 }
 
 std::string CUtil::GetFileDigest(const std::string& strPath, KODI::UTILITY::CDigest::Type type)
@@ -889,7 +889,7 @@ bool CUtil::SetXBEDescription(const std::string& strFileName, const std::string&
   std::wstring shortDescription;
   g_charsetConverter.utf8ToW(strDescription, shortDescription);
   if (shortDescription.size() > 40)
-    shortDescription = shortDescription.Left(40);
+    shortDescription = shortDescription.substr(0, 40);
   wcsncpy(HC.TitleName, shortDescription.c_str(), 40);  // only allow 40 chars*/
   fwrite(&HC,1,sizeof(HC),hFile);
   fclose(hFile);
@@ -961,7 +961,7 @@ void CUtil::CreateShortcut(CFileItem* pItem)
       {
         std::string strFname;
         strFname = URIUtils::GetFileName(pItem->GetPath());
-        strFname.ToLower();
+        StringUtils::ToLower(strFname);
         if (strFname != "dashupdate.xbe" && strFname != "downloader.xbe" && strFname != "update.xbe")
         {
           CShortcut cut;
@@ -1360,7 +1360,7 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
       int fnl = strFileNameNoExt.size();
 
       std::string strFileNameNoExtNoCase(strFileNameNoExt);
-      strFileNameNoExtNoCase.MakeLower();
+      StringUtils::ToLower(strFileNameNoExtNoCase);
       for (int j = 0; j < (int)items.Size(); j++)
       {
         URIUtils::Split(items[j]->GetPath().c_str(), strPath, strItem);
@@ -1383,9 +1383,9 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
             int l = strlen(sub_exts[i]);
 
             //Cache any alternate subtitles.
-            if (strItem.Left(9).ToLower() == "subtitle." && strItem.Right(l).ToLower() == sub_exts[i])
+            if (StringUtils::StartsWithNoCase(strItem, "subtitle.") && StringUtils::EndsWithNoCase(strItem, sub_exts[i]))
             {
-              strLExt = strItem.Right(strItem.length() - 9);
+              strLExt = strItem.substr(strItem.length() - 9);
               strDest = StringUtils::Format("special://temp/subtitle.alt-%s", strLExt.c_str());
               if (CFile::Copy(items[j]->GetPath(), strDest, pCallback, NULL))
               {
@@ -1395,9 +1395,9 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
             }
 
             //Cache subtitle with same name as movie
-            if (strItem.Right(l).ToLower() == sub_exts[i] && strItem.Left(fnl).ToLower() == strFileNameNoExt.ToLower())
+            if (StringUtils::EndsWithNoCase(strItem, sub_exts[i]) && StringUtils::StartsWithNoCase(strItem, strFileNameNoExt))
             {
-              strLExt = strItem.Right(strItem.size() - fnl);
+              strLExt = strItem.substr(strItem.size() - fnl);
               strDest = StringUtils::Format("special://temp/subtitle%s", strLExt.c_str());
               if (CFile::Copy(items[j]->GetPath(), strDest, pCallback, NULL))
                 CLog::Log(LOGINFO, " cached subtitle %s->%s\n", strItem.c_str(), strDest.c_str());
@@ -1418,7 +1418,7 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
       continue;
 
     std::string filename = URIUtils::GetFileName(items[i]->GetPath());
-    strLExt = filename.Right(filename.size()-8);
+    strLExt = filename.substr(filename.size()-8);
     vecExtensionsCached.push_back(strLExt);
     if (URIUtils::GetExtension(filename) == ".smi")
     {
@@ -1495,7 +1495,7 @@ bool CUtil::CacheRarSubtitles(const std::string& strRarPath,
     int iPos=0;
     std::string strFileName = URIUtils::GetFileName(strPathInRar);
     std::string strFileNameNoCase(strFileName);
-    strFileNameNoCase.MakeLower();
+    StringUtils::ToLower(strFileNameNoCase);
     if (strFileNameNoCase.find(strCompare) >= 0)
       while (sub_exts[iPos])
       {
@@ -1946,42 +1946,42 @@ std::string CUtil::MakeLegalFileName(const std::string &strFile, int LegalType)
 {
   std::string result = strFile;
 
-  result.Replace('/', '_');
-  result.Replace('\\', '_');
-  result.Replace('?', '_');
+  StringUtils::Replace(result, '/', '_');
+  StringUtils::Replace(result, '\\', '_');
+  StringUtils::Replace(result, '?', '_');
 
   if (LegalType == LEGAL_WIN32_COMPAT)
   {
     // just filter out some illegal characters on windows
-    result.Replace(':', '_');
-    result.Replace('*', '_');
-    result.Replace('?', '_');
-    result.Replace('\"', '_');
-    result.Replace('<', '_');
-    result.Replace('>', '_');
-    result.Replace('|', '_');
-    result.TrimRight(".");
-    result.TrimRight(" ");
+    StringUtils::Replace(result, ':', '_');
+    StringUtils::Replace(result, '*', '_');
+    StringUtils::Replace(result, '?', '_');
+    StringUtils::Replace(result, '\"', '_');
+    StringUtils::Replace(result, '<', '_');
+    StringUtils::Replace(result, '>', '_');
+    StringUtils::Replace(result, '|', '_');
+    StringUtils::TrimRight(result, ".");
+    StringUtils::TrimRight(result, " ");
   }
 
   // check if the filename is a legal FATX one.
   if (LegalType == LEGAL_FATX)
   {
-    result.Replace(':', '_');
-    result.Replace('*', '_');
-    result.Replace('?', '_');
-    result.Replace('\"', '_');
-    result.Replace('<', '_');
-    result.Replace('>', '_');
-    result.Replace('|', '_');
-    result.Replace(',', '_');
-    result.Replace('=', '_');
-    result.Replace('+', '_');
-    result.Replace(';', '_');
-    result.Replace('"', '_');
-    result.Replace('\'', '_');
-    result.TrimRight(".");
-    result.TrimRight(" ");
+    StringUtils::Replace(result, ':', '_');
+    StringUtils::Replace(result, '*', '_');
+    StringUtils::Replace(result, '?', '_');
+    StringUtils::Replace(result, '\"', '_');
+    StringUtils::Replace(result, '<', '_');
+    StringUtils::Replace(result, '>', '_');
+    StringUtils::Replace(result, '|', '_');
+    StringUtils::Replace(result, ',', '_');
+    StringUtils::Replace(result, '=', '_');
+    StringUtils::Replace(result, '+', '_');
+    StringUtils::Replace(result, ';', '_');
+    StringUtils::Replace(result, '"', '_');
+    StringUtils::Replace(result, '\'', '_');
+    StringUtils::TrimRight(result, ".");
+    StringUtils::TrimRight(result, " ");
 
     GetFatXQualifiedPath(result);
   }
@@ -2032,7 +2032,7 @@ std::string CUtil::ValidatePath(const std::string &path, bool bFixDoubleSlashes 
   // check the path for incorrect slashes
   if (URIUtils::IsDOSPath(path))
   {
-    result.Replace('/', '\\');
+    StringUtils::Replace(result, '/', '\\');
     /* The double slash correction should only be used when *absolutely*
        necessary! This applies to certain DLLs or use from Python DLLs/scripts
        that incorrectly generate double (back) slashes.
@@ -2040,7 +2040,7 @@ std::string CUtil::ValidatePath(const std::string &path, bool bFixDoubleSlashes 
     if (bFixDoubleSlashes)
     {
       // Fixup for double back slashes (but ignore the \\ of unc-paths)
-      for (int x = 1; x < result.size() - 1; x++)
+      for (unsigned int x = 1; x < result.size() - 1; x++)
       {
         if (result[x] == '\\' && result[x+1] == '\\')
           result.erase(x);
@@ -2049,7 +2049,7 @@ std::string CUtil::ValidatePath(const std::string &path, bool bFixDoubleSlashes 
   }
   else if (path.find("://") >= 0 || path.find(":\\\\") >= 0)
   {
-    result.Replace('\\', '/');
+    StringUtils::Replace(result, '\\', '/');
     /* The double slash correction should only be used when *absolutely*
        necessary! This applies to certain DLLs or use from Python DLLs/scripts
        that incorrectly generate double (back) slashes.
@@ -2057,7 +2057,7 @@ std::string CUtil::ValidatePath(const std::string &path, bool bFixDoubleSlashes 
     if (bFixDoubleSlashes)
     {
       // Fixup for double forward slashes(/) but don't touch the :// of URLs
-      for (int x = 2; x < result.size() - 1; x++)
+      for (unsigned int x = 2; x < result.size() - 1; x++)
       {
         if ( result[x] == '/' && result[x + 1] == '/' && !(result[x - 1] == ':' || (result[x - 1] == '/' && result[x - 2] == ':')) )
           result.erase(x);
@@ -2234,7 +2234,7 @@ int CUtil::GetMatchingSource(const std::string& strPath1, VECSOURCES& VECSOURCES
       // "Name (Drive Status/Disc Name)"
       int iPos = strName.rfind('(');
       if (iPos > 1)
-        strName = strName.Mid(0, iPos - 1);
+        strName = strName.substr(0, iPos - 1);
     }
     //CLog::Log(LOGDEBUG,"CUtil::GetMatchingSource, comparing name [%s]", strName.c_str());
     if (strPath == strName)
@@ -2340,28 +2340,28 @@ std::string CUtil::TranslateSpecialSource(const std::string &strSpecial)
   if (!strSpecial.empty() && strSpecial[0] == '$')
   {
     if (StringUtils::StartsWithNoCase(strSpecial, "$home"))
-      return URIUtils::AddFileToFolder("special://home/", strSpecial.Mid(5));
+      return URIUtils::AddFileToFolder("special://home/", strSpecial.substr(5));
     else if (StringUtils::StartsWithNoCase(strSpecial, "$subtitles"))
-      return URIUtils::AddFileToFolder("special://subtitles/", strSpecial.Mid(10));
+      return URIUtils::AddFileToFolder("special://subtitles/", strSpecial.substr(10));
     else if (StringUtils::StartsWithNoCase(strSpecial, "$userdata"))
-      return URIUtils::AddFileToFolder("special://userdata/", strSpecial.Mid(9));
+      return URIUtils::AddFileToFolder("special://userdata/", strSpecial.substr(9));
     else if (StringUtils::StartsWithNoCase(strSpecial, "$database"))
-      return URIUtils::AddFileToFolder("special://database/", strSpecial.Mid(9));
+      return URIUtils::AddFileToFolder("special://database/", strSpecial.substr(9));
     else if (StringUtils::StartsWithNoCase(strSpecial, "$thumbnails"))
-      return URIUtils::AddFileToFolder("special://thumbnails/", strSpecial.Mid(11));
+      return URIUtils::AddFileToFolder("special://thumbnails/", strSpecial.substr(11));
     else if (StringUtils::StartsWithNoCase(strSpecial, "$recordings"))
-      return URIUtils::AddFileToFolder("special://recordings/", strSpecial.Mid(11));
+      return URIUtils::AddFileToFolder("special://recordings/", strSpecial.substr(11));
     else if (StringUtils::StartsWithNoCase(strSpecial, "$screenshots"))
-      return URIUtils::AddFileToFolder("special://screenshots/", strSpecial.Mid(12));
+      return URIUtils::AddFileToFolder("special://screenshots/", strSpecial.substr(12));
     else if (StringUtils::StartsWithNoCase(strSpecial, "$musicplaylists"))
-      return URIUtils::AddFileToFolder("special://musicplaylists/", strSpecial.Mid(15));
+      return URIUtils::AddFileToFolder("special://musicplaylists/", strSpecial.substr(15));
     else if (StringUtils::StartsWithNoCase(strSpecial, "$videoplaylists"))
-      return URIUtils::AddFileToFolder("special://videoplaylists/", strSpecial.Mid(15));
+      return URIUtils::AddFileToFolder("special://videoplaylists/", strSpecial.substr(15));
     else if (StringUtils::StartsWithNoCase(strSpecial, "$cdrips"))
-      return URIUtils::AddFileToFolder("special://cdrips/", strSpecial.Mid(7));
+      return URIUtils::AddFileToFolder("special://cdrips/", strSpecial.substr(7));
     // this one will be removed post 2.0
     else if (StringUtils::StartsWithNoCase(strSpecial, "$playlists"))
-      return URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("system.playlistspath"), strSpecial.Mid(10));
+      return URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("system.playlistspath"), strSpecial.substr(10));
   }
   return strSpecial;
 }
@@ -2551,7 +2551,7 @@ bool CUtil::AutoDetection()
     for(unsigned int i=0; i < v_xboxclients.client_ip.size(); i++)
     {
       // extract client informations
-      StringUtils::SplitString(v_xboxclients.client_info[i],";", arSplit);
+      arSplit = StringUtils::Split(v_xboxclients.client_info[i],";");
       if ((int)arSplit.size() > 1 && !v_xboxclients.client_informed[i])
       {
         //extract client info and build the ftp link!
@@ -2876,8 +2876,7 @@ void CUtil::AutoDetectionGetSource(VECSOURCES &shares)
     {
       //extract client info string: NickName;FTP_USER;FTP_Password;FTP_PORT;BOOST_MODE
       std::string strFTPPath, strNickName, strFtpUserName, strFtpPassword, strFtpPort, strBoosMode;
-      std::vector<std::string> arSplit;
-      StringUtils::SplitString(v_xboxclients.client_info[i],";", arSplit);
+      std::vector<std::string> arSplit = StringUtils::Split(v_xboxclients.client_info[i],";");
       if ((int)arSplit.size() > 1)
       {
         strNickName     = arSplit[0].c_str();
@@ -2887,7 +2886,7 @@ void CUtil::AutoDetectionGetSource(VECSOURCES &shares)
         strBoosMode     = arSplit[4].c_str();
         strFTPPath = StringUtils::Format("ftp://%s:%s@%s:%s/",strFtpUserName.c_str(),strFtpPassword.c_str(),v_xboxclients.client_ip[i].c_str(),strFtpPort.c_str());
 
-        strNickName.TrimRight(' ');
+        StringUtils::TrimRight(strNickName, " ");
 #ifdef HAS_XBOX_HARDWARE
         share.strName = StringUtils::Format("FTP XBMC (%s)", strNickName.c_str());
 #else
@@ -2996,17 +2995,17 @@ double CUtil::AlbumRelevance(const std::string& strAlbumTemp1, const std::string
   // weighting is identical, both album and artist are 50% of the total relevance
   // a missing artist means the maximum relevance can only be 0.50
   std::string strAlbumTemp = strAlbumTemp1;
-  strAlbumTemp.MakeLower();
+  StringUtils::ToLower(strAlbumTemp);
   std::string strAlbum = strAlbum1;
-  strAlbum.MakeLower();
+  StringUtils::ToLower(strAlbum);
   double fAlbumPercentage = fstrcmp(strAlbumTemp.c_str(), strAlbum.c_str(), 0.0f);
   double fArtistPercentage = 0.0f;
   if (!strArtist1.empty())
   {
     std::string strArtistTemp = strArtistTemp1;
-    strArtistTemp.MakeLower();
+    StringUtils::ToLower(strArtistTemp);
     std::string strArtist = strArtist1;
-    strArtist.MakeLower();
+    StringUtils::ToLower(strArtist);
     fArtistPercentage = fstrcmp(strArtistTemp.c_str(), strArtist.c_str(), 0.0f);
   }
   double fRelevance = fAlbumPercentage * 0.5f + fArtistPercentage * 0.5f;
@@ -3126,7 +3125,7 @@ void CUtil::GetSkinThemes(std::vector<std::string>& vecTheme)
       if (strExtension == ".xpr" && StringUtils::EqualsNoCase(pItem->GetLabel(), "Textures.xpr"))
       {
         std::string strLabel = pItem->GetLabel();
-        vecTheme.push_back(strLabel.Mid(0, strLabel.size() - 4));
+        vecTheme.push_back(strLabel.substr(0, strLabel.size() - 4));
       }
     }
   }

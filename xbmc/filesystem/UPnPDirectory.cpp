@@ -166,7 +166,7 @@ bool CUPnPDirectory::GetResource(const CURL& path, CFileItem &item)
 
     std::string uuid   = path.GetHostName();
     std::string object = path.GetFileName();
-    object.TrimRight("/");
+    StringUtils::TrimRight(object, "/");
     CURL::Decode(object);
 
     PLT_DeviceDataReference device;

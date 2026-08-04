@@ -70,7 +70,7 @@ void CXeniumLCD::SetLine(int iLine, const std::string& strLine)
   if (iLine < 0 || iLine >= (int)m_iRows) return;
 
   std::string strLineLong=strLine;
-  strLineLong.Trim();
+  StringUtils::Trim(strLineLong);
     StringToLCDCharSet(strLineLong);
 
   while (strLineLong.size() < m_iColumns) strLineLong+=" ";
@@ -218,7 +218,7 @@ void CXeniumLCD::Process()
         std::string strTmp=m_strLine[iLine];
         if (strTmp.size() > m_iColumns)
         {
-          strTmp=m_strLine[iLine].Left(m_iColumns);
+          strTmp=m_strLine[iLine].substr(0, m_iColumns);
         }
         m_iPos[iLine]=0;
         DisplaySetPos(0,iLine);

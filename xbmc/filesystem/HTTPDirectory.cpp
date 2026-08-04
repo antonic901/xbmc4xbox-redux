@@ -84,7 +84,8 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       if(strLink[0] == '/')
         strLink = strLink.Mid(1);
 
-      std::string strNameTemp = strName.Trim();
+      std::string strNameTemp = strName;
+      StringUtils::Trim(strNameTemp);
 
       std::wstring wName, wLink, wConverted;
       g_charsetConverter.unknownToUTF8(strNameTemp);

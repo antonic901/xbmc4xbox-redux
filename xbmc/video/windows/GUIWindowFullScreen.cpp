@@ -823,24 +823,24 @@ void CGUIWindowFullScreen::RenderTTFSubtitles()
     if (appPlayer->GetCurrentSubtitle(subtitleText))
     {
       // Remove HTML-like tags from the subtitles until
-      subtitleText.Replace("\\r", "");
-      subtitleText.Replace("\r", "");
-      subtitleText.Replace("\\n", "[CR]");
-      subtitleText.Replace("\n", "[CR]");
-      subtitleText.Replace("<br>", "[CR]");
-      subtitleText.Replace("\\N", "[CR]");
-      subtitleText.Replace("<i>", "[I]");
-      subtitleText.Replace("</i>", "[/I]");
-      subtitleText.Replace("<b>", "[B]");
-      subtitleText.Replace("</b>", "[/B]");
-      subtitleText.Replace("<u>", "");
-      subtitleText.Replace("<p>", "");
-      subtitleText.Replace("<P>", "");
-      subtitleText.Replace("&nbsp;", "");
-      subtitleText.Replace("</u>", "");
-      subtitleText.Replace("</i", "[/I]"); // handle tags which aren't closed properly (happens).
-      subtitleText.Replace("</b", "[/B]");
-      subtitleText.Replace("</u", "");
+      StringUtils::Replace(subtitleText, "\\r", "");
+      StringUtils::Replace(subtitleText, "\r", "");
+      StringUtils::Replace(subtitleText, "\\n", "[CR]");
+      StringUtils::Replace(subtitleText, "\n", "[CR]");
+      StringUtils::Replace(subtitleText, "<br>", "[CR]");
+      StringUtils::Replace(subtitleText, "\\N", "[CR]");
+      StringUtils::Replace(subtitleText, "<i>", "[I]");
+      StringUtils::Replace(subtitleText, "</i>", "[/I]");
+      StringUtils::Replace(subtitleText, "<b>", "[B]");
+      StringUtils::Replace(subtitleText, "</b>", "[/B]");
+      StringUtils::Replace(subtitleText, "<u>", "");
+      StringUtils::Replace(subtitleText, "<p>", "");
+      StringUtils::Replace(subtitleText, "<P>", "");
+      StringUtils::Replace(subtitleText, "&nbsp;", "");
+      StringUtils::Replace(subtitleText, "</u>", "");
+      StringUtils::Replace(subtitleText, "</i", "[/I]"); // handle tags which aren't closed properly (happens).
+      StringUtils::Replace(subtitleText, "</b", "[/B]");
+      StringUtils::Replace(subtitleText, "</u", "");
 
       RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
       CServiceBroker::GetWinSystem()->GetGfxContext().SetRenderingResolution(CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(), false);

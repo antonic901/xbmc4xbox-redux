@@ -642,7 +642,7 @@ extern "C"
     if (url.GetFileName().find("*.*") != string::npos)
     {
       std::string strReplaced = url.GetFileName();
-      strReplaced.Replace("*.*","");
+      StringUtils::Replace(strReplaced, "*.*","");
       url.SetFileName(strReplaced);
     }
     else if (url.GetFileName().find("*.") != string::npos)

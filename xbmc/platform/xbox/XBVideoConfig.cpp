@@ -325,7 +325,7 @@ void XBVideoConfig::PrintInfo() const
   if (Has480p()) strAVFlags += "480p,";
   if (Has720p()) strAVFlags += "720p,";
   if (Has1080i()) strAVFlags += "1080i,";
-  if (strAVFlags.size() > 1) strAVFlags = strAVFlags.Left(strAVFlags.size() - 1);
+  if (strAVFlags.size() > 1) strAVFlags = strAVFlags.substr(0, strAVFlags.size() - 1);
   CLog::Log(LOGINFO, "AV Flags: %s", strAVFlags.c_str());
 #endif
 }
