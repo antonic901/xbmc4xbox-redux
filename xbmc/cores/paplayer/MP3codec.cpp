@@ -353,7 +353,7 @@ int MP3Codec::Read(int size, bool init)
           }
         }
         m_OutputBufferPos += outputsize;
-        ASSERT(m_OutputBufferPos <= m_OutputBufferSize);
+        assert(m_OutputBufferPos <= m_OutputBufferSize);
       }
       return result;
     }
