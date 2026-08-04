@@ -28,6 +28,8 @@
 #include "Options.h"
 #include "version.h"
 
+#include <assert.h>
+
 #define BUFSIZE 4096
 
 //////////////////////////////////////////////////////////////////////
@@ -36,7 +38,7 @@
 
 CAdminSocket::CAdminSocket(CAdminInterface *pAdminInterface)
 {
-    ASSERT(pAdminInterface);
+    assert(pAdminInterface);
     m_pAdminInterface = pAdminInterface;
     m_bStillNeedAuth = TRUE;
 
@@ -300,14 +302,14 @@ BOOL CAdminSocket::ParseRecvBuffer()
                 md5.update(m_Nonce1, 8);
                 COptions options;
                 std::string pass = options.GetOption(OPTION_ADMINPASS);
-                if (pass.GetLength() < 6)
+                if (pass.length() < 6)
                 {
                     SendCommand(_T("Protocol error: Server misconfigured, admin password not set correctly"), 1);
                     Close();
                     m_pAdminInterface->Remove(this);
                     return FALSE;
                 }
-                md5.update((unsigned char *)pass.c_str(), pass.GetLength());
+                md5.update((unsigned char *)pass.c_str(), pass.length());
                 md5.update(m_Nonce2, 8);
                 md5.finalize();
                 unsigned char *digest = md5.raw_digest();

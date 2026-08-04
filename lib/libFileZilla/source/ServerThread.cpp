@@ -28,6 +28,8 @@
 #include "Permissions.h"
 #include "ExternalIpCheck.h"
 
+#include "utils/StringUtils.h"
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
@@ -97,7 +99,7 @@ BOOL CServerThread::InitInstance()
 
 DWORD CServerThread::ExitInstance()
 {
-    ASSERT(m_pPermissions);
+    assert(m_pPermissions);
     delete m_pPermissions;
     m_pPermissions=0;
     delete m_pOptions;
@@ -237,25 +239,25 @@ void CServerThread::AddNewSocket(SOCKET sockethandle)
         m_RawWelcomeMessage = msg;
         m_ParsedWelcomeMessage.clear();
 
-        msg.Replace("%%", "\001");
-        msg.Replace("%v", GetVersionString());
-        msg.Replace("\001", "%");
+        StringUtils::Replace(msg, "%%", "\001");
+        StringUtils::Replace(msg, "%v", GetVersionString());
+        StringUtils::Replace(msg, "\001", "%");
 
-        ASSERT(msg!="");
+        assert(msg!="");
         int oldpos=0;
-        msg.Replace("\r\n", "\n");
-        int pos=msg.Find("\n");
+        StringUtils::Replace(msg, "\r\n", "\n");
+        int pos=msg.find("\n");
         std::string line;
         while (pos!=-1)
         {
           // why is there an assertion here?
             // ASSERT(pos);
-            m_ParsedWelcomeMessage.push_back("220-" +  msg.Mid(oldpos, pos-oldpos) );
+            m_ParsedWelcomeMessage.push_back("220-" +  msg.substr(oldpos, pos-oldpos) );
             oldpos=pos+1;
-            pos=msg.Find("\n", oldpos);
+            pos=msg.find("\n", oldpos);
         }
 
-        line = msg.Mid(oldpos);
+        line = msg.substr(oldpos);
         if (line != "")
             m_ParsedWelcomeMessage.push_back("220 " + line);
         else
@@ -264,9 +266,9 @@ void CServerThread::AddNewSocket(SOCKET sockethandle)
         }
     }
 
-    ASSERT(!m_ParsedWelcomeMessage.empty());
+    assert(!m_ParsedWelcomeMessage.empty());
     for (std::list<std::string>::iterator iter = m_ParsedWelcomeMessage.begin(); iter != m_ParsedWelcomeMessage.end(); iter++)
-        if (!socket->Send(*iter))
+        if (!socket->Send((*iter).c_str()))
             break;
 }
 
@@ -637,7 +639,7 @@ void CServerThread::DecIpCount(const std::string &ip)
 {
     EGCS;
     std::map<std::string, int>::iterator iter=m_userIPs.find(ip);
-    ASSERT(iter!=m_userIPs.end());
+    assert(iter!=m_userIPs.end());
     if (iter==m_userIPs.end())
     {
         LGCS;
@@ -645,7 +647,7 @@ void CServerThread::DecIpCount(const std::string &ip)
     }
     else
     {
-        ASSERT(iter->second);
+        assert(iter->second);
         if (iter->second)
             iter->second--;
     }

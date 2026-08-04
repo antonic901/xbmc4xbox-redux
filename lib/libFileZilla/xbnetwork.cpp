@@ -21,6 +21,8 @@
 #include "Thread.h"
 #include "xbnetwork.h"
 
+#include "utils/StringUtils.h"
+
 #include <xtl.h>
 #include <stdio.h>
 #include <algorithm>
@@ -101,7 +103,7 @@ CAsyncSelectHelper::CAsyncSelectHelper(SOCKET s, HWND hWnd, unsigned int wMsg, l
 {
   SetParams(hWnd, wMsg, lEvent);
 
-  ASSERT(s != INVALID_SOCKET);
+  assert(s != INVALID_SOCKET);
   InitializeCriticalSection(&mCS);
 }
 
@@ -144,7 +146,7 @@ void CAsyncSelectHelper::Lock()
 {
   EnterCriticalSection(&mCS);
   mLockCount++;
-  ASSERT(mLockCount == 1);
+  assert(mLockCount == 1);
 }
 
 
@@ -338,7 +340,7 @@ DWORD CAsyncSelectManager::Run()
         {
           std::string str;
           str = StringUtils::Format(_T("0x%X : Socket 0x%X select() result == SOCKET_ERROR\n"), GetCurrentThreadId(), helper->mSocket);
-          OutputDebugString(str);
+          OutputDebugString(str.c_str());
         }
         else
         {
@@ -349,7 +351,7 @@ DWORD CAsyncSelectManager::Run()
             {
               std::string str;
               str = StringUtils::Format(_T("0x%X : Socket 0x%X select() exception received, FD_CONNECT\n"), GetCurrentThreadId(), helper->mSocket);
-              OutputDebugString(str);
+              OutputDebugString(str.c_str());
 
               PostMessage(helper->mWnd, helper->mMsg, s, MAKELPARAM(FD_CONNECT, SOCKET_ERROR));
             }
@@ -358,7 +360,7 @@ DWORD CAsyncSelectManager::Run()
             {
               std::string str;
               str = StringUtils::Format(_T("0x%X : Socket 0x%X select() exception received, FD_CLOSE\n"), GetCurrentThreadId(), helper->mSocket);
-              OutputDebugString(str);
+              OutputDebugString(str.c_str());
 
               PostMessage(helper->mWnd, helper->mMsg, s, MAKELPARAM(FD_CLOSE, SOCKET_ERROR));
             }
@@ -366,7 +368,7 @@ DWORD CAsyncSelectManager::Run()
             {
               std::string str;
               str = StringUtils::Format(_T("0x%X : Socket 0x%X select() exception received, but not handled\n"), GetCurrentThreadId(), helper->mSocket);
-              OutputDebugString(str);
+              OutputDebugString(str.c_str());
 
               PostMessage(helper->mWnd, helper->mMsg, s, MAKELPARAM(FD_CLOSE, SOCKET_ERROR));
             }
@@ -392,7 +394,7 @@ DWORD CAsyncSelectManager::Run()
               {
                 std::string str;
                 str = StringUtils::Format(_T("0x%X : Socket 0x%X select() FD_ACCEPT received, but not handled\n"), GetCurrentThreadId(), helper->mSocket);
-                OutputDebugString(str);
+                OutputDebugString(str.c_str());
               }
             }
             else
@@ -416,7 +418,7 @@ DWORD CAsyncSelectManager::Run()
                       {
                         std::string str;
                         str = StringUtils::Format(_T("0x%X : Socket 0x%X select() FD_CLOSE received, but mIsConnected == false\n"), GetCurrentThreadId(), helper->mSocket);
-                        OutputDebugString(str);
+                        OutputDebugString(str.c_str());
                       }
                     }
                   }
@@ -461,7 +463,7 @@ DWORD CAsyncSelectManager::Run()
               {
                 std::string str;
                 str = StringUtils::Format(_T("0x%X : Socket 0x%X select() FD_CONNECT received, but not handled\n"), GetCurrentThreadId(), helper->mSocket);
-                OutputDebugString(str);
+                OutputDebugString(str.c_str());
               }
             }
             else
@@ -490,7 +492,7 @@ DWORD CAsyncSelectManager::Run()
           {
             std::string str;
             str = StringUtils::Format(_T("0x%X : Socket 0x%X select() unknown event\n"), GetCurrentThreadId(), helper->mSocket);
-            OutputDebugString(str);
+            OutputDebugString(str.c_str());
           }
         }
       }

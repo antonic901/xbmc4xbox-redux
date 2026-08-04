@@ -5,6 +5,9 @@
 #include "ListenSocket.h"
 #include "AdminListenSocket.h"
 
+#include "utils/StringUtils.h"
+
+#include <algorithm>
 
 #pragma warning (disable:4244)
 #pragma warning (disable:4800)
@@ -43,14 +46,14 @@ XFSTATUS CXBServer::SetThreadNum(int ThreadNum)
         }
         std::string str;
         str = StringUtils::Format("Number of threads increased to %d.", ThreadNum);
-        ShowStatus(str, 0);
+        ShowStatus(str.c_str(), 0);
     }
     else
   if (ThreadNum < m_ThreadArray.size())
     {
         std::string str;
         str = StringUtils::Format("Decreasing number of threads to %d.", ThreadNum);
-        ShowStatus(str, 0);
+        ShowStatus(str.c_str(), 0);
         int removethreads = m_ThreadArray.size() - ThreadNum;
         int i = 0;
         for (std::list<CServerThread*>::iterator iter = m_ThreadArray.begin();
@@ -76,16 +79,16 @@ XFSTATUS CXBServer::SetServerPort(int ServerPort)
     {
         std::string str;
         str = StringUtils::Format("Closing listen socket on port %d", ServerPort);
-        ShowStatus(str, 0);
+        ShowStatus(str.c_str(), 0);
         m_pListenSocket->Close();
         str = StringUtils::Format("Creating listen socket on port %d...", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
-        ShowStatus(str, 0);
+        ShowStatus(str.c_str(), 0);
         if (!m_pListenSocket->Create(m_pOptions->GetOptionVal(OPTION_SERVERPORT), SOCK_STREAM,FD_ACCEPT,0) || !m_pListenSocket->Listen())
         {
             delete m_pListenSocket;
             m_pListenSocket = 0;
             str = StringUtils::Format("Failed to create listen socket on port %d. Server is not online!", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
-            ShowStatus(str,1);
+            ShowStatus(str.c_str(),1);
             m_nServerState = 0;
       return XFS_ERROR;
         }
@@ -122,7 +125,7 @@ XFSTATUS CXBServer::SetAdminPort(int AdminPort)
             std::string str;
             str = StringUtils::Format(_T("Failed to change admin listen port to %d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
             m_pOptions->SetOption(OPTION_ADMINPORT, AdminPort);
-            ShowStatus(str, 1);
+            ShowStatus(str.c_str(), 1);
         }
         else
         {
@@ -139,7 +142,7 @@ XFSTATUS CXBServer::SetAdminPort(int AdminPort)
             {
                 std::string str;
                 str = StringUtils::Format(_T("Admin listen port changed to %d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
-                ShowStatus(str, 0);
+                ShowStatus(str.c_str(), 0);
             }
 
             if (m_pOptions->GetOption(OPTION_ADMINIPBINDINGS) != "*")
@@ -152,13 +155,13 @@ XFSTATUS CXBServer::SetAdminPort(int AdminPort)
                     ipBindings += " ";
                 while (ipBindings != "")
                 {
-                    int pos = ipBindings.Find(" ");
+                    int pos = ipBindings.find(" ");
                     if (pos == -1)
                         break;
-                    std::string ip = ipBindings.Left(pos);
-                    ipBindings = ipBindings.Mid(pos+1);
+                    std::string ip = ipBindings.substr(0, pos);
+                    ipBindings = ipBindings.substr(pos+1);
                     CAdminListenSocket *pAdminListenSocket = new CAdminListenSocket(m_pAdminInterface);
-                    if (!pAdminListenSocket->Create(m_pOptions->GetOptionVal(OPTION_ADMINPORT), SOCK_STREAM, FD_ACCEPT, ip) || !pAdminListenSocket->Listen())
+                    if (!pAdminListenSocket->Create(m_pOptions->GetOptionVal(OPTION_ADMINPORT), SOCK_STREAM, FD_ACCEPT, ip.c_str()) || !pAdminListenSocket->Listen())
                     {
                         bError = TRUE;
                         str += _T(" ") + ip;
@@ -168,7 +171,7 @@ XFSTATUS CXBServer::SetAdminPort(int AdminPort)
                         m_AdminListenSocketList.push_back(pAdminListenSocket);
                 }
                 if (bError)
-                    ShowStatus(str, 1);
+                    ShowStatus(str.c_str(), 1);
             }
             if (adminIpBindings!=m_pOptions->GetOption(OPTION_ADMINIPBINDINGS))
                 ShowStatus(_T("Admin interface IP bindings changed"), 0);
@@ -230,7 +233,7 @@ LRESULT CXBServer::OnServerMessage(WPARAM wParam, LPARAM lParam)
                   mConnectionMap[pConnOp->data->userid].mId = pConnOp->data->userid;
             mConnectionMap[pConnOp->data->userid].mIPAddress = pConnOp->data->ip;
             mConnectionMap[pConnOp->data->userid].mPort = pConnOp->data->port;
-            if (pConnOp->data->user)
+            if (!pConnOp->data->user.empty())
               mConnectionMap[pConnOp->data->userid].mUsername = pConnOp->data->user;
             else
               mConnectionMap[pConnOp->data->userid].mUsername = _T("");

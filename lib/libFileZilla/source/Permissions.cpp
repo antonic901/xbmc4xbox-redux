@@ -43,7 +43,7 @@ class CPermissionsHelperWindow
 public:
     CPermissionsHelperWindow(CPermissions *pPermissions)
     {
-        ASSERT(pPermissions);
+        assert(pPermissions);
         m_pPermissions=pPermissions;
 
         //Create window
@@ -64,7 +64,7 @@ public:
         RegisterClassEx(&wndclass);
 
         m_hWnd=CreateWindow(_T("CPermissions Helper Window"), _T("CPermissions Helper Window"), 0, 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(0));
-        ASSERT(m_hWnd);
+        assert(m_hWnd);
         SetWindowLong(m_hWnd, GWL_USERDATA, (LONG)this);
     };
 
@@ -91,8 +91,8 @@ protected:
             CPermissionsHelperWindow *pWnd=(CPermissionsHelperWindow *)GetWindowLong(hWnd, GWL_USERDATA);
             if (!pWnd)
                 return 0;
-            ASSERT(pWnd);
-            ASSERT(pWnd->m_pPermissions);
+            assert(pWnd);
+            assert(pWnd->m_pPermissions);
 
             pWnd->m_pPermissions->m_sync.Lock();
 
@@ -155,7 +155,7 @@ CPermissions::~CPermissions()
     for (instanceIter=m_sInstanceList.begin(); instanceIter!=m_sInstanceList.end(); instanceIter++)
         if (*instanceIter==this)
             break;
-    ASSERT(instanceIter!=m_sInstanceList.end());
+    assert(instanceIter!=m_sInstanceList.end());
     m_sInstanceList.erase(instanceIter);
     m_sync.Unlock();
     if (m_pPermissionsHelperWindow)
@@ -183,8 +183,8 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
         int i = dir.find_last_of("\\/");
         if (i < 0)
             return res;
-        sFileSpec = dir.Mid(i+1);
-        dir = dir.Left(i+1);
+        sFileSpec = dir.substr(i+1);
+        dir = dir.substr(0, i+1);
         res = GetRealDirectory(dir, index, directory, bTruematch);
     }
     if (res)
@@ -240,8 +240,8 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
         }
 
         std::string fn = FindFileData.cFileName;
-        std::string fn2 = fn.Right(4);
-        fn2.MakeLower();
+        std::string fn2 = fn.substr(fn.size() - 4);
+        StringUtils::ToLower(fn2);
 
         if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
         {
@@ -254,7 +254,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
                 continue;
             if (bRelative)
             {
-                fn=fn.Left(fn.GetLength()-4);
+                fn=fn.substr(0, fn.length()-4);
                 t_directory directory;
                 BOOL truematch;
                 if (GetRealDirectory(dir+"/"+fn,index,directory, truematch))
@@ -269,13 +269,13 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
             else
             {
                 std::string lnkpath = GetShortcutTarget((directory.dir+"\\"+FindFileData.cFileName).c_str());
-                lnkpath.Replace(":u", m_UsersList[index].user);
-                lnkpath.Replace(":U", m_UsersList[index].user);
+                StringUtils::Replace(lnkpath, ":u", m_UsersList[index].user);
+                StringUtils::Replace(lnkpath, ":U", m_UsersList[index].user);
                 if (lnkpath == "")
                     continue;
-                lnkpath.Replace("\\", "/");
-                lnkpath.TrimRight("/");
-                fn = fn.Left(fn.GetLength()-4);
+                StringUtils::Replace(lnkpath, "\\", "/");
+                StringUtils::TrimRight(lnkpath, "/");
+                fn = fn.substr(0, fn.length()-4);
 
                 t_directory directory;
                 BOOL truematch;
@@ -288,8 +288,8 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
 
                 memcpy(pDir->buffer + pDir->len, "lrwxr-xr-x", 10);
                 pDir->len += 10;
-                directory.dir.Replace("\\","/");
-                directory.dir.TrimRight("/");
+                StringUtils::Replace(directory.dir, "\\","/");
+                StringUtils::TrimRight(directory.dir, "/");
                 fn = fn + " -> "+"/" + directory.dir;
             }
         }
@@ -300,9 +300,9 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
             pDir->buffer[pDir->len++] = directory.bFileWrite ? 'w' : '-';
 
             BOOL isexe = FALSE;
-            std::string ext = fn.Right(4);
-            ext.MakeLower();
-            if (ext.ReverseFind('.')!=-1)
+            std::string ext = fn.substr(fn.size() - 4);
+            StringUtils::ToLower(ext);
+            if (ext.rfind('.')!=-1)
             {
                 if (ext == ".exe")
                     isexe = TRUE;
@@ -350,7 +350,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
 #endif
             pDir->len += sprintf(pDir->buffer + pDir->len, "%02d:%02d ", sFileTime.wHour, sFileTime.wMinute);
 
-        int len = fn.GetLength();
+        int len = fn.length();
         memcpy(pDir->buffer + pDir->len, fn.c_str(), len);
         pDir->len += len;
         pDir->buffer[pDir->len++] = '\r';
@@ -394,7 +394,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
 
         if (bRelative)
         {
-            fn = fn.Left(fn.GetLength()-4);
+            fn = fn.substr(0, fn.length()-4);
             t_directory directory;
             BOOL truematch;
             if (GetRealDirectory(dir+"/"+fn,index,directory,truematch))
@@ -409,13 +409,13 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
         else
         {
             std::string lnkpath = GetShortcutTarget((directory.dir+"\\"+FindFileData.cFileName).c_str());
-            lnkpath.Replace(":u", m_UsersList[index].user);
-            lnkpath.Replace(":U", m_UsersList[index].user);
+            StringUtils::Replace(lnkpath, ":u", m_UsersList[index].user);
+            StringUtils::Replace(lnkpath, ":U", m_UsersList[index].user);
             if (lnkpath=="")
                 continue;
-            lnkpath.Replace("\\","/");
-            lnkpath.TrimRight("/");
-            fn=fn.Left(fn.GetLength()-4);
+            StringUtils::Replace(lnkpath, "\\","/");
+            StringUtils::TrimRight(lnkpath, "/");
+            fn=fn.substr(0, fn.length()-4);
 
             t_directory directory;
             BOOL truematch;
@@ -427,8 +427,8 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
                 continue;
             memcpy(pDir->buffer + pDir->len, "lrwxr-xr-x", 10);
             pDir->len += 10;
-            directory.dir.Replace("\\","/");
-            directory.dir.TrimRight("/");
+            StringUtils::Replace(directory.dir, "\\","/");
+            StringUtils::TrimRight(directory.dir, "/");
             fn=fn+" -> "+"/"+directory.dir;
         }
 
@@ -463,7 +463,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
 #endif
             pDir->len += sprintf(pDir->buffer + pDir->len, "%02d:%02d ", sFileTime.wHour, sFileTime.wMinute);
 
-        int len = fn.GetLength();
+        int len = fn.length();
         memcpy(pDir->buffer + pDir->len, fn.c_str(), len);
         pDir->len += len;
         pDir->buffer[pDir->len++] = '\r';
@@ -480,9 +480,9 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
 int CPermissions::GetDirName(LPCTSTR user, std::string dirname, std::string currentdir, int op, std::string &physical, std::string &logical)
 {
     //Reformat the directory
-    dirname.Replace("\\", "/");
-    while(dirname.Replace("//", "/"));
-    dirname.TrimRight("/");
+    StringUtils::Replace(dirname, "\\", "/");
+    while(StringUtils::Replace(dirname, "//", "/"));
+    StringUtils::TrimRight(dirname, "/");
     if (dirname == "")
         return PERMISSION_NOTFOUND;
     else
@@ -490,39 +490,39 @@ int CPermissions::GetDirName(LPCTSTR user, std::string dirname, std::string curr
         //Reassamble the path, parse the dots
         std::list<std::string> piecelist;
         int pos;
-        if (dirname.Left(1)!="/")
+        if (dirname.substr(0, 1)!="/")
         { //New relative path
           //The current dir has to be added to the split into pieces
             std::string tmp=currentdir;
-            tmp.TrimRight("/");
-            tmp.TrimLeft("/");
-            while((pos=tmp.Find("/"))!=-1)
+            StringUtils::TrimRight(tmp, "/");
+            StringUtils::TrimLeft(tmp, "/");
+            while((pos=tmp.find("/"))!=-1)
             {
-                piecelist.push_back(tmp.Left(pos));
-                tmp=tmp.Mid(pos+1);
+                piecelist.push_back(tmp.substr(0, pos));
+                tmp=tmp.substr(pos+1);
             }
             if (tmp!="")
                 piecelist.push_back(tmp);
         }
         //Split the new path into pieces and add it to the piecelist
-        dirname.TrimLeft("/");
-        while((pos=dirname.Find("/"))!=-1 || dirname.size())
+        StringUtils::TrimLeft(dirname, "/");
+        while((pos=dirname.find("/"))!=-1 || dirname.size())
         {
       if(pos<0) pos = dirname.size();
-      std::string tmp = dirname.Left(pos);
+      std::string tmp = dirname.substr(0, pos);
 
       if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpautofatx"))
             {
         if(tmp.length() > 42)
-          tmp = tmp.Left(42);
-        tmp.TrimRight(" \\");
+          tmp = tmp.substr(0, 42);
+        StringUtils::TrimRight(tmp, " \\");
                 if( tmp.length() && tmp[tmp.length()-1] != ':') // avoid fuckups with F: etc
                     CUtil::RemoveIllegalChars(tmp);
       }
 
       if (tmp!="")
               piecelist.push_back(tmp);
-            dirname=dirname.Mid(pos+1);
+            dirname=dirname.substr(pos+1);
         }
 
     int remove=0; //Number of pieces that will be removed due to dots
@@ -532,7 +532,7 @@ int CPermissions::GetDirName(LPCTSTR user, std::string dirname, std::string curr
             if (tmp == "..")
             { //Oh, double dots found! Remove one piece
                 remove++;
-                tmp=tmp.Mid(1);
+                tmp=tmp.substr(1);
             }
             if (tmp!=".") //Skips single dots
             {
@@ -549,14 +549,14 @@ int CPermissions::GetDirName(LPCTSTR user, std::string dirname, std::string curr
     }
 
     std::string dir;
-    int pos = dirname.ReverseFind('/');
+    int pos = dirname.rfind('/');
     if (pos == -1)
         return PERMISSION_NOTFOUND;
   logical = dirname;
-  dir=dirname.Left(pos);
+  dir=dirname.substr(0, pos);
     if (dir == "")
         dir = "/";
-    dirname = dirname.Mid(pos+1);
+    dirname = dirname.substr(pos+1);
 
     //Get userindex based on user string
     unsigned int index;
@@ -579,13 +579,13 @@ int CPermissions::GetDirName(LPCTSTR user, std::string dirname, std::string curr
         res = GetRealDirectory(dir, index, directory, truematch);
         if (res&PERMISSION_NOTFOUND && op==DOP_CREATE)
         { //that path could not be found. Maybe more than one directory level has to be created, check that
-            int pos = dir.ReverseFind('/');
+            int pos = dir.rfind('/');
             if (pos == -1)
                 return res;
             if (dir=="/") //We are already at the topmost level!
                 return res;
-            dirname=dir.Mid(pos+1)+"/"+dirname;
-            dir=dir.Left(pos);
+            dirname=dir.substr(pos+1)+"/"+dirname;
+            dir=dir.substr(0, pos);
             if (dir=="")
                 dir = "/";
             continue;
@@ -604,7 +604,7 @@ int CPermissions::GetDirName(LPCTSTR user, std::string dirname, std::string curr
     } while (TRUE);
 
   //realdir and realdirname should now be complete, (realdir contains the existing part, realdirname the other
-  realdirname.Replace("/", "\\");
+  StringUtils::Replace(realdirname, "/", "\\");
   physical = realdir + "\\" + realdirname;
 
   //Restore what we actually want to create
@@ -619,7 +619,7 @@ int CPermissions::GetDirName(LPCTSTR user, std::string dirname, std::string curr
         return res | res2;
 
     //dir+dirname could no be found
-    DWORD nAttributes = GetFileAttributes(physical);
+    DWORD nAttributes = GetFileAttributes(physical.c_str());
     if (nAttributes==0xFFFFFFFF && !(op&DOP_CREATE))
         res |= PERMISSION_NOTFOUND;
     else if (!(nAttributes&FILE_ATTRIBUTE_DIRECTORY))
@@ -643,13 +643,13 @@ int CPermissions::GetFileName(LPCTSTR user, std::string filename, std::string cu
 
     //If links are resolved, don't allow any operation on lnk files
     BOOL bLnk = m_UsersList[index].ResolveLinks();
-    if (filename.Right(4)==".lnk" && bLnk)
+    if (filename.substr(filename.size() - 4)==".lnk" && bLnk)
         return PERMISSION_DENIED;
 
     //Reformat the directory
-    filename.Replace("\\","/");
-    while(filename.Replace("//","/"));
-    filename.TrimRight("/");
+    StringUtils::Replace(filename, "\\","/");
+    while(StringUtils::Replace(filename, "//","/"));
+    StringUtils::TrimRight(filename, "/");
     if (filename=="")
         return PERMISSION_NOTFOUND;
     else
@@ -657,26 +657,26 @@ int CPermissions::GetFileName(LPCTSTR user, std::string filename, std::string cu
         //Reassamble the path, parse the dots
         std::list<std::string> piecelist;
         int pos;
-        if (filename.Left(1)!="/")
+        if (filename.substr(0, 1)!="/")
         { //New relative path
           //The current dir has to be added to the split into pieces
             std::string tmp=currentdir;
-            tmp.TrimRight("/");
-            tmp.TrimLeft("/");
-            while((pos=tmp.Find("/"))!=-1)
+            StringUtils::TrimRight(tmp, "/");
+            StringUtils::TrimLeft(tmp, "/");
+            while((pos=tmp.find("/"))!=-1)
             {
-                piecelist.push_back(tmp.Left(pos));
-                tmp=tmp.Mid(pos+1);
+                piecelist.push_back(tmp.substr(0, pos));
+                tmp=tmp.substr(pos+1);
             }
             if (tmp!="")
                 piecelist.push_back(tmp);
         }
         //Split the new path into pieces and add it to the piecelist
-        filename.TrimLeft("/");
-        while((pos=filename.Find("/"))!=-1)
+        StringUtils::TrimLeft(filename, "/");
+        while((pos=filename.find("/"))!=-1)
         {
-            piecelist.push_back(filename.Left(pos));
-            filename=filename.Mid(pos+1);
+            piecelist.push_back(filename.substr(0, pos));
+            filename=filename.substr(pos+1);
         }
         if (filename!="")
             piecelist.push_back(filename);
@@ -688,7 +688,7 @@ int CPermissions::GetFileName(LPCTSTR user, std::string filename, std::string cu
             while (tmp == "..")
             { //Oh, double dots found! Remove one piece
                 remove++;
-                tmp=tmp.Mid(1);
+                tmp=tmp.substr(1);
             }
             if (tmp!=".") //Skips single dots
             {
@@ -704,14 +704,14 @@ int CPermissions::GetFileName(LPCTSTR user, std::string filename, std::string cu
             return PERMISSION_NOTFOUND;
     }
     std::string dir;
-    int pos=filename.ReverseFind('/');
+    int pos=filename.rfind('/');
     if (pos==-1)
         return PERMISSION_NOTFOUND;
-    dir=filename.Left(pos);
+    dir=filename.substr(0, pos);
     if (dir=="")
         dir="/";
-    filename=filename.Mid(pos+1);
-    dir.MakeLower();
+    filename=filename.substr(pos+1);
+    StringUtils::ToLower(dir);
     //dir now is the absolute path (logical server path of course)
     //while filename is the filename
 
@@ -732,8 +732,8 @@ int CPermissions::GetFileName(LPCTSTR user, std::string filename, std::string cu
         res |= PERMISSION_DENIED;
     if (!truematch && !directory.bDirSubdirs)
         res |= PERMISSION_DENIED;
-    dir.TrimRight("\\");
-    DWORD nAttributes = GetFileAttributes(dir+"\\"+filename);
+    StringUtils::TrimRight(dir, "\\");
+    DWORD nAttributes = GetFileAttributes((dir+"\\"+filename).c_str());
     if (nAttributes==0xFFFFFFFF)
     {
         if (!(op&(FOP_WRITE|FOP_APPEND|FOP_CREATENEW)))
@@ -769,19 +769,19 @@ std::string CPermissions::GetHomeDir(const CUser &user, BOOL bRealPath /*=FALSE*
 
     if (bRealPath)
     {
-        path.Replace(":u", user.user);
-        path.Replace(":U", user.user);
+        StringUtils::Replace(path, ":u", user.user);
+        StringUtils::Replace(path, ":U", user.user);
         return path;
     }
 
 
     if (!bRelative)
     {
-        path.Replace("\\","/");
-        path.TrimRight("/");
+        StringUtils::Replace(path, "\\","/");
+        StringUtils::TrimRight(path, "/");
         path="/"+path;
-        path.Replace(":u", user.user);
-        path.Replace(":U", user.user);
+        StringUtils::Replace(path, ":u", user.user);
+        StringUtils::Replace(path, ":U", user.user);
         return path;
     }
     return "/";
@@ -809,34 +809,34 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
     BOOL bRelative = m_UsersList[user].UseRelativePaths();
     BOOL bLnk = m_UsersList[user].ResolveLinks();
     std::string realpath;
-    directory.TrimLeft("/");
-    directory.TrimRight("/");
+    StringUtils::TrimLeft(directory, "/");
+    StringUtils::TrimRight(directory, "/");
     if (!bRelative)
     {
-        directory.Replace("/","\\");
-        while (directory.Replace("\\\\", "\\"));
+        StringUtils::Replace(directory, "/","\\");
+        while (StringUtils::Replace(directory, "\\\\", "\\"));
 
-        directory.TrimRight("\\");
+        StringUtils::TrimRight(directory, "\\");
 
         //Split dir into pieces
         std::list<std::string> PathPieces;
         int pos;
 
         int remove=0;
-        while((pos=directory.ReverseFind('\\'))!=-1 || directory!="")
+        while((pos=directory.rfind('\\'))!=-1 || directory!="")
         {
-            std::string piece=directory.Mid(pos+1);
+            std::string piece=directory.substr(pos+1);
 
             BOOL bRemoveThis=FALSE;
 #ifdef _XBOX
-            while (piece.Left(3)=="../")
+            while (piece.substr(0, 3)=="../")
             { //Oh, double dots found! Remove one piece
                 bRemoveThis=TRUE;
                 remove++;
-                piece=piece.Mid(2);
+                piece=piece.substr(2);
             }
 #else
-            while (piece.Left(2)=="..")
+            while (piece.substr(0, 2)=="..")
             { //Oh, double dots found! Remove one piece
                 bRemoveThis=TRUE;
                 remove++;
@@ -850,8 +850,8 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
                 else
                     PathPieces.push_front(piece);
             }
-            if (directory.GetLength()>pos)
-                directory=directory.Left(pos);
+            if (directory.length()>pos)
+                directory=directory.substr(0, pos);
             else
                 directory="";
         }
@@ -877,26 +877,26 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
         for (std::list<std::string>::iterator iter = PathPieces.begin(); iter!=PathPieces.end(); iter++)
         {
             std::string piece=*iter;
-            DWORD nAttributes=GetFileAttributes(path+"\\"+piece);
+            DWORD nAttributes=GetFileAttributes((path+"\\"+piece).c_str());
             if (nAttributes!=0xFFFFFFFF)
             {
                 if (!(nAttributes&FILE_ATTRIBUTE_DIRECTORY))
                     return PERMISSION_DIRNOTFILE;
                 path+="\\"+piece;
             }
-            else if (m_UsersList[user].ResolveLinks() && (nAttributes=GetFileAttributes(path+"\\"+piece+".lnk"))!=0xFFFFFFFF )
+            else if (m_UsersList[user].ResolveLinks() && (nAttributes=GetFileAttributes((path+"\\"+piece+".lnk").c_str()))!=0xFFFFFFFF )
             {
                 if (nAttributes&FILE_ATTRIBUTE_DIRECTORY)
                     return PERMISSION_DIRNOTFILE;
 
-                std::string target=GetShortcutTarget(path+"\\"+piece+".lnk");
-                target.Replace(":u", m_UsersList[user].user);
-                target.Replace(":U", m_UsersList[user].user);
+                std::string target=GetShortcutTarget((path+"\\"+piece+".lnk").c_str());
+                StringUtils::Replace(target, ":u", m_UsersList[user].user);
+                StringUtils::Replace(target, ":U", m_UsersList[user].user);
                 if (target=="")
                     return PERMISSION_NOTFOUND;
-                if (target.Right(2)!=":\\")
+                if (target.substr(target.size() - 2)!=":\\")
                 {
-                    nAttributes=GetFileAttributes(target);
+                    nAttributes=GetFileAttributes(target.c_str());
                     if (nAttributes==0xFFFFFFFF)
                         return PERMISSION_NOTFOUND;
                     else if (!(nAttributes&FILE_ATTRIBUTE_DIRECTORY))
@@ -916,31 +916,31 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
         if (homepath == "") //No homedir found
             return PERMISSION_DENIED;
 
-        homepath.TrimRight("\\");
+        StringUtils::TrimRight(homepath, "\\");
 
         //Split dir into pieces
         std::list<std::string> PathPieces;
         int pos;
 
         int remove=0;
-        while((pos=directory.ReverseFind('/'))!=-1 || directory!="")
+        while((pos=directory.rfind('/'))!=-1 || directory!="")
         {
-            std::string piece=directory.Mid(pos+1);
+            std::string piece=directory.substr(pos+1);
 
             BOOL bRemoveThis=FALSE;
 #ifdef _XBOX
-            while (piece.Left(3)=="../")
+            while (piece.substr(0, 3)=="../")
             { //Oh, double dots found! Remove one piece
                 bRemoveThis=TRUE;
                 remove++;
-                piece=piece.Mid(2);
+                piece=piece.substr(2);
             }
 #else
-            while (piece.Left(2)=="..")
+            while (piece.substr(0, 2)=="..")
             { //Oh, double dots found! Remove one piece
                 bRemoveThis=TRUE;
                 remove++;
-                piece=piece.Mid(1);
+                piece=piece.substr(1);
             }
 #endif
             if (!bRemoveThis && piece!=".") //Skips single dots
@@ -950,8 +950,8 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
                 else
                     PathPieces.push_front(piece);
             }
-            if (directory.GetLength()>pos)
-                directory=directory.Left(pos);
+            if (directory.length()>pos)
+                directory=directory.substr(0, pos);
             else
                 directory="";
         }
@@ -963,26 +963,26 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
         for (std::list<std::string>::iterator iter=PathPieces.begin(); iter!=PathPieces.end(); iter++)
         {
             std::string piece=*iter;
-            DWORD nAttributes=GetFileAttributes(path+"\\"+piece);
+            DWORD nAttributes=GetFileAttributes((path+"\\"+piece).c_str());
             if (nAttributes!=0xFFFFFFFF)
             {
                 if (!(nAttributes&FILE_ATTRIBUTE_DIRECTORY))
                     return PERMISSION_FILENOTDIR;
                 path+="\\"+piece;
             }
-            else if (m_UsersList[user].ResolveLinks() && (nAttributes=GetFileAttributes(path+"\\"+piece+".lnk"))!=0xFFFFFFFF )
+            else if (m_UsersList[user].ResolveLinks() && (nAttributes=GetFileAttributes((path+"\\"+piece+".lnk").c_str()))!=0xFFFFFFFF )
             {
                 if (nAttributes&FILE_ATTRIBUTE_DIRECTORY)
                     return PERMISSION_NOTFOUND;
 
-                std::string target=GetShortcutTarget(path+"\\"+piece+".lnk");
-                target.Replace(":u", m_UsersList[user].user);
-                target.Replace(":U", m_UsersList[user].user);
+                std::string target=GetShortcutTarget((path+"\\"+piece+".lnk").c_str());
+                StringUtils::Replace(target, ":u", m_UsersList[user].user);
+                StringUtils::Replace(target, ":U", m_UsersList[user].user);
                 if (target=="")
                     return PERMISSION_NOTFOUND;
-                if (target.Right(2)!=":\\")
+                if (target.substr(target.size() - 2)!=":\\")
                 {
-                    nAttributes=GetFileAttributes(target);
+                    nAttributes=GetFileAttributes(target.c_str());
                     if (nAttributes==0xFFFFFFFF)
                         return PERMISSION_NOTFOUND;
                     else if (!(nAttributes&FILE_ATTRIBUTE_DIRECTORY))
@@ -1003,15 +1003,15 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
         BOOL bFoundMatch = FALSE;
         unsigned int i;
         std::string path2=path;
-        path2.TrimRight("\\");
-        path2.MakeLower();
+        StringUtils::TrimRight(path2, "\\");
+        StringUtils::ToLower(path2);
         for (i=0; i<m_UsersList[user].permissions.size(); i++)
         {
             std::string path3=m_UsersList[user].permissions[i].dir;
-            path3.TrimRight("\\");
-            path3.MakeLower();
-            path3.Replace(":u", m_UsersList[user].user);
-            path3.Replace(":U", m_UsersList[user].user);
+            StringUtils::TrimRight(path3, "\\");
+            StringUtils::ToLower(path3);
+            StringUtils::Replace(path3, ":u", m_UsersList[user].user);
+            StringUtils::Replace(path3, ":U", m_UsersList[user].user);
             if (path3==path2)
             {
                 if (path==realpath)
@@ -1025,10 +1025,10 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
             for (i=0; i<m_UsersList[user].pOwner->permissions.size(); i++)
             {
                 std::string path3=m_UsersList[user].pOwner->permissions[i].dir;
-                path3.TrimRight("\\");
-                path3.MakeLower();
-                path3.Replace(":u", m_UsersList[user].user);
-                path3.Replace(":U", m_UsersList[user].user);
+                StringUtils::TrimRight(path3, "\\");
+                StringUtils::ToLower(path3);
+                StringUtils::Replace(path3, ":u", m_UsersList[user].user);
+                StringUtils::Replace(path3, ":U", m_UsersList[user].user);
                 if (path3==path2)
                 {
                     if (path==realpath)
@@ -1041,16 +1041,16 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
 
         if (!bFoundMatch)
         {
-            int pos = path.ReverseFind('\\');
+            int pos = path.rfind('\\');
             if (pos!=-1)
-                path=path.Left(pos);
+                path=path.substr(0, pos);
             else
             {
                 return PERMISSION_DENIED;
             }
             continue;
         }
-        realpath.TrimRight('\\');
+        StringUtils::TrimRight(realpath, "\\");
         ret.dir = realpath;
         return 0;
     }
@@ -1071,15 +1071,15 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
     BOOL bRelative=m_UsersList[index].UseRelativePaths();
 
     //Reformat the directory
-    dir.Replace("\\","/");
-    while(dir.Replace("//","/"));
-    dir.TrimRight("/");
+    StringUtils::Replace(dir, "\\", "/");
+    while(StringUtils::Replace(dir, "//", "/"));
+    StringUtils::TrimRight(dir, "/");
     if (dir=="")
     {
         if (!bRelative)
         {
             //dir was / - We need to prepend with the drive letter
-            dir=currentdir.Mid(1, 2) + '/';
+            dir=currentdir.substr(1, 2) + '/';
         }
         else
         {
@@ -1091,22 +1091,22 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
         //Reassamble the path, remove the dots
         std::list<std::string> piecelist;
         int pos;
-        if (!bRelative && dir.GetLength()>=2)
+        if (!bRelative && dir.length()>=2)
         {
             //Make sure / is in front of a dir starting with a drive letter
             if (isalpha(dir[0]) && dir[1]==':')
                 dir="/"+dir;
         }
-        if (dir.Left(1)!="/")
+        if (dir.substr(1)!="/")
         { //New relative path
           //The current dir has to be added to the split into pieces
             std::string tmp=currentdir;
-            tmp.TrimRight("/");
-            tmp.TrimLeft("/");
-            while((pos=tmp.Find("/"))!=-1)
+            StringUtils::TrimRight(tmp, "/");
+            StringUtils::TrimLeft(tmp, "/");
+            while((pos=tmp.find("/"))!=-1)
             {
-                piecelist.push_back(tmp.Left(pos));
-                tmp=tmp.Mid(pos+1);
+                piecelist.push_back(tmp.substr(pos));
+                tmp=tmp.substr(pos+1);
             }
             if (tmp!="")
                 piecelist.push_back(tmp);
@@ -1116,20 +1116,20 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
             if (!bRelative)
             {
                 //dir starts with a / - Does that include the driver letter?
-                if (dir.GetLength()<3 || !isalpha(dir[1]) || (dir[2] != ':'))
+                if (dir.length()<3 || !isalpha(dir[1]) || (dir[2] != ':'))
                 {
 #ifdef _XBOX
                     if (1 /*g_settings.m_bFTPSingleCharDrives*/ &&
-                      (isalpha(dir[1]) && ((dir.GetLength() == 2) || (dir[2] == '/'))))
+                      (isalpha(dir[1]) && ((dir.length() == 2) || (dir[2] == '/'))))
                     {
                     // modified to be consistent with other xbox ftp behavior: drive
                     // name is a single character without the ':' at the end
                     // this is the drive letter specified without the ':' character
                     // at the end - correct it
                     CString drive = dir.substr(0, 2);
-                    drive.ToUpper();
-                    if (dir.GetLength() > 3)
-                      dir = drive + ":/" + dir.Mid(3);
+                    StringUtils::ToUpper(drive);
+                    if (dir.length() > 3)
+                      dir = drive + ":/" + dir.substr(3);
                     else
                       dir = drive + ":/";
                     }
@@ -1137,7 +1137,7 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
                     {
 #endif
                   //We were given an absolute path without a drive letter we need to put one in the dir list
-                  piecelist.push_back(currentdir.Mid(1, 2));
+                  piecelist.push_back(currentdir.substr(1, 2));
 #ifdef _XBOX
                     }
 #endif
@@ -1146,11 +1146,11 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
         }
 
         //Split the new path into pieces and add it to the piecelist
-        dir.TrimLeft("/");
-        while((pos=dir.Find("/"))!=-1)
+        StringUtils::TrimLeft(dir, "/");
+        while((pos=dir.find("/"))!=-1)
         {
-            piecelist.push_back(dir.Left(pos));
-            dir=dir.Mid(pos+1);
+            piecelist.push_back(dir.substr(pos));
+            dir=dir.substr(pos+1);
         }
         if (dir!="")
             piecelist.push_back(dir);
@@ -1162,7 +1162,7 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
             if (tmp == "..")
             { //Oh, double dots found! Remove one piece
                 remove++;
-                tmp=tmp.Mid(1);
+                tmp=tmp.substr(1);
             }
             if (tmp!=".") //Skips single dots
             {
@@ -1203,13 +1203,13 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
     else
     {
         //No relative server path, we have to convert the physical path into a logical server path.
-        directory.dir.Replace("\\","/");
-        directory.dir.TrimRight("/");
+        StringUtils::Replace(directory.dir, "\\", "/");
+        StringUtils::TrimRight(directory.dir, "/");
         currentdir="/"+directory.dir;
     }
 #ifdef _XBOX
     if ((currentdir.size() == 3) && (currentdir[0]=='/') && (isalpha(currentdir[1])) && (currentdir[2]==':'))
-        currentdir.MakeUpper();
+      StringUtils::ToUpper(currentdir);
 #endif
     return 0;
 }
@@ -1318,12 +1318,12 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
         int i = dir.find_last_of("\\/");
         if (i < 0)
             return res;
-        sFileSpec = dir.Mid(i+1);
-        dir = dir.Left(i+1);
+        sFileSpec = dir.substr(i+1);
+        dir = dir.substr(i+1);
 
         i = dirToDisplay.find_last_of("/");
         if (i >= 0)
-            dirToDisplay = dirToDisplay.Left(i+1);
+            dirToDisplay = dirToDisplay.substr(i+1);
         else
             dirToDisplay = "";
 
@@ -1355,7 +1355,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
     WIN32_FIND_DATA FindFileData;
     WIN32_FIND_DATA NextFindFileData;
     HANDLE hFind;
-    hFind = FindFirstFile(directory.dir + "\\" + sFileSpec, &NextFindFileData);
+    hFind = FindFirstFile((directory.dir + "\\" + sFileSpec).c_str(), &NextFindFileData);
     while (hFind != INVALID_HANDLE_VALUE)
     {
         FindFileData=NextFindFileData;
@@ -1378,8 +1378,8 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
         }
 
         std::string fn = FindFileData.cFileName;
-        std::string fn2 = fn.Right(4);
-        fn2.MakeLower();
+        std::string fn2 = fn.substr(fn.size() - 4);
+        StringUtils::ToLower(fn2);
 
         if (!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && fn2==".lnk" && m_UsersList[index].ResolveLinks())
         {
@@ -1387,7 +1387,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
                 continue;
             if (bRelative)
             {
-                fn = fn.Left(fn.GetLength()-4);
+                fn = fn.substr(fn.length()-4);
                 t_directory directory;
                 BOOL truematch;
                 if (GetRealDirectory(dir+"/"+fn, index, directory ,truematch))
@@ -1399,14 +1399,14 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
             }
             else
             {
-                std::string lnkpath = GetShortcutTarget(directory.dir+"\\"+FindFileData.cFileName);
+                std::string lnkpath = GetShortcutTarget((directory.dir+"\\"+FindFileData.cFileName).c_str());
                 if (lnkpath=="")
                     continue;
-                lnkpath.Replace(":u", m_UsersList[index].user);
-                lnkpath.Replace(":U", m_UsersList[index].user);
-                lnkpath.Replace("\\","/");
-                lnkpath.TrimRight("/");
-                fn = fn.Left(fn.GetLength()-4);
+                StringUtils::Replace(lnkpath, ":u", m_UsersList[index].user);
+                StringUtils::Replace(lnkpath, ":U", m_UsersList[index].user);
+                StringUtils::Replace(lnkpath, "\\", "/");
+                StringUtils::TrimRight(lnkpath, "/");
+                fn = fn.substr(fn.length()-4);
 
                 t_directory directory;
                 BOOL truematch;
@@ -1416,14 +1416,14 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
                     continue;
                 if (!truematch && !directory.bDirSubdirs)
                     continue;
-                directory.dir.Replace("\\","/");
-                directory.dir.TrimRight("/");
+                StringUtils::Replace(directory.dir, "\\", "/");
+                StringUtils::TrimRight(directory.dir, "/");
             }
         }
-        int len = dirToDisplay.GetLength();
+        int len = dirToDisplay.length();
         memcpy(pDir->buffer + pDir->len, dirToDisplay.c_str(), len);
         pDir->len += len;
-        len = fn.GetLength();
+        len = fn.length();
         memcpy(pDir->buffer + pDir->len, fn.c_str(), len);
         pDir->len += len;
         pDir->buffer[pDir->len++] = '\r';
@@ -1435,7 +1435,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
         return 0;
 
     // Now repeat the search with .lnk added
-    hFind = FindFirstFile(directory.dir + "\\" + sFileSpec + ".lnk", &NextFindFileData);
+    hFind = FindFirstFile((directory.dir + "\\" + sFileSpec + ".lnk").c_str(), &NextFindFileData);
     while (hFind != INVALID_HANDLE_VALUE)
     {
         FindFileData=NextFindFileData;
@@ -1464,7 +1464,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
 
         if (bRelative)
         {
-            fn = fn.Left(fn.GetLength()-4);
+            fn = fn.substr(fn.length()-4);
             t_directory directory;
             BOOL truematch;
             if (GetRealDirectory(dir+"/"+fn, index, directory ,truematch))
@@ -1476,14 +1476,14 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
         }
         else
         {
-            std::string lnkpath = GetShortcutTarget(directory.dir+"\\"+FindFileData.cFileName);
+            std::string lnkpath = GetShortcutTarget((directory.dir+"\\"+FindFileData.cFileName).c_str());
             if (lnkpath=="")
                 continue;
-            lnkpath.Replace(":u", m_UsersList[index].user);
-            lnkpath.Replace(":U", m_UsersList[index].user);
-            lnkpath.Replace("\\","/");
-            lnkpath.TrimRight("/");
-            fn = fn.Left(fn.GetLength()-4);
+            StringUtils::Replace(lnkpath, ":u", m_UsersList[index].user);
+            StringUtils::Replace(lnkpath, ":U", m_UsersList[index].user);
+            StringUtils::Replace(lnkpath, "\\", "/");
+            StringUtils::TrimRight(lnkpath, "/");
+            fn = fn.substr(fn.length()-4);
 
             t_directory directory;
             BOOL truematch;
@@ -1493,11 +1493,11 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
                 continue;
             if (!truematch && !directory.bDirSubdirs)
                 continue;
-            directory.dir.Replace("\\","/");
-            directory.dir.TrimRight("/");
+            StringUtils::Replace(directory.dir, "\\", "/");
+            StringUtils::TrimRight(directory.dir, "/");
         }
 
-        int len = fn.GetLength();
+        int len = fn.length();
         memcpy(pDir->buffer + pDir->len, fn.c_str(), len);
         pDir->len += len;
         pDir->buffer[pDir->len++] = '\r';
@@ -1519,7 +1519,7 @@ BOOL CPermissions::Lookup(LPCTSTR user, LPCTSTR pass, CUser &userdata, int noPas
     for (unsigned int i=0; i<m_UsersList.size(); i++)
     {
         std::string curUser=m_UsersList[i].user;
-        curUser.MakeLower();
+        StringUtils::ToLower(curUser);
         if (curUser==user)
         {
             if (noPasswordCheck || m_UsersList[i].password==hash || m_UsersList[i].password=="")
@@ -1543,7 +1543,7 @@ void CPermissions::UpdateInstances()
     {
         if (*iter!=this)
         {
-            ASSERT((*iter)->m_pPermissionsHelperWindow);
+            assert((*iter)->m_pPermissionsHelperWindow);
             ::PostMessage((*iter)->m_pPermissionsHelperWindow->GetHwnd(), WM_USER, 0, 0);
         }
     }
@@ -1552,7 +1552,7 @@ void CPermissions::UpdateInstances()
 
 void CPermissions::SetKey(CMarkupSTL *pXML, LPCTSTR name, LPCTSTR value)
 {
-    ASSERT(pXML);
+    assert(pXML);
     pXML->AddChildElem(_T("Option"), value);
     pXML->AddChildAttrib(_T("Name"), name);
 }
@@ -1564,7 +1564,7 @@ void CPermissions::SavePermissions(CMarkupSTL *pXML, const t_group &user)
     for (unsigned int i=0; i<user.permissions.size(); i++)
     {
         pXML->AddChildElem(_T("Permission"));
-        pXML->AddChildAttrib(_T("Dir"), user.permissions[i].dir);
+        pXML->AddChildAttrib(_T("Dir"), user.permissions[i].dir.c_str());
         pXML->IntoElem();
         SetKey(pXML, "FileRead", user.permissions[i].bFileRead ? "1":"0");
         SetKey(pXML, "FileWrite", user.permissions[i].bFileWrite ? "1":"0");
@@ -1762,20 +1762,20 @@ BOOL CPermissions::ParseUsersCommand(unsigned char *pData, DWORD dwDataLength)
         for (t_GroupsList::const_iterator groupiter=m_GroupsList.begin(); groupiter!=m_GroupsList.end(); groupiter++)
         {
             pXML->AddChildElem(_T("Group"));
-            pXML->AddChildAttrib(_T("Name"), groupiter->group);
+            pXML->AddChildAttrib(_T("Name"), groupiter->group.c_str());
             pXML->IntoElem();
 
             std::string str;
             str = StringUtils::Format(_T("%d"), groupiter->nLnk);
-            SetKey(pXML, "Resolve Shortcuts", str);
+            SetKey(pXML, "Resolve Shortcuts", str.c_str());
             str = StringUtils::Format(_T("%d"), groupiter->nRelative);
-            SetKey(pXML, "Relative", str);
+            SetKey(pXML, "Relative", str.c_str());
             str = StringUtils::Format(_T("%d"), groupiter->nBypassUserLimit);
-            SetKey(pXML, "Bypass server userlimit", str);
+            SetKey(pXML, "Bypass server userlimit", str.c_str());
             str = StringUtils::Format(_T("%d"), groupiter->nUserLimit);
-            SetKey(pXML, "User Limit", str);
+            SetKey(pXML, "User Limit", str.c_str());
             str = StringUtils::Format(_T("%d"), groupiter->nIpLimit);
-            SetKey(pXML, "IP Limit", str);
+            SetKey(pXML, "IP Limit", str.c_str());
 
             SavePermissions(pXML, *groupiter);
             SaveSpeedLimits(pXML, *groupiter);
@@ -1794,22 +1794,22 @@ BOOL CPermissions::ParseUsersCommand(unsigned char *pData, DWORD dwDataLength)
         for (t_UsersList::const_iterator iter=m_UsersList.begin(); iter!=m_UsersList.end(); iter++)
         {
             pXML->AddChildElem(_T("User"));
-            pXML->AddChildAttrib(_T("Name"), iter->user);
+            pXML->AddChildAttrib(_T("Name"), iter->user.c_str());
             pXML->IntoElem();
 
             std::string str;
-            SetKey(pXML, "Pass", iter->password);
-            SetKey(pXML, "Group", iter->group);
+            SetKey(pXML, "Pass", iter->password.c_str());
+            SetKey(pXML, "Group", iter->group.c_str());
             str = StringUtils::Format(_T("%d"), iter->nLnk);
-            SetKey(pXML, "Resolve Shortcuts", str);
+            SetKey(pXML, "Resolve Shortcuts", str.c_str());
             str = StringUtils::Format(_T("%d"), iter->nRelative);
-            SetKey(pXML, "Relative", str);
+            SetKey(pXML, "Relative", str.c_str());
             str = StringUtils::Format(_T("%d"), iter->nBypassUserLimit);
-            SetKey(pXML, "Bypass server userlimit", str);
+            SetKey(pXML, "Bypass server userlimit", str.c_str());
             str = StringUtils::Format(_T("%d"), iter->nUserLimit);
-            SetKey(pXML, "User Limit", str);
+            SetKey(pXML, "User Limit", str.c_str());
             str = StringUtils::Format(_T("%d"), iter->nIpLimit);
-            SetKey(pXML, "IP Limit", str);
+            SetKey(pXML, "IP Limit", str.c_str());
 
             SavePermissions(pXML, *iter);
             SaveSpeedLimits(pXML, *iter);
@@ -1851,15 +1851,15 @@ BOOL CPermissions::Init()
                         std::string name = pXML->GetChildAttrib(_T("Name"));
                         std::string value = pXML->GetChildData();
                         if (name==_T("Resolve Shortcuts"))
-                            group.nLnk = _ttoi(value);
+                          group.nLnk = _ttoi(value.c_str());
                         else if (name == _T("Relative"))
-                            group.nRelative = _ttoi(value);
+                            group.nRelative = _ttoi(value.c_str());
                         else if (name == _T("Bypass server userlimit"))
-                            group.nBypassUserLimit = _ttoi(value);
+                            group.nBypassUserLimit = _ttoi(value.c_str());
                         else if (name == _T("User Limit"))
-                            group.nUserLimit = _ttoi(value);
+                            group.nUserLimit = _ttoi(value.c_str());
                         else if (name == _T("IP Limit"))
-                            group.nIpLimit = _ttoi(value);
+                            group.nIpLimit = _ttoi(value.c_str());
 
                         if (group.nUserLimit<0 || group.nUserLimit>999999999)
                             group.nUserLimit=0;
@@ -1903,15 +1903,15 @@ BOOL CPermissions::Init()
                         if (name == _T("Pass"))
                             user.password = value;
                         else if (name==_T("Resolve Shortcuts"))
-                            user.nLnk = _ttoi(value);
+                            user.nLnk = _ttoi(value.c_str());
                         else if (name == _T("Relative"))
-                            user.nRelative = _ttoi(value);
+                            user.nRelative = _ttoi(value.c_str());
                         else if (name == _T("Bypass server userlimit"))
-                            user.nBypassUserLimit = _ttoi(value);
+                            user.nBypassUserLimit = _ttoi(value.c_str());
                         else if (name == _T("User Limit"))
-                            user.nUserLimit = _ttoi(value);
+                            user.nUserLimit = _ttoi(value.c_str());
                         else if (name == _T("IP Limit"))
-                            user.nIpLimit = _ttoi(value);
+                            user.nIpLimit = _ttoi(value.c_str());
                         else if (name == _T("Group"))
                             user.group = value;
 
@@ -2069,18 +2069,18 @@ void CPermissions::AutoCreateDirs(const char *username)
         if (permissioniter->bAutoCreate)
         {
             std::string dir = permissioniter->dir;
-            dir.Replace(":u", user.user);
-            dir.Replace(":U", user.user);
-            CreateDirectory(dir, NULL);
+            StringUtils::Replace(dir, ":u", user.user);
+            StringUtils::Replace(dir, ":U", user.user);
+            CreateDirectory(dir.c_str(), NULL);
         }
     if (user.pOwner)
         for (std::vector<t_directory>::iterator permissioniter = user.pOwner->permissions.begin(); permissioniter!=user.pOwner->permissions.end(); permissioniter++)
             if (permissioniter->bAutoCreate)
             {
                 std::string dir = permissioniter->dir;
-                dir.Replace(":u", user.user);
-                dir.Replace(":U", user.user);
-                CreateDirectory(dir, NULL);
+                StringUtils::Replace(dir, ":u", user.user);
+                StringUtils::Replace(dir, ":U", user.user);
+                CreateDirectory(dir.c_str(), NULL);
             }
 
 }
@@ -2095,29 +2095,29 @@ void CPermissions::ReadSpeedLimits(CMarkupSTL *pXML, t_group &group)
         int n;
 
         str = pXML->GetChildAttrib("DlType");
-        n = _ttoi(str);
+        n = _ttoi(str.c_str());
         if (n >= 0 && n < 4)
             group.nDownloadSpeedLimitType = n;
         str = pXML->GetChildAttrib("DlLimit");
-        n = _ttoi(str);
+        n = _ttoi(str.c_str());
         if (n > 0 && n < 65536)
             group.nDownloadSpeedLimit = n;
         str = pXML->GetChildAttrib("UlType");
-        n = _ttoi(str);
+        n = _ttoi(str.c_str());
         if (n >= 0 && n < 4)
             group.nUploadSpeedLimitType = n;
         str = pXML->GetChildAttrib("UlLimit");
-        n = _ttoi(str);
+        n = _ttoi(str.c_str());
         if (n > 0 && n < 65536)
             group.nUploadSpeedLimit = n;
 
         str = pXML->GetChildAttrib("ServerDlLimitBypass");
-        n = _ttoi(str);
+        n = _ttoi(str.c_str());
         if (n >= 0 && n < 4)
             group.nBypassServerDownloadSpeedLimit = n;
 
         str = pXML->GetChildAttrib("ServerUlLimitBypass");
-        n = _ttoi(str);
+        n = _ttoi(str.c_str());
         if (n >= 0 && n < 4)
             group.nBypassServerUploadSpeedLimit = n;
 
@@ -2131,7 +2131,7 @@ void CPermissions::ReadSpeedLimits(CMarkupSTL *pXML, t_group &group)
             {
                 CSpeedLimit limit;
                 str = pXML->GetChildAttrib("Speed");
-                n = _ttoi(str);
+                n = _ttoi(str.c_str());
                 if (n < 0 || n > 65535)
                     n = 10;
                 limit.m_Speed = n;
@@ -2142,7 +2142,7 @@ void CPermissions::ReadSpeedLimits(CMarkupSTL *pXML, t_group &group)
                 {
                     str = pXML->GetChildData();
                     if (str != "")
-                        n = _ttoi(str);
+                        n = _ttoi(str.c_str());
                     else
                         n = 0x7F;
                     limit.m_Day = n & 0x7F;
@@ -2154,17 +2154,17 @@ void CPermissions::ReadSpeedLimits(CMarkupSTL *pXML, t_group &group)
                 {
                     limit.m_DateCheck = TRUE;
                     str = pXML->GetChildAttrib("Year");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1900 || n > 3000)
                         n = 2003;
                     limit.m_Date.y = n;
                     str = pXML->GetChildAttrib("Month");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1 || n > 12)
                         n = 1;
                     limit.m_Date.m = n;
                     str = pXML->GetChildAttrib("Day");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1 || n > 31)
                         n = 1;
                     limit.m_Date.d = n;
@@ -2176,17 +2176,17 @@ void CPermissions::ReadSpeedLimits(CMarkupSTL *pXML, t_group &group)
                 {
                     limit.m_FromCheck = TRUE;
                     str = pXML->GetChildAttrib("Hour");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 23)
                         n = 0;
                     limit.m_FromTime.h = n;
                     str = pXML->GetChildAttrib("Minute");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_FromTime.m = n;
                     str = pXML->GetChildAttrib("Second");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_FromTime.s = n;
@@ -2198,17 +2198,17 @@ void CPermissions::ReadSpeedLimits(CMarkupSTL *pXML, t_group &group)
                 {
                     limit.m_ToCheck = TRUE;
                     str = pXML->GetChildAttrib("Hour");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 23)
                         n = 0;
                     limit.m_ToTime.h = n;
                     str = pXML->GetChildAttrib("Minute");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_ToTime.m = n;
                     str = pXML->GetChildAttrib("Second");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_ToTime.s = n;
@@ -2231,7 +2231,7 @@ void CPermissions::ReadSpeedLimits(CMarkupSTL *pXML, t_group &group)
             {
                 CSpeedLimit limit;
                 str = pXML->GetChildAttrib("Speed");
-                n = _ttoi(str);
+                n = _ttoi(str.c_str());
                 if (n < 0 || n > 65535)
                     n = 10;
                 limit.m_Speed = n;
@@ -2242,7 +2242,7 @@ void CPermissions::ReadSpeedLimits(CMarkupSTL *pXML, t_group &group)
                 {
                     str = pXML->GetChildData();
                     if (str != "")
-                        n = _ttoi(str);
+                        n = _ttoi(str.c_str());
                     else
                         n = 0x7F;
                     limit.m_Day = n & 0x7F;
@@ -2254,17 +2254,17 @@ void CPermissions::ReadSpeedLimits(CMarkupSTL *pXML, t_group &group)
                 {
                     limit.m_DateCheck = TRUE;
                     str = pXML->GetChildAttrib("Year");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1900 || n > 3000)
                         n = 2003;
                     limit.m_Date.y = n;
                     str = pXML->GetChildAttrib("Month");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1 || n > 12)
                         n = 1;
                     limit.m_Date.m = n;
                     str = pXML->GetChildAttrib("Day");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1 || n > 31)
                         n = 1;
                     limit.m_Date.d = n;
@@ -2276,17 +2276,17 @@ void CPermissions::ReadSpeedLimits(CMarkupSTL *pXML, t_group &group)
                 {
                     limit.m_FromCheck = TRUE;
                     str = pXML->GetChildAttrib("Hour");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 23)
                         n = 0;
                     limit.m_FromTime.h = n;
                     str = pXML->GetChildAttrib("Minute");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_FromTime.m = n;
                     str = pXML->GetChildAttrib("Second");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_FromTime.s = n;
@@ -2298,17 +2298,17 @@ void CPermissions::ReadSpeedLimits(CMarkupSTL *pXML, t_group &group)
                 {
                     limit.m_ToCheck = TRUE;
                     str = pXML->GetChildAttrib("Hour");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 23)
                         n = 0;
                     limit.m_ToTime.h = n;
                     str = pXML->GetChildAttrib("Minute");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_ToTime.m = n;
                     str = pXML->GetChildAttrib("Second");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_ToTime.s = n;
@@ -2356,7 +2356,7 @@ void CPermissions::SaveSpeedLimits(CMarkupSTL *pXML, const t_group &group)
         pXML->IntoElem();
 
         str = StringUtils::Format("%d", limit.m_Day);
-        pXML->AddChildElem(_T("Days"), str);
+        pXML->AddChildElem(_T("Days"), str.c_str());
 
         if (limit.m_DateCheck)
         {
@@ -2398,7 +2398,7 @@ void CPermissions::SaveSpeedLimits(CMarkupSTL *pXML, const t_group &group)
         pXML->IntoElem();
 
         str = StringUtils::Format("%d", limit.m_Day);
-        pXML->AddChildElem(_T("Days"), str);
+        pXML->AddChildElem(_T("Days"), str.c_str());
 
         if (limit.m_DateCheck)
         {
@@ -2457,15 +2457,15 @@ void CPermissions::ReloadConfig()
                     std::string name = pXML->GetChildAttrib(_T("Name"));
                     std::string value = pXML->GetChildData();
                     if (name==_T("Resolve Shortcuts"))
-                        group.nLnk = _ttoi(value);
+                        group.nLnk = _ttoi(value.c_str());
                     else if (name == _T("Relative"))
-                        group.nRelative = _ttoi(value);
+                        group.nRelative = _ttoi(value.c_str());
                     else if (name == _T("Bypass server userlimit"))
-                        group.nBypassUserLimit = _ttoi(value);
+                        group.nBypassUserLimit = _ttoi(value.c_str());
                     else if (name == _T("User Limit"))
-                        group.nUserLimit = _ttoi(value);
+                        group.nUserLimit = _ttoi(value.c_str());
                     else if (name == _T("IP Limit"))
-                        group.nIpLimit = _ttoi(value);
+                        group.nIpLimit = _ttoi(value.c_str());
 
                     if (group.nUserLimit<0 || group.nUserLimit>999999999)
                         group.nUserLimit=0;
@@ -2509,15 +2509,15 @@ void CPermissions::ReloadConfig()
                     if (name == _T("Pass"))
                         user.password = value;
                     else if (name==_T("Resolve Shortcuts"))
-                        user.nLnk = _ttoi(value);
+                        user.nLnk = _ttoi(value.c_str());
                     else if (name == _T("Relative"))
-                        user.nRelative = _ttoi(value);
+                        user.nRelative = _ttoi(value.c_str());
                     else if (name == _T("Bypass server userlimit"))
-                        user.nBypassUserLimit = _ttoi(value);
+                        user.nBypassUserLimit = _ttoi(value.c_str());
                     else if (name == _T("User Limit"))
-                        user.nUserLimit = _ttoi(value);
+                        user.nUserLimit = _ttoi(value.c_str());
                     else if (name == _T("IP Limit"))
-                        user.nIpLimit = _ttoi(value);
+                        user.nIpLimit = _ttoi(value.c_str());
                     else if (name == _T("Group"))
                         user.group = value;
 

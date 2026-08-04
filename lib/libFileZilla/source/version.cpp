@@ -34,6 +34,8 @@
 #include "stdafx.h"
 #include "version.h"
 
+#include "utils/StringUtils.h"
+
 
 #define XBFILEZILLA_VERSION "1.5.6"
 #define FILEZILLA_VERSION "0.8.8"

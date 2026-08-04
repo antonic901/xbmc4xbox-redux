@@ -31,6 +31,7 @@
 #include "Permissions.h"
 #include "FileLogger.h"
 #include "version.h"
+#include "utils/StringUtils.h"
 #include "utils/log.h"
 
 #if defined(_XBOX)
@@ -131,7 +132,7 @@ bool CServer::Create()
         }
     }
 
-    m_pFileLogger->Log(GetVersionString() + " started");
+    m_pFileLogger->Log((GetVersionString() + " started").c_str());
     m_pFileLogger->Log("Initializing Server.");
 
     m_pListenSocket = new CListenSocket(this);
@@ -141,23 +142,23 @@ bool CServer::Create()
     int nPort = (int)m_pOptions->GetOptionVal(OPTION_SERVERPORT);
     std::string str;
     str = StringUtils::Format("Creating listen socket on port %d...", nPort);
-    ShowStatus(str, 0);
+    ShowStatus(str.c_str(), 0);
     if (!m_pListenSocket->Create(nPort, SOCK_STREAM, FD_ACCEPT, 0) || !m_pListenSocket->Listen())
     {
         str = StringUtils::Format("Failed to create listen socket on port %d. Server is not online!", nPort);
-        ShowStatus(str, 1);
+        ShowStatus(str.c_str(), 1);
         delete m_pListenSocket;
         m_pListenSocket = NULL;
     }
     else
     {
         str = "Server online.";
-        ShowStatus(str, 0);
+        ShowStatus(str.c_str(), 0);
         m_nServerState = 1;
     }
 
     m_nTimerID = SetTimer(m_hWnd, 1234, 10000, NULL);
-    ASSERT(m_nTimerID);
+    assert(m_nTimerID);
 
     CreateAdminListenSocket();
 
@@ -182,7 +183,7 @@ LRESULT CALLBACK CServer::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPA
         return pServer->OnServerMessage(wParam, lParam);
     else if (hWnd && message == WM_DESTROY)
     {
-        ASSERT( hWnd == pServer->m_hWnd);
+        assert( hWnd == pServer->m_hWnd);
         HANDLE *handle=new HANDLE[pServer->m_ThreadArray.size()];
         unsigned int i=0;
         for (std::list<CServerThread *>::iterator iter=pServer->m_ThreadArray.begin(); iter!=pServer->m_ThreadArray.end(); iter++, i++)
@@ -232,8 +233,8 @@ LRESULT CServer::OnServerMessage(WPARAM wParam, LPARAM lParam)
         SystemTimeToFileTime(&msg->time, &fFileTime);
         _int64 time = ((_int64)fFileTime.dwHighDateTime<<32) + fFileTime.dwLowDateTime;
 
-        str = StringUtils::Format("(%06d)- %s (%s)> %s", msg->userid, (LPCTSTR)msg->user.c_str(), (LPCTSTR)msg->ip.c_str(), (LPCTSTR)msg->status.c_str());
-        ShowStatus(time, str, msg->type);
+        str = StringUtils::Format("(%06d)- %s (%s)> %s", msg->userid, (LPCTSTR)msg->user, (LPCTSTR)msg->ip, (LPCTSTR)msg->status);
+        ShowStatus(time, str.c_str(), msg->type);
         delete [] msg->user;
         delete [] msg->status;
         delete msg;
@@ -250,7 +251,7 @@ LRESULT CServer::OnServerMessage(WPARAM wParam, LPARAM lParam)
                 m_UsersList.erase(iter);
         }
         USES_CONVERSION;
-        int userlen = pConnOp->data->user ? strlen(pConnOp->data->user) : 0;
+        int userlen = !pConnOp->data->user.empty() ? strlen(pConnOp->data->user.c_str()) : 0;
         int len = 2 + 4 + strlen(pConnOp->data->ip)+2 + 4 + userlen+2;
         unsigned char *buffer = new unsigned char[len];
         buffer[0] = USERCONTROL_CONNOP;
@@ -262,8 +263,8 @@ LRESULT CServer::OnServerMessage(WPARAM wParam, LPARAM lParam)
         memcpy(buffer + 2 + 4 +2 + strlen(pConnOp->data->ip)+2, &pConnOp->data->port, 4);
         buffer[2 + 4 + strlen(pConnOp->data->ip)+2 + 4]= userlen/256;
         buffer[2 + 4 + strlen(pConnOp->data->ip)+2 + 4 + 1]= userlen%256;
-        if (pConnOp->data->user)
-            memcpy(buffer + 2 + 4 + strlen(pConnOp->data->ip)+2 + 4 + 2, T2CA(pConnOp->data->user), userlen);
+        if (!pConnOp->data->user.empty())
+            memcpy(buffer + 2 + 4 + strlen(pConnOp->data->ip)+2 + 4 + 2, T2CA(pConnOp->data->user.c_str()), userlen);
         m_pAdminInterface->SendCommand(2, 3, buffer, len);
         delete [] buffer;
         delete pConnOp->data;
@@ -367,7 +368,7 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
             int len = 3;
             std::map<int, t_connectiondata>::iterator iter;
             for (iter=m_UsersList.begin(); iter!=m_UsersList.end(); iter++)
-                len += 4 + strlen(iter->second.ip)+2 + 4 + strlen(iter->second.user)+2;
+                len += 4 + strlen(iter->second.ip)+2 + 4 + strlen(iter->second.user.c_str())+2;
             unsigned char *buffer = new unsigned char[len];
             buffer[0] = USERCONTROL_GETLIST;
             buffer[1] = m_UsersList.size() / 256;
@@ -386,12 +387,12 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
                 memcpy(p, &iter->second.port, 4);
                 p+=4;
 
-                if (iter->second.user)
+                if (!iter->second.user.empty())
                 {
-                    *p++ = strlen(iter->second.user) / 256;
-                    *p++ = strlen(iter->second.user) % 256;
-                    memcpy(p, T2CA(iter->second.user), strlen(T2CA(iter->second.user)));
-                    p+=strlen(T2CA(iter->second.user));
+                    *p++ = strlen(iter->second.user.c_str()) / 256;
+                    *p++ = strlen(iter->second.user.c_str()) % 256;
+                    memcpy(p, T2CA(iter->second.user.c_str()), strlen(T2CA(iter->second.user.c_str())));
+                    p+=strlen(T2CA(iter->second.user.c_str()));
                 }
                 else
                 {
@@ -488,13 +489,13 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
                     }
                     std::string str;
                     str = StringUtils::Format("Number of threads increased to %d.", threadnum);
-                    ShowStatus(str, 0);
+                    ShowStatus(str.c_str(), 0);
                 }
                 else if (threadnum<m_ThreadArray.size())
                 {
                     std::string str;
                     str = StringUtils::Format("Decreasing number of threads to %d.", threadnum);
-                    ShowStatus(str, 0);
+                    ShowStatus(str.c_str(), 0);
                     unsigned int i=0;
                     for (std::list<CServerThread *>::iterator iter=m_ThreadArray.begin(); iter!=m_ThreadArray.end(); iter++,i++)
                         if (i>=threadnum)
@@ -506,16 +507,16 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
                     {
                         std::string str;
                         str = StringUtils::Format("Closing listen socket on port %d", nListenPort);
-                        ShowStatus(str, 0);
+                        ShowStatus(str.c_str(), 0);
                         m_pListenSocket->Close();
                         str = StringUtils::Format("Creating listen socket on port %I64d...", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
-                        ShowStatus(str, 0);
+                        ShowStatus(str.c_str(), 0);
                         if (!m_pListenSocket->Create((int)m_pOptions->GetOptionVal(OPTION_SERVERPORT), SOCK_STREAM,FD_ACCEPT,0) || !m_pListenSocket->Listen())
                         {
                             delete m_pListenSocket;
                             m_pListenSocket = NULL;
                             str = StringUtils::Format("Failed to create listen socket on port %I64d. Server is not online!", m_pOptions->GetOptionVal(OPTION_SERVERPORT));
-                            ShowStatus(str,1);
+                            ShowStatus(str.c_str(),1);
                             m_nServerState = 0;
                         }
                         else
@@ -540,7 +541,7 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
                         std::string str;
                         str = StringUtils::Format(_T("Failed to change admin listen port to %I64d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
                         m_pOptions->SetOption(OPTION_ADMINPORT, nAdminListenPort);
-                        ShowStatus(str, 1);
+                        ShowStatus(str.c_str(), 1);
                     }
                     else
                     {
@@ -557,7 +558,7 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
                         {
                             std::string str;
                             str = StringUtils::Format(_T("Admin listen port changed to %I64d."), m_pOptions->GetOptionVal(OPTION_ADMINPORT));
-                            ShowStatus(str, 0);
+                            ShowStatus(str.c_str(), 0);
                         }
 
                         if (m_pOptions->GetOption(OPTION_ADMINIPBINDINGS) != "*")
@@ -570,13 +571,13 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
                                 ipBindings += " ";
                             while (ipBindings != "")
                             {
-                                int pos = ipBindings.Find(" ");
+                                int pos = ipBindings.find(" ");
                                 if (pos == -1)
                                     break;
-                                std::string ip = ipBindings.Left(pos);
-                                ipBindings = ipBindings.Mid(pos+1);
+                                std::string ip = ipBindings.substr(0, pos);
+                                ipBindings = ipBindings.substr(pos+1);
                                 CAdminListenSocket *pAdminListenSocket = new CAdminListenSocket(m_pAdminInterface);
-                                if (!pAdminListenSocket->Create((int)m_pOptions->GetOptionVal(OPTION_ADMINPORT), SOCK_STREAM, FD_ACCEPT, ip) || !pAdminListenSocket->Listen())
+                                if (!pAdminListenSocket->Create((int)m_pOptions->GetOptionVal(OPTION_ADMINPORT), SOCK_STREAM, FD_ACCEPT, ip.c_str()) || !pAdminListenSocket->Listen())
                                 {
                                     bError = TRUE;
                                     str += _T(" ") + ip;
@@ -586,7 +587,7 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
                                     m_AdminListenSocketList.push_back(pAdminListenSocket);
                             }
                             if (bError)
-                                ShowStatus(str, 1);
+                                ShowStatus(str.c_str(), 1);
                         }
                         if (adminIpBindings!=m_pOptions->GetOption(OPTION_ADMINIPBINDINGS))
                             ShowStatus(_T("Admin interface IP bindings changed"), 0);
@@ -632,7 +633,7 @@ BOOL CServer::ProcessCommand(CAdminSocket *pAdminSocket, int nID, unsigned char 
         {
             std::string str;
             str = StringUtils::Format("\001Protocol error: Unknown command (%d).", nID);
-            pAdminSocket->SendCommand(1, 1, str.c_str(), str.GetLength());
+            pAdminSocket->SendCommand(1, 1, str.c_str(), str.length());
         }
         break;
     }
@@ -691,13 +692,13 @@ BOOL CServer::ToggleActive(int nServerState)
             int nPort = (m_pOptions ? (int)m_pOptions->GetOptionVal(OPTION_SERVERPORT) : 21);
             std::string str;
             str = StringUtils::Format("Creating listen socket on port %d...", nPort);
-            ShowStatus(str, 0);
+            ShowStatus(str.c_str(), 0);
             if (!m_pListenSocket->Create(nPort, SOCK_STREAM, FD_ACCEPT, 0) || !m_pListenSocket->Listen())
             {
                 delete m_pListenSocket;
                 m_pListenSocket = NULL;
                 str = StringUtils::Format("Failed to create listen socket on port %d. Server is not online!", nPort);
-                ShowStatus(str, 1);
+                ShowStatus(str.c_str(), 1);
             }
             else
             {
@@ -803,12 +804,12 @@ void CServer::ShowStatus(_int64 eventDate, LPCTSTR msg, int nType)
         text2+=" ";
         text2+=text;
         std::string str = msg;
-        int pos=str.Find("-");
+        int pos=str.find("-");
         if (pos!=-1)
         {
-            str.Insert(pos, text2 + " ");
+            str.insert(pos, text2 + " ");
         }
-        m_pFileLogger->Log(str);
+        m_pFileLogger->Log(str.c_str());
     }
 }
 
@@ -852,7 +853,7 @@ BOOL CServer::CreateAdminListenSocket()
                 str = StringUtils::Format(_T("Failed to create listen socket for admin interface on port %d, the admin interface has been disabled."), nAdminPort);
             }
         }
-        MessageBox(0, str, _T("FileZilla Server Error"), MB_ICONEXCLAMATION | MB_SERVICE_NOTIFICATION);
+        MessageBox(0, str.c_str(), _T("FileZilla Server Error"), MB_ICONEXCLAMATION | MB_SERVICE_NOTIFICATION);
     }
     if (pAdminListenSocket)
     {
@@ -868,13 +869,13 @@ BOOL CServer::CreateAdminListenSocket()
             ipBindings += " ";
         while (ipBindings != "")
         {
-            int pos = ipBindings.Find(" ");
+            int pos = ipBindings.find(" ");
             if (pos == -1)
                 break;
-            std::string ip = ipBindings.Left(pos);
-            ipBindings = ipBindings.Mid(pos+1);
+            std::string ip = ipBindings.substr(0, pos);
+            ipBindings = ipBindings.substr(pos+1);
             CAdminListenSocket *pAdminListenSocket = new CAdminListenSocket(m_pAdminInterface);
-            if (!pAdminListenSocket->Create(nAdminPort, SOCK_STREAM, FD_ACCEPT, ip) || !pAdminListenSocket->Listen())
+            if (!pAdminListenSocket->Create(nAdminPort, SOCK_STREAM, FD_ACCEPT, ip.c_str()) || !pAdminListenSocket->Listen())
             {
                 delete pAdminListenSocket;
                 bError = TRUE;
@@ -884,7 +885,7 @@ BOOL CServer::CreateAdminListenSocket()
                 m_AdminListenSocketList.push_back(pAdminListenSocket);
         }
         if (bError)
-            MessageBox(0, str, _T("FileZilla Server Error"), MB_ICONEXCLAMATION | MB_SERVICE_NOTIFICATION);
+            MessageBox(0, str.c_str(), _T("FileZilla Server Error"), MB_ICONEXCLAMATION | MB_SERVICE_NOTIFICATION);
     }
     return !m_AdminListenSocketList.empty();
 }

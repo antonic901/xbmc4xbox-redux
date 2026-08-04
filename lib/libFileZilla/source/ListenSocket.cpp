@@ -24,6 +24,8 @@
 #include "ServerThread.h"
 #include "Server.h"
 
+#include "utils/StringUtils.h"
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
@@ -34,7 +36,7 @@ static char THIS_FILE[] = __FILE__;
 
 CListenSocket::CListenSocket(CServer *pServer)
 {
-    ASSERT(pServer);
+    assert(pServer);
     m_pServer = pServer;
 
     m_bLocked = FALSE;
@@ -63,7 +65,7 @@ void CListenSocket::OnAccept(int nErrorCode)
     if (m_bLocked)
     {
         std::string str = "421 Server is locked, please try again later.\r\n";
-        socket.Send(str, str.GetLength());
+        socket.Send(str.c_str(), str.length());
         return;
     }
 
@@ -104,5 +106,5 @@ void CListenSocket::OnAccept(int nErrorCode)
 
 void CListenSocket::SendStatus(std::string status, int type)
 {
-    m_pServer->ShowStatus(status, type);
+    m_pServer->ShowStatus(status.c_str(), type);
 }

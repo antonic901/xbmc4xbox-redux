@@ -46,7 +46,7 @@ static char THIS_FILE[] = __FILE__;
 // CTransferSocket
 CTransferSocket::CTransferSocket(CControlSocket *pOwner)
 {
-    ASSERT(pOwner);
+    assert(pOwner);
     m_pOwner = pOwner;
     m_status = 0;
     m_nMode = TRANSFERMODE_NOTSET;
@@ -74,8 +74,8 @@ CTransferSocket::CTransferSocket(CControlSocket *pOwner)
 
 void CTransferSocket::Init(t_dirlisting *pDir, int nMode)
 {
-    ASSERT(nMode==TRANSFERMODE_LIST || nMode==TRANSFERMODE_NLST);
-    ASSERT(pDir);
+    assert(nMode==TRANSFERMODE_LIST || nMode==TRANSFERMODE_NLST);
+    assert(pDir);
     m_bReady = TRUE;
     m_status = 0;
     if (m_pBuffer)
@@ -96,7 +96,7 @@ void CTransferSocket::Init(t_dirlisting *pDir, int nMode)
 
 void CTransferSocket::Init(std::string filename, int nMode, _int64 rest, BOOL bBinary /*=TRUE*/)
 {
-    ASSERT(nMode==TRANSFERMODE_SEND || nMode==TRANSFERMODE_RECEIVE);
+    assert(nMode==TRANSFERMODE_SEND || nMode==TRANSFERMODE_RECEIVE);
     m_bReady=TRUE;
     m_Filename=filename;
     m_nRest=rest;
@@ -206,7 +206,7 @@ void CTransferSocket::OnSend(int nErrorCode)
             else
                 m_nBufferPos += numsend;
 
-            ASSERT(m_nBufferPos <= m_pDirListing->len);
+            assert(m_nBufferPos <= m_pDirListing->len);
 
             if (m_nBufferPos == m_pDirListing->len)
             {
@@ -497,7 +497,7 @@ void CTransferSocket::OnReceive(int nErrorCode)
 
         if (m_hFile == INVALID_HANDLE_VALUE)
         {
-            ASSERT(m_Filename!="");
+            assert(m_Filename!="");
 #if defined(_XBOX)
       // this to handle fat-x limitations
       if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("services.ftpautofatx"))
@@ -519,9 +519,9 @@ void CTransferSocket::OnReceive(int nErrorCode)
         m_Filename = strPath+"\\"+strFilename;*/
         CUtil::GetFatXQualifiedPath(m_Filename);
       }
-            m_hFile = CreateFile(m_Filename, GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, 0);
+            m_hFile = CreateFile(m_Filename.c_str(), GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, 0);
 #else
-            m_hFile = CreateFile(m_Filename, GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS, 0, 0);
+            m_hFile = CreateFile(m_Filename.c_str(), GENERIC_WRITE, FILE_SHARE_READ, 0, OPEN_ALWAYS, 0, 0);
 #endif
 
             if (m_hFile == INVALID_HANDLE_VALUE)
@@ -733,8 +733,8 @@ BOOL CTransferSocket::InitTransfer(BOOL bCalledFromSend)
 
             if (!m_pOwner->m_pOwner->m_pOptions->GetOptionVal(OPTION_NOINFXPSTRICT))
             {
-                OwnerIP.Left(OwnerIP.ReverseFind('.'));
-                TransferIP.Left(OwnerIP.ReverseFind('.'));
+                OwnerIP.substr(0, OwnerIP.rfind('.'));
+                TransferIP.substr(0, OwnerIP.rfind('.'));
             }
             if (OwnerIP != TransferIP && OwnerIP != "127.0.0.1" && TransferIP != "127.0.0.1")
             {
@@ -767,8 +767,8 @@ BOOL CTransferSocket::InitTransfer(BOOL bCalledFromSend)
 
             if (!m_pOwner->m_pOwner->m_pOptions->GetOptionVal(OPTION_NOOUTFXPSTRICT))
             {
-                OwnerIP.Left(OwnerIP.ReverseFind('.'));
-                TransferIP.Left(OwnerIP.ReverseFind('.'));
+                OwnerIP.substr(0, OwnerIP.rfind('.'));
+                TransferIP.substr(0, OwnerIP.rfind('.'));
             }
             if (OwnerIP != TransferIP && OwnerIP != "127.0.0.1" && TransferIP != "127.0.0.1")
             {
@@ -786,7 +786,7 @@ BOOL CTransferSocket::InitTransfer(BOOL bCalledFromSend)
         std::string str="150 Connection accepted";
         if (m_nRest)
             str = StringUtils::Format("150 Connection accepted, restarting at offset %I64d",m_nRest);
-        m_pOwner->Send(str);
+        m_pOwner->Send(str.c_str());
     }
 
     m_bStarted=TRUE;
@@ -805,14 +805,14 @@ BOOL CTransferSocket::InitTransfer(BOOL bCalledFromSend)
             Close();
             return FALSE;
         }
-        ASSERT(m_Filename!="");
-        m_hFile = CreateFile(m_Filename, GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
+        assert(m_Filename!="");
+        m_hFile = CreateFile(m_Filename.c_str(), GENERIC_READ, FILE_SHARE_READ|FILE_SHARE_WRITE, 0, OPEN_EXISTING, 0, 0);
 #else
         if (m_pBuffer)
             delete [] m_pBuffer;
         m_pBuffer=new char[m_nBufSize];
         ASSERT(m_Filename!="");
-        m_hFile = CreateFile(m_Filename, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
+        m_hFile = CreateFile(m_Filename.c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
 #endif
         if (m_hFile == INVALID_HANDLE_VALUE)
         {

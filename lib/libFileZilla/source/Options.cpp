@@ -24,6 +24,8 @@
 #include "version.h"
 #include "misc\MarkupSTL.h"
 
+#include "utils/StringUtils.h"
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
@@ -59,7 +61,7 @@ class COptionsHelperWindow
 public:
     COptionsHelperWindow(COptions *pOptions)
     {
-        ASSERT(pOptions);
+        assert(pOptions);
         m_pOptions=pOptions;
 
         //Create window
@@ -80,7 +82,7 @@ public:
         RegisterClassEx(&wndclass);
 
         m_hWnd=CreateWindow(_T("COptions Helper Window"), _T("COptions Helper Window"), 0, 0, 0, 0, 0, 0, 0, 0, GetModuleHandle(0));
-        ASSERT(m_hWnd);
+        assert(m_hWnd);
         SetWindowLong(m_hWnd, GWL_USERDATA, (LONG)this);
     };
 
@@ -107,8 +109,8 @@ protected:
             COptionsHelperWindow *pWnd=(COptionsHelperWindow *)GetWindowLong(hWnd, GWL_USERDATA);
             if (!pWnd)
                 return 0;
-            ASSERT(pWnd);
-            ASSERT(pWnd->m_pOptions);
+            assert(pWnd);
+            assert(pWnd->m_pOptions);
             for (int i=0;i<OPTIONS_NUM;i++)
                 pWnd->m_pOptions->m_OptionsCache[i].bCached=FALSE;
             COptions::m_Sync.Lock();
@@ -149,7 +151,7 @@ COptions::~COptions()
         if (*iter==this)
             break;
 
-    ASSERT(iter!=m_InstanceList.end());
+    assert(iter!=m_InstanceList.end());
     m_InstanceList.erase(iter);
     m_Sync.Unlock();
 
@@ -262,18 +264,18 @@ void COptions::SetOption(int nOptionID, _int64 value)
     while (res)
     {
         std::string name=xml.GetChildAttrib( _T("name"));
-        if (!_tcscmp(name, m_Options[nOptionID-1].name))
+        if (!_tcscmp(name.c_str(), m_Options[nOptionID-1].name))
         {
             xml.SetChildAttrib(_T("name"), m_Options[nOptionID-1].name);
             xml.SetChildAttrib(_T("type"), _T("numeric"));
-            xml.SetChildData(valuestr);
+            xml.SetChildData(valuestr.c_str());
             break;
         }
         res=xml.FindChildElem();
     }
     if (!res)
     {
-        xml.InsertChildElem(_T("Item"), valuestr);
+        xml.InsertChildElem(_T("Item"), valuestr.c_str());
         xml.SetChildAttrib(_T("name"), m_Options[nOptionID-1].name);
         xml.SetChildAttrib(_T("type"), _T("numeric"));
     }
@@ -291,32 +293,32 @@ void COptions::SetOption(int nOptionID, LPCTSTR value)
         {
             std::vector<std::string> msgLines;
             int oldpos=0;
-            str.Replace("\r\n", "\n");
-            int pos=str.Find("\n");
+            StringUtils::Replace(str, "\r\n", "\n");
+            int pos=str.find("\n");
             std::string line;
             while (pos!=-1)
             {
                 if (pos)
                 {
-                    line = str.Mid(oldpos, pos-oldpos);
-                    line = line.Left(70);
-                    line.TrimRight(" ");
+                    line = str.substr(oldpos, pos-oldpos);
+                    line = line.substr(0, 70);
+                    StringUtils::TrimRight(line, " ");
                     if (msgLines.size() || line!="")
                         msgLines.push_back(line);
                 }
                 oldpos=pos+1;
-                pos=str.Find("\n", oldpos);
+                pos=str.find("\n", oldpos);
             }
-            line=str.Mid(oldpos);
+            line=str.substr(oldpos);
             if (line!="")
             {
-                line=line.Left(70);
+                line=line.substr(0, 70);
                 msgLines.push_back(line);
             }
             str="";
             for (unsigned int i=0;i<msgLines.size();i++)
                 str+=msgLines[i]+"\r\n";
-            str.TrimRight("\r\n");
+            StringUtils::TrimRight(str, "\r\n");
             if (str=="")
             {
 #if defined(_XBOX)
@@ -352,7 +354,7 @@ void COptions::SetOption(int nOptionID, LPCTSTR value)
                         memset(&sockAddr,0,sizeof(sockAddr));
 
                         sockAddr.sin_family = AF_INET;
-                        sockAddr.sin_addr.s_addr = inet_addr(sub);
+                        sockAddr.sin_addr.s_addr = inet_addr(sub.c_str());
 
                         if (sockAddr.sin_addr.s_addr != INADDR_NONE)
                         {
@@ -377,7 +379,7 @@ void COptions::SetOption(int nOptionID, LPCTSTR value)
                 memset(&sockAddr,0,sizeof(sockAddr));
 
                 sockAddr.sin_family = AF_INET;
-                sockAddr.sin_addr.s_addr = inet_addr(sub);
+                sockAddr.sin_addr.s_addr = inet_addr(sub.c_str());
 
                 if (sockAddr.sin_addr.s_addr != INADDR_NONE)
                 {
@@ -396,7 +398,7 @@ void COptions::SetOption(int nOptionID, LPCTSTR value)
                 if (*iter != "127.0.0.1")
                     str += *iter + " ";
 
-            str.TrimRight(" ");
+            StringUtils::TrimRight(str, " ");
         }
         break;
     case OPTION_ADMINIPADDRESSES:
@@ -411,21 +413,21 @@ void COptions::SetOption(int nOptionID, LPCTSTR value)
                 {
                     if (sub!="" && dotCount==3)
                     {
-                        while (sub.Replace("**", "*"));
+                        while (StringUtils::Replace(sub, "**", "*"));
                         BOOL bError = FALSE;
                         std::string ip;
                         for (int j=0; j<3; j++)
                         {
-                            int pos = sub.Find(".");
+                            int pos = sub.find(".");
                             if (pos<1 || pos>3)
                             {
                                 bError = TRUE;
                                 break;
                             }
-                            ip += sub.Left(pos) + ".";
-                            sub = sub.Mid(pos + 1);
+                            ip += sub.substr(0, pos) + ".";
+                            sub = sub.substr(pos + 1);
                         }
-                        if (!bError && sub.GetLength() != 0)
+                        if (!bError && sub.length() != 0)
                         {
                             ip += sub;
                             ipList.push_back(ip);
@@ -443,21 +445,21 @@ void COptions::SetOption(int nOptionID, LPCTSTR value)
             }
             if (sub!="" && dotCount==3)
             {
-                while (sub.Replace("**", "*"));
+                while (StringUtils::Replace(sub, "**", "*"));
                 BOOL bError = FALSE;
                 std::string ip;
                 for (int j=0; j<3; j++)
                 {
-                    int pos = sub.Find(".");
+                    int pos = sub.find(".");
                     if (pos<1 || pos>3)
                     {
                         bError = TRUE;
                         break;
                     }
-                    ip += sub.Left(pos) + ".";
-                    sub = sub.Mid(pos + 1);
+                    ip += sub.substr(0, pos) + ".";
+                    sub = sub.substr(pos + 1);
                 }
-                if (!bError && sub.GetLength() != 0)
+                if (!bError && sub.length() != 0)
                 {
                     ip += sub;
                     ipList.push_back(ip);
@@ -468,11 +470,11 @@ void COptions::SetOption(int nOptionID, LPCTSTR value)
             for (std::list<std::string>::iterator iter = ipList.begin(); iter!=ipList.end(); iter++)
                 if (*iter != "127.0.0.1")
                     str += *iter + " ";
-            str.TrimRight(" ");
+            StringUtils::TrimRight(str, " ");
         }
         break;
     case OPTION_ADMINPASS:
-        if (str.GetLength() < 6)
+        if (str.length() < 6)
             return;
         break;
     }
@@ -504,18 +506,18 @@ void COptions::SetOption(int nOptionID, LPCTSTR value)
     while (res)
     {
         std::string name=xml.GetChildAttrib( _T("name"));
-        if (!_tcscmp(name, m_Options[nOptionID-1].name))
+        if (!_tcscmp(name.c_str(), m_Options[nOptionID-1].name))
         {
             xml.SetChildAttrib(_T("name"), m_Options[nOptionID-1].name);
             xml.SetChildAttrib(_T("type"), _T("string"));
-            xml.SetChildData(str);
+            xml.SetChildData(str.c_str());
             break;
         }
         res=xml.FindChildElem();
     }
     if (!res)
     {
-        xml.InsertChildElem( _T("Item"), str );
+        xml.InsertChildElem( _T("Item"), str.c_str() );
         xml.SetChildAttrib(_T("name"), m_Options[nOptionID-1].name);
         xml.SetChildAttrib(_T("type"), _T("string"));
     }
@@ -524,8 +526,8 @@ void COptions::SetOption(int nOptionID, LPCTSTR value)
 
 std::string COptions::GetOption(int nOptionID)
 {
-    ASSERT(nOptionID>0 && nOptionID<=OPTIONS_NUM);
-    ASSERT(!m_Options[nOptionID-1].nType);
+    assert(nOptionID>0 && nOptionID<=OPTIONS_NUM);
+    assert(!m_Options[nOptionID-1].nType);
     Init();
 
     if (m_OptionsCache[nOptionID-1].bCached)
@@ -565,8 +567,8 @@ std::string COptions::GetOption(int nOptionID)
 
 _int64 COptions::GetOptionVal(int nOptionID)
 {
-    ASSERT(nOptionID>0 && nOptionID<=OPTIONS_NUM);
-    ASSERT(m_Options[nOptionID-1].nType == 1);
+    assert(nOptionID>0 && nOptionID<=OPTIONS_NUM);
+    assert(m_Options[nOptionID-1].nType == 1);
     Init();
 
     if (m_OptionsCache[nOptionID-1].bCached)
@@ -624,7 +626,7 @@ void COptions::UpdateInstances()
     m_Sync.Lock();
     for (std::list<COptions *>::iterator iter=m_InstanceList.begin(); iter!=m_InstanceList.end(); iter++)
     {
-        ASSERT((*iter)->m_pOptionsHelperWindow);
+        assert((*iter)->m_pOptionsHelperWindow);
         ::PostMessage((*iter)->m_pOptionsHelperWindow->GetHwnd(), WM_USER, 0, 0);
     }
     m_Sync.Unlock();
@@ -683,7 +685,7 @@ void COptions::Init()
                 std::string type=xml.GetChildAttrib( _T("type") );
                 for (int i=0;i<OPTIONS_NUM;i++)
                 {
-                    if (!_tcscmp(name, m_Options[i].name))
+                    if (!_tcscmp(name.c_str(), m_Options[i].name))
                     {
                         if (m_sOptionsCache[i].bCached)
                             break;
@@ -693,15 +695,15 @@ void COptions::Init()
                             {
                                 if (m_Options[i].nType!=1)
                                     break;
-                                _int64 value64=_ttoi64(value);
-                                if (IsNumeric(value))
+                                _int64 value64=_ttoi64(value.c_str());
+                                if (IsNumeric(value.c_str()))
                                     SetOption(i+1, value64);
                             }
                             else
                             {
                                 if (m_Options[i].nType!=0)
                                     break;
-                                SetOption(i+1, value);
+                                SetOption(i+1, value.c_str());
                             }
                         }
                         break;
@@ -762,7 +764,7 @@ CMarkupSTL *COptions::GetXML()
 
 BOOL COptions::FreeXML(CMarkupSTL *pXML)
 {
-    ASSERT(pXML);
+    assert(pXML);
     if (!pXML)
         return FALSE;
     TCHAR buffer[MAX_PATH + 1000]; //Make it large enough
@@ -789,9 +791,9 @@ BOOL COptions::GetAsCommand(char **pBuffer, DWORD *nBufferLength)
         len+=1;
         if (!m_Options[i].nType)
             if ((i+1)!=OPTION_ADMINPASS)
-                len+=GetOption(i+1).GetLength()+2;
-            else if (GetOption(i+1).GetLength() >= 6)
-                len+=GetOption(i+1).GetLength()+2;
+                len+=GetOption(i+1).length()+2;
+            else if (GetOption(i+1).length() >= 6)
+                len+=GetOption(i+1).length()+2;
             else
                 len+=3;
         else
@@ -819,14 +821,14 @@ BOOL COptions::GetAsCommand(char **pBuffer, DWORD *nBufferLength)
                 if ((i+1)==OPTION_ADMINPASS) //Do NOT send admin password,
                                              //instead send empty string if admin pass is set
                                              //and send a single char if admin pass is invalid (len < 6)
-                if (str.GetLength() >= 6)
+                if (str.length() >= 6)
                     str="";
                 else
                     str="*";
-                *p++ = str.GetLength() / 256;
-                *p++ = str.GetLength() % 256;
-                memcpy(p, str, str.GetLength());
-                p+=str.GetLength();
+                *p++ = str.length() / 256;
+                *p++ = str.length() % 256;
+                memcpy(p, str.c_str(), str.length());
+                p+=str.length();
             }
             break;
         case 1:
@@ -837,7 +839,7 @@ BOOL COptions::GetAsCommand(char **pBuffer, DWORD *nBufferLength)
             }
             break;
         default:
-            ASSERT(FALSE);
+            assert(FALSE);
         }
     }
 
@@ -993,7 +995,7 @@ BOOL COptions::SaveSpeedLimits()
         xml.IntoElem();
 
         str = StringUtils::Format("%d", limit.m_Day);
-        xml.AddChildElem(_T("Days"), str);
+        xml.AddChildElem(_T("Days"), str.c_str());
 
         if (limit.m_DateCheck)
         {
@@ -1035,7 +1037,7 @@ BOOL COptions::SaveSpeedLimits()
         xml.IntoElem();
 
         str = StringUtils::Format("%d", limit.m_Day);
-        xml.AddChildElem(_T("Days"), str);
+        xml.AddChildElem(_T("Days"), str.c_str());
 
         if (limit.m_DateCheck)
         {
@@ -1095,7 +1097,7 @@ BOOL COptions::ReadSpeedLimits(CMarkupSTL *pXML)
             {
                 CSpeedLimit limit;
                 str = pXML->GetChildAttrib("Speed");
-                n = _ttoi(str);
+                n = _ttoi(str.c_str());
                 if (n < 0 || n > 65535)
                     n = 10;
                 limit.m_Speed = n;
@@ -1106,7 +1108,7 @@ BOOL COptions::ReadSpeedLimits(CMarkupSTL *pXML)
                 {
                     str = pXML->GetChildData();
                     if (str != "")
-                        n = _ttoi(str);
+                        n = _ttoi(str.c_str());
                     else
                         n = 0x7F;
                     limit.m_Day = n & 0x7F;
@@ -1118,17 +1120,17 @@ BOOL COptions::ReadSpeedLimits(CMarkupSTL *pXML)
                 {
                     limit.m_DateCheck = TRUE;
                     str = pXML->GetChildAttrib("Year");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1900 || n > 3000)
                         n = 2003;
                     limit.m_Date.y = n;
                     str = pXML->GetChildAttrib("Month");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1 || n > 12)
                         n = 1;
                     limit.m_Date.m = n;
                     str = pXML->GetChildAttrib("Day");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1 || n > 31)
                         n = 1;
                     limit.m_Date.d = n;
@@ -1140,17 +1142,17 @@ BOOL COptions::ReadSpeedLimits(CMarkupSTL *pXML)
                 {
                     limit.m_FromCheck = TRUE;
                     str = pXML->GetChildAttrib("Hour");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 23)
                         n = 0;
                     limit.m_FromTime.h = n;
                     str = pXML->GetChildAttrib("Minute");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_FromTime.m = n;
                     str = pXML->GetChildAttrib("Second");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_FromTime.s = n;
@@ -1162,17 +1164,17 @@ BOOL COptions::ReadSpeedLimits(CMarkupSTL *pXML)
                 {
                     limit.m_ToCheck = TRUE;
                     str = pXML->GetChildAttrib("Hour");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 23)
                         n = 0;
                     limit.m_ToTime.h = n;
                     str = pXML->GetChildAttrib("Minute");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_ToTime.m = n;
                     str = pXML->GetChildAttrib("Second");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_ToTime.s = n;
@@ -1195,7 +1197,7 @@ BOOL COptions::ReadSpeedLimits(CMarkupSTL *pXML)
             {
                 CSpeedLimit limit;
                 str = pXML->GetChildAttrib("Speed");
-                n = _ttoi(str);
+                n = _ttoi(str.c_str());
                 if (n < 0 || n > 65535)
                     n = 10;
                 limit.m_Speed = n;
@@ -1206,7 +1208,7 @@ BOOL COptions::ReadSpeedLimits(CMarkupSTL *pXML)
                 {
                     str = pXML->GetChildData();
                     if (str != "")
-                        n = _ttoi(str);
+                        n = _ttoi(str.c_str());
                     else
                         n = 0x7F;
                     limit.m_Day = n & 0x7F;
@@ -1218,17 +1220,17 @@ BOOL COptions::ReadSpeedLimits(CMarkupSTL *pXML)
                 {
                     limit.m_DateCheck = TRUE;
                     str = pXML->GetChildAttrib("Year");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1900 || n > 3000)
                         n = 2003;
                     limit.m_Date.y = n;
                     str = pXML->GetChildAttrib("Month");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1 || n > 12)
                         n = 1;
                     limit.m_Date.m = n;
                     str = pXML->GetChildAttrib("Day");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 1 || n > 31)
                         n = 1;
                     limit.m_Date.d = n;
@@ -1240,17 +1242,17 @@ BOOL COptions::ReadSpeedLimits(CMarkupSTL *pXML)
                 {
                     limit.m_FromCheck = TRUE;
                     str = pXML->GetChildAttrib("Hour");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 23)
                         n = 0;
                     limit.m_FromTime.h = n;
                     str = pXML->GetChildAttrib("Minute");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_FromTime.m = n;
                     str = pXML->GetChildAttrib("Second");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_FromTime.s = n;
@@ -1262,17 +1264,17 @@ BOOL COptions::ReadSpeedLimits(CMarkupSTL *pXML)
                 {
                     limit.m_ToCheck = TRUE;
                     str = pXML->GetChildAttrib("Hour");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 23)
                         n = 0;
                     limit.m_ToTime.h = n;
                     str = pXML->GetChildAttrib("Minute");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_ToTime.m = n;
                     str = pXML->GetChildAttrib("Second");
-                    n = _ttoi(str);
+                    n = _ttoi(str.c_str());
                     if (n < 0 || n > 59)
                         n = 0;
                     limit.m_ToTime.s = n;
@@ -1387,7 +1389,7 @@ void COptions::ReloadConfig()
                 std::string type=xml.GetChildAttrib( _T("type") );
                 for (int i=0;i<OPTIONS_NUM;i++)
                 {
-                    if (!_tcscmp(name, m_Options[i].name))
+                    if (!_tcscmp(name.c_str(), m_Options[i].name))
                     {
                         if (m_sOptionsCache[i].bCached)
                             break;
@@ -1397,15 +1399,15 @@ void COptions::ReloadConfig()
                             {
                                 if (m_Options[i].nType!=1)
                                     break;
-                                _int64 value64=_ttoi64(value);
-                                if (IsNumeric(value))
+                                _int64 value64=_ttoi64(value.c_str());
+                                if (IsNumeric(value.c_str()))
                                     SetOption(i+1, value64);
                             }
                             else
                             {
                                 if (m_Options[i].nType!=0)
                                     break;
-                                SetOption(i+1, value);
+                                SetOption(i+1, value.c_str());
                             }
                         }
                         break;

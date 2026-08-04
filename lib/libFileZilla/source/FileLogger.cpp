@@ -183,9 +183,9 @@ BOOL CFileLogger::CheckLogFile()
             }
         }
 
-        if (_tcscmp(oldestname, "") && nLimit && totalsize > nLimit*1024)
+        if (_tcscmp(oldestname.c_str(), "") && nLimit && totalsize > nLimit*1024)
         {
-            DeleteFile(oldestname);
+            DeleteFile(oldestname.c_str());
             return TRUE;
         }
     }

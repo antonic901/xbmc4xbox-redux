@@ -21,6 +21,8 @@
 #include "ServerThread.h"
 #include "Options.h"
 
+#include <assert.h>
+
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
 //////////////////////////////////////////////////////////////////////
@@ -29,7 +31,7 @@
 
 CExternalIpCheck::CExternalIpCheck(CServerThread *pOwner)
 {
-    ASSERT(pOwner);
+    assert(pOwner);
     m_pOwner = pOwner;
 
     m_bActive = FALSE;

@@ -21,7 +21,7 @@
 
 #include "xbwindows.h"
 
-
+#include <assert.h>
 
 // global CWindowManager object
 CWindowManager gWindowManager;
@@ -356,7 +356,7 @@ HWND CWindowManager::CreateWindow(LPCTSTR lpClassName, LPCTSTR lpWindowName, DWO
 
 ATOM CWindowManager::RegisterClassEx(CONST WNDCLASSEX *lpwcx)
 {
-  ASSERT(lpwcx);
+  assert(lpwcx);
   if (!lpwcx)
     return NULL;
 
@@ -466,7 +466,7 @@ HMODULE GetModuleHandle(LPCTSTR lpModuleName)
 DWORD GetModuleFileName(HMODULE hModule, LPTSTR lpFilename, DWORD nSize)
 {
   // for now, only return full path
-  ASSERT(hModule == 0);
+  assert(hModule == 0);
 
   const char* path = XBFILEZILLA(GetConfigurationPath());
 

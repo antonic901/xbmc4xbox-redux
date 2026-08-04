@@ -44,7 +44,7 @@ CCriticalSectionWrapper CXBFileZillaImp::mXBoxSettingsCS;
 
 CXBFileZillaImp::CXBFileZillaImp()
 {
-  ASSERT(mInstance == NULL);
+  assert(mInstance == NULL);
   mConfigurationPath = "T:\\";
   mServer = new CXBServer();
   mCriticalOperationCallback = NULL;
@@ -367,12 +367,12 @@ bool CXBFileZillaImp::GetSfvEnabled()
 std::string CXBFileZillaImp::ConvertToDrivename(LPCTSTR Dirname)
 {
   std::string retval = Dirname;
-  retval.ToUpper();
-  retval.Trim();
-  retval.TrimRight(_T("\\"));
-  int index = retval.Find(_T("\\"));
+  StringUtils::ToUpper(retval);
+  StringUtils::Trim(retval);
+  StringUtils::TrimRight(retval, _T("\\"));
+  int index = retval.find(_T("\\"));
   if (index != -1)
-    retval = retval.Left(index);
+    retval = retval.substr(0, index);
   retval += _T("\\");
   return retval;
 }

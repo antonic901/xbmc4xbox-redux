@@ -23,41 +23,43 @@
 #include "stdafx.h"
 #include "Thread.h"
 
+#include <assert.h>
+
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
 //////////////////////////////////////////////////////////////////////
 
 CThread::CThread()
 {
-	m_hThread = 0;
-	m_dwThreadId = NULL;
-	m_hEventStarted = CreateEvent(0, TRUE, TRUE, NULL);
+    m_hThread = 0;
+    m_dwThreadId = NULL;
+    m_hEventStarted = CreateEvent(0, TRUE, TRUE, NULL);
 }
 
 CThread::~CThread()
 {
-	CloseHandle(m_hEventStarted);
-	CloseHandle(m_hThread);
+    CloseHandle(m_hEventStarted);
+    CloseHandle(m_hThread);
 }
 
 BOOL CThread::Create(int nPriority /*=THREAD_PRIORITY_NORMAL*/, DWORD dwCreateFlags /*=0*/)
-{  
-	m_hThread=CreateThread(0, 0x10000, ThreadProc, this, dwCreateFlags, &m_dwThreadId);
-	if (!m_hThread)
-	{
-		delete this;
-		return FALSE;
-	}
+{
+    m_hThread=CreateThread(0, 0x10000, ThreadProc, this, dwCreateFlags, &m_dwThreadId);
+    if (!m_hThread)
+    {
+        delete this;
+        return FALSE;
+    }
   ResetEvent(m_hEventStarted);
-	::SetThreadPriority(m_hThread, nPriority);  
-	return TRUE;
+    ::SetThreadPriority(m_hThread, nPriority);
+    return TRUE;
 }
 
 BOOL CThread::PostThreadMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
-	BOOL res=::PostThreadMessage(m_dwThreadId, message, wParam, lParam);;
-	ASSERT(res);
-	return res;
+    BOOL res=::PostThreadMessage(m_dwThreadId, message, wParam, lParam);;
+    assert(res);
+    return res;
 }
 
 #ifdef _XBOX
@@ -69,47 +71,47 @@ DWORD CThread::SuspendThread()
 
 DWORD CThread::ResumeThread()
 {
-	BOOL res=::ResumeThread(m_hThread);
-	if (res)
-	{
-		WaitForSingleObject(m_hEventStarted, INFINITE);
-	}
-	return res;
+    BOOL res=::ResumeThread(m_hThread);
+    if (res)
+    {
+        WaitForSingleObject(m_hEventStarted, INFINITE);
+    }
+    return res;
 }
 
 DWORD WINAPI CThread::ThreadProc(LPVOID lpParameter)
 {
-	return ((CThread *)lpParameter)->Run();
+    return ((CThread *)lpParameter)->Run();
 }
 
 DWORD CThread::Run()
 {
-	InitInstance();
-	SetEvent(m_hEventStarted);
-	MSG msg;
-	while (GetMessage(&msg, 0, 0, 0))
-	{
-		TranslateMessage(&msg);
-		if (!msg.hwnd)
-			OnThreadMessage(msg.message, msg.wParam, msg.lParam);
-		DispatchMessage(&msg);
-	}
-	DWORD res=ExitInstance();
-	delete this;
-	return res;
+    InitInstance();
+    SetEvent(m_hEventStarted);
+    MSG msg;
+    while (GetMessage(&msg, 0, 0, 0))
+    {
+        TranslateMessage(&msg);
+        if (!msg.hwnd)
+            OnThreadMessage(msg.message, msg.wParam, msg.lParam);
+        DispatchMessage(&msg);
+    }
+    DWORD res=ExitInstance();
+    delete this;
+    return res;
 }
 
 int CThread::OnThreadMessage(UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-	return 0;
+    return 0;
 }
 
 BOOL CThread::InitInstance()
 {
-	return TRUE;
+    return TRUE;
 }
 
 DWORD CThread::ExitInstance()
 {
-	return 0;
+    return 0;
 }

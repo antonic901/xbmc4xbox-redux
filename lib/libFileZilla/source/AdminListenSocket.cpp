@@ -8,13 +8,15 @@
 #include "AdminInterface.h"
 #include "Options.h"
 
+#include <assert.h>
+
 //////////////////////////////////////////////////////////////////////
 // Konstruktion/Destruktion
 //////////////////////////////////////////////////////////////////////
 
 CAdminListenSocket::CAdminListenSocket(CAdminInterface *pAdminInterface)
 {
-    ASSERT(pAdminInterface);
+    assert(pAdminInterface);
     m_pAdminInterface = pAdminInterface;
 }
 
@@ -39,13 +41,13 @@ void CAdminListenSocket::OnAccept(int nErrorCode)
 
         if (validIPs != "")
             validIPs += " ";
-        int pos = validIPs.Find(" ");
+        int pos = validIPs.find(" ");
         BOOL bMatchFound = (ip != "127.0.0.1" ? FALSE : TRUE);
         while (pos!=-1 && !bMatchFound)
         {
-            std::string curIp = validIPs.Left(pos);
-            LPCTSTR c = curIp;
-            LPCTSTR p = ip;
+            std::string curIp = validIPs.substr(0, pos);
+            LPCTSTR c = curIp.c_str();
+            LPCTSTR p = ip.c_str();
 
             //Look if remote and local ip match
             while (*c && *p)
@@ -70,8 +72,8 @@ void CAdminListenSocket::OnAccept(int nErrorCode)
             if (!*c && !*p)
                 bMatchFound = TRUE;
 
-            validIPs = validIPs.Mid(pos+1);
-            pos = validIPs.Find(" ");
+            validIPs = validIPs.substr(pos+1);
+            pos = validIPs.find(" ");
         }
 
         if (!bMatchFound)
