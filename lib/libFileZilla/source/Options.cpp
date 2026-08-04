@@ -137,7 +137,7 @@ COptions::COptions()
     m_Sync.Lock();
 #ifdef _DEBUG
     for (std::list<COptions *>::iterator iter=m_InstanceList.begin(); iter!=m_InstanceList.end(); iter++)
-        ASSERT(*iter!=this);
+        assert(*iter!=this);
 #endif _DEBUG
     m_InstanceList.push_back(this);
     m_Sync.Unlock();

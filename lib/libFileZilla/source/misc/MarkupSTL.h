@@ -14,7 +14,7 @@
 #endif // _MSC_VER > 1000
 
 #ifdef _DEBUG
-#define _DS(i) (i?&((LPCTSTR)m_csDoc)[m_aPos[i].nStartL]:0)
+#define _DS(i) (i?&((LPCTSTR)m_csDoc.c_str())[m_aPos[i].nStartL]:0)
 #define MARKUP_SETDEBUGSTATE m_pMainDS=_DS(m_iPos); m_pChildDS=_DS(m_iPosChild)
 #else
 #define MARKUP_SETDEBUGSTATE
