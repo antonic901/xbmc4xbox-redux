@@ -631,7 +631,7 @@ void CASyncDirectSound::SwitchChannels(int iAudioStream, bool bAudioOnAllSpeaker
 
 void GetSigmoidCurve(float scale, short *curve)
 {
-  ASSERT(scale > 1);
+  assert(scale > 1);
   // f(x) = a/(1 + e^{-bx}) + c
 
   // want it to map 0 .. 1, and have f'(0) = scale > 1

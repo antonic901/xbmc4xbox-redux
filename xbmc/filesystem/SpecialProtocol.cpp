@@ -121,7 +121,7 @@ std::string CSpecialProtocol::TranslatePath(const CURL &url)
     RootDir = FullFileName.substr(0, pos);
 
     if (pos < FullFileName.size())
-      FileName = FullFileName.Mid(pos + 1);
+      FileName = FullFileName.substr(pos + 1);
   }
   else
     RootDir = FullFileName;

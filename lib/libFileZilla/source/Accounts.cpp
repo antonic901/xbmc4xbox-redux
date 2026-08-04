@@ -121,11 +121,11 @@ unsigned char * t_group::ParseBuffer(unsigned char *pBuffer, int length)
 
     if ((p-pBuffer+len)>length)
         return NULL;
+    group.resize(len);
     char *pStr = &group[0];
     if (!pStr)
         return NULL;
     memcpy(pStr, p, len);
-    group.ReleaseBuffer(len);
     p+=len;
 
     if ((p-pBuffer+11)>length)
@@ -157,11 +157,11 @@ unsigned char * t_group::ParseBuffer(unsigned char *pBuffer, int length)
         p+=2;
         if ((p-pBuffer+len)>length)
             return NULL;
+        dir.dir.resize(len);
         char *pStr = &dir.dir[0];
         if (!pStr)
             return NULL;
         memcpy(pStr, p, len);
-        dir.dir.ReleaseBuffer(len);
         p+=len;
 
         if ((p-pBuffer+2)>length)
@@ -420,11 +420,11 @@ unsigned char * t_user::ParseBuffer(unsigned char *pBuffer, int length)
     p+=2;
     if ((p-pBuffer+len)>length)
         return NULL;
+    user.resize(len);
     char *pStr = &user[0];
     if (!pStr)
         return NULL;
     memcpy(pStr, p, len);
-    user.ReleaseBuffer(len);
     p+=len;
 
     if ((p-pBuffer+2)>length)
@@ -433,11 +433,11 @@ unsigned char * t_user::ParseBuffer(unsigned char *pBuffer, int length)
     p+=2;
     if ((p-pBuffer+len)>length)
         return NULL;
+    password.resize(len);
     pStr = &password[0];
     if (!pStr)
         return NULL;
     memcpy(pStr, p, len);
-    password.ReleaseBuffer(len);
     p+=len;
 
     return p;

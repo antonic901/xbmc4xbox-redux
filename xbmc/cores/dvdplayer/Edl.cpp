@@ -155,28 +155,29 @@ bool CEdl::ReadEdl(const std::string& strMovie, const float fFramesPerSecond)
   bool bError = false;
   int iLine = 0;
   std::string strBuffer;
+  strBuffer.resize(1024);
   while (edlFile.ReadString(&strBuffer[0], 1024))
   {
-    strBuffer.ReleaseBuffer();
-
     // Log any errors from previous run in the loop
     if (bError)
       CLog::Log(LOGWARNING, "%s - Error on line %i in EDL file: %s", __FUNCTION__, iLine, edlFilename.c_str());
 
     iLine++;
 
-    std::vector<std::string> strFields(2);
+    char buffer1[513];
+    char buffer2[513];
     int iAction;
-    int iFieldsRead = sscanf(strBuffer.c_str(), "%512s %512s %i", &strFields[0][0],
-                             &strFields[1][0], &iAction);
-    strFields[0].ReleaseBuffer();
-    strFields[1].ReleaseBuffer();
-
+    int iFieldsRead = sscanf(strBuffer.c_str(), "%512s %512s %i", buffer1,
+                             buffer2, &iAction);
     if (iFieldsRead != 2 && iFieldsRead != 3) // Make sure we read the right number of fields
     {
       bError = true;
       continue;
     }
+
+    std::vector<std::string> strFields(2);
+    strFields[0] = buffer1;
+    strFields[1] = buffer2;
 
     if (iFieldsRead == 2) // If only 2 fields read, then assume it's a scene marker.
     {
@@ -225,7 +226,7 @@ bool CEdl::ReadEdl(const std::string& strMovie, const float fFramesPerSecond)
       }
       else if (strFields[i].substr(0, 1) == "#") // #12345 format for frame number
       {
-        iCutStartEnd[i] = (int64_t)(atol(strFields[i].Mid(1)) / fFramesPerSecond * 1000); // frame number to ms
+        iCutStartEnd[i] = (int64_t)(atol(strFields[i].substr(1).c_str()) / fFramesPerSecond * 1000); // frame number to ms
       }
       else // Plain old seconds in float format, e.g. 123.45
       {
@@ -283,8 +284,6 @@ bool CEdl::ReadEdl(const std::string& strMovie, const float fFramesPerSecond)
       continue;
     }
   }
-
-  strBuffer.ReleaseBuffer();
 
   if (bError) // Log last line warning, if there was one, since while loop will have terminated.
     CLog::Log(LOGWARNING, "%s - Error on line %i in EDL file: %s", __FUNCTION__, iLine, edlFilename.c_str());

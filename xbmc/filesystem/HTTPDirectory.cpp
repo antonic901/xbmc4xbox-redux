@@ -82,7 +82,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       strName = reItem.GetReplaceString("\\2");
 
       if(strLink[0] == '/')
-        strLink = strLink.Mid(1);
+        strLink = strLink.substr(1);
 
       std::string strNameTemp = strName;
       StringUtils::Trim(strNameTemp);
@@ -100,7 +100,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       // split link with url options
       int pos = strLinkBase.find('?');
       if (pos != -1) {
-        strLinkOptions = strLinkBase.Mid(pos);
+        strLinkOptions = strLinkBase.substr(pos);
         strLinkBase.erase(pos);
       }
       std::string strLinkTemp = strLinkBase;

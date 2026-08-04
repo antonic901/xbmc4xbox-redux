@@ -44,7 +44,7 @@ bool CMemUnitDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
   g_directoryCache.ClearDirectory(strPath);
   CFileItemList cacheItems;
-  if (!fileSystem->GetDirectory(strPath.Mid(7), cacheItems))
+  if (!fileSystem->GetDirectory(strPath.substr(7), cacheItems))
   {
     delete fileSystem;
     return false;

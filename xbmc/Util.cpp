@@ -1461,9 +1461,8 @@ bool CUtil::CacheRarSubtitles(const std::string& strRarPath,
   // zip only gets the root dir
   if (URIUtils::GetExtension(strRarPath) == ".zip")
   {
-    std::string strZipPath;
-    URIUtils::CreateArchivePath(strZipPath,"zip",strRarPath,"");
-    if (!CDirectory::GetDirectory(strZipPath,ItemList,"",DIR_FLAG_NO_FILE_DIRS))
+    CURL urlZipPath = URIUtils::CreateArchivePath("zip",CURL(strRarPath),"");
+    if (!CDirectory::GetDirectory(urlZipPath.Get(),ItemList,"",DIR_FLAG_NO_FILE_DIRS))
       return false;
   }
   else
@@ -1483,12 +1482,12 @@ bool CUtil::CacheRarSubtitles(const std::string& strRarPath,
     // checking for embedded rars, I moved this outside the sub_ext[] loop. We only need to check this once for each file.
     if (URIUtils::IsRAR(strPathInRar) || URIUtils::IsZIP(strPathInRar))
     {
-      std::string strRarInRar;
+      CURL urlRarInRar;
       if (URIUtils::GetExtension(strPathInRar) == ".rar")
-        URIUtils::CreateArchivePath(strRarInRar, "rar", strRarPath, strPathInRar);
+        urlRarInRar = URIUtils::CreateArchivePath("rar", CURL(strRarPath), strPathInRar);
       else
-        URIUtils::CreateArchivePath(strRarInRar, "zip", strRarPath, strPathInRar);
-      CacheRarSubtitles(strRarInRar,strCompare);
+        urlRarInRar = URIUtils::CreateArchivePath("zip", CURL(strRarPath), strPathInRar);
+      CacheRarSubtitles(urlRarInRar.Get(),strCompare);
     }
     // done checking if this is a rar-in-rar
 
@@ -1503,7 +1502,10 @@ bool CUtil::CacheRarSubtitles(const std::string& strRarPath,
         {
           std::string strSourceUrl;
           if (URIUtils::GetExtension(strRarPath) == ".rar")
-            URIUtils::CreateArchivePath(strSourceUrl, "rar", strRarPath, strPathInRar);
+          {
+            CURL url = URIUtils::CreateArchivePath("rar", CURL(strRarPath), strPathInRar);
+            strSourceUrl = url.Get();
+          }
           else
             strSourceUrl = strPathInRar;
 

@@ -168,10 +168,9 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
   }
   else if (pItem->IsZIP())
   {
-    std::string strDirectory;
-    URIUtils::CreateArchivePath(strDirectory, "zip", pItem->GetPath(), "");
+    CURL urlDirectory = URIUtils::CreateArchivePath("zip", pItem->GetURL(), "");
     CFileItemList items;
-    directory->GetDirectory(CURL(strDirectory), items);
+    directory->GetDirectory(urlDirectory, items);
 
     // sort the items before adding to playlist
     items.Sort(SortByLabel, SortOrderAscending);
@@ -181,10 +180,9 @@ void CXbmcWeb::AddItemToPlayList(const CFileItemPtr &pItem)
   }
   else if (pItem->IsRAR())
   {
-    std::string strDirectory;
-    URIUtils::CreateArchivePath(strDirectory, "rar", pItem->GetPath(), "");
+    CURL urlDirectory = URIUtils::CreateArchivePath("rar", pItem->GetURL(), "");
     CFileItemList items;
-    directory->GetDirectory(CURL(strDirectory), items);
+    directory->GetDirectory(urlDirectory, items);
 
     // sort the items before adding to playlist
     items.Sort(SortByLabel, SortOrderAscending);
@@ -645,17 +643,17 @@ int CXbmcWeb::xbmcCatalog( int eid, webs_t wp, char_t *parameter)
 
           if (itm->IsZIP()) // mount zip archive
           {
+            CURL url = URIUtils::CreateArchivePath("zip",itm->GetURL(),"");
             CMediaSource shareZip;
-            URIUtils::CreateArchivePath(shareZip.strPath,"zip",itm->GetPath(),"");
+            shareZip.strPath = url.Get();
             itm->SetPath(shareZip.strPath);
             itm->m_bIsFolder = true;
           }
           else if (itm->IsRAR()) // mount rar archive
           {
             CMediaSource shareRar;
-            std::string strRarPath;
-            URIUtils::CreateArchivePath(strRarPath,"rar",itm->GetPath(),"");
-            shareRar.strPath = strRarPath;
+            CURL url = URIUtils::CreateArchivePath("rar",itm->GetURL(),"");
+            shareRar.strPath = url.Get();
 
             itm->SetPath(shareRar.strPath);
             itm->m_bIsFolder = true;

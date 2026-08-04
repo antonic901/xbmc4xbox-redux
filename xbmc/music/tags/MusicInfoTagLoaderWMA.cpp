@@ -39,17 +39,16 @@ std::string fixString(std::string &ansiString)
 // twice the length they should be. This function is a quick fix to the problem. The correct
 // solution would be to call ucs2CharsetToStringCharset only when necessary.
 {
-  int halfLen = ansiString.length() / 2 - 1;
-  std::string out = "";
+  int halfLen = static_cast<int>(ansiString.length()) / 2 - 1;
 
-  if (halfLen > 0)
-    if (*(ansiString.Mid(halfLen, 1).c_str()) == 0 &&
-        *(ansiString.Mid(halfLen + 1, 1).c_str()) == 0)
-      out = ansiString.substr(0, halfLen);
-  if (out == "")
-    return ansiString ;
-  else
-    return out ;
+  if (halfLen > 0 &&
+      ansiString[halfLen] == '\0' &&
+      ansiString[halfLen + 1] == '\0')
+  {
+    return ansiString.substr(0, halfLen);
+  }
+
+  return ansiString;
 }
 
 

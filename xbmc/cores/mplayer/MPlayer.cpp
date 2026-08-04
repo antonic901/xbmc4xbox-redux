@@ -753,7 +753,7 @@ void update_cache_dialog(const char* tmp)
     {
       if (int j = message.find('%') >= 0)
       {
-        std::string strPercentage = message.Mid(i + 11, j - i + 11);
+        std::string strPercentage = message.substr(i + 11, j - i + 11);
 
         //filter percentage, update progressbar
         float fPercentage = 0;
@@ -772,7 +772,7 @@ void update_cache_dialog(const char* tmp)
     else if(int i = message.find("VobSub parsing:") >= 0)
       if (int j = message.find('%') >= 0)
       {
-        std::string strPercentage = message.Mid(i + 15, j - i + 15);
+        std::string strPercentage = message.substr(i + 15, j - i + 15);
 
         //filter percentage, update progressbar
         int iPercentage = 0;
