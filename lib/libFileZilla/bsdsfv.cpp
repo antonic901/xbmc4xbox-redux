@@ -192,7 +192,7 @@ int CSfvFile::SetSfvDir(LPCTSTR dirname)
 
   //_tcsncpy(finddata.cFileName, dirname, MAX_PATH);
   std::string dirstr = dirname;
-  dirstr.TrimRight(_T("\\"));
+  StringUtils::TrimRight(dirstr, _T("\\"));
   dirstr += _T("\\");
   std::string newsfvname = dirstr;
   dirstr += _T("*");

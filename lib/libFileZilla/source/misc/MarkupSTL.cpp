@@ -10,6 +10,8 @@
 #include "atlconv.h"
 #include "MarkupSTL.h"
 
+#include "utils/StringUtils.h"
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -51,18 +53,18 @@ bool CMarkupSTL::SetDoc( LPCTSTR szDoc )
     if ( szDoc )
         m_csDoc = szDoc;
     else
-        m_csDoc.Empty();
+        m_csDoc.clear();
 
     // Starting size of position array: 1 element per 64 bytes of document
     // Tight fit when parsing small doc, only 0 to 2 reallocs when parsing large doc
     // Start at 8 when creating new document
-    UINT nStartSize = m_csDoc.GetLength() / 64 + 8;
+    UINT nStartSize = m_csDoc.length() / 64 + 8;
     if ( m_aPos.size() < nStartSize )
         m_aPos.resize( nStartSize );
 
     // Parse document
     bool bWellFormed = false;
-    if ( m_csDoc.GetLength() )
+    if ( m_csDoc.length() )
     {
         m_aPos[0].Clear();
         int iPos = x_ParseElem( 0 );
@@ -118,20 +120,20 @@ bool CMarkupSTL::Load( LPCTSTR szFileName )
     delete [] pBuffer;
 #else
     DWORD numread;
-    if (ReadFile(hFile, csDoc.GetBuffer(nLength), nLength, &numread, 0))
+    csDoc.resize(nLength);
+    if (ReadFile(hFile, &csDoc[0], nLength, &numread, 0))
         nLength = numread;
     else
         nLength = 0;
 #endif
-    csDoc.ReleaseBuffer(nLength);
     CloseHandle(hFile);
 
-    return SetDoc( csDoc );
+    return SetDoc( csDoc.c_str() );
 }
 
 bool CMarkupSTL::Save( LPCTSTR szFileName )
 {
-    int nLength = m_csDoc.GetLength();
+    int nLength = m_csDoc.length();
     HANDLE hFile = CreateFile(szFileName, GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, 0, 0);
     if (hFile == INVALID_HANDLE_VALUE)
         return false;
@@ -146,7 +148,7 @@ bool CMarkupSTL::Save( LPCTSTR szFileName )
     delete[] pBuffer;
 #else
     DWORD numwritten;
-    WriteFile(hFile, (LPCTSTR)m_csDoc, nLength, &numwritten, 0);
+    WriteFile(hFile, m_csDoc.c_str(), nLength, &numwritten, 0);
 #endif
     CloseHandle(hFile);
     return true;
@@ -235,7 +237,7 @@ std::string CMarkupSTL::GetAttribName( int n ) const
     if ( ! m_iPos || m_nNodeType != MNT_ELEMENT )
         return _T("");
 
-    TokenPos token( m_csDoc );
+    TokenPos token( m_csDoc.c_str() );
     token.nNext = m_aPos[m_iPos].nStartL + 1;
     for ( int nAttrib=0; nAttrib<=n; ++nAttrib )
         if ( ! x_FindAttrib(token) )
@@ -295,11 +297,11 @@ std::string CMarkupSTL::GetChildSubDoc() const
     {
         int nL = m_aPos[m_iPosChild].nStartL;
         int nR = m_aPos[m_iPosChild].nEndR + 1;
-        TokenPos token( m_csDoc );
+        TokenPos token( m_csDoc.c_str() );
         token.nNext = nR;
         if ( ! x_FindToken(token) || m_csDoc[token.nL] == _T('<') )
             nR = token.nL;
-        return m_csDoc.Mid( nL, nR - nL );
+        return m_csDoc.substr( nL, nR - nL );
     }
     return _T("");
 }
@@ -381,7 +383,7 @@ int CMarkupSTL::x_ParseElem( int iPosParent )
     // i.e. <?xml version="1.0"?>, and <!-- comment here -->
     // So any tag beginning with ? or ! is ignored
     // Loop past ignored tags
-    TokenPos token( m_csDoc );
+    TokenPos token( m_csDoc.c_str() );
     token.nNext = m_aPos[iPosParent].nEndL;
     std::string csName;
     while ( csName.empty() )
@@ -454,7 +456,7 @@ int CMarkupSTL::x_ParseElem( int iPosParent )
 
         // Look for left angle bracket of end tag
         if ( ! x_FindChar( token.szDoc, m_aPos[iPos].nEndL, _T('<') ) )
-            return x_ParseError( _T("End tag of %s element not found"), csName );
+            return x_ParseError( _T("End tag of %s element not found"), csName.c_str() );
 
         // Look through tokens of end tag
         token.nNext = m_aPos[iPos].nEndL + 1;
@@ -466,10 +468,10 @@ int CMarkupSTL::x_ParseElem( int iPosParent )
             {
                 // Is first token not an end slash mark?
                 if ( nTokenCount == 1 && m_csDoc[token.nL] != _T('/') )
-                    return x_ParseError( _T("Expecting end tag of element %s"), csName );
+                    return x_ParseError( _T("Expecting end tag of element %s"), csName.c_str() );
 
-                else if ( nTokenCount == 2 && ! token.Match(csName) )
-                    return x_ParseError( _T("End tag does not correspond to %s"), csName );
+                else if ( nTokenCount == 2 && ! token.Match(csName.c_str()) )
+                    return x_ParseError( _T("End tag does not correspond to %s"), csName.c_str() );
 
                 // Else is it a right angle bracket?
                 else if ( m_csDoc[token.nL] == _T('>') )
@@ -479,7 +481,7 @@ int CMarkupSTL::x_ParseElem( int iPosParent )
 
         // Was a right angle bracket not found?
         if ( ! token.szDoc[token.nL] || nTokenCount < 2 )
-            return x_ParseError( _T("End tag not completed for element %s"), csName );
+            return x_ParseError( _T("End tag not completed for element %s"), csName.c_str() );
         m_aPos[iPos].nEndR = token.nL;
     }
 
@@ -570,8 +572,8 @@ std::string CMarkupSTL::x_GetToken( const CMarkupSTL::TokenPos& token ) const
     // Build the substring from those indexes and return it
     if ( token.nL > token.nR )
         return _T("");
-    return m_csDoc.Mid( token.nL,
-        token.nR - token.nL + ((token.nR<m_csDoc.GetLength())? 1:0) );
+    return m_csDoc.substr( token.nL,
+        token.nR - token.nL + ((token.nR<m_csDoc.length())? 1:0) );
 }
 
 int CMarkupSTL::x_FindElem( int iPosParent, int iPos, LPCTSTR szPath )
@@ -589,7 +591,7 @@ int CMarkupSTL::x_FindElem( int iPosParent, int iPos, LPCTSTR szPath )
         return iPos;
 
     // Search
-    TokenPos token( m_csDoc );
+    TokenPos token( m_csDoc.c_str() );
     while ( iPos )
     {
         // Compare tag name
@@ -707,7 +709,7 @@ int CMarkupSTL::x_ParseNode( CMarkupSTL::TokenPos& token )
 std::string CMarkupSTL::x_GetTagName( int iPos ) const
 {
     // Return the tag name at specified element
-    TokenPos token( m_csDoc );
+    TokenPos token( m_csDoc.c_str() );
     token.nNext = m_aPos[iPos].nStartL + 1;
     if ( ! iPos || ! x_FindToken( token ) )
         return _T("");
@@ -761,10 +763,10 @@ std::string CMarkupSTL::x_GetAttrib( int iPos, LPCTSTR szAttrib ) const
     if ( ! iPos || m_nNodeType != MNT_ELEMENT )
         return _T("");
 
-    TokenPos token( m_csDoc );
+    TokenPos token( m_csDoc.c_str() );
     token.nNext = m_aPos[iPos].nStartL + 1;
     if ( szAttrib && x_FindAttrib( token, szAttrib ) )
-        return x_TextFromDoc( token.nL, token.nR - ((token.nR<m_csDoc.GetLength())?0:1) );
+        return x_TextFromDoc( token.nL, token.nR - ((token.nR<m_csDoc.length())?0:1) );
     return _T("");
 }
 
@@ -790,7 +792,7 @@ bool CMarkupSTL::x_SetAttrib( int iPos, LPCTSTR szAttrib, LPCTSTR szValue )
     if ( ! iPos || m_nNodeType != MNT_ELEMENT )
         return false;
 
-    TokenPos token( m_csDoc );
+    TokenPos token( m_csDoc.c_str() );
     token.nNext = m_aPos[iPos].nStartL + 1;
     int nInsertAt, nReplace = 0;
     std::string csInsert;
@@ -818,7 +820,7 @@ bool CMarkupSTL::x_SetAttrib( int iPos, LPCTSTR szAttrib, LPCTSTR szValue )
     }
 
     x_DocChange( nInsertAt, nReplace, csInsert );
-    int nAdjust = csInsert.GetLength() - nReplace;
+    int nAdjust = csInsert.length() - nReplace;
     m_aPos[iPos].nStartR += nAdjust;
     m_aPos[iPos].AdjustEnd( nAdjust );
     x_Adjust( iPos, nAdjust );
@@ -872,7 +874,7 @@ bool CMarkupSTL::x_SetData( int iPos, LPCTSTR szData, int nCDATA )
         // Pre-adjust since <NAME/> becomes <NAME>data</NAME>
         std::string csTagName = x_GetTagName( iPos );
         m_aPos[iPos].nStartR -= 1;
-        m_aPos[iPos].nEndL -= (1 + csTagName.GetLength());
+        m_aPos[iPos].nEndL -= (1 + csTagName.length());
         std::string csFormat;
         csFormat = _T(">");
         csFormat += csInsert;
@@ -886,7 +888,7 @@ bool CMarkupSTL::x_SetData( int iPos, LPCTSTR szData, int nCDATA )
         nReplace = m_aPos[iPos].nEndL - m_aPos[iPos].nStartR - 1;
     }
     x_DocChange( nInsertAt, nReplace, csInsert );
-    int nAdjust = csInsert.GetLength() - nReplace;
+    int nAdjust = csInsert.length() - nReplace;
     x_Adjust( iPos, nAdjust );
     m_aPos[iPos].AdjustEnd( nAdjust );
     MARKUP_SETDEBUGSTATE;
@@ -900,16 +902,16 @@ std::string CMarkupSTL::x_GetData( int iPos ) const
     if ( ! m_aPos[iPos].iElemChild && ! m_aPos[iPos].IsEmptyElement() )
     {
         // See if it is a CDATA section
-        TokenPos token( m_csDoc );
+        TokenPos token( m_csDoc.c_str() );
         token.nNext = m_aPos[iPos].nStartR+1;
         if ( x_FindToken( token ) && m_csDoc[token.nL] == _T('<')
                 && token.nL + 11 < m_aPos[iPos].nEndL
                 && _tcsncmp( &token.szDoc[token.nL+1], _T("![CDATA["), 8 ) == 0 )
         {
-            int nEndCDATA = m_csDoc.Find( _T("]]>"), token.nNext );
+            int nEndCDATA = m_csDoc.find( _T("]]>"), token.nNext );
             if ( nEndCDATA != -1 && nEndCDATA < m_aPos[iPos].nEndL )
             {
-                return m_csDoc.Mid( token.nL+9, nEndCDATA-token.nL-9 );
+                return m_csDoc.substr( token.nL+9, nEndCDATA-token.nL-9 );
             }
         }
         return x_TextFromDoc( m_aPos[iPos].nStartR+1, m_aPos[iPos].nEndL-1 );
@@ -938,7 +940,8 @@ std::string CMarkupSTL::x_TextToDoc( LPCTSTR szText, bool bAttrib ) const
     const _TCHAR* pSource = szText;
     int nDestSize = _tcslen(pSource);
     nDestSize += nDestSize / 10 + 7;
-    _TCHAR* pDest = csText.GetBuffer(nDestSize);
+    csText.resize(nDestSize);
+    _TCHAR* pDest = &csText[0];
     int nLen = 0;
     _TCHAR cSource = *pSource;
     _TCHAR* pFound;
@@ -946,9 +949,9 @@ std::string CMarkupSTL::x_TextToDoc( LPCTSTR szText, bool bAttrib ) const
     {
         if ( nLen > nDestSize - 6 )
         {
-            csText.ReleaseBuffer(nLen);
             nDestSize *= 2;
-            pDest = csText.GetBuffer(nDestSize);
+            csText.resize(nDestSize);
+            pDest = &csText[0];
         }
         if ( (pFound=_tcschr(pFind,cSource)) != NULL )
         {
@@ -964,7 +967,6 @@ std::string CMarkupSTL::x_TextToDoc( LPCTSTR szText, bool bAttrib ) const
         pSource += _tclen( pSource );
         cSource = *pSource;
     }
-    csText.ReleaseBuffer(nLen);
     return csText;
 }
 
@@ -980,9 +982,10 @@ std::string CMarkupSTL::x_TextFromDoc( int nLeft, int nRight ) const
     static int anCodeLen[] = { 3,4,3,5,5 };
     static _TCHAR* szSymbol = _T("<&>\'\"");
     std::string csText;
-    const _TCHAR* pSource = m_csDoc;
+    const _TCHAR* pSource = m_csDoc.c_str();
     int nDestSize = nRight - nLeft + 1;
-    _TCHAR* pDest = csText.GetBuffer(nDestSize);
+    csText.resize(nDestSize);
+    _TCHAR* pDest = &csText[0];
     int nLen = 0;
     int nCharLen;
     int nChar = nLeft;
@@ -1019,7 +1022,6 @@ std::string CMarkupSTL::x_TextFromDoc( int nLeft, int nRight ) const
             nChar += nCharLen;
         }
     }
-    csText.ReleaseBuffer(nLen);
     return csText;
 }
 
@@ -1028,8 +1030,8 @@ void CMarkupSTL::x_DocChange( int nLeft, int nReplace, const std::string& csInse
     // Insert csInsert int m_csDoc at nLeft replacing nReplace chars
     // Do this with only one buffer reallocation if it grows
     //
-    int nDocLength = m_csDoc.GetLength();
-    int nInsLength = csInsert.GetLength();
+    int nDocLength = m_csDoc.length();
+    int nInsLength = csInsert.length();
 
     // Make sure nLeft and nReplace are within bounds
     nLeft = max( 0, min( nLeft, nDocLength ) );
@@ -1038,17 +1040,15 @@ void CMarkupSTL::x_DocChange( int nLeft, int nReplace, const std::string& csInse
     // Get pointer to buffer with enough room
     int nNewLength = nInsLength + nDocLength - nReplace;
     int nBufferLen = nNewLength;
-    _TCHAR* pDoc = m_csDoc.GetBuffer( nBufferLen );
+    m_csDoc.resize(nBufferLen);
+    _TCHAR* pDoc = &m_csDoc[0];
 
     // Move part of old doc that goes after insert
     if ( nLeft+nReplace < nDocLength )
         memmove( &pDoc[nLeft+nInsLength], &pDoc[nLeft+nReplace], (nDocLength-nLeft-nReplace)*sizeof(_TCHAR) );
 
     // Copy insert
-    memcpy( &pDoc[nLeft], csInsert, nInsLength*sizeof(_TCHAR) );
-
-    // Release
-    m_csDoc.ReleaseBuffer( nNewLength );
+    memcpy( &pDoc[nLeft], csInsert.c_str(), nInsLength*sizeof(_TCHAR) );
 }
 
 void CMarkupSTL::x_Adjust( int iPos, int nShift, bool bAfterPos )
@@ -1143,7 +1143,7 @@ void CMarkupSTL::x_LocateNew( int iPosParent, int& iPosRel, int& nOffset, int nL
     // Go up to start of next node, unless its splitting an empty element
     if ( ! bHonorWhitespace && ! m_aPos[iPosParent].IsEmptyElement() )
     {
-        TokenPos token( m_csDoc );
+        TokenPos token( m_csDoc.c_str() );
         token.nNext = nStartL;
         if ( ! x_FindToken(token) || m_csDoc[token.nL] == _T('<') )
             nStartL = token.nL;
@@ -1205,7 +1205,7 @@ bool CMarkupSTL::x_AddElem( LPCTSTR szName, LPCTSTR szValue, bool bInsert, bool 
             return false;
 
         // Locate after any version and DTD
-        m_aPos[0].nEndL = m_csDoc.GetLength();
+        m_aPos[0].nEndL = m_csDoc.length();
     }
 
     // Locate where to add element relative to current node
@@ -1268,7 +1268,7 @@ bool CMarkupSTL::x_AddElem( LPCTSTR szName, LPCTSTR szValue, bool bInsert, bool 
     {
         // <NAME>value</NAME>
         std::string csValue = x_TextToDoc( szValue );
-        nLenValue = csValue.GetLength();
+        nLenValue = csValue.length();
         csInsert = _T("<");
         csInsert += szName;
         csInsert += _T(">");
@@ -1303,10 +1303,10 @@ bool CMarkupSTL::x_AddElem( LPCTSTR szName, LPCTSTR szValue, bool bInsert, bool 
         // <A/> (len 4) becomes <A><B/></A> (len 11)
         // In x_Adjust everything will be adjusted 11 - 4 = 7
         // But the nEndL of element A should only be adjusted 5
-        m_aPos[iPosParent].nEndL -= (csParentTagName.GetLength() + 1);
+        m_aPos[iPosParent].nEndL -= (csParentTagName.length() + 1);
     }
     x_DocChange( nLeft, nReplace, csInsert );
-    x_Adjust( iPos, csInsert.GetLength() - nReplace );
+    x_Adjust( iPos, csInsert.length() - nReplace );
 
     if ( bAddChild )
         x_SetPos( m_iPosParent, iPosParent, iPos );
@@ -1380,7 +1380,7 @@ bool CMarkupSTL::x_AddSubDoc( LPCTSTR szSubDoc, bool bInsert, bool bAddChild )
     {
         // Abort because not well-formed
         std::string csRevert = bEmptyParent?_T("/"):_T("");
-        x_DocChange( nLeft, csInsert.GetLength(), csRevert );
+        x_DocChange( nLeft, csInsert.length(), csRevert );
         m_iPosFree = iPosFreeBeforeAdd;
         return false;
     }
@@ -1403,11 +1403,11 @@ bool CMarkupSTL::x_AddSubDoc( LPCTSTR szSubDoc, bool bInsert, bool bAddChild )
         if ( bEmptyParent )
         {
             m_aPos[iPosParent].nStartR -= 1;
-            m_aPos[iPosParent].nEndL -= (csParentTagName.GetLength() + 1);
+            m_aPos[iPosParent].nEndL -= (csParentTagName.length() + 1);
         }
 
         // Adjust, but don't adjust children of iPos (bAfterPos=true)
-        x_Adjust( iPos, csInsert.GetLength() - nReplace, true );
+        x_Adjust( iPos, csInsert.length() - nReplace, true );
     }
 
     // Set position to top element of subdocument
@@ -1443,7 +1443,7 @@ int CMarkupSTL::x_RemoveElem( int iPos )
     // Links have been changed to go around removed element
     // But element position and links are still valid
     int nAfterEnd = m_aPos[iPos].nEndR + 1;
-    TokenPos token( m_csDoc );
+    TokenPos token( m_csDoc.c_str() );
     token.nNext = nAfterEnd;
     if ( ! x_FindToken(token) || token.szDoc[token.nL] == _T('<') )
         nAfterEnd = token.nL;

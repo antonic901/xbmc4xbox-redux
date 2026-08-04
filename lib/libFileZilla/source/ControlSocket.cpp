@@ -71,7 +71,7 @@ CControlSocket::CControlSocket(CServerThread *pOwner)
     GetSystemTime(&m_LoginTime);
     m_bQuitCommand = FALSE;
 
-    ASSERT(pOwner);
+    assert(pOwner);
     m_pOwner=pOwner;
 
     m_nTelnetSkip = 0;
@@ -214,16 +214,16 @@ BOOL CControlSocket::GetCommand(std::string &command, std::string &args)
 
     //Output command in status window
     std::string str2=str;
-    str2.MakeUpper();
+    StringUtils::ToUpper(str2);
 
     //Hide passwords if the server admin wants to.
-    if (str2.Left(5)=="PASS ")
+    if (str2.substr(0, 5)=="PASS ")
     {    if (m_pOwner->m_pOptions->GetOptionVal(OPTION_LOGSHOWPASS))
             SendStatus(str.c_str(),2);
         else
         {
-            str2=str.Left(5);
-            for (int i=0;i<str.GetLength()-5;i++)
+            str2=str.substr(0, 5);
+            for (int i=0;i<str.length()-5;i++)
                 str2+="*";
             SendStatus(str2.c_str(),2);
         }
@@ -232,19 +232,19 @@ BOOL CControlSocket::GetCommand(std::string &command, std::string &args)
         SendStatus(str.c_str(),2);
 
     //Split command and arguments
-    int pos = str.Find(" ");
+    int pos = str.find(" ");
     if (pos!=-1)
     {
-        command = str.Left(pos);
-        args = str.Mid(pos+1);
-        args.TrimLeft(" ");
-        args.TrimRight(" ");
+        command = str.substr(0, pos);
+        args = str.substr(pos+1);
+        StringUtils::TrimLeft(args, " ");
+        StringUtils::TrimRight(args, " ");
     }
     else
         command = str;
     if (command == "")
         return FALSE;
-    command.MakeUpper();
+    StringUtils::ToUpper(command);
     return TRUE;
 }
 
@@ -258,18 +258,18 @@ BOOL CControlSocket::GetCommandFromString(const std::string& source, std::string
 
     //Output command in status window
     std::string str2=source;
-    str2.MakeUpper();
+    StringUtils::ToUpper(str2);
 
   //SendStatus(source,2); // already done in GetCommand()
 
     //Split command and arguments
-    int pos=source.Find(" ");
+    int pos=source.find(" ");
     if (pos!=-1)
     {
-        command=source.Left(pos);
-        args=source.Mid(pos+1);
-        args.TrimLeft(" ");
-        args.TrimRight(" ");
+        command=source.substr(0, pos);
+        args=source.substr(pos+1);
+        StringUtils::TrimLeft(args, " ");
+        StringUtils::TrimRight(args, " ");
     }
     else
         command=source;
@@ -316,15 +316,22 @@ BOOL CControlSocket::SendCurDir(const std::string command,std::string curDir)
 BOOL CControlSocket::SendDir(const std::string command,std::string curDir,const std::string prompt)
 {
   if (1 /*g_settings.m_bFTPSingleCharDrives*/
-    && (curDir.GetLength() >= 2)
-    && (curDir[0] == '/') && isalpha(curDir[1]) && ((curDir.GetLength() == 2) || (curDir[2] == ':')))
+    && (curDir.length() >= 2)
+    && (curDir[0] == '/') && isalpha(curDir[1]) && ((curDir.length() == 2) || (curDir[2] == ':')))
   {
     // modified to be consistent with other xbox ftp behavior: drive
     // name is a single character without the ':' at the end
-    if (curDir.GetLength() > 3)
-      curDir = curDir.Left(2).ToUpper() + curDir.Mid(3);
+    if (curDir.length() > 3)
+    {
+      curDir = curDir.substr(0, 2);
+      StringUtils::ToUpper(curDir);
+      curDir += curDir.substr(3);
+    }
     else
-      curDir = curDir.Left(2).ToUpper();
+    {
+      curDir = curDir.substr(0, 2);
+      StringUtils::ToUpper(curDir);
+    }
   }
 
   std::string str;
@@ -616,7 +623,7 @@ void CControlSocket::ParseCommand()
             }
             m_status.loggedon = FALSE;
             RenName = "";
-            args.MakeLower();
+            StringUtils::ToLower(args);
             m_status.user=args;
 #ifndef NOLAYERS
             if (m_pGssLayer && m_pGssLayer->AuthSuccessful())
@@ -839,10 +846,10 @@ void CControlSocket::ParseCommand()
             int count=0;
             int pos=0;
             //Convert commas to dots
-            args.Replace(",",".");
+            StringUtils::Replace(args, ",",".");
             while(1)
             {
-                pos=args.Find(".",pos);
+                pos=args.find(".",pos);
                 if (pos!=-1)
                     count++;
                 else
@@ -856,12 +863,12 @@ void CControlSocket::ParseCommand()
             }
             std::string ip;
             int port = 0;
-            int i=args.ReverseFind('.');
-            port=atoi(args.Right(args.GetLength()-(i+1))); //get ls byte of server socket
-            args=args.Left(i);
-            i=args.ReverseFind('.');
-            port+=256*atoi(args.Right(args.GetLength()-(i+1))); // add ms byte to server socket
-            ip=args.Left(i);
+            int i=args.rfind('.');
+            port=atoi(StringUtils::Right(args, args.length()-(i+1)).c_str()); //get ls byte of server socket
+            args=args.substr(0, i);
+            i=args.rfind('.');
+            port+=256*atoi(StringUtils::Right(args, args.length()-(i+1)).c_str()); // add ms byte to server socket
+            ip=args.substr(0, i);
 
             if (inet_addr(ip.c_str())==INADDR_NONE || port<1 || port>65535)
             {
@@ -953,7 +960,7 @@ void CControlSocket::ParseCommand()
             if (bResult)
                 port = ntohs(sockAddr.sin_port);
             //Reformat the ip
-            ip.Replace(".",",");
+            StringUtils::Replace(ip, ".",",");
             //Put the answer together
             std::string str;
             str = StringUtils::Format("227 Entering Passive Mode (%s,%d,%d)",ip.c_str(),port/256,port%256);
@@ -963,7 +970,7 @@ void CControlSocket::ParseCommand()
         }
     case COMMAND_TYPE:
         {
-            args.MakeUpper();
+            StringUtils::ToUpper(args);
             if (args[0] != 'I' && args[0] != 'A')
             {
                 Send("501 Parameters invalid. Must be I for binary and A for ASCII type.");
@@ -986,28 +993,28 @@ void CControlSocket::ParseCommand()
         {
             //Check args, currently only supported argument is the directory which will be listed.
             std::string dirToList=m_CurrentDir;
-            args.TrimLeft(" ");
-            args.TrimRight(" ");
+            StringUtils::TrimLeft(args, " ");
+            StringUtils::TrimRight(args, " ");
             if (args!="")
             {
                 BOOL bBreak=FALSE;
                 while (args[0]=='-') //No parameters supported
                 {
-                    if (args.GetLength()<2)
+                    if (args.length()<2)
                     { //Dash without param
                         Send("501 Syntax error");
                         bBreak = TRUE;
                         break;
                     }
 
-                    int pos=args.Find(" ");
+                    int pos=args.find(" ");
                     std::string params;
                     if (pos!=-1)
                     {
-                        params=args.Left(1);
-                        params=params.Left(pos-1);
-                        args=args.Mid(pos+1);
-                        args.TrimLeft(" ");
+                        params=args.substr(0, 1);
+                        params=params.substr(0, pos-1);
+                        args=args.substr(pos+1);
+                        StringUtils::TrimLeft(args, " ");
                     }
                     else
                         args="";
@@ -1021,7 +1028,7 @@ void CControlSocket::ParseCommand()
                             break;
                         }
                         //Ignore other parameters
-                        params=params.Mid(1);
+                        params=params.substr(1);
                     }
 
                     if (args=="")
@@ -1038,8 +1045,8 @@ void CControlSocket::ParseCommand()
                         break;
                     }
 
-                    args.Replace("\\","/");
-                    args.Replace("//", "/");
+                    StringUtils::Replace(args, "\\","/");
+                    StringUtils::Replace(args, "//", "/");
                     //Convert relative vpath into absolute vpath
                     if (args[0]!='/')
                         args=m_CurrentDir+"/"+args;
@@ -1092,12 +1099,12 @@ void CControlSocket::ParseCommand()
                                 // modified to be consistent with other xbox ftp behavior: drive
                                 // name is a single character without the ':' at the end
                                 dirToList = drive;
-                                dirToList.MakeUpper();
+                                StringUtils::ToUpper(dirToList);
                             }
                         }
 
-                        dirToList.TrimRight("\\");
-                        dirToList.TrimRight("/");
+                        StringUtils::TrimRight(dirToList, "\\");
+                        StringUtils::TrimRight(dirToList, "/");
 
                         if (NULL==pCurrent)
                         {
@@ -1168,7 +1175,7 @@ void CControlSocket::ParseCommand()
     case COMMAND_REST:
         {
             BOOL error=FALSE;
-            for (int i=0;i<args.GetLength();i++)
+            for (int i=0;i<args.length();i++)
                 if (!isdigit(args[i]))
                     error=TRUE;
             if (error)
@@ -1496,8 +1503,8 @@ void CControlSocket::ParseCommand()
                 BOOL bReplySent = FALSE;
                 while (result!="")
                 {
-                    std::string piece = result.Left(result.Find("\\")+1);
-                    if (piece.Right(2) == ".\\")
+                    std::string piece = result.substr(0, result.find("\\")+1);
+                    if (piece.substr(piece.size() - 2) == ".\\")
                     {
                         Send("550 Directoryname not valid");
                         bReplySent = TRUE;
@@ -1505,7 +1512,7 @@ void CControlSocket::ParseCommand()
                     }
 
           str += piece;
-                    result = result.Mid(result.Find("\\")+1);
+                    result = result.substr(result.find("\\")+1);
                     res = CreateDirectory(str.c_str(),0);
                 }
                 if (!bReplySent)
@@ -1745,28 +1752,28 @@ void CControlSocket::ParseCommand()
         else
         {
             //Check args, currently only supported argument is the directory which will be listed.
-            args.TrimLeft(" ");
-            args.TrimRight(" ");
+            StringUtils::TrimLeft(args, " ");
+            StringUtils::TrimRight(args, " ");
             if (args!="")
             {
                 BOOL bBreak=FALSE;
                 while (args[0]=='-') //No parameters supported
                 {
-                    if (args.GetLength()<2)
+                    if (args.length()<2)
                     { //Dash without param
                         Send("501 Syntax error");
                         bBreak = TRUE;
                         break;
                     }
 
-                    int pos=args.Find(" ");
+                    int pos=args.find(" ");
                     std::string params;
                     if (pos!=-1)
                     {
-                        params=args.Left(1);
-                        params=params.Left(pos-1);
-                        args=args.Mid(pos+1);
-                        args.TrimLeft(" ");
+                        params=args.substr(0, 1);
+                        params=params.substr(0, pos-1);
+                        args=args.substr(pos+1);
+                        StringUtils::TrimLeft(args, " ");
                     }
                     else
                         args="";
@@ -1780,7 +1787,7 @@ void CControlSocket::ParseCommand()
                             break;
                         }
                         //Ignore other parameters
-                        params=params.Mid(1);
+                        params=params.substr(1);
                     }
 
                     if (args=="")
@@ -1797,9 +1804,9 @@ void CControlSocket::ParseCommand()
                         break;
                     }
 
-                    args.Replace("\\","/");
-                    args.Replace("//", "/");
-                    args.TrimRight("/");
+                    StringUtils::Replace(args, "\\","/");
+                    StringUtils::Replace(args, "//", "/");
+                    StringUtils::TrimRight(args, "/");
                 }
             }
 
@@ -1837,7 +1844,7 @@ void CControlSocket::ParseCommand()
                         }
 
             if (1 /*g_settings.m_bFTPSingleCharDrives*/
-              && (iter->dir.GetLength() == 3)
+              && (iter->dir.length() == 3)
               && isalpha(iter->dir[0]) && (iter->dir[1] == ':') && (iter->dir[2] == '\\'))
             {
               // modified to be consistent with other xbox ftp behavior: drive
@@ -1925,7 +1932,7 @@ void CControlSocket::ParseCommand()
                 std::string str;
                 SYSTEMTIME time;
                 FileTimeToSystemTime(&status.m_mtime, &time);
-                str.Format("213 %04d%02d%02d%02d%02d%02d",
+                str = StringUtils::Format("213 %04d%02d%02d%02d%02d%02d",
                             time.wYear,
                             time.wMonth,
                             time.wDay,
@@ -2013,43 +2020,43 @@ void CControlSocket::ParseCommand()
                 Send("501 Syntax error");
                 break;
             }
-            args = args.Mid(1);
+            args = args.substr(1);
 
-            int pos = args.Find('|');
-            if (pos < 1 || (pos>=(args.GetLength()-1)))
+            int pos = args.find('|');
+            if (pos < 1 || (pos>=(args.length()-1)))
             {
                 Send("501 Syntax error");
                 break;
             }
-            int protocol = _ttoi(args.Left(pos));
+            int protocol = _ttoi(args.substr(0, pos).c_str());
             if (protocol != 1)
             {
                 Send("522 Extended Port Failure - unknown network protocol");
                 break;
             }
-            args = args.Mid(pos + 1);
+            args = args.substr(pos + 1);
 
-            pos = args.Find('|');
-            if (pos < 1 || (pos>=(args.GetLength()-1)))
+            pos = args.find('|');
+            if (pos < 1 || (pos>=(args.length()-1)))
             {
                 Send("501 Syntax error");
                 break;
             }
-            std::string ip = args.Left(pos);
+            std::string ip = args.substr(0, pos);
             if (inet_addr(ip.c_str()) == INADDR_NONE)
             {
                 Send("501 Syntax error");
                 break;
             }
-            args = args.Mid(pos + 1);
+            args = args.substr(pos + 1);
 
-            pos = args.Find('|');
+            pos = args.find('|');
             if (pos < 1)
             {
                 Send("501 Syntax error");
                 break;
             }
-            int port = _ttoi(args.Left(pos));
+            int port = _ttoi(args.substr(0, pos).c_str());
             if (port<1 || port>65535)
             {
                 Send("501 Syntax error");
@@ -2074,7 +2081,7 @@ void CControlSocket::ParseCommand()
             else
 #endif
             {
-                args.MakeLower();
+                StringUtils::ToLower(args);
                 if (args != _T("gssapi"))
                 {
                     Send("504 Auth type not supported");
@@ -2191,23 +2198,23 @@ void CControlSocket::ParseCommand()
           std::string strHelp;
           CBuiltins::GetInstance().GetHelp(strHelp);
           Send(_T("200-FTP SITE HELP"));
-          int iReturn = strHelp.Find("\n");
+          int iReturn = strHelp.find("\n");
           while (iReturn >= 0)
           {
-            std::string helpline = "  " + strHelp.Left(iReturn);
+            std::string helpline = "  " + strHelp.substr(0, iReturn);
 
             // replace tab with spaces (tab position = 30)
             //   because ftp command line (at least on windows) does
             //   not show tabs well.
-            int iTabPos = helpline.Find("\t");
+            int iTabPos = helpline.find("\t");
             if (iTabPos >= 0)
             {
-              helpline = helpline.Left(iTabPos) + std::string(30 - iTabPos, ' ') + helpline.Mid(iTabPos + 1);
+              helpline = helpline.substr(0, iTabPos) + std::string(30 - iTabPos, ' ') + helpline.substr(iTabPos + 1);
             }
 
             Send(_T(helpline.c_str()));
-            strHelp = strHelp.Mid(iReturn + 1);
-            iReturn = strHelp.Find("\n");
+            strHelp = strHelp.substr(iReturn + 1);
+            iReturn = strHelp.find("\n");
           }
           Send(_T("200 End of help"));
         }
@@ -2224,7 +2231,7 @@ void CControlSocket::ParseCommand()
         case -1:
         {
             // not recognized as a standard command, call ExecBuiltIn
-          if (sitecommand.Find(".") != 5)
+          if (sitecommand.find(".") != 5)
           {
             std::string prefix("XBOX.");
             sitecommand = prefix + sitecommand;
@@ -2700,16 +2707,16 @@ void CControlSocket::ResetTransferstatus()
 
 BOOL CControlSocket::UnquoteArgs(std::string &args)
 {
-    args.TrimLeft( _T(" ") );
-    args.TrimRight( _T(" ") );
-    int pos1=args.Find('"');
-    int pos2=args.ReverseFind('"');
+    StringUtils::TrimLeft(args, _T(" ") );
+    StringUtils::TrimRight(args, _T(" ") );
+    int pos1=args.find('"');
+    int pos2=args.rfind('"');
     if (pos1==-1 && pos2==-1)
         return TRUE;
-    if (pos1 || pos2!=(args.GetLength()-1) || pos1>=(pos2-1))
+    if (pos1 || pos2!=(args.length()-1) || pos1>=(pos2-1))
         return FALSE;
-    args=args.Mid(1, args.GetLength()-2);
-    if (args.Find('"')!=-1 || args.Left(1)==" " || args.Right(1)==" ")
+    args=args.substr(1, args.length()-2);
+    if (args.find('"')!=-1 || args.substr(0, 1)==" " || args.substr(args.size() - 1)==" ")
         return FALSE;
     return TRUE;
 }
@@ -2767,7 +2774,7 @@ void CControlSocket::OnSend(int nErrorCode)
 BOOL CControlSocket::DoUserLogin(char* sendme)
 {
     CUser user;
-    if (m_pOwner->m_pPermissions->Lookup(m_status.user, "", user, TRUE))
+    if (m_pOwner->m_pPermissions->Lookup(m_status.user.c_str(), "", user, TRUE))
     {
         if (!user.BypassUserLimit())
         {
@@ -2785,7 +2792,7 @@ BOOL CControlSocket::DoUserLogin(char* sendme)
         {
                 std::string str;
                 str = StringUtils::Format("Refusing connection. Reason: Max. connection count reached for the user \"%s\".",m_status.user.c_str());
-                SendStatus(str,1);
+                SendStatus(str.c_str(),1);
                 strcpy(sendme, "421 Too many users logged in for this account. Try again later.");
                 ForceClose(-1);
                 return FALSE;
@@ -2812,13 +2819,13 @@ BOOL CControlSocket::DoUserLogin(char* sendme)
                 str = StringUtils::Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected once)",ip.c_str());
             else
                 str = StringUtils::Format("Refusing connection. Reason: No more connections allowed from your IP. (%s already connected %d times)",ip.c_str(),count);
-            SendStatus(str,1);
+            SendStatus(str.c_str(),1);
             strcpy(sendme, "421 Refusing connection. No more connections allowed from your IP.");
             ForceClose(-1);
             return FALSE;
         }
 
-        m_CurrentDir = m_pOwner->m_pPermissions->GetHomeDir(m_status.user);
+        m_CurrentDir = m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str());
         if (m_CurrentDir=="")
         {
             strcpy(sendme, "550 Could not get home dir!");
@@ -2833,9 +2840,9 @@ BOOL CControlSocket::DoUserLogin(char* sendme)
         {
             std::string str;
             str = StringUtils::Format("Refusing connection. Reason: Maximum connection count (%d) reached for this user", user.GetUserLimit());
-            SendStatus(str,1);
+            SendStatus(str.c_str(),1);
             sprintf(sendme, "421 Refusing connection. Maximum connection count reached for the user '%s'", user.user);
-            Send(str);
+            Send(str.c_str());
             ForceClose(-1);
             return FALSE;
         }
@@ -2846,7 +2853,7 @@ BOOL CControlSocket::DoUserLogin(char* sendme)
 
         GetSystemTime(&m_LastTransferTime);
 
-        m_pOwner->m_pPermissions->AutoCreateDirs(m_status.user);
+        m_pOwner->m_pPermissions->AutoCreateDirs(m_status.user.c_str());
 
         t_connectiondata *conndata=new t_connectiondata;
         t_connop *op=new t_connop;
@@ -3012,7 +3019,7 @@ CControlSocket::CreateTransferSocket(CTransferSocket *pTransferSocket)
     if (m_pGssLayer && m_pGssLayer->AuthSuccessful())
         m_transferstatus.socket->UseGSS(m_pGssLayer);
 #endif
-    if (pTransferSocket->Connect(m_transferstatus.ip,m_transferstatus.port)==0)
+    if (pTransferSocket->Connect(m_transferstatus.ip.c_str(),m_transferstatus.port)==0)
     {
         if (GetLastError() != WSAEWOULDBLOCK)
         {

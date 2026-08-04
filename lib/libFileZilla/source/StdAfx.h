@@ -51,6 +51,14 @@
 #include <string>
 #endif
 
+#ifndef VERIFY
+  #ifdef _DEBUG
+    #define VERIFY(x) assert((x))
+  #else
+    #define VERIFY(x) x
+  #endif
+#endif
+
 #include "MFC64bitFix.h"
 #include <map>
 #include <list>
