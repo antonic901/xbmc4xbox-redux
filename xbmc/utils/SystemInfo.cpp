@@ -240,21 +240,21 @@ std::string CSysInfoJob::GetSystemUpTime(bool bTotalUptime)
   SystemUpTime(iInputMinutes,iMinutes, iHours, iDays);
   if (iDays > 0)
   {
-    strSystemUptime.Format("%i %s, %i %s, %i %s",
-      iDays,g_localizeStrings.Get(12393),
-      iHours,g_localizeStrings.Get(12392),
-      iMinutes, g_localizeStrings.Get(12391));
+    strSystemUptime = StringUtils::Format("%i %s, %i %s, %i %s",
+      iDays,g_localizeStrings.Get(12393).c_str(),
+      iHours,g_localizeStrings.Get(12392).c_str(),
+      iMinutes, g_localizeStrings.Get(12391).c_str());
   }
   else if (iDays == 0 && iHours >= 1 )
   {
-    strSystemUptime.Format("%i %s, %i %s",
-      iHours,g_localizeStrings.Get(12392),
-      iMinutes, g_localizeStrings.Get(12391));
+    strSystemUptime = StringUtils::Format("%i %s, %i %s",
+      iHours,g_localizeStrings.Get(12392).c_str(),
+      iMinutes, g_localizeStrings.Get(12391).c_str());
   }
   else if (iDays == 0 && iHours == 0 &&  iMinutes >= 0)
   {
-    strSystemUptime.Format("%i %s",
-      iMinutes, g_localizeStrings.Get(12391));
+    strSystemUptime = StringUtils::Format("%i %s",
+      iMinutes, g_localizeStrings.Get(12391).c_str());
   }
   return strSystemUptime;
 }
@@ -893,7 +893,7 @@ bool CSysInfo::GetRefurbInfo(std::string& rfi_FirstBootTime, std::string& rfi_Po
     return false;
 
   FileTimeToSystemTime((FILETIME*)&xri.FirstBootTime, &sys_time);
-  rfi_FirstBootTime.Format("%d-%d-%d %d:%02d",
+  rfi_FirstBootTime = StringUtils::Format("%d-%d-%d %d:%02d",
     sys_time.wMonth,
     sys_time.wDay,
     sys_time.wYear,
@@ -1376,11 +1376,11 @@ std::string CSysInfo::GetUnits(int iFrontPort)
   std::string strReturn;
   if (iFrontPort==4) iFrontPort = 3;
   if (iFrontPort==8) iFrontPort = 4;
-  strReturn.Format("%s%s%s%s%s%s%s%s%s%s%s",
-    bPad ? g_localizeStrings.Get(38730):"", bPad && bKeyb ? ", ":"", bPad && bMem ? ", ":"", bPad && (bHeadSet || bMic) ? ", ":"",
-    bHeadSet || bMic ? g_localizeStrings.Get(38733):"", (bHeadSet || bMic) && bMem ? ", ":"",
-    bMem ? g_localizeStrings.Get(38734):"", bMem && bIR ? ", ":"",
-    bIR ? g_localizeStrings.Get(38735):""
+  strReturn = StringUtils::Format("%s%s%s%s%s%s%s%s%s%s%s",
+    bPad ? g_localizeStrings.Get(38730).c_str():"", bPad && bKeyb ? ", ":"", bPad && bMem ? ", ":"", bPad && (bHeadSet || bMic) ? ", ":"",
+    bHeadSet || bMic ? g_localizeStrings.Get(38733).c_str():"", (bHeadSet || bMic) && bMem ? ", ":"",
+    bMem ? g_localizeStrings.Get(38734).c_str():"", bMem && bIR ? ", ":"",
+    bIR ? g_localizeStrings.Get(38735).c_str():""
     );
 
   return strReturn;
@@ -1423,14 +1423,14 @@ std::string CSysInfo::GetXBProduceInfo()
 
   CLog::Log(LOGDEBUG, "- XBOX production info: Country: %s, LineNumber: %c, Week %c%c, Year 200%c", country, info[0x00], info[0x08], info[0x09],info[0x07]);
   std::string strXBProDate;
-  strXBProDate.Format("%s, %s 200%c, %s: %c%c %s: %c",
+  strXBProDate = StringUtils::Format("%s, %s 200%c, %s: %c%c %s: %c",
     country,
-    g_localizeStrings.Get(201),
+    g_localizeStrings.Get(201).c_str(),
     info[0x07],
-    g_localizeStrings.Get(20169),
+    g_localizeStrings.Get(20169).c_str(),
     info[0x08],
     info[0x09],
-    g_localizeStrings.Get(20170),
+    g_localizeStrings.Get(20170).c_str(),
     info[0x00]);
   return strXBProDate;
 }

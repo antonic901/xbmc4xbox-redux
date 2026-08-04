@@ -52,7 +52,7 @@ bool COggTag::Read(const std::string& strFile1)
   if (URIUtils::HasExtension(strFile, ".oggstream"))
   {
     std::string strFileName=URIUtils::GetFileName(strFile);
-    int iStart=strFileName.ReverseFind("-")+1;
+    int iStart=strFileName.rfind("-")+1;
     currentStream = atoi(strFileName.substr(iStart, strFileName.size()-iStart-10).c_str())-1;
     std::string strPath=strFile;
     strFile = URIUtils::GetDirectory(strPath);

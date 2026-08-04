@@ -144,7 +144,7 @@ bool IDirectory::ProcessRequirements()
 
 bool IDirectory::GetKeyboardInput(const CVariant &heading, std::string &input)
 {
-  if (!std::string(m_requirements["input"].asString()).IsEmpty())
+  if (!std::string(m_requirements["input"].asString()).empty())
   {
     input = m_requirements["input"].asString();
     return true;

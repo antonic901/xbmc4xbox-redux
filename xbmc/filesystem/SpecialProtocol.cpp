@@ -115,12 +115,12 @@ std::string CSpecialProtocol::TranslatePath(const CURL &url)
   std::string RootDir;
 
   // Split up into the special://root and the rest of the filename
-  int pos = FullFileName.Find('/');
+  int pos = FullFileName.find('/');
   if (pos != -1 && pos > 1)
   {
     RootDir = FullFileName.Left(pos);
 
-    if (pos < FullFileName.GetLength())
+    if (pos < FullFileName.size())
       FileName = FullFileName.Mid(pos + 1);
   }
   else

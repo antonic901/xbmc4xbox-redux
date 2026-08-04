@@ -43,7 +43,7 @@ using namespace XFILE;
 //CdgLoader
 CCdgLoader::CCdgLoader() : CThread("CCdgLoader")
 {
-  m_strFileName.Empty();
+  m_strFileName.clear();
   m_CdgFileState = FILE_NOT_LOADED;
   m_pBuffer = NULL;
   m_uiFileLength = 0;

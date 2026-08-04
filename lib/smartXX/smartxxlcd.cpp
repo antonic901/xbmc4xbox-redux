@@ -591,7 +591,7 @@ void CSmartXXLCD::Process()
           std::string strLine="";
           for (int iCol=0; iCol < (int)m_iColumns;++iCol)
           {
-            strLine +=strRow.GetAt(iPos);
+            strLine +=strRow[iPos];
             iPos++;
             if (iPos >= iSize) iPos=0;
           }

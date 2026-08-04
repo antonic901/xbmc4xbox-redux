@@ -498,7 +498,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
 
 
   { //Setup any video filter we want, ie postprocessing, noise...
-    strTmp.Empty();
+    strTmp.clear();
     vector<std::string> vecPPOptions;
 
     if ( m_bDeinterlace )
@@ -557,7 +557,7 @@ void CMPlayer::Options::GetOptions(int& argc, char* argv[])
     //Only enable post processing if something is selected
     if (vecPPOptions.size() > 0)
     {
-      strTmp.Empty();
+      strTmp.clear();
       strTmp += "pp=";
 
       for (unsigned int i = 0; i < vecPPOptions.size(); ++i)
@@ -749,9 +749,9 @@ void update_cache_dialog(const char* tmp)
 
     std::string message = tmp;
     message.Trim();
-    if (int i = message.Find("Cache fill:") >= 0)
+    if (int i = message.find("Cache fill:") >= 0)
     {
-      if (int j = message.Find('%') >= 0)
+      if (int j = message.find('%') >= 0)
       {
         std::string strPercentage = message.Mid(i + 11, j - i + 11);
 
@@ -769,8 +769,8 @@ void update_cache_dialog(const char* tmp)
         return;
       }
     }
-    else if(int i = message.Find("VobSub parsing:") >= 0)
-      if (int j = message.Find('%') >= 0)
+    else if(int i = message.find("VobSub parsing:") >= 0)
+      if (int j = message.find('%') >= 0)
       {
         std::string strPercentage = message.Mid(i + 15, j - i + 15);
 
@@ -845,7 +845,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
   bFileIsDVDIfoFile = file.IsDVDFile(false, true);
 
   CLog::Log(LOGDEBUG,"file:%s IsDiscImage:%i IsDVDIfoFile:%i", strFile.c_str(), bFileIsDVDImage , bFileIsDVDIfoFile);
-  if (strFile.Find("dvd://") >= 0 || bFileIsDVDImage || bFileIsDVDIfoFile)
+  if (strFile.find("dvd://") >= 0 || bFileIsDVDImage || bFileIsDVDIfoFile)
   {
     bIsDVD = true;
     bIsVideo = true;
@@ -1476,7 +1476,7 @@ void CMPlayer::Process()
   {
     xbox_audio_wait_completion();
   }
-  _SubtitleExtension.Empty();
+  _SubtitleExtension.clear();
 
   //Set m_bIsPlaying to false here to make sure closefile doesn't try to close the file again
   m_bIsPlaying = false;
@@ -1685,7 +1685,7 @@ void CMPlayer::GetVideoInfo( std::string& strVideoInfo)
     return ;
   }
   mplayer_GetVideoInfo(strFourCC, strVideoCodec, &fFPS, &iWidth, &iHeight, &lFrames2Early, &lFrames2Late);
-  strVideoInfo.Format("video:%s fps:%02.2f %ix%i early/late:%i/%i",
+  strVideoInfo = StringUtils::Format("video:%s fps:%02.2f %ix%i early/late:%i/%i",
                       strVideoCodec, fFPS, iWidth, iHeight, lFrames2Early, lFrames2Late);
 }
 
@@ -1704,7 +1704,7 @@ void CMPlayer::GetGeneralInfo( std::string& strVideoInfo)
   }
 
   mplayer_GetGeneralInfo(&lFramesDropped, &iQuality, &iCacheFilled, &fTotalCorrection, &fAVDelay);
-  strVideoInfo.Format("dropped:%i Q:%i cache:%i%% ct:%2.2f edl:%s av:%2.2f",
+  strVideoInfo = StringUtils::Format("dropped:%i Q:%i cache:%i%% ct:%2.2f edl:%s av:%2.2f",
                       lFramesDropped, iQuality, iCacheFilled, fTotalCorrection, m_Edl.GetInfo().c_str(), fAVDelay );
 }
 

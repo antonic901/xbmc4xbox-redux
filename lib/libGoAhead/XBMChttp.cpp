@@ -1810,8 +1810,7 @@ int CXbmcHttp::xbmcGetThumb(int numParas, std::string paras[], bool bGetThumb)
   }
   if (tempSkipWebFooterHeader)
   {
-    std::string strHttpResponseHeaders;
-    strHttpResponseHeaders.Format(
+    std::string strHttpResponseHeaders = StringUtils::Format(
     "HTTP/1.0 200 OK\r\n"
     "Pragma: no-cache\r\n"
     "Cache-control: no-cache\r\n"
@@ -2370,8 +2369,7 @@ int CXbmcHttp::xbmcDownloadInternetFile(int numParas, std::string paras[])
             CFile::Delete(dest);
           if (tempSkipWebFooterHeader)
           {
-            std::string strHttpResponseHeaders;
-            strHttpResponseHeaders.Format(
+            std::string strHttpResponseHeaders = StringUtils::Format(
             "HTTP/1.0 200 OK\r\n"
             "Pragma: no-cache\r\n"
             "Cache-control: no-cache\r\n"
@@ -2776,7 +2774,7 @@ int CXbmcHttp::xbmcGetSystemInfoByName(int numParas, std::string paras[])
         strTemp = "Error:No information retrieved for " + paras[i];
       strInfo += openTag + strTemp;
     }
-    if(strInfo.Find("°") && strInfo.Find("Â"))
+    if(strInfo.find("°") && strInfo.find("Â"))
     {
       // The Charset Converter ToUtf8() will add. only in this case= "°" a char "Â°" during converting,
       // which is the right value for the GUI!
@@ -3181,7 +3179,7 @@ CLog::Log(LOGDEBUG, "xbmcHttpShim ends");
 bool CXbmcHttpShim::checkForFunctionTypeParas(std::string &cmd, std::string &paras)
 {
   int open, close;
-  open = cmd.Find("(");
+  open = cmd.find("(");
   if (open>0)
   {
     close=cmd.length();

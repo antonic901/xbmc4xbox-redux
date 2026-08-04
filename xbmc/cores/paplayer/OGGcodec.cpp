@@ -62,7 +62,7 @@ bool OGGCodec::Init(const std::string &strFile1, unsigned int filecache)
   {
     //  Extract the bitstream to play
     std::string strFileName=URIUtils::GetFileName(strFile);
-    int iStart=strFileName.ReverseFind('-')+1;
+    int iStart=strFileName.rfind('-')+1;
     m_CurrentStream = atoi(strFileName.substr(iStart, strFileName.size()-iStart-10).c_str())-1;
     //  The directory we are in, is the file
     //  that contains the bitstream to play,

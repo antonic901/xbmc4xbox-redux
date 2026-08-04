@@ -184,17 +184,17 @@ void CRssReader::Process()
     if (!strXML.empty() && m_pObserver)
     {
       // erase any <content:encoded> tags (also unsupported by tinyxml)
-      int iStart = strXML.Find("<content:encoded>");
+      int iStart = strXML.find("<content:encoded>");
       int iEnd = 0;
       while (iStart > 0)
       {
         // get <content:encoded> end position
-        iEnd = strXML.Find("</content:encoded>", iStart) + 18;
+        iEnd = strXML.find("</content:encoded>", iStart) + 18;
 
         // erase the section
         strXML = strXML.erase(iStart, iEnd - iStart);
 
-        iStart = strXML.Find("<content:encoded>");
+        iStart = strXML.find("<content:encoded>");
       }
 
       if (Parse((LPSTR)strXML.c_str(), iFeed))
@@ -234,7 +234,7 @@ void CRssReader::AddString(std::wstring aString, int aColour, int iFeed)
   else
     m_strFeed[iFeed] += aString;
 
-  int nStringLength = aString.GetLength();
+  int nStringLength = aString.size();
 
   for (int i = 0;i < nStringLength;i++)
     aString[i] = (CHAR) (48 + aColour);
@@ -273,7 +273,7 @@ void CRssReader::GetNewsItems(TiXmlElement* channelXmlNode, int iFeed)
 
       for (i = m_tagSet.begin(); i != m_tagSet.end(); i++)
       {
-        if (!childNode->NoChildren() && i->Equals(strName))
+        if (!childNode->NoChildren() && (*i) == strName)
         {
           std::string htmlText = childNode->FirstChild()->Value();
 
@@ -354,7 +354,7 @@ bool CRssReader::Parse(int iFeed)
   TiXmlElement* rssXmlNode = NULL;
 
   std::string strValue = rootXmlNode->Value();
-  if (strValue.Find("rss") >= 0 || strValue.Find("rdf") >= 0)
+  if (strValue.find("rss") >= 0 || strValue.find("rdf") >= 0)
     rssXmlNode = rootXmlNode;
   else
   {

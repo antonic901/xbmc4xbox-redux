@@ -97,7 +97,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       std::string strLinkOptions;
 
       // split link with url options
-      int pos = strLinkBase.Find('?');
+      int pos = strLinkBase.find('?');
       if (pos != -1) {
         strLinkOptions = strLinkBase.Mid(pos);
         strLinkBase.erase(pos);
@@ -112,7 +112,7 @@ bool CHTTPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       g_charsetConverter.wToUTF8(wConverted, strLinkTemp);
 
       if (StringUtils::EndsWith(strNameTemp, "..>") &&
-          strLinkTemp.Left(strNameTemp.GetLength()-3) == strNameTemp.Left(strNameTemp.GetLength(-3)))
+          StringUtils::StartsWith(strLinkTemp, strNameTemp.substr(0, strNameTemp.length() - 3)))
         strName = strNameTemp = strLinkTemp;
 
       // we detect http directory items by its display name and its stripped link

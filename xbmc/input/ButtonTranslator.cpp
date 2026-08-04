@@ -778,8 +778,8 @@ int CButtonTranslator::TranslateWindow(const std::string &window)
   if (strWindow.empty()) return WINDOW_INVALID;
   strWindow.ToLower();
   // eliminate .xml
-  if (strWindow.Mid(strWindow.GetLength() - 4) == ".xml" )
-    strWindow = strWindow.Mid(0, strWindow.GetLength() - 4);
+  if (StringUtils::EndsWith(strWindow, ".xml"))
+    strWindow.resize(strWindow.size() - 4);
 
   // window12345, for custom window to be keymapped
   if (strWindow.length() > 6 && StringUtils::StartsWithNoCase(strWindow, "window"))

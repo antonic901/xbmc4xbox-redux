@@ -83,7 +83,7 @@ void ILCD::StringToLCDCharSet(std::string& strText)
   {
     cLCD = strText.at(i);
     cLCD = LCD[iLCDContr][cLCD];
-    strText.SetAt(i, cLCD);
+    strText[i] = cLCD;
   }
 }
 

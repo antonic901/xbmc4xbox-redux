@@ -119,7 +119,7 @@ int CVorbisTag::ParseTagEntry(std::string& strTagEntry)
     tag.SetLyrics(strTagValue);
 
 
-  if ( strTagType == "RATING" && strTagValue.GetLength() == 1 && strTagValue[0] > '0' && strTagValue[0] < '6')
+  if ( strTagType == "RATING" && strTagValue.length() == 1 && strTagValue[0] > '0' && strTagValue[0] < '6')
     tag.SetRating(strTagValue[0]);
 
   //  Get new style replay gain info
@@ -165,7 +165,7 @@ int CVorbisTag::ParseTagEntry(std::string& strTagEntry)
 
 void CVorbisTag::SplitEntry(const std::string& strTagEntry, std::string& strTagType, std::string& strTagValue)
 {
-  int nPos = strTagEntry.Find( '=' );
+  int nPos = strTagEntry.find( '=' );
 
   if ( nPos > -1 )
   {

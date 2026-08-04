@@ -43,7 +43,7 @@ bool ASAPCodec::Init(const std::string &strFile, unsigned int filecache)
   if (URIUtils::HasExtension(strFile, ".asapstream"))
   {
     std::string strFileName = URIUtils::GetFileName(strFile);
-    int iStart = strFileName.ReverseFind('-') + 1;
+    int iStart = strFileName.rfind('-') + 1;
     song = atoi(strFileName.substr(iStart, strFileName.size() - iStart - 11).c_str()) - 1;
     strFileToLoad = URIUtils::GetDirectory(strFile);
     URIUtils::RemoveSlashAtEnd(strFileToLoad);

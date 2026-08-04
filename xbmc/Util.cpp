@@ -222,11 +222,11 @@ std::string CUtil::GetTitleFromPath(const CURL& url, bool bIsFolder /* = false *
     strFilename = g_localizeStrings.Get(744);
 
   // Music Playlists
-  else if (URIUtils::PathStarts(path, "special://musicplaylists"))
+  else if (StringUtils::StartsWith(path, "special://musicplaylists"))
     strFilename = g_localizeStrings.Get(136);
 
   // Video Playlists
-  else if (URIUtils::PathStarts(path, "special://videoplaylists"))
+  else if (StringUtils::StartsWith(path, "special://videoplaylists"))
     strFilename = g_localizeStrings.Get(136);
 
   else if (URIUtils::HasParentInHostname(url) && strFilename.empty())
@@ -1385,7 +1385,7 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
             //Cache any alternate subtitles.
             if (strItem.Left(9).ToLower() == "subtitle." && strItem.Right(l).ToLower() == sub_exts[i])
             {
-              strLExt = strItem.Right(strItem.GetLength() - 9);
+              strLExt = strItem.Right(strItem.length() - 9);
               strDest = StringUtils::Format("special://temp/subtitle.alt-%s", strLExt.c_str());
               if (CFile::Copy(items[j]->GetPath(), strDest, pCallback, NULL))
               {
@@ -1496,7 +1496,7 @@ bool CUtil::CacheRarSubtitles(const std::string& strRarPath,
     std::string strFileName = URIUtils::GetFileName(strPathInRar);
     std::string strFileNameNoCase(strFileName);
     strFileNameNoCase.MakeLower();
-    if (strFileNameNoCase.Find(strCompare) >= 0)
+    if (strFileNameNoCase.find(strCompare) >= 0)
       while (sub_exts[iPos])
       {
         if (StringUtils::CompareNoCase(strExt, sub_exts[iPos]) == 0)
@@ -1551,7 +1551,7 @@ void CUtil::PrepareSubtitleFonts()
   else
   {
     std::string strPath;
-    strPath.Format("%s\\%s\\%i",
+    strPath = StringUtils::Format("%s\\%s\\%i",
                   strFontPath.c_str(),
                   CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("Subtitles.Font").c_str(),
                   CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("Subtitles.Height"));
@@ -1608,7 +1608,7 @@ void CUtil::PlayDVD(const std::string& strProtocol, bool restart)
 
 std::string CUtil::GetNextFilename(const std::string &fn_template, int max)
 {
-  if (!fn_template.Find("%03d"))
+  if (!fn_template.find("%03d"))
     return "";
 
   std::string searchPath = URIUtils::GetDirectory(fn_template);
@@ -1634,7 +1634,7 @@ std::string CUtil::GetNextFilename(const std::string &fn_template, int max)
 
 std::string CUtil::GetNextPathname(const std::string &path_template, int max)
 {
-  if (!path_template.Find("%04d"))
+  if (!path_template.find("%04d"))
     return "";
 
   for (int i = 0; i <= max; i++)
@@ -2020,7 +2020,7 @@ std::string CUtil::ValidatePath(const std::string &path, bool bFixDoubleSlashes 
   // filenames. NOTE: Don't use IsInZip or IsInRar here since it will infinitely
   // recurse and crash XBMC
   if (URIUtils::IsURL(path) &&
-     (path.Find('%') >= 0 ||
+     (path.find('%') >= 0 ||
       StringUtils::StartsWithNoCase(path, "apk:") ||
       StringUtils::StartsWithNoCase(path, "zip:") ||
       StringUtils::StartsWithNoCase(path, "rar:") ||
@@ -2040,14 +2040,14 @@ std::string CUtil::ValidatePath(const std::string &path, bool bFixDoubleSlashes 
     if (bFixDoubleSlashes)
     {
       // Fixup for double back slashes (but ignore the \\ of unc-paths)
-      for (int x = 1; x < result.GetLength() - 1; x++)
+      for (int x = 1; x < result.size() - 1; x++)
       {
         if (result[x] == '\\' && result[x+1] == '\\')
-          result.Delete(x);
+          result.erase(x);
       }
     }
   }
-  else if (path.Find("://") >= 0 || path.Find(":\\\\") >= 0)
+  else if (path.find("://") >= 0 || path.find(":\\\\") >= 0)
   {
     result.Replace('\\', '/');
     /* The double slash correction should only be used when *absolutely*
@@ -2057,10 +2057,10 @@ std::string CUtil::ValidatePath(const std::string &path, bool bFixDoubleSlashes 
     if (bFixDoubleSlashes)
     {
       // Fixup for double forward slashes(/) but don't touch the :// of URLs
-      for (int x = 2; x < result.GetLength() - 1; x++)
+      for (int x = 2; x < result.size() - 1; x++)
       {
         if ( result[x] == '/' && result[x + 1] == '/' && !(result[x - 1] == ':' || (result[x - 1] == '/' && result[x - 2] == ':')) )
-          result.Delete(x);
+          result.erase(x);
       }
     }
   }
@@ -2204,7 +2204,7 @@ int CUtil::GetMatchingSource(const std::string& strPath1, VECSOURCES& VECSOURCES
 
   // stack://
   if (checkURL.IsProtocol("stack"))
-    strPath.Delete(0, 8); // remove the stack protocol
+    strPath.erase(0, 8); // remove the stack protocol
 
   if (checkURL.IsProtocol("shout"))
     strPath = checkURL.GetHostName();
@@ -2232,7 +2232,7 @@ int CUtil::GetMatchingSource(const std::string& strPath1, VECSOURCES& VECSOURCES
       // not a path, so we need to modify the source name
       // since we add the drive status and disc name to the source
       // "Name (Drive Status/Disc Name)"
-      int iPos = strName.ReverseFind('(');
+      int iPos = strName.rfind('(');
       if (iPos > 1)
         strName = strName.Mid(0, iPos - 1);
     }
@@ -2406,13 +2406,13 @@ void CUtil::DeleteDirectoryCache(const std::string &prefix)
 
   for (int i = 0; i < items.Size(); ++i)
   {
-    if (items[i]->m_bIsFolder)
+    const CFileItemPtr &item = items[i];
+    if (item->m_bIsFolder)
       continue;
-    std::string fileName = URIUtils::GetFileName(items[i]->GetPath());
-    if (fileName.Left(prefix.GetLength()) == prefix)
-      XFILE::CFile::Delete(items[i]->GetPath());
+    std::string fileName = URIUtils::GetFileName(item->GetPath());
+    if (StringUtils::StartsWith(fileName, prefix))
+      XFILE::CFile::Delete(item->GetPath());
   }
-
 }
 
 bool CUtil::SetSysDateTimeYear(int iYear, int iMonth, int iDay, int iHour, int iMinute)
@@ -2732,7 +2732,7 @@ bool CUtil::AutoDetectionPing(std::string strFTPUserName, std::string strFTPPass
       if(strReceiveMessage == sztmp)
       {
         // we received a "ping" request, sending our informations
-        strTmp.Format("%s;%s;%s;%d;%d\r\n\0",
+        strTmp = StringUtils::Format("%s;%s;%s;%d;%d\r\n\0",
           strNickName.c_str(),  // Our Nick-, Device Name!
           strFTPUserName.c_str(), // User Name for our FTP Server
           strFTPPass.c_str(), // Password for our FTP Server
@@ -2745,7 +2745,7 @@ bool CUtil::AutoDetectionPing(std::string strFTPUserName, std::string strFTPPass
         //We received new client information, extracting information
         std::string strInfo, strIP;
         strInfo = StringUtils::Format("%s",sztmp); //this is the client info
-        strIP.Format("%d.%d.%d.%d",
+        strIP = StringUtils::Format("%d.%d.%d.%d",
 #ifndef _LINUX
           cliAddr.sin_addr.S_un.S_un_b.s_b1,
           cliAddr.sin_addr.S_un.S_un_b.s_b2,
@@ -2982,11 +2982,11 @@ void CUtil::GetRecursiveDirsListing(const std::string& strPath, CFileItemList& i
 
 void CUtil::ForceForwardSlashes(std::string& strPath)
 {
-  int iPos = strPath.ReverseFind('\\');
+  int iPos = strPath.rfind('\\');
   while (iPos > 0)
   {
     strPath.at(iPos) = '/';
-    iPos = strPath.ReverseFind('\\');
+    iPos = strPath.rfind('\\');
   }
 }
 
@@ -2999,7 +2999,7 @@ double CUtil::AlbumRelevance(const std::string& strAlbumTemp1, const std::string
   strAlbumTemp.MakeLower();
   std::string strAlbum = strAlbum1;
   strAlbum.MakeLower();
-  double fAlbumPercentage = fstrcmp(strAlbumTemp, strAlbum, 0.0f);
+  double fAlbumPercentage = fstrcmp(strAlbumTemp.c_str(), strAlbum.c_str(), 0.0f);
   double fArtistPercentage = 0.0f;
   if (!strArtist1.empty())
   {
@@ -3007,7 +3007,7 @@ double CUtil::AlbumRelevance(const std::string& strAlbumTemp1, const std::string
     strArtistTemp.MakeLower();
     std::string strArtist = strArtist1;
     strArtist.MakeLower();
-    fArtistPercentage = fstrcmp(strArtistTemp, strArtist, 0.0f);
+    fArtistPercentage = fstrcmp(strArtistTemp.c_str(), strArtist.c_str(), 0.0f);
   }
   double fRelevance = fAlbumPercentage * 0.5f + fArtistPercentage * 0.5f;
   return fRelevance;
@@ -3090,7 +3090,7 @@ bool CUtil::SupportsWriteFileOperations(const std::string& strPath)
   if (URIUtils::IsMultiPath(strPath))
     return CMultiPathDirectory::SupportsWriteFileOperations(strPath);
 #ifdef HAS_XBOX_HARDWARE
-  if (URIUtils::IsMemCard(strPath) && g_memoryUnitManager.IsDriveWriteable(strPath))
+  if (URIUtils::IsMemoryCard(strPath) && g_memoryUnitManager.IsDriveWriteable(strPath))
     return true;
 #endif
   return false;
@@ -3352,7 +3352,7 @@ bool CUtil::RunFFPatchedXBE(std::string szPath1, std::string& szNewPath)
     CLog::Log(LOGDEBUG, "%s - Progressive Mode detected: Skipping Auto Filter Flicker Patching!", __FUNCTION__);
     return false;
   }
-  if (strncmp(szPath1, "D:", 2) == 0)
+  if (strncmp(szPath1.c_str(), "D:", 2) == 0)
   {
     CLog::Log(LOGDEBUG, "%s - Source is DVD-ROM! Skipping Filter Flicker Patching.", __FUNCTION__);
     return false;
