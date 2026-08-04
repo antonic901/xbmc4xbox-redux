@@ -3862,6 +3862,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\video\PlayerController.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\video\VideoChapterImageFileLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\VideoChapterImageFileLoader.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\video\VideoDatabase.cpp">
 				</File>
 				<File
@@ -3872,6 +3878,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\video\VideoDbUrl.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\VideoEmbeddedImageFileLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\VideoEmbeddedImageFileLoader.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\VideoGeneratedImageFileLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\video\VideoGeneratedImageFileLoader.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\video\VideoInfoDownloader.cpp">
@@ -4208,6 +4226,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\music\MusicDbUrl.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\music\MusicEmbeddedImageFileLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\music\MusicEmbeddedImageFileLoader.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\music\MusicInfoLoader.cpp">
@@ -5382,6 +5406,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\karaoke\CdgVoiceManager.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="pictures"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\pictures\PictureFolderImageFileLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\pictures\PictureFolderImageFileLoader.h">
 				</File>
 			</Filter>
 		</Filter>

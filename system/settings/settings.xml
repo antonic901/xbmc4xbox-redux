@@ -693,7 +693,7 @@
           <control type="toggle" />
         </setting>
         <setting id="myvideos.extractchapterthumbs" type="boolean" label="37044" help="37045">
-          <level>2</level>
+          <level>4</level>
           <default>false</default>
           <control type="toggle" />
         </setting>
