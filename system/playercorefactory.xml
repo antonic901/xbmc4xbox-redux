@@ -25,7 +25,7 @@
     <!-- DVDs -->
     <rule name="dvd" dvd="true" player="DVDPlayer" />
     <rule name="dvdfile" dvdfile="true" player="DVDPlayer" />
-    <rule name="dvdimage" dvdimage="true" player="DVDPlayer" />
+    <rule name="discimage" discimage="true" player="DVDPlayer" />
 
     <!-- dvdplayer generally plays these better -->
     <rule name="ogv/flv/mov" filetypes="ogv|flv|mov" player="DVDPlayer" />
