@@ -333,10 +333,6 @@ bool CMusicGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
     }
   }
 
-  SPlayerAudioStreamInfo audioInfo;
-  CApplicationComponents &components = CServiceBroker::GetAppComponents();
-  const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
-  appPlayer->GetAudioStreamInfo(appPlayer->GetAudioStream(), audioInfo);
   switch (info.m_info)
   {
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -382,6 +378,13 @@ bool CMusicGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
     }
     case MUSICPLAYER_BITRATE:
     {
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+      if (!appPlayer->IsPlaying())
+        return false;
+
+      SPlayerAudioStreamInfo audioInfo;
+      appPlayer->GetAudioStreamInfo(appPlayer->GetAudioStream(), audioInfo);
       float fTimeSpan = (float)(CTimeUtils::GetFrameTime() - m_lastMusicBitrateTime);
       if (fTimeSpan >= 500.0f)
       {
@@ -397,6 +400,13 @@ bool CMusicGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
     }
     case MUSICPLAYER_CHANNELS:
     {
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+      if (!appPlayer->IsPlaying())
+        return false;
+
+      SPlayerAudioStreamInfo audioInfo;
+      appPlayer->GetAudioStreamInfo(appPlayer->GetAudioStream(), audioInfo);
       if (audioInfo.channels > 0)
       {
         value = StringUtils::Format("%i", audioInfo.channels);
@@ -406,6 +416,13 @@ bool CMusicGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
     }
     case MUSICPLAYER_BITSPERSAMPLE:
     {
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+      if (!appPlayer->IsPlaying())
+        return false;
+
+      SPlayerAudioStreamInfo audioInfo;
+      appPlayer->GetAudioStreamInfo(appPlayer->GetAudioStream(), audioInfo);
       if (audioInfo.bitspersample > 0)
       {
         value = StringUtils::Format("%i", audioInfo.bitspersample);
@@ -415,6 +432,13 @@ bool CMusicGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
     }
     case MUSICPLAYER_SAMPLERATE:
     {
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+      if (!appPlayer->IsPlaying())
+        return false;
+
+      SPlayerAudioStreamInfo audioInfo;
+      appPlayer->GetAudioStreamInfo(appPlayer->GetAudioStream(), audioInfo);
       if (audioInfo.samplerate > 0)
       {
         value = StringUtils::Format("%.5g", ((double)audioInfo.samplerate / 1000.0));
@@ -423,8 +447,17 @@ bool CMusicGUIInfo::GetLabel(std::string& value, const CFileItem *item, int cont
       break;
     }
     case MUSICPLAYER_CODEC:
-      value = StringUtils::Format("%s", audioInfo.audioCodecName.c_str());
+    {
+      CApplicationComponents &components = CServiceBroker::GetAppComponents();
+      const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
+      if (!appPlayer->IsPlaying())
+        return false;
+
+      SPlayerAudioStreamInfo audioInfo;
+      appPlayer->GetAudioStreamInfo(appPlayer->GetAudioStream(), audioInfo);
+      value = audioInfo.audioCodecName;
       return true;
+    }
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////
