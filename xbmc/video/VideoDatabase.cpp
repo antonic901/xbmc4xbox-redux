@@ -6038,8 +6038,8 @@ void CVideoDatabase::UpdateMovieTitle(int idMovie,
   {
     CLog::Log(
         LOGERROR,
-        "{} (int idMovie, const std::string& strNewMovieTitle) failed on MovieID:{} and Title:{}",
-        __FUNCTION__, idMovie, strNewMovieTitle);
+        "%s (int idMovie, const std::string& strNewMovieTitle) failed on MovieID:%i and Title:%s",
+        __FUNCTION__, idMovie, strNewMovieTitle.c_str());
   }
 }
 
@@ -9559,9 +9559,9 @@ void CVideoDatabase::CleanDatabase(CGUIDialogProgressBarHandle* handle,
           "parentPath WHERE parentPath.idPath = path.idParentPath)) " // MySQL only fix (#5007)
           "AND NOT EXISTS (SELECT 1 FROM files WHERE files.idPath = path.idPath) "
           "AND NOT EXISTS (SELECT 1 FROM tvshowlinkpath WHERE tvshowlinkpath.idPath = path.idPath) "
-          "AND NOT EXISTS (SELECT 1 FROM movie WHERE movie.c{:02} = path.idPath) "
-          "AND NOT EXISTS (SELECT 1 FROM episode WHERE episode.c{:02} = path.idPath) "
-          "AND NOT EXISTS (SELECT 1 FROM musicvideo WHERE musicvideo.c{:02} = path.idPath)",
+          "AND NOT EXISTS (SELECT 1 FROM movie WHERE movie.c%02d = path.idPath) "
+          "AND NOT EXISTS (SELECT 1 FROM episode WHERE episode.c%02d = path.idPath) "
+          "AND NOT EXISTS (SELECT 1 FROM musicvideo WHERE musicvideo.c%02d = path.idPath)",
           VIDEODB_ID_PARENTPATHID, VIDEODB_ID_EPISODE_PARENTPATHID,
           VIDEODB_ID_MUSICVIDEO_PARENTPATHID);
       m_pDS->exec(sql);
@@ -10030,8 +10030,8 @@ void CVideoDatabase::ExportToXML(const std::string &path, bool singleFile /* = t
         else
           CLog::Log(
               LOGDEBUG,
-              "CVideoDatabase::{} - Not exporting movie set '{}' as could not create folder '{}'",
-              __FUNCTION__, title, itemPath);
+              "CVideoDatabase::%s - Not exporting movie set '%s' as could not create folder '%s'",
+              __FUNCTION__, title.c_str(), itemPath.c_str());
         m_pDS->next();
         current++;
       }

@@ -2720,7 +2720,7 @@ bool CFileItemList::Save(int windowID)
   if (iSize <= 0)
     return false;
 
-  CLog::Log(LOGDEBUG, "Saving fileitems [%s]", CURL::GetRedacted(GetPath().c_str()));
+  CLog::Log(LOGDEBUG, "Saving fileitems [%s]", CURL::GetRedacted(GetPath()).c_str());
 
   CFile file;
   std::string cachefile = GetDiscFileCache(windowID);

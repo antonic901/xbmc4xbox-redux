@@ -413,8 +413,8 @@ bool CAddonInstaller::InstallFromZip(const std::string &path)
   {
     CLog::Log(
         LOGERROR,
-        "CAddonInstaller: installing addon failed '{}' - itemsize: {}, first item is folder: {}",
-        CURL::GetRedacted(path), items.Size(), items[0]->m_bIsFolder);
+        "CAddonInstaller: installing addon failed '%s' - itemsize: %i, first item is folder: %i",
+        CURL::GetRedacted(path).c_str(), items.Size(), items[0]->m_bIsFolder);
     return false;
   }
 
@@ -1007,8 +1007,8 @@ bool CAddonInstallJob::Install(const std::string &installFrom, const RepositoryP
     {
       CLog::Log(
           LOGERROR,
-          "CAddonInstallJob::{}: failed to install repository [{}]. It has dependencies defined",
-          __FUNCTION__, m_addon->ID());
+          "CAddonInstallJob::%s: failed to install repository [%s]. It has dependencies defined",
+          __FUNCTION__, m_addon->ID().c_str());
       ReportInstallError(m_addon->ID(), m_addon->ID(), g_localizeStrings.Get(24088));
       return false;
     }

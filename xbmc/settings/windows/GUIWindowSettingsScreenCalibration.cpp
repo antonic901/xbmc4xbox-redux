@@ -75,7 +75,7 @@ void CGUIWindowSettingsScreenCalibration::ResetCalibration()
   pDialog->SetHeading(20325);
   std::string strText = StringUtils::Format(
       g_localizeStrings.Get(20326).c_str(),
-      CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(m_Res[m_iCurRes]).strMode);
+      CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(m_Res[m_iCurRes]).strMode.c_str());
   pDialog->SetText(boost::move(strText));
   pDialog->SetChoice(0, 222);
   pDialog->SetChoice(1, 186);

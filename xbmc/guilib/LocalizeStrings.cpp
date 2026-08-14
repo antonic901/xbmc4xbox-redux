@@ -52,7 +52,7 @@ static bool LoadPO(const std::string &filename, std::map<uint32_t, LocStr>& stri
         else if (bStrInMem)
           CLog::Log(
               LOGDEBUG,
-              "POParser: id:{} was recently re-used in the English string file, which is not yet "
+              "POParser: id:%i was recently re-used in the English string file, which is not yet "
               "changed in the translated file. Using the English string instead",
               id);
         strings[id + offset].strTranslated = PODoc.GetMsgid();

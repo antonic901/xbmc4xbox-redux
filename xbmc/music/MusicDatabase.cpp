@@ -11907,8 +11907,8 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,
             else if (!CDirectory::Exists(strAlbumPath))
               CLog::Log(
                   LOGDEBUG,
-                  "CMusicDatabase::{} - Not exporting album {} as found path {} does not exist",
-                  __FUNCTION__, album.strAlbum, strAlbumPath);
+                  "CMusicDatabase::%s - Not exporting album %s as found path %s does not exist",
+                  __FUNCTION__, album.strAlbum.c_str(), strAlbumPath.c_str());
             else
             {
               strPath = strAlbumPath;
