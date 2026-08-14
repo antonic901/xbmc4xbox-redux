@@ -256,7 +256,6 @@ void CAdvancedSettings::Initialize()
   m_bPowerSave = true;
   m_displayRemoteCodes = false;
   m_noDVDROM = false;
-  m_usePCDVDROM = false;
 
   m_playlistAsFolders = true;
   m_detectAsUdf = false;
@@ -744,7 +743,6 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
   XMLUtils::GetBoolean(pRootElement, "powersave", m_bPowerSave);
   XMLUtils::GetBoolean(pRootElement, "displayremotecodes", m_displayRemoteCodes);
   XMLUtils::GetBoolean(pRootElement, "nodvdrom", m_noDVDROM);
-  XMLUtils::GetBoolean(pRootElement, "usepcdvdrom", m_usePCDVDROM);
 
   XMLUtils::GetUInt(pRootElement, "fanartres", m_fanartRes, 0, 9999);
   XMLUtils::GetUInt(pRootElement, "imageres", m_imageRes, 0, 9999);

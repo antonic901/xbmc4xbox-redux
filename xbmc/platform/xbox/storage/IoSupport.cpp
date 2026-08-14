@@ -261,14 +261,7 @@ DWORD CIoSupport::GetTrayState()
 {
 #ifdef _XBOX
   DWORD dwTrayState, dwTrayCount;
-  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_usePCDVDROM)
-  {
-    dwTrayState = TRAY_CLOSED_MEDIA_PRESENT;
-  }
-  else
-  {
-    HalReadSMCTrayState(&dwTrayState, &dwTrayCount);
-  }
+  HalReadSMCTrayState(&dwTrayState, &dwTrayCount);
 
   return dwTrayState;
 #endif
