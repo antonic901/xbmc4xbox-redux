@@ -183,7 +183,6 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     bool m_bPowerSave;
     bool m_displayRemoteCodes;
     bool m_noDVDROM;
-    bool m_usePCDVDROM;
 
     bool m_playlistAsFolders;
     bool m_detectAsUdf;

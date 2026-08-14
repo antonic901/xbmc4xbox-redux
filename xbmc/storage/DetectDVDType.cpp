@@ -46,7 +46,6 @@ CCriticalSection CDetectDVDMedia::m_muReadingMedia;
 CEvent CDetectDVDMedia::m_evAutorun;
 int CDetectDVDMedia::m_DriveState = DRIVE_CLOSED_NO_MEDIA;
 CCdInfo* CDetectDVDMedia::m_pCdInfo = NULL;
-time_t CDetectDVDMedia::m_LastPoll = 0;
 CDetectDVDMedia* CDetectDVDMedia::m_pInstance = NULL;
 std::string CDetectDVDMedia::m_diskLabel = "";
 std::string CDetectDVDMedia::m_diskPath = "";
@@ -73,12 +72,7 @@ void CDetectDVDMedia::OnStartup()
 
 void CDetectDVDMedia::Process()
 {
-  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_usePCDVDROM)
-  {
-    m_DriveState = DRIVE_CLOSED_MEDIA_PRESENT;
-  }
-
-  while (( !m_bStop ) && (!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_usePCDVDROM))
+  while ( !m_bStop )
   {
     Sleep(500);
     UpdateDvdrom();
@@ -301,7 +295,7 @@ void CDetectDVDMedia::SetNewDVDShareUrl( const std::string& strNewUrl, bool bCDD
   m_diskPath = strNewUrl;
 
   // update label to xbe label if applicable
-  if ((CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_usePCDVDROM || IsDiscInDrive()) && !bCDDA && CFile::Exists("D:\\default.xbe"))
+  if (IsDiscInDrive() && !bCDDA && CFile::Exists("D:\\default.xbe"))
     CUtil::GetXBEDescription("D:\\default.xbe", m_diskLabel);
 }
 
@@ -383,40 +377,7 @@ int CDetectDVDMedia::DriveReady()
 bool CDetectDVDMedia::IsDiscInDrive()
 {
   CSingleLock waitLock(m_muReadingMedia);
-  bool bResult = true;
-  if ( m_DriveState != DRIVE_CLOSED_MEDIA_PRESENT )
-  {
-    bResult = false;
-  }
-
-  if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_usePCDVDROM)
-  {
-    // allow the application to poll once every five seconds
-    if ((clock() - m_LastPoll) > 5000)
-    {
-      // only poll if we're not playing media from the drive
-      const CApplicationComponents &components = CServiceBroker::GetAppComponents();
-      const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
-      if (!(appPlayer->IsPlaying() && g_application.CurrentFileItem().IsOnDVD()))
-      {
-        CLog::Log(LOGINFO, "Polling PC-DVDROM...");
-
-        m_isoReader.Reset();
-
-        CIoSupport::Dismount("Cdrom0");
-        if (CIoSupport::RemapDriveLetter('D', "Cdrom0") == S_OK)
-        {
-          if (m_pInstance)
-          {
-            m_pInstance->DetectMediaType();
-          }
-        }
-      }
-      m_LastPoll = clock();
-    }
-  }
-
-  return bResult;
+  return m_DriveState != DRIVE_CLOSED_MEDIA_PRESENT;
 }
 
 // Static function
