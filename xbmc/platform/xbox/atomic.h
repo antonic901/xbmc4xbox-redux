@@ -32,13 +32,13 @@ public:
     InterlockedExchange(&m_value, value ? 1 : 0);
   }
 
-  bool value()
+  bool value() const
   {
     return InterlockedCompareExchange(&m_value, 0, 0) != 0;
   }
 
 private:
-  LONG m_value;
+  mutable LONG m_value;
 };
 
 template<>
@@ -55,13 +55,13 @@ public:
     InterlockedExchange(&m_value, value);
   }
 
-  long value()
+  long value() const
   {
     return InterlockedCompareExchange(&m_value, 0, 0);
   }
 
 private:
-  LONG m_value;
+  mutable LONG m_value;
 };
 
 typedef atomic<bool> atomic_bool;
