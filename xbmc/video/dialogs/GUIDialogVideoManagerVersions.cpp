@@ -406,7 +406,7 @@ bool CGUIDialogVideoManagerVersions::GetAllOtherMovies(const boost::shared_ptr<C
 
   // get video list
   const std::string videoTitlesDir(StringUtils::Format(
-      "videodb://{}/titles", CMediaTypes::ToPlural(item->GetVideoInfoTag()->m_type)));
+      "videodb://%s/titles", CMediaTypes::ToPlural(item->GetVideoInfoTag()->m_type.c_str())));
 
   list.Clear();
 

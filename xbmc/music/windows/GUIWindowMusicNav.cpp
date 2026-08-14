@@ -790,7 +790,7 @@ bool CGUIWindowMusicNav::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       CVideoDatabase database;
       database.Open();
       strPath = StringUtils::Format(
-          "videodb://musicvideos/artists/{}/",
+          "videodb://musicvideos/artists/%i/",
           database.GetMatchingMusicVideo(item->GetMusicInfoTag()->GetArtistString()));
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_VIDEO_NAV,strPath);
       return true;

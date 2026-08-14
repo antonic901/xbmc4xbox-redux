@@ -279,8 +279,8 @@ namespace VIDEO
     {
       CLog::Log(
           LOGINFO,
-          "VideoInfoScanner: Plugin '{}' does not support media library scanning for '{}' content",
-          CURL::GetRedacted(strDirectory), TranslateContent(content));
+          "VideoInfoScanner: Plugin '%s' does not support media library scanning for '%s' content",
+          CURL::GetRedacted(strDirectory).c_str(), TranslateContent(content).c_str());
       return true;
     }
 
@@ -2144,9 +2144,9 @@ namespace VIDEO
       {
         CLog::Log(
             LOGDEBUG,
-            "{} - no match for show: '{}', season: {}, episode: {}.{}, airdate: '{}', title: '{}'",
-            __FUNCTION__, showInfo.m_strTitle, file->iSeason, file->iEpisode, file->iSubepisode,
-            file->cDate.GetAsLocalizedDate(), file->strTitle);
+            "%s - no match for show: '%s', season: %i, episode: %i.%i, airdate: '%s', title: '%s'",
+            __FUNCTION__, showInfo.m_strTitle.c_str(), file->iSeason, file->iEpisode, file->iSubepisode,
+            file->cDate.GetAsLocalizedDate().c_str(), file->strTitle.c_str());
       }
     }
     return INFO_ADDED;
