@@ -1538,9 +1538,11 @@ bool CAddonSettings::ParseOldLabel(const TiXmlElement* element,
                                    const std::string& settingId,
                                    int& labelId)
 {
-  labelId = -1;
   if (element == NULL)
+  {
+    labelId = -1;
     return false;
+  }
 
   // label value as a string
   std::string labelString;
@@ -1556,6 +1558,8 @@ bool CAddonSettings::ParseOldLabel(const TiXmlElement* element,
     if (endptr == NULL || *endptr == '\0')
       return true;
   }
+  else if (labelId != -1)
+    return true;
   // make sure the label string is not empty
   else
     labelString = " ";
