@@ -2,16 +2,15 @@
 <addon
   id="webinterface.default"
   version="1.0.0"
-  name="XBMC Reloaded"
+  name="Xodi web interface - Reloaded"
   provider-name="Team XBMC">
   <requires>
-    <import addon="xbmc.gui" version="2.13"/>
+    <import addon="xbmc.gui" version="5.17.0" />
   </requires>
-  <extension
-    point="xbmc.webinterface"/>
+  <extension point="xbmc.webinterface"/>
   <extension point="xbmc.addon.metadata">
-    <summary lang="en_GB">Team-Xbmc Web Interface. (XBMC's default web interface)</summary>
-    <description lang="en_GB">Default web interface for XBMC; Designed for devices of all resolutions</description>
     <platform>all</platform>
+    <summary lang="en_GB">Default web interface</summary>
+    <description lang="en_GB">Browse and interact with your Music, Movies, TV Shows and more via a web browser. Stream music and videos on your browser. Edit and manage your Kodi media library.</description>
   </extension>
 </addon>
