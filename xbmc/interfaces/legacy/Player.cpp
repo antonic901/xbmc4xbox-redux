@@ -206,21 +206,6 @@ namespace XBMCAddon
       invokeCallback(new CallbackFunction<Player>(this, &Player::onPlayBackStarted));
     }
 
-    void Player::OnAVStarted(const CFileItem &file)
-    {
-      // We only have fileItem due to us having to
-      // implement the interface, we can't send it to python
-      // as we're not able to serialize it.
-      XBMC_TRACE;
-      invokeCallback(new CallbackFunction<Player>(this, &Player::onAVStarted));
-    }
-
-    void Player::OnAVChange()
-    {
-      XBMC_TRACE;
-      invokeCallback(new CallbackFunction<Player>(this, &Player::onAVChange));
-    }
-
     void Player::OnPlayBackEnded()
     {
       XBMC_TRACE;
@@ -276,16 +261,6 @@ namespace XBMCAddon
     }
 
     void Player::onPlayBackStarted()
-    {
-      XBMC_TRACE;
-    }
-
-    void Player::onAVStarted()
-    {
-      XBMC_TRACE;
-    }
-
-    void Player::onAVChange()
     {
       XBMC_TRACE;
     }

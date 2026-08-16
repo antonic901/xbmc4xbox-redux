@@ -179,7 +179,6 @@ CApplication::CApplication(void)
     m_Autorun(new CAutorun()),
 #endif
     m_itemCurrentFile(boost::make_shared<CFileItem>()),
-    m_playerEvent(true, true),
     m_bInitializing(true),
     m_nextPlaylistItem(-1),
     m_bStop(false)
@@ -2119,7 +2118,6 @@ bool CApplication::OnMessage(CGUIMessage& message)
     {
       m_itemCurrentFile =
           boost::make_shared<CFileItem>(*boost::static_pointer_cast<CFileItem>(message.GetItem()));
-      m_playerEvent.Reset();
 
       PLAYLIST::CPlayList playList = CServiceBroker::GetPlaylistPlayer().GetPlaylist(
           CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist());
@@ -2164,12 +2162,6 @@ bool CApplication::OnMessage(CGUIMessage& message)
 
       CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "xbmc", "OnPlay",
                                                          m_itemCurrentFile, param);
-
-      // we don't want a busy dialog when switching channels
-      const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
-      if (!m_itemCurrentFile->IsLiveTV() ||
-          (!appPlayer->IsPlayingVideo() && !appPlayer->IsPlayingAudio()))
-        CGUIDialogBusy::WaitOnEvent(m_playerEvent);
 
       return true;
     }
@@ -2269,7 +2261,6 @@ bool CApplication::OnMessage(CGUIMessage& message)
     CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "xbmc", "OnStop",
                                                        m_itemCurrentFile, data);
 
-    m_playerEvent.Set();
     ResetCurrentItem();
     PlaybackCleanup();
 #ifdef HAS_PYTHON
@@ -2285,7 +2276,6 @@ bool CApplication::OnMessage(CGUIMessage& message)
     CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Player, "xbmc", "OnStop",
                                                        m_itemCurrentFile, data);
 
-    m_playerEvent.Set();
     const boost::shared_ptr<CApplicationStackHelper> stackHelper = GetComponent<CApplicationStackHelper>();
     if (stackHelper->IsPlayingRegularStack() && stackHelper->HasNextStackPartFileItem())
     { // just play the next item in the stack
