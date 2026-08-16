@@ -18,7 +18,7 @@
 //
 //  --------------------------------------------------------------------------
 //
-// Copyright © 2000, Juan Soulie <jsoulie@cplusplus.com>
+// Copyright ï¿½ 2000, Juan Soulie <jsoulie@cplusplus.com>
 //
 // Permission to use, copy, modify, distribute and sell this software or any
 // part thereof and/or its documentation for any purpose is granted without fee
@@ -37,7 +37,7 @@
 
 #pragma pack(1)
 
-struct COLOR {unsigned char b,g,r,x;};	// Windows GDI expects 4bytes per color
+struct COLOR {unsigned char b,g,r,x;};  // Windows GDI expects 4bytes per color
 #define ALIGN sizeof(int)         ///< Windows GDI expects all int-aligned
 
 #define LZW_MAXBITS   12
@@ -84,7 +84,7 @@ GUIBITMAPINFOHEADER;
 typedef struct tagGUIBITMAPINFO
 {
     GUIBITMAPINFOHEADER    bmiHeader;
-    GUIRGBQUAD						 bmiColors[1];
+    GUIRGBQUAD             bmiColors[1];
 } GUIBITMAPINFO;
 #else
   typedef tagBITMAPINFO GUIBITMAPINFO;

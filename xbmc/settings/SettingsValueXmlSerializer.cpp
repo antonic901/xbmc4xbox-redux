@@ -96,6 +96,6 @@ void CSettingsValueXmlSerializer::SerializeSetting(TiXmlNode* parent,
 
   if (parent->InsertEndChild(settingElement) == NULL)
     CLog::Log(LOGWARNING,
-      "CSettingsValueXmlSerializer: unable to write <" SETTING_XML_ELM_SETTING " id=\"{}\"> tag",
-      setting->GetId());
+      "CSettingsValueXmlSerializer: unable to write <" SETTING_XML_ELM_SETTING " id=\"%s\"> tag",
+      setting->GetId().c_str());
 }

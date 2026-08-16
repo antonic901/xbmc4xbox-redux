@@ -1688,9 +1688,9 @@ bool CApplication::PlayMedia(CFileItem& item, const std::string& player, PLAYLIS
       else
       {
         CLog::Log(LOGWARNING,
-                  "CApplication::PlayMedia called to play a playlist {} but no idea which playlist "
+                  "CApplication::PlayMedia called to play a playlist %s but no idea which playlist "
                   "to use, playing first item",
-                  item.GetPath());
+                  item.GetPath().c_str());
         if (playlist->size())
           return PlayFile(*(*playlist)[0], "", false);
       }

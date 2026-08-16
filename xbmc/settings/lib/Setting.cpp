@@ -940,8 +940,8 @@ bool CSettingInt::Deserialize(const TiXmlNode *node, bool update /* = false */)
     if (options != NULL && options->FirstChild() != NULL)
     {
       if (!DeserializeOptionsSort(options, m_optionsSort))
-        CLog::Log(LOGWARNING, "invalid \"sort\" attribute of <" SETTING_XML_ELM_OPTIONS "> for \"{}\"",
-                       m_id);
+        CLog::Log(LOGWARNING, "invalid \"sort\" attribute of <" SETTING_XML_ELM_OPTIONS "> for \"%s\"",
+                       m_id.c_str());
 
       if (options->FirstChild()->Type() == TiXmlNode::TINYXML_TEXT)
       {
@@ -1470,8 +1470,8 @@ bool CSettingString::Deserialize(const TiXmlNode *node, bool update /* = false *
     if (options != NULL && options->FirstChild() != NULL)
     {
       if (!DeserializeOptionsSort(options, m_optionsSort))
-        CLog::Log(LOGWARNING, "invalid \"sort\" attribute of <" SETTING_XML_ELM_OPTIONS "> for \"{}\"",
-                       m_id);
+        CLog::Log(LOGWARNING, "invalid \"sort\" attribute of <" SETTING_XML_ELM_OPTIONS "> for \"%s\"",
+                       m_id.c_str());
 
       if (options->FirstChild()->Type() == TiXmlNode::TINYXML_TEXT)
       {

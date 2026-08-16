@@ -214,8 +214,8 @@ ADDON_STATUS CAddonDll::Create(KODI_ADDON_INSTANCE_STRUCT* firstKodiInstance)
   else
   { // Addon failed initialization
     CLog::Log(LOGERROR,
-              "ADDON: Dll {} - Client returned bad status ({}) from Create and is not usable",
-              Name(), status);
+              "ADDON: Dll %s - Client returned bad status (%d) from Create and is not usable",
+              Name().c_str(), status);
 
     // @todo currently a copy and paste from other function and becomes improved.
     std::string heading =

@@ -332,7 +332,7 @@ std::string CScraper::InternalRun(const std::string &function,
 
 std::string CScraper::GetPathSettingsAsJSON()
 {
-  static const std::string EmptyPathSettings = "{}";
+  static const std::string EmptyPathSettings = "%s";
 
   if (!LoadSettings(false, true))
     return EmptyPathSettings;
@@ -933,10 +933,10 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl,
   }
 
   CLog::Log(LOGDEBUG,
-            "{}: Searching for '{}' using {} scraper "
-            "(path: '{}', content: '{}', version: '{}')",
-            __FUNCTION__, sTitle, Name(), Path(), ADDON::TranslateContent(Content()),
-            Version().asString());
+            "%s: Searching for '%s' using %s scraper "
+            "(path: '%s', content: '%s', version: '%s')",
+            __FUNCTION__, sTitle.c_str(), Name().c_str(), Path().c_str(), ADDON::TranslateContent(Content()).c_str(),
+            Version().asString().c_str());
 
   std::vector<CScraperUrl> vcscurl;
   if (IsNoop())
@@ -1077,10 +1077,10 @@ std::vector<CMusicAlbumInfo> CScraper::FindAlbum(CCurlFile &fcurl,
                                                  const std::string &sArtist)
 {
   CLog::Log(LOGDEBUG,
-            "{}: Searching for '{} - {}' using {} scraper "
-            "(path: '{}', content: '{}', version: '{}')",
-            __FUNCTION__, sArtist, sAlbum, Name(), Path(), ADDON::TranslateContent(Content()),
-            Version().asString());
+            "%s: Searching for '%s - %s' using %s scraper "
+            "(path: '%s', content: '%s', version: '%s')",
+            __FUNCTION__, sArtist.c_str(), sAlbum.c_str(), Name().c_str(), Path().c_str(), ADDON::TranslateContent(Content()).c_str(),
+            Version().asString().c_str());
 
   std::vector<CMusicAlbumInfo> vcali;
   if (IsNoop())
@@ -1183,10 +1183,10 @@ std::vector<CMusicAlbumInfo> CScraper::FindAlbum(CCurlFile &fcurl,
 std::vector<CMusicArtistInfo> CScraper::FindArtist(CCurlFile &fcurl, const std::string &sArtist)
 {
   CLog::Log(LOGDEBUG,
-            "{}: Searching for '{}' using {} scraper "
-            "(file: '{}', content: '{}', version: '{}')",
-            __FUNCTION__, sArtist, Name(), Path(), ADDON::TranslateContent(Content()),
-            Version().asString());
+            "%s: Searching for '%s' using %s scraper "
+            "(file: '%s', content: '%s', version: '%s')",
+            __FUNCTION__, sArtist.c_str(), Name().c_str(), Path().c_str(), ADDON::TranslateContent(Content()).c_str(),
+            Version().asString().c_str());
 
   std::vector<CMusicArtistInfo> vcari;
   if (IsNoop())
@@ -1278,10 +1278,10 @@ EPISODELIST CScraper::GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl 
     return vcep;
 
   CLog::Log(LOGDEBUG,
-            "{}: Searching '{}' using {} scraper "
-            "(file: '{}', content: '{}', version: '{}')",
-            __FUNCTION__, scurl.GetFirstThumbUrl(), Name(), Path(),
-            ADDON::TranslateContent(Content()), Version().asString());
+            "%s: Searching '%s' using %s scraper "
+            "(file: '%s', content: '%s', version: '%s')",
+            __FUNCTION__, scurl.GetFirstThumbUrl().c_str(), Name().c_str(), Path().c_str(),
+            ADDON::TranslateContent(Content()).c_str(), Version().asString().c_str());
 
   if (m_isPython)
   {
@@ -1396,10 +1396,10 @@ bool CScraper::GetVideoDetails(XFILE::CCurlFile& fcurl,
                                CVideoInfoTag& video)
 {
   CLog::Log(LOGDEBUG,
-            "{}: Reading {} '{}' using {} scraper "
-            "(file: '{}', content: '{}', version: '{}')",
-            __FUNCTION__, fMovie ? MediaTypeMovie : MediaTypeEpisode, scurl.GetFirstThumbUrl(),
-            Name(), Path(), ADDON::TranslateContent(Content()), Version().asString());
+            "%s: Reading %s '%s' using %s scraper "
+            "(file: '%s', content: '%s', version: '%s')",
+            __FUNCTION__, fMovie ? MediaTypeMovie : MediaTypeEpisode, scurl.GetFirstThumbUrl().c_str(),
+            Name().c_str(), Path().c_str(), ADDON::TranslateContent(Content()).c_str(), Version().asString().c_str());
 
   video.Reset();
 
@@ -1443,10 +1443,10 @@ bool CScraper::GetVideoDetails(XFILE::CCurlFile& fcurl,
 bool CScraper::GetAlbumDetails(CCurlFile &fcurl, const CScraperUrl &scurl, CAlbum &album)
 {
   CLog::Log(LOGDEBUG,
-            "{}: Reading '{}' using {} scraper "
-            "(file: '{}', content: '{}', version: '{}')",
-            __FUNCTION__, scurl.GetFirstThumbUrl(), Name(), Path(),
-            ADDON::TranslateContent(Content()), Version().asString());
+            "%s: Reading '%s' using %s scraper "
+            "(file: '%s', content: '%s', version: '%s')",
+            __FUNCTION__, scurl.GetFirstThumbUrl().c_str(), Name().c_str(), Path().c_str(),
+            ADDON::TranslateContent(Content()).c_str(), Version().asString().c_str());
 
   if (m_isPython)
     return PythonDetails(ID(), "url", scurl.GetFirstThumbUrl(),
@@ -1481,10 +1481,10 @@ bool CScraper::GetArtistDetails(CCurlFile &fcurl,
     return false;
 
   CLog::Log(LOGDEBUG,
-            "{}: Reading '{}' ('{}') using {} scraper "
-            "(file: '{}', content: '{}', version: '{}')",
-            __FUNCTION__, scurl.GetFirstThumbUrl(), sSearch, Name(), Path(),
-            ADDON::TranslateContent(Content()), Version().asString());
+            "%s: Reading '%s' ('%s') using %s scraper "
+            "(file: '%s', content: '%s', version: '%s')",
+            __FUNCTION__, scurl.GetFirstThumbUrl().c_str(), sSearch.c_str(), Name().c_str(), Path().c_str(),
+            ADDON::TranslateContent(Content()).c_str(), Version().asString().c_str());
 
   if (m_isPython)
     return PythonDetails(ID(), "url", scurl.GetFirstThumbUrl(),
@@ -1520,10 +1520,10 @@ bool CScraper::GetArtwork(XFILE::CCurlFile &fcurl, CVideoInfoTag &details)
     return false;
 
   CLog::Log(LOGDEBUG,
-            "{}: Reading artwork for '{}' using {} scraper "
-            "(file: '{}', content: '{}', version: '{}')",
-            __FUNCTION__, details.GetUniqueID(), Name(), Path(), ADDON::TranslateContent(Content()),
-            Version().asString());
+            "%s: Reading artwork for '%s' using %s scraper "
+            "(file: '%s', content: '%s', version: '%s')",
+            __FUNCTION__, details.GetUniqueID().c_str(), Name().c_str(), Path().c_str(), ADDON::TranslateContent(Content()).c_str(),
+            Version().asString().c_str());
 
   if (m_isPython)
     return PythonDetails(ID(), "id", details.GetUniqueID(),

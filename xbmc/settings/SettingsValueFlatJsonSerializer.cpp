@@ -132,8 +132,8 @@ CVariant CSettingsValueFlatJsonSerializer::SerializeSettingValue(
     case SettingType::Unknown:
     default:
       CLog::Log(LOGWARNING,
-        "CSettingsValueFlatJsonSerializer: failed to serialize setting \"{}\" with value \"{}\" " \
-        "of unknown type", setting->GetId(), setting->ToString());
+        "CSettingsValueFlatJsonSerializer: failed to serialize setting \"%s\" with value \"%s\" " \
+        "of unknown type", setting->GetId().c_str(), setting->ToString().c_str());
       return CVariant::ConstNullVariant;
   }
 }

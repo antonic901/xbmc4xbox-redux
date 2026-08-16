@@ -778,8 +778,8 @@ void CMusicInfoScanner::FileItemsToAlbums(CFileItemList& items, VECALBUMS& album
     {
       compilation = true;
       CLog::Log(LOGDEBUG,
-                "Album '{}' is a compilation as all songs are marked as part of a compilation",
-                songsByAlbumName->first);
+                "Album '%s' is a compilation as all songs are marked as part of a compilation",
+                songsByAlbumName->first.c_str());
     }
 
     /*

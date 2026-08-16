@@ -335,7 +335,7 @@ bool CGUIControl::OnMessage(CGUIMessage& message)
       if ( !CanFocus() )
       {
         CLog::Log(LOGERROR,
-                  "Control {} in window {} has been asked to focus, "
+                  "Control %i in window %i has been asked to focus, "
                   "but it can't",
                   GetID(), GetParentID());
         return false;

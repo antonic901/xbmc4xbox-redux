@@ -53,9 +53,9 @@ CAddonStatusHandler::CAddonStatusHandler(const std::string& addonID,
     return;
 
   CLog::Log(LOGINFO,
-            "Called Add-on status handler for '{}' of clientName:{}, clientID:{}, instanceID:{} "
-            "(same Thread={})",
-            status, m_addon->Name(), m_addon->ID(), m_instanceId, sameThread ? "yes" : "no");
+            "Called Add-on status handler for '%d' of clientName:%s, clientID:%s, instanceID:%"PRIu32" "
+            "(same Thread=%s)",
+            status, m_addon->Name().c_str(), m_addon->ID().c_str(), m_instanceId, sameThread ? "yes" : "no");
 
   m_status = status;
 

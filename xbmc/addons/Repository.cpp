@@ -132,17 +132,17 @@ CRepository::CRepository(const AddonInfoPtr& addonInfo) : CAddon(addonInfo, Addo
   if (!Type(AddonType::REPOSITORY)->GetValue("info").empty())
   {
     CLog::Log(LOGERROR,
-              "Repository add-on {} uses old schema definition for the repository extension point! "
+              "Repository add-on %s uses old schema definition for the repository extension point! "
               "This is no longer supported, please update your addon to use <dir> definitions.",
-              ID());
+              ID().c_str());
   }
 
   if (m_dirs.empty())
   {
     CLog::Log(LOGERROR,
-              "Repository add-on {} does not have any directory matching {} and won't be able to "
+              "Repository add-on %s does not have any directory matching %s and won't be able to "
               "update/serve addons! Please fix the addon.xml definition",
-              ID(), version.asString());
+              ID().c_str(), version.asString().c_str());
   }
 
   for (RepositoryDirList::const_iterator dir = m_dirs.begin(); dir != m_dirs.end(); ++dir)

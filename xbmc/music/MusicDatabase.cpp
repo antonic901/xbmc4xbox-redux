@@ -11902,8 +11902,8 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,
             // avoid overwriting by not allow NFO and art to be exported
             if (strAlbumPath.empty())
               CLog::Log(LOGDEBUG,
-                        "CMusicDatabase::{} - Not exporting album {} as unique path not found",
-                        __FUNCTION__, album.strAlbum);
+                        "CMusicDatabase::%s - Not exporting album %s as unique path not found",
+                        __FUNCTION__, album.strAlbum.c_str());
             else if (!CDirectory::Exists(strAlbumPath))
               CLog::Log(
                   LOGDEBUG,
@@ -11932,8 +11932,8 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,
             }
             if (!pathfound)
               CLog::Log(LOGDEBUG,
-                        "CMusicDatabase::{} - Not exporting album {} as could not create {}",
-                        __FUNCTION__, album.strAlbum, strPath);
+                        "CMusicDatabase::%s - Not exporting album %s as could not create %s",
+                        __FUNCTION__, album.strAlbum.c_str(), strPath.c_str());
             else
             {
               std::string strAlbumFolder;
@@ -11947,8 +11947,8 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,
               }
               if (!pathfound)
                 CLog::Log(LOGDEBUG,
-                          "CMusicDatabase::{} - Not exporting album {} as could not create {}",
-                          __FUNCTION__, album.strAlbum, strPath);
+                          "CMusicDatabase::%s - Not exporting album %s as could not create %s",
+                          __FUNCTION__, album.strAlbum.c_str(), strPath.c_str());
             }
           }
           if (pathfound)

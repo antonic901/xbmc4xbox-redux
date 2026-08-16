@@ -741,8 +741,8 @@ bool CLangInfo::SetLanguage(std::string language /* = "" */, bool reloadServices
         (addonMgr.IsAddonDisabled(language) && !addonMgr.EnableAddon(language)))
     {
       CLog::Log(LOGWARNING,
-                "CLangInfo::{}: could not find or enable language add-on '{}', loading default...",
-                __FUNCTION__, language);
+                "CLangInfo::%s: could not find or enable language add-on '%s', loading default...",
+                __FUNCTION__, language.c_str());
       language = boost::static_pointer_cast<const CSettingString>(
                      CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(
                          CSettings::SETTING_LOCALE_LANGUAGE))

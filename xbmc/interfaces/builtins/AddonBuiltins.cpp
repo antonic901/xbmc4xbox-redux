@@ -208,8 +208,8 @@ static int RunScript(const std::vector<std::string>& params)
         {
           scriptpath = addon->LibPath();
           CLog::Log(LOGWARNING,
-                    "RunScript called for a non-script addon '{}'. This behaviour is deprecated.",
-                    params[0]);
+                    "RunScript called for a non-script addon '%s'. This behaviour is deprecated.",
+                    params[0].c_str());
         }
         else
         {
