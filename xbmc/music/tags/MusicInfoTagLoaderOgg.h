@@ -30,6 +30,6 @@ public:
   CMusicInfoTagLoaderOgg(void);
   virtual ~CMusicInfoTagLoaderOgg();
 
-  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
+  virtual bool Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
 };
 }

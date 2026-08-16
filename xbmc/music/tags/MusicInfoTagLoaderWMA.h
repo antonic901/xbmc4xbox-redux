@@ -20,6 +20,7 @@
  */
 
 #include "music/tags/ImusicInfoTagLoader.h"
+#include "utils/StdString.h"
 
 namespace MUSIC_INFO
 {
@@ -30,7 +31,7 @@ public:
   CMusicInfoTagLoaderWMA(void);
   virtual ~CMusicInfoTagLoaderWMA();
 
-  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
+  virtual bool Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
 
 protected:
   void SetTagValueString(const CStdString& strFrameName, const CStdString& strValue, CMusicInfoTag& tag);

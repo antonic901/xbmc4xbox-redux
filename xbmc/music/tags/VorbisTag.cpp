@@ -84,9 +84,7 @@ int CVorbisTag::ParseTagEntry(CStdString& strTagEntry)
 
   if ( strTagType == "DATE" )
   {
-    SYSTEMTIME dateTime;
-    dateTime.wYear = atoi(strTagValue);
-    tag.SetReleaseDate(dateTime);
+    tag.SetYear(atoi(strTagValue));
   }
 
   if ( strTagType == "GENRE" )

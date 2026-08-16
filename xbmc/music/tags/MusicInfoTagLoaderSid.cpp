@@ -45,7 +45,7 @@ CMusicInfoTagLoaderSid::~CMusicInfoTagLoaderSid()
 {
 }
 
-bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderSid::Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   CStdString strFileToLoad = strFileName;
   int iTrack = 0;
@@ -218,9 +218,7 @@ bool CMusicInfoTagLoaderSid::Load(const CStdString& strFileName, CMusicInfoTag& 
         tag.SetTitle(strTitle);
       if (tag.GetArtist().empty())
         tag.SetArtist(strArtist);
-      SYSTEMTIME dateTime;
-      dateTime.wYear = atoi(strYear.c_str());
-      tag.SetReleaseDate(dateTime);
+      tag.SetYear(atoi(strYear.c_str()));
       f2.close();
       return( true );
     }

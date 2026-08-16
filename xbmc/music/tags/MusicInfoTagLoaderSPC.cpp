@@ -40,7 +40,7 @@ SPC_ID666 *SPC_get_id666FP (CFile& file)
 
   file.Seek(0x23,SEEK_SET);
   char c;
-  if (file.Read(&c,1) != 1 || c == 27) 
+  if (file.Read(&c,1) != 1 || c == 27)
   {
       free(id);
       return NULL;
@@ -118,7 +118,7 @@ CMusicInfoTagLoaderSPC::~CMusicInfoTagLoaderSPC()
 {
 }
 
-bool CMusicInfoTagLoaderSPC::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderSPC::Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   tag.SetLoaded(false);
 

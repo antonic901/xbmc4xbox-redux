@@ -13,6 +13,7 @@
 #include "network/cddb.h"
 #include "profiles/ProfileManager.h"
 #include "settings/SettingsComponent.h"
+#include "storage/DetectDVDType.h"
 #include "storage/MediaManager.h"
 #include "utils/log.h"
 
@@ -43,7 +44,7 @@ bool CMusicInfoTagLoaderCDDA::Load(const std::string& strFileName, CMusicInfoTag
     bool bResult = false;
 
     // Get information for the inserted disc
-    CCdInfo* pCdInfo = CServiceBroker::GetMediaManager().GetCdInfo();
+    CCdInfo* pCdInfo = CDetectDVDMedia::GetCdInfo();
     if (pCdInfo == NULL)
       return bResult;
 

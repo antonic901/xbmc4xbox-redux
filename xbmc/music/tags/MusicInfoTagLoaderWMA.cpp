@@ -86,7 +86,7 @@ CMusicInfoTagLoaderWMA::~CMusicInfoTagLoaderWMA()
 // Based on MediaInfo
 // by J�r�me Martinez, Zen@MediaArea.net
 // http://sourceforge.net/projects/mediainfo/
-bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderWMA::Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   try
   {
@@ -417,9 +417,7 @@ void CMusicInfoTagLoaderWMA::SetTagValueString(const CStdString& strFrameName, c
   //else if (strFrameName=="WM/Track") // Old Tracknumber, should not be used anymore
   else if (strFrameName == "WM/Year")
   {
-    SYSTEMTIME dateTime;
-    dateTime.wYear = atoi(strValue.c_str());
-    tag.SetReleaseDate(dateTime);
+    tag.SetYear(atoi(strValue.c_str()));
   }
   else if (strFrameName == "WM/Genre")
   {
@@ -510,7 +508,7 @@ void CMusicInfoTagLoaderWMA::SetTagValueBinary(const CStdString& strFrameName, c
       {
         tag.SetCoverArtInfo(picture.dwDataLen, picture.pwszMIMEType);
         if (art)
-          art->set(picture.pbData, picture.dwDataLen, picture.pwszMIMEType);
+          art->Set(picture.pbData, picture.dwDataLen, picture.pwszMIMEType);
       }
     }
   }
