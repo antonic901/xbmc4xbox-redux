@@ -119,8 +119,12 @@ VOID CDetectDVDMedia::UpdateDvdrom()
         {
           // Send Message to GUI that disc been ejected
           SetNewDVDShareUrl("D:\\", false, g_localizeStrings.Get(502));
-          CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_REMOVED_MEDIA);
-          CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage( msg );
+          CGUIComponent* gui = CServiceBroker::GetGUI();
+          if (gui)
+          {
+            CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_REMOVED_MEDIA);
+            gui->GetWindowManager().SendThreadMessage( msg );
+          }
           m_isoReader.Reset();
           waitLock.Leave();
           m_DriveState = DRIVE_OPEN;
@@ -142,8 +146,12 @@ VOID CDetectDVDMedia::UpdateDvdrom()
             m_pCdInfo = NULL;
           }
           waitLock.Leave();
-          CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_SOURCES);
-          CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage( msg );
+          CGUIComponent* gui = CServiceBroker::GetGUI();
+          if (gui)
+          {
+            CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_SOURCES);
+            gui->GetWindowManager().SendThreadMessage( msg );
+          }
           // Do we really need sleep here? This will fix: [ 1530771 ] "Open tray" problem
           // Sleep(6000);
           return ;
@@ -162,9 +170,13 @@ VOID CDetectDVDMedia::UpdateDvdrom()
           m_DriveState = DRIVE_CLOSED_NO_MEDIA;
           SetNewDVDShareUrl("D:\\", false, g_localizeStrings.Get(504));
           // Send Message to GUI that disc has changed
-          CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_SOURCES);
           waitLock.Leave();
-          CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage( msg );
+          CGUIComponent* gui = CServiceBroker::GetGUI();
+          if (gui)
+          {
+            CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_SOURCES);
+            gui->GetWindowManager().SendThreadMessage( msg );
+          }
           return ;
         }
         break;
@@ -177,9 +189,13 @@ VOID CDetectDVDMedia::UpdateDvdrom()
           CIoSupport::RemapDriveLetter('D', "Cdrom0");
           // Detect ISO9660(mode1/mode2) or CDDA filesystem
           DetectMediaType();
-          CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_SOURCES);
           waitLock.Leave();
-            CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage( msg );
+          CGUIComponent* gui = CServiceBroker::GetGUI();
+          if (gui)
+          {
+            CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_SOURCES);
+            gui->GetWindowManager().SendThreadMessage( msg );
+          }
           // Tell the application object that a new Cd is inserted
           // So autorun can be started.
           if ( !m_bStartup )
@@ -246,7 +262,8 @@ void CDetectDVDMedia::DetectMediaType()
 
   if (m_pCdInfo->IsISOUDF(1))
   {
-    if (!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_detectAsUdf)
+    boost::shared_ptr<CSettingsComponent> settingsComponent = CServiceBroker::GetSettingsComponent();
+    if (settingsComponent && settingsComponent->GetAdvancedSettings()->m_detectAsUdf)
     {
       strNewUrl = "iso9660://";
       m_isoReader.Scan();
@@ -377,7 +394,7 @@ int CDetectDVDMedia::DriveReady()
 bool CDetectDVDMedia::IsDiscInDrive()
 {
   CSingleLock waitLock(m_muReadingMedia);
-  return m_DriveState != DRIVE_CLOSED_MEDIA_PRESENT;
+  return m_DriveState == DRIVE_CLOSED_MEDIA_PRESENT;
 }
 
 // Static function
