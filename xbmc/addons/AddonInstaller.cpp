@@ -1080,10 +1080,10 @@ bool CAddonInstallJob::Install(const std::string &installFrom, const RepositoryP
             if (!dependencyToInstall->MeetsVersion(versionMin, version))
             {
               CLog::Log(LOGERROR,
-                        "CAddonInstallJob[{}]: found dependency [{}/{}] doesn't meet minimum "
-                        "version [{}]",
-                        m_addon->ID(), addonID, dependencyToInstall->Version().asString(),
-                        versionMin.asString());
+                        "CAddonInstallJob[%s]: found dependency [%s/%s] doesn't meet minimum "
+                        "version [%s]",
+                        m_addon->ID().c_str(), addonID.c_str(), dependencyToInstall->Version().asString().c_str(),
+                        versionMin.asString().c_str());
               ReportInstallError(m_addon->ID(), m_addon->ID(), g_localizeStrings.Get(24085));
               return false;
             }

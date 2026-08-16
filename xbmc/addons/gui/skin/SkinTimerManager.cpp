@@ -58,8 +58,8 @@ void CSkinTimerManager::LoadTimerInternal(const TiXmlElement* node)
   if (TimerExists(timerName))
   {
     CLog::Log(LOGWARNING,
-               "Ignoring timer with name {} - another timer with the same name already exists",
-               timerName);
+               "Ignoring timer with name %s - another timer with the same name already exists",
+               timerName.c_str());
     return;
   }
 

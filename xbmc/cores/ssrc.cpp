@@ -25,7 +25,7 @@
 #include <math.h>
 
 #include "system.h"
-#include "ssrc.h" 
+#include "ssrc.h"
 
 //#include "SRand.h"
 
@@ -3121,13 +3121,13 @@ bool Cssrc::InitFilters(void)
     //    |....B....|....C....|   buf1      n1b2+n1b2
     //|.A.|....D....|             buf2  n2x+n1b2
     //
-    // ‚Ü‚¸inbuf‚©‚çB‚Éosf”ƒTƒ“ƒvƒŠƒ“ƒO‚µ‚È‚ª‚çƒRƒs[
-    // C‚ÍƒNƒŠƒA
-    // BC‚Éstage 1 filter‚ğ‚©‚¯‚é
-    // D‚ÉB‚ğ‘«‚·
-    // AD‚Éstage 2 filter‚ğ‚©‚¯‚é
-    // D‚ÌŒã‚ë‚ğA‚ÉˆÚ“®
-    // C‚ğD‚ÉƒRƒs[
+    // ï¿½Ü‚ï¿½inbufï¿½ï¿½ï¿½ï¿½Bï¿½ï¿½osfï¿½ï¿½Tï¿½ï¿½ï¿½vï¿½ï¿½ï¿½ï¿½ï¿½Oï¿½ï¿½ï¿½È‚ï¿½ï¿½ï¿½Rï¿½sï¿½[
+    // Cï¿½ÍƒNï¿½ï¿½ï¿½A
+    // BCï¿½ï¿½stage 1 filterï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    // Dï¿½ï¿½Bï¿½ğ‘«‚ï¿½
+    // ADï¿½ï¿½stage 2 filterï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    // Dï¿½ÌŒï¿½ï¿½ï¿½Aï¿½ÉˆÚ“ï¿½
+    // Cï¿½ï¿½Dï¿½ÉƒRï¿½sï¿½[
 
     buf1 = new REAL * [nch];
     for (int i = 0;i < nch;i++)
@@ -3916,15 +3916,15 @@ int Cssrc::DownSampleCommon(unsigned char * *pRetDataPtr, bool IsEof, int tobere
   CopyMemory(RetData, InData, DataSize);
   return(RetData);
  }
- 
+
  char *pReturnData = NULL;
  DWORD ReturnDataSize = 0;
- 
+
  //------get what we have------
  DWORD DataLen = (DWORD)DataSize;
  DWORD Used = 0;
 // char *pData = DataStream.ReturnData(InData, DataLen);
- 
+
  DWORD Left = DataLen;
  //----are we upsampling?-------
  if (UpSampling)
@@ -3933,7 +3933,7 @@ int Cssrc::DownSampleCommon(unsigned char * *pRetDataPtr, bool IsEof, int tobere
   while (true)
   {
    int toberead,toberead2;
- 
+
    toberead2 = toberead = (int)(floor((double)n2b2*sfrq/(dfrq*osf))+1+n1x-inbuflen);
    if (toberead == 0)
     break;
@@ -3951,29 +3951,29 @@ int Cssrc::DownSampleCommon(unsigned char * *pRetDataPtr, bool IsEof, int tobere
    //-----inc counters------
    Used+=(toberead * bps*nch);
    Left-=(toberead * bps*nch);
- 
+
    //---run upsample-----
    unsigned char *pOutData;
    int NewSamples = UpSampleRawIn(&pOutData, IsEOF, toberead, toberead2, nsmplread);
- 
+
    //------take new data and add to pReturnData-------
    if (NewSamples > 0)
    {
     DWORD NewBufferLenNeeded = ReturnDataSize + NewSamples;
     //-----we can store it in existing?------
     char *pNewBuffer = new char[NewBufferLenNeeded]; // plus a bit to grow
- 
+
     if (ReturnDataSize) // existing?
     {
      CopyMemory(pNewBuffer, pReturnData, ReturnDataSize);
      delete pReturnData;
     }
- 
+
     CopyMemory((pNewBuffer + ReturnDataSize), pOutData, NewSamples);
     ReturnDataSize+=NewSamples;
     pReturnData = pNewBuffer;
    }
-  }  
+  }
  } else { //========down sample
   //-----if have enough then encode chunks-----
   while (true)
@@ -3994,11 +3994,11 @@ int Cssrc::DownSampleCommon(unsigned char * *pRetDataPtr, bool IsEof, int tobere
    //-----inc counters------
    Used+=(toberead * bps*nch);
    Left-=(toberead * bps*nch);
- 
+
    //---run upsample-----
    unsigned char *pOutData;
    int NewSamples = DownSampleRawIn(&pOutData, IsEOF, toberead, nsmplread);
- 
+
    //------take new data and add to pReturnData-------
    if (NewSamples > 0)
    {
@@ -4013,16 +4013,16 @@ int Cssrc::DownSampleCommon(unsigned char * *pRetDataPtr, bool IsEof, int tobere
     ReturnDataSize+=NewSamples;
     pReturnData = pNewBuffer;
    }
-  }  
+  }
  }
  //-------------store any unused-------------
  if (Left)
 //  DataStream.StoreThisExtraData(pData + Used, Left);
 // delete []pData;
- 
+
  //-----return what we have--------
  DataSize = ReturnDataSize;
- 
+
  return(pReturnData);
 }*/
 

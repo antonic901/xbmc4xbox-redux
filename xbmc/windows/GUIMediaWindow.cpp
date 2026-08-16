@@ -1872,7 +1872,7 @@ void CGUIMediaWindow::UpdateFilterPath(const std::string &strDirectory, const CF
     if (!m_filter.LoadFromJson(filter))
     {
       CLog::Log(LOGWARNING,
-                "CGUIMediaWindow::UpdateFilterPath(): unable to load existing filter ({})", filter);
+                "CGUIMediaWindow::UpdateFilterPath(): unable to load existing filter (%s)", filter.c_str());
       m_filter.Reset();
       m_strFilterPath = m_vecItems->GetPath();
     }

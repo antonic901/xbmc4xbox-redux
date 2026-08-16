@@ -778,8 +778,8 @@ boost::shared_ptr<CSettingGroup> CAddonSettings::ParseOldSettingElement(
       else
       {
         CLog::Log(LOGWARNING,
-            "failed to parse enable condition \"{}\" of old setting definition for \"{}\"",
-            setting->enableCondition, setting->setting->GetId());
+            "failed to parse enable condition \"%s\" of old setting definition for \"%s\"",
+            setting->enableCondition.c_str(), setting->setting->GetId().c_str());
       }
     }
 
@@ -792,8 +792,8 @@ boost::shared_ptr<CSettingGroup> CAddonSettings::ParseOldSettingElement(
       else
       {
         CLog::Log(LOGWARNING,
-            "failed to parse visible condition \"{}\" of old setting definition for \"{}\"",
-            setting->visibleCondition, setting->setting->GetId());
+            "failed to parse visible condition \"%s\" of old setting definition for \"%s\"",
+            setting->visibleCondition.c_str(), setting->setting->GetId().c_str());
       }
     }
 
@@ -1638,8 +1638,8 @@ bool CAddonSettings::ParseOldCondition(const boost::shared_ptr<const CSetting>& 
     if (referencedSetting == NULL)
     {
       CLog::Log(LOGWARNING,
-          "cannot reference separator setting in old setting condition \"{}\" for \"{}\"", *cond,
-          setting->GetId());
+          "cannot reference separator setting in old setting condition \"%s\" for \"%s\"", cond->c_str(),
+          setting->GetId().c_str());
       error = true;
       continue;
     }

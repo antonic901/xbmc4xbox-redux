@@ -488,7 +488,7 @@ void CGUIWindowManager::Remove(int id)
   else
   {
     CLog::Log(LOGWARNING,
-              "Attempted to remove window {} "
+              "Attempted to remove window %i "
               "from the window manager when it didn't exist",
               id);
   }
@@ -643,7 +643,7 @@ void CGUIWindowManager::ActivateWindow_Internal(int iWindowID, const std::vector
   if (!g_passwordManager.CheckMenuLock(iWindowID))
   {
     CLog::Log(LOGERROR,
-              "MasterCode or MediaSource-code is wrong: Window with id {} will not be loaded! "
+              "MasterCode or MediaSource-code is wrong: Window with id %i will not be loaded! "
               "Enter a correct code!",
               iWindowID);
     if (GetActiveWindow() == WINDOW_INVALID && iWindowID != WINDOW_HOME)
@@ -978,7 +978,7 @@ bool CGUIWindowManager::HandleAction(CAction const& action) const
         return false;
       }
       CLog::Log(LOGWARNING,
-                "CGUIWindowManager - {} - ignoring action {}, because topmost modal dialog closing "
+                "CGUIWindowManager - %s - ignoring action %i, because topmost modal dialog closing "
                 "animation is running",
                 __FUNCTION__, action.GetID());
       return true; // do nothing with the action until the anim is finished

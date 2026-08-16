@@ -110,7 +110,7 @@ void CPlayListWPL::Save(const std::string& strFileName) const
   write += StringUtils::Format("<smil>\n");
   write += StringUtils::Format("    <head>\n");
   write += StringUtils::Format("        <meta name=%cGenerator%c content=%cMicrosoft Windows Media "
-                               "Player -- 10.0.0.3646{}/>\n",
+                               "Player -- 10.0.0.3646%c/>\n",
                                34, 34, 34, 34);
   write += StringUtils::Format("        <author/>\n");
   write += StringUtils::Format("        <title>%s</title>\n", m_strPlayListName.c_str());

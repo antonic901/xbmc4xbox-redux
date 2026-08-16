@@ -922,9 +922,9 @@ bool CAddonMgr::EnableAddon(const std::string& id)
   ResolveDependencies(id, needed, missing);
   for (std::vector<std::string>::const_iterator dep = missing.begin(); dep != missing.end(); ++dep)
     CLog::Log(LOGWARNING,
-              "CAddonMgr: '{}' required by '{}' is missing. Add-on may not function "
+              "CAddonMgr: '%s' required by '%s' is missing. Add-on may not function "
               "correctly",
-              *dep, id);
+              (*dep).c_str(), id.c_str());
   for (std::reverse_iterator<std::vector<std::string>::iterator> it = needed.rbegin(); it != needed.rend(); ++it)
     EnableSingle(*it);
 

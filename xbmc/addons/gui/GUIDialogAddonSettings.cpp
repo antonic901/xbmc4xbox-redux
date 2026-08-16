@@ -68,9 +68,9 @@ bool CGUIDialogAddonSettings::OnMessage(CGUIMessage& message)
       if (instanceId != m_instanceId)
       {
         CLog::Log(LOGERROR,
-                  "CGUIDialogAddonSettings::{}: Set value \"{}\" from add-on \"{}\" called with "
-                  "invalid instance id (given: {}, needed: {})",
-                  __FUNCTION__, m_addon->ID(), settingId, instanceId, m_instanceId);
+                  "CGUIDialogAddonSettings::%s: Set value \"%s\" from add-on \"%s\" called with "
+                  "invalid instance id (given: %"PRIu32", needed: %"PRIu32")",
+                  __FUNCTION__, m_addon->ID().c_str(), settingId.c_str(), instanceId, m_instanceId);
         break;
       }
 

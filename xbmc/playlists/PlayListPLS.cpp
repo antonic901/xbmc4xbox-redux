@@ -178,9 +178,9 @@ bool CPlayListPLS::Load(const std::string &strFile)
   if (bFailed)
   {
     CLog::Log(LOGERROR,
-              "File {} is not a valid PLS playlist. Location of first file,title or length is not "
+              "File %s is not a valid PLS playlist. Location of first file,title or length is not "
               "permitted (eg. File0 should be File1)",
-              URIUtils::GetFileName(strFileName));
+              URIUtils::GetFileName(strFileName).c_str());
     return false;
   }
 

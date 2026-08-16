@@ -6,14 +6,14 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted.
  *
- * ¤³¤Î¥×¥í¥°¥é¥à¤Îºî¼Ô¤Ï jagarl ¤Ç¤¹¡£
+ * ï¿½ï¿½ï¿½Î¥×¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îºï¿½Ô¤ï¿½ jagarl ï¿½Ç¤ï¿½ï¿½ï¿½
  *
- * ¤³¤Î¥×¥í¥°¥é¥à¡¢µÚ¤Ó¥³¥ó¥Ñ¥¤¥ë¤Ë¤è¤Ã¤ÆÀ¸À®¤·¤¿¥Ð¥¤¥Ê¥ê¤Ï
- * ¥×¥í¥°¥é¥à¤òÊÑ¹¹¤¹¤ë¡¢¤·¤Ê¤¤¤Ë¤«¤«¤ï¤é¤ººÆÇÛÉÛ²ÄÇ½¤Ç¤¹¡£
- * ¤½¤ÎºÝ¡¢¾åµ­ Copyright É½¼¨¤òÊÝ»ý¤¹¤ë¤Ê¤É¤Î¾ò·ï¤Ï²Ý¤·¤Þ
- * ¤»¤ó¡£ÂÐ±þ¤¬ÌÌÅÝ¤Ê¤Î¤Ç¥Ð¥°Êó¹ð¤ò½ü¤­¡¢¥á¡¼¥ë¤ÇÏ¢Íí¤ò¤¹¤ë
- * ¤Ê¤É¤ÎÉ¬Í×¤â¤¢¤ê¤Þ¤»¤ó¡£¥½¡¼¥¹¤Î°ìÉô¤òÎ®ÍÑ¤¹¤ë¤³¤È¤ò´Þ¤á¡¢
- * ¤´¼«Í³¤Ë¤ª»È¤¤¤¯¤À¤µ¤¤¡£
+ * ï¿½ï¿½ï¿½Î¥×¥ï¿½ï¿½ï¿½ï¿½ï¿½à¡¢ï¿½Ú¤Ó¥ï¿½ï¿½ï¿½Ñ¥ï¿½ï¿½ï¿½Ë¤ï¿½Ã¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¥ï¿½ï¿½Ê¥ï¿½ï¿½
+ * ï¿½×¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¹ï¿½ï¿½ï¿½ï¿½ë¡¢ï¿½ï¿½ï¿½Ê¤ï¿½ï¿½Ë¤ï¿½ï¿½ï¿½ï¿½ï¿½é¤ºï¿½ï¿½ï¿½ï¿½ï¿½Û²ï¿½Ç½ï¿½Ç¤ï¿½ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ÎºÝ¡ï¿½ï¿½åµ­ Copyright É½ï¿½ï¿½ï¿½ï¿½ï¿½Ý»ï¿½ï¿½ï¿½ï¿½ï¿½Ê¤É¤Î¾ï¿½ï¿½Ï²Ý¤ï¿½ï¿½ï¿½
+ * ï¿½ï¿½ï¿½ï¿½ï¿½Ð±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¤Ê¤Î¤Ç¥Ð¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½á¡¼ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ò¤¹¤ï¿½
+ * ï¿½Ê¤É¤ï¿½É¬ï¿½×¤â¤¢ï¿½ï¿½Þ¤ï¿½ï¿½ó¡£¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î°ï¿½ï¿½ï¿½ï¿½ï¿½Î®ï¿½Ñ¤ï¿½ï¿½ë¤³ï¿½È¤ï¿½Þ¤á¡¢
+ * ï¿½ï¿½ï¿½ï¿½Í³ï¿½Ë¤ï¿½ï¿½È¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  *
  * THIS SOFTWARE IS PROVIDED BY KAZUNORI 'jagarl' UENO ``AS IS'' AND ANY
  * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -27,7 +27,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
  * USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
- * 
+ *
  */
 
 #ifndef _NWA_DECODER_H
@@ -38,15 +38,15 @@
 typedef struct NWAData_s
 {
     int channels;
-    int bps;						/* bits per sample */
-    int freq;						/* samples per second */
-    int complevel;				/* compression level */
-    int blocks;					/* block count */
-    int datasize;					/* all data size */
-    int compdatasize;				/* compressed data size */
-    int samplecount;				/* all samples */
-    int blocksize;				/* samples per block */
-    int restsize;					/* samples of the last block */
+    int bps;                        /* bits per sample */
+    int freq;                       /* samples per second */
+    int complevel;                /* compression level */
+    int blocks;                   /* block count */
+    int datasize;                    /* all data size */
+    int compdatasize;                /* compressed data size */
+    int samplecount;                 /* all samples */
+    int blocksize;                /* samples per block */
+    int restsize;                    /* samples of the last block */
 
     int curblock;
     off_t *offsets;

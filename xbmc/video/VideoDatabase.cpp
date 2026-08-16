@@ -6067,9 +6067,9 @@ bool CVideoDatabase::UpdateVideoSortTitle(int idDb,
   catch (...)
   {
     CLog::Log(LOGERROR,
-              "{} (int idDb, const std::string& strNewSortTitle, VideoDbContentType::Type iType) "
-              "failed on ID: {} and Sort Title: {}",
-              __FUNCTION__, idDb, strNewSortTitle);
+              "%s (int idDb, const std::string& strNewSortTitle, VideoDbContentType::Type iType) "
+              "failed on ID: %i and Sort Title: %s",
+              __FUNCTION__, idDb, strNewSortTitle.c_str());
   }
 
   return false;
@@ -6213,7 +6213,7 @@ bool CVideoDatabase::GetNavCommon(const std::string& strBaseDir,
       else
         return false;
 
-      strSQL = "SELECT {} " + PrepareSQL("FROM %s ", type);
+      strSQL = "SELECT %s " + PrepareSQL("FROM %s ", type);
       extFilter.fields = PrepareSQL("%s.%s_id, %s.name, path.strPath", type, type, type);
       extFilter.AppendField(extraField);
       extFilter.AppendJoin(PrepareSQL("JOIN %s_link ON %s.%s_id = %s_link.%s_id", type, type, type, type, type));
@@ -6250,7 +6250,7 @@ bool CVideoDatabase::GetNavCommon(const std::string& strBaseDir,
       else
         return false;
 
-      strSQL = "SELECT {} " + PrepareSQL("FROM %s ", type);
+      strSQL = "SELECT %s " + PrepareSQL("FROM %s ", type);
       extFilter.fields = PrepareSQL("%s.%s_id, %s.name", type, type, type);
       extFilter.AppendField(extraField);
       extFilter.AppendJoin(PrepareSQL("JOIN %s_link ON %s.%s_id = %s_link.%s_id", type, type, type, type, type));
@@ -6454,7 +6454,7 @@ bool CVideoDatabase::GetMusicVideoAlbumsNav(const std::string& strBaseDir, CFile
     if (!videoUrl.FromString(strBaseDir))
       return false;
 
-    std::string strSQL = "select {} from musicvideo_view ";
+    std::string strSQL = "select %s from musicvideo_view ";
     Filter extFilter = filter;
     extFilter.fields = PrepareSQL("musicvideo_view.c%02d, musicvideo_view.idMVideo, actor.name, "
                                   "musicvideo_view.c%02d, musicvideo_view.c%02d, musicvideo_view.c%02d ",
@@ -6717,7 +6717,7 @@ bool CVideoDatabase::GetPeopleNav(const std::string& strBaseDir,
       else
         return false;
 
-      strSQL = "SELECT {} FROM actor ";
+      strSQL = "SELECT %s FROM actor ";
       extFilter.fields = "actor.actor_id, actor.name, actor.art_urls, path.strPath";
       extFilter.AppendField(extraField);
       extFilter.AppendJoin(PrepareSQL("JOIN %s_link ON actor.actor_id = %s_link.actor_id", type, type));
@@ -6773,7 +6773,7 @@ bool CVideoDatabase::GetPeopleNav(const std::string& strBaseDir,
       else
         return false;
 
-      strSQL = "SELECT {} FROM actor ";
+      strSQL = "SELECT %s FROM actor ";
       extFilter.fields = "actor.actor_id, actor.name, actor.art_urls";
       extFilter.AppendField(extraField);
       extFilter.AppendJoin(PrepareSQL("JOIN %s_link on actor.actor_id = %s_link.actor_id", type, type));
@@ -8545,7 +8545,7 @@ void CVideoDatabase::GetMusicVideoAlbumsByName(const std::string& strSearch, CFi
       return;
 
     strSQL = StringUtils::Format("SELECT DISTINCT"
-                                 "  musicvideo.c{:02},"
+                                 "  musicvideo.c%02d,"
                                  "  musicvideo.idMVideo,"
                                  "  path.strPath"
                                  " FROM"

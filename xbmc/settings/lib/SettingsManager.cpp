@@ -762,8 +762,8 @@ bool CSettingsManager::Serialize(TiXmlNode *parent) const
 
     if (parent->InsertEndChild(settingElement) == NULL)
     {
-      CLog::Log(LOGWARNING, "unable to write <" SETTING_XML_ELM_SETTING " id=\"{}\"> tag",
-                     setting->second.setting->GetId());
+      CLog::Log(LOGWARNING, "unable to write <" SETTING_XML_ELM_SETTING " id=\"%s\"> tag",
+                     setting->second.setting->GetId().c_str());
       continue;
     }
   }

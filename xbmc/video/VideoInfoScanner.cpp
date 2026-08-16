@@ -331,9 +331,9 @@ namespace VIDEO
       else if (hash.empty())
       { // directory empty or non-existent - add to clean list and skip
         CLog::Log(LOGDEBUG,
-                  "VideoInfoScanner: Skipping dir '{}' as it's empty or doesn't exist - adding to "
+                  "VideoInfoScanner: Skipping dir '%s' as it's empty or doesn't exist - adding to "
                   "clean list",
-                  CURL::GetRedacted(strDirectory));
+                  CURL::GetRedacted(strDirectory).c_str());
         if (m_bClean)
           m_pathsToClean.insert(m_database.GetPathId(strDirectory));
         bSkip = true;
@@ -508,9 +508,9 @@ namespace VIDEO
       if (ret == INFO_CANCELLED || ret == INFO_ERROR)
       {
         CLog::Log(LOGWARNING,
-                  "VideoInfoScanner: Error {} occurred while retrieving"
-                  "information for {}.",
-                  ret, CURL::GetRedacted(pItem->GetPath()));
+                  "VideoInfoScanner: Error %d occurred while retrieving"
+                  "information for %s.",
+                  ret, CURL::GetRedacted(pItem->GetPath()).c_str());
         FoundSomeInfo = false;
         break;
       }
@@ -519,8 +519,8 @@ namespace VIDEO
       else if (ret == INFO_NOT_FOUND)
       {
         CLog::Log(LOGWARNING,
-                  "No information found for item '{}', it won't be added to the library.",
-                  CURL::GetRedacted(pItem->GetPath()));
+                  "No information found for item '%s', it won't be added to the library.",
+                  CURL::GetRedacted(pItem->GetPath()).c_str());
 
         MediaType mediaType = MediaTypeMovie;
         if (info2->Content() == CONTENT_TVSHOWS)
@@ -1229,9 +1229,9 @@ namespace VIDEO
     if (tag->m_iSeason == 0 && tag->m_iEpisode == 0)
     {
       CLog::Log(LOGDEBUG,
-                "{} - found exclusion match for: {}. Both Season and Episode are 0. Item will be "
+                "%s - found exclusion match for: %s. Both Season and Episode are 0. Item will be "
                 "ignored for scanning.",
-                __FUNCTION__, CURL::GetRedacted(item->GetPath()));
+                __FUNCTION__, CURL::GetRedacted(item->GetPath()).c_str());
       return true;
     }
 
@@ -1713,9 +1713,9 @@ namespace VIDEO
     path = URIUtils::AddFileToFolder(path, CUtil::MakeLegalFileName(setTitle, LEGAL_WIN32_COMPAT));
     URIUtils::AddSlashAtEnd(path);
     CLog::Log(LOGDEBUG,
-        "VideoInfoScanner: Looking for local artwork for movie set '{}' in folder '{}'",
-        setTitle,
-        CURL::GetRedacted(path));
+        "VideoInfoScanner: Looking for local artwork for movie set '%s' in folder '%s'",
+        setTitle.c_str(),
+        CURL::GetRedacted(path).c_str());
     return CDirectory::Exists(path) ? path : "";
   }
 
@@ -2018,12 +2018,12 @@ namespace VIDEO
       if (episodes.empty())
       {
         CLog::Log(LOGERROR,
-                  "VideoInfoScanner: Asked to lookup episode {}"
+                  "VideoInfoScanner: Asked to lookup episode %s"
                   " online, but we have either no episode guide or"
                   " we are using the local scraper. Check your tvshow.nfo and make"
                   " sure the <episodeguide> tag is in place and/or use an online"
                   " scraper.",
-                  CURL::GetRedacted(file->strPath));
+                  CURL::GetRedacted(file->strPath).c_str());
         continue;
       }
 
@@ -2115,9 +2115,9 @@ namespace VIDEO
             guide = candidates->begin() + index;
             bFound = true;
             CLog::Log(LOGDEBUG,
-                      "{} fuzzy title match for show: '{}', title: '{}', match: '{}', score: {:f} "
-                      ">= {:f}",
-                      __FUNCTION__, showInfo.m_strTitle, file->strTitle, titles[index], matchscore,
+                      "%s fuzzy title match for show: '%s', title: '%s', match: '%s', score: %f "
+                      ">= %f",
+                      __FUNCTION__, showInfo.m_strTitle.c_str(), file->strTitle.c_str(), titles[index].c_str(), matchscore,
                       minscore);
           }
         }

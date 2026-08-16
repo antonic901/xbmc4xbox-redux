@@ -126,8 +126,8 @@ ADDON_STATUS IAddonInstanceHandler::CreateInstance()
   if (status != ADDON_STATUS_OK)
   {
     CLog::Log(LOGERROR,
-              "IAddonInstanceHandler::{}: {} returned bad status \"{}\" during instance creation",
-              __FUNCTION__, m_addon->ID(), kodi::addon::TranslateAddonStatus(status));
+              "IAddonInstanceHandler::%s: %s returned bad status \"%s\" during instance creation",
+              __FUNCTION__, m_addon->ID().c_str(), kodi::addon::TranslateAddonStatus(status).c_str());
   }
   return status;
 }
@@ -368,7 +368,7 @@ bool IAddonInstanceHandler::set_instance_setting_string(const KODI_ADDON_INSTANC
   if (!instance || !id || !value)
   {
     CLog::Log(LOGERROR,
-              "IAddonInstanceHandler::{} - invalid data (instance='{}', id='{}', value='{}')",
+              "IAddonInstanceHandler::%s - invalid data (instance='%p', id='%p', value='%p')",
               __FUNCTION__, hdl, static_cast<const void*>(id), static_cast<const void*>(value));
 
     return false;

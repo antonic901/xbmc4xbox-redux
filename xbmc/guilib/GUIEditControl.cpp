@@ -69,7 +69,7 @@ CGUIEditControl::CGUIEditControl(int parentID, int controlID, float posX, float 
   {
     m_height = m_label.GetLabelInfo().font->GetTextHeight(1);
     CLog::Log(LOGWARNING,
-               "No height has been set for GUI edit control ID {}, fallback to font height",
+               "No height has been set for GUI edit control ID %i, fallback to font height",
                controlID);
   }
 }
