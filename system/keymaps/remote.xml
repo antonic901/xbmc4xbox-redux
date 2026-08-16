@@ -123,7 +123,7 @@
       <clear>XBMC.ActivateWindow(Weather)</clear>
     </remote>
   </Home>
-  <MyFiles>
+  <Filemanager>
     <remote>
       <zero>Delete</zero>
       <one>Highlight</one>
@@ -131,7 +131,7 @@
       <seven>Move</seven>
       <clear>Delete</clear>
     </remote>
-  </MyFiles>
+  </Filemanager>
   <MyMusicPlaylist>
     <remote>
       <clear>Delete</clear>
@@ -145,18 +145,12 @@
       <zero>Queue</zero>
     </remote>
   </MyMusicPlaylistEditor>
-  <MyMusicFiles>
+  <Music>
     <remote>
       <zero>Queue</zero>
       <star>Queue</star>
     </remote>
-  </MyMusicFiles>
-  <MyMusicLibrary>
-    <remote>
-      <zero>Queue</zero>
-      <star>Queue</star>
-    </remote>
-  </MyMusicLibrary>
+  </Music>
   <FullscreenVideo>
     <remote>
       <left>StepBack</left>
@@ -210,11 +204,6 @@
       <info>CodecInfo</info>
     </remote>
   </MusicOSD>
-  <VisualisationSettings>
-    <remote>
-      <menu>Back</menu>
-    </remote>
-  </VisualisationSettings>
   <VisualisationPresetList>
     <remote>
       <menu>Back</menu>
@@ -248,13 +237,13 @@
       <xbox>NextResolution</xbox>
     </remote>
   </ScreenCalibration>
-  <GUICalibration>
+  <ScreenCalibration>
     <remote>
       <select>NextCalibration</select>
       <enter>NextCalibration</enter>
       <zero>ResetCalibration</zero>
     </remote>
-  </GUICalibration>
+  </ScreenCalibration>
   <VideoOSD>
     <remote>
       <menu>Back</menu>
@@ -303,12 +292,6 @@
       <clear>Delete</clear>
     </remote>
   </MyVideoLibrary>
-  <MyVideoFiles>
-    <remote>
-      <zero>Queue</zero>
-      <star>Queue</star>
-    </remote>
-  </MyVideoFiles>
   <MyVideoPlaylist>
     <remote>
       <clear>Delete</clear>

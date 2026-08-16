@@ -78,7 +78,7 @@
       <seven>Number7</seven>
       <eight>Number8</eight>
       <nine>Number9</nine>
-      <backslash>ToggleFullScreen</backslash>
+      <backslash>FullScreen</backslash>
       <home>FirstPage</home>
       <end>LastPage</end>
       <key id='65446'>ParentDir</key>
@@ -91,14 +91,14 @@
       <end>XBMC.ShutDown()</end>
     </keyboard>
   </Home>
-  <MyFiles>
+  <Filemanager>
     <keyboard>
       <space>Highlight</space>
       <delete>Delete</delete>
       <m>Move</m>
       <r>Rename</r>
     </keyboard>
-  </MyFiles>
+  </Filemanager>
   <MyMusicPlaylist>
     <keyboard>
       <space>Back</space>
@@ -114,18 +114,12 @@
       <delete>Delete</delete>
     </keyboard>
   </MyMusicPlaylistEditor>
-  <MyMusicFiles>
+  <MyMusic>
     <keyboard>
       <space>Playlist</space>
       <q>Queue</q>
     </keyboard>
-  </MyMusicFiles>
-  <MyMusicLibrary>
-    <keyboard>
-      <space>Playlist</space>
-      <q>Queue</q>
-    </keyboard>
-  </MyMusicLibrary>
+  </MyMusic>
   <FullscreenVideo>
     <keyboard>
       <f>FastForward</f>
@@ -184,7 +178,7 @@
       <m>OSD</m>
       <i>Info</i>
       <p>ActivateWindow(VisualisationPresetList)</p>
-      <v>ActivateWindow(VisualisationSettings)</v>
+      <v>ActivateWindow(AddonSettings)</v>
       <n>ActivateWindow(MusicPlaylist)</n>
       <left>StepBack</left>
       <right>StepForward</right>
@@ -205,24 +199,10 @@
       <i>Info</i>
       <o>CodecInfo</o>
       <p>ActivateWindow(VisualisationPresetList)</p>
-      <v>ActivateWindow(VisualisationSettings)</v>
+      <v>ActivateWindow(AddonSettings)</v>
       <n>ActivateWindow(MusicPlaylist)</n>
     </keyboard>
   </MusicOSD>
-  <VisualisationSettings>
-    <keyboard>
-      <f>FastForward</f>
-      <r>Rewind</r>
-      <period>SkipNext</period>
-      <comma>SkipPrevious</comma>
-      <m>Back</m>
-      <i>Info</i>
-      <o>CodecInfo</o>
-      <p>ActivateWindow(VisualisationPresetList)</p>
-      <v>Back</v>
-      <n>ActivateWindow(MusicPlaylist)</n>
-    </keyboard>
-  </VisualisationSettings>
   <VisualisationPresetList>
     <keyboard>
       <f>FastForward</f>
@@ -266,13 +246,6 @@
       <r>NextResolution</r>
     </keyboard>
   </ScreenCalibration>
-  <GUICalibration>
-    <keyboard>
-      <return>NextCalibration</return>
-      <enter>NextCalibration</enter>
-      <d>ResetCalibration</d>
-    </keyboard>
-  </GUICalibration>
   <VideoOSD>
     <keyboard>
       <m>Back</m>
@@ -317,14 +290,9 @@
       <delete>Delete</delete>
       <space>Playlist</space>
       <w>ToggleWatched</w>
-    </keyboard>
-  </MyVideoLibrary>
-  <MyVideoFiles>
-    <keyboard>
-      <space>Playlist</space>
       <q>Queue</q>
     </keyboard>
-  </MyVideoFiles>
+  </MyVideoLibrary>
   <MyVideoPlaylist>
     <keyboard>
       <space>Back</space>
