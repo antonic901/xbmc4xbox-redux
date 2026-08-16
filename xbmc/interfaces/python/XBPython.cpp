@@ -126,34 +126,6 @@ void XBPython::OnPlayBackStarted(const CFileItem& file)
   }
 }
 
-// message all registered callbacks that we changed stream
-void XBPython::OnAVStarted(const CFileItem &file)
-{
-#ifndef _XBOX
-  XBMC_TRACE;
-  LOCK_AND_COPY(std::vector<void*>, tmp, m_vecPlayerCallbackList);
-  for (auto& it : tmp)
-  {
-    if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList, it))
-      ((IPlayerCallback*)it)->OnAVStarted(file);
-  }
-#endif
-}
-
-// message all registered callbacks that we changed stream
-void XBPython::OnAVChange()
-{
-#ifndef _XBOX
-  XBMC_TRACE;
-  LOCK_AND_COPY(std::vector<void*>, tmp, m_vecPlayerCallbackList);
-  for (auto& it : tmp)
-  {
-    if (CHECK_FOR_ENTRY(m_vecPlayerCallbackList, it))
-      ((IPlayerCallback*)it)->OnAVChange();
-  }
-#endif
-}
-
 // message all registered callbacks that we paused playing
 void XBPython::OnPlayBackPaused()
 {

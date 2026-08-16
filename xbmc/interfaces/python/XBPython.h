@@ -58,8 +58,6 @@ public:
   virtual ~XBPython();
   virtual void OnPlayBackEnded();
   virtual void OnPlayBackStarted(const CFileItem& file);
-  virtual void OnAVStarted(const CFileItem &file);
-  virtual void OnAVChange();
   virtual void OnPlayBackPaused();
   virtual void OnPlayBackResumed();
   virtual void OnPlayBackStopped();
