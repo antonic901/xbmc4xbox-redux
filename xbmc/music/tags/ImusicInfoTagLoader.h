@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <xtl.h>
 #include <string>
 
 class EmbeddedArt;

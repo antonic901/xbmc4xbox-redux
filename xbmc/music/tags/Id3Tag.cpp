@@ -134,9 +134,7 @@ bool CID3Tag::Parse()
   if (!tag.GetTitle().empty() || !tag.GetArtist().empty() || !tag.GetAlbum().empty())
     tag.SetLoaded();
 
-  SYSTEMTIME dateTime;
-  dateTime.wYear = atoi(GetYear());
-  tag.SetReleaseDate(dateTime);
+  tag.SetYear(atoi(GetYear()));
 
   id3_length_t length;
   const LPCSTR pb=(LPCSTR)GetUniqueFileIdentifier("http://musicbrainz.org", &length);
@@ -175,7 +173,7 @@ bool CID3Tag::Parse()
     {
       tag.SetCoverArtInfo(nBufSize, mimeType);
       if (m_art)
-        m_art->set(pPic, nBufSize, mimeType);
+        m_art->Set(pPic, nBufSize, mimeType);
     }
   }
 

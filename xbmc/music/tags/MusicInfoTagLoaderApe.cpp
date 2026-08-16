@@ -35,7 +35,7 @@ CMusicInfoTagLoaderApe::CMusicInfoTagLoaderApe(void)
 CMusicInfoTagLoaderApe::~CMusicInfoTagLoaderApe()
 {}
 
-bool CMusicInfoTagLoaderApe::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderApe::Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   try
   {
@@ -58,11 +58,8 @@ bool CMusicInfoTagLoaderApe::Load(const CStdString& strFileName, CMusicInfoTag& 
       tag.SetMusicBrainzAlbumID(myTag.GetMusicBrainzAlbumID());
       tag.SetMusicBrainzArtistID(StringUtils::Split(myTag.GetMusicBrainzArtistID(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
       tag.SetMusicBrainzTrackID(myTag.GetMusicBrainzTrackID());
-      SYSTEMTIME dateTime;
-      ZeroMemory(&dateTime, sizeof(SYSTEMTIME));
-      dateTime.wYear = atoi(myTag.GetYear());
       tag.SetRating(myTag.GetRating());
-      tag.SetReleaseDate(dateTime);
+      tag.SetYear(atoi(myTag.GetYear()));
       tag.SetLoaded();
       return true;
     }

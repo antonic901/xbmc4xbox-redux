@@ -30,7 +30,7 @@ CMusicInfoTagLoaderFlac::CMusicInfoTagLoaderFlac(void)
 CMusicInfoTagLoaderFlac::~CMusicInfoTagLoaderFlac()
 {}
 
-bool CMusicInfoTagLoaderFlac::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderFlac::Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   try
   {

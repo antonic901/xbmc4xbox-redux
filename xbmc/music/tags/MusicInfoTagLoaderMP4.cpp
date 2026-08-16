@@ -35,29 +35,29 @@ using namespace MUSIC_INFO;
 // -------------------------------------------------------------------------------------------------
 // Private data & functions purely to satisfy MP4 tag processing code...
 
-#define	MAKE_ATOM_NAME( a, b, c, d )	( ( (a) << 24 ) | ( (b) << 16 ) | ( (c) << 8 ) | (d) )
+#define    MAKE_ATOM_NAME( a, b, c, d )    ( ( (a) << 24 ) | ( (b) << 16 ) | ( (c) << 8 ) | (d) )
 
-static const unsigned int	g_MetaAtomName			=	MAKE_ATOM_NAME(	 'm', 'e', 't', 'a' );	// 'meta'
-static const unsigned int	g_IlstAtomName			=	MAKE_ATOM_NAME(  'i', 'l', 's', 't' );	// 'ilst'
-static const unsigned int	g_MdhdAtomName			=	MAKE_ATOM_NAME(  'm', 'd', 'h', 'd' );	// 'mdhd'
+static const unsigned int    g_MetaAtomName            =    MAKE_ATOM_NAME(     'm', 'e', 't', 'a' );    // 'meta'
+static const unsigned int    g_IlstAtomName            =    MAKE_ATOM_NAME(  'i', 'l', 's', 't' );    // 'ilst'
+static const unsigned int    g_MdhdAtomName            =    MAKE_ATOM_NAME(  'm', 'd', 'h', 'd' );    // 'mdhd'
 
-static const unsigned int	g_TitleAtomName			=	MAKE_ATOM_NAME( 0xa9, 'n', 'a', 'm' ); 	// '�nam'
-static const unsigned int	g_ArtistAtomName		=	MAKE_ATOM_NAME( 0xa9, 'A', 'R', 'T' );	// '�ART'
-static const unsigned int	g_AlbumArtistAtomName		=	MAKE_ATOM_NAME( 'a', 'A', 'R', 'T' );	// 'aART'
-static const unsigned int	g_AlbumAtomName			=	MAKE_ATOM_NAME( 0xa9, 'a', 'l', 'b' );	// '�alb'
-static const unsigned int	g_DayAtomName			=	MAKE_ATOM_NAME( 0xa9, 'd', 'a', 'y' );	// '�day'
-static const unsigned int	g_CustomGenreAtomName	=	MAKE_ATOM_NAME( 0xa9, 'g', 'e', 'n' );	// '�gnr'
-static const unsigned int	g_GenreAtomName			=	MAKE_ATOM_NAME(  'g', 'n', 'r', 'e' );	// 'gnre'
-static const unsigned int	g_TrackNumberAtomName	=	MAKE_ATOM_NAME(  't', 'r', 'k', 'n' );	// 'trkn'
-static const unsigned int	g_DiscNumberAtomName	=	MAKE_ATOM_NAME(  'd', 'i', 's', 'k' );	// 'disk'
-static const unsigned int	g_CoverArtAtomName		=	MAKE_ATOM_NAME(  'c', 'o', 'v', 'r' );	// 'covr'
-static const unsigned int	g_CompilationAtomName	=	MAKE_ATOM_NAME(  'c', 'p', 'i', 'l' );	// 'cpil'
-static const unsigned int	g_CommentAtomName	=	MAKE_ATOM_NAME(  0xa9, 'c', 'm', 't' );	// 'cpil'
-static const unsigned int	g_LyricsAtomName	=	MAKE_ATOM_NAME(  0xa9, 'l', 'y', 'r' );	// '�lyr'
+static const unsigned int    g_TitleAtomName            =    MAKE_ATOM_NAME( 0xa9, 'n', 'a', 'm' );     // '�nam'
+static const unsigned int    g_ArtistAtomName        =    MAKE_ATOM_NAME( 0xa9, 'A', 'R', 'T' );    // '�ART'
+static const unsigned int    g_AlbumArtistAtomName        =    MAKE_ATOM_NAME( 'a', 'A', 'R', 'T' );    // 'aART'
+static const unsigned int    g_AlbumAtomName            =    MAKE_ATOM_NAME( 0xa9, 'a', 'l', 'b' );    // '�alb'
+static const unsigned int    g_DayAtomName            =    MAKE_ATOM_NAME( 0xa9, 'd', 'a', 'y' );    // '�day'
+static const unsigned int    g_CustomGenreAtomName    =    MAKE_ATOM_NAME( 0xa9, 'g', 'e', 'n' );    // '�gnr'
+static const unsigned int    g_GenreAtomName            =    MAKE_ATOM_NAME(  'g', 'n', 'r', 'e' );    // 'gnre'
+static const unsigned int    g_TrackNumberAtomName    =    MAKE_ATOM_NAME(  't', 'r', 'k', 'n' );    // 'trkn'
+static const unsigned int    g_DiscNumberAtomName    =    MAKE_ATOM_NAME(  'd', 'i', 's', 'k' );    // 'disk'
+static const unsigned int    g_CoverArtAtomName        =    MAKE_ATOM_NAME(  'c', 'o', 'v', 'r' );    // 'covr'
+static const unsigned int    g_CompilationAtomName    =    MAKE_ATOM_NAME(  'c', 'p', 'i', 'l' );    // 'cpil'
+static const unsigned int    g_CommentAtomName    =    MAKE_ATOM_NAME(  0xa9, 'c', 'm', 't' );    // 'cpil'
+static const unsigned int    g_LyricsAtomName    =    MAKE_ATOM_NAME(  0xa9, 'l', 'y', 'r' );    // '�lyr'
 
 // These atoms contain other atoms.. so when we find them, we have to recurse..
 
-static unsigned int	g_ContainerAtoms[] =
+static unsigned int    g_ContainerAtoms[] =
 {
   MAKE_ATOM_NAME( 'm', 'o', 'o', 'v' ),
     MAKE_ATOM_NAME( 't', 'r', 'a', 'k' ),
@@ -96,10 +96,10 @@ void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaDa
 {
   switch ( metaKey )
   {
-  case	g_TitleAtomName:
+  case    g_TitleAtomName:
     {
       // We need to zero-terminate the string, which needs workspace..
-      auto_aptr<char>	dataWorkspace( new char[ metaSize + 1 ] );
+      auto_aptr<char>    dataWorkspace( new char[ metaSize + 1 ] );
       memcpy( dataWorkspace.get(), pMetaData, metaSize );
       dataWorkspace[ metaSize ] = '\0';
 
@@ -110,10 +110,10 @@ void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaDa
       break;
     }
 
-  case	g_ArtistAtomName:
+  case    g_ArtistAtomName:
     {
       // We need to zero-terminate the string, which needs workspace..
-      auto_aptr<char>	dataWorkspace( new char[ metaSize + 1 ] );
+      auto_aptr<char>    dataWorkspace( new char[ metaSize + 1 ] );
       memcpy( dataWorkspace.get(), pMetaData, metaSize );
       dataWorkspace[ metaSize ] = '\0';
 
@@ -122,10 +122,10 @@ void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaDa
       break;
     }
 
-  case	g_AlbumAtomName:
+  case    g_AlbumAtomName:
     {
       // We need to zero-terminate the string, which needs workspace..
-      auto_aptr<char>	dataWorkspace( new char[ metaSize + 1 ] );
+      auto_aptr<char>    dataWorkspace( new char[ metaSize + 1 ] );
       memcpy( dataWorkspace.get(), pMetaData, metaSize );
       dataWorkspace[ metaSize ] = '\0';
 
@@ -134,10 +134,10 @@ void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaDa
       break;
     }
 
-  case	g_AlbumArtistAtomName:
+  case    g_AlbumArtistAtomName:
     {
       // We need to zero-terminate the string, which needs workspace..
-      auto_aptr<char>	dataWorkspace( new char[ metaSize + 1 ] );
+      auto_aptr<char>    dataWorkspace( new char[ metaSize + 1 ] );
       memcpy( dataWorkspace.get(), pMetaData, metaSize );
       dataWorkspace[ metaSize ] = '\0';
 
@@ -145,21 +145,19 @@ void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaDa
 
       break;
     }
-  case	g_DayAtomName:
+  case    g_DayAtomName:
     {
       // We need to zero-terminate the string, which needs workspace..
-      auto_aptr<char>	dataWorkspace( new char[ metaSize + 1 ] );
+      auto_aptr<char>    dataWorkspace( new char[ metaSize + 1 ] );
       memcpy( dataWorkspace.get(), pMetaData, metaSize );
       dataWorkspace[ metaSize ] = '\0';
 
-      SYSTEMTIME dateTime;
-      dateTime.wYear = atoi( dataWorkspace.get() );
-      tag.SetReleaseDate( dateTime );
+      tag.SetYear( atoi( dataWorkspace.get() ) );
 
       break;
     }
 
-  case	g_GenreAtomName:
+  case    g_GenreAtomName:
     {
       // When a genre number is specified, we need to translate to a string for display..
       // Note that AAC/iTunes genre numbers are the same as ID3 numbers, but are offset by 1.
@@ -180,7 +178,7 @@ void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaDa
   case g_CommentAtomName:
     {
       // We need to zero-terminate the string, which needs workspace..
-      auto_aptr<char>	dataWorkspace( new char[ metaSize + 1 ] );
+      auto_aptr<char>    dataWorkspace( new char[ metaSize + 1 ] );
       memcpy( dataWorkspace.get(), pMetaData, metaSize );
       dataWorkspace[ metaSize ] = '\0';
 
@@ -190,17 +188,17 @@ void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaDa
   case g_LyricsAtomName:
     {
       // We need to zero-terminate the string, which needs workspace..
-      auto_aptr<char>	dataWorkspace( new char[ metaSize + 1 ] );
+      auto_aptr<char>    dataWorkspace( new char[ metaSize + 1 ] );
       memcpy( dataWorkspace.get(), pMetaData, metaSize );
       dataWorkspace[ metaSize ] = '\0';
 
       tag.SetLyrics( dataWorkspace.get() );
       break;
     }
-  case	g_CustomGenreAtomName:
+  case    g_CustomGenreAtomName:
     {
       // We need to zero-terminate the string, which needs workspace..
-      auto_aptr<char>	dataWorkspace( new char[ metaSize + 1 ] );
+      auto_aptr<char>    dataWorkspace( new char[ metaSize + 1 ] );
       memcpy( dataWorkspace.get(), pMetaData, metaSize );
       dataWorkspace[ metaSize ] = '\0';
 
@@ -209,21 +207,21 @@ void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaDa
       break;
     }
 
-  case	g_TrackNumberAtomName:
+  case    g_TrackNumberAtomName:
     {
       tag.SetTrackNumber( pMetaData[ 3 ] );
 
       break;
     }
 
-  case	g_DiscNumberAtomName:
+  case    g_DiscNumberAtomName:
     {
       tag.SetDiscNumber( pMetaData[ 3 ] );
 
       break;
     }
 
-  case	g_CoverArtAtomName:
+  case    g_CoverArtAtomName:
     {
       // This cover-art handling is pretty much what was in the old MP4 tag processing code..
 
@@ -239,7 +237,7 @@ void CMusicInfoTagLoaderMP4::ParseTag( unsigned int metaKey, const char* pMetaDa
 
       tag.SetCoverArtInfo(metaSize, mimeType);
       if (art)
-        art->set((const uint8_t*)pMetaData, metaSize, mimeType);
+        art->Set((const uint8_t*)pMetaData, metaSize, mimeType);
       break;
     }
   default:
@@ -273,9 +271,9 @@ int CMusicInfoTagLoaderMP4::GetILSTOffset( const char* pBuffer, int bufferSize )
 int CMusicInfoTagLoaderMP4::ParseAtom( int64_t startOffset, int64_t stopOffset, CMusicInfoTag& tag, EmbeddedArt *art )
 {
   int64_t       currentOffset;
-  int				    atomSize;
+  int                    atomSize;
   unsigned int  atomName;
-  char			    atomHeader[ 10 ];
+  char                atomHeader[ 10 ];
 
   currentOffset = startOffset;
   while ( currentOffset < stopOffset)
@@ -283,7 +281,7 @@ int CMusicInfoTagLoaderMP4::ParseAtom( int64_t startOffset, int64_t stopOffset, 
     // Seek to the atom header
     m_file.Seek( currentOffset, SEEK_SET );
 
-    // Read it in.. we only want the atom name & size..	they're always there..
+    // Read it in.. we only want the atom name & size..    they're always there..
     m_file.Read( atomHeader, 8 );
 
     // Now pull out the bits we need..
@@ -304,10 +302,10 @@ int CMusicInfoTagLoaderMP4::ParseAtom( int64_t startOffset, int64_t stopOffset, 
     if ( atomName == g_MetaAtomName )
     {
       // Use auto_aptr for our workspace, so that it tidies up on any throw..
-      auto_aptr<char>	atomBuffer( new char[ atomSize ] );
+      auto_aptr<char>    atomBuffer( new char[ atomSize ] );
 
       // Read the metadata in..
-      m_file.Read( atomBuffer.get(), atomSize - 4 );	// We've already read the size/name in...
+      m_file.Read( atomBuffer.get(), atomSize - 4 );    // We've already read the size/name in...
 
       // Look for the 'ilst' atom, and turn it into an offset within atomBuffer.
       int nextTagPosition = GetILSTOffset( atomBuffer.get(), atomSize - 4 ) + 8;
@@ -315,9 +313,9 @@ int CMusicInfoTagLoaderMP4::ParseAtom( int64_t startOffset, int64_t stopOffset, 
       // Now go through all of the tags we find.. processing is pretty much taken from source at http://www.getid3.org..
       while ( ( nextTagPosition < ( atomSize - 4 ) ) && ( nextTagPosition > 8 ) )
       {
-        int				metaSize	= ReadUnsignedInt( atomBuffer.get() + ( nextTagPosition - 4 ) ) - 4;
-        unsigned int	metaKey		= ReadUnsignedInt( atomBuffer.get() + nextTagPosition );
-        char*			metaData	= ( atomBuffer.get() + nextTagPosition ) + 20;
+        int                metaSize    = ReadUnsignedInt( atomBuffer.get() + ( nextTagPosition - 4 ) ) - 4;
+        unsigned int    metaKey        = ReadUnsignedInt( atomBuffer.get() + nextTagPosition );
+        char*            metaData    = ( atomBuffer.get() + nextTagPosition ) + 20;
 
         if (metaSize - 20 <= 0)
           break;
@@ -333,11 +331,11 @@ int CMusicInfoTagLoaderMP4::ParseAtom( int64_t startOffset, int64_t stopOffset, 
     else
       if ( atomName == g_MdhdAtomName )
       {
-        char	mdhdData[ 20 ];
+        char    mdhdData[ 20 ];
         m_file.Read( mdhdData, sizeof( mdhdData ) );
 
-        unsigned int	timeScale	=	ReadUnsignedInt( mdhdData+12 );
-        unsigned int	duration	=	ReadUnsignedInt( mdhdData+16 );
+        unsigned int    timeScale    =    ReadUnsignedInt( mdhdData+12 );
+        unsigned int    duration    =    ReadUnsignedInt( mdhdData+16 );
         tag.SetDuration( duration / timeScale );
       }
 
@@ -362,7 +360,7 @@ CMusicInfoTagLoaderMP4::~CMusicInfoTagLoaderMP4()
 {
 }
 
-bool CMusicInfoTagLoaderMP4::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderMP4::Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   try
   {

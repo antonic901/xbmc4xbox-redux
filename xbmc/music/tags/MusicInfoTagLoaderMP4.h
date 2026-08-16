@@ -31,7 +31,7 @@ public:
   CMusicInfoTagLoaderMP4(void);
   virtual ~CMusicInfoTagLoaderMP4();
 
-  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
+  virtual bool Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
 
 private:
   unsigned int ReadUnsignedInt( const char* pData );

@@ -23,12 +23,12 @@
 
 namespace MUSIC_INFO
 {
-	class CMusicInfoTagLoaderSPC: public IMusicInfoTagLoader
-	{
+    class CMusicInfoTagLoaderSPC: public IMusicInfoTagLoader
+    {
     public:
       CMusicInfoTagLoaderSPC(void);
       virtual ~CMusicInfoTagLoaderSPC();
 
-      virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
-	};
+      virtual bool Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
+    };
 }

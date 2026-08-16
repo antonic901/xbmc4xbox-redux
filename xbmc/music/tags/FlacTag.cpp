@@ -147,7 +147,7 @@ bool CFlacTag::Read(const CStdString& strFile)
       if (picData)
       {
         m_file->Read(picData, picSize);
-        m_art->set(picData, picSize, mimeType);
+        m_art->Set(picData, picSize, mimeType);
         delete[] picData;
       }
     }

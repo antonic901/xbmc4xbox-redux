@@ -30,7 +30,7 @@ CMusicInfoTagLoaderOgg::CMusicInfoTagLoaderOgg(void)
 CMusicInfoTagLoaderOgg::~CMusicInfoTagLoaderOgg()
 {}
 
-bool CMusicInfoTagLoaderOgg::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderOgg::Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   try
   {

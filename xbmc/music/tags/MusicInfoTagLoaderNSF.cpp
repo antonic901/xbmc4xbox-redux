@@ -51,7 +51,7 @@ int CMusicInfoTagLoaderNSF::GetStreamCount(const CStdString& strFileName)
   return result;
 }
 
-bool CMusicInfoTagLoaderNSF::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderNSF::Load(const std::string& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
 {
   tag.SetLoaded(false);
 
