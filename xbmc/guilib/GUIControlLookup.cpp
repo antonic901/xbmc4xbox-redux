@@ -73,7 +73,7 @@ void CGUIControlLookup::RemoveLookup(CGUIControl *control)
   if (lookupControl)
   { // remove the group's lookup
     const LookupMap &map(lookupControl->GetLookup());
-    for (LookupMap::const_iterator i = m_lookup.begin(); i != m_lookup.end(); ++i)
+    for (LookupMap::const_iterator i = map.begin(); i != map.end(); ++i)
     { // remove this control
       for (LookupMap::iterator it = m_lookup.begin(); it != m_lookup.end(); ++it)
       {
