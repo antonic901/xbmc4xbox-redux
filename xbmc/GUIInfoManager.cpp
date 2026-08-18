@@ -9482,7 +9482,7 @@ int CGUIInfoManager::getIntValue(int infoNum, const CGUIListItem *item, int cont
     else
     {
       char* endPtr = NULL;
-      int intValue = static_cast<int>(std::strtol(value.c_str(), &endPtr, 10));
+      intValue = static_cast<int>(std::strtol(value.c_str(), &endPtr, 10));
       if (endPtr == value || *endPtr != '\0')
         intValue = 0;
     }
