@@ -503,8 +503,7 @@ void CComboRenderer::SetupScreenshot()
     if (pFSWin && pFSWin->NeedRenderFullScreen())
     {
       pFSWin->RenderFullScreen();
-      if (CServiceBroker::GetGUI()->GetWindowManager().HasVisibleModalDialog())
-        CServiceBroker::GetGUI()->GetWindowManager().RenderDialogs();
+      CServiceBroker::GetGUI()->GetWindowManager().RenderDialogs();
     }
   }
 

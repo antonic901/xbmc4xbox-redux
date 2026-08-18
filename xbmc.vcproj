@@ -1398,6 +1398,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\pictures\GUIViewStatePictures.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\windows\GUIWindowDebugInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\windows\GUIWindowDebugInfo.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\windows\GUIWindowFileManager.cpp">
 				</File>
 				<File

@@ -20,6 +20,8 @@
 
 #include "XBoxRenderer.h"
 
+#include "GUIInfoManager.h"
+#include "ServiceBroker.h"
 #include "XBVideoConfig.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
@@ -27,6 +29,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "messaging/ApplicationMessenger.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
@@ -1073,16 +1076,11 @@ void CXBoxRenderer::Render(DWORD flags)
     if (pFSWin && pFSWin->NeedRenderFullScreen())
     {
       pFSWin->RenderFullScreen();
-      if (CServiceBroker::GetGUI()->GetWindowManager().HasVisibleModalDialog())
-        CServiceBroker::GetGUI()->GetWindowManager().RenderDialogs();
+      CServiceBroker::GetGUI()->GetWindowManager().RenderDialogs();
     }
 
-    CApplicationComponents &components = CServiceBroker::GetAppComponents();
-    const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
-    if (!appPlayer->IsPaused())
-    {
-      components.GetComponent<CApplicationXbox>()->RenderMemoryStatus();
-    }
+    if (!CServiceBroker::GetAppMessenger()->IsProcessThread())
+      CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetSystemInfoProvider().UpdateFPS();
   }
 }
 
