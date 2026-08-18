@@ -55,6 +55,8 @@
 #include "windows/GUIWindowFileManager.h"
 #include "windows/GUIWindowHome.h"
 #include "windows/GUIWindowLoginScreen.h"
+#include "windows/GUIWindowScreensaver.h"
+#include "windows/GUIWindowScreensaverDim.h"
 #include "windows/GUIWindowSplash.h"
 #include "windows/GUIWindowStartup.h"
 #include "windows/GUIWindowSystemInfo.h"
@@ -134,6 +136,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowSettingsProfile);
   Add(new CGUIWindow(WINDOW_SKIN_SETTINGS, "SkinSettings.xml"));
   Add(new CGUIWindowAddonBrowser);
+  Add(new CGUIWindowScreensaverDim);
   Add(new CGUIWindowDebugInfo);
   Add(new CGUIDialogYesNo);
   Add(new CGUIDialogProgress);
@@ -190,6 +193,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowSlideShow);
 
   Add(new CGUIDialogVideoOSD);
+  Add(new CGUIWindowScreensaver);
   Add(new CGUIWindowWeather);
   Add(new CGUIWindowStartup);
   Add(new CGUIWindowSplash);

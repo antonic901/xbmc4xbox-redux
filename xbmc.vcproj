@@ -1428,6 +1428,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\windows\GUIWindowScreensaver.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\windows\GUIWindowScreensaverDim.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\windows\GUIWindowScreensaverDim.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\pictures\GUIWindowSlideShow.cpp">
 				</File>
 				<File
