@@ -290,61 +290,6 @@ bool CApplicationXbox::HasMemoryUpgrade() const
   return m_hasMemoryUpgrade;
 }
 
-void CApplicationXbox::RenderMemoryStatus()
-{
-  if (!m_debugLayout)
-  {
-    CGUIFont *font13 = g_fontManager.GetDefaultFont();
-    CGUIFont *font13border = g_fontManager.GetDefaultFont(true);
-    if (font13)
-      m_debugLayout = new CGUITextLayout(font13, true, 0, font13border);
-  }
-  if (!m_debugLayout)
-    return;
-
-#if !defined(_DEBUG) && !defined(PROFILE)
-  if (LOG_LEVEL_DEBUG_FREEMEM <= CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_logLevel)
-#endif
-  {
-    // reset the window scaling and fade status
-    RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
-    CServiceBroker::GetWinSystem()->GetGfxContext().SetRenderingResolution(CServiceBroker::GetWinSystem()->GetGfxContext().GetResInfo(), false);
-
-    MEMORYSTATUS stat;
-    GlobalMemoryStatus(&stat);
-    std::string info = StringUtils::Format("FreeMem %d/%d KB, FPS %2.1f, CPU %2.0f%%", stat.dwAvailPhys/1024, stat.dwTotalPhys/1024, CServiceBroker::GetGUI()->GetInfoManager().GetInfoProviders().GetSystemInfoProvider().GetFPS(), (1.0f - m_idleThread.GetRelativeUsage())*100);
-
-    if(g_SkinInfo->IsDebugging())
-    {
-      if (!info.empty())
-        info += "\n";
-      CGUIWindow *window = CServiceBroker::GetGUI()->GetWindowManager().GetWindow(CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow());
-      if (window)
-      {
-        std::string windowName = CButtonTranslator::TranslateWindow(window->GetID());
-        if (!windowName.empty())
-          windowName += " (" + window->GetProperty("xmlfile").asString() + ")";
-        else
-          windowName = window->GetProperty("xmlfile").asString();
-        info += "Window: " + windowName + "  ";
-      }
-      if (window)
-      {
-        CGUIControl *control = window->GetFocusedControl();
-        if (control)
-          info += StringUtils::Format(
-              "Focused: %i (%s)", control->GetID(),
-              CGUIControlFactory::TranslateControlType(control->GetControlType()).c_str());
-      }
-    }
-    float x = 0.04f * CServiceBroker::GetWinSystem()->GetGfxContext().GetWidth();
-    float y = 0.04f * CServiceBroker::GetWinSystem()->GetGfxContext().GetHeight();
-
-    m_debugLayout->Update(info);
-    m_debugLayout->RenderOutline(x, y, 0xffffffff, 0xff000000, 0, 0);
-  }
-}
-
 bool CApplicationXbox::MustBlockHDSpinDown(bool bCheckThisForNormalSpinDown)
 {
   CApplicationComponents &components = CServiceBroker::GetAppComponents();

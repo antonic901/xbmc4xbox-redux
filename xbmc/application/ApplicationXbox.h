@@ -40,8 +40,6 @@ public:
 
   bool HasMemoryUpgrade() const;
 
-  void RenderMemoryStatus();
-
   /*!
    \brief Checks if HDD spindown must be blocked
 

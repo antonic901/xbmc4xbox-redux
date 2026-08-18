@@ -51,6 +51,7 @@
 #include "video/windows/GUIWindowVideoNav.h"
 #include "video/windows/GUIWindowVideoPlaylist.h"
 #include "windows/GUIWindowWeather.h"
+#include "windows/GUIWindowDebugInfo.h"
 #include "windows/GUIWindowFileManager.h"
 #include "windows/GUIWindowHome.h"
 #include "windows/GUIWindowLoginScreen.h"
@@ -133,6 +134,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowSettingsProfile);
   Add(new CGUIWindow(WINDOW_SKIN_SETTINGS, "SkinSettings.xml"));
   Add(new CGUIWindowAddonBrowser);
+  Add(new CGUIWindowDebugInfo);
   Add(new CGUIDialogYesNo);
   Add(new CGUIDialogProgress);
   Add(new CGUIDialogExtendedProgressBar);
@@ -1173,20 +1175,28 @@ CGUIDialog* CGUIWindowManager::GetDialog(int id) const
 #ifdef HAS_XBOX_D3D
 void CGUIWindowManager::RenderDialogs()
 {
-  CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
-  // find the window with the lowest render order
-  std::vector<CGUIWindow*> renderList = m_activeDialogs;
-  stable_sort(renderList.begin(), renderList.end(), RenderOrderSortFunction);
+  // This should be called only from Render Manager thread.
+  // If it's main thread, dialogs are rendered normally.
+  if (CServiceBroker::GetAppMessenger()->IsProcessThread())
+    return;
 
-  // iterate through and render if they're running
-  for (std::vector<CGUIWindow*>::iterator it = renderList.begin(); it != renderList.end(); ++it)
+  if (!m_activeDialogs.empty() && !CServiceBroker::GetAppMessenger()->IsProcessThread())
   {
-    if ((*it)->IsDialogRunning())
-      (*it)->DoRender();
-  }
+    CSingleLock lock(CServiceBroker::GetWinSystem()->GetGfxContext());
+    // find the window with the lowest render order
+    std::vector<CGUIWindow*> renderList = m_activeDialogs;
+    stable_sort(renderList.begin(), renderList.end(), RenderOrderSortFunction);
 
-  // execute post rendering actions (finalize window closing)
-  AfterRender();
+    // iterate through and render if they're running
+    for (std::vector<CGUIWindow*>::iterator it = renderList.begin(); it != renderList.end(); ++it)
+    {
+      if ((*it)->IsDialogRunning())
+        (*it)->DoRender();
+    }
+
+    // execute post rendering actions (finalize window closing)
+    AfterRender();
+  }
 }
 #endif
 
