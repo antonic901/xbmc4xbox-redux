@@ -542,6 +542,25 @@ namespace XBMCAddon
       return CSysInfo::GetUserAgent();
     }
 
+    int readSMBus(int address, int command, bool word)
+    {
+      XBMC_TRACE;
+      unsigned long data = 0;
+      long ret = HalReadSMBusValue((UCHAR)address, (UCHAR)command, (UCHAR)(bWord != 0), (LPBYTE)&data);
+      if (ret != 0)
+      {
+        return -1;
+      }
+      if (bWord)
+        return (long)(data & 0xFFFF);
+      return (long)(data & 0xFF);
+    }
+
+    void writeSMBus(int address, int command, int value, bool word)
+    {
+      HalWriteSMBusValue((BYTE)address, (BYTE)command, (BOOL)(bWord != 0), (BYTE)value);
+    }
+
     int getSERVER_WEBSERVER() { return CApplication::ES_WEBSERVER; }
     int getSERVER_AIRPLAYSERVER() { return CApplication::ES_AIRPLAYSERVER; }
     int getSERVER_UPNPSERVER() { return CApplication::ES_UPNPSERVER; }

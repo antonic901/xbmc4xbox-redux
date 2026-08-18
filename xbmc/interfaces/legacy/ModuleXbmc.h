@@ -971,6 +971,70 @@ namespace XBMCAddon
 #else
     String convertLanguage(const char* language, int format);
 #endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+    ///
+    /// \ingroup python_xbmc
+    /// @brief \python_func{ xbmc.readSMBus(address, commad, word) }
+    ///-----------------------------------------------------------------------
+    /// Reads a value from a device on the SMBus (i2c).
+    ///
+    /// @param address               integer - 8-bit SMBus device address (eg. 0x20 for the PIC)
+    /// @param command               integer - register/command byte to read from"
+    /// @param word                  bool - True to read a 16-bit word, False (default) for an 8-bit byte"
+    /// @return                      Returns the value read as an integer
+    ///                              or -1 if the read failed.
+    ///
+    ///
+    /// @note Only available on the Xbox.
+    ///
+    ///
+    /// ------------------------------------------------------------------------
+    ///
+    /// **Example:**
+    /// ~~~~~~~~~~~~~{.py}
+    /// ..
+    /// fanspeed = xbmc.readSMBus(0x20, 0x10)
+    /// ..
+    /// ~~~~~~~~~~~~~
+    ///
+    readSMBus(...);
+#else
+    int readSMBus(int address, int command, bool word);
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+    ///
+    /// \ingroup python_xbmc
+    /// @brief \python_func{ xbmc.writeSMBus(address, commad, value, word) }
+    ///-----------------------------------------------------------------------
+    /// Writes a value to a device on the SMBus (i2c).
+    ///
+    /// @param address               integer - 8-bit SMBus device address (eg. 0x20 for the PIC)
+    /// @param command               integer - register/command byte to write to"
+    /// @param value                 integer - value to write"
+    /// @param word                  bool - True to write a 16-bit word, False (default) for an 8-bit byte"
+    /// @return                      Returns the value read as an integer
+    ///                              or -1 if the read failed.
+    ///
+    ///
+    /// @note Only available on the Xbox. Writing to the wrong device/register can"
+    ///       reset or power off the console, so use with care.
+    ///
+    ///
+    /// ------------------------------------------------------------------------
+    ///
+    /// **Example:**
+    /// ~~~~~~~~~~~~~{.py}
+    /// ..
+    /// xbmc.writeSMBus(0x20, 0x08, 0x0F)
+    /// ..
+    /// ~~~~~~~~~~~~~
+    ///
+    writeSMBus(...);
+#else
+    void writeSMBus(int address, int command, int value, bool word);
+#endif
     //@}
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
     SWIG_CONSTANT_FROM_GETTER(int, SERVER_WEBSERVER);
