@@ -10525,10 +10525,10 @@ msgctxt "#24043"
 msgid "Available updates"
 msgstr ""
 
-#: xbmc/addons/AddonInstaller.cpp
-#: xbmc/addons/AddonsDatabase.cpp
+#. Used to show on addon list the current install process (shown after 24042)
+#: xbmc/addons/GUIWindowAddonBrowser.cpp
 msgctxt "#24044"
-msgid "Dependencies not met. Please contact add-on author."
+msgid "Installing %i%%"
 msgstr ""
 
 #. Used as an event log description for add-ons failed to install from zip
@@ -10973,7 +10973,138 @@ msgctxt "#24147"
 msgid "Failed to scan %s: %s"
 msgstr ""
 
-#empty strings from id 24148 to 24990
+msgctxt "#24148"
+msgid "Incompatible add-ons"
+msgstr ""
+
+msgctxt "#24149"
+msgid "The following add-ons are incompatible with this version of Kodi and have been automatically disabled: %s."
+msgstr ""
+
+#. Progress text on splash screen
+#: xbmc/Application.cpp
+msgctxt "#24150"
+msgid "Database migration in progress - please wait"
+msgstr ""
+
+#. Progress text on splash screen
+#: xbmc/Application.cpp
+msgctxt "#24151"
+msgid "Add-on migration in progress - please wait"
+msgstr ""
+
+#. Inform about not supported addon if tried to enable
+#: xbmc/addons/AddonManager.cpp
+#: xbmc/addons/AddonDll.cpp
+msgctxt "#24152"
+msgid "The add-on is not compatible with this version of Kodi."
+msgstr ""
+
+#empty strings from id 24153 to 24165
+
+#. Header text for yes/no dialog about enable of broken add-on
+#: xbmc/addons/gui/GUIHelpers.cpp
+msgctxt "#24164"
+msgid "Add-on \"%s\" broken"
+msgstr ""
+
+#. Yes/no dialog text with add-on broken string value and to ask for use
+#: xbmc/addons/gui/GUIHelpers.cpp
+msgctxt "#24165"
+msgid "Add-on marked as broken with following note:[CR][B][I]%s[/I][/B][CR][CR]Do you want to enable?"
+msgstr ""
+
+#. Header text for yes/no dialog about enable of deprecated add-on
+#: xbmc/addons/gui/GUIHelpers.cpp
+msgctxt "#24166"
+msgid "Add-on \"%s\" deprecated"
+msgstr ""
+
+#. Yes/no dialog text with add-on deprecated string value and to ask for use
+#: xbmc/addons/gui/GUIHelpers.cpp
+msgctxt "#24167"
+msgid "Add-on marked as deprecated with following note:[CR][B][I]%s[/I][/B][CR][CR]Do you want to enable?"
+msgstr ""
+
+#. Notification event to show addon marked as deprecated.
+#: xbmc/addons/AddonInstaller.cpp
+msgctxt "#24168"
+msgid "Deprecated: %s"
+msgstr ""
+
+#. Lifecycle state name, for normal addons (no special). Used also on skin to compare and identify related state.
+#: addons/skin.estuary/xml/AddonBrowser.xml
+#: addons/skin.estuary/xml/DialogAddonInfo.xml
+#: addons/skin.estuary/xml/Variables.xml
+#: xbmc/guilib/guiinfo/AddonsGUIInfo.cpp
+msgctxt "#24169"
+msgid "Normal"
+msgstr ""
+
+#. Lifecycle state name, for deprecated addons. Used also on skin to compare and identify related state.
+#: addons/skin.estuary/xml/AddonBrowser.xml
+#: addons/skin.estuary/xml/DialogAddonInfo.xml
+#: addons/skin.estuary/xml/Variables.xml
+#: xbmc/filesystem/AddonsDirectory.cpp
+#: xbmc/guilib/guiinfo/AddonsGUIInfo.cpp
+msgctxt "#24170"
+msgid "Deprecated"
+msgstr ""
+
+#. Lifecycle state name, for broken and not usable addons. Used also on skin to compare and identify related state.
+#: addons/skin.estuary/xml/AddonBrowser.xml
+#: addons/skin.estuary/xml/DialogAddonInfo.xml
+#: addons/skin.estuary/xml/Variables.xml
+#: xbmc/guilib/guiinfo/AddonsGUIInfo.cpp
+msgctxt "#24171"
+msgid "Broken"
+msgstr ""
+
+#empty strings from id 24172 to 24179
+#24171-24179 reserved for future use of lifecycle state name (to have continuous chain of GUI)
+
+#. The minimum version a dependency must meet. This is set in the <requires> tag of the dependee
+#. {3:s} reserved for an empty string or the " (optional)" optional string. see #24184
+#: xbmc/addons/GUIDialogAddonInfo.cpp
+msgctxt "#24180"
+msgid "Minimum: %s%s"
+msgstr ""
+
+#. The minimum version, plus the version going to be installed
+#. {3:s} reserved for an empty string or the " (optional)" optional string. see #24184
+#: xbmc/addons/gui/GUIDialogAddonInfo.cpp
+msgctxt "#24181"
+msgid "Minimum: %s => Install: %s%s"
+msgstr ""
+
+#. The minimum version, plus the currently installed version
+#. {3:s} reserved for an empty string or the " (optional)" optional string. see #24184
+#: xbmc/addons/gui/GUIDialogAddonInfo.cpp
+msgctxt "#24182"
+msgid "Minimum: %s / Installed: %s%s"
+msgstr ""
+
+#. The minimum version, the currently installed, plus the updated version we're going to install
+#. {3:s} reserved for an empty string or the " (optional)" optional string. see #24184
+#: xbmc/addons/gui/GUIDialogAddonInfo.cpp
+msgctxt "#24183"
+msgid "Minimum: %s / Installed: %s => Update to: %s%s"
+msgstr ""
+
+#. used in #24180 - #24183 as {3:s}
+#: xbmc/addons/gui/GUIDialogAddonInfo.cpp
+msgctxt "#24184"
+msgid " (optional)"
+msgstr ""
+
+#. The minimum version, only lower versions are available for install
+#. {3:s} reserved for an empty string or the " (optional)" optional string. see #24184
+#: xbmc/addons/gui/GUIDialogAddonInfo.cpp
+msgctxt "#24185"
+msgid "Minimum: %s / Not available%s"
+msgstr ""
+
+#empty strings from id 24186 to 24990
 
 #. Used as error message in add-on browser when add-on repository data could not be downloaded
 #: xbmc/filesystem/AddonsDirectory.cpp
@@ -11036,7 +11167,7 @@ msgctxt "#25001"
 msgid "Hide foreign"
 msgstr ""
 
-#empty strings from id 25002 to 29799
+#empty strings from id 25002 to 25005
 
 #: xbmc\video\windows\GUIWindowVideoBase.cpp
 msgctxt "#25006"
@@ -11065,18 +11196,20 @@ msgctxt "#25013"
 msgid "Auto-skip on"
 msgstr ""
 
-#empty strings from id 25014 to 29800
+#. Used to tell addon origin type
+#. xbmc/guilib/guiinfo/AddonsGUIInfo.cpp
+msgctxt "#25014"
+msgid "Manual"
+msgstr ""
+
+#empty strings from id 25015 to 29800
 
 #: unused
 msgctxt "#29801"
 msgid "QWERTY keyboard"
 msgstr ""
 
-msgctxt "#29802"
-msgid "Passthrough audio in use"
-msgstr ""
-
-#empty strings from id 29803 to 29908
+#empty strings from id 29802 to 29908
 
 #. Studio name (if present)
 #: addons/skin.estuary/1080i/DialogPVRRadioRDSInfo.xml
@@ -11135,7 +11268,13 @@ msgctxt "#29994"
 msgid "Roles"
 msgstr ""
 
-#empty strings from id 29995 to 33000
+#. Label for multi-disc movies, including movie title (param 0) and disc number (param 1).
+#: xbc/video/VideoInfoScanner.cpp
+msgctxt "#29995"
+msgid "%s (Disc %s)"
+msgstr ""
+
+#empty strings from id 29996 to 33000
 #strings 30000 thru 30999 reserved for plug-ins and plug-in settings
 #strings 31000 thru 31999 reserved for skins
 #strings 32000 thru 32999 reserved for scripts
@@ -13849,4 +13988,10 @@ msgstr ""
 
 msgctxt "#38995"
 msgid "Default emulator"
+msgstr ""
+
+#: xbmc/addons/GUIDialogAddonInfo.cpp
+#: addons/skin.estuary/xml/DialogAddonInfo.xml
+msgctxt "#39024"
+msgid "Dependencies"
 msgstr ""
