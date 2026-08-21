@@ -1322,11 +1322,17 @@ msgctxt "#306"
 msgid "Non-interleaved"
 msgstr ""
 
-#empty string with id 307
+#. Select option for the setting "Preferred audio language".
+#. Will prefer the stream marked as "default" if available.
+#: xbmc/LangInfo.cpp
+#: xbmc/cores/VideoPlayer/VideoPlayer.cpp
+msgctxt "#307"
+msgid "Media default"
+msgstr ""
 
 #: xbmc/LangInfo.cpp
 msgctxt "#308"
-msgid "Original stream's language"
+msgid "Original language"
 msgstr ""
 
 #: xbmc/LangInfo.cpp
@@ -2876,12 +2882,7 @@ msgctxt "#665"
 msgid "Compression level"
 msgstr ""
 
-#: system/settings/settings.xml
-msgctxt "#666"
-msgid "Enable component-specific logging"
-msgstr ""
-
-#empty strings from id 667 to 699
+#empty strings from id 666 to 699
 
 msgctxt "#700"
 msgid "Cleaning up library"
@@ -4991,7 +4992,12 @@ msgctxt "#12379"
 msgid "Use pan and zoom effects"
 msgstr ""
 
-#empty strings from id 12380 to 12381
+#empty string with id 12380
+
+#: system/settings/settings.xml
+msgctxt "#12381"
+msgid "Switch to visualisation on playback"
+msgstr ""
 
 #. time format with meridiem (xx) e.g. "HH:mm:ss xx"
 #: xbmc/LangInfo.cpp
@@ -6053,7 +6059,31 @@ msgctxt "#13521"
 msgid "Choose art type"
 msgstr ""
 
-#empty strings from id 13522 to 13555
+#. label of a setting that allows splitting of albums into component discs
+#: system/settings/settings.xml
+msgctxt "#13522"
+msgid "Split albums into individual discs"
+msgstr ""
+
+#. Description of setting with label #13522 "Split albums into individual discs"
+#: system/settings/settings.xml
+msgctxt "#13523"
+msgid "When enabled, opening a multi-disc album shows the discs as individual items instead of all the songs. Opening a disc then shows the songs on that disc."
+msgstr ""
+
+#. Label of a setting that allows original release dates to be used instead of album release date
+#: system/settings/settings.xml
+msgctxt "#13524"
+msgid "Use original release date of albums for year"
+msgstr ""
+
+#. Description of setting with label #13524
+#: system/settings/settings.xml
+msgctxt "#13525"
+msgid "When enabled, use the original year of release rather than the album release year (if available)."
+msgstr ""
+
+#empty strings from id 13526 to 13555
 
 #. Label of a setting that allows to select the skip step sizes to use for skipping
 #: system/settings/settings.xml
@@ -8300,7 +8330,32 @@ msgctxt "#20223"
 msgid "Artist information folder"
 msgstr ""
 
-#empty strings from id 20224 to 20249
+#: system/settings/settings.xml
+msgctxt "#20224"
+msgid "Prefer online album art"
+msgstr ""
+
+#. Description of setting with label #20224 "Prefer online album art"
+#: system/settings/settings.xml
+msgctxt "#20225"
+msgid "Where no local album cover exists, online art will be used. Where neither is available, cover images embedded in music files will be used"
+msgstr ""
+
+#: system/settings/settings.xml
+#: xbmc/video/VideoItemArtworkHandler.cpp
+#: xbmc/music/dialogs/GUIDialogVideoInfo.cpp
+msgctxt "#20226"
+msgid "Movie set information folder"
+msgstr ""
+
+#empty string with id 20227
+
+#: system/settings/settings.xml
+msgctxt "#20228"
+msgid "Use artist sortname when sorting by artist"
+msgstr ""
+
+#empty strings from id 20229 to 20249
 
 msgctxt "#20250"
 msgid "Party on! (videos)"
@@ -9133,7 +9188,17 @@ msgctxt "#20471"
 msgid "Show empty TV shows"
 msgstr ""
 
-#empty strings from id 20472 to 21329
+#: system/settings/settings.xml
+msgctxt "#20472"
+msgid "Show all performers for music videos"
+msgstr ""
+
+#: addons/skin.estuary/xml/Variables.xml
+msgctxt "#20473"
+msgid "Premiered"
+msgstr ""
+
+#empty strings from id 20474 to 21329
 #up to 21329 is reserved for the video db !! !
 
 #: system/settings/settings.xml
@@ -9202,7 +9267,25 @@ msgctxt "#21342"
 msgid "There are currently no updates available for this add-on."
 msgstr ""
 
-#empty strings from id 21343 to 21358
+#: system/settings.xml
+msgctxt "#21343"
+msgid "Use video tags"
+msgstr ""
+
+#empty string with id 21344
+
+#. Used in AutoPlayNextItem dialogs for not categorized listItem directories
+#: xbmc/view/GUIViewState.cpp
+msgctxt "#21345"
+msgid "Uncategorized"
+msgstr ""
+
+#empty strings from id 21346 to 21357
+
+#: system/settings/settings.xml
+msgctxt "#21358"
+msgid "Enable UPnP support"
+msgstr ""
 
 #: xbmc/dialogs/GUIDialogFileBrowser.cpp
 msgctxt "#21359"
@@ -9603,14 +9686,16 @@ msgctxt "#21448"
 msgid "Subtitle language"
 msgstr ""
 
+#empty string with ID 21449
+
+#. Label for controls used to edit something (e.g. setting "Appearance -> Skin -> Edit" or a context menu entry to open timer settings dialog)
 #: system/settings/settings.xml
-msgctxt "#21449"
-msgid "Remote control sends keyboard presses"
+#: xbmc/pvr/PVRContextMenus.cpp
+msgctxt "#21450"
+msgid "Edit"
 msgstr ""
 
-msgctxt "#21451"
-msgid "Internet connection required."
-msgstr ""
+#empty string with ID 21451
 
 #: xbmc/addons/GUIViewStateAddonBrowser.cpp
 #: xbmc/filesystem/AddonsDirectory.cpp
@@ -10114,11 +10199,6 @@ msgstr ""
 #strings 21900 thru 21999 reserved for slideshow info
 
 #: system/settings/settings.xml
-msgctxt "#22000"
-msgid "Update library on startup"
-msgstr ""
-
-#: system/settings/settings.xml
 msgctxt "#22001"
 msgid "Hide progress of library updates"
 msgstr ""
@@ -10239,7 +10319,25 @@ msgctxt "#22033"
 msgid "Charset"
 msgstr ""
 
-#empty strings from id 22034 to 22078
+#empty strings from id 22034 to 22075
+
+#. Label for setting to choose the default action for "play"
+#: system/settings/settings.xml
+msgctxt "#22076"
+msgid "Default play action"
+msgstr ""
+
+#. Label for value for default play action setting
+#: system/settings/settings.xml
+msgctxt "#22077"
+msgid "Ask if resumable"
+msgstr ""
+
+#. Label for value for default play action setting
+#: system/settings/settings.xml
+msgctxt "#22078"
+msgid "Resume"
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#22079"
@@ -12223,6 +12321,30 @@ msgctxt "#36291"
 msgid "Auto eject disc after rip is complete."
 msgstr ""
 
+#. Description of settings category "Interface -> Startup" with label #14224
+#: system/settings/settings.xml
+msgctxt "#36292"
+msgid "This category contains startup settings."
+msgstr ""
+
+#. Description of setting with label #20223 "Artist information folder"
+#: system/settings/settings.xml
+msgctxt "#36293"
+msgid "Select the folder where artist information (nfo files and images) should be saved in."
+msgstr ""
+
+#. Description of setting with label #20228 "Use artist sortname"
+#: system/settings/settings.xml
+msgctxt "#36294"
+msgid "When sorting music items by artist use sortname e.g. Parton, Dolly rather than name."
+msgstr ""
+
+#. Description of setting with label #20226 "Movie set information folder"
+#: system/settings/settings.xml
+msgctxt "#36300"
+msgid "Select the folder where movie set information (images) are saved locally."
+msgstr ""
+
 #: system/settings/settings.xml
 msgctxt "#36302"
 msgid "No info available yet."
@@ -12567,12 +12689,6 @@ msgctxt "#36393"
 msgid "Select the folder where screenshots should be saved in."
 msgstr ""
 
-#. Description of setting with label #666 "Enable component-specific logging"
-#: system/settings/settings.xml
-msgctxt "#36394"
-msgid "Enables verbose messages from additional libraries to be included in the debug log."
-msgstr ""
-
 #. Description of settings category with label #12360 "Master lock"
 #: system/settings/settings.xml
 msgctxt "#36395"
@@ -12705,21 +12821,36 @@ msgctxt "#36420"
 msgid "Look for external subtitles for videos provided by the UPnP server. This can cause extensive CPU, filesystem and network load."
 msgstr ""
 
+#: system/settings/settings.xml
+msgctxt "#36422"
+msgid "Update official add-ons from"
+msgstr ""
+
+#. Description of setting with label #36422 "Update official add-ons from"
+#: system/settings/settings.xml
+msgctxt "#36423"
+msgid "By default, add-ons from official repositories will be prevented from being auto-updated from private repositories. For cases such as updating from an add-ons beta repository this option can be switched to [Any repositories] (bear in mind this is a less secure option and enabling it could cause incompatibility and crashes)."
+msgstr ""
+
 #. Description for setting #310: "Keyboard layouts"
 #: system/settings/settings.xml
 msgctxt "#36432"
 msgid "Select virtual keyboard layouts."
 msgstr ""
 
-#empty strings from id 36433 to 36499
-#end reservation
+#. Option for setting "System -> Add-ons -> Update official add-ons from"
+#: system/settings/settings.xml
+msgctxt "#36437"
+msgid "Official repositories only (default)"
+msgstr ""
 
-#reserved strings for 3d modes 36462 - 36503
+#. Option for setting "System -> Add-ons -> Update official add-ons from"
+#: system/settings/settings.xml
+msgctxt "#36438"
+msgid "Any repositories"
+msgstr ""
 
-#empty strings from id 36462 to 36519
-#end of reserved strings for 3d modes
-
-#empty strings from id 36519 to 36599
+#empty strings from id 36439 to 36602
 #reserved strings 365XX
 
 #. Description of settings category with label #14216 Display
@@ -12817,7 +12948,37 @@ msgctxt "#36627"
 msgid "Client"
 msgstr ""
 
-#empty strings from id 36628 to 36899
+#. Menuitem at "Settings -> System -> Add-ons"
+#: ./system/settings/settings.xml
+msgctxt "#36638"
+msgid "Remove all orphaned add-ons"
+msgstr ""
+
+#. Description of setting with label #36638 "Remove all orphaned dependencies"
+#: system/settings/settings.xml
+msgctxt "#36639"
+msgid "Remove all modules and support libraries that have been automatically installed and are in an orphaned state."
+msgstr ""
+
+#. Dialog caption
+#: xbmc/addons/AddonSystemSettings.cpp
+msgctxt "#36640"
+msgid "Orphaned add-ons"
+msgstr ""
+
+#. Dialog text if orphaned add-ons were found and removed
+#: xbmc/addons/AddonSystemSettings.cpp
+msgctxt "#36641"
+msgid "The following orphaned add-ons were removed from your system: %s."
+msgstr ""
+
+#. Dialog text if no more orphaned add-ons left on the system
+#: xbmc/addons/AddonSystemSettings.cpp
+msgctxt "#36642"
+msgid "No orphaned add-ons to remove."
+msgstr ""
+
+#empty strings from id 36643 to 36899
 
 #: xbmc/media/MediaType.cpp
 msgctxt "#36900"
@@ -13238,7 +13399,19 @@ msgctxt "#38109"
 msgid "This category contains the settings for how information for pictures is shown and navigated"
 msgstr ""
 
-#empty strings from id 38112 to 38206
+#. Description of setting with label #12381 "Switch to visualisation on playback"
+#: system/settings/settings.xml
+msgctxt "#38112"
+msgid "Automatically go to the visualisation window when audio playback starts"
+msgstr ""
+
+#empty strings from id 38113 to 38189
+
+msgctxt "#38190"
+msgid "Extract thumbnails from video files"
+msgstr ""
+
+#empty strings from id 38191 to 38206
 
 #. Description of setting "Pictures -> Show EXIF picture information" with label #38207
 #: system/settings/settings.xml
@@ -13990,8 +14163,153 @@ msgctxt "#38995"
 msgid "Default emulator"
 msgstr ""
 
+#. Description of setting with label #21358 "Share my libraries"
+#: system/settings/settings.xml
+msgctxt "#39017"
+msgid "Enables UPnP. This allows you to stream media in your libraries to a UPnP client and to detect remote UPnP servers."
+msgstr ""
+
 #: xbmc/addons/GUIDialogAddonInfo.cpp
 #: addons/skin.estuary/xml/DialogAddonInfo.xml
 msgctxt "#39024"
 msgid "Dependencies"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39125"
+msgid "Enable tag reading in file view"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39137"
+msgid "Artwork level"
+msgstr ""
+
+#. Description of setting with label #39137 "Artwork level"
+#: system/settings/settings.xml
+msgctxt "#39138"
+msgid "The amount of artwork automatically selected - [Maximum] all local images and remote art; [Basic] save space on limited devices or when using a simple skin; [Custom] configured by user for detailed control; [None] no art"
+msgstr ""
+
+#empty string with id 39139
+
+#. Value of setting with label #39137 "Artwork level"
+#: system/settings/settings.xml
+msgctxt "#39140"
+msgid "Maximum"
+msgstr ""
+
+#. Value of setting with label #39137 "Artwork level"
+#: system/settings/settings.xml
+msgctxt "#39141"
+msgid "Basic"
+msgstr ""
+
+#. Value of setting with label #39137 "Artwork level"
+#: system/settings/settings.xml
+msgctxt "#39142"
+msgid "Custom"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39143"
+msgid "Movie art types whitelist"
+msgstr ""
+
+#. Description of setting with label #39150 "Movie art types whitelist"
+#: system/settings/settings.xml
+msgctxt "#39144"
+msgid "Limit the movie and movie set artwork fetched locally or applied from scraper remote art results to just those art types in the whitelist"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39145"
+msgid "TV show art types whitelist"
+msgstr ""
+
+#. Description of setting with label #39152 "TV show art types whitelist"
+#: system/settings/settings.xml
+msgctxt "#39146"
+msgid "Limit the TV show and season artwork fetched locally or applied from scraper remote art results to just those art types in the whitelist"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39147"
+msgid "Episode art types whitelist"
+msgstr ""
+
+#. Description of setting with label #39154 "Episode art types whitelist"
+#: system/settings/settings.xml
+msgctxt "#39148"
+msgid "Limit the episode artwork fetched locally or applied from scraper remote art results to just those art types in the whitelist"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39149"
+msgid "Music video art types whitelist"
+msgstr ""
+
+#. Description of setting with label #39156 "Music video art types whitelist"
+#: system/settings/settings.xml
+msgctxt "#39150"
+msgid "Limit the music video artwork fetched locally or applied from scraper remote art results to just those art types in the whitelist"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#39192"
+msgid "Disable screensaver when playing audio"
+msgstr ""
+
+#. Description of setting with label #39192 "Disable screensaver when playing audio"
+#: system/settings/settings.xml
+msgctxt "#39193"
+msgid "If music is being played, the screensaver will never be activated"
+msgstr ""
+
+#. Select default video version setting
+#: system/settings/settings.xml
+msgctxt "#40200"
+msgid "Select default video version"
+msgstr ""
+
+#. Help for select default video version setting
+#: system/settings/settings.xml
+msgctxt "#40201"
+msgid "Defines how to handle selection of videos with multiple versions.[CR][Enabled] Automatically select the default video version without prompting.[CR][Disabled] Display a dialogue to select a version of the video."
+msgstr ""
+
+#. Ignore different video versions settting
+#: system/settings/settings.xml
+msgctxt "#40202"
+msgid "Ignore different video versions on scan"
+msgstr ""
+
+#. Help for Ignore different video versions settting
+#: system/settings/settings.xml
+msgctxt "#40203"
+msgid "Select scanner action for different video versions.[CR][Enabled] Add different video versions to library seperately without confirmation.[CR][Disabled] Prompt for converting different video versions into additional versions of the original."
+msgstr ""
+
+#. Ignore video extras settting
+#: system/settings/settings.xml
+msgctxt "#40204"
+msgid "Ignore video extras on scan"
+msgstr ""
+
+#. Help for ignore video extras settting
+#: system/settings/settings.xml
+msgctxt "#40205"
+msgid "Select scanner action for video extras in \"extras\" folder.[CR][Enabled] Scan video extras like regular videos.[CR][Disabled] Add video extras to library for associated video."
+msgstr ""
+
+#. Show video versions as folder settting
+#: system/settings/settings.xml
+msgctxt "#40206"
+msgid "Show videos with multiple versions as folder"
+msgstr ""
+
+#. Help for show video versions as folder settting
+#: system/settings/settings.xml
+msgctxt "#40207"
+msgid "When enabled, a video with multiple versions will be shown as a folder in the video library. This folder can then be opened to display the individual video versions. When disabled, the configured select action will be applied."
 msgstr ""

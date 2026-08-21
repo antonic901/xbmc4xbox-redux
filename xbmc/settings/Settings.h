@@ -236,8 +236,6 @@ public:
   static const char* SETTING_NETWORK_BANDWIDTH;
   static const char* SETTING_POWERMANAGEMENT_SHUTDOWNTIME;
   static const char* SETTING_DEBUG_SHOWLOGINFO;
-  static const char* SETTING_DEBUG_EXTRALOGGING;
-  static const char* SETTING_DEBUG_SETEXTRALOGLEVEL;
   static const char* SETTING_DEBUG_SCREENSHOTPATH;
   static const char* SETTING_MASTERLOCK_LOCKCODE;
   static const char* SETTING_MASTERLOCK_STARTUPLOCK;
