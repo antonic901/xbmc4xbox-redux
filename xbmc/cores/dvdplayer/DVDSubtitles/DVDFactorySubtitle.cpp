@@ -33,34 +33,6 @@
 
 using namespace std;
 
-bool CDVDFactorySubtitle::GetSubtitles(VecSubtitleFiles& vecSubtitles, string& strFile)
-{
-  CLog::Log(LOGINFO, "CDVDFactorySubtitle::GetSubtitles, searching subtitles");
-
-  vecSubtitles.clear();
-  std::string subtitlePrefix = "special://temp/subtitle";
-
-  std::string strExtensionCached;
-
-  CUtil::CacheSubtitles(strFile, strExtensionCached);
-  int iSize = strExtensionCached.size();
-  int iStart = 0;
-
-  while (iStart < iSize)
-  {
-    int iEnd = strExtensionCached.find("|", iStart);
-    std::string strExtension = strExtensionCached.substr(iStart, iEnd-iStart);
-    iStart = iEnd + 1;
-
-    std::string subtitleFile = subtitlePrefix + strExtension;;
-    vecSubtitles.push_back(subtitleFile);
-  }
-
-  CLog::Log(LOGINFO, "CDVDFactorySubtitle::GetSubtitles, searching subtitles done");
-
-  return true;
-}
-
 CDVDSubtitleParser* CDVDFactorySubtitle::CreateParser(string& strFile)
 {
   char line[1024];
