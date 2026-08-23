@@ -250,6 +250,9 @@
 #define ACTION_INPUT_TEXT             244
 #define ACTION_VOLUME_SET             245
 
+//! Browse for subtitle. Can be used in videofullscreen
+#define ACTION_BROWSE_SUBTITLE        247
+
 //! Used to queue an item to the next position in the playlist
 #define ACTION_QUEUE_ITEM_NEXT        251
 
