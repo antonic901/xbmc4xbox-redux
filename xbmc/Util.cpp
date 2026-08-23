@@ -1385,7 +1385,7 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
             //Cache any alternate subtitles.
             if (StringUtils::StartsWithNoCase(strItem, "subtitle.") && StringUtils::EndsWithNoCase(strItem, sub_exts[i]))
             {
-              strLExt = strItem.substr(strItem.length() - 9);
+              strLExt = strItem.substr(9);
               strDest = StringUtils::Format("special://temp/subtitle.alt-%s", strLExt.c_str());
               if (CFile::Copy(items[j]->GetPath(), strDest, pCallback, NULL))
               {
@@ -1397,7 +1397,7 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
             //Cache subtitle with same name as movie
             if (StringUtils::EndsWithNoCase(strItem, sub_exts[i]) && StringUtils::StartsWithNoCase(strItem, strFileNameNoExt))
             {
-              strLExt = strItem.substr(strItem.size() - fnl);
+              strLExt = strItem.substr(fnl);
               strDest = StringUtils::Format("special://temp/subtitle%s", strLExt.c_str());
               if (CFile::Copy(items[j]->GetPath(), strDest, pCallback, NULL))
                 CLog::Log(LOGINFO, " cached subtitle %s->%s\n", strItem.c_str(), strDest.c_str());
@@ -1418,7 +1418,7 @@ void CUtil::CacheSubtitles(const std::string& strMovie, std::string& strExtensio
       continue;
 
     std::string filename = URIUtils::GetFileName(items[i]->GetPath());
-    strLExt = filename.substr(filename.size()-8);
+    strLExt = filename.substr(8);
     vecExtensionsCached.push_back(strLExt);
     if (URIUtils::GetExtension(filename) == ".smi")
     {
