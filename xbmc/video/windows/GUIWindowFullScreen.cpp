@@ -40,6 +40,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "video/dialogs/GUIDialogFullScreenInfo.h"
 #include "video/dialogs/GUIDialogAudioSettings.h"
+#include "video/dialogs/GUIDialogSubtitleSettings.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "GUISliderControl.h"
@@ -411,6 +412,13 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
     }
     return true;
     break;
+  case ACTION_BROWSE_SUBTITLE:
+    {
+      std::string path = CGUIDialogSubtitleSettings::BrowseForSubtitle();
+      if (!path.empty())
+        appPlayer->AddSubtitle(path);
+      return true;
+    }
   case ACTION_ZOOM_IN:
     {
       CMediaSettings::GetInstance().GetCurrentVideoSettings().m_CustomZoomAmount += 0.01f;

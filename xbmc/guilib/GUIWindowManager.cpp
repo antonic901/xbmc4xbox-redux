@@ -91,6 +91,7 @@
 #include "profiles/dialogs/GUIDialogProfileSettings.h"
 #include "settings/dialogs/GUIDialogContentSettings.h"
 #include "settings/dialogs/GUIDialogLibExportSettings.h"
+#include "video/dialogs/GUIDialogSubtitleSettings.h"
 #include "video/dialogs/GUIDialogVideoBookmarks.h"
 #include "video/dialogs/GUIDialogVideoSettings.h"
 
@@ -154,6 +155,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIDialogMusicOSD);
   Add(new CGUIDialogVisualisationPresetList);
   Add(new CGUIDialogVideoSettings);
+  Add(new CGUIDialogSubtitleSettings);
   Add(new CGUIDialogVideoBookmarks);
   // Don't add the filebrowser dialog - it's created and added when it's needed
   Add(new CGUIDialogMediaSource);
@@ -232,6 +234,7 @@ bool CGUIWindowManager::DestroyWindows()
     DestroyWindow(WINDOW_DIALOG_MEDIA_SOURCE);
     DestroyWindow(WINDOW_DIALOG_VIDEO_OSD_SETTINGS);
     DestroyWindow(WINDOW_DIALOG_AUDIO_OSD_SETTINGS);
+    DestroyWindow(WINDOW_DIALOG_SUBTITLE_OSD_SETTINGS);
     DestroyWindow(WINDOW_DIALOG_VIDEO_BOOKMARKS);
     DestroyWindow(WINDOW_DIALOG_CONTENT_SETTINGS);
     DestroyWindow(WINDOW_DIALOG_INFOPROVIDER_SETTINGS);
