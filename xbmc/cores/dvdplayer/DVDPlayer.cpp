@@ -520,20 +520,33 @@ bool CDVDPlayer::OpenInputStream()
   {
     // find any available external subtitles
     std::vector<std::string> filenames;
-#ifdef _XBOX
-    std::string strPath = m_item.GetPath();
-    CDVDFactorySubtitle::GetSubtitles(filenames, strPath);
-#else
-    CUtil::ScanForExternalSubtitles(m_item.GetPath(), filenames);
-#endif
+
+    if (!URIUtils::IsUPnP(m_item.GetPath()) &&
+        !m_item.GetProperty("no-ext-subs-scan").asBoolean(false))
+      CUtil::ScanForExternalSubtitles(m_item.GetDynPath(), filenames);
 
     // find any upnp subtitles
     std::string key("upnp:subtitle:1");
     for(unsigned s = 1; m_item.HasProperty(key); key = StringUtils::Format("upnp:subtitle:%u", ++s))
       filenames.push_back(m_item.GetProperty(key).asString());
 
-    for(unsigned int i=0;i<filenames.size();i++)
-      AddSubtitleFile(filenames[i], i == 0 ? CDemuxStream::FLAG_DEFAULT : CDemuxStream::FLAG_NONE);
+    for (unsigned int i=0;i<filenames.size();i++)
+    {
+      // if vobsub subtitle:
+      if (URIUtils::HasExtension(filenames[i], ".idx"))
+      {
+        std::string strSubFile;
+        if (CUtil::FindVobSubPair( filenames, filenames[i], strSubFile))
+          AddSubtitleFile(filenames[i], strSubFile);
+      }
+      else
+      {
+        if (!CUtil::IsVobSub(filenames, filenames[i] ))
+        {
+          AddSubtitleFile(filenames[i]);
+        }
+      }
+    } // end loop over all subtitle files
 
     CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleCached = true;
   }
@@ -3396,13 +3409,21 @@ int CDVDPlayer::GetSourceBitrate()
 }
 
 
-int CDVDPlayer::AddSubtitleFile(const std::string& filename, CDemuxStream::EFlags flags)
+int CDVDPlayer::AddSubtitleFile(const std::string& filename, const std::string& subfilename, CDemuxStream::EFlags flags)
 {
   std::string ext = URIUtils::GetExtension(filename);
+  std::string vobsubfile = subfilename;
   if(ext == ".idx")
   {
+    if (vobsubfile.empty()) {
+      // find corresponding .sub (e.g. in case of manually selected .idx sub)
+      vobsubfile = CUtil::GetVobSubSubFromIdx(filename);
+      if (vobsubfile.empty())
+        return -1;
+    }
+
     CDVDDemuxVobsub v;
-    if(!v.Open(filename))
+    if(!v.Open(filename, vobsubfile))
       return -1;
     m_SelectionStreams.Update(NULL, &v);
     int index = m_SelectionStreams.IndexOf(STREAM_SUBTITLE, m_SelectionStreams.Source(STREAM_SOURCE_DEMUX_SUB, filename), 0);
@@ -3411,9 +3432,10 @@ int CDVDPlayer::AddSubtitleFile(const std::string& filename, CDemuxStream::EFlag
   }
   if(ext == ".sub")
   {
-    std::string strReplace(URIUtils::ReplaceExtension(filename,".idx"));
-    if (XFILE::CFile::Exists(strReplace))
-      return -1;
+    // if this looks like vobsub file (i.e. .idx found), add it as such
+    std::string vobsubidx = CUtil::GetVobSubIdxFromSub(filename);
+    if (!vobsubidx.empty())
+      return AddSubtitleFile(vobsubidx, filename, flags);
   }
   SelectionStream s;
   s.source   = m_SelectionStreams.Source(STREAM_SOURCE_TEXT, filename);

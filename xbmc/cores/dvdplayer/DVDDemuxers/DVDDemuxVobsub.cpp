@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "DVDDemuxVobsub.h"
 #include "DVDInputStreams/DVDFactoryInputStream.h"
 #include "DVDInputStreams/DVDInputStream.h"
@@ -39,7 +39,7 @@ CDVDDemuxVobsub::CDVDDemuxVobsub()
 CDVDDemuxVobsub::~CDVDDemuxVobsub()
 {
   for(unsigned i=0;i<m_Streams.size();i++)
-  {    
+  {
     if(m_Streams[i]->ExtraData)
       free(m_Streams[i]->ExtraData);
     delete m_Streams[i];
@@ -47,7 +47,7 @@ CDVDDemuxVobsub::~CDVDDemuxVobsub()
   m_Streams.clear();
 }
 
-bool CDVDDemuxVobsub::Open(const string& filename)
+bool CDVDDemuxVobsub::Open(const string& filename, const string& subfilename)
 {
   m_Filename = filename;
 
@@ -55,9 +55,13 @@ bool CDVDDemuxVobsub::Open(const string& filename)
   if(!pStream->Open(filename))
     return false;
 
-  string vobsub = filename;
-  vobsub.erase(vobsub.rfind('.'), vobsub.size());
-  vobsub += ".sub";
+  std::string vobsub = subfilename;
+  if ( vobsub == "")
+  {
+    vobsub = filename;
+    vobsub.erase(vobsub.rfind('.'), vobsub.size());
+    vobsub += ".sub";
+  }
 
   CFileItem item(vobsub, false);
   item.SetMimeType("video/x-vobsub");
@@ -183,14 +187,14 @@ bool CDVDDemuxVobsub::ParseDelay(SState& state, char* line)
   while(*line == ' ') line++;
   if(*line == '-')
   {
-	  line++;
-	  negative = true;
+      line++;
+      negative = true;
   }
   if(sscanf(line, "%d:%d:%d:%d", &h, &m, &s, &ms) != 4)
     return false;
   state.delay = h*3600.0 + m*60.0 + s + ms*0.001;
   if(negative)
-	  state.delay *= -1;
+      state.delay *= -1;
   return true;
 }
 
@@ -213,11 +217,11 @@ bool CDVDDemuxVobsub::ParseId(SState& state, char* line)
   else
     stream->iPhysicalId = -1;
 
-  stream->codec = AV_CODEC_ID_DVD_SUBTITLE;  
+  stream->codec = AV_CODEC_ID_DVD_SUBTITLE;
   stream->iId = m_Streams.size();
 
   state.id = stream->iId;
-  m_Streams.push_back(stream.release());  
+  m_Streams.push_back(stream.release());
   return true;
 }
 
@@ -232,7 +236,7 @@ bool CDVDDemuxVobsub::ParseTimestamp(SState& state, char* line)
 {
   if(state.id < 0)
     return false;
-  
+
   int h,m,s,ms;
   STimestamp timestamp;
 

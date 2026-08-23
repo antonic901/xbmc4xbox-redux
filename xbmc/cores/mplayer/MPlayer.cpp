@@ -749,9 +749,9 @@ void update_cache_dialog(const char* tmp)
 
     std::string message = tmp;
     StringUtils::Trim(message);
-    if (int i = message.find("Cache fill:") >= 0)
+    if (size_t i = message.find("Cache fill:") != std::string::npos)
     {
-      if (int j = message.find('%') >= 0)
+      if (size_t j = message.find('%') != std::string::npos)
       {
         std::string strPercentage = message.substr(i + 11, j - i + 11);
 
@@ -769,8 +769,8 @@ void update_cache_dialog(const char* tmp)
         return;
       }
     }
-    else if(int i = message.find("VobSub parsing:") >= 0)
-      if (int j = message.find('%') >= 0)
+    else if(size_t i = message.find("VobSub parsing:") != std::string::npos)
+      if (size_t j = message.find('%') != std::string::npos)
       {
         std::string strPercentage = message.substr(i + 15, j - i + 15);
 
@@ -845,7 +845,7 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
   bFileIsDVDIfoFile = file.IsDVDFile(false, true);
 
   CLog::Log(LOGDEBUG,"file:%s IsDiscImage:%i IsDVDIfoFile:%i", strFile.c_str(), bFileIsDVDImage , bFileIsDVDIfoFile);
-  if (strFile.find("dvd://") >= 0 || bFileIsDVDImage || bFileIsDVDIfoFile)
+  if (strFile.find("dvd://") != std::string::npos || bFileIsDVDImage || bFileIsDVDIfoFile)
   {
     bIsDVD = true;
     bIsVideo = true;
@@ -882,14 +882,11 @@ bool CMPlayer::OpenFile(const CFileItem& file, const CPlayerOptions& initoptions
     // cache (remote) subtitles to HD
     if (!bFileOnInternet && bIsVideo && !bIsDVD && CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleOn && !initoptions.identify)
     {
-      m_dlgCache->SetMessage("Caching subtitles...");
-      CUtil::CacheSubtitles(strFile, _SubtitleExtension, m_dlgCache);
-
-      if( m_dlgCache )
+      std::vector<std::string> filenames;
+      CUtil::ScanForExternalSubtitles(strFile, filenames);
+      for (std::vector<std::string>::const_iterator it = filenames.begin(); it != filenames.end(); ++it)
       {
-        //If caching was canceled, bail here
-        if( m_dlgCache->IsCanceled() ) throw 0;
-        m_dlgCache->ShowProgressBar(false);
+        _SubtitleExtension += URIUtils::GetExtension(*it) + "|";
       }
 
       CUtil::PrepareSubtitleFonts();
