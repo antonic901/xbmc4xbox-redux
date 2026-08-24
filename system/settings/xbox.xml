@@ -622,47 +622,6 @@
         </setting>
       </group>
     </category>
-    <category id="audio">
-      <group id="3" label="14252">
-        <setting id="audiooutput.ac3passthrough" type="boolean" label="364" help="36365">
-          <level>2</level>
-          <default>true</default>
-          <dependencies>
-            <dependency type="enable" setting="audiooutput.mode">1</dependency> <!-- AUDIO_DIGITAL -->
-          </dependencies>
-          <control type="toggle" />
-        </setting>
-        <setting id="audiooutput.dtspassthrough" type="boolean" label="254" help="36366">
-          <level>2</level>
-          <default>false</default>
-          <dependencies>
-            <dependency type="enable" setting="audiooutput.mode">1</dependency> <!-- AUDIO_DIGITAL -->
-          </dependencies>
-          <control type="toggle" />
-        </setting>
-        <setting id="audiooutput.aacpassthrough" type="boolean" parent="audiooutput.mode" label="38623" help="">
-          <level>2</level>
-          <default>false</default>
-          <dependencies>
-            <dependency type="enable" setting="audiooutput.mode">1</dependency> <!-- AUDIO_DIGITAL -->
-          </dependencies>
-          <control type="toggle" />
-        </setting>
-        <setting id="musicplayer.outputtoallspeakers" type="boolean" label="252" help="">
-          <level>2</level>
-          <default>false</default>
-          <dependencies>
-            <dependency type="enable" setting="audiooutput.mode">1</dependency> <!-- AUDIO_DIGITAL -->
-          </dependencies>
-          <control type="toggle" />
-        </setting>
-        <setting id="audiooutput.downmixmultichannel" type="boolean" label="548" help="">
-          <level>2</level>
-          <default>true</default>
-          <control type="toggle" />
-        </setting>
-      </group>
-    </category>
     <category id="powermanagement">
       <group id="2">
         <setting id="harddisk.spindowntime" type="integer" label="229" help="">
