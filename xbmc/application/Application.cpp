@@ -1045,11 +1045,8 @@ bool CApplication::OnAction(const CAction &action)
   if (action.GetID() == ACTION_TOGGLE_DIGITAL_ANALOG)
   {
     const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
-    int audioOutputMode = settings->GetInt(CSettings::SETTING_AUDIOOUTPUT_MODE);
-    if (audioOutputMode)
-      settings->SetInt(CSettings::SETTING_AUDIOOUTPUT_MODE, 0);
-    else
-      settings->SetInt(CSettings::SETTING_AUDIOOUTPUT_MODE, 1);
+    bool passthrough = settings->GetBool(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH);
+    settings->SetBool(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH, !passthrough);
 
 #ifdef _XBOX
     // Why we do this on Xbox?

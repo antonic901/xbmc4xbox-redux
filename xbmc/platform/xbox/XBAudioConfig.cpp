@@ -46,14 +46,14 @@ XBAudioConfig::~XBAudioConfig()
 
 void XBAudioConfig::OnSettingsLoaded()
 {
-  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_AUDIOOUTPUT_MODE) == AUDIO_DIGITAL && !HasDigitalOutput())
-    CServiceBroker::GetSettingsComponent()->GetSettings()->SetInt(CSettings::SETTING_AUDIOOUTPUT_MODE, AUDIO_ANALOG);
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH) && !HasDigitalOutput())
+    CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH, false);
   CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH, GetAC3Enabled());
   CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_AUDIOOUTPUT_DTSPASSTHROUGH, GetDTSEnabled());
-  CLog::Log(LOGINFO, "Using %s output", CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_AUDIOOUTPUT_MODE) == AUDIO_ANALOG ? "analog" : "digital");
+  CLog::Log(LOGINFO, "Using %s output", CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH) ? "digital" : "analog" );
   CLog::Log(LOGINFO, "AC3 pass through is %s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH) ? "enabled" : "disabled");
   CLog::Log(LOGINFO, "DTS pass through is %s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_AUDIOOUTPUT_DTSPASSTHROUGH) ? "enabled" : "disabled");
-  CLog::Log(LOGINFO, "AAC pass through is %s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiooutput.aacpassthrough") ? "enabled" : "disabled");
+  CLog::Log(LOGINFO, "AAC pass through is %s", CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_AUDIOOUTPUT_AACPASSTHROUGH) ? "enabled" : "disabled");
 }
 
 bool XBAudioConfig::HasDigitalOutput()

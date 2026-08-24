@@ -24,9 +24,6 @@
 
 #define XC_AUDIO_FLAGS 9
 
-#define AUDIO_ANALOG 0
-#define AUDIO_DIGITAL 1
-
 class XBAudioConfig : public ISettingsHandler
 {
 public:

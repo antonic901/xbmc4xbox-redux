@@ -242,7 +242,7 @@ const char* CSettings::SETTING_VIDEOSCREEN_ASPECT = "videooutput.aspect";
 const char* CSettings::SETTING_VIDEOSCREEN_HD480p = "videooutput.hd480p";
 const char* CSettings::SETTING_VIDEOSCREEN_HD720p = "videooutput.hd720p";
 const char* CSettings::SETTING_VIDEOSCREEN_HD1080i = "videooutput.hd1080i";
-const char* CSettings::SETTING_AUDIOOUTPUT_MODE = "audiooutput.mode";
+const char* CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH = "audiooutput.passthrough";
 const char* CSettings::SETTING_AUDIOOUTPUT_AACPASSTHROUGH = "audiooutput.aacpassthrough";
 const char* CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH = "audiooutput.ac3passthrough";
 const char* CSettings::SETTING_AUDIOOUTPUT_DTSPASSTHROUGH = "audiooutput.dtspassthrough";
@@ -550,8 +550,8 @@ void CSettings::InitializeDefaults()
   // set some default values if necessary
 #if defined(_XBOX)
   CLog::Log(LOGNOTICE, "Getting hardware information now...");
-  if (boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_MODE))->GetValue() == AUDIO_DIGITAL && !g_audioConfig.HasDigitalOutput())
-    boost::static_pointer_cast<CSettingInt>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_MODE))->SetDefault(AUDIO_ANALOG);
+  if (boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH))->GetValue() && !g_audioConfig.HasDigitalOutput())
+    boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH))->SetDefault(false);
   boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH))->SetDefault(g_audioConfig.GetAC3Enabled());
   boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_DTSPASSTHROUGH))->SetDefault(g_audioConfig.GetDTSEnabled());
 
