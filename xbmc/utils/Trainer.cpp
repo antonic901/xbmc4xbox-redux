@@ -52,8 +52,9 @@ using namespace XFILE;
 #define XBTF_SECTION 0x16 // section to patch the locations in memory our xbtf support functions end up
 #define XBTF_ENTRYPOINT 0x1A // entry point for xbtf file (really com).
 
-#define ETM_HEAP_SIZE 2400  // just enough room to match evox's etm spec limit (no need to give them more room then evox does)
-#define XBTF_HEAP_SIZE 15360 // plenty of room for trainer + xbtf support functions
+#define NUM_KB(n) (n * 1024)
+#define ETM_HEAP_SIZE NUM_KB(32)  // room for up to 32kb trainers
+#define XBTF_HEAP_SIZE (ETM_HEAP_SIZE + NUM_KB(8)) // plenty of room for trainer + xbtf support functions, 8kb more
 
 #define KERNEL_STORE_ADDRESS 0x8000000C // this is address in kernel we store the address of our allocated memory block
 #define KERNEL_START_ADDRESS 0x80010000 // base addy of kernel
@@ -564,6 +565,16 @@ bool CTrainer::Load(const std::string& strPath)
     m_bIsXBTF = false;
 
   m_iSize = (unsigned int)file.GetLength();
+  if (!m_bIsXBTF && m_iSize > ETM_HEAP_SIZE)
+  {
+    CLog::Log(LOGINFO, "CTrainer::Load: trainer \"%s\" size %d greater than ETM_HEAP_SIZE of %d bytes!", strPath.c_str(), m_iSize, ETM_HEAP_SIZE);
+    return false;
+  }
+  if (m_bIsXBTF && m_iSize > XBTF_HEAP_SIZE)
+  {
+    CLog::Log(LOGINFO, "CTrainer::Load: trainer \"%s\" size %d greater than XBTF_HEAP_SIZE of %d bytes!", strPath.c_str(), m_iSize, XBTF_HEAP_SIZE);
+    return false;
+  }
   if (m_iSize < ETM_SELECTIONS_OFFSET)
   {
     CLog::Log(LOGINFO,"CTrainer::Load: Broken trainer %s",strPath.c_str());
