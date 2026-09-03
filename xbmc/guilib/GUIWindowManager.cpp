@@ -70,6 +70,7 @@
 #include "addons/gui/GUIDialogAddonSettings.h"
 #include "dialogs/GUIDialogBusy.h"
 #include "dialogs/GUIDialogButtonMenu.h"
+#include "dialogs/GUIDialogColorPicker.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "dialogs/GUIDialogGamepad.h"
@@ -187,6 +188,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowMusicPlaylistEditor);
 
   Add(new CGUIDialogSelect);
+  Add(new CGUIDialogColorPicker);
   Add(new CGUIDialogMusicInfo);
   Add(new CGUIDialogOK);
   Add(new CGUIDialogVideoInfo);
@@ -251,6 +253,7 @@ bool CGUIWindowManager::DestroyWindows()
     DestroyWindow(WINDOW_DIALOG_SLIDER);
     DestroyWindow(WINDOW_DIALOG_MEDIA_FILTER);
     DestroyWindow(WINDOW_DIALOG_SUBTITLES);
+    DestroyWindow(WINDOW_DIALOG_COLOR_PICKER);
 
     DestroyWindow(WINDOW_DIALOG_TEXT_VIEWER);
     DestroyWindow(WINDOW_STARTUP_ANIM);

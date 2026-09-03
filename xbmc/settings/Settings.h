@@ -108,8 +108,10 @@ public:
   static const char* SETTING_MYVIDEOS_EXTRACTTHUMB;
   static const char* SETTING_MYVIDEOS_STACKVIDEOS;
   static const char* SETTING_LOCALE_SUBTITLELANGUAGE;
+  static const char* SETTING_SUBTITLES_FONT;
   static const char* SETTING_SUBTITLES_FONTSIZE;
   static const char* SETTING_SUBTITLES_STYLE;
+  static const char* SETTING_SUBTITLES_COLOR;
   static const char* SETTING_SUBTITLES_CHARSET;
   static const char* SETTING_SUBTITLES_LANGUAGES;
   static const char* SETTING_SUBTITLES_STORAGEMODE;

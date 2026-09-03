@@ -11,6 +11,7 @@
 #include "GUIAction.h"
 #include "GUIBorderedImage.h"
 #include "GUIButtonControl.h"
+#include "GUIColorButtonControl.h"
 #include "GUIColorManager.h"
 #include "GUIControlGroup.h"
 #include "GUIControlGroupList.h"
@@ -59,6 +60,7 @@ typedef struct
 
 static const ControlMapping controls[] = {
     {"button", CGUIControl::GUICONTROL_BUTTON},
+    {"colorbutton", CGUIControl::GUICONTROL_COLORBUTTON},
     {"edit", CGUIControl::GUICONTROL_EDIT},
     {"fadelabel", CGUIControl::GUICONTROL_FADELABEL},
     {"fixedlist", CGUIControl::GUICONTAINER_FIXEDLIST},
@@ -1540,6 +1542,22 @@ CGUIControl* CGUIControlFactory::Create(int parentID,
     case CGUIControl::GUICONTROL_RENDERADDON:
     {
       control = new CGUIRenderingControl(parentID, id, posX, posY, width, height);
+      break;
+    }
+    case CGUIControl::GUICONTROL_COLORBUTTON:
+    {
+      control = new CGUIColorButtonControl(parentID, id, posX, posY, width, height, textureFocus,
+                                           textureNoFocus, labelInfo, textureColorMask,
+                                           textureColorDisabledMask);
+
+      CGUIColorButtonControl* rcontrol = static_cast<CGUIColorButtonControl*>(control);
+      rcontrol->SetLabel(strLabel);
+      rcontrol->SetImageBoxColor(colorBox);
+      rcontrol->SetColorDimensions(colorPosX, colorPosY, colorWidth, colorHeight);
+      rcontrol->SetClickActions(clickActions);
+      rcontrol->SetFocusActions(focusActions);
+      rcontrol->SetUnFocusActions(unfocusActions);
+
       break;
     }
     default:

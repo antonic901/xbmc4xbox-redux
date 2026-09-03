@@ -1457,7 +1457,7 @@ void CUtil::PrepareSubtitleFonts()
 
   if( IsUsingTTFSubtitles()
     || CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_FONTSIZE) == 0
-    || CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.font").size() == 0)
+    || CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SUBTITLES_FONT).size() == 0)
   {
     /* delete all files in the font dir, so mplayer doesn't try to load them */
 
@@ -1996,7 +1996,7 @@ std::string CUtil::ValidatePath(const std::string &path, bool bFixDoubleSlashes 
 
 bool CUtil::IsUsingTTFSubtitles()
 {
-  return URIUtils::HasExtension(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.font"), ".ttf");
+  return URIUtils::HasExtension(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SUBTITLES_FONT), ".ttf");
 }
 
 void CUtil::SplitExecFunction(const std::string &execString, std::string &function, vector<string> &parameters)

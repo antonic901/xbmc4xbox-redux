@@ -394,25 +394,10 @@
           </constraints>
           <control type="list" format="string" />
         </setting>
-        <setting id="subtitles.color" type="integer" parent="subtitles.font" label="737" help="36188">
+        <setting id="subtitles.colorpick" type="string" parent="subtitles.font" label="737" help="36188">
           <level>3</level>
-          <default>1</default> <!-- White -->
-          <constraints>
-            <options>
-              <option label="760">0</option> <!-- Yellow -->
-              <option label="761">1</option> <!-- White -->
-              <option label="762">2</option> <!-- Blue -->
-              <option label="763">3</option> <!-- Bright green -->
-              <option label="764">4</option> <!-- Yellow green -->
-              <option label="765">5</option> <!-- Cyan -->
-              <option label="766">6</option> <!-- Light grey -->
-              <option label="767">7</option> <!-- Grey -->
-            </options>
-          </constraints>
-          <dependencies>
-            <dependency type="enable" on="property" name="IsUsingTTFSubtitles" setting="subtitles.font" />
-          </dependencies>
-          <control type="list" format="string" />
+          <default>FFFFFFFF</default> <!-- White -->
+          <control type="colorbutton" />
         </setting>
         <setting id="subtitles.charset" type="string" label="735" help="36189">
           <level>1</level>

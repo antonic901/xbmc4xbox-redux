@@ -100,6 +100,7 @@
 #define WINDOW_FULLSCREEN_VIDEO           12005
 #define WINDOW_VISUALISATION              12006
 #define WINDOW_SLIDESHOW                  12007
+#define WINDOW_DIALOG_COLOR_PICKER 12008
 
 //! @todo Numbers given here must match the ids given in strings.po for a translatable string for
 //! the window. 12009 to 12014 are already taken for something else in strings.po (accidentally).
