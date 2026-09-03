@@ -1,33 +1,26 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "utils/log.h"
 #include "Encoder.h"
+
 #include "filesystem/File.h"
+#include "utils/log.h"
+
+#include <string.h>
+#include <utility>
+#include <boost/move/make_unique.hpp>
 
 using namespace KODI::CDRIP;
 
 CEncoder::CEncoder()
 {
-  m_file = NULL;
   m_dwWriteBufferPointer = 0;
+  m_iTrackLength = 0;
   m_iInChannels = 0;
   m_iInSampleRate = 0;
   m_iInBitsPerSample = 0;
@@ -38,30 +31,48 @@ CEncoder::~CEncoder()
   FileClose();
 }
 
-bool CEncoder::Init(const char* strFile, int iInChannels, int iInRate, int iInBits)
+bool CEncoder::EncoderInit(const std::string& strFile, int iInChannels, int iInRate, int iInBits)
 {
-  if (strFile == NULL) return false;
-
   m_dwWriteBufferPointer = 0;
   m_strFile = strFile;
-
   m_iInChannels = iInChannels;
   m_iInSampleRate = iInRate;
   m_iInBitsPerSample = iInBits;
 
   if (!FileCreate(strFile))
   {
-    CLog::Log(LOGERROR, "Error: Cannot open file: %s", strFile);
+    CLog::Log(LOGERROR, "CEncoder::%s - Cannot open file: %s", __FUNCTION__, strFile.c_str());
     return false;
   }
+
+  return Init();
+}
+
+ssize_t CEncoder::EncoderEncode(uint8_t* pbtStream, size_t nNumBytesRead)
+{
+  const int iBytes = Encode(pbtStream, nNumBytesRead);
+  if (iBytes < 0)
+  {
+    CLog::Log(LOGERROR, "CEncoder::%s - Internal encoder error: %i", __FUNCTION__, iBytes);
+    return 0;
+  }
+  return 1;
+}
+
+bool CEncoder::EncoderClose()
+{
+  if (!Close())
+    return false;
+
+  FlushStream();
+  FileClose();
+
   return true;
 }
 
-bool CEncoder::FileCreate(const char* filename)
+bool CEncoder::FileCreate(const std::string& filename)
 {
-  delete m_file;
-
-  m_file = new XFILE::CFile;
+  m_file = boost::movelib::make_unique<XFILE::CFile>();
   if (m_file)
     return m_file->OpenForWrite(filename, true);
   return false;
@@ -72,27 +83,48 @@ bool CEncoder::FileClose()
   if (m_file)
   {
     m_file->Close();
-    delete m_file;
-    m_file = NULL;
+    m_file.reset();
   }
   return true;
 }
 
 // return total bytes written, or -1 on error
-int CEncoder::FileWrite(LPCVOID pBuffer, DWORD iBytes)
+ssize_t CEncoder::FileWrite(const uint8_t* pBuffer, size_t iBytes)
 {
   if (!m_file)
     return -1;
 
-  ssize_t dwBytesWritten = m_file->Write(pBuffer, iBytes);
+  const ssize_t dwBytesWritten = m_file->Write(pBuffer, iBytes);
   if (dwBytesWritten <= 0)
     return -1;
 
   return dwBytesWritten;
 }
 
+ssize_t CEncoder::Seek(ssize_t iFilePosition, int iWhence)
+{
+  if (!m_file)
+    return -1;
+  FlushStream();
+  return m_file->Seek(iFilePosition, iWhence);
+}
+
+int64_t CEncoder::GetLength()
+{
+  if (!m_file)
+    return -1;
+
+  return m_file->GetLength();
+}
+
+bool CEncoder::CloseFile()
+{
+  FlushStream();
+  return FileClose();
+}
+
 // write the stream to our writebuffer, and write the buffer to disk if it's full
-int CEncoder::WriteStream(LPCVOID pBuffer, DWORD iBytes)
+ssize_t CEncoder::Write(const uint8_t* pBuffer, size_t iBytes)
 {
   if ((WRITEBUFFER_SIZE - m_dwWriteBufferPointer) > iBytes)
   {
@@ -110,18 +142,20 @@ int CEncoder::WriteStream(LPCVOID pBuffer, DWORD iBytes)
       return FileWrite(pBuffer, iBytes);
     }
 
-    DWORD dwBytesRemaining = iBytes - (WRITEBUFFER_SIZE - m_dwWriteBufferPointer);
+    const size_t dwBytesRemaining = iBytes - (WRITEBUFFER_SIZE - m_dwWriteBufferPointer);
     // fill up our write buffer and write it to disk
-    memcpy(m_btWriteBuffer + m_dwWriteBufferPointer, pBuffer, (WRITEBUFFER_SIZE - m_dwWriteBufferPointer));
+    memcpy(m_btWriteBuffer + m_dwWriteBufferPointer, pBuffer,
+           (WRITEBUFFER_SIZE - m_dwWriteBufferPointer));
     FileWrite(m_btWriteBuffer, WRITEBUFFER_SIZE);
     m_dwWriteBufferPointer = 0;
 
     // pbtRemaining = pBuffer + bytesWritten
-    BYTE* pbtRemaining = (BYTE*)pBuffer + (iBytes - dwBytesRemaining);
+    const uint8_t* pbtRemaining = pBuffer + (iBytes - dwBytesRemaining);
     if (dwBytesRemaining > WRITEBUFFER_SIZE)
     {
       // data is not going to fit in our buffer, just write it to disk
-      if (FileWrite(pbtRemaining, dwBytesRemaining) == -1) return -1;
+      if (FileWrite(pbtRemaining, dwBytesRemaining) == -1)
+        return -1;
       return iBytes;
     }
     else
@@ -135,12 +169,12 @@ int CEncoder::WriteStream(LPCVOID pBuffer, DWORD iBytes)
 }
 
 // flush the contents of our writebuffer
-int CEncoder::FlushStream()
+ssize_t CEncoder::FlushStream()
 {
-  int iResult;
-  if (m_dwWriteBufferPointer == 0) return 0;
+  if (m_dwWriteBufferPointer == 0)
+    return 0;
 
-  iResult = FileWrite(m_btWriteBuffer, m_dwWriteBufferPointer);
+  const ssize_t iResult = FileWrite(m_btWriteBuffer, m_dwWriteBufferPointer);
   m_dwWriteBufferPointer = 0;
 
   return iResult;

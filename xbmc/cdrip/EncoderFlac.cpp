@@ -37,14 +37,10 @@ CEncoderFlac::~CEncoderFlac()
   delete [] m_samplesBuf;
 }
 
-bool CEncoderFlac::Init(const char* strFile, int iInChannels, int iInRate, int iInBits)
+bool CEncoderFlac::Init()
 {
   // we only accept 2 / 44100 / 16 atm
-  if (iInChannels != 2 || iInRate != 44100 || iInBits != 16)
-    return false;
-
-  // set input stream information and open the file
-  if (!CEncoder::Init(strFile, iInChannels, iInRate, iInBits))
+  if (m_iInChannels != 2 || m_iInSampleRate != 44100 || m_iInBitsPerSample != 16)
     return false;
 
   // load the flac dll
@@ -120,7 +116,7 @@ bool CEncoderFlac::Init(const char* strFile, int iInChannels, int iInRate, int i
   return true;
 }
 
-int CEncoderFlac::Encode(int nNumBytesRead, BYTE* pbtStream)
+ssize_t CEncoderFlac::Encode(uint8_t* pbtStream, size_t nNumBytesRead)
 {
   int nLeftSamples = nNumBytesRead / 2; // each sample takes 2 bytes (16 bits per sample)
   while (nLeftSamples > 0)
@@ -166,15 +162,13 @@ bool CEncoderFlac::Close()
     m_dll.FLAC__stream_encoder_delete(m_encoder);
   }
 
-  FileClose();
-
   return ok ? true : false;
 }
 
 FLAC__StreamEncoderWriteStatus CEncoderFlac::write_callback(const FLAC__StreamEncoder *encoder, const FLAC__byte buffer[], size_t bytes, unsigned samples, unsigned current_frame, void *client_data)
 {
   CEncoderFlac *pThis = (CEncoderFlac *)client_data;
-  if (pThis->FileWrite(buffer, bytes) != bytes)
+  if (pThis->Write(buffer, bytes) != bytes)
     return FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR;
   return FLAC__STREAM_ENCODER_WRITE_STATUS_OK;
 }
@@ -182,7 +176,7 @@ FLAC__StreamEncoderWriteStatus CEncoderFlac::write_callback(const FLAC__StreamEn
 FLAC__StreamEncoderSeekStatus CEncoderFlac::seek_callback(const FLAC__StreamEncoder *encoder, FLAC__uint64 absolute_byte_offset, void *client_data)
 {
   CEncoderFlac *pThis = (CEncoderFlac *)client_data;
-  if (pThis->m_file->Seek(absolute_byte_offset, FILE_BEGIN) < 0)
+  if (pThis->Seek(absolute_byte_offset, FILE_BEGIN) < 0)
     return FLAC__STREAM_ENCODER_SEEK_STATUS_ERROR;
   return FLAC__STREAM_ENCODER_SEEK_STATUS_OK;
 }
@@ -190,7 +184,7 @@ FLAC__StreamEncoderSeekStatus CEncoderFlac::seek_callback(const FLAC__StreamEnco
 FLAC__StreamEncoderTellStatus CEncoderFlac::tell_callback(const FLAC__StreamEncoder *encoder, FLAC__uint64 *absolute_byte_offset, void *client_data)
 {
   CEncoderFlac *pThis = (CEncoderFlac *)client_data;
-  int64_t off = pThis->m_file->GetLength();
+  int64_t off = pThis->GetLength();
   if (off < 0)
     return FLAC__STREAM_ENCODER_TELL_STATUS_ERROR;
   *absolute_byte_offset = off;

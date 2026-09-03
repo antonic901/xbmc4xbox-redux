@@ -111,7 +111,7 @@ bool CCDDARipJob::DoWork()
   }
 
   // close encoder ripper
-  encoder->Close();
+  encoder->EncoderClose();
   encoder.reset();
   reader.Close();
 
@@ -167,7 +167,7 @@ int CCDDARipJob::RipChunk(CFile& reader, const boost::movelib::unique_ptr<CEncod
     return 1;
 
   // encode data
-  ssize_t encres = encoder->Encode(result, stream);
+  ssize_t encres = encoder->EncoderEncode(stream, result);
 
   // Get progress indication
   percent = static_cast<int>(reader.GetPosition() * 100 / reader.GetLength());
@@ -220,7 +220,7 @@ boost::movelib::unique_ptr<CEncoder> CCDDARipJob::SetupEncoder(CFile& reader)
   encoder->SetYear(m_tag.GetYearString());
 
   // init encoder
-  if (!encoder->Init(m_output.c_str(), m_channels, m_rate, m_bps))
+  if (!encoder->EncoderInit(m_output, m_channels, m_rate, m_bps))
     encoder.reset();
 
   return boost::move(encoder);
