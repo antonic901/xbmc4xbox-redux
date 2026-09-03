@@ -33,6 +33,7 @@ extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
 #endif
 
 using namespace MUSIC_INFO;
+using namespace KODI::CDRIP;
 
 // taken from Lame from main.c
 int CEncoderLame::parse_args_from_string(lame_global_flags * const gfp, const char *p,

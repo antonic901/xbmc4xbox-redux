@@ -26,6 +26,8 @@
 
 #include <ctime>
 
+using namespace KODI::CDRIP;
+
 CEncoderVorbis::CEncoderVorbis()
 {
   m_pBuffer = NULL;

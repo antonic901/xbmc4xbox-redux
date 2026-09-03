@@ -24,6 +24,11 @@
 #include "Encoder.h"
 #include "DllLameenc.h"
 
+namespace KODI
+{
+namespace CDRIP
+{
+
 class CEncoderLame : public CEncoder
 {
 public:
@@ -45,5 +50,8 @@ protected:
 
   DllLameEnc m_dll;
 };
+
+} /* namespace CDRIP */
+} /* namespace KODI */
 
 #endif // _ENCODERLAME_H

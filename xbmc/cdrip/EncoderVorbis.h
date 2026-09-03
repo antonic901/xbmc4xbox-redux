@@ -26,6 +26,11 @@
 #include "DllVorbis.h"
 #include "DllVorbisEnc.h"
 
+namespace KODI
+{
+namespace CDRIP
+{
+
 class CEncoderVorbis : public CEncoder
 {
 public:
@@ -52,5 +57,8 @@ protected:
   DllVorbis m_VorbisDll;
   DllVorbisEnc m_VorbisEncDll;
 };
+
+} /* namespace CDRIP */
+} /* namespace KODI */
 
 #endif // _ENCODERVORBIS_H

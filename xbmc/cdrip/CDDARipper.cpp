@@ -1,58 +1,50 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "system.h"
-
-#ifdef HAS_CDDA_RIPPER
-
 #include "CDDARipper.h"
+
 #include "CDDARipJob.h"
-#include "utils/StringUtils.h"
+#include "Encoder.h" // CDDARIP_ENCODER_WAV, CDDARIP_ENCODER_VORBIS, CDDARIP_ENCODER_FLAC
+#include "FileItem.h"
+#include "ServiceBroker.h"
 #include "Util.h"
-#include "URL.h"
+#include "addons/AddonManager.h"
+#include "addons/addoninfo/AddonInfo.h"
+#include "addons/addoninfo/AddonType.h"
 #include "filesystem/CDDADirectory.h"
-#include "music/tags/MusicInfoTagLoaderFactory.h"
-#include "utils/LabelFormatter.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
+#include "messaging/helpers/DialogOKHelper.h"
+#include "music/MusicDatabase.h"
+#include "music/MusicDbUrl.h"
 #include "music/MusicLibraryQueue.h"
 #include "music/infoscanner/MusicInfoScanner.h"
 #include "music/tags/MusicInfoTag.h"
-#include "guilib/GUIComponent.h"
-#include "guilib/GUIWindowManager.h"
-#include "guilib/LocalizeStrings.h"
-#include "dialogs/GUIDialogOK.h"
+#include "music/tags/MusicInfoTagLoaderFactory.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/MediaSourceSettings.h"
 #include "settings/SettingPath.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/windows/GUIControlSettings.h"
-#include "FileItem.h"
 #include "storage/DetectDVDType.h"
-#include "utils/log.h"
+#include "storage/MediaManager.h"
+#include "utils/LabelFormatter.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
-#include "settings/MediaSourceSettings.h"
-#include "application/Application.h"
-#include "music/MusicDatabase.h"
+#include "utils/log.h"
 
+using namespace ADDON;
 using namespace XFILE;
 using namespace MUSIC_INFO;
+using namespace KODI::MESSAGING;
+using namespace KODI::CDRIP;
 
 CCDDARipper& CCDDARipper::GetInstance()
 {
@@ -60,14 +52,11 @@ CCDDARipper& CCDDARipper::GetInstance()
   return sRipper;
 }
 
-CCDDARipper::CCDDARipper()
-  : CJobQueue(false, 1) //enforce fifo and non-parallel processing
+CCDDARipper::CCDDARipper() : CJobQueue(false, 1) //enforce fifo and non-parallel processing
 {
 }
 
-CCDDARipper::~CCDDARipper()
-{
-}
+CCDDARipper::~CCDDARipper() {}
 
 // rip a single track from cd
 bool CCDDARipper::RipTrack(CFileItem* pItem)
@@ -75,7 +64,8 @@ bool CCDDARipper::RipTrack(CFileItem* pItem)
   // don't rip non cdda items
   if (!URIUtils::HasExtension(pItem->GetPath(), ".cdda"))
   {
-    CLog::Log(LOGDEBUG, "cddaripper: file is not a cdda track");
+    CLog::Log(LOGDEBUG, "CCDDARipper::%s - File '%s' is not a cdda track", __FUNCTION__,
+              pItem->GetPath().c_str());
     return false;
   }
 
@@ -85,12 +75,12 @@ bool CCDDARipper::RipTrack(CFileItem* pItem)
   if (!CreateAlbumDir(*pItem->GetMusicInfoTag(), strDirectory, legalType))
     return false;
 
-  std::string strFile = URIUtils::AddFileToFolder(strDirectory,
-                      CUtil::MakeLegalFileName(GetTrackName(pItem), legalType));
+  std::string strFile = URIUtils::AddFileToFolder(
+      strDirectory, CUtil::MakeLegalFileName(GetTrackName(pItem), legalType));
 
-  AddJob(new CCDDARipJob(pItem->GetPath(),strFile,
-                         *pItem->GetMusicInfoTag(),
-                         CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.encoder")));
+  AddJob(new CCDDARipJob(pItem->GetPath(), strFile, *pItem->GetMusicInfoTag(),
+                         CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
+                             CSettings::SETTING_AUDIOCDS_ENCODER)));
 
   return true;
 }
@@ -101,7 +91,7 @@ bool CCDDARipper::RipCD()
   MEDIA_DETECT::CCdInfo* pInfo = MEDIA_DETECT::CDetectDVDMedia::GetCdInfo();
   if (pInfo == NULL || !pInfo->IsAudio(1))
   {
-    CLog::Log(LOGDEBUG, "cddaripper: CD is not an audio cd");
+    CLog::Log(LOGDEBUG, "CCDDARipper::%s - CD is not an audio cd", __FUNCTION__);
     return false;
   }
 
@@ -115,12 +105,12 @@ bool CCDDARipper::RipCD()
   {
     CFileItemPtr pItem = vecItems[i];
     CMusicInfoTagLoaderFactory factory;
-    boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader (factory.CreateLoader(*pItem));
-    if (NULL != pLoader.get())
+    boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader(factory.CreateLoader(*pItem));
+    if (nullptr != pLoader)
     {
       pLoader->Load(pItem->GetPath(), *pItem->GetMusicInfoTag()); // get tag from file
       if (!pItem->GetMusicInfoTag()->Loaded())
-        break;  //  No CDDB info available
+        break; //  No CDDB info available
     }
   }
 
@@ -131,36 +121,31 @@ bool CCDDARipper::RipCD()
     return false;
 
   // rip all tracks one by one
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
   for (int i = 0; i < vecItems.Size(); i++)
   {
     CFileItemPtr item = vecItems[i];
 
     // construct filename
-    std::string strFile = URIUtils::AddFileToFolder(strDirectory, CUtil::MakeLegalFileName(GetTrackName(item.get()), legalType));
+    std::string strFile = URIUtils::AddFileToFolder(
+        strDirectory, CUtil::MakeLegalFileName(GetTrackName(item.get()), legalType));
 
     // don't rip non cdda items
     if (item->GetPath().find(".cdda") == std::string::npos)
       continue;
 
-    bool eject = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("audiocds.ejectonrip") &&
-                 i == vecItems.Size()-1;
-    AddJob(new CCDDARipJob(item->GetPath(),strFile,
-                           *item->GetMusicInfoTag(),
-                           CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.encoder"), eject));
+    bool eject =
+        settings->GetBool(CSettings::SETTING_AUDIOCDS_EJECTONRIP) && i == vecItems.Size() - 1;
+    AddJob(new CCDDARipJob(item->GetPath(), strFile, *item->GetMusicInfoTag(),
+                           settings->GetInt(CSettings::SETTING_AUDIOCDS_ENCODER), eject));
   }
 
   return true;
 }
 
-const char* CCDDARipper::GetExtension(int iEncoder)
-{
-  if (iEncoder == CDDARIP_ENCODER_WAV) return ".wav";
-  if (iEncoder == CDDARIP_ENCODER_VORBIS) return ".ogg";
-  if (iEncoder == CDDARIP_ENCODER_FLAC) return ".flac";
-  return ".mp3";
-}
-
-bool CCDDARipper::CreateAlbumDir(const MUSIC_INFO::CMusicInfoTag& infoTag, std::string& strDirectory, int& legalType)
+bool CCDDARipper::CreateAlbumDir(const MUSIC_INFO::CMusicInfoTag& infoTag,
+                                 std::string& strDirectory,
+                                 int& legalType)
 {
   boost::shared_ptr<CSettingPath> recordingpathSetting = boost::static_pointer_cast<CSettingPath>(
       CServiceBroker::GetSettingsComponent()->GetSettings()->GetSetting(
@@ -179,10 +164,8 @@ bool CCDDARipper::CreateAlbumDir(const MUSIC_INFO::CMusicInfoTag& infoTag, std::
   if (strDirectory.size() < 3)
   {
     // no rip path has been set, show error
-    CLog::Log(LOGERROR, "Error: CDDARipPath has not been set");
-    CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
-    CGUIDialogOK::ShowAndGetInput(257, 608);
-    CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
+    CLog::Log(LOGERROR, "CCDDARipper::%s - Required path has not been set", __FUNCTION__);
+    HELPERS::ShowOKDialogText(257, 608);
     return false;
   }
 
@@ -193,9 +176,6 @@ bool CCDDARipper::CreateAlbumDir(const MUSIC_INFO::CMusicInfoTag& infoTag, std::
 #ifdef TARGET_WINDOWS
   if (ripPath.IsHD())
     legalType = LEGAL_WIN32_COMPAT;
-#elif defined(_XBOX)
-  if (ripPath.IsHD())
-    legalType = LEGAL_FATX;
 #endif
 
   std::string strAlbumDir = GetAlbumDirName(infoTag);
@@ -211,7 +191,8 @@ bool CCDDARipper::CreateAlbumDir(const MUSIC_INFO::CMusicInfoTag& infoTag, std::
   // Create directory if it doesn't exist
   if (!CUtil::CreateDirectoryEx(strDirectory))
   {
-    CLog::Log(LOGERROR, "Unable to create directory '%s'", strDirectory.c_str());
+    CLog::Log(LOGERROR, "CCDDARipper::%s - Unable to create directory '%s'", __FUNCTION__,
+              strDirectory.c_str());
     return false;
   }
 
@@ -225,12 +206,13 @@ std::string CCDDARipper::GetAlbumDirName(const MUSIC_INFO::CMusicInfoTag& infoTa
   // use audiocds.trackpathformat setting to format
   // directory name where CD tracks will be stored,
   // use only format part ending at the last '/'
-  strAlbumDir = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("audiocds.trackpathformat");
+  strAlbumDir = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(
+      CSettings::SETTING_AUDIOCDS_TRACKPATHFORMAT);
   size_t pos = strAlbumDir.find_last_of("/\\");
   if (pos == std::string::npos)
     return ""; // no directory
 
-  strAlbumDir = strAlbumDir.substr(0, pos);
+  strAlbumDir.resize(pos);
 
   // replace %A with album artist name
   if (strAlbumDir.find("%A") != std::string::npos)
@@ -250,7 +232,8 @@ std::string CCDDARipper::GetAlbumDirName(const MUSIC_INFO::CMusicInfoTag& infoTa
   {
     std::string strAlbum = infoTag.GetAlbum();
     if (strAlbum.empty())
-      strAlbum = StringUtils::Format("Unknown Album %s", CDateTime::GetCurrentDateTime().GetAsLocalizedDateTime().c_str());
+      strAlbum = StringUtils::Format("Unknown Album %s",
+                                     CDateTime::GetCurrentDateTime().GetAsLocalizedDateTime().c_str());
     else
       StringUtils::Replace(strAlbum, '/', '_');
     StringUtils::Replace(strAlbumDir, "%B", strAlbum);
@@ -259,7 +242,9 @@ std::string CCDDARipper::GetAlbumDirName(const MUSIC_INFO::CMusicInfoTag& infoTa
   // replace %G with genre
   if (strAlbumDir.find("%G") != std::string::npos)
   {
-    std::string strGenre = StringUtils::Join(infoTag.GetGenre(), CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
+    std::string strGenre = StringUtils::Join(
+        infoTag.GetGenre(),
+        CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
     if (strGenre.empty())
       strGenre = "Unknown Genre";
     else
@@ -281,7 +266,7 @@ std::string CCDDARipper::GetAlbumDirName(const MUSIC_INFO::CMusicInfoTag& infoTa
   return strAlbumDir;
 }
 
-std::string CCDDARipper::GetTrackName(CFileItem *item)
+std::string CCDDARipper::GetTrackName(CFileItem* item)
 {
   // get track number from "cdda://local/01.cdda"
   int trackNumber = atoi(item->GetPath().substr(13, item->GetPath().size() - 13 - 5).c_str());
@@ -292,10 +277,11 @@ std::string CCDDARipper::GetTrackName(CFileItem *item)
 
   // get track file name format from audiocds.trackpathformat setting,
   // use only format part starting from the last '/'
-  std::string strFormat = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("audiocds.trackpathformat");
+  std::string strFormat = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(
+      CSettings::SETTING_AUDIOCDS_TRACKPATHFORMAT);
   size_t pos = strFormat.find_last_of("/\\");
   if (pos != std::string::npos)
-    strFormat.erase(0, pos+1);
+    strFormat.erase(0, pos + 1);
 
   CLabelFormatter formatter(strFormat, "");
   formatter.FormatLabel(&destItem);
@@ -305,7 +291,16 @@ std::string CCDDARipper::GetTrackName(CFileItem *item)
   if (track.empty())
     track = StringUtils::Format("%s%02i", "Track-", trackNumber);
 
-  track += GetExtension(CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("audiocds.encoder"));
+  const int encoder = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
+        CSettings::SETTING_AUDIOCDS_ENCODER);
+  if (encoder == CDDARIP_ENCODER_WAV)
+    track += ".wav";
+  else if (encoder == CDDARIP_ENCODER_VORBIS)
+    track += ".ogg";
+  else if (encoder == CDDARIP_ENCODER_FLAC)
+    track += ".flac";
+  else
+    track += ".mp3";
 
   return track;
 }
@@ -314,17 +309,20 @@ void CCDDARipper::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 {
   if (success)
   {
-    if(CJobQueue::QueueEmpty())
+    if (CJobQueue::QueueEmpty())
     {
-      std::string dir = URIUtils::GetDirectory(((CCDDARipJob*)job)->GetOutput());
+      std::string dir = URIUtils::GetDirectory(static_cast<CCDDARipJob*>(job)->GetOutput());
       bool unimportant;
-      int source = CUtil::GetMatchingSource(dir, *CMediaSourceSettings::GetInstance().CMediaSourceSettings::GetSources("music"), unimportant);
+      int source = CUtil::GetMatchingSource(
+          dir, *CMediaSourceSettings::GetInstance().CMediaSourceSettings::GetSources("music"),
+          unimportant);
 
       CMusicDatabase database;
       database.Open();
-      if (source>=0 && database.InsideScannedPath(dir))
+      if (source >= 0 && database.InsideScannedPath(dir))
         CMusicLibraryQueue::GetInstance().ScanLibrary(
             dir, MUSIC_INFO::CMusicInfoScanner::SCAN_NORMAL, false);
+
       database.Close();
     }
     return CJobQueue::OnJobComplete(jobID, success, job);
@@ -332,5 +330,3 @@ void CCDDARipper::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 
   CancelJobs();
 }
-
-#endif

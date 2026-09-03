@@ -51,6 +51,11 @@ enum CDDARipQuality
 
 namespace XFILE { class CFile; }
 
+namespace KODI
+{
+namespace CDRIP
+{
+
 class CEncoder
 {
 public:
@@ -99,6 +104,9 @@ protected:
   BYTE m_btWriteBuffer[WRITEBUFFER_SIZE]; // 128k buffer for writing to disc
   DWORD m_dwWriteBufferPointer;
 };
+
+} /* namespace CDRIP */
+} /* namespace KODI */
 
 #endif // _ENCODER_H
 

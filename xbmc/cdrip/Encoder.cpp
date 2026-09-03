@@ -22,6 +22,8 @@
 #include "Encoder.h"
 #include "filesystem/File.h"
 
+using namespace KODI::CDRIP;
+
 CEncoder::CEncoder()
 {
   m_file = NULL;

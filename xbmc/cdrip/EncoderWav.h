@@ -41,6 +41,11 @@ typedef struct
 }
 WAVHDR, *PWAVHDR, *LPWAVHDR;
 
+namespace KODI
+{
+namespace CDRIP
+{
+
 class CEncoderWav : public CEncoder
 {
 public:
@@ -56,5 +61,8 @@ private:
 
   int m_iBytesWritten;
 };
+
+} /* namespace CDRIP */
+} /* namespace KODI */
 
 #endif // _ENCODERWAV_H

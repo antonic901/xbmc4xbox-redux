@@ -68,10 +68,6 @@ public:
                                                 std::vector<IntegerSettingOption>& list,
                                                 int& current,
                                                 void* data);
-  static void SettingOptionAudioCdEncodersFiller(const boost::shared_ptr<const CSetting>& setting,
-                                                 std::vector<IntegerSettingOption>& list,
-                                                 int& current,
-                                                 void* data);
 
 protected:
   static void ExecuteXBE(const std::string &xbeFile);
