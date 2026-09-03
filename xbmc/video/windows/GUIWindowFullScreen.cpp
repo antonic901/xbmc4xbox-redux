@@ -56,6 +56,7 @@
 #include "SeekHandler.h"
 #include "guiinfo/GUIInfoLabels.h"
 #include "utils/MathUtils.h"
+#include "utils/ColorUtils.h"
 
 #include <stdio.h>
 
@@ -107,9 +108,6 @@
 
 //Progressbar used for buffering status and after seeking
 #define CONTROL_PROGRESS                 23
-
-
-static color_t color[8] = { 0xFFFFFF00, 0xFFFFFFFF, 0xFF0099FF, 0xFF00FF00, 0xFFCCFF00, 0xFF00FFFF, 0xFFE5E5E5, 0xFFC0C0C0 };
 
 CGUIWindowFullScreen::CGUIWindowFullScreen(void)
     : CGUIWindow(WINDOW_FULLSCREEN_VIDEO, "VideoFullScreen.xml")
@@ -559,12 +557,12 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
         CSingleLock lock (m_fontLock);
 
         std::string fontPath = "special://xbmc/media/Fonts/";
-        fontPath += CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.font");
+        fontPath += CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SUBTITLES_FONT);
 
         // We scale based on PAL4x3 - this at least ensures all sizing is constant across resolutions.
         RESOLUTION_INFO pal(720, 576, 0);
-        CGUIFont *subFont = g_fontManager.LoadTTF("__subtitle__", fontPath, color[CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.color")], 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_FONTSIZE), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.style"), false, 1.0f, 1.0f, &pal, true);
-        CGUIFont *borderFont = g_fontManager.LoadTTF("__subtitleborder__", fontPath, 0xFF000000, 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_FONTSIZE), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("subtitles.style"), true, 1.0f, 1.0f, &pal, true);
+        CGUIFont *subFont = g_fontManager.LoadTTF("__subtitle__", fontPath, UTILS::COLOR::ConvertHexToColor(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SUBTITLES_COLOR)), 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_FONTSIZE), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_STYLE), false, 1.0f, 1.0f, &pal, true);
+        CGUIFont *borderFont = g_fontManager.LoadTTF("__subtitleborder__", fontPath, 0xFF000000, 0, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_FONTSIZE), CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_STYLE), true, 1.0f, 1.0f, &pal, true);
         if (!subFont || !borderFont)
           CLog::Log(LOGERROR, "CGUIWindowFullScreen::OnMessage(WINDOW_INIT) - Unable to load subtitle font");
         else

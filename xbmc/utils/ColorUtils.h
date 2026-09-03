@@ -18,6 +18,7 @@ namespace COLOR
 
 typedef uint32_t Color;
 
+const Color NONE = 0x00000000;
 const Color BLACK = 0xFF000000;
 
 struct ColorInfo

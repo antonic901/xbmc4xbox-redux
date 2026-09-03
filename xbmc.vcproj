@@ -1274,6 +1274,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\dialogs\GUIDialogCache.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\dialogs\GUIDialogColorPicker.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\dialogs\GUIDialogColorPicker.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\dialogs\GUIDialogContextMenu.cpp">
 				</File>
 				<File

@@ -17,6 +17,7 @@
 #include "addons/gui/GUIWindowAddonBrowser.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationSkinHandling.h"
+#include "dialogs/GUIDialogColorPicker.h"
 #include "dialogs/GUIDialogFileBrowser.h"
 #include "dialogs/GUIDialogNumeric.h"
 #include "dialogs/GUIDialogSelect.h"
@@ -318,7 +319,7 @@ static int SetImage(const std::vector<std::string>& params)
  */
 static int SetColor(const std::vector<std::string>& params)
 {
-  /* int string = CSkinSettings::GetInstance().TranslateString(params[0]);
+  int string = CSkinSettings::GetInstance().TranslateString(params[0]);
   std::string value = CSkinSettings::GetInstance().GetString(string);
 
   if (value.empty() && params.size() > 2)
@@ -330,7 +331,7 @@ static int SetColor(const std::vector<std::string>& params)
       CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogColorPicker>(
           WINDOW_DIALOG_COLOR_PICKER);
   pDlgColorPicker->Reset();
-  pDlgColorPicker->SetHeading(CVariant{g_localizeStrings.Get(atoi(params[1].c_str()))});
+  pDlgColorPicker->SetHeading(g_localizeStrings.Get(atoi(params[1].c_str())));
 
   if (params.size() > 3)
   {
@@ -349,7 +350,7 @@ static int SetColor(const std::vector<std::string>& params)
   {
     value = pDlgColorPicker->GetSelectedColor();
     CSkinSettings::GetInstance().SetString(string, value);
-  } */
+  }
 
   return 0;
 }

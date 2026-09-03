@@ -284,6 +284,7 @@ static const ActionMapping windows[] =
         {"programinformation"       , WINDOW_DIALOG_PROGRAM_INFO},
         {"programsettings"          , WINDOW_DIALOG_PROGRAM_SETTINGS},
         {"textviewer"               , WINDOW_DIALOG_TEXT_VIEWER},
+        {"dialogcolorpicker"        , WINDOW_DIALOG_COLOR_PICKER},
         {"fullscreenvideo"          , WINDOW_FULLSCREEN_VIDEO},
         {"visualisation"            , WINDOW_VISUALISATION},
         {"slideshow"                , WINDOW_SLIDESHOW},

@@ -127,7 +127,7 @@ std::string CSpecialProtocol::TranslatePath(const CURL &url)
     RootDir = FullFileName;
 
   if (RootDir == "subtitles")
-    translatedPath = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("subtitles.custompath"), FileName);
+    translatedPath = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SUBTITLES_CUSTOMPATH), FileName);
   else if (RootDir == "userdata")
     translatedPath = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(), FileName);
   else if (RootDir == "database")

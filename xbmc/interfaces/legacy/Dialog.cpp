@@ -7,6 +7,7 @@
  */
 #include "LanguageHook.h"
 
+#include "dialogs/GUIDialogColorPicker.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogSelect.h"
@@ -443,6 +444,47 @@ namespace XBMCAddon
           break;
       }
 
+      return value;
+    }
+
+    String Dialog::colorpicker(const String& heading,
+                               const String& selectedcolor,
+                               const String& colorfile,
+                               const std::vector<const ListItem*>& colorlist)
+    {
+      DelayedCallGuard dcguard(languageHook);
+      std::string value = emptyString;
+      CGUIDialogColorPicker* pDialog =
+          CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogColorPicker>(
+              WINDOW_DIALOG_COLOR_PICKER);
+      if (pDialog == NULL)
+        throw WindowException("Error: Window is NULL, this is not possible :-)");
+
+      pDialog->Reset();
+      if (!heading.empty())
+        pDialog->SetHeading(heading);
+
+      if (!colorlist.empty())
+      {
+        CFileItemList items;
+        for (std::vector<const ListItem*>::const_iterator coloritem = colorlist.begin(); coloritem != colorlist.end(); ++coloritem)
+        {
+          items.Add((*coloritem)->item);
+        }
+        pDialog->SetItems(items);
+      }
+      else if (!colorfile.empty())
+        pDialog->LoadColors(colorfile);
+      else
+        pDialog->LoadColors();
+
+      if (!selectedcolor.empty())
+        pDialog->SetSelectedColor(selectedcolor);
+
+      pDialog->Open();
+
+      if (pDialog->IsConfirmed())
+        value = pDialog->GetSelectedColor();
       return value;
     }
 
