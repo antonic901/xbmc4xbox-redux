@@ -3750,6 +3750,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="commons"
 				Filter="">
 				<File
+					RelativePath=".\xbmc\commons\Buffer.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\commons\Exception.cpp">
 				</File>
 				<File
