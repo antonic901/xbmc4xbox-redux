@@ -2398,6 +2398,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\cdrip\EncoderWav.h">
 				</File>
+				<File
+					RelativePath=".\xbmc\cdrip\IEncoder.h">
+				</File>
 			</Filter>
 			<Filter
 				Name="LCD"

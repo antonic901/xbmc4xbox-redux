@@ -34,8 +34,8 @@ class CEncoderFlac : public CEncoder
 public:
   CEncoderFlac();
   virtual ~CEncoderFlac();
-  bool Init(const char* strFile, int iInChannels, int iInRate, int iInBits);
-  int Encode(int nNumBytesRead, uint8_t* pbtStream);
+  bool Init();
+  ssize_t Encode(uint8_t* pbtStream, size_t nNumBytesRead);
   bool Close();
 
 private:

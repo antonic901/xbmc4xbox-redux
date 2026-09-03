@@ -75,13 +75,10 @@ CEncoderLame::CEncoderLame()
   memset(m_outPath, 0, XBMC_MAX_PATH + 1);
 }
 
-bool CEncoderLame::Init(const char* strFile, int iInChannels, int iInRate, int iInBits)
+bool CEncoderLame::Init()
 {
   // we only accept 2 / 44100 / 16 atm
-  if (iInChannels != 2 || iInRate != 44100 || iInBits != 16) return false;
-
-  // set input stream information and open the file
-  if (!CEncoder::Init(strFile, iInChannels, iInRate, iInBits)) return false;
+  if (m_iInChannels != 2 || m_iInSampleRate != 44100 || m_iInBitsPerSample != 16) return false;
 
   // load the lame dll
   if (!m_dll.Load())
@@ -132,7 +129,7 @@ bool CEncoderLame::Init(const char* strFile, int iInChannels, int iInRate, int i
   return true;
 }
 
-int CEncoderLame::Encode(int nNumBytesRead, BYTE* pbtStream)
+ssize_t CEncoderLame::Encode(uint8_t* pbtStream, size_t nNumBytesRead)
 {
   int iBytes = m_dll.lame_encode_buffer_interleaved(m_pGlobalFlags, (short*)pbtStream, nNumBytesRead / 4, m_buffer, sizeof(m_buffer));
 
@@ -142,7 +139,7 @@ int CEncoderLame::Encode(int nNumBytesRead, BYTE* pbtStream)
     return 0;
   }
 
-  if (WriteStream(m_buffer, iBytes) != iBytes)
+  if (CEncoder::Write(m_buffer, iBytes) != iBytes)
   {
     CLog::Log(LOGERROR, "Error writing Lame buffer to file");
     return 0;
@@ -162,9 +159,8 @@ bool CEncoderLame::Close()
     return false;
   }
 
-  WriteStream(m_buffer, iBytes);
-  FlushStream();
-  FileClose();
+  CEncoder::Write(m_buffer, iBytes);
+  CEncoder::CloseFile();
 
   // open again, but now the old way, lame only accepts FILE pointers
   FILE* file = fopen_utf8(m_strFile.c_str(), "rb+");
