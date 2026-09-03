@@ -549,7 +549,7 @@ void CSettings::InitializeDefaults()
 {
   // set some default values if necessary
 #if defined(_XBOX)
-  CLog::Log(LOGNOTICE, "Getting hardware information now...");
+  CLog::Log(LOGINFO, "Getting hardware information now...");
   if (boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH))->GetValue() && !g_audioConfig.HasDigitalOutput())
     boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH))->SetDefault(false);
   boost::static_pointer_cast<CSettingBool>(GetSettingsManager()->GetSetting(CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH))->SetDefault(g_audioConfig.GetAC3Enabled());

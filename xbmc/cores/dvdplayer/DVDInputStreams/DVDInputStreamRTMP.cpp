@@ -49,7 +49,7 @@ extern "C"
       case RTMP_LOGCRIT:    level = LOGFATAL;   break;
       case RTMP_LOGERROR:   level = LOGERROR;   break;
       case RTMP_LOGWARNING: level = LOGWARNING; break;
-      case RTMP_LOGINFO:    level = LOGNOTICE;  break;
+      case RTMP_LOGINFO:    level = LOGINFO;  break;
       case RTMP_LOGDEBUG:   level = LOGINFO;    break;
       case RTMP_LOGDEBUG2:  level = LOGDEBUG;   break;
     }
@@ -215,7 +215,7 @@ int64_t CDVDInputStreamRTMP::Seek(int64_t offset, int whence)
 
 bool CDVDInputStreamRTMP::SeekTime(int iTimeInMsec)
 {
-  CLog::Log(LOGNOTICE, "RTMP Seek to %i requested", iTimeInMsec);
+  CLog::Log(LOGINFO, "RTMP Seek to %i requested", iTimeInMsec);
   CSingleLock lock(m_RTMPSection);
 
   // don't try to seek in live streams as it can cause librtmp to stall
@@ -239,7 +239,7 @@ bool CDVDInputStreamRTMP::Pause(double dTime)
 
   m_bPaused = !m_bPaused;
 
-  CLog::Log(LOGNOTICE, "RTMP Pause %s requested", m_bPaused ? "TRUE" : "FALSE");
+  CLog::Log(LOGINFO, "RTMP Pause %s requested", m_bPaused ? "TRUE" : "FALSE");
 
   if (m_rtmp)
     m_libRTMP.Pause(m_rtmp, m_bPaused);

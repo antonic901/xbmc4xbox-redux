@@ -417,7 +417,7 @@ void CButtonTranslator::MapJoystickActions(int windowID, TiXmlNode *pJoystick)
   }
   else
   {
-    CLog::Log(LOGNOTICE, "No Joystick name specified, loading default map");
+    CLog::Log(LOGINFO, "No Joystick name specified, loading default map");
   }
 
   joynames.push_back(joyname);

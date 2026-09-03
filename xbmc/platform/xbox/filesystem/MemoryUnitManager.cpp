@@ -98,7 +98,7 @@ bool CMemoryUnitManager::Update()
 
 void CMemoryUnitManager::UnMountUnits(unsigned long device)
 {
-  CLog::Log(LOGNOTICE, "Attempting to unmount memory unit device %08x", device);
+  CLog::Log(LOGINFO, "Attempting to unmount memory unit device %08x", device);
   for (DWORD i = 0; i < 4; ++i)
   {
     if (device & (1 << i))
@@ -120,7 +120,7 @@ void CMemoryUnitManager::UnMountUnits(unsigned long device)
 
 void CMemoryUnitManager::MountUnits(unsigned long device, bool notify)
 {
-  CLog::Log(LOGNOTICE, "Attempting to mount memory unit device %08x", device);
+  CLog::Log(LOGINFO, "Attempting to mount memory unit device %08x", device);
   for (DWORD i = 0; i < 4; ++i)
   {
     if (device & (1 << i))

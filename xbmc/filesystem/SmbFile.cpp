@@ -265,7 +265,7 @@ bool CSmbFile::Open(const CURL& url)
   // if a file matches the if below return false, it can't exist on a samba share.
   if (!IsValidFile(url.GetFileName()))
   {
-      CLog::Log(LOGNOTICE,"FileSmb->Open: Bad URL : '%s'",url.GetFileName().c_str());
+      CLog::Log(LOGINFO,"FileSmb->Open: Bad URL : '%s'",url.GetFileName().c_str());
       return false;
   }
   m_url = url;

@@ -52,7 +52,7 @@ namespace XBMCAddon
     ///  |----------------:|---------------------------------------------------|
     ///  | xbmc.LOGDEBUG   | In depth information about the status of Kodi. This information can pretty much only be deciphered by a developer or long time Kodi power user.
     ///  | xbmc.LOGINFO    | Something has happened. It's not a problem, we just thought you might want to know. Fairly excessive output that most people won't care about.
-    ///  | xbmc.LOGNOTICE  | Similar to INFO but the average Joe might want to know about these events. This level and above are logged by default.
+    ///  | xbmc.LOGINFO  | Similar to INFO but the average Joe might want to know about these events. This level and above are logged by default.
     ///  | xbmc.LOGWARNING | Something potentially bad has happened. If Kodi did something you didn't expect, this is probably why. Watch for errors to follow.
     ///  | xbmc.LOGERROR   | This event is bad. Something has failed. You likely noticed problems with the application be it skin artifacts, failure of playback a crash, etc.
     ///  | xbmc.LOGFATAL   | We're screwed. Kodi is about to crash.
@@ -63,14 +63,14 @@ namespace XBMCAddon
     ///
     /// Text is written to the log for the following conditions.
     ///           - loglevel == -1 (NONE, nothing at all is logged)
-    ///           - loglevel == 0 (NORMAL, shows LOGNOTICE, LOGERROR, LOGSEVERE
+    ///           - loglevel == 0 (NORMAL, shows LOGINFO, LOGERROR, LOGFATAL
     ///             and LOGFATAL)
     ///           - loglevel == 1 (DEBUG, shows all)
     ///           See pydocs for valid values for level.
     ///
     ///
     /// ------------------------------------------------------------------------
-    /// @python_v17 Default level changed from LOGNOTICE to LOGDEBUG
+    /// @python_v17 Default level changed from LOGINFO to LOGDEBUG
     ///
     /// **Example:**
     /// ~~~~~~~~~~~~~{.py}
@@ -995,10 +995,10 @@ namespace XBMCAddon
     SWIG_CONSTANT_FROM_GETTER(int, TRAY_CLOSED_MEDIA_PRESENT);
     SWIG_CONSTANT_FROM_GETTER(int, LOGDEBUG);
     SWIG_CONSTANT_FROM_GETTER(int, LOGINFO);
-    SWIG_CONSTANT_FROM_GETTER(int, LOGNOTICE);
+    SWIG_CONSTANT_FROM_GETTER(int, LOGINFO);
     SWIG_CONSTANT_FROM_GETTER(int, LOGWARNING);
     SWIG_CONSTANT_FROM_GETTER(int, LOGERROR);
-    SWIG_CONSTANT_FROM_GETTER(int, LOGSEVERE);
+    SWIG_CONSTANT_FROM_GETTER(int, LOGFATAL);
     SWIG_CONSTANT_FROM_GETTER(int, LOGFATAL);
     SWIG_CONSTANT_FROM_GETTER(int, LOGNONE);
 

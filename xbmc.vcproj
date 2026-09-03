@@ -466,12 +466,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			<File
 				RelativePath=".\xbmc\TextureDatabase.h">
 			</File>
-			<File
-				RelativePath=".\xbmc\XbmcContext.cpp">
-			</File>
-			<File
-				RelativePath=".\xbmc\XbmcContext.h">
-			</File>
 			<Filter
 				Name="Settings"
 				Filter="">
@@ -3760,9 +3754,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\commons\Exception.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\commons\ilog.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\commons\ilog.h">

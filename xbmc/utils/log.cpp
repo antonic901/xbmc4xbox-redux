@@ -66,7 +66,7 @@ void CLog::Log(int loglevel, const char *format, ... )
   loglevel = loglevel & LOGMASK;
 #if !(defined(_DEBUG) || defined(PROFILE))
   if (m_logLevel > LOG_LEVEL_NORMAL ||
-     (m_logLevel > LOG_LEVEL_NONE && loglevel >= LOGNOTICE))
+     (m_logLevel > LOG_LEVEL_NONE && loglevel >= LOGINFO))
 #endif
   {
     if (!m_file)
@@ -196,7 +196,7 @@ void CLog::SetLogLevel(int level)
 {
   CSingleLock waitLock(critSec);
   m_logLevel = level;
-  CLog::Log(LOGNOTICE, "Log level changed to %d", m_logLevel);
+  CLog::Log(LOGINFO, "Log level changed to %d", m_logLevel);
 }
 
 int CLog::GetLogLevel()

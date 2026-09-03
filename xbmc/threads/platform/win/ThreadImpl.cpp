@@ -24,6 +24,7 @@
 #include <windows.h>
 #endif
 #include "threads/platform/win/Win32Exception.h"
+#include "utils/log.h"
 
 void CThread::SpawnThread(unsigned stacksize)
 {
@@ -32,12 +33,12 @@ void CThread::SpawnThread(unsigned stacksize)
   m_ThreadOpaque.handle = CreateThread(NULL, stacksize, (LPTHREAD_START_ROUTINE)&staticThread, this, CREATE_SUSPENDED, &m_ThreadId);
   if (m_ThreadOpaque.handle == NULL)
   {
-    if (logger) logger->Log(LOGERROR, "%s - fatal error %d creating thread", __FUNCTION__, GetLastError());
+    CLog::Log(LOGERROR, "%s - fatal error %d creating thread", __FUNCTION__, GetLastError());
     return;
   }
 
   if (ResumeThread(m_ThreadOpaque.handle) == -1)
-    if (logger) logger->Log(LOGERROR, "%s - fatal error %d resuming thread", __FUNCTION__, GetLastError());
+    CLog::Log(LOGERROR, "%s - fatal error %d resuming thread", __FUNCTION__, GetLastError());
 
 }
 

@@ -429,7 +429,7 @@ void XBVideoConfig::Save()
   // check that we updated correctly
   if (m_dwVideoFlags != XGetVideoFlags())
   {
-    CLog::Log(LOGNOTICE, "Failed to save video config!");
+    CLog::Log(LOGINFO, "Failed to save video config!");
   }
 #endif
 }

@@ -328,7 +328,7 @@ bool CNetworkServices::StartTimeServer()
   if(!IsTimeServerRunning())
   {
     CSectionLoader::Load("SNTP");
-    CLog::Log(LOGNOTICE, "start timeserver client");
+    CLog::Log(LOGINFO, "start timeserver client");
     m_sntpclient = new CSNTPClient();
     m_sntpclient->Update();
   }
@@ -351,7 +351,7 @@ bool CNetworkServices::StopTimeServer()
 #ifdef HAS_TIME_SERVER
   if (m_sntpclient)
   {
-    CLog::Log(LOGNOTICE, "stop time server client");
+    CLog::Log(LOGINFO, "stop time server client");
     SAFE_DELETE(m_sntpclient);
     CSectionLoader::Unload("SNTP");
   }
@@ -389,7 +389,7 @@ bool CNetworkServices::StartWebserver()
   if (IsWebserverRunning())
     return true;
 
-  CLog::Log(LOGNOTICE, "Webserver: Starting...");
+  CLog::Log(LOGINFO, "Webserver: Starting...");
   CSectionLoader::Load("LIBHTTP");
   m_webserver = new CWebServer();
   if(!m_webserver->Start(webPort, false))
@@ -425,12 +425,12 @@ bool CNetworkServices::StopWebserver()
   if (!IsWebserverRunning())
     return true;
 
-  CLog::Log(LOGNOTICE, "Webserver: Stopping...");
+  CLog::Log(LOGINFO, "Webserver: Stopping...");
   m_webserver->Stop();
   delete m_webserver;
   m_webserver = NULL;
   CSectionLoader::Unload("LIBHTTP");
-  CLog::Log(LOGNOTICE, "Webserver: Stopped...");
+  CLog::Log(LOGINFO, "Webserver: Stopped...");
   return true;
 #endif // HAS_WEB_SERVER
   return false;
@@ -445,7 +445,7 @@ bool CNetworkServices::StartFtpServer()
   if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SERVICES_FTPSERVER))
     return false;
 
-  CLog::Log(LOGNOTICE, "XBFileZilla: Starting...");
+  CLog::Log(LOGINFO, "XBFileZilla: Starting...");
   if (!IsFtpServerRunning())
   {
     std::string xmlpath = "special://xbmc/system/";
@@ -465,8 +465,8 @@ bool CNetworkServices::StartFtpServer()
     {
       // 'FileZilla Server.xml' does not exist or is corrupt,
       // falling back to ftp emergency recovery mode
-      CLog::Log(LOGNOTICE, "XBFileZilla: 'FileZilla Server.xml' is missing or is corrupt!");
-      CLog::Log(LOGNOTICE, "XBFileZilla: Starting ftp emergency recovery mode");
+      CLog::Log(LOGINFO, "XBFileZilla: 'FileZilla Server.xml' is missing or is corrupt!");
+      CLog::Log(LOGINFO, "XBFileZilla: Starting ftp emergency recovery mode");
       StartFtpEmergencyRecoveryMode();
     }
     xml.Close();
@@ -633,7 +633,7 @@ bool CNetworkServices::StartEventServer()
     return false;
   }
 
-  CLog::Log(LOGNOTICE, "ES: Starting event server");
+  CLog::Log(LOGINFO, "ES: Starting event server");
   server->StartServer();
 
   return true;
@@ -669,18 +669,18 @@ bool CNetworkServices::StopEventServer(bool bWait, bool promptuser)
       if (HELPERS::ShowYesNoDialogText(13140, 13141, "", "", 10000) !=
         YES)
       {
-        CLog::Log(LOGNOTICE, "ES: Not stopping event server");
+        CLog::Log(LOGINFO, "ES: Not stopping event server");
         return false;
       }
     }
-    CLog::Log(LOGNOTICE, "ES: Stopping event server with confirmation");
+    CLog::Log(LOGINFO, "ES: Stopping event server with confirmation");
 
     CEventServer::GetInstance()->StopServer(true);
   }
   else
   {
     if (!bWait)
-      CLog::Log(LOGNOTICE, "ES: Stopping event server");
+      CLog::Log(LOGINFO, "ES: Stopping event server");
 
     CEventServer::GetInstance()->StopServer(bWait);
   }
@@ -722,7 +722,7 @@ bool CNetworkServices::StopUPnP(bool bWait)
   if (!CUPnP::IsInstantiated())
     return true;
 
-  CLog::Log(LOGNOTICE, "stopping upnp");
+  CLog::Log(LOGINFO, "stopping upnp");
   CUPnP::ReleaseInstance(bWait);
 
   return true;
@@ -736,7 +736,7 @@ bool CNetworkServices::StartUPnPClient()
   if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SERVICES_UPNP))
     return false;
 
-  CLog::Log(LOGNOTICE, "starting upnp client");
+  CLog::Log(LOGINFO, "starting upnp client");
   CUPnP::GetInstance()->StartClient();
   return IsUPnPClientRunning();
 #endif // HAS_UPNP
@@ -757,7 +757,7 @@ bool CNetworkServices::StopUPnPClient()
   if (!IsUPnPRendererRunning())
     return true;
 
-  CLog::Log(LOGNOTICE, "stopping upnp client");
+  CLog::Log(LOGINFO, "stopping upnp client");
   CUPnP::GetInstance()->StopClient();
 
   return true;
@@ -772,7 +772,7 @@ bool CNetworkServices::StartUPnPRenderer()
       !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SERVICES_UPNP))
     return false;
 
-  CLog::Log(LOGNOTICE, "starting upnp renderer");
+  CLog::Log(LOGINFO, "starting upnp renderer");
   return CUPnP::GetInstance()->StartRenderer();
 #endif // HAS_UPNP
   return false;
@@ -792,7 +792,7 @@ bool CNetworkServices::StopUPnPRenderer()
   if (!IsUPnPRendererRunning())
     return true;
 
-  CLog::Log(LOGNOTICE, "stopping upnp renderer");
+  CLog::Log(LOGINFO, "stopping upnp renderer");
   CUPnP::GetInstance()->StopRenderer();
 
   return true;
@@ -807,7 +807,7 @@ bool CNetworkServices::StartUPnPServer()
       !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_SERVICES_UPNP))
     return false;
 
-  CLog::Log(LOGNOTICE, "starting upnp server");
+  CLog::Log(LOGINFO, "starting upnp server");
   return CUPnP::GetInstance()->StartServer();
 #endif // HAS_UPNP
   return false;
@@ -827,7 +827,7 @@ bool CNetworkServices::StopUPnPServer()
   if (!IsUPnPRendererRunning())
     return true;
 
-  CLog::Log(LOGNOTICE, "stopping upnp server");
+  CLog::Log(LOGINFO, "stopping upnp server");
   CUPnP::GetInstance()->StopServer();
 
   return true;

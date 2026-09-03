@@ -287,7 +287,7 @@ int CWebServer::initWebs()
     // Create a handler for the default home page
     websUrlHandlerDefine(T("/"), NULL, 0, websHomePageHandler, 0);
 
-  CLog::Log(LOGNOTICE, "Webserver: Started");
+  CLog::Log(LOGINFO, "Webserver: Started");
     return 0;
 }
 

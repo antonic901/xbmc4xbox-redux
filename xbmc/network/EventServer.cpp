@@ -157,7 +157,7 @@ void CEventServer::Process()
     any_addr.SetAddress ("127.0.0.1");  // only listen on localhost
 #endif
 
-  CLog::Log(LOGNOTICE, "ES: Starting UDP Event server on %s:%d", any_addr.Address(), m_iPort);
+  CLog::Log(LOGINFO, "ES: Starting UDP Event server on %s:%d", any_addr.Address(), m_iPort);
 
   Cleanup();
 
@@ -216,7 +216,7 @@ void CEventServer::Process()
     // BroadcastBeacon();
   }
 
-  CLog::Log(LOGNOTICE, "ES: UDP Event server stopped");
+  CLog::Log(LOGINFO, "ES: UDP Event server stopped");
   m_bRunning = false;
   Cleanup();
 }
@@ -281,7 +281,7 @@ void CEventServer::RefreshClients()
   {
     if (! (iter->second->Alive()))
     {
-      CLog::Log(LOGNOTICE, "ES: Client %s from %s timed out", iter->second->Name().c_str(),
+      CLog::Log(LOGINFO, "ES: Client %s from %s timed out", iter->second->Name().c_str(),
                 iter->second->Address().Address());
       delete iter->second;
       m_clients.erase(iter);

@@ -211,7 +211,7 @@ bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const cha
     strcpy(m_networkinfo.ip, "0.0.0.0");
 
     TranslateConfig(m_networkinfo, params);
-    CLog::Log(LOGNOTICE, "Network: Using DHCP IP settings");
+    CLog::Log(LOGINFO, "Network: Using DHCP IP settings");
   }
   else if (iAssignment == NETWORK_STATIC)
   {
@@ -223,12 +223,12 @@ bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const cha
     strcpy(m_networkinfo.DNS2, szNameServerAlt);
 
     TranslateConfig(m_networkinfo, params);
-    CLog::Log(LOGNOTICE, "Network: Using static IP settings");
+    CLog::Log(LOGINFO, "Network: Using static IP settings");
   }
   else
   {
     dashconfig = true;
-    CLog::Log(LOGNOTICE, "Network: Using dashboard IP settings");
+    CLog::Log(LOGINFO, "Network: Using dashboard IP settings");
   }
 
   /* configure addresses */

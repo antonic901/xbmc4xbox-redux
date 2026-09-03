@@ -20,8 +20,7 @@
 
 #include "Win32Exception.h"
 #include <eh.h>
-
-#define LOG if(logger) logger->Log
+#include "utils/log.h"
 
 void win32_exception::install_handler()
 {
@@ -40,7 +39,7 @@ void win32_exception::translate(unsigned code, EXCEPTION_POINTERS* info)
     }
 }
 
-win32_exception::win32_exception(const EXCEPTION_RECORD& info, const char* classname) : 
+win32_exception::win32_exception(const EXCEPTION_RECORD& info, const char* classname) :
   XbmcCommons::Exception(classname ? classname : "win32_exception"),
 mWhat("Win32 exception"), mWhere(info.ExceptionAddress), mCode(info.ExceptionCode)
 {
@@ -58,9 +57,9 @@ mWhat("Win32 exception"), mWhere(info.ExceptionAddress), mCode(info.ExceptionCod
 void win32_exception::LogThrowMessage(const char *prefix)  const
 {
   if( prefix )
-    LOG(LOGERROR, "%s : %s (code:0x%08x) at 0x%08x", prefix, (unsigned int) what(), code(), where());
+    CLog::Log(LOGERROR, "%s : %s (code:0x%08x) at 0x%08x", prefix, (unsigned int) what(), code(), where());
   else
-    LOG(LOGERROR, "%s (code:0x%08x) at 0x%08x", what(), code(), where());
+    CLog::Log(LOGERROR, "%s (code:0x%08x) at 0x%08x", what(), code(), where());
 }
 
 access_violation::access_violation(const EXCEPTION_RECORD& info)
@@ -85,20 +84,20 @@ void access_violation::LogThrowMessage(const char *prefix) const
 {
   if( prefix )
     if( mAccessType == Write)
-      LOG(LOGERROR, "%s : %s at 0x%08x: Writing location 0x%08x", prefix, what(), where(), address());
+      CLog::Log(LOGERROR, "%s : %s at 0x%08x: Writing location 0x%08x", prefix, what(), where(), address());
     else if( mAccessType == Read)
-      LOG(LOGERROR, "%s : %s at 0x%08x: Reading location 0x%08x", prefix, what(), where(), address());
+      CLog::Log(LOGERROR, "%s : %s at 0x%08x: Reading location 0x%08x", prefix, what(), where(), address());
     else if( mAccessType == DEP)
-      LOG(LOGERROR, "%s : %s at 0x%08x: DEP violation, location 0x%08x", prefix, what(), where(), address());
+      CLog::Log(LOGERROR, "%s : %s at 0x%08x: DEP violation, location 0x%08x", prefix, what(), where(), address());
     else
-      LOG(LOGERROR, "%s : %s at 0x%08x: unknown access type, location 0x%08x", prefix, what(), where(), address());
+      CLog::Log(LOGERROR, "%s : %s at 0x%08x: unknown access type, location 0x%08x", prefix, what(), where(), address());
   else
     if( mAccessType == Write)
-      LOG(LOGERROR, "%s at 0x%08x: Writing location 0x%08x", what(), where(), address());
+      CLog::Log(LOGERROR, "%s at 0x%08x: Writing location 0x%08x", what(), where(), address());
     else if( mAccessType == Read)
-      LOG(LOGERROR, "%s at 0x%08x: Reading location 0x%08x", what(), where(), address());
+      CLog::Log(LOGERROR, "%s at 0x%08x: Reading location 0x%08x", what(), where(), address());
     else if( mAccessType == DEP)
-      LOG(LOGERROR, "%s at 0x%08x: DEP violation, location 0x%08x", what(), where(), address());
+      CLog::Log(LOGERROR, "%s at 0x%08x: DEP violation, location 0x%08x", what(), where(), address());
     else
-      LOG(LOGERROR, "%s at 0x%08x: unknown access type, location 0x%08x", what(), where(), address());
+      CLog::Log(LOGERROR, "%s at 0x%08x: unknown access type, location 0x%08x", what(), where(), address());
 }

@@ -145,7 +145,7 @@ extern "C" void* __cdecl track_malloc(size_t s)
   void* p = malloc(s);
   if (!p) 
   {    
-    CLog::Log(LOGSEVERE, "DLL: %s : malloc failed, crash imminent (Out of memory requesting %"PRIdS" bytes)", tracker_getdllname(loc), s);
+    CLog::Log(LOGFATAL, "DLL: %s : malloc failed, crash imminent (Out of memory requesting %"PRIdS" bytes)", tracker_getdllname(loc), s);
     return NULL;
   }
 
@@ -161,7 +161,7 @@ extern "C" void* __cdecl track_calloc(size_t n, size_t s)
   void* p = calloc(n, s);
   if (!p) 
   {    
-    CLog::Log(LOGSEVERE, "DLL: %s : calloc failed, crash imminent (Out of memory)", tracker_getdllname(loc));
+    CLog::Log(LOGFATAL, "DLL: %s : calloc failed, crash imminent (Out of memory)", tracker_getdllname(loc));
     return NULL;
   }
 
@@ -178,7 +178,7 @@ extern "C" void* __cdecl track_realloc(void* p, size_t s)
   if (!q) 
   {
     //  a dll may realloc with a size of 0, so NULL is the correct return value is this case
-    if (s > 0) CLog::Log(LOGSEVERE, "DLL: %s : realloc failed, crash imminent (Out of memory)", tracker_getdllname(loc));
+    if (s > 0) CLog::Log(LOGFATAL, "DLL: %s : realloc failed, crash imminent (Out of memory)", tracker_getdllname(loc));
     return NULL;
   }
 

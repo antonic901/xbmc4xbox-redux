@@ -2156,7 +2156,7 @@ void CControlSocket::ParseCommand()
       std::string fullcommand = sitecommand;
       if (siteargs.size() > 0) fullcommand += "(" + siteargs + ")";
 
-      CLog::Log(LOGNOTICE, "200 FTP SITE command called [command=%s, args=%s]", sitecommand.c_str(), siteargs.c_str());
+      CLog::Log(LOGINFO, "200 FTP SITE command called [command=%s, args=%s]", sitecommand.c_str(), siteargs.c_str());
 
         //Check if command is valid
         int nCommandID = -1;
@@ -2241,7 +2241,7 @@ void CControlSocket::ParseCommand()
               std::string str;
               str = StringUtils::Format("200 FTP SITE - calling ExecBuiltIn [command=%s, args=%s]", sitecommand.c_str(), siteargs.c_str());
               //Send(str.c_str());
-            CLog::Log(LOGNOTICE, str.c_str());
+            CLog::Log(LOGINFO, str.c_str());
           }
 
           int rtn = CBuiltins::GetInstance().Execute(siteargs);
@@ -2250,7 +2250,7 @@ void CControlSocket::ParseCommand()
               std::string str;
               str = StringUtils::Format("200 FTP SITE - called ExecBuiltIn [command=%s, args=%s, rtn=%i]", sitecommand.c_str(), siteargs.c_str(), rtn);
               //Send(str.c_str());
-            CLog::Log(LOGNOTICE, str.c_str());
+            CLog::Log(LOGINFO, str.c_str());
           }
 
           if (rtn == 0)

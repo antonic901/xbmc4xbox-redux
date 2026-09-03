@@ -2937,7 +2937,7 @@ void CApplication::SetLoggingIn(bool switchingProfiles)
 void CApplication::PrintStartupLog()
 {
   CLog::Log(LOGINFO, "-----------------------------------------------------------------------");
-  CLog::Log(LOGNOTICE, "Starting Xodi. Built on %s", __DATE__);
+  CLog::Log(LOGINFO, "Starting Xodi. Built on %s", __DATE__);
   CSpecialProtocol::LogPaths();
   CLog::Log(LOGINFO, "-----------------------------------------------------------------------");
 }

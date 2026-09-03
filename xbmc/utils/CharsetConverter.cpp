@@ -413,7 +413,7 @@ bool CCharsetConverter::CInnerConverter::convert(iconv_t type, int multiplier, c
   char*       outBuf     = (char*)malloc(outBufSize);
   if (outBuf == NULL)
   {
-      CLog::Log(LOGSEVERE, "%s: malloc failed", __FUNCTION__);
+      CLog::Log(LOGFATAL, "%s: malloc failed", __FUNCTION__);
       return false;
   }
 
@@ -440,7 +440,7 @@ bool CCharsetConverter::CInnerConverter::convert(iconv_t type, int multiplier, c
         char* newBuf  = (char*)realloc(outBuf, outBufSize);
         if (!newBuf)
         {
-          CLog::Log(LOGSEVERE, "%s realloc failed with errno=%d(%s)",
+          CLog::Log(LOGFATAL, "%s realloc failed with errno=%d(%s)",
                     __FUNCTION__, errno, strerror(errno));
           break;
         }
@@ -536,7 +536,7 @@ bool CCharsetConverter::CInnerConverter::logicalToVisualBiDi(
     if (visual == NULL)
     {
       free(visual);
-      CLog::Log(LOGSEVERE, "%s: can't allocate memory", __FUNCTION__);
+      CLog::Log(LOGFATAL, "%s: can't allocate memory", __FUNCTION__);
       return false;
     }
 

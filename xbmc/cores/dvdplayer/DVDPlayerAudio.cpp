@@ -131,7 +131,7 @@ bool CDVDPlayerAudio::OpenStream( CDVDStreamInfo &hints )
 {
   bool passthrough = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH);
 
-  CLog::Log(LOGNOTICE, "Finding audio codec for: %i", hints.codec);
+  CLog::Log(LOGINFO, "Finding audio codec for: %i", hints.codec);
   CDVDAudioCodec* codec = CDVDFactoryCodec::CreateAudioCodec(hints, passthrough);
   if( !codec )
   {
@@ -145,7 +145,7 @@ bool CDVDPlayerAudio::OpenStream( CDVDStreamInfo &hints )
   {
     OpenStream(hints, codec);
     m_messageQueue.Init();
-    CLog::Log(LOGNOTICE, "Creating audio thread");
+    CLog::Log(LOGINFO, "Creating audio thread");
     Create();
   }
   return true;
@@ -185,13 +185,13 @@ void CDVDPlayerAudio::CloseStream(bool bWaitForBuffers)
   // send abort message to the audio queue
   m_messageQueue.Abort();
 
-  CLog::Log(LOGNOTICE, "Waiting for audio thread to exit");
+  CLog::Log(LOGINFO, "Waiting for audio thread to exit");
 
   // shut down the adio_decode thread and wait for it
   StopThread(); // will set this->m_bStop to true
 
   // destroy audio device
-  CLog::Log(LOGNOTICE, "Closing audio device");
+  CLog::Log(LOGINFO, "Closing audio device");
   if (bWaitForBuffers && m_speed > 0)
   {
     m_bStop = false;
@@ -203,7 +203,7 @@ void CDVDPlayerAudio::CloseStream(bool bWaitForBuffers)
   // uninit queue
   m_messageQueue.End();
 
-  CLog::Log(LOGNOTICE, "Deleting audio codec");
+  CLog::Log(LOGINFO, "Deleting audio codec");
   if (m_pAudioCodec)
   {
     m_pAudioCodec->Dispose();
@@ -446,7 +446,7 @@ void CDVDPlayerAudio::OnStartup()
 
 void CDVDPlayerAudio::Process()
 {
-  CLog::Log(LOGNOTICE, "running thread: CDVDPlayerAudio::Process()");
+  CLog::Log(LOGINFO, "running thread: CDVDPlayerAudio::Process()");
 
   int result;
   bool packetadded(false);
@@ -624,7 +624,7 @@ void CDVDPlayerAudio::OnExit()
 {
   g_dvdPerformanceCounter.DisableAudioDecodePerformance();
 
-  CLog::Log(LOGNOTICE, "thread end: CDVDPlayerAudio::OnExit()");
+  CLog::Log(LOGINFO, "thread end: CDVDPlayerAudio::OnExit()");
 }
 
 void CDVDPlayerAudio::SetSpeed(int speed)

@@ -69,13 +69,4 @@ private:
 
 #undef ATTRIB_LOG_FORMAT
 
-namespace XbmcUtils
-{
-  class LogImplementation : public XbmcCommons::ILogger
-  {
-  public:
-    inline virtual void log(int logLevel, const char* message) { CLog::Log(logLevel,"%s",message); }
-  };
-}
-
 XBMC_GLOBAL_REF(CLog::CLogGlobals,g_log_globals);

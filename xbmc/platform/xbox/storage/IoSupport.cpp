@@ -107,7 +107,7 @@ HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
   if (!NT_SUCCESS(status))
     CLog::Log(LOGERROR, "Failed to create symbolic link!  (status=0x%08x)", status);
   else
-    CLog::Log(LOGNOTICE, "Mapping drive %c to %s", cDriveLetter, szDevice);
+    CLog::Log(LOGINFO, "Mapping drive %c to %s", cDriveLetter, szDevice);
 
   return status;
 #else
@@ -132,7 +132,7 @@ HRESULT CIoSupport::UnmapDriveLetter(char cDriveLetter)
   status =  IoDeleteSymbolicLink(&LinkName);
 
   if (NT_SUCCESS(status))
-    CLog::Log(LOGNOTICE, "Unmapped drive %c", cDriveLetter);
+    CLog::Log(LOGINFO, "Unmapped drive %c", cDriveLetter);
   else if(status != NT_STATUS_OBJECT_NAME_NOT_FOUND)
     CLog::Log(LOGERROR, "Failed to delete symbolic link!  (status=0x%08x)", status);
 
@@ -163,7 +163,7 @@ HRESULT CIoSupport::Dismount(const char* szDevice)
   status = IoDismountVolumeByName(&DeviceName);
 
   if (NT_SUCCESS(status))
-    CLog::Log(LOGNOTICE, "Dismounted %s", szDevice);
+    CLog::Log(LOGINFO, "Dismounted %s", szDevice);
   else if(status != NT_STATUS_VOLUME_DISMOUNTED)
     CLog::Log(LOGERROR, "Failed to dismount volume!  (status=0x%08x)", status);
 
