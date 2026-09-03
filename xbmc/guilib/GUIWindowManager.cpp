@@ -21,7 +21,6 @@
 #include "application/Application.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
-#include "dialogs/GUIDialogFavourites.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 #include "messaging/ApplicationMessenger.h"
@@ -163,7 +162,6 @@ void CGUIWindowManager::CreateWindows()
   // Don't add the filebrowser dialog - it's created and added when it's needed
   Add(new CGUIDialogMediaSource);
   Add(new CGUIDialogProfileSettings);
-  Add(new CGUIDialogFavourites);
   Add(new CGUIDialogSongInfo);
   Add(new CGUIDialogSmartPlaylistEditor);
   Add(new CGUIDialogSmartPlaylistRule);
