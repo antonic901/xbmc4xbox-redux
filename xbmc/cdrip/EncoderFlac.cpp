@@ -25,6 +25,8 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 
+using namespace KODI::CDRIP;
+
 CEncoderFlac::CEncoderFlac() : m_encoder(0), m_samplesBuf(new FLAC__int32[SAMPLES_BUF_SIZE])
 {
   m_metadata[0] = 0;
@@ -86,7 +88,7 @@ bool CEncoderFlac::Init(const char* strFile, int iInChannels, int iInRate, int i
       !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
       !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "COMMENT", m_strComment.c_str()) ||
       !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false)
-      ) 
+      )
     {
       CLog::Log(LOGERROR, "ERROR: FLAC out of memory or tag error\n");
       ok = false;
@@ -103,7 +105,7 @@ bool CEncoderFlac::Init(const char* strFile, int iInChannels, int iInRate, int i
     FLAC__StreamEncoderInitStatus init_status;
     init_status = m_dll.FLAC__stream_encoder_init_stream(m_encoder, write_callback, seek_callback, tell_callback, 0, this);
     if (init_status != FLAC__STREAM_ENCODER_INIT_STATUS_OK)
-	  {
+      {
       CLog::Log(LOGERROR, "FLAC encoder initializing error");
       ok = false;
     }

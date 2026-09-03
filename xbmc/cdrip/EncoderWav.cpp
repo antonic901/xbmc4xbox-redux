@@ -22,6 +22,8 @@
 #include "EncoderWav.h"
 #include "filesystem/File.h"
 
+using namespace KODI::CDRIP;
+
 CEncoderWav::CEncoderWav()
 {
   m_iBytesWritten = 0;

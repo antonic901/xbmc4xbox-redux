@@ -407,18 +407,3 @@ void CAutorun::SettingOptionAudioCdActionsFiller(const SettingConstPtr& setting,
 #endif
 }
 
-void CAutorun::SettingOptionAudioCdEncodersFiller(const SettingConstPtr& setting,
-                                                  std::vector<IntegerSettingOption>& list,
-                                                  int& current,
-                                                  void* data)
-{
-#ifdef HAVE_LIBMP3LAME
-  list.push_back(IntegerSettingOption(g_localizeStrings.Get(34000), CDDARIP_ENCODER_LAME));
-#endif
-#ifdef HAVE_LIBVORBISENC
-  list.push_back(IntegerSettingOption(g_localizeStrings.Get(34001), CDDARIP_ENCODER_VORBIS));
-#endif
-  list.push_back(IntegerSettingOption(g_localizeStrings.Get(34002), CDDARIP_ENCODER_WAV));
-  list.push_back(IntegerSettingOption(g_localizeStrings.Get(34005), CDDARIP_ENCODER_FLAC));
-}
-
