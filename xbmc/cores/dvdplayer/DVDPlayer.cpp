@@ -390,7 +390,7 @@ bool CDVDPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 {
   try
   {
-    CLog::Log(LOGNOTICE, "DVDPlayer: Opening: %s", file.GetPath().c_str());
+    CLog::Log(LOGINFO, "DVDPlayer: Opening: %s", file.GetPath().c_str());
 
     // if playing a file close it first
     // this has to be changed so we won't have to close it.
@@ -428,7 +428,7 @@ bool CDVDPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 
 bool CDVDPlayer::CloseFile(bool reopen)
 {
-  CLog::Log(LOGNOTICE, "CDVDPlayer::CloseFile()");
+  CLog::Log(LOGINFO, "CDVDPlayer::CloseFile()");
 
   // unpause the player
   SetPlaySpeed(DVD_PLAYSPEED_NORMAL);
@@ -446,7 +446,7 @@ bool CDVDPlayer::CloseFile(bool reopen)
   if(m_pInputStream)
     m_pInputStream->Abort();
 
-  CLog::Log(LOGNOTICE, "DVDPlayer: waiting for threads to exit");
+  CLog::Log(LOGINFO, "DVDPlayer: waiting for threads to exit");
 
   // wait for the main thread to finish up
   // since this main thread cleans up all other resources and threads
@@ -459,7 +459,7 @@ bool CDVDPlayer::CloseFile(bool reopen)
   m_HasVideo = false;
   m_HasAudio = false;
 
-  CLog::Log(LOGNOTICE, "DVDPlayer: finished waiting");
+  CLog::Log(LOGINFO, "DVDPlayer: finished waiting");
 
   return true;
 }
@@ -486,7 +486,7 @@ bool CDVDPlayer::OpenInputStream()
   if(m_pInputStream)
     SAFE_DELETE(m_pInputStream);
 
-  CLog::Log(LOGNOTICE, "Creating InputStream");
+  CLog::Log(LOGINFO, "Creating InputStream");
 
   // correct the filename if needed
   std::string filename(m_item.GetPath());
@@ -565,7 +565,7 @@ bool CDVDPlayer::OpenDemuxStream()
   if(m_pDemuxer)
     SAFE_DELETE(m_pDemuxer);
 
-  CLog::Log(LOGNOTICE, "Creating Demuxer");
+  CLog::Log(LOGINFO, "Creating Demuxer");
 
   try
   {
@@ -820,7 +820,7 @@ void CDVDPlayer::Process()
 
   if (CDVDInputStream::IMenus* ptr = dynamic_cast<CDVDInputStream::IMenus*>(m_pInputStream))
   {
-    CLog::Log(LOGNOTICE, "DVDPlayer: playing a file with menu's");
+    CLog::Log(LOGINFO, "DVDPlayer: playing a file with menu's");
     m_PlayerOptions.starttime = 0;
 
     if(m_PlayerOptions.state.size() > 0)
@@ -1733,39 +1733,39 @@ void CDVDPlayer::OnExit()
 
   try
   {
-    CLog::Log(LOGNOTICE, "CDVDPlayer::OnExit()");
+    CLog::Log(LOGINFO, "CDVDPlayer::OnExit()");
 
     // set event to inform openfile something went wrong in case openfile is still waiting for this event
     SetCaching(CACHESTATE_DONE);
 
     // close each stream
-    if (!m_bAbortRequest) CLog::Log(LOGNOTICE, "DVDPlayer: eof, waiting for queues to empty");
+    if (!m_bAbortRequest) CLog::Log(LOGINFO, "DVDPlayer: eof, waiting for queues to empty");
     if (m_CurrentAudio.id >= 0)
     {
-      CLog::Log(LOGNOTICE, "DVDPlayer: closing audio stream");
+      CLog::Log(LOGINFO, "DVDPlayer: closing audio stream");
       CloseAudioStream(!m_bAbortRequest);
     }
     if (m_CurrentVideo.id >= 0)
     {
-      CLog::Log(LOGNOTICE, "DVDPlayer: closing video stream");
+      CLog::Log(LOGINFO, "DVDPlayer: closing video stream");
       CloseVideoStream(!m_bAbortRequest);
     }
     if (m_CurrentSubtitle.id >= 0)
     {
-      CLog::Log(LOGNOTICE, "DVDPlayer: closing subtitle stream");
+      CLog::Log(LOGINFO, "DVDPlayer: closing subtitle stream");
       CloseSubtitleStream(!m_bAbortRequest);
     }
     // destroy the demuxer
     if (m_pDemuxer)
     {
-      CLog::Log(LOGNOTICE, "CDVDPlayer::OnExit() deleting demuxer");
+      CLog::Log(LOGINFO, "CDVDPlayer::OnExit() deleting demuxer");
       delete m_pDemuxer;
     }
     m_pDemuxer = NULL;
 
     if (m_pSubtitleDemuxer)
     {
-      CLog::Log(LOGNOTICE, "CDVDPlayer::OnExit() deleting subtitle demuxer");
+      CLog::Log(LOGINFO, "CDVDPlayer::OnExit() deleting subtitle demuxer");
       delete m_pSubtitleDemuxer;
     }
     m_pSubtitleDemuxer = NULL;
@@ -1773,7 +1773,7 @@ void CDVDPlayer::OnExit()
     // destroy the inputstream
     if (m_pInputStream)
     {
-      CLog::Log(LOGNOTICE, "CDVDPlayer::OnExit() deleting input stream");
+      CLog::Log(LOGINFO, "CDVDPlayer::OnExit() deleting input stream");
       delete m_pInputStream;
     }
     m_pInputStream = NULL;
@@ -2570,7 +2570,7 @@ void CDVDPlayer::ToFFRW(int iSpeed)
 
 bool CDVDPlayer::OpenAudioStream(int iStream, int source)
 {
-  CLog::Log(LOGNOTICE, "Opening audio stream: %i source: %i", iStream, source);
+  CLog::Log(LOGINFO, "Opening audio stream: %i source: %i", iStream, source);
 
   if (!m_pDemuxer)
     return false;
@@ -2629,7 +2629,7 @@ bool CDVDPlayer::OpenAudioStream(int iStream, int source)
 
 bool CDVDPlayer::OpenVideoStream(int iStream, int source)
 {
-  CLog::Log(LOGNOTICE, "Opening video stream: %i source: %i", iStream, source);
+  CLog::Log(LOGINFO, "Opening video stream: %i source: %i", iStream, source);
 
   if (!m_pDemuxer)
     return false;
@@ -2688,7 +2688,7 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source)
 
 bool CDVDPlayer::OpenSubtitleStream(int iStream, int source)
 {
-  CLog::Log(LOGNOTICE, "Opening Subtitle stream: %i source: %i", iStream, source);
+  CLog::Log(LOGINFO, "Opening Subtitle stream: %i source: %i", iStream, source);
 
   CDemuxStream* pStream = NULL;
   std::string filename;
@@ -2703,7 +2703,7 @@ bool CDVDPlayer::OpenSubtitleStream(int iStream, int source)
 
     if(!m_pSubtitleDemuxer || m_pSubtitleDemuxer->GetFileName() != st.filename)
     {
-      CLog::Log(LOGNOTICE, "Opening Subtitle file: %s", st.filename.c_str());
+      CLog::Log(LOGINFO, "Opening Subtitle file: %s", st.filename.c_str());
       auto_ptr<CDVDDemuxVobsub> demux(new CDVDDemuxVobsub());
       if(!demux->Open(st.filename))
         return false;
@@ -2787,7 +2787,7 @@ bool CDVDPlayer::CloseAudioStream(bool bWaitForBuffers)
   if (m_CurrentAudio.id < 0)
     return false;
 
-  CLog::Log(LOGNOTICE, "Closing audio stream");
+  CLog::Log(LOGINFO, "Closing audio stream");
 
   if(bWaitForBuffers)
     SetCaching(CACHESTATE_DONE);
@@ -2803,7 +2803,7 @@ bool CDVDPlayer::CloseVideoStream(bool bWaitForBuffers)
   if (m_CurrentVideo.id < 0)
     return false;
 
-  CLog::Log(LOGNOTICE, "Closing video stream");
+  CLog::Log(LOGINFO, "Closing video stream");
 
   if(bWaitForBuffers)
     SetCaching(CACHESTATE_DONE);
@@ -2819,7 +2819,7 @@ bool CDVDPlayer::CloseSubtitleStream(bool bKeepOverlays)
   if (m_CurrentSubtitle.id < 0)
     return false;
 
-  CLog::Log(LOGNOTICE, "Closing subtitle stream");
+  CLog::Log(LOGINFO, "Closing subtitle stream");
 
   m_dvdPlayerSubtitle.CloseStream(!bKeepOverlays);
 

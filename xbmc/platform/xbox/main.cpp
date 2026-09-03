@@ -10,7 +10,6 @@
 
 #include "ServiceBroker.h"
 #include "Util.h"
-#include "XbmcContext.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
 
@@ -65,9 +64,6 @@ void SetupDriveLetters()
 
 void main()
 {
-  // set up some xbmc specific relationships
-  XBMC::Context context;
-
   //floating point precision to 24 bits (faster performance)
   _controlfp(_PC_24, _MCW_PC);
 

@@ -64,12 +64,12 @@ BOOL CXBFileZillaImp::InitInstance()
   ReadXBoxSettings();
   if( mServer->Create() )
   {
-    CLog::Log(LOGNOTICE, "XBFileZilla: Started");
+    CLog::Log(LOGINFO, "XBFileZilla: Started");
     return true;
   }
   else
   {
-    CLog::Log(LOGNOTICE, "XBFileZilla: Startup failed");
+    CLog::Log(LOGINFO, "XBFileZilla: Startup failed");
     return false;
   }
 

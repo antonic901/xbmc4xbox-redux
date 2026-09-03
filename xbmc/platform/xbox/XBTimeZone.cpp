@@ -905,7 +905,7 @@ bool XBTimeZone::SetTimeZoneInfo(const MINI_TZI * tzi)
 
   if (ExQueryNonVolatileSetting(XC_USER_SETTINGS, &type, &eepromdata, sizeof(eepromdata), &size) < 0)
   {
-    CLog::Log(LOGNOTICE, "Failed to get EEPROM User settings!");
+    CLog::Log(LOGINFO, "Failed to get EEPROM User settings!");
     return FALSE;
   }
 

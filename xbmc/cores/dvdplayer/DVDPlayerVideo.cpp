@@ -105,7 +105,7 @@ CDVDPlayerVideo::~CDVDPlayerVideo()
 #ifdef HAS_VIDEO_PLAYBACK
   if(m_output.inited)
   {
-    CLog::Log(LOGNOTICE, "%s - uninitting video device", __FUNCTION__);
+    CLog::Log(LOGINFO, "%s - uninitting video device", __FUNCTION__);
     g_renderManager.UnInit();
   }
 #endif
@@ -127,7 +127,7 @@ double CDVDPlayerVideo::GetOutputDelay()
 
 bool CDVDPlayerVideo::OpenStream( CDVDStreamInfo &hint )
 {
-  CLog::Log(LOGNOTICE, "Creating video codec with codec id: %i", hint.codec);
+  CLog::Log(LOGINFO, "Creating video codec with codec id: %i", hint.codec);
   CDVDVideoCodec* codec = CDVDFactoryCodec::CreateVideoCodec( hint );
   if(!codec)
   {
@@ -140,7 +140,7 @@ bool CDVDPlayerVideo::OpenStream( CDVDStreamInfo &hint )
   else
   {
     OpenStream(hint, codec);
-    CLog::Log(LOGNOTICE, "Creating video thread");
+    CLog::Log(LOGINFO, "Creating video thread");
     m_messageQueue.Init();
     Create();
   }
@@ -195,13 +195,13 @@ void CDVDPlayerVideo::CloseStream(bool bWaitForBuffers)
   m_messageQueue.Abort();
 
   // wait for decode_video thread to end
-  CLog::Log(LOGNOTICE, "waiting for video thread to exit");
+  CLog::Log(LOGINFO, "waiting for video thread to exit");
 
   StopThread(); // will set this->m_bStop to true
 
   m_messageQueue.End();
 
-  CLog::Log(LOGNOTICE, "deleting video codec");
+  CLog::Log(LOGINFO, "deleting video codec");
   if (m_pVideoCodec)
   {
     m_pVideoCodec->Dispose();
@@ -235,7 +235,7 @@ void CDVDPlayerVideo::OnStartup()
 
 void CDVDPlayerVideo::Process()
 {
-  CLog::Log(LOGNOTICE, "running thread: video_thread");
+  CLog::Log(LOGINFO, "running thread: video_thread");
 
   DVDVideoPicture picture;
   CDVDVideoPPFFmpeg mPostProcess("");
@@ -639,7 +639,7 @@ void CDVDPlayerVideo::OnExit()
     m_pOverlayCodecCC = NULL;
   }
 
-  CLog::Log(LOGNOTICE, "thread end: video_thread");
+  CLog::Log(LOGINFO, "thread end: video_thread");
 }
 
 void CDVDPlayerVideo::ProcessVideoUserData(DVDVideoUserData* pVideoUserData, double pts)
@@ -830,7 +830,7 @@ int CDVDPlayerVideo::OutputPicture(DVDVideoPicture* pPicture, double pts)
    || ( m_output.color_matrix != pPicture->color_matrix && pPicture->color_matrix != 0 ) // don't reconfigure on unspecified
    || m_output.color_range != pPicture->color_range)
   {
-    CLog::Log(LOGNOTICE, " fps: %f, pwidth: %i, pheight: %i, dwidth: %i, dheight: %i",
+    CLog::Log(LOGINFO, " fps: %f, pwidth: %i, pheight: %i, dwidth: %i, dheight: %i",
       m_fFrameRate, pPicture->iWidth, pPicture->iHeight, pPicture->iDisplayWidth, pPicture->iDisplayHeight);
     unsigned flags = 0;
     if(pPicture->color_range == 1)

@@ -166,7 +166,7 @@ void XBAudioConfig::Save()
   // check that we updated correctly
   if (m_dwAudioFlags != XGetAudioFlags())
   {
-    CLog::Log(LOGNOTICE, "Failed to save audio config!");
+    CLog::Log(LOGINFO, "Failed to save audio config!");
   }
 #endif
 }

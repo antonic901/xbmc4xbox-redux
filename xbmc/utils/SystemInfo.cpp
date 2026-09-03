@@ -868,11 +868,11 @@ bool CSysInfo::GetHDDInfo(std::string& strHDDModel, std::string& strHDDSerial,st
     if (XKHDD::IsSmartSupported(hddcommand.DATA_BUFFER))
     {
       m_bSmartSupported = true;
-      CLog::Log(LOGNOTICE, "HDD: SMART is supported.");
+      CLog::Log(LOGINFO, "HDD: SMART is supported.");
       if (XKHDD::IsSmartEnabled(hddcommand.DATA_BUFFER))
       {
         m_bSmartEnabled = true;
-        CLog::Log(LOGNOTICE, "HDD: SMART is enabled.");
+        CLog::Log(LOGINFO, "HDD: SMART is enabled.");
       }
     }
 

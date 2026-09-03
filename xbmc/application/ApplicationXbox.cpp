@@ -584,12 +584,12 @@ void CApplicationXbox::StartServices()
   // Create idle thread
   if (CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_bPowerSave)
   {
-    CLog::Log(LOGNOTICE, "Using idle thread with HLT (power saving)");
+    CLog::Log(LOGINFO, "Using idle thread with HLT (power saving)");
     m_idleThread.Create(false, 0x100);
   }
   else
   {
-    CLog::Log(LOGNOTICE, "Not using idle thread with HLT (no power saving)");
+    CLog::Log(LOGINFO, "Not using idle thread with HLT (no power saving)");
   }
 
   // Set LED color of front panel

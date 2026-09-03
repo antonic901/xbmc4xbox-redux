@@ -81,7 +81,7 @@ bool CPosixUDPSocket::Bind(CAddress& addr, int port, int range)
     }
     else
     {
-      CLog::Log(LOGNOTICE, "UDP: Listening on port %d", m_iPort);
+      CLog::Log(LOGINFO, "UDP: Listening on port %d", m_iPort);
       SetBound();
       SetReady();
       break;

@@ -179,7 +179,7 @@ extern "C"
     {
       stream_language_t slt;
       pgetSubtitleStreamInfo(iStream, &slt);
-      CLog::Log(LOGNOTICE, "mplayer: falling back to old style subtitle interface");
+      CLog::Log(LOGINFO, "mplayer: falling back to old style subtitle interface");
 
       sub->id = slt.id;
       sub->invalid = 0;

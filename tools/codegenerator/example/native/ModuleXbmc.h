@@ -1,1 +1,1 @@
-void log(const char* msg, int level = LOGNOTICE);
+void log(const char* msg, int level = LOGINFO);

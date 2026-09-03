@@ -41,7 +41,7 @@ map<std::string, std::string> CSpecialProtocol::m_pathMap;
 void CSpecialProtocol::SetProfilePath(const std::string &dir)
 {
   SetPath("profile", dir);
-  CLog::Log(LOGNOTICE, "special://profile/ is mapped to: %s", GetPath("profile").c_str());
+  CLog::Log(LOGINFO, "special://profile/ is mapped to: %s", GetPath("profile").c_str());
 }
 
 void CSpecialProtocol::SetXBMCPath(const std::string &dir)
@@ -240,13 +240,13 @@ std::string CSpecialProtocol::TranslatePathConvertCase(const std::string& path)
 
 void CSpecialProtocol::LogPaths()
 {
-  CLog::Log(LOGNOTICE, "special://xbmc/ is mapped to: %s", GetPath("xbmc").c_str());
-  CLog::Log(LOGNOTICE, "special://xbmcbin/ is mapped to: %s", GetPath("xbmcbin").c_str());
-  CLog::Log(LOGNOTICE, "special://xbmcbinaddons/ is mapped to: %s", GetPath("xbmcbinaddons").c_str());
-  CLog::Log(LOGNOTICE, "special://masterprofile/ is mapped to: %s", GetPath("masterprofile").c_str());
-  CLog::Log(LOGNOTICE, "special://home/ is mapped to: %s", GetPath("home").c_str());
-  CLog::Log(LOGNOTICE, "special://temp/ is mapped to: %s", GetPath("temp").c_str());
-  //CLog::Log(LOGNOTICE, "special://userhome/ is mapped to: %s", GetPath("userhome").c_str());
+  CLog::Log(LOGINFO, "special://xbmc/ is mapped to: %s", GetPath("xbmc").c_str());
+  CLog::Log(LOGINFO, "special://xbmcbin/ is mapped to: %s", GetPath("xbmcbin").c_str());
+  CLog::Log(LOGINFO, "special://xbmcbinaddons/ is mapped to: %s", GetPath("xbmcbinaddons").c_str());
+  CLog::Log(LOGINFO, "special://masterprofile/ is mapped to: %s", GetPath("masterprofile").c_str());
+  CLog::Log(LOGINFO, "special://home/ is mapped to: %s", GetPath("home").c_str());
+  CLog::Log(LOGINFO, "special://temp/ is mapped to: %s", GetPath("temp").c_str());
+  //CLog::Log(LOGINFO, "special://userhome/ is mapped to: %s", GetPath("userhome").c_str());
 }
 
 // private routines, to ensure we only set/get an appropriate path
