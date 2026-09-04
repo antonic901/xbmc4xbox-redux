@@ -10,7 +10,11 @@
 
 #include "ScriptInvocationManager.h"
 
-CLanguageInvokerThread::CLanguageInvokerThread(LanguageInvokerPtr invoker, CScriptInvocationManager *invocationManager, bool reuseable)
+#include <utility>
+
+CLanguageInvokerThread::CLanguageInvokerThread(LanguageInvokerPtr invoker,
+                                               CScriptInvocationManager* invocationManager,
+                                               bool reuseable)
   : ILanguageInvoker(NULL),
     CThread("LanguageInvoker"),
     m_invoker(invoker),
@@ -98,7 +102,8 @@ void CLanguageInvokerThread::Process()
     return;
 
   CSingleLock lckdl(m_mutex);
-  do {
+  do
+  {
     m_restart = false;
     m_invoker->Execute(m_script, m_args);
 

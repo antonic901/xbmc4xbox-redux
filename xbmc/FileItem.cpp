@@ -1447,6 +1447,57 @@ void CFileItem::UpdateInfo(const CFileItem &item, bool replaceLabels /*=true*/)
   UpdateMimeType(m_doContentLookup);
 }
 
+void CFileItem::MergeInfo(const CFileItem& item)
+{
+  // TODO: Currently merge the metadata/art info is implemented for video case only
+  if (item.HasVideoInfoTag())
+  {
+    if (item.m_videoInfoTag)
+    {
+      if (m_videoInfoTag)
+        m_videoInfoTag->Merge(*item.m_videoInfoTag);
+      else
+        m_videoInfoTag = new CVideoInfoTag(*item.m_videoInfoTag);
+    }
+
+    SetOverlayImage(GetVideoInfoTag()->GetPlayCount() > 0 ? CGUIListItem::ICON_OVERLAY_WATCHED
+                                                          : CGUIListItem::ICON_OVERLAY_UNWATCHED);
+    SetInvalid();
+  }
+  if (item.HasMusicInfoTag())
+  {
+    *GetMusicInfoTag() = *item.GetMusicInfoTag();
+    SetInvalid();
+  }
+  if (item.HasPictureInfoTag())
+  {
+    *GetPictureInfoTag() = *item.GetPictureInfoTag();
+    SetInvalid();
+  }
+  if (item.HasProgramInfoTag())
+  {
+    *GetProgramInfoTag() = *item.GetProgramInfoTag();
+    SetInvalid();
+  }
+  SetDynPath(item.GetDynPath());
+  if (!item.GetLabel().empty())
+    SetLabel(item.GetLabel());
+  if (!item.GetLabel2().empty())
+    SetLabel2(item.GetLabel2());
+  if (!item.GetArt().empty())
+  {
+    if (item.IsVideo())
+      AppendArt(item.GetArt());
+    else
+      SetArt(item.GetArt());
+  }
+  AppendProperties(item);
+
+  SetContentLookup(item.m_doContentLookup);
+  SetMimeType(item.m_mimetype);
+  UpdateMimeType(m_doContentLookup);
+}
+
 void CFileItem::SetFromProgramInfoTag(const CProgramInfoTag &program)
 {
   if (!program.m_strTitle.empty())
