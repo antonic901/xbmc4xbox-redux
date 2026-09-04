@@ -73,39 +73,39 @@ XBPython::~XBPython()
 #define CHECK_FOR_ENTRY(l,v) \
   (l.hadSomethingRemoved ? (std::find(l.begin(),l.end(),v) != l.end()) : true)
 
-void XBPython::Announce(ANNOUNCEMENT::AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data)
+void XBPython::Announce(ANNOUNCEMENT::AnnouncementFlag flag, const std::string& sender, const std::string& message, const CVariant &data)
 {
   if (flag & ANNOUNCEMENT::VideoLibrary)
   {
-   if (strcmp(message, "OnScanFinished") == 0)
+   if (message == "OnScanFinished")
      OnScanFinished("video");
-   else if (strcmp(message, "OnScanStarted") == 0)
+   else if (message == "OnScanStarted")
      OnScanStarted("video");
-   else if (strcmp(message, "OnCleanStarted") == 0)
+   else if (message == "OnCleanStarted")
      OnCleanStarted("video");
-   else if (strcmp(message, "OnCleanFinished") == 0)
+   else if (message == "OnCleanFinished")
      OnCleanFinished("video");
   }
   else if (flag & ANNOUNCEMENT::AudioLibrary)
   {
-   if (strcmp(message, "OnScanFinished") == 0)
+   if (message == "OnScanFinished")
      OnScanFinished("music");
-   else if (strcmp(message, "OnScanStarted") == 0)
+   else if (message == "OnScanStarted")
      OnScanStarted("music");
-   else if (strcmp(message, "OnCleanStarted") == 0)
+   else if (message == "OnCleanStarted")
      OnCleanStarted("music");
-   else if (strcmp(message, "OnCleanFinished") == 0)
+   else if (message == "OnCleanFinished")
      OnCleanFinished("music");
   }
   else if (flag & ANNOUNCEMENT::GUI)
   {
-   if (strcmp(message, "OnScreensaverDeactivated") == 0)
+   if (message == "OnScreensaverDeactivated")
      OnScreensaverDeactivated();
-   else if (strcmp(message, "OnScreensaverActivated") == 0)
+   else if (message == "OnScreensaverActivated")
      OnScreensaverActivated();
-   else if (strcmp(message, "OnDPMSDeactivated") == 0)
+   else if (message == "OnDPMSDeactivated")
      OnDPMSDeactivated();
-   else if (strcmp(message, "OnDPMSActivated") == 0)
+   else if (message == "OnDPMSActivated")
      OnDPMSActivated();
   }
 

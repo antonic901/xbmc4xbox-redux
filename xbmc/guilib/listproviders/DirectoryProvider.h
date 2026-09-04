@@ -62,8 +62,8 @@ public:
   virtual boost::movelib::unique_ptr<IListProvider> Clone();
   virtual bool Update(bool forceRefresh);
   virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag,
-                const char *sender,
-                const char *message,
+                const std::string& sender,
+                const std::string& message,
                 const CVariant& data);
   virtual void Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items);
   virtual void Reset();

@@ -22,6 +22,7 @@
 
 #include <algorithm>
 
+#include "FileItem.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
 #include "dialogs/GUIDialogOK.h"
