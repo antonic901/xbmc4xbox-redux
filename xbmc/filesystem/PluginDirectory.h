@@ -10,16 +10,12 @@
 
 #include "IDirectory.h"
 #include "SortFileItem.h"
-#include "addons/IAddon.h"
-#include "threads/CriticalSection.h"
+#include "interfaces/generic/RunningScriptsHandler.h"
 #include "threads/Event.h"
-#include "threads/Thread.h"
 
 #include <atomic.h>
-#include <map>
+#include <memory>
 #include <string>
-
-#include "PlatformDefs.h"
 
 class CURL;
 class CFileItem;
@@ -28,12 +24,13 @@ class CFileItemList;
 namespace XFILE
 {
 
-class CPluginDirectory : public IDirectory
+class CPluginDirectory : public IDirectory, public CRunningScriptsHandler<CPluginDirectory>
 {
 public:
   CPluginDirectory();
-  ~CPluginDirectory(void);
+  virtual ~CPluginDirectory(void);
   virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool Resolve(CFileItem& item) const;
   virtual bool AllowAll() const { return true; }
   virtual bool Exists(const CURL& url) { return true; }
   virtual float GetProgress() const;
@@ -67,7 +64,7 @@ public:
   static bool AddItem(int handle, const CFileItem *item, int totalItems);
   static bool AddItems(int handle, const CFileItemList *items, int totalItems);
   static void EndOfDirectory(int handle, bool success, bool replaceListing, bool cacheToDisc);
-  static void AddSortMethod(int handle, SORT_METHOD sortMethod, const std::string &label2Mask);
+  static void AddSortMethod(int handle, SORT_METHOD sortMethod, const std::string &labelMask, const std::string &label2Mask);
   static std::string GetSetting(int handle, const std::string &key);
   static void SetSetting(int handle, const std::string &key, const std::string &value);
   static void SetContent(int handle, const std::string &strContent);
@@ -75,37 +72,19 @@ public:
   static void SetResolvedUrl(int handle, bool success, const CFileItem* resultItem);
   static void SetLabel2(int handle, const std::string& ident);
 
+protected:
+  // implementations of CRunningScriptsHandler / CScriptRunner
+  virtual bool IsSuccessful() const { return m_success; }
+  virtual bool IsCancelled() const { return m_cancelled.value(); }
+
 private:
-  ADDON::AddonPtr m_addon;
-  bool StartScript(const std::string& strPath, bool retrievingDir, bool resume);
-  bool WaitOnScriptResult(const std::string &scriptPath, int scriptId, const std::string &scriptName, bool retrievingDir);
+  bool StartScript(const std::string& strPath, bool resume);
 
-  static std::map<int,CPluginDirectory*> globalHandles;
-  static int getNewHandle(CPluginDirectory *cp);
-  static void reuseHandle(int handle, CPluginDirectory *cp);
-
-  static void removeHandle(int handle);
-  static CPluginDirectory *dirFromHandle(int handle);
-  static CCriticalSection m_handleLock;
-  static int handleCounter;
-
-  CFileItemList* m_listItems;
-  CFileItem*     m_fileResult;
-  CEvent         m_fetchComplete;
+  boost::movelib::unique_ptr<CFileItemList> m_listItems;
+  boost::movelib::unique_ptr<CFileItem> m_fileResult;
 
   atomic<bool> m_cancelled;
-  bool          m_success;      // set by script in EndOfDirectory
-  int    m_totalItems;   // set by script in AddDirectoryItem
-
-  class CScriptObserver : public CThread
-  {
-  public:
-    CScriptObserver(int scriptId, CEvent &event);
-    void Abort();
-  protected:
-    virtual void Process();
-    int m_scriptId;
-    CEvent &m_event;
-  };
+  bool m_success; // set by script in EndOfDirectory
+  int m_totalItems; // set by script in AddDirectoryItem
 };
 }

@@ -3084,10 +3084,25 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\interfaces\generic\LanguageInvokerThread.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\interfaces\generic\RunningScriptObserver.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\generic\RunningScriptObserver.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\generic\RunningScriptsHandler.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\interfaces\generic\ScriptInvocationManager.cpp">
 					</File>
 					<File
 						RelativePath=".\xbmc\interfaces\generic\ScriptInvocationManager.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\generic\ScriptRunner.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\interfaces\generic\ScriptRunner.h">
 					</File>
 				</Filter>
 				<Filter

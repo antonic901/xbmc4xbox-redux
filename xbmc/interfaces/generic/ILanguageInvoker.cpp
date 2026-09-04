@@ -13,14 +13,13 @@
 #include <string>
 #include <vector>
 
-ILanguageInvoker::ILanguageInvoker(ILanguageInvocationHandler *invocationHandler)
-  : m_id(-1),
-    m_state(InvokerStateUninitialized),
-    m_invocationHandler(invocationHandler)
+ILanguageInvoker::ILanguageInvoker(ILanguageInvocationHandler* invocationHandler)
+  : m_invocationHandler(invocationHandler),
+    m_id(-1),
+    m_state(InvokerStateUninitialized)
 { }
 
-ILanguageInvoker::~ILanguageInvoker()
-{ }
+ILanguageInvoker::~ILanguageInvoker() {}
 
 bool ILanguageInvoker::Execute(const std::string &script, const std::vector<std::string> &arguments /* = std::vector<std::string>() */)
 {
@@ -64,10 +63,10 @@ bool ILanguageInvoker::onExecutionInitialized()
   return m_invocationHandler->OnScriptInitialized(this);
 }
 
-void ILanguageInvoker::onAbortRequested()
+void ILanguageInvoker::AbortNotification()
 {
   if (m_invocationHandler)
-    m_invocationHandler->OnScriptAbortRequested(this);
+    m_invocationHandler->NotifyScriptAborting(this);
 }
 
 void ILanguageInvoker::onExecutionFailed()
