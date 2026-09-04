@@ -84,7 +84,7 @@ static void AnnounceRemove(const std::string& content, int id)
   data["id"] = id;
   if (CMusicLibraryQueue::GetInstance().IsScanningLibrary())
     data["transaction"] = true;
-  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnRemove", data);
+  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "OnRemove", data);
 }
 
 static void AnnounceUpdate(const std::string& content, int id, bool added = false)
@@ -96,7 +96,7 @@ static void AnnounceUpdate(const std::string& content, int id, bool added = fals
     data["transaction"] = true;
   if (added)
     data["added"] = true;
-  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnUpdate", data);
+  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "OnUpdate", data);
 }
 
 CMusicDatabase::CMusicDatabase(void)
@@ -4543,7 +4543,7 @@ int CMusicDatabase::Cleanup(CGUIDialogProgress* progressDialog /*= NULL*/)
   int ret;
   unsigned int time = XbmcThreads::SystemClockMillis();
   CLog::Log(LOGINFO, "%s: Starting musicdatabase cleanup ..", __FUNCTION__);
-  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnCleanStarted");
+  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "OnCleanStarted");
 
   SetLibraryLastCleaned();
 
@@ -4682,7 +4682,7 @@ int CMusicDatabase::Cleanup(CGUIDialogProgress* progressDialog /*= NULL*/)
 
   CLog::Log(LOGINFO, "%s: Cleaning musicdatabase done. Operation took %us", __FUNCTION__,
             static_cast<unsigned int>((XbmcThreads::SystemClockMillis() - time) / 1000));
-  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnCleanFinished");
+  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "OnCleanFinished");
 
   if (!Compress(false))
   {
@@ -4694,7 +4694,7 @@ error:
   RollbackTransaction();
   // Recreate DELETE triggers on song_artist and album_artist
   CreateRemovedLinkTriggers();
-  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnCleanFinished");
+  CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "OnCleanFinished");
   return ret;
 }
 
@@ -12163,7 +12163,7 @@ void CMusicDatabase::ExportToXML(const CLibExportSettings& settings,
       data["file"] = xmlFile;
       if (iFailCount > 0)
         data["failcount"] = iFailCount;
-      CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "xbmc", "OnExport",
+      CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::AudioLibrary, "OnExport",
                                                          data);
     }
   }

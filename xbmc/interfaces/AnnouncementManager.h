@@ -1,35 +1,24 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2014 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
-#include <vector>
+
+#pragma once
 
 #include "IAnnouncer.h"
-#include "FileItem.h"
 #include "threads/CriticalSection.h"
-#include "threads/Thread.h"
 #include "threads/Event.h"
+#include "threads/Thread.h"
 #include "utils/Variant.h"
 
 #include <list>
+#include <boost/shared_ptr.hpp>
 #include <vector>
 
+class CFileItem;
 class CVariant;
 
 namespace ANNOUNCEMENT
@@ -46,24 +35,50 @@ namespace ANNOUNCEMENT
     void AddAnnouncer(IAnnouncer *listener);
     void RemoveAnnouncer(IAnnouncer *listener);
 
-    void Announce(AnnouncementFlag flag, const char *sender, const char *message);
-    void Announce(AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
-    void Announce(AnnouncementFlag flag, const char *sender, const char *message,
-        const boost::shared_ptr<const CFileItem>& item);
-    void Announce(AnnouncementFlag flag, const char *sender, const char *message,
-        const boost::shared_ptr<const CFileItem>& item, const CVariant &data);
+    void Announce(AnnouncementFlag flag, const std::string& message);
+    void Announce(AnnouncementFlag flag, const std::string& message, const CVariant& data);
+    void Announce(AnnouncementFlag flag,
+                  const std::string& message,
+                  const boost::shared_ptr<const CFileItem>& item);
+    void Announce(AnnouncementFlag flag,
+                  const std::string& message,
+                  const boost::shared_ptr<const CFileItem>& item,
+                  const CVariant& data);
+
+    void Announce(AnnouncementFlag flag, const std::string& sender, const std::string& message);
+    void Announce(AnnouncementFlag flag,
+                  const std::string& sender,
+                  const std::string& message,
+                  const CVariant& data);
+    void Announce(AnnouncementFlag flag,
+                  const std::string& sender,
+                  const std::string& message,
+                  const boost::shared_ptr<const CFileItem>& item,
+                  const CVariant& data);
+
+    // The sender is not related to the application name.
+    // Also it's part of Kodi's API - changing it will break
+    // a big number of python addons and third party json consumers.
+    static const std::string ANNOUNCEMENT_SENDER;
 
   protected:
-    void Process();
-    void DoAnnounce(AnnouncementFlag flag, const char *sender, const char *message, CFileItemPtr item, const CVariant &data);
-    void DoAnnounce(AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
+    virtual void Process();
+    void DoAnnounce(AnnouncementFlag flag,
+                    const std::string& sender,
+                    const std::string& message,
+                    const boost::shared_ptr<CFileItem>& item,
+                    const CVariant& data);
+    void DoAnnounce(AnnouncementFlag flag,
+                    const std::string& sender,
+                    const std::string& message,
+                    const CVariant& data);
 
     struct CAnnounceData
     {
       AnnouncementFlag flag;
       std::string sender;
       std::string message;
-      CFileItemPtr item;
+      boost::shared_ptr<CFileItem> item;
       CVariant data;
     };
     std::list<CAnnounceData> m_announcementQueue;
@@ -73,7 +88,8 @@ namespace ANNOUNCEMENT
     CAnnouncementManager(const CAnnouncementManager&);
     CAnnouncementManager const& operator=(CAnnouncementManager const&);
 
-    CCriticalSection m_critSection;
+    CCriticalSection m_announcersCritSection;
+    CCriticalSection m_queueCritSection;
     std::vector<IAnnouncer *> m_announcers;
   };
 }

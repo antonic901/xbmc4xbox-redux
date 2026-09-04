@@ -35,7 +35,7 @@ public:
   CGUIWindowHome(void);
   virtual ~CGUIWindowHome(void);
   virtual void OnInitWindow();
-  virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
+  virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag, const std::string& sender, const std::string& message, const CVariant& data);
 
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnAction(const CAction &action);

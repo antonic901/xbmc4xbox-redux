@@ -148,7 +148,7 @@ bool CFavouritesDirectory::Save(const CFileItemList &items)
 
   bool bRet = doc.SaveFile(favourites);
   if (bRet)
-    CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::GUI, "xbmc", "OnFavouritesUpdated");
+    CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::GUI, "OnFavouritesUpdated");
 
   return bRet;
 }

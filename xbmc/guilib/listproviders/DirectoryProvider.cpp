@@ -281,8 +281,8 @@ bool CDirectoryProvider::Update(bool forceRefresh)
 }
 
 void CDirectoryProvider::Announce(ANNOUNCEMENT::AnnouncementFlag flag,
-                                  const char *sender,
-                                  const char *message,
+                                  const std::string& sender,
+                                  const std::string& message,
                                   const CVariant& data)
 {
   // we are only interested in library, player and GUI changes
@@ -301,7 +301,7 @@ void CDirectoryProvider::Announce(ANNOUNCEMENT::AnnouncementFlag flag,
 
     if (flag & ANNOUNCEMENT::Player)
     {
-      if (strcmp(message, "OnPlay") == 0 || strcmp(message, "OnResume") == 0 || strcmp(message, "OnStop") == 0)
+      if (message == "OnPlay" || message == "OnResume" || message == "OnStop")
       {
         if (m_currentSort.sortBy == SortByNone || // not nice, but many directories that need to be refreshed on start/stop have no special sort order (e.g. in progress movies)
             m_currentSort.sortBy == SortByLastPlayed ||
@@ -318,8 +318,8 @@ void CDirectoryProvider::Announce(ANNOUNCEMENT::AnnouncementFlag flag,
 
       // if there was a database update, we set the update state
       // to PENDING to fire off a new job in the next update
-      if (strcmp(message, "OnScanFinished") == 0 || strcmp(message, "OnCleanFinished") == 0 || strcmp(message, "OnUpdate") == 0 ||
-          strcmp(message, "OnRemove") == 0 || strcmp(message, "OnRefresh") == 0)
+      if (message == "OnScanFinished" || message == "OnCleanFinished" || message == "OnUpdate" ||
+          message == "OnRemove" || message == "OnRefresh")
         m_updateState = INVALIDATED;
     }
   }
