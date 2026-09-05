@@ -36,7 +36,7 @@ class CApplicationPowerHandling : public IApplicationComponent
   friend class CApplicationXbox;
 
 public:
-  CApplicationPowerHandling() : m_bInhibitScreenSaver(false), m_bResetScreenSaver(false), m_screensaverActive(false), m_iScreenSaveLock(0) {}
+  CApplicationPowerHandling() : m_bInhibitScreenSaver(false), m_bResetScreenSaver(false), m_screensaverActive(false), m_iScreenSaveLock(0), m_bInhibitIdleShutdown(false) {}
 
   bool IsInScreenSaver() const { return m_screensaverActive; }
   bool IsScreenSaverInhibited() const;
@@ -50,6 +50,7 @@ public:
 
   int GlobalIdleTime();
   void ResetSystemIdleTimer();
+  bool IsIdleShutdownInhibited() const;
 
   void ResetShutdownTimers();
   void StopShutdownTimer();
@@ -69,6 +70,8 @@ protected:
   void ResetScreenSaverTimer();
   bool WakeUpScreenSaver();
 
+  void InhibitIdleShutdown(bool inhibit);
+
   /*! \brief Helper method to determine how to handle TMSG_SHUTDOWN
   */
   void HandleShutdownMessage();
@@ -85,6 +88,7 @@ protected:
   int m_iScreenSaveLock;
   std::string m_screensaverIdInUse;
 
+  bool m_bInhibitIdleShutdown;
   CStopWatch m_navigationTimer;
   CStopWatch m_shutdownTimer;
 

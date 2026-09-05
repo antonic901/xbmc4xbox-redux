@@ -339,7 +339,7 @@ void CApplicationPowerHandling::CheckShutdown()
   if (!appPlayer)
     return;
 
-  if (appPlayer->IsPlaying() ||
+  if (m_bInhibitIdleShutdown || appPlayer->IsPlaying() ||
       appPlayer->IsPausedPlayback() // is something playing?
       || CMusicLibraryQueue::GetInstance().IsRunning() ||
       CVideoLibraryQueue::GetInstance().IsRunning() ||
@@ -362,6 +362,16 @@ void CApplicationPowerHandling::CheckShutdown()
     // Sleep the box
     CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN);
   }
+}
+
+void CApplicationPowerHandling::InhibitIdleShutdown(bool inhibit)
+{
+  m_bInhibitIdleShutdown = inhibit;
+}
+
+bool CApplicationPowerHandling::IsIdleShutdownInhibited() const
+{
+  return m_bInhibitIdleShutdown;
 }
 
 bool CApplicationPowerHandling::OnSettingAction(const CSetting& setting)

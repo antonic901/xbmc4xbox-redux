@@ -501,8 +501,14 @@ bool CSystemGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
         case SYSTEM_SCREENSAVER_ACTIVE:
           value = appPower->IsInScreenSaver();
           return true;
+        case SYSTEM_IS_SCREENSAVER_INHIBITED:
+          value = appPower->IsScreenSaverInhibited();
+          return true;
         case SYSTEM_DPMS_ACTIVE:
           value = false;
+          return true;
+        case SYSTEM_IDLE_SHUTDOWN_INHIBITED:
+          value = appPower->IsIdleShutdownInhibited();
           return true;
         case SYSTEM_IDLE_TIME:
           value = appPower->GlobalIdleTime() >= static_cast<int>(info.GetData1());
