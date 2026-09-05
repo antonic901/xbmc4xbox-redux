@@ -2459,7 +2459,7 @@ void CApplication::ConfigureAndEnableAddons()
       {
         if (HELPERS::ShowYesNoDialogLines(24039, // Disabled add-ons
                                           24059, // Would you like to enable this add-on?
-                                          addon->Name()) == HELPERS::YES)
+                                          addon->Name()) == HELPERS::CHOICE_YES)
         {
           if (addon->CanHaveAddonOrInstanceSettings())
           {

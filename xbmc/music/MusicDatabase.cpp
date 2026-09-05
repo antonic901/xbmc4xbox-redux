@@ -4916,7 +4916,7 @@ void CMusicDatabase::Clean()
     return;
   }
 
-  if (HELPERS::ShowYesNoDialogText(313, 333) == HELPERS::YES)
+  if (HELPERS::ShowYesNoDialogText(313, 333) == HELPERS::CHOICE_YES)
   {
     CMusicDatabase musicdatabase;
     if (musicdatabase.Open())

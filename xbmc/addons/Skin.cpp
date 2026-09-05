@@ -394,7 +394,7 @@ void CSkinInfo::OnPostInstall(bool update, bool modal)
 
   if (IsInUse() || (!update && !modal &&
                     HELPERS::ShowYesNoDialogText(Name(), 24099) ==
-                        HELPERS::YES))
+                        HELPERS::CHOICE_YES))
   {
     CGUIDialogKaiToast *toast = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogKaiToast>(WINDOW_DIALOG_KAI_TOAST);
     if (toast)

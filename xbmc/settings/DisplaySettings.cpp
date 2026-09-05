@@ -200,7 +200,7 @@ bool CDisplaySettings::OnSettingChanging(const boost::shared_ptr<const CSetting>
       if (!m_resolutionChangeAborted)
       {
         if (HELPERS::ShowYesNoDialogText(13110, 13111, "",
-                                         "", 15000) != YES)
+                                         "", 15000) != CHOICE_YES)
         {
           m_resolutionChangeAborted = true;
           return false;

@@ -255,7 +255,7 @@ bool CAddonInstaller::InstallModal(const std::string& addonID,
   if (promptForInstall == InstallModalPrompt::CHOICE_YES)
   {
     if (HELPERS::ShowYesNoDialogLines(24076, 24100, addon->Name(),
-                                      24101) != HELPERS::YES)
+                                      24101) != HELPERS::CHOICE_YES)
     {
       return false;
     }

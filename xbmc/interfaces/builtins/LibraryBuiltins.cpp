@@ -136,8 +136,8 @@ static int ExportLibrary(const std::vector<std::string>& params)
   else
   {
     HELPERS::DialogResponse result = HELPERS::ShowYesNoDialogText(iHeading, 20426, 20428, 20429);
-    cancelled = result == HELPERS::CANCELLED;
-    singleFile = result != HELPERS::YES;
+    cancelled = result == HELPERS::CHOICE_CANCELLED;
+    singleFile = result != HELPERS::CHOICE_YES;
   }
 
   if (cancelled)
@@ -150,8 +150,8 @@ static int ExportLibrary(const std::vector<std::string>& params)
     else
     {
       HELPERS::DialogResponse result = HELPERS::ShowYesNoDialogText(iHeading, 20430);
-      cancelled = result == HELPERS::CANCELLED;
-      thumbs = result == HELPERS::YES;
+      cancelled = result == HELPERS::CHOICE_CANCELLED;
+      thumbs = result == HELPERS::CHOICE_YES;
     }
   }
 
@@ -165,7 +165,7 @@ static int ExportLibrary(const std::vector<std::string>& params)
     if (movieSetsInfoPath.empty())
     {
       KODI::MESSAGING::HELPERS::DialogResponse result = HELPERS::ShowYesNoDialogText(iHeading, 36301);
-      cancelled = result != HELPERS::YES;
+      cancelled = result != HELPERS::CHOICE_YES;
     }
   }
 
@@ -179,8 +179,8 @@ static int ExportLibrary(const std::vector<std::string>& params)
     else
     {
       HELPERS::DialogResponse result = HELPERS::ShowYesNoDialogText(iHeading, 20436);
-      cancelled = result == HELPERS::CANCELLED;
-      actorThumbs = result == HELPERS::YES;
+      cancelled = result == HELPERS::CHOICE_CANCELLED;
+      actorThumbs = result == HELPERS::CHOICE_YES;
     }
   }
 
@@ -194,8 +194,8 @@ static int ExportLibrary(const std::vector<std::string>& params)
     else
     {
       HELPERS::DialogResponse result = HELPERS::ShowYesNoDialogText(iHeading, 20431);
-      cancelled = result == HELPERS::CANCELLED;
-      overwrite = result == HELPERS::YES;
+      cancelled = result == HELPERS::CHOICE_CANCELLED;
+      overwrite = result == HELPERS::CHOICE_YES;
     }
   }
 

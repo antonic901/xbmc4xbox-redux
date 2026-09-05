@@ -10,6 +10,7 @@
 
 #include "utils/Variant.h"
 
+#include <boost/array.hpp>
 #include <string>
 
 namespace KODI
@@ -30,7 +31,7 @@ struct DialogOKMessage
   DialogOKMessage() : show(true) {}
   CVariant heading; //!< Heading to be displayed in the dialog box
   CVariant text;  //!< Body text to be displayed, this is mutually exclusive with lines below
-  CVariant lines[3];  //!< Body text to be displayed, specified as three lines. This is mutually exclusive with the text above
+  boost::array<CVariant, 3> lines;  //!< Body text to be displayed, specified as three lines. This is mutually exclusive with the text above
   bool show; //!< bool to see if the dialog needs to be shown
 };
 

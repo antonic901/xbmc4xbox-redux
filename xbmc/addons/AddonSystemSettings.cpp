@@ -91,7 +91,7 @@ void CAddonSystemSettings::OnSettingChanged(const boost::shared_ptr<const CSetti
   if (setting->GetId() == CSettings::SETTING_ADDONS_ALLOW_UNKNOWN_SOURCES &&
       CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(
           CSettings::SETTING_ADDONS_ALLOW_UNKNOWN_SOURCES) &&
-      ShowYesNoDialogText(19098, 36618) != KODI::MESSAGING::HELPERS::YES)
+      ShowYesNoDialogText(19098, 36618) != KODI::MESSAGING::HELPERS::CHOICE_YES)
   {
     CServiceBroker::GetSettingsComponent()->GetSettings()->SetBool(CSettings::SETTING_ADDONS_ALLOW_UNKNOWN_SOURCES, false);
   }
