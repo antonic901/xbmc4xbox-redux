@@ -1,53 +1,32 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
-#include <system.h> // <xtl.h>
 #include "Builtins.h"
 
 #include "AddonBuiltins.h"
 #include "ApplicationBuiltins.h"
 #include "GUIBuiltins.h"
-#include "GUIControlBuiltins.h"
 #include "GUIContainerBuiltins.h"
+#include "GUIControlBuiltins.h"
 #include "LibraryBuiltins.h"
 #include "OpticalBuiltins.h"
 #include "PictureBuiltins.h"
 #include "PlayerBuiltins.h"
 #include "ProfileBuiltins.h"
+#include "ServiceBroker.h"
 #include "SkinBuiltins.h"
 #include "SystemBuiltins.h"
 #include "WeatherBuiltins.h"
-#include "XboxBuiltins.h"
-
+#include "input/InputManager.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "Util.h"
-#include "utils/log.h"
+#include "utils/ExecString.h"
 #include "utils/StringUtils.h"
-
-#if defined(TARGET_ANDROID)
-#include "AndroidBuiltins.h"
-#endif
-
-#if defined(TARGET_POSIX)
-#include "linux/PlatformDefs.h"
-#endif
+#include "utils/log.h"
 
 CBuiltins::CBuiltins()
 {
@@ -64,20 +43,9 @@ CBuiltins::CBuiltins()
   RegisterCommands<CSkinBuiltins>();
   RegisterCommands<CSystemBuiltins>();
   RegisterCommands<CWeatherBuiltins>();
-  RegisterCommands<CXboxBuiltins>();
-
-#if defined(HAVE_LIBCEC)
-  RegisterCommands<CCECBuiltins>();
-#endif
-
-#if defined(TARGET_ANDROID)
-  RegisterCommands<CAndroidBuiltins>();
-#endif
 }
 
-CBuiltins::~CBuiltins()
-{
-}
+CBuiltins::~CBuiltins() {}
 
 CBuiltins& CBuiltins::GetInstance()
 {
@@ -87,10 +55,12 @@ CBuiltins& CBuiltins::GetInstance()
 
 bool CBuiltins::HasCommand(const std::string& execString)
 {
-  std::string function;
-  std::vector<std::string> parameters;
-  CUtil::SplitExecFunction(execString, function, parameters);
-  StringUtils::ToLower(function);
+  const CExecString exec(execString);
+  if (!exec.IsValid())
+    return false;
+
+  const std::string function = exec.GetFunction();
+  const std::vector<std::string> parameters = exec.GetParams();
 
   const CBuiltins::CommandMap::iterator &it = m_command.find(function);
   if (it != m_command.end())
@@ -104,10 +74,11 @@ bool CBuiltins::HasCommand(const std::string& execString)
 
 bool CBuiltins::IsSystemPowerdownCommand(const std::string& execString)
 {
-  std::string execute;
-  std::vector<std::string> params;
-  CUtil::SplitExecFunction(execString, execute, params);
-  StringUtils::ToLower(execute);
+  const CExecString exec(execString);
+  if (!exec.IsValid())
+    return false;
+
+  const std::string execute = exec.GetFunction();
 
   // Check if action is resulting in system powerdown.
   if (execute == "reboot"    ||
@@ -141,11 +112,12 @@ void CBuiltins::GetHelp(std::string &help)
 
 int CBuiltins::Execute(const std::string& execString)
 {
-  // Deprecated. Get the text after the "XBMC."
-  std::string execute;
-  std::vector<std::string> params;
-  CUtil::SplitExecFunction(execString, execute, params);
-  StringUtils::ToLower(execute);
+  const CExecString exec(execString);
+  if (!exec.IsValid())
+    return -1;
+
+  const std::string execute = exec.GetFunction();
+  const std::vector<std::string> params = exec.GetParams();
 
   const CBuiltins::CommandMap::iterator &it = m_command.find(execute);
   if (it != m_command.end())
@@ -154,8 +126,8 @@ int CBuiltins::Execute(const std::string& execString)
       return it->second.Execute(params);
     else
     {
-      CLog::Log(LOGERROR, "%s called with invalid number of parameters (should be: %" PRIdS ", is %" PRIdS")",
-                          execute.c_str(), it->second.parameters, params.size());
+      CLog::Log(LOGERROR, "%s called with invalid number of parameters (should be: %" PRIuS", is %" PRIuS")",
+                execute.c_str(), it->second.parameters, params.size());
       return -1;
     }
   }

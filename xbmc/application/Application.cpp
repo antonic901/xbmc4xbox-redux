@@ -1151,6 +1151,14 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     }
     break;
 
+  case TMSG_INHIBITIDLESHUTDOWN:
+    GetComponent<CApplicationPowerHandling>()->InhibitIdleShutdown(pMsg->param1 != 0);
+    break;
+
+  case TMSG_INHIBITSCREENSAVER:
+    GetComponent<CApplicationPowerHandling>()->InhibitScreenSaver(pMsg->param1 != 0);
+    break;
+
   case TMSG_ACTIVATESCREENSAVER:
     GetComponent<CApplicationPowerHandling>()->ActivateScreenSaver();
     break;

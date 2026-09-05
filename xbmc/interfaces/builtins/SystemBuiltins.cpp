@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2005-2015 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "SystemBuiltins.h"
@@ -23,8 +11,6 @@
 #include "ServiceBroker.h"
 #include "messaging/ApplicationMessenger.h"
 #include "utils/StringUtils.h"
-
-using namespace KODI::MESSAGING;
 
 /*! \brief Execute a system executable.
  *  \param params The parameters.
@@ -38,28 +24,15 @@ static int Exec(const std::vector<std::string>& params)
   return 0;
 }
 
-/*! \brief Hibernate system.
- *  \param params (ignored)
- */
-static int Hibernate(const std::vector<std::string>& params)
-{
-  return 0;
-}
-
 /*! \brief Inhibit idle shutdown timer.
  *  \param params The parameters.
  *  \details params[0] = "true" to inhibit shutdown timer (optional).
  */
 static int InhibitIdle(const std::vector<std::string>& params)
 {
-  return 0;
-}
+  bool inhibit = (params.size() == 1 && StringUtils::EqualsNoCase(params[0], "true"));
+  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_INHIBITIDLESHUTDOWN, inhibit);
 
-/*! \brief Minimize application.
- *  \param params (ignored)
- */
-static int Minimize(const std::vector<std::string>& params)
-{
   return 0;
 }
 
@@ -93,16 +66,6 @@ static int Reboot(const std::vector<std::string>& params)
   return 0;
 }
 
-/*! \brief Soft reset system.
- *  \param params (ignored)
- */
-static int Reset(const std::vector<std::string>& params)
-{
-  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_RESET);
-
-  return 0;
-}
-
 /*! \brief Restart application.
  *  \param params (ignored)
  */
@@ -116,9 +79,31 @@ static int RestartApp(const std::vector<std::string>& params)
 /*! \brief Activate screensaver.
  *  \param params (ignored)
  */
-static int Screensaver(const std::vector<std::string>& params)
+static int ActivateScreensaver(const std::vector<std::string>& params)
 {
   CServiceBroker::GetAppMessenger()->PostMsg(TMSG_ACTIVATESCREENSAVER);
+
+  return 0;
+}
+
+/*! \brief Reset screensaver.
+ *  \param params (ignored)
+ */
+static int ResetScreensaver(const std::vector<std::string>& params)
+{
+  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_RESETSCREENSAVER);
+
+  return 0;
+}
+
+/*! \brief Inhibit screensaver.
+ *  \param params The parameters.
+ *  \details params[0] = "true" to inhibit screensaver (optional).
+ */
+static int InhibitScreenSaver(const std::vector<std::string>& params)
+{
+  bool inhibit = (params.size() == 1 && StringUtils::EqualsNoCase(params[0], "true"));
+  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_INHIBITSCREENSAVER, inhibit);
 
   return 0;
 }
@@ -130,14 +115,6 @@ static int Shutdown(const std::vector<std::string>& params)
 {
   CServiceBroker::GetAppMessenger()->PostMsg(TMSG_SHUTDOWN);
 
-  return 0;
-}
-
-/*! \brief Suspend system.
- *  \param params (ignored)
- */
-static int Suspend(const std::vector<std::string>& params)
-{
   return 0;
 }
 
@@ -159,20 +136,16 @@ static int Suspend(const std::vector<std::string>& params)
 ///     Starts the screensaver
 ///   }
 ///   \table_row2_l{
-///     <b>`Hibernate`</b>
+///     <b>`InhibitScreensaver(yesNo)`</b>
 ///     ,
-///     Hibernate (S4) the System
+///     Inhibit the screensaver
+///     @param[in] yesNo   value with "true" or "false" to inhibit or allow screensaver (leaving empty defaults to false)
 ///   }
 ///   \table_row2_l{
 ///     <b>`InhibitIdleShutdown(true/false)`</b>
 ///     ,
 ///     Prevent the system to shutdown on idle.
 ///     @param[in] value                 "true" to inhibit shutdown timer (optional).
-///   }
-///   \table_row2_l{
-///     <b>`Minimize`</b>
-///     ,
-///     Minimizes Kodi
 ///   }
 ///   \table_row2_l{
 ///     <b>`Powerdown`</b>
@@ -192,7 +165,7 @@ static int Suspend(const std::vector<std::string>& params)
 ///   \table_row2_l{
 ///     <b>`Reset`</b>
 ///     ,
-///     Soft reset the system
+///     Reset the system (same as reboot)
 ///   }
 ///   \table_row2_l{
 ///     <b>`Restart`</b>
@@ -208,11 +181,6 @@ static int Suspend(const std::vector<std::string>& params)
 ///     <b>`ShutDown`</b>
 ///     ,
 ///     Trigger default Shutdown action defined in System Settings
-///   }
-///   \table_row2_l{
-///     <b>`Suspend`</b>
-///     ,
-///     Suspends (S3 / S1 depending on bios setting) the System
 ///   }
 ///   \table_row2_l{
 ///     <b>`System.Exec(exec)`</b>
@@ -233,45 +201,44 @@ CBuiltins::CommandMap CSystemBuiltins::GetOperations() const
 {
   CBuiltins::CommandMap commands;
 
-  CBuiltins::BUILT_IN builtin1 = {"Activate Screensaver", 0, Screensaver};
+  CBuiltins::BUILT_IN builtin1 = {"Activate Screensaver", 0, ActivateScreensaver};
   commands.insert(std::make_pair("activatescreensaver", builtin1));
 
-  CBuiltins::BUILT_IN builtin2 = {"Hibernates the system", 0, Hibernate};
-  commands.insert(std::make_pair("hibernate", builtin2));
+  CBuiltins::BUILT_IN builtin2 = {"Reset Screensaver", 0, ResetScreensaver};
+  commands.insert(std::make_pair("resetscreensaver", builtin2));
 
-  CBuiltins::BUILT_IN builtin3 = {"Inhibit idle shutdown", 0, InhibitIdle};
-  commands.insert(std::make_pair("inhibitidleshutdown", builtin3));
+  CBuiltins::BUILT_IN builtin4 = {"Inhibit idle shutdown", 0, InhibitIdle};
+  commands.insert(std::make_pair("inhibitidleshutdown", builtin4));
 
-  CBuiltins::BUILT_IN builtin4 = {"Minimize Kodi", 0, Minimize};
-  commands.insert(std::make_pair("minimize", builtin4));
+  CBuiltins::BUILT_IN builtin5 = {"Inhibit Screensaver", 0, InhibitScreenSaver};
+  commands.insert(std::make_pair("inhibitscreensaver", builtin5));
 
-  CBuiltins::BUILT_IN builtin5 = {"Powerdown system", 0, Powerdown};
-  commands.insert(std::make_pair("powerdown", builtin5));
+  CBuiltins::BUILT_IN builtin7 = {"Powerdown system", 0, Powerdown};
+  commands.insert(std::make_pair("powerdown", builtin7));
 
-  CBuiltins::BUILT_IN builtin6 = {"Quit Kodi", 0, Quit};
-  commands.insert(std::make_pair("quit", builtin6));
+  CBuiltins::BUILT_IN builtin8 = {"Quit Kodi", 0, Quit};
+  commands.insert(std::make_pair("quit", builtin8));
 
-  CBuiltins::BUILT_IN builtin7 = {"Reboot the system", 0, Reboot};
-  commands.insert(std::make_pair("reboot", builtin7));
-  commands.insert(std::make_pair("restart", builtin7));
+  CBuiltins::BUILT_IN builtin9 = {"Reboot the system", 0, Reboot};
+  commands.insert(std::make_pair("reboot", builtin9));
 
-  CBuiltins::BUILT_IN builtin8 = {"Soft reset the system", 0, Reset};
-  commands.insert(std::make_pair("reset", builtin8));
+  CBuiltins::BUILT_IN builtin10 = {"Reset the system (same as reboot)", 0, Reboot};
+  commands.insert(std::make_pair("reset", builtin10));
 
-  CBuiltins::BUILT_IN builtin9 = {"Restart Kodi", 0, RestartApp};
-  commands.insert(std::make_pair("restartapp", builtin9));
+  CBuiltins::BUILT_IN builtin11 = {"Restart the system (same as reboot)", 0, Reboot};
+  commands.insert(std::make_pair("restart", builtin11));
 
-  CBuiltins::BUILT_IN builtin10 = {"Shutdown the system", 0, Shutdown};
-  commands.insert(std::make_pair("shutdown", builtin10));
+  CBuiltins::BUILT_IN builtin12 = {"Restart Kodi", 0, RestartApp};
+  commands.insert(std::make_pair("restartapp", builtin12));
 
-  CBuiltins::BUILT_IN builtin11 = {"Suspends the system", 0, Suspend};
-  commands.insert(std::make_pair("suspend", builtin11));
+  CBuiltins::BUILT_IN builtin13 = {"Shutdown the system", 0, Shutdown};
+  commands.insert(std::make_pair("shutdown", builtin13));
 
-  CBuiltins::BUILT_IN builtin12 = {"Execute shell commands", 1, Exec<0>};
-  commands.insert(std::make_pair("system.exec", builtin12));
+  CBuiltins::BUILT_IN builtin15 = {"Execute shell commands", 1, Exec<0>};
+  commands.insert(std::make_pair("system.exec", builtin15));
 
-  CBuiltins::BUILT_IN builtin13 = {"Execute shell commands and freezes Kodi until shell is closed", 1, Exec<1>};
-  commands.insert(std::make_pair("system.execwait", builtin13));
+  CBuiltins::BUILT_IN builtin16 = {"Execute shell commands and freezes Kodi until shell is closed", 1, Exec<1>};
+  commands.insert(std::make_pair("system.execwait", builtin16));
 
   return commands;
 }

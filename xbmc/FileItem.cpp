@@ -51,7 +51,7 @@
 
 #include <algorithm>
 #include <cstdlib>
-#include <memory>
+#include <boost/move/make_unique.hpp>
 
 using namespace KODI;
 using namespace XFILE;
@@ -3357,6 +3357,184 @@ bool CFileItem::LoadMusicTag()
       }
     }
   }
+  return false;
+}
+
+bool CFileItem::LoadDetails()
+{
+  if (IsVideoDb())
+  {
+    if (HasVideoInfoTag())
+      return true;
+
+    CVideoDatabase db;
+    if (!db.Open())
+    {
+      CLog::Log(LOGERROR, "Error opening video database");
+      return false;
+    }
+
+    VIDEODATABASEDIRECTORY::CQueryParams params;
+    VIDEODATABASEDIRECTORY::CDirectoryNode::GetDatabaseInfo(GetPath(), params);
+
+    bool ret(false);
+    boost::movelib::unique_ptr<CVideoInfoTag> tag = boost::movelib::make_unique<CVideoInfoTag>();
+    if (params.GetMovieId() >= 0)
+      ret = db.GetMovieInfo(
+          std::string(), *tag, static_cast<int>(params.GetMovieId()),
+          static_cast<int>(params.GetVideoVersionId())); //! @todo add support for asset id
+    else if (params.GetMVideoId() >= 0)
+      ret = db.GetMusicVideoInfo(std::string(), *tag, static_cast<int>(params.GetMVideoId()));
+    else if (params.GetEpisodeId() >= 0)
+      ret = db.GetEpisodeInfo(std::string(), *tag, static_cast<int>(params.GetEpisodeId()));
+    else if (params.GetSetId() >= 0) // movie set
+      ret = db.GetSetInfo(static_cast<int>(params.GetSetId()), *tag, this);
+    else if (params.GetTvShowId() >= 0)
+    {
+      if (params.GetSeason() >= 0)
+      {
+        const int idSeason = db.GetSeasonId(static_cast<int>(params.GetTvShowId()),
+                                            static_cast<int>(params.GetSeason()));
+        if (idSeason >= 0)
+          ret = db.GetSeasonInfo(idSeason, *tag, this);
+      }
+      else
+        ret = db.GetTvShowInfo(std::string(), *tag, static_cast<int>(params.GetTvShowId()), this);
+    }
+
+    if (ret)
+    {
+      const CFileItem loadedItem(*tag);
+      UpdateInfo(loadedItem);
+    }
+    return ret;
+  }
+
+  if (!IsPlayList() && IsVideo())
+  {
+    if (HasVideoInfoTag())
+      return true;
+
+    CVideoDatabase db;
+    if (!db.Open())
+    {
+      CLog::Log(LOGERROR, "Error opening video database");
+      return false;
+    }
+
+    boost::movelib::unique_ptr<CVideoInfoTag> tag = boost::movelib::make_unique<CVideoInfoTag>();
+    if (db.LoadVideoInfo(GetDynPath(), *tag))
+    {
+      const CFileItem loadedItem(*tag);
+      UpdateInfo(loadedItem);
+      return true;
+    }
+
+    CLog::Log(LOGERROR, "Error filling item details (path=%s)", GetPath().c_str());
+    return false;
+  }
+
+  if (IsPlayList() && IsType(".strm"))
+  {
+    const boost::movelib::unique_ptr<PLAYLIST::CPlayList> playlist(PLAYLIST::CPlayListFactory::Create(*this));
+    if (playlist)
+    {
+      if (playlist->Load(GetPath()) && playlist->size() == 1)
+      {
+        const CFileItemPtr item((*playlist)[0]);
+        if (item->IsVideo())
+        {
+          CVideoDatabase db;
+          if (!db.Open())
+          {
+            CLog::Log(LOGERROR, "Error opening video database");
+            return false;
+          }
+
+          CVideoInfoTag tag;
+          if (db.LoadVideoInfo(GetDynPath(), tag))
+          {
+            UpdateInfo(*item);
+            *GetVideoInfoTag() = tag;
+            return true;
+          }
+        }
+        else if (item->IsAudio())
+        {
+          if (item->LoadMusicTag())
+          {
+            UpdateInfo(*item);
+            return true;
+          }
+        }
+      }
+    }
+    CLog::Log(LOGERROR, "Error loading strm file details (path=%s)", GetPath().c_str());
+    return false;
+  }
+
+  if (IsAudio())
+  {
+    return LoadMusicTag();
+  }
+
+  if (IsMusicDb())
+  {
+    if (HasMusicInfoTag())
+      return true;
+
+    CMusicDatabase db;
+    if (!db.Open())
+    {
+      CLog::Log(LOGERROR, "Error opening music database");
+      return false;
+    }
+
+    MUSICDATABASEDIRECTORY::CQueryParams params;
+    MUSICDATABASEDIRECTORY::CDirectoryNode::GetDatabaseInfo(GetPath(), params);
+
+    if (params.GetSongId() >= 0)
+    {
+      CSong song;
+      if (db.GetSong(params.GetSongId(), song))
+      {
+        GetMusicInfoTag()->SetSong(song);
+        return true;
+      }
+    }
+    else if (params.GetAlbumId() >= 0)
+    {
+      m_bIsFolder = true;
+      CAlbum album;
+      if (db.GetAlbum(params.GetAlbumId(), album, false))
+      {
+        GetMusicInfoTag()->SetAlbum(album);
+        return true;
+      }
+    }
+    else if (params.GetArtistId() >= 0)
+    {
+      m_bIsFolder = true;
+      CArtist artist;
+      if (db.GetArtist(params.GetArtistId(), artist, false))
+      {
+        GetMusicInfoTag()->SetArtist(artist);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  if (IsProgramDb())
+  {
+    if (HasProgramInfoTag())
+      return true;
+
+    return false;
+  }
+
+  //! @todo add support for other types on demand.
+  CLog::Log(LOGDEBUG, "Unsupported item type (path=%s)", GetPath().c_str());
   return false;
 }
 

@@ -1,43 +1,31 @@
 /*
- *      Copyright (C) 2005-2015 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "LibraryBuiltins.h"
 
-#include "application/Application.h"
-#include "dialogs/GUIDialogFileBrowser.h"
-#include "dialogs/GUIDialogYesNo.h"
-#include "guilib/LocalizeStrings.h"
-#include "guilib/GUIComponent.h"
-#include "guilib/GUIWindowManager.h"
 #include "GUIUserMessages.h"
 #include "MediaSource.h"
+#include "ServiceBroker.h"
+#include "dialogs/GUIDialogFileBrowser.h"
+#include "dialogs/GUIDialogYesNo.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
+#include "guilib/LocalizeStrings.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "messaging/helpers/DialogOKHelper.h"
-#include "music/MusicDatabase.h"
 #include "music/MusicLibraryQueue.h"
 #include "music/infoscanner/MusicInfoScanner.h"
 #include "settings/LibExportSettings.h"
+#include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "storage/MediaManager.h"
-#include "utils/log.h"
 #include "utils/StringUtils.h"
-#include "utils/URIUtils.h"
+#include "utils/log.h"
 #include "video/VideoDatabase.h"
 #include "video/VideoLibraryQueue.h"
 
@@ -137,9 +125,6 @@ static int ExportLibrary(const std::vector<std::string>& params)
   VECSOURCES shares;
   CServiceBroker::GetMediaManager().GetLocalDrives(shares);
   CServiceBroker::GetMediaManager().GetNetworkLocations(shares);
-#ifndef _XBOX
-  CServiceBroker::GetMediaManager().GetRemovableDrives(shares);
-#endif
   bool singleFile;
   bool thumbs=false;
   bool actorThumbs=false;
@@ -167,6 +152,20 @@ static int ExportLibrary(const std::vector<std::string>& params)
       HELPERS::DialogResponse result = HELPERS::ShowYesNoDialogText(iHeading, 20430);
       cancelled = result == HELPERS::CANCELLED;
       thumbs = result == HELPERS::YES;
+    }
+  }
+
+  if (cancelled)
+    return -1;
+
+  if (thumbs && !singleFile && StringUtils::EqualsNoCase(params[0], "video"))
+  {
+    std::string movieSetsInfoPath = CServiceBroker::GetSettingsComponent()->GetSettings()->
+        GetString(CSettings::SETTING_VIDEOLIBRARY_MOVIESETSFOLDER);
+    if (movieSetsInfoPath.empty())
+    {
+      KODI::MESSAGING::HELPERS::DialogResponse result = HELPERS::ShowYesNoDialogText(iHeading, 36301);
+      cancelled = result != HELPERS::YES;
     }
   }
 
@@ -240,7 +239,7 @@ Avoiding breaking change to original ExportLibrary routine parameters
 *           params[1] = export type "singlefile", "separate", or "library".
 *           params[2] = path of destination folder.
 *           params[3,...] = "unscraped" to include unscraped items
-*           params[3,...] = "overwrite" to overwrite exitsing files.
+*           params[3,...] = "overwrite" to overwrite existing files.
 *           params[3,...] = "artwork" to include images such as thumbs and fanart.
 *           params[3,...] = "skipnfo" to not include nfo files (just art).
 *           params[3,...] = "ablums" to include albums.
@@ -301,6 +300,7 @@ static int ExportLibrary2(const std::vector<std::string>& params)
   return 0;
 }
 
+
 /*! \brief Update a library.
  *  \param params The parameters.
  *  \details params[0] = "video" or "music".
@@ -358,7 +358,7 @@ static int SearchVideoLibrary(const std::vector<std::string>& params)
 ///     <b>`cleanlibrary(type)`</b>
 ///     ,
 ///      Clean the video/music library
-///     @param[in] type                  "video" or "music".
+///     @param[in] type                  "video"\, "movies"\, "tvshows"\, "musicvideos" or "music".
 ///   }
 ///   \table_row2_l{
 ///     <b>`exportlibrary(type [\, exportSingeFile\, exportThumbs\, overwrite\, exportActorThumbs])`</b>
@@ -376,10 +376,10 @@ static int SearchVideoLibrary(const std::vector<std::string>& params)
 ///     ,
 ///     Export the video/music library with extended parameters
 ///     @param[in] library               "video" or "music".
-///     @param[in] exportFiletype        "singlefile", "separate" or "library"
-///     @param[in] path                  Path to destination folder
-///     @param[in] unscraped             Add "unscraped" to include unscraped items
-///     @param[in] overwrite             Add "overwrite" to overwrite exitsing files.
+///     @param[in] exportFiletype        "singlefile"\, "separate" or "library".
+///     @param[in] path                  Path to destination folder.
+///     @param[in] unscraped             Add "unscraped" to include unscraped items.
+///     @param[in] overwrite             Add "overwrite" to overwrite existing files.
 ///     @param[in] artwork               Add "artwork" to include images such as thumbs and fanart.
 ///     @param[in] skipnfo               Add "skipnfo" to not include nfo files(just art).
 ///     @param[in] albums                Add "ablums" to include albums.
@@ -424,4 +424,3 @@ CBuiltins::CommandMap CLibraryBuiltins::GetOperations() const
 
   return commands;
 }
-

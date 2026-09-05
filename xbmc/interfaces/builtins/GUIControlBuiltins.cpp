@@ -1,28 +1,18 @@
 /*
- *      Copyright (C) 2005-2015 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIControlBuiltins.h"
 
+#include "ServiceBroker.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "input/ButtonTranslator.h"
+#include "utils/StringUtils.h"
 
 /*! \brief Send a move event to a GUI control.
  *  \param params The parameters.
@@ -89,12 +79,46 @@ static int SendMessage(const std::vector<std::string>& params)
  *  \param params The parameters.
  *  \details params[0] = ID of control.
  *           params[1] = ID of subitem of control (optional).
+ *           params[2] = "absolute" to focus the absolute position instead of the relative one (optional).
  */
 static int SetFocus(const std::vector<std::string>& params)
 {
   int controlID = atol(params[0].c_str());
   int subItem = (params.size() > 1) ? atol(params[1].c_str())+1 : 0;
-  CGUIMessage msg(GUI_MSG_SETFOCUS, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog(), controlID, subItem);
+  int absID = 0;
+  if (params.size() > 2 && StringUtils::EqualsNoCase(params[2].c_str(), "absolute"))
+    absID = 1;
+  CGUIMessage msg(GUI_MSG_SETFOCUS, CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog(), controlID, subItem, absID);
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
+
+  return 0;
+}
+
+/*! \brief Set a control to visible.
+ *  \param params The parameters.
+ *  \details params[0] = ID of control.
+ */
+static int SetVisible(const std::vector<std::string>& params)
+{
+  int controlID = strtol(params[0].c_str(), NULL, 10);
+  CGUIMessage msg(GUI_MSG_VISIBLE,
+                  CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog(),
+                  controlID);
+  CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
+
+  return 0;
+}
+
+/*! \brief Set a control to hidden.
+ *  \param params The parameters.
+ *  \details params[0] = ID of control.
+ */
+static int SetHidden(const std::vector<std::string>& params)
+{
+  int controlID = strtol(params[0].c_str(), NULL, 10);
+  CGUIMessage msg(GUI_MSG_HIDDEN,
+                  CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindowOrDialog(),
+                  controlID);
   CServiceBroker::GetGUI()->GetWindowManager().SendMessage(msg);
 
   return 0;
@@ -148,6 +172,25 @@ static int ShiftPage(const std::vector<std::string>& params)
 ///     Change current focus to a different control id
 ///     @param[in] controlId             ID of control.
 ///     @param[in] subitemId             ID of subitem of control (optional).
+///     @param[in] absolute              "absolute" to focus the absolute position instead of the relative one (optional).
+///   }
+///   \table_row2_l{
+///     <b>`control.setvisible(controlId)`</b>
+///     \anchor Builtin_SetVisible,
+///     Set the control id to visible
+///     @param[in] controlId             ID of control.
+///     <p><hr>
+///     @skinning_v20 **[New builtin]** \link Builtin_SetVisible `SetVisible(id)`\endlink
+///     <p>
+///   }
+///   \table_row2_l{
+///     <b>`control.sethidden(controlId)`</b>
+///     \anchor Builtin_SetHidden,
+///     Set the control id to hidden
+///     @param[in] controlId             ID of control.
+///     <p><hr>
+///     @skinning_v20 **[New builtin]** \link Builtin_SetHidden `SetHidden(id)`\endlink
+///     <p>
 ///   }
 ///   \table_row2_l{
 ///     <b>`pagedown(controlId)`</b>
@@ -174,6 +217,7 @@ static int ShiftPage(const std::vector<std::string>& params)
 ///     Change current focus to a different control id
 ///     @param[in] controlId             ID of control.
 ///     @param[in] subitemId             ID of subitem of control (optional).
+///     @param[in] absolute              "absolute" to focus the absolute position instead of the relative one (optional).
 ///   }
 ///  \table_end
 ///
@@ -191,18 +235,23 @@ CBuiltins::CommandMap CGUIControlBuiltins::GetOperations() const
   CBuiltins::BUILT_IN builtin3 = {"Change current focus to a different control id", 1, SetFocus};
   commands.insert(std::make_pair("control.setfocus", builtin3));
 
-  CBuiltins::BUILT_IN builtin4 = {"Send a page down event to the pagecontrol with given id", 1, ShiftPage<GUI_MSG_PAGE_DOWN>};
-  commands.insert(std::make_pair("pagedown", builtin4));
+  CBuiltins::BUILT_IN builtin4 = {"Set the control id to visible", 1, SetVisible};
+  commands.insert(std::make_pair("control.setvisible", builtin4));
 
-  CBuiltins::BUILT_IN builtin5 = {"Send a page up event to the pagecontrol with given id", 1, ShiftPage<GUI_MSG_PAGE_UP>};
-  commands.insert(std::make_pair("pageup", builtin5));
+  CBuiltins::BUILT_IN builtin5 = {"Set the control id to Hidden", 1, SetHidden};
+  commands.insert(std::make_pair("control.sethidden", builtin5));
 
-  CBuiltins::BUILT_IN builtin6 = {"Send a click message from the given control to the given window", 1, SendClick};
-  commands.insert(std::make_pair("sendclick", builtin6));
+  CBuiltins::BUILT_IN builtin6 = {"Send a page down event to the pagecontrol with given id", 1, ShiftPage<GUI_MSG_PAGE_DOWN>};
+  commands.insert(std::make_pair("pagedown", builtin6));
 
-  CBuiltins::BUILT_IN builtin7 = {"Change current focus to a different control id", 1, SetFocus};
-  commands.insert(std::make_pair("setfocus", builtin7));
+  CBuiltins::BUILT_IN builtin7 = {"Send a page up event to the pagecontrol with given id", 1, ShiftPage<GUI_MSG_PAGE_UP>};
+  commands.insert(std::make_pair("pageup", builtin7));
+
+  CBuiltins::BUILT_IN builtin8 = {"Send a click message from the given control to the given window", 1, SendClick};
+  commands.insert(std::make_pair("sendclick", builtin8));
+
+  CBuiltins::BUILT_IN builtin9 = {"Change current focus to a different control id", 1, SetFocus};
+  commands.insert(std::make_pair("setfocus", builtin9));
 
   return commands;
 }
-
