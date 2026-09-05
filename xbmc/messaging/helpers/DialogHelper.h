@@ -1,23 +1,12 @@
-#pragma once
 /*
-*      Copyright (C) 2005-2015 Team Kodi
-*      http://kodi.tv
-*
-*  This Program is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2, or (at your option)
-*  any later version.
-*
-*  This Program is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-*  GNU General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with Kodi; see the file COPYING.  If not, see
-*  <http://www.gnu.org/licenses/>.
-*
-*/
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
+#pragma once
 
 #include "utils/Variant.h"
 
@@ -33,13 +22,13 @@ namespace HELPERS
 
 enum DialogResponse
 {
-  CANCELLED,
-  YES,
-  NO,
-  CUSTOM
+  CHOICE_CANCELLED,
+  CHOICE_YES,
+  CHOICE_NO,
+  CHOICE_CUSTOM,
 };
 
-/*! \struct DialogHelper.h "messaging/helpers/DialogHelper.h"
+/*! \struct DialogYesNoMessage DialogHelper.h "messaging/helpers/DialogHelper.h"
     \brief Payload sent for message TMSG_GUI_DIALOG_YESNO
 
     \sa ShowDialogText
@@ -47,6 +36,7 @@ enum DialogResponse
 */
 struct DialogYesNoMessage
 {
+  DialogYesNoMessage() : autoclose(0) {}
   CVariant heading; //!< Heading to be displayed in the dialog box
   CVariant text;  //!< Body text to be displayed, this is mutually exclusive with lines below
   boost::array<CVariant, 3> lines;  //!< Body text to be displayed, specified as three lines. This is mutually exclusive with the text above
@@ -54,8 +44,6 @@ struct DialogYesNoMessage
   CVariant noLabel; //!< Text to show on the no button
   CVariant customLabel; //!< Text to show on the 3rd custom button
   uint32_t autoclose; //!< Time in milliseconds before autoclosing the dialog, 0 means don't autoclose
-
-  DialogYesNoMessage() : autoclose(0) {}
 };
 
 /*!
@@ -74,10 +62,12 @@ struct DialogYesNoMessage
   \sa CGUIDialogYesNo::ShowAndGetInput
   \sa DialogYesNoMessage
 */
-DialogResponse ShowYesNoDialogText(CVariant heading, CVariant text, CVariant noLabel = "", CVariant yesLabel = "", uint32_t autoCloseTimeout = 0);
+DialogResponse ShowYesNoDialogText(CVariant heading, CVariant text, CVariant noLabel = CVariant(),
+                                   CVariant yesLabel = CVariant(), uint32_t autoCloseTimeout = 0);
 
 /*!
-\brief This is a helper method to send a threadmessage to open a Yes/No dialog box with a cutom button
+\brief This is a helper method to send a threadmessage to open a Yes/No dialog box with a custom button
+
 \param[in]  heading           The text to display as the dialog box header
 \param[in]  text              The text to display in the dialog body
 \param[in]  noLabel           The text to display on the No button
@@ -93,8 +83,8 @@ DialogResponse ShowYesNoDialogText(CVariant heading, CVariant text, CVariant noL
 \sa CGUIDialogYesNo::ShowAndGetInput
 \sa DialogYesNoMessage
 */
-DialogResponse ShowYesNoCustomDialog(CVariant heading, CVariant text, CVariant noLabel = "", CVariant yesLabel = "",
-                                        CVariant customLabel = "", uint32_t autoCloseTimeout = 0);
+DialogResponse ShowYesNoCustomDialog(CVariant heading, CVariant text, CVariant noLabel = CVariant(), CVariant yesLabel = CVariant(),
+                                        CVariant customLabel = CVariant(), uint32_t autoCloseTimeout = 0);
 
 /*!
   \brief This is a helper method to send a threadmessage to open a Yes/No dialog box
@@ -114,8 +104,9 @@ DialogResponse ShowYesNoCustomDialog(CVariant heading, CVariant text, CVariant n
   \sa CGUIDialogYesNo::ShowAndGetInput
   \sa DialogYesNoMessage
 */
-DialogResponse ShowYesNoDialogLines(CVariant heading, CVariant line0, CVariant line1 = "",
-  CVariant line2 = "", CVariant noLabel = "", CVariant yesLabel = "", uint32_t autoCloseTimeout = 0);
+DialogResponse ShowYesNoDialogLines(CVariant heading, CVariant line0, CVariant line1 = CVariant(),
+                                    CVariant line2 = CVariant(), CVariant noLabel = CVariant(),
+                                    CVariant yesLabel = CVariant(), uint32_t autoCloseTimeout = 0);
 
 }
 }

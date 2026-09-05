@@ -373,7 +373,7 @@ void CApplicationSkinHandling::ReloadSkin(bool confirm)
     if (confirm && m_confirmSkinChange)
     {
       if (HELPERS::ShowYesNoDialogText(13123, 13111, "", "",
-                                       10000) != HELPERS::YES)
+                                       10000) != HELPERS::CHOICE_YES)
       {
         m_confirmSkinChange = false;
         settings->SetString(CSettings::SETTING_LOOKANDFEEL_SKIN, oldSkin);

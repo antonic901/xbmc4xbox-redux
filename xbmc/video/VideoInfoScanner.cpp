@@ -2440,7 +2440,7 @@ namespace VIDEO
       return false;
     }
     return HELPERS::ShowYesNoDialogText(20448, 20450) ==
-           HELPERS::YES;
+           HELPERS::CHOICE_YES;
   }
 
   bool CVideoInfoScanner::ProgressCancelled(CGUIDialogProgress* progress, int heading, const std::string &line1)

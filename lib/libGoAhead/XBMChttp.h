@@ -21,7 +21,32 @@ typedef struct websRec *webs_t;
 
 class CFileItem; typedef boost::shared_ptr<CFileItem> CFileItemPtr;
 
-class CXbmcHttpShim
+class CHttpResponse
+{
+protected:
+  int SetResponseInternal(std::string response)
+  {
+    CSingleLock lock(m_critBuffer);
+    bufferResponse = response;
+    lock.Leave();
+    return 0;
+  }
+
+  std::string GetResponse()
+  {
+    std::string tmp;
+    CSingleLock lock (m_critBuffer);
+    tmp = bufferResponse;
+    lock.Leave();
+    return tmp;
+  }
+
+private:
+  std::string bufferResponse;
+  CCriticalSection m_critBuffer;
+};
+
+class CXbmcHttpShim : public CHttpResponse
 {
 public:
   CXbmcHttpShim();
@@ -33,6 +58,7 @@ public:
   std::string xbmcExternalCall(char *command);
   bool checkForFunctionTypeParas(std::string &cmd, std::string &paras);
 private:
+  void HttpApi(std::string cmd, bool wait = false);
   std::string flushResult(int eid, webs_t wp, const std::string &output);
 };
 
@@ -44,7 +70,7 @@ public:
   bool broadcast(std::string message, int port);
 };
 
-class CXbmcHttp
+class CXbmcHttp : public CHttpResponse
 {
 public:
   std::string userHeader, userFooter;

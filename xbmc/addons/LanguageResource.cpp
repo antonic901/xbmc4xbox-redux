@@ -104,7 +104,7 @@ void CLanguageResource::OnPostInstall(bool update, bool modal)
 
   if (IsInUse() || (!update && !modal &&
                     (HELPERS::ShowYesNoDialogText(Name(), 24132) ==
-                     HELPERS::YES)))
+                     HELPERS::CHOICE_YES)))
   {
     if (IsInUse())
       g_langInfo.SetLanguage(ID());

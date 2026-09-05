@@ -75,7 +75,7 @@ static int EnableAddon(const std::vector<std::string>& params)
     return -1;
 
   KODI::MESSAGING::HELPERS::DialogResponse response = HELPERS::ShowYesNoDialogLines(24076, 24135, addon->Name(), 24136);
-  if (response == KODI::MESSAGING::HELPERS::YES)
+  if (response == KODI::MESSAGING::HELPERS::CHOICE_YES)
     CServiceBroker::GetAddonMgr().EnableAddon(addonid);
 
   return 0;

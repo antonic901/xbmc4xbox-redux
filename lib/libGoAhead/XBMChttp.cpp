@@ -376,12 +376,12 @@ int CXbmcHttp::SetResponse(const std::string &response)
   if (response.length()>=closeTag.length())
   {
     if ((response.substr(response.length() - closeTag.length())!=closeTag) && closeFinalTag)
-      return CServiceBroker::GetAppMessenger()->SetResponse(response+closeTag);
+      return SetResponseInternal(response+closeTag);
   }
   else
     if (closeFinalTag)
-      return CServiceBroker::GetAppMessenger()->SetResponse(response+closeTag);
-  return CServiceBroker::GetAppMessenger()->SetResponse(response);
+      return SetResponseInternal(response+closeTag);
+  return SetResponseInternal(response);
 }
 
 int CXbmcHttp::displayDir(int numParas, std::string paras[])
@@ -3295,15 +3295,15 @@ std::string CXbmcHttpShim::xbmcProcessCommand( int eid, webs_t wp, char_t *comma
   if (legalCmd)
   {
     if (paras!="")
-      CServiceBroker::GetAppMessenger()->HttpApi(cmd+"; "+paras, true);
+      HttpApi(cmd+"; "+paras, true);
     else
-      CServiceBroker::GetAppMessenger()->HttpApi(cmd, true);
+      HttpApi(cmd, true);
     //wait for response - max 20s
     Sleep(0);
-    response=CServiceBroker::GetAppMessenger()->GetResponse();
+    response=GetResponse();
     while (response=="[No response yet]" && cnt++<200)
     {
-      response=CServiceBroker::GetAppMessenger()->GetResponse();
+      response=GetResponse();
       CLog::Log(LOGDEBUG, "XBMCHTTPShim: waiting %d", cnt);
       Sleep(100);
     }
@@ -3370,4 +3370,13 @@ void CXbmcHttpShim::xbmcForm(webs_t wp, char_t *path, char_t *query)
     websDone(wp, 200);
   else
     CLog::Log(LOGERROR, "HttpApi Timeout command: %s", query);
+}
+
+void CXbmcHttpShim::HttpApi(std::string cmd, bool wait)
+{
+  SetResponseInternal("");
+  if (wait)
+    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_HTTPAPI, -1, -1, NULL, cmd);
+  else
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_HTTPAPI, -1, -1, NULL, cmd);
 }

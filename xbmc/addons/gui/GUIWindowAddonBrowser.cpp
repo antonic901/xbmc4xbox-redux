@@ -202,7 +202,7 @@ void CGUIWindowAddonBrowser::InstallFromZip()
   if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(
           CSettings::SETTING_ADDONS_ALLOW_UNKNOWN_SOURCES))
   {
-    if (ShowYesNoDialogText(13106, 36617, 186, 10004) == YES)
+    if (ShowYesNoDialogText(13106, 36617, 186, 10004) == CHOICE_YES)
       CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(
           WINDOW_SETTINGS_SYSTEM, CSettings::SETTING_ADDONS_ALLOW_UNKNOWN_SOURCES);
   }

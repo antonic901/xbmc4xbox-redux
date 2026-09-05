@@ -282,7 +282,7 @@ void CNetworkServices::OnSettingChanged(const boost::shared_ptr<const CSetting>&
   {
     // okey we really don't need to restart, only deinit samba, but that could be damn hard if something is playing
     // TODO - General way of handling setting changes that require restart
-    if (HELPERS::ShowYesNoDialogText(14038, 14039) == YES)
+    if (HELPERS::ShowYesNoDialogText(14038, 14039) == CHOICE_YES)
     {
       CServiceBroker::GetSettingsComponent()->GetSettings()->Save();
       CServiceBroker::GetAppMessenger()->PostMsg(TMSG_RESTARTAPP);
@@ -667,7 +667,7 @@ bool CNetworkServices::StopEventServer(bool bWait, bool promptuser)
     if (server->GetNumberOfClients() > 0)
     {
       if (HELPERS::ShowYesNoDialogText(13140, 13141, "", "", 10000) !=
-        YES)
+        CHOICE_YES)
       {
         CLog::Log(LOGINFO, "ES: Not stopping event server");
         return false;

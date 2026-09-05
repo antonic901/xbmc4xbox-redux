@@ -237,7 +237,7 @@ void CMediaSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& se
   const std::string &settingId = setting->GetId();
   if (settingId == CSettings::SETTING_MUSICLIBRARY_CLEANUP)
   {
-    if (HELPERS::ShowYesNoDialogText(313, 333) == YES)
+    if (HELPERS::ShowYesNoDialogText(313, 333) == CHOICE_YES)
     {
       if (CMusicLibraryQueue::GetInstance().IsRunning())
         HELPERS::ShowOKDialogText(700, 703);
@@ -271,7 +271,7 @@ void CMediaSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& se
   }
   else if (settingId == CSettings::SETTING_VIDEOLIBRARY_CLEANUP)
   {
-    if (HELPERS::ShowYesNoDialogText(313, 333) == YES)
+    if (HELPERS::ShowYesNoDialogText(313, 333) == CHOICE_YES)
     {
       if (!CVideoLibraryQueue::GetInstance().CleanLibraryModal())
         HELPERS::ShowOKDialogText(700, 703);
