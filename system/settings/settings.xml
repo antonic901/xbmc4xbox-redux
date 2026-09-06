@@ -1347,8 +1347,8 @@
           <control type="spinner" format="integer" />
         </setting>
         <setting id="services.esallinterfaces" type="boolean" label="14277" help="36338">
-          <level>1</level>
-          <default>false</default>
+          <level>4</level>
+          <default>true</default>
           <dependencies>
             <dependency type="enable">
               <condition setting="services.esenabled" operator="is">true</condition>

@@ -7482,6 +7482,14 @@ msgstr ""
 
 #empty strings from id 19056 to 19176
 
+#. generic warning label used at several places
+#: xbmc/addons/AddonSystemSettings.cpp
+#: xbmc/addons/gui/GUIDialogAddonSettings.cpp
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#19098"
+msgid "Warning!"
+msgstr ""
+
 #: system/settings/settings.xml
 msgctxt "#19177"
 msgid "Playback"
@@ -13004,6 +13012,12 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#36627"
 msgid "Client"
+msgstr ""
+
+#. Text in confirm dialog when enabling setting "Services -> Control -> Allow remote control from applications on other systems"
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#36633"
+msgid "These services offer neither authentication nor encryption. Anyone who can connect to them will be able to completely control this application and, therefore, this device, so they should never be exposed to the Internet. Proceed?"
 msgstr ""
 
 #. Menuitem at "Settings -> System -> Add-ons"
