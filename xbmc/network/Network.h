@@ -45,6 +45,8 @@ struct network_info
   char dhcpserver[32];
 };
 
+class CNetworkServices;
+
 class CNetwork
 {
 public:
@@ -57,6 +59,9 @@ public:
 
   CNetwork(void);
   ~CNetwork(void);
+
+  // Get network services
+  CNetworkServices& GetServices() { return *m_services; }
 
   /* initializes network settings */
   bool Initialize(int iAssignment, const char* szLocalAddress, const char* szLocalSubnet, const char* szLocalGateway, const char* szNameServer, const char* szNameServerAlt);
@@ -102,4 +107,6 @@ private:
   void NetworkDown();
   void NetworkUp();
   CCriticalSection  m_critSection;
+
+  CNetworkServices* m_services;
 };

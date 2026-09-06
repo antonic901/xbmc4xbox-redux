@@ -499,7 +499,8 @@ bool in_ether (char *bufp, unsigned char *addr)
   return true;
 }
 
-CNetwork::CNetwork(void)
+CNetwork::CNetwork(void) :
+  m_services(new CNetworkServices())
 {
   memset(&m_networkinfo, 0, sizeof(m_networkinfo));
   m_lastlink = 0;
@@ -511,6 +512,8 @@ CNetwork::CNetwork(void)
 CNetwork::~CNetwork(void)
 {
   Deinitialize();
+  delete m_services;
+  m_services = NULL;
 }
 
 void CNetwork::Deinitialize()
@@ -599,13 +602,13 @@ void CNetwork::NetworkMessage(EMESSAGE message, DWORD dwParam)
   {
     case SERVICES_UP:
       CLog::Log(LOGDEBUG, "%s - Starting network services",__FUNCTION__);
-      CNetworkServices::GetInstance().Start();
+      m_services->Start();
       break;
     case SERVICES_DOWN:
       CLog::Log(LOGDEBUG, "%s - Stopping network services",__FUNCTION__);
-      CNetworkServices::GetInstance().Stop(false); // tell network services to stop, but don't wait for them yet
+      m_services->Stop(false); // tell network services to stop, but don't wait for them yet
       CLog::Log(LOGDEBUG, "%s - Waiting for network services to stop",__FUNCTION__);
-      CNetworkServices::GetInstance().Stop(true); // wait for network services to stop
+      m_services->Stop(true); // wait for network services to stop
       break;
   }
 }

@@ -19,7 +19,6 @@
 #include "input/KeyboardLayoutManager.h"
 
 #include "karaoke/CdgParser.h"
-#include "network/NetworkServices.h"
 #include "network/upnp/UPnPSettings.h"
 #include "SeekHandler.h"
 #include "ServiceBroker.h"
@@ -219,6 +218,7 @@ const char* CSettings::SETTING_SERVICES_UPNPSERVER = "services.upnpserver";
 const char* CSettings::SETTING_SERVICES_UPNPRENDERER = "services.upnprenderer";
 const char* CSettings::SETTING_SERVICES_WEBSERVER = "services.webserver";
 const char* CSettings::SETTING_SERVICES_WEBSERVERPORT = "services.webserverport";
+const char* CSettings::SETTING_SERVICES_WEBSERVERAUTHENTICATION = "services.webserverauthentication";
 const char* CSettings::SETTING_SERVICES_WEBSERVERUSERNAME = "services.webserverusername";
 const char* CSettings::SETTING_SERVICES_WEBSERVERPASSWORD = "services.webserverpassword";
 const char* CSettings::SETTING_SERVICES_WEBSKIN = "services.webskin";
@@ -769,27 +769,6 @@ void CSettings::InitializeISettingCallbacks()
   GetSettingsManager()->RegisterCallback(&g_langInfo, settingSet);
 
   settingSet.clear();
-  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVER);
-  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVERPORT);
-  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVERUSERNAME);
-  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVERPASSWORD);
-  settingSet.insert(CSettings::SETTING_SERVICES_UPNPSERVER);
-  settingSet.insert(CSettings::SETTING_SERVICES_UPNPRENDERER);
-  settingSet.insert(CSettings::SETTING_SERVICES_ESENABLED);
-  settingSet.insert(CSettings::SETTING_SERVICES_ESPORT);
-  settingSet.insert(CSettings::SETTING_SERVICES_ESALLINTERFACES);
-  settingSet.insert(CSettings::SETTING_SERVICES_ESINITIALDELAY);
-  settingSet.insert(CSettings::SETTING_SERVICES_ESCONTINUOUSDELAY);
-  settingSet.insert(CSettings::SETTING_SERVICES_FTPSERVER);
-  settingSet.insert(CSettings::SETTING_SERVICES_FTPSERVER_USER);
-  settingSet.insert(CSettings::SETTING_SERVICES_FTPSERVER_PASSWORD);
-  settingSet.insert(CSettings::SETTING_SERVICES_TIMESERVER);
-  settingSet.insert(CSettings::SETTING_SERVICES_TIMESERVER_ADDRESS);
-  settingSet.insert(CSettings::SETTING_SMB_WINSSERVER);
-  settingSet.insert(CSettings::SETTING_SMB_WORKGROUP);
-  GetSettingsManager()->RegisterCallback(&CNetworkServices::GetInstance(), settingSet);
-
-  settingSet.clear();
   settingSet.insert(CSettings::SETTING_MASTERLOCK_LOCKCODE);
   GetSettingsManager()->RegisterCallback(&g_passwordManager, settingSet);
 
@@ -819,7 +798,6 @@ void CSettings::UninitializeISettingCallbacks()
   GetSettingsManager()->UnregisterCallback(&g_charsetConverter);
   GetSettingsManager()->UnregisterCallback(CFanController::Instance());
   GetSettingsManager()->UnregisterCallback(&g_langInfo);
-  GetSettingsManager()->UnregisterCallback(&CNetworkServices::GetInstance());
   GetSettingsManager()->UnregisterCallback(&g_passwordManager);
   GetSettingsManager()->UnregisterCallback(&CRssManager::GetInstance());
   GetSettingsManager()->UnregisterCallback(&g_timezone);

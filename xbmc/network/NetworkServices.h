@@ -1,44 +1,33 @@
-#pragma once
 /*
- *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "system.h"
+#pragma once
+
 #include "settings/lib/ISettingCallback.h"
 
-#ifdef HAS_TIME_SERVER
+class CSettings;
 class CSNTPClient;
-#endif
 #ifdef HAS_WEB_SERVER
 class CWebServer;
 #endif // HAS_WEB_SERVER
-#ifdef HAS_FTP_SERVER
 class CXBFileZilla;
-#endif
 
 class CNetworkServices : public ISettingCallback
 {
 public:
-  static CNetworkServices& GetInstance();
+  CNetworkServices();
+  virtual ~CNetworkServices();
 
   virtual bool OnSettingChanging(const boost::shared_ptr<const CSetting>& setting);
   virtual void OnSettingChanged(const boost::shared_ptr<const CSetting>& setting);
+  virtual bool OnSettingUpdate(const boost::shared_ptr<CSetting>& setting,
+                       const char* oldSettingId,
+                       const TiXmlNode* oldSettingNode);
 
   void Start();
   void Stop(bool bWait);
@@ -46,32 +35,18 @@ public:
   enum ESERVERS
   {
     ES_WEBSERVER = 1,
-    ES_AIRPLAYSERVER,
-    ES_JSONRPCSERVER,
     ES_UPNPRENDERER,
     ES_UPNPSERVER,
     ES_EVENTSERVER,
-    ES_ZEROCONF,
-    ES_WSDISCOVERY,
+    ES_TIMESERVER,
+    ES_FTPSERVER
   };
 
-  bool StartTimeServer();
-  bool IsTimeServerRunning();
-  bool StopTimeServer();
-  bool IsTimeServerUpdateNeeded();
-  void UpdateTimeServer();
+  bool StartServer(enum ESERVERS server, bool start);
 
   bool StartWebserver();
   bool IsWebserverRunning();
   bool StopWebserver();
-
-  bool StartFtpServer();
-  bool StartFtpEmergencyRecoveryMode();
-  bool IsFtpServerRunning();
-  bool StopFtpServer();
-  bool SetFTPServerUserPass();
-  bool FtpHasActiveConnections();
-  int GetFtpServerPort();
 
   bool StartEventServer();
   bool IsEventServerRunning();
@@ -94,21 +69,30 @@ public:
   bool IsRssRunning();
   bool StopRss();
 
+  // Xbox services
+  bool StartTimeServer();
+  bool StopTimeServer();
+  void UpdateTimeServer();
+
+  bool StartFtpServer();
+  bool StartFtpEmergencyRecoveryMode();
+  bool StopFtpServer();
+  bool SetFTPServerUserPass();
+  bool FtpHasActiveConnections();
+
 private:
-  CNetworkServices();
   CNetworkServices(const CNetworkServices&);
   CNetworkServices const& operator=(CNetworkServices const&);
-  virtual ~CNetworkServices();
 
   bool ValidatePort(int port);
 
-#ifdef HAS_TIME_SERVER
- CSNTPClient* m_sntpclient;
-#endif
+  // Construction parameters
+  boost::shared_ptr<CSettings> m_settings;
+
+  // Network services
 #ifdef HAS_WEB_SERVER
   CWebServer* m_webserver;
 #endif
-#ifdef HAS_FTP_SERVER
+  CSNTPClient* m_sntpclient;
   CXBFileZilla* m_filezilla;
-#endif
 };

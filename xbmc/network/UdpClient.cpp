@@ -1,37 +1,23 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "UdpClient.h"
-#include "windowing/GraphicContext.h"
-#include "utils/log.h"
 
-#include "threads/SingleLock.h"
+#include "Network.h"
+#include "utils/log.h"
+#include "windowing/GraphicContext.h"
 
 #define UDPCLIENT_DEBUG_LEVEL LOGDEBUG
 
-CUdpClient::CUdpClient(void) : CThread("CUdpClient")
+CUdpClient::CUdpClient(void) : CThread("UDPClient")
 {}
 
-CUdpClient::~CUdpClient(void)
-{
-}
+CUdpClient::~CUdpClient(void) {}
 
 bool CUdpClient::Create(void)
 {
@@ -62,7 +48,7 @@ bool CUdpClient::Create(void)
   ioctlsocket(client_socket, FIONBIO, &nonblocking);
 
   CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT: Spawning listener thread...");
-  CThread::Create(false, THREAD_MINSTACKSIZE);
+  CThread::Create(false);
 
   CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT: Ready.");
 
@@ -77,14 +63,14 @@ void CUdpClient::Destroy()
 
 void CUdpClient::OnStartup()
 {
-  SetPriority( THREAD_PRIORITY_LOWEST );
+  SetPriority(THREAD_PRIORITY_LOWEST);
 }
 
-bool CUdpClient::Broadcast(int aPort, std::string& aMessage)
+bool CUdpClient::Broadcast(int aPort, const std::string& aMessage)
 {
   CSingleLock lock(critical_section);
 
-  SOCKADDR_IN addr;
+  struct sockaddr_in addr;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(aPort);
   addr.sin_addr.s_addr = INADDR_BROADCAST;
@@ -97,11 +83,11 @@ bool CUdpClient::Broadcast(int aPort, std::string& aMessage)
 }
 
 
-bool CUdpClient::Send(std::string aIpAddress, int aPort, std::string& aMessage)
+bool CUdpClient::Send(const std::string& aIpAddress, int aPort, const std::string& aMessage)
 {
   CSingleLock lock(critical_section);
 
-  SOCKADDR_IN addr;
+  struct sockaddr_in addr;
   addr.sin_family = AF_INET;
   addr.sin_port = htons(aPort);
   addr.sin_addr.s_addr = inet_addr(aIpAddress.c_str());
@@ -113,7 +99,7 @@ bool CUdpClient::Send(std::string aIpAddress, int aPort, std::string& aMessage)
   return true;
 }
 
-bool CUdpClient::Send(SOCKADDR_IN aAddress, std::string& aMessage)
+bool CUdpClient::Send(struct sockaddr_in aAddress, const std::string& aMessage)
 {
   CSingleLock lock(critical_section);
 
@@ -123,7 +109,7 @@ bool CUdpClient::Send(SOCKADDR_IN aAddress, std::string& aMessage)
   return true;
 }
 
-bool CUdpClient::Send(SOCKADDR_IN aAddress, LPBYTE pMessage, DWORD dwSize)
+bool CUdpClient::Send(struct sockaddr_in aAddress, unsigned char* pMessage, DWORD dwSize)
 {
   CSingleLock lock(critical_section);
 
@@ -136,16 +122,28 @@ bool CUdpClient::Send(SOCKADDR_IN aAddress, LPBYTE pMessage, DWORD dwSize)
 
 void CUdpClient::Process()
 {
-  Sleep(2000);
+  CThread::Sleep(2000);
 
   CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT: Listening.");
 
-  SOCKADDR_IN remoteAddress;
+  struct sockaddr_in remoteAddress;
   char messageBuffer[1024];
   DWORD dataAvailable;
 
   while ( !m_bStop )
   {
+    fd_set readset, exceptset;
+    FD_ZERO(&readset);    FD_SET(client_socket, &readset);
+    FD_ZERO(&exceptset);  FD_SET(client_socket, &exceptset);
+
+    int nfds = (int)(client_socket);
+    timeval tv = { 0, 100000 };
+    if (select(nfds, &readset, NULL, &exceptset, &tv) < 0)
+    {
+      CLog::Log(LOGERROR, "UDPCLIENT: failed to select on socket");
+      break;
+    }
+
     // is there any data to read
     dataAvailable = 0;
     ioctlsocket(client_socket, FIONREAD, &dataAvailable);
@@ -166,16 +164,11 @@ void CUdpClient::Process()
 
         std::string message = messageBuffer;
 
-        CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT RX: %u\t\t<- '%s'",
-                  XbmcThreads::SystemClockMillis(), message.c_str() );
+        unsigned int now = XbmcThreads::SystemClockMillis();
 
-        // NOTE: You should consider locking access to the screen device
-        // or at least wait until after vertical refresh before firing off events
-        // to protect access to graphics resources.
+        CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT RX: %u\t\t<- '%s'", XbmcThreads::SystemClockMillis() - now, message.c_str());
 
-        CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
-        OnMessage(remoteAddress, message, (LPBYTE)messageBuffer, messageLength);
-        CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
+        OnMessage(remoteAddress, message, reinterpret_cast<unsigned char*>(messageBuffer), messageLength);
       }
       else
       {
@@ -188,7 +181,7 @@ void CUdpClient::Process()
     }
 
     // dispatch a single command if any pending
-    DispatchNextCommand();
+    while(DispatchNextCommand()) {}
   }
 
   closesocket(client_socket);
@@ -204,11 +197,7 @@ bool CUdpClient::DispatchNextCommand()
     CSingleLock lock(critical_section);
 
     if (commands.size() <= 0)
-    {
-      // relinquish the remainder of this threads time slice
-      Sleep(1);
       return false;
-    }
 
     COMMANDITERATOR it = commands.begin();
     command = *it;
@@ -219,13 +208,17 @@ bool CUdpClient::DispatchNextCommand()
   if (command.binarySize > 0)
   {
     // only perform the following if logging level at debug
-    CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT TX: %u\t\t-> "
-                                     "<binary payload %u bytes>",
-              XbmcThreads::SystemClockMillis(), command.binarySize );
+
+    unsigned int now = XbmcThreads::SystemClockMillis();
+
+    CLog::Log(UDPCLIENT_DEBUG_LEVEL,
+              "UDPCLIENT TX: %u\t\t-> "
+              "<binary payload %u bytes>",
+              XbmcThreads::SystemClockMillis() - now, command.binarySize);
 
     do
     {
-      ret = sendto(client_socket, (LPCSTR) command.binary, command.binarySize, 0, (struct sockaddr *) & command.address, sizeof(command.address));
+      ret = sendto(client_socket, (const char*) command.binary, command.binarySize, 0, (struct sockaddr *) & command.address, sizeof(command.address));
     }
     while (ret == -1);
 
@@ -234,12 +227,14 @@ bool CUdpClient::DispatchNextCommand()
   else
   {
     // only perform the following if logging level at debug
-    CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT TX: %u\t\t-> '%s'",
-              XbmcThreads::SystemClockMillis(), command.message.c_str() );
+    unsigned int now = XbmcThreads::SystemClockMillis();
+
+    CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT TX: %u\t\t-> '%s'", XbmcThreads::SystemClockMillis() - now,
+              command.message.c_str());
 
     do
     {
-      ret = sendto(client_socket, command.message.c_str(), command.message.length(), 0, (struct sockaddr *) & command.address, sizeof(command.address));
+      ret = sendto(client_socket, command.message.c_str(), command.message.size(), 0, (struct sockaddr *) & command.address, sizeof(command.address));
     }
     while (ret == -1 && !m_bStop);
   }

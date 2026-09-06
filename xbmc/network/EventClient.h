@@ -1,40 +1,30 @@
-#ifndef __EVENT_CLIENT_H__
-#define __EVENT_CLIENT_H__
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "ServiceBroker.h"
-#include "threads/Thread.h"
-#include "threads/CriticalSection.h"
-#include "Socket.h"
+#pragma once
+
 #include "EventPacket.h"
+#include "ServiceBroker.h"
+#include "Socket.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "threads/CriticalSection.h"
+#include "threads/Thread.h"
 
+#include <list>
 #include <map>
 #include <queue>
-#include <list>
+#include <utility>
 
 namespace EVENTCLIENT
 {
+
+  #define ES_FLAG_UNICODE    0x80000000 // new 16bit key flag to support real unicode over EventServer
 
   class CEventAction
   {
@@ -43,9 +33,9 @@ namespace EVENTCLIENT
     {
       actionType = 0;
     }
-    CEventAction(const char* action, unsigned char type)
+    CEventAction(const char* action, unsigned char type):
+      actionName(action)
     {
-      actionName = action;
       actionType = type;
     }
 
@@ -56,39 +46,33 @@ namespace EVENTCLIENT
   class CEventButtonState
   {
   public:
-    CEventButtonState()
+    CEventButtonState() : m_iNextRepeat(0)
     {
       m_iKeyCode   = 0;
-      m_mapName    = "";
-      m_buttonName = "";
       m_fAmount    = 0.0f;
       m_bUseAmount = false;
       m_bRepeat    = false;
       m_bActive    = false;
       m_bAxis      = false;
       m_iControllerNumber = 0;
-      m_iNextRepeat = 0;
     }
 
-    CEventButtonState(unsigned short iKeyCode,
+    CEventButtonState(unsigned int iKeyCode,
                       std::string mapName,
                       std::string buttonName,
                       float fAmount,
                       bool isAxis,
                       bool bRepeat,
-                      bool bUseAmount
-      )
+                      bool bUseAmount)
+      : m_buttonName(buttonName), m_mapName(mapName), m_iNextRepeat(0)
     {
       m_iKeyCode   = iKeyCode;
-      m_buttonName = buttonName;
-      m_mapName    = mapName;
       m_fAmount    = fAmount;
       m_bUseAmount = bUseAmount;
       m_bRepeat    = bRepeat;
       m_bActive    = true;
       m_bAxis      = isAxis;
       m_iControllerNumber = 0;
-      m_iNextRepeat = 0;
       Load();
     }
 
@@ -98,23 +82,25 @@ namespace EVENTCLIENT
     bool Repeat() const { return m_bRepeat; }
     int  ControllerNumber() const { return m_iControllerNumber; }
     bool Axis() const { return m_bAxis; }
-    unsigned short KeyCode() const { return m_iKeyCode; }
+    unsigned int KeyCode() const { return m_iKeyCode; }
     float Amount() const  { return m_fAmount; }
     void Load();
     const std::string& JoystickName() const { return m_joystickName; }
+    const std::string& CustomControllerName() const { return m_customControllerName; }
 
     // data
-    unsigned short    m_iKeyCode;
+    unsigned int      m_iKeyCode;
     unsigned short    m_iControllerNumber;
     std::string       m_buttonName;
     std::string       m_mapName;
     std::string       m_joystickName;
+    std::string       m_customControllerName;
     float             m_fAmount;
     bool              m_bUseAmount;
     bool              m_bRepeat;
     bool              m_bActive;
     bool              m_bAxis;
-    unsigned int      m_iNextRepeat;
+    unsigned int m_iNextRepeat;
   };
 
 
@@ -131,9 +117,9 @@ namespace EVENTCLIENT
       Initialize();
     }
 
-    CEventClient(SOCKETS::CAddress& addr)
+    explicit CEventClient(SOCKETS::CAddress& addr):
+      m_remoteAddr(addr)
     {
-      m_remoteAddr = addr;
       Initialize();
     }
 
@@ -155,8 +141,11 @@ namespace EVENTCLIENT
 
     void RefreshSettings()
     {
-      m_iRepeatDelay = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.esinitialdelay");
-      m_iRepeatSpeed = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("services.escontinuousdelay");
+      const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+      m_iRepeatDelay =
+          settings->GetInt(CSettings::SETTING_SERVICES_ESINITIALDELAY);
+      m_iRepeatSpeed =
+          settings->GetInt(CSettings::SETTING_SERVICES_ESCONTINUOUSDELAY);
     }
 
     SOCKETS::CAddress& Address()
@@ -170,7 +159,7 @@ namespace EVENTCLIENT
     }
 
     // add packet to queue
-    bool AddPacket(EVENTPACKET::CEventPacket *packet);
+    bool AddPacket(boost::shared_ptr<EVENTPACKET::CEventPacket> packet);
 
     // return true if client received ping with the last 1 minute
     bool Alive() const;
@@ -188,7 +177,7 @@ namespace EVENTCLIENT
     void FreePacketQueues();
 
     // return event states
-    unsigned short GetButtonCode(std::string& strMapName, bool& isAxis, float& amount);
+    unsigned int GetButtonCode(std::string& strMapName, bool& isAxis, float& amount, bool &isJoystick);
 
   protected:
     bool ProcessPacket(EVENTPACKET::CEventPacket *packet);
@@ -200,7 +189,7 @@ namespace EVENTCLIENT
     virtual bool OnPacketNOTIFICATION(EVENTPACKET::CEventPacket *packet);
     virtual bool OnPacketLOG(EVENTPACKET::CEventPacket *packet);
     virtual bool OnPacketACTION(EVENTPACKET::CEventPacket *packet);
-    bool CheckButtonRepeat(unsigned int &next);
+    bool CheckButtonRepeat(unsigned int& next);
 
     // returns true if the client has received the HELO packet
     bool Greeted() { return m_bGreeted; }
@@ -236,8 +225,8 @@ namespace EVENTCLIENT
     time_t            m_lastSeq;
     int               m_iRemotePort;
     bool              m_bGreeted;
-    unsigned int      m_iRepeatDelay;
-    unsigned int      m_iRepeatSpeed;
+    unsigned int m_iRepeatDelay;
+    unsigned int m_iRepeatSpeed;
     bool              m_bSequenceError;
 
     SOCKETS::CAddress m_remoteAddr;
@@ -245,8 +234,8 @@ namespace EVENTCLIENT
     EVENTPACKET::LogoType m_eLogoType;
     CCriticalSection  m_critSection;
 
-    std::map <unsigned int, EVENTPACKET::CEventPacket*>  m_seqPackets;
-    std::queue <EVENTPACKET::CEventPacket*> m_readyPackets;
+    std::map<unsigned int, boost::shared_ptr<EVENTPACKET::CEventPacket> > m_seqPackets;
+    std::queue<boost::shared_ptr<EVENTPACKET::CEventPacket> > m_readyPackets;
 
     // button and mouse state
     std::list<CEventButtonState>  m_buttonQueue;
@@ -254,6 +243,5 @@ namespace EVENTCLIENT
     CEventButtonState m_currentButton;
   };
 
-} // EVENTCLIENT
+}
 
-#endif // __EVENT_CLIENT_H__

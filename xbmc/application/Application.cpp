@@ -2574,8 +2574,7 @@ void CApplication::ProcessSlow()
   g_curlInterface.CheckIdle();
 
   // check for any needed SNTP update
-  if (CNetworkServices::GetInstance().IsTimeServerRunning() && CNetworkServices::GetInstance().IsTimeServerUpdateNeeded())
-    CNetworkServices::GetInstance().UpdateTimeServer();
+  CServiceBroker::GetNetwork().GetServices().UpdateTimeServer();
 
   CServiceBroker::GetGUI()->GetLargeTextureManager().CleanupUnusedImages();
 

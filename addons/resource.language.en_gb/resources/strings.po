@@ -3550,7 +3550,17 @@ msgctxt "#1051"
 msgid "Enter web address"
 msgstr ""
 
-#empty strings from id 1052 to 1179
+#: system/settings/settings.xml
+msgctxt "#1052"
+msgid "Require authentication"
+msgstr ""
+
+#: system/settings/settings.xml
+msgctxt "#1053"
+msgid "Choose whether requests to the web server require a username and a password, which must be set below if enabled. It is recommended to always leave this setting enabled."
+msgstr ""
+
+#empty strings from id 1054 to 1179
 
 #: system/settings/settings.xml
 msgctxt "#1180"
@@ -14220,6 +14230,11 @@ msgstr ""
 #: addons/skin.estuary/xml/DialogAddonInfo.xml
 msgctxt "#39024"
 msgid "Dependencies"
+msgstr ""
+
+#: xbmc/network/GUIDialogNetworkSetup.cpp
+msgctxt "#39103"
+msgid "Unable to configure network location. Invalid path given."
 msgstr ""
 
 #: system/settings/settings.xml

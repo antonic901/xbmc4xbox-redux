@@ -1,30 +1,23 @@
+/*
+ *  Copyright (c) 2002 Frodo
+ *      Portions Copyright (c) by the authors of ffmpeg and xvid
+ *
+ *  Copyright (C) 2002-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
 #pragma once
 
-/*
-* XBMC Media Center
-* Copyright (c) 2002 Frodo
-* Portions Copyright (c) by the authors of ffmpeg and xvid
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
-#include "threads/Thread.h"
 #include "threads/CriticalSection.h"
-#include "system.h"
+#include "threads/Thread.h"
 
 #include <string>
+#include <vector>
+
+#include "PlatformDefs.h"
 
 class CUdpClient : CThread
 {
@@ -37,23 +30,28 @@ protected:
   bool Create();
   void Destroy();
 
-  void OnStartup();
-  void Process();
+  virtual void OnStartup();
+  virtual void Process();
 
-  bool Broadcast(int aPort, std::string& aMessage);
-  bool Send(std::string aIpAddress, int aPort, std::string& aMessage);
-  bool Send(SOCKADDR_IN aAddress, std::string& aMessage);
-  bool Send(SOCKADDR_IN aAddress, LPBYTE pMessage, DWORD dwSize);
+  bool Broadcast(int aPort, const std::string& aMessage);
+  bool Send(const std::string& aIpAddress, int aPort, const std::string& aMessage);
+  bool Send(struct sockaddr_in aAddress, const std::string& aMessage);
+  bool Send(struct sockaddr_in aAddress, unsigned char* pMessage, DWORD dwSize);
 
-  virtual void OnMessage(SOCKADDR_IN& aRemoteAddress, std::string& aMessage, LPBYTE pMessage, DWORD dwMessageLength){};
+  virtual void OnMessage(struct sockaddr_in& aRemoteAddress,
+                         const std::string& aMessage,
+                         unsigned char* pMessage,
+                         DWORD dwMessageLength)
+  {
+  }
 
 protected:
 
   struct UdpCommand
   {
-    SOCKADDR_IN address;
+    struct sockaddr_in address;
     std::string message;
-    LPBYTE binary;
+    unsigned char* binary;
     DWORD binarySize;
   };
 
