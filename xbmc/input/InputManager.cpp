@@ -20,10 +20,13 @@
 #include "input/Keyboard.h"
 #include "input/keyboard/KeyIDs.h"
 #include "input/keyboard/XBMC_vkeys.h"
+#include "network/EventServer.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/ExecString.h"
 #include "utils/log.h"
+
+using EVENTSERVER::CEventServer;
 
 using namespace KODI::MESSAGING;
 
@@ -424,6 +427,109 @@ bool CInputManager::ProcessKeyboard()
   return false;
 }
 
+bool CInputManager::ProcessEventServer(int windowId, float frameTime)
+{
+  CEventServer* es = CEventServer::GetInstance();
+  if (!es || !es->Running() || es->GetNumberOfClients() == 0)
+    return false;
+
+  // process any queued up actions
+  if (es->ExecuteNextAction())
+  {
+    // reset idle timers
+    CApplicationComponents &components = CServiceBroker::GetAppComponents();
+    const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+    appPower->ResetSystemIdleTimer();
+    appPower->ResetScreenSaver();
+    appPower->WakeUpScreenSaverAndDPMS();
+  }
+
+  // now handle any buttons or axis
+  std::string strMapName;
+  bool isAxis = false;
+  float fAmount = 0.0;
+  bool isJoystick = false;
+
+  // es->ExecuteNextAction() invalidates the ref to the CEventServer instance
+  // when the action exits XBMC
+  es = CEventServer::GetInstance();
+  if (!es || !es->Running() || es->GetNumberOfClients() == 0)
+    return false;
+  unsigned int wKeyID = es->GetButtonCode(strMapName, isAxis, fAmount, isJoystick);
+
+  if (wKeyID)
+  {
+    if (strMapName.length() > 0)
+    {
+      // joysticks are not supported via eventserver
+      if (isJoystick)
+      {
+        return false;
+      }
+      else // it is a customcontroller
+      {
+        int actionID;
+        std::string actionName;
+        bool fullRange = false;
+
+        // Translate using custom controller translator.
+        if (CButtonTranslator::GetInstance().TranslateJoystickString(
+                windowId, strMapName.c_str(), wKeyID, isAxis, actionID, actionName, fullRange))
+        {
+          // break screensaver
+          CApplicationComponents &components = CServiceBroker::GetAppComponents();
+          const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+          appPower->ResetSystemIdleTimer();
+          appPower->ResetScreenSaver();
+
+          // in case we wokeup the screensaver or screen - eat that action...
+          if (appPower->WakeUpScreenSaverAndDPMS())
+            return true;
+
+          CLog::Log(LOGDEBUG, "EventServer: key %u translated to action %s", wKeyID, actionName.c_str());
+
+          return ExecuteInputAction(CAction(actionID, fAmount, 0.0f, actionName));
+        }
+        else
+        {
+          CLog::Log(LOGDEBUG, "ERROR mapping customcontroller action. CustomController: %s %u",
+                    strMapName.c_str(), wKeyID);
+        }
+      }
+    }
+    else
+    {
+      CKey key;
+
+      if (wKeyID == KEY_BUTTON_LEFT_ANALOG_TRIGGER)
+        key = CKey(wKeyID, static_cast<uint8_t>(255 * fAmount), 0, 0.0, 0.0, 0.0, 0.0, frameTime);
+      else if (wKeyID == KEY_BUTTON_RIGHT_ANALOG_TRIGGER)
+        key = CKey(wKeyID, 0, static_cast<uint8_t>(255 * fAmount), 0.0, 0.0, 0.0, 0.0, frameTime);
+      else if (wKeyID == KEY_BUTTON_LEFT_THUMB_STICK_LEFT)
+        key = CKey(wKeyID, 0, 0, -fAmount, 0.0, 0.0, 0.0, frameTime);
+      else if (wKeyID == KEY_BUTTON_LEFT_THUMB_STICK_RIGHT)
+        key = CKey(wKeyID, 0, 0, fAmount, 0.0, 0.0, 0.0, frameTime);
+      else if (wKeyID == KEY_BUTTON_LEFT_THUMB_STICK_UP)
+        key = CKey(wKeyID, 0, 0, 0.0, fAmount, 0.0, 0.0, frameTime);
+      else if (wKeyID == KEY_BUTTON_LEFT_THUMB_STICK_DOWN)
+        key = CKey(wKeyID, 0, 0, 0.0, -fAmount, 0.0, 0.0, frameTime);
+      else if (wKeyID == KEY_BUTTON_RIGHT_THUMB_STICK_LEFT)
+        key = CKey(wKeyID, 0, 0, 0.0, 0.0, -fAmount, 0.0, frameTime);
+      else if (wKeyID == KEY_BUTTON_RIGHT_THUMB_STICK_RIGHT)
+        key = CKey(wKeyID, 0, 0, 0.0, 0.0, fAmount, 0.0, frameTime);
+      else if (wKeyID == KEY_BUTTON_RIGHT_THUMB_STICK_UP)
+        key = CKey(wKeyID, 0, 0, 0.0, 0.0, 0.0, fAmount, frameTime);
+      else if (wKeyID == KEY_BUTTON_RIGHT_THUMB_STICK_DOWN)
+        key = CKey(wKeyID, 0, 0, 0.0, 0.0, 0.0, -fAmount, frameTime);
+      else
+        key = CKey(wKeyID);
+      return OnKey(key);
+    }
+  }
+
+  return false;
+}
+
 bool CInputManager::Process(int windowId, float frameTime)
 {
   // read raw input
@@ -433,6 +539,7 @@ bool CInputManager::Process(int windowId, float frameTime)
   ProcessRemote(windowId, frameTime);
   ProcessGamepad(windowId, frameTime);
   ProcessKeyboard();
+  ProcessEventServer(windowId, frameTime);
 
   return true;
 }

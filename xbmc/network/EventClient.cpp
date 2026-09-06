@@ -114,9 +114,9 @@ bool CEventClient::AddPacket(boost::shared_ptr<CEventPacket> packet)
     {
       if(!m_bSequenceError)
         CLog::Log(LOGWARNING,
-                  "CEventClient::AddPacket - received packet with same sequence number ({}) as "
-                  "previous packet from eventclient {}",
-                  packet->Sequence(), m_deviceName);
+                  "CEventClient::AddPacket - received packet with same sequence number (%u) as "
+                  "previous packet from eventclient %s",
+                  packet->Sequence(), m_deviceName.c_str());
       m_bSequenceError = true;
       m_seqPackets.erase(packet->Sequence());
     }
@@ -356,8 +356,6 @@ bool CEventClient::OnPacketBUTTON(CEventPacket *packet)
     keycode = 0;
   else if(flags & PTB_VKEY)
     keycode = bcode|KEY_VKEY;
-  else if(flags & PTB_UNICODE)
-    keycode = bcode|ES_FLAG_UNICODE;
   else
     keycode = bcode;
 

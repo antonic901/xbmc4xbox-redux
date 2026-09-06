@@ -16,6 +16,7 @@
 #include "input/Keyboard.h"
 #include "utils/DelayController.h"
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -46,6 +47,15 @@ public:
    \return true if event is handled, false otherwise
   */
   bool ProcessKeyboard();
+
+  /*! \brief decode an event from the event service, this can be mouse, key, joystick, reset idle
+   * timers.
+   *
+   * \param windowId Currently active window
+   * \param frameTime Time in seconds since last call
+   * \return true if event is handled, false otherwise
+   */
+  bool ProcessEventServer(int windowId, float frameTime);
 
   /*! \brief Process all inputs
    *
@@ -89,6 +99,8 @@ private:
   bool ExecuteInputAction(const CAction &action);
 
   CKey m_LastKey;
+
+  std::map<std::string, std::map<int, float> > m_lastAxisMap;
 
   void ReadInput();
 
