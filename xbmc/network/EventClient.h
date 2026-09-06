@@ -24,8 +24,6 @@
 namespace EVENTCLIENT
 {
 
-  #define ES_FLAG_UNICODE    0x80000000 // new 16bit key flag to support real unicode over EventServer
-
   class CEventAction
   {
   public:
