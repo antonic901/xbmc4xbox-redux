@@ -1,33 +1,15 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "system.h"
-
-#ifdef HAS_EVENT_SERVER
-
 #include "EventPacket.h"
+
 #include "Socket.h"
 #include "utils/log.h"
-#ifdef _XBOX
-#include "libcdio/inttypes.h"
-#endif
 
 using namespace EVENTPACKET;
 
@@ -36,7 +18,7 @@ using namespace EVENTPACKET;
 /************************************************************************/
 bool CEventPacket::Parse(int datasize, const void *data)
 {
-  unsigned char* buf = (unsigned char *)data;
+  unsigned char* buf = const_cast<unsigned char*>((const unsigned char *)data);
   if (datasize < HEADER_SIZE || datasize > PACKET_SIZE)
     return false;
 
@@ -69,9 +51,9 @@ bool CEventPacket::Parse(int datasize, const void *data)
 
   // get payload size
   buf += 4;
-  m_iPayloadSize = ntohs(*((uint16_t*)buf));
+  uint16_t payloadSize = ntohs(*(reinterpret_cast<uint16_t*>(buf)));
 
-  if ((m_iPayloadSize + HEADER_SIZE) != (unsigned int)datasize)
+  if ((payloadSize + HEADER_SIZE) != static_cast<uint16_t>(datasize))
     return false;
 
   // get the client's token
@@ -81,27 +63,18 @@ bool CEventPacket::Parse(int datasize, const void *data)
   buf += 4;
 
   // get payload
-  if (m_iPayloadSize)
+  if (payloadSize > 0)
   {
     // forward past reserved bytes
     buf += 10;
 
-    if (m_pPayload)
-    {
-      free(m_pPayload);
-      m_pPayload = NULL;
-    }
-
-    m_pPayload = malloc(m_iPayloadSize);
-    if (!m_pPayload)
-    {
-      CLog::Log(LOGERROR, "ES: Out of memory");
-      return false;
-    }
-    memcpy(m_pPayload, buf, (size_t)m_iPayloadSize);
+    m_pPayload = std::vector<uint8_t>(buf, buf + payloadSize);
   }
-
-  return  (m_bValid = true);
+  m_bValid = true;
+  return true;
 }
 
-#endif // HAS_EVENT_SERVER
+void CEventPacket::SetPayload(std::vector<uint8_t> payload)
+{
+  m_pPayload = payload;
+}

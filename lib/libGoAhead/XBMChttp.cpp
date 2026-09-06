@@ -46,6 +46,7 @@
 #include "filesystem/VirtualDirectory.h"
 #include "network/NetworkServices.h"
 #include "network/UdpClient.h"
+#include "network/Network.h"
 #include "filesystem/Directory.h"
 #include "playlists/PlayList.h"
 #include "music/tags/MusicInfoTag.h"
@@ -2960,7 +2961,7 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, std::string paras[])
 {
   if (numParas==0)
   {
-    if (CNetworkServices::GetInstance().IsWebserverRunning())
+    if (CServiceBroker::GetNetwork().GetServices().IsWebserverRunning())
       return SetResponse(openTag+"On");
     else
       return SetResponse(openTag+"Off");
@@ -2969,7 +2970,7 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, std::string paras[])
   StringUtils::ToLower(paras[0]);
   if (paras[0] == "on")
   {
-    if (CNetworkServices::GetInstance().IsWebserverRunning())
+    if (CServiceBroker::GetNetwork().GetServices().IsWebserverRunning())
       return SetResponse(openTag+"Already on");
     else
     {
@@ -2980,7 +2981,7 @@ int CXbmcHttp::xbmcWebServerStatus(int numParas, std::string paras[])
   else
   {
     if (paras[0] == "off")
-      if (!CNetworkServices::GetInstance().IsWebserverRunning())
+      if (!CServiceBroker::GetNetwork().GetServices().IsWebserverRunning())
         return SetResponse(openTag+"Already off");
       else
       {

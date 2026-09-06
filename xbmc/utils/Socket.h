@@ -1,36 +1,34 @@
-#ifndef __XBMC_SOCKET_H__
-#define __XBMC_SOCKET_H__
+/*
+ * Socket classes
+ *  Copyright (c) 2008 d4rk
+ *  Copyright (C) 2008-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 
-#include <string.h>
+#pragma once
+
+#include <xtl.h>
+
 #include <map>
+#include <boost/shared_ptr.hpp>
+#include <string.h>
 #include <vector>
 
-#ifdef _XBOX
-#include <xtl.h>
-#include "network/Network.h"
-#endif
+#include "PlatformDefs.h"
 
 namespace SOCKETS
 {
-
 #ifdef _XBOX
-static char* inet_ntoa (struct in_addr in)
-{
-  static char _inetaddress[32];
-  sprintf(_inetaddress, "%d.%d.%d.%d", in.S_un.S_un_b.s_b1, in.S_un.S_un_b.s_b2, in.S_un.S_un_b.s_b3, in.S_un.S_un_b.s_b4);
-  return _inetaddress;
-}
-#endif
-
-#ifdef _LINUX
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <unistd.h>
-typedef int SOCKET;
-#else
-typedef int socklen_t;
+  static char* inet_ntoa (struct in_addr in)
+  {
+    static char _inetaddress[32];
+    sprintf(_inetaddress, "%d.%d.%d.%d", in.S_un.S_un_b.s_b1, in.S_un.S_un_b.s_b2, in.S_un.S_un_b.s_b3, in.S_un.S_un_b.s_b4);
+    return _inetaddress;
+  }
+  typedef int socklen_t;
 #endif
 
   // types of sockets
@@ -47,19 +45,23 @@ typedef int socklen_t;
   class CAddress
   {
   public:
-    sockaddr_in saddr;
-    socklen_t   size;
+    union
+    {
+      sockaddr_in saddr4;
+      sockaddr saddr_generic;
+    } saddr;
+    socklen_t size;
 
   public:
     CAddress()
     {
       memset(&saddr, 0, sizeof(saddr));
-      saddr.sin_family = AF_INET;
-      saddr.sin_addr.s_addr = htonl(INADDR_ANY);
-      size = sizeof(saddr);
+      saddr.saddr4.sin_family = AF_INET;
+      saddr.saddr4.sin_addr.s_addr = htonl(INADDR_ANY);
+      size = sizeof(saddr.saddr4);
     }
 
-    CAddress(const char *address)
+    explicit CAddress(const char *address)
     {
       SetAddress(address);
     }
@@ -67,20 +69,20 @@ typedef int socklen_t;
     void SetAddress(const char *address)
     {
       memset(&saddr, 0, sizeof(saddr));
-      saddr.sin_family = AF_INET;
-      saddr.sin_addr.s_addr = inet_addr(address);
-      size = sizeof(saddr);
+      saddr.saddr4.sin_family = AF_INET;
+      saddr.saddr4.sin_addr.s_addr = inet_addr(address);
+      size = sizeof(saddr.saddr4);
     }
 
     // returns statically alloced buffer, do not free
-    char *Address()
+    const char *Address()
     {
-      return inet_ntoa(saddr.sin_addr);
+      return inet_ntoa(saddr.saddr4.sin_addr);
     }
 
     unsigned long ULong()
     {
-      return (unsigned long)saddr.sin_addr.s_addr;
+      return (unsigned long)saddr.saddr4.sin_addr.s_addr;
     }
   };
 
@@ -100,15 +102,15 @@ typedef int socklen_t;
     virtual ~CBaseSocket() { Close(); }
 
     // socket functions
-    virtual bool Bind(CAddress& addr, int port, int range=0) = 0;
+    virtual bool Bind(bool localOnly, int port, int range=0) = 0;
     virtual bool Connect() = 0;
-    virtual void Close() {};
+    virtual void Close() {}
 
     // state functions
-    bool        Ready()  { return m_bReady; }
-    bool        Bound()  { return m_bBound; }
-    SocketType  Type()   { return m_Type; }
-    int         Port()   { return m_iPort; }
+    bool Ready() { return m_bReady; }
+    bool Bound() { return m_bBound; }
+    SocketType Type() { return m_Type; }
+    int Port() { return m_iPort; }
     virtual SOCKET Socket() = 0;
 
   protected:
@@ -117,9 +119,9 @@ typedef int socklen_t;
 
   protected:
     SocketType m_Type;
-    bool       m_bReady;
-    bool       m_bBound;
-    int        m_iPort;
+    bool m_bReady;
+    bool m_bBound;
+    int m_iPort;
   };
 
   /**********************************************************************/
@@ -137,7 +139,7 @@ typedef int socklen_t;
                        const void* buffer) = 0;
 
     // read datagrams, return no. of bytes read or -1 or error
-    virtual int  Read(CAddress& addr, const int buffersize, void *buffer) = 0;
+    virtual int Read(CAddress& addr, const int buffersize, void *buffer) = 0;
     virtual bool Broadcast(const CAddress& addr, const int datasize,
                            const void* data) = 0;
   };
@@ -155,21 +157,21 @@ typedef int socklen_t;
         m_iSock = INVALID_SOCKET;
       }
 
-    bool Bind(CAddress& addr, int port, int range=0);
-    bool Connect() { return false; }
+    virtual bool Bind(bool localOnly, int port, int range=0);
+    virtual bool Connect() { return false; }
     bool Listen(int timeout);
-    int  SendTo(const CAddress& addr, const int datasize, const void* data);
-    int  Read(CAddress& addr, const int buffersize, void *buffer);
-    bool Broadcast(const CAddress& addr, const int datasize, const void* data)
+    virtual int SendTo(const CAddress& addr, const int datasize, const void* data);
+    virtual int Read(CAddress& addr, const int buffersize, void *buffer);
+    virtual bool Broadcast(const CAddress& addr, const int datasize, const void* data)
     {
-      // TODO
+      //! @todo implement
       return false;
     }
-    SOCKET  Socket() { return m_iSock; }
-    void Close();
+    virtual SOCKET Socket() { return m_iSock; }
+    virtual void Close();
 
   protected:
-    SOCKET   m_iSock;
+    SOCKET m_iSock;
     CAddress m_addr;
   };
 
@@ -179,30 +181,33 @@ typedef int socklen_t;
   class CSocketFactory
   {
   public:
-    static CUDPSocket* CreateUDPSocket();
+    static boost::shared_ptr<CUDPSocket> CreateUDPSocket();
   };
 
   /**********************************************************************/
   /* Listens on multiple sockets for reads                              */
   /**********************************************************************/
+
+#define LISTENERROR 1
+#define LISTENEMPTY 2
+
   class CSocketListener
   {
   public:
     CSocketListener();
-    void         AddSocket(CBaseSocket *);
-    bool         Listen(int timeoutMs); // in ms, -1=>never timeout, 0=>poll
-    void         Clear();
+    void AddSocket(CBaseSocket *);
+    bool Listen(int timeoutMs); // in ms, -1=>never timeout, 0=>poll
+    void Clear();
     CBaseSocket* GetFirstReadySocket();
     CBaseSocket* GetNextReadySocket();
 
   protected:
     std::vector<CBaseSocket*> m_sockets;
-    int                       m_iReadyCount;
-    int                       m_iMaxSockets;
-    int                       m_iCurrentSocket;
-    fd_set                    m_fdset;
+    int m_iReadyCount;
+    int m_iMaxSockets;
+    int m_iCurrentSocket;
+    fd_set m_fdset;
   };
 
 }
 
-#endif //  __XBMC_SOCKET_H__

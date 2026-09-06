@@ -549,12 +549,11 @@ namespace XBMCAddon
     }
 
     int getSERVER_WEBSERVER() { return CNetworkServices::ES_WEBSERVER; }
-    int getSERVER_AIRPLAYSERVER() { return CNetworkServices::ES_AIRPLAYSERVER; }
     int getSERVER_UPNPSERVER() { return CNetworkServices::ES_UPNPSERVER; }
     int getSERVER_UPNPRENDERER() { return CNetworkServices::ES_UPNPRENDERER; }
     int getSERVER_EVENTSERVER() { return CNetworkServices::ES_EVENTSERVER; }
-    int getSERVER_JSONRPCSERVER() { return CNetworkServices::ES_JSONRPCSERVER; }
-    int getSERVER_ZEROCONF() { return CNetworkServices::ES_ZEROCONF; }
+    int getSERVER_TIMESERVER() { return CNetworkServices::ES_TIMESERVER; }
+    int getSERVER_FTPSERVER() { return CNetworkServices::ES_FTPSERVER; }
 
     int getPLAYLIST_MUSIC() { return PLAYLIST::TYPE_MUSIC; }
     int getPLAYLIST_VIDEO() { return PLAYLIST::TYPE_VIDEO; }

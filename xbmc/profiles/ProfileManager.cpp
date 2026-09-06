@@ -441,7 +441,7 @@ void CProfileManager::LogOff()
   appPower->WakeUpScreenSaverAndDPMS();
   CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(WINDOW_LOGIN_SCREEN, std::vector<std::string>(), false);
 
-  if (!CNetworkServices::GetInstance().StartEventServer()) // event server could be needed in some situations
+  if (!CServiceBroker::GetNetwork().GetServices().StartEventServer()) // event server could be needed in some situations
     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33102), g_localizeStrings.Get(33100));
 }
 

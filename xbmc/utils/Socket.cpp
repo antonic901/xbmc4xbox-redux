@@ -1,33 +1,21 @@
 /*
-* XBMC
-* Socket classes
-* Copyright (c) 2008 d4rk
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
-#include "system.h"
-
-#ifdef HAS_EVENT_SERVER
+ * Socket classes
+ *  Copyright (c) 2008 d4rk
+ *  Copyright (C) 2008-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 
 #include "Socket.h"
-#include "log.h"
+
+#include "utils/log.h"
+
+#include <boost/make_shared.hpp>
 #include <vector>
 
 using namespace SOCKETS;
-using namespace std;
 
 #ifdef WINSOCK_VERSION
 #define close closesocket
@@ -37,12 +25,11 @@ using namespace std;
 /* CPosixUDPSocket                                                    */
 /**********************************************************************/
 
-bool CPosixUDPSocket::Bind(CAddress& addr, int port, int range)
+bool CPosixUDPSocket::Bind(bool localOnly, int port, int range)
 {
   // close any existing sockets
   Close();
 
-  // create the socket
   m_iSock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
   if (m_iSock == INVALID_SOCKET)
@@ -58,30 +45,31 @@ bool CPosixUDPSocket::Bind(CAddress& addr, int port, int range)
 #else
   int yes = 1;
 #endif
-  if (setsockopt(m_iSock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int))==-1)
+  if (setsockopt(m_iSock, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes)) == -1)
   {
     CLog::Log(LOGWARNING, "UDP: Could not enable the address reuse options");
     CLog::Log(LOGWARNING, "UDP: %s", strerror(errno));
   }
 
-  // set the port
-  m_addr = addr;
-  m_iPort = port;
-  m_addr.saddr.sin_port = htons(port);
+  // bind to any address or localhost
+  if (localOnly)
+    m_addr = CAddress("127.0.0.1");
+  else
+    m_addr = CAddress("0.0.0.0");
 
   // bind the socket ( try from port to port+range )
-  while (m_iPort <= port + range)
+  for (m_iPort = port; m_iPort <= port + range; ++m_iPort)
   {
-    if (bind(m_iSock, (struct sockaddr*)&m_addr.saddr, sizeof(m_addr.saddr)) != 0)
+    m_addr.saddr.saddr4.sin_port = htons(m_iPort);
+
+    if (bind(m_iSock, (struct sockaddr*)&m_addr.saddr, m_addr.size) != 0)
     {
-      CLog::Log(LOGWARNING, "UDP: Error binding socket on port %d", m_iPort);
+      CLog::Log(LOGWARNING, "UDP: Error binding socket on port %i", m_iPort);
       CLog::Log(LOGWARNING, "UDP: %s", strerror(errno));
-      m_iPort++;
-      m_addr.saddr.sin_port = htons(m_iPort);
     }
     else
     {
-      CLog::Log(LOGINFO, "UDP: Listening on port %d", m_iPort);
+      CLog::Log(LOGINFO, "UDP: Listening on port %i", m_iPort);
       SetBound();
       SetReady();
       break;
@@ -120,17 +108,16 @@ int CPosixUDPSocket::SendTo(const CAddress& addr, const int buffersize,
                           const void *buffer)
 {
   return (int)sendto(m_iSock, (const char *)buffer, (size_t)buffersize, 0,
-                     (const struct sockaddr*)&addr.saddr,
-                     sizeof(addr.saddr));
+                     (const struct sockaddr*)&addr.saddr, addr.size);
 }
 
 /**********************************************************************/
 /* CSocketFactory                                                     */
 /**********************************************************************/
 
-CUDPSocket* CSocketFactory::CreateUDPSocket()
+boost::shared_ptr<CUDPSocket> CSocketFactory::CreateUDPSocket()
 {
-  return new CPosixUDPSocket();
+  return boost::make_shared<CPosixUDPSocket>();
 }
 
 /**********************************************************************/
@@ -160,7 +147,10 @@ void CSocketListener::AddSocket(CBaseSocket *sock)
 bool CSocketListener::Listen(int timeout)
 {
   if (m_sockets.size()==0)
-    return false;
+  {
+    CLog::Log(LOGERROR, "SOCK: No sockets to listen for");
+    throw LISTENEMPTY;
+  }
 
   m_iReadyCount = 0;
   m_iCurrentSocket = 0;
@@ -177,20 +167,13 @@ bool CSocketListener::Listen(int timeout)
   tv.tv_usec = rem * 1000;
   tv.tv_sec = timeout / 1000;
 
-  if (timeout<0)
-  {
-    m_iReadyCount = select(m_iMaxSockets+1, &m_fdset, NULL, NULL, NULL);
-  }
-  else
-  {
-    m_iReadyCount = select(m_iMaxSockets+1, &m_fdset, NULL, NULL, &tv);
-  }
+  m_iReadyCount = select(m_iMaxSockets+1, &m_fdset, NULL, NULL, (timeout < 0 ? NULL : &tv));
 
   if (m_iReadyCount<0)
   {
     CLog::Log(LOGERROR, "SOCK: Error selecting socket(s)");
     Clear();
-    return false;
+    throw LISTENERROR;
   }
   else
   {
@@ -239,5 +222,3 @@ CBaseSocket* CSocketListener::GetNextReadySocket()
   }
   return NULL;
 }
-
-#endif // HAS_EVENT_SERVER

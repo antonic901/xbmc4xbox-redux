@@ -1,25 +1,16 @@
-#ifndef __EVENT_PACKET_H__
-#define __EVENT_PACKET_H__
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include <stdint.h>
+#include <stdlib.h>
+#include <vector>
 
 namespace EVENTPACKET
 {
@@ -53,7 +44,7 @@ namespace EVENTPACKET
   /************************************************************************/
 
   /************************************************************************
-     The payload format for each packet type is decribed below each
+     The payload format for each packet type is described below each
      packet type.
 
      Legend:
@@ -85,7 +76,8 @@ namespace EVENTPACKET
     PTB_NO_REPEAT  = 0x20,
     PTB_VKEY       = 0x40,
     PTB_AXIS       = 0x80,
-    PTB_AXISSINGLE = 0x100
+    PTB_AXISSINGLE = 0x100,
+    PTB_UNICODE    = 0x200
   };
 
   enum ActionType
@@ -139,6 +131,15 @@ namespace EVENTPACKET
     /* %s - button name (required if flags & 0x01)                          */
     /************************************************************************/
 
+    PT_MOUSE         = 0x04,
+    /************************************************************************/
+    /* Payload format                                                       */
+    /* %c - flags                                                           */
+    /*    - 0x01 absolute position                                          */
+    /* %i - mousex (0-65535 => maps to screen width)                        */
+    /* %i - mousey (0-65535 => maps to screen height)                       */
+    /************************************************************************/
+
     PT_PING          = 0x05,
     /************************************************************************/
     /* no payload                                                           */
@@ -146,6 +147,7 @@ namespace EVENTPACKET
 
     PT_BROADCAST     = 0x06,
     /************************************************************************/
+    /* @todo implement                                                      */
     /* Payload format: TODO                                                 */
     /************************************************************************/
 
@@ -188,63 +190,32 @@ namespace EVENTPACKET
   class CEventPacket
   {
   public:
-    CEventPacket()
-    {
-      m_bValid = false;
-      m_iSeq = 0;
-      m_iTotalPackets = 0;
-      m_pPayload = NULL;
-      m_iPayloadSize = 0;
-      m_iClientToken = 0;
-      m_cMajVer = '0';
-      m_cMinVer = '0';
-      m_eType = PT_LAST;
-    }
+    CEventPacket::CEventPacket() : m_bValid(false), m_iSeq(0), m_iTotalPackets(0), m_iClientToken(0), m_cMajVer('0'), m_cMinVer('0'), m_eType(PT_LAST) {}
 
-    CEventPacket(int datasize, const void* data)
-    {
-      m_bValid = false;
-      m_iSeq = 0;
-      m_iTotalPackets = 0;
-      m_pPayload = NULL;
-      m_iPayloadSize = 0;
-      m_iClientToken = 0;
-      m_cMajVer = '0';
-      m_cMinVer = '0';
-      m_eType = PT_LAST;
-      
-      Parse(datasize, data);
-    }
+    explicit CEventPacket(int datasize, const void* data) : m_bValid(false), m_iSeq(0), m_iTotalPackets(0), m_iClientToken(0), m_cMajVer('0'), m_cMinVer('0'), m_eType(PT_LAST) { Parse(datasize, data); }
 
-    virtual      ~CEventPacket() { free(m_pPayload); }
+    virtual ~CEventPacket() {}
     virtual bool Parse(int datasize, const void *data);
     bool         IsValid() const { return m_bValid; }
     PacketType   Type() const { return m_eType; }
     unsigned int Size() const { return m_iTotalPackets; }
     unsigned int Sequence() const { return m_iSeq; }
-    void*        Payload() { return m_pPayload; }
-    unsigned int PayloadSize() const { return m_iPayloadSize; }
+    const uint8_t* Payload() const { return m_pPayload.empty() ? NULL : &m_pPayload[0]; }
+    unsigned int PayloadSize() const { return m_pPayload.size(); }
     unsigned int ClientToken() const { return m_iClientToken; }
-    void         SetPayload(unsigned int psize, void *payload)
-    {
-      free(m_pPayload);
-      m_pPayload = payload;
-      m_iPayloadSize = psize;
-    }
+    void SetPayload(std::vector<uint8_t> payload);
 
   protected:
-    bool           m_bValid;
-    unsigned int   m_iSeq;
-    unsigned int   m_iTotalPackets;
+    bool m_bValid;
+    unsigned int m_iSeq;
+    unsigned int m_iTotalPackets;
     unsigned char  m_header[32];
-    void*          m_pPayload;
-    unsigned int   m_iPayloadSize;
-    unsigned int   m_iClientToken;
-    unsigned char  m_cMajVer;
-    unsigned char  m_cMinVer;
-    PacketType     m_eType;
+    std::vector<uint8_t> m_pPayload;
+    unsigned int m_iClientToken;
+    unsigned char m_cMajVer;
+    unsigned char m_cMinVer;
+    PacketType m_eType;
   };
 
 }
 
-#endif // __EVENT_PACKET_H__
