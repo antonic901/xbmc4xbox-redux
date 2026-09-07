@@ -35,6 +35,8 @@
 #include "pictures/GUIWindowSlideShow.h"
 #include "profiles/windows/GUIWindowSettingsProfile.h"
 #include "programs/GUIWindowPrograms.h"
+#include "programs/dialogs/GUIDialogProgramInfo.h"
+#include "programs/dialogs/GUIDialogProgramSettings.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/windows/GUIWindowSettings.h"
@@ -201,6 +203,9 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowWeather);
   Add(new CGUIWindowStartup);
   Add(new CGUIWindowSplash);
+
+  Add(new CGUIDialogProgramInfo);
+  Add(new CGUIDialogProgramSettings);
 }
 
 bool CGUIWindowManager::DestroyWindows()
@@ -283,6 +288,9 @@ bool CGUIWindowManager::DestroyWindows()
     Remove(WINDOW_DIALOG_KAI_TOAST);
     Remove(WINDOW_DIALOG_SEEK_BAR);
     Remove(WINDOW_DIALOG_VOLUME_BAR);
+
+    DestroyWindow(WINDOW_DIALOG_PROGRAM_INFO);
+    DestroyWindow(WINDOW_DIALOG_PROGRAM_SETTINGS);
   }
   catch (...)
   {
