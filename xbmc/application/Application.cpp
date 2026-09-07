@@ -156,7 +156,6 @@ using namespace XbmcThreads;
 
 #if defined(_DEBUG) && !defined(USE_RELEASE_LIBS)
   #pragma comment (lib,"lib/libsmb/libsmbd.lib")      // SECTIONNAME=LIBSMB
-  #pragma comment (lib,"lib/libGoAhead/goaheadd.lib") // SECTIONNAME=LIBHTTP
   #pragma comment (lib,"lib/sqLite/libSQLite3d.lib")
   #pragma comment (lib,"lib/libshout/libshoutd.lib" )
   #pragma comment (lib,"lib/libcdio/libcdiod.lib" )
@@ -165,7 +164,6 @@ using namespace XbmcThreads;
   #pragma comment (lib,"lib/libpcre/libpcred.lib")
 #else
   #pragma comment (lib,"lib/libsmb/libsmb.lib")
-  #pragma comment (lib,"lib/libGoAhead/goahead.lib")
   #pragma comment (lib,"lib/sqLite/libSQLite3.lib")
   #pragma comment (lib,"lib/libcdio/libcdio.lib")
   #pragma comment (lib,"lib/libiconv/libiconv.lib")

@@ -12,9 +12,6 @@
 
 class CSettings;
 class CSNTPClient;
-#ifdef HAS_WEB_SERVER
-class CWebServer;
-#endif // HAS_WEB_SERVER
 class CXBFileZilla;
 
 class CNetworkServices : public ISettingCallback
@@ -34,7 +31,6 @@ public:
 
   enum ESERVERS
   {
-    ES_WEBSERVER = 1,
     ES_UPNPRENDERER,
     ES_UPNPSERVER,
     ES_EVENTSERVER,
@@ -43,10 +39,6 @@ public:
   };
 
   bool StartServer(enum ESERVERS server, bool start);
-
-  bool StartWebserver();
-  bool IsWebserverRunning();
-  bool StopWebserver();
 
   bool StartEventServer();
   bool IsEventServerRunning();
@@ -90,9 +82,6 @@ private:
   boost::shared_ptr<CSettings> m_settings;
 
   // Network services
-#ifdef HAS_WEB_SERVER
-  CWebServer* m_webserver;
-#endif
   CSNTPClient* m_sntpclient;
   CXBFileZilla* m_filezilla;
 };

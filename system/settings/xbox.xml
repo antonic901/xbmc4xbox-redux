@@ -381,36 +381,6 @@
         </setting>
       </group>
     </category>
-    <category id="control">
-      <group id="1">
-        <setting id="services.httpapibroadcastlevel" type="integer" label="0" help="">
-          <level>4</level>
-          <default>0</default>
-          <constraints>
-            <minimum>0</minimum>
-            <step>1</step>
-            <maximum>5</maximum>
-          </constraints>
-          <dependencies>
-            <dependency type="enable" setting="services.webserver">true</dependency>
-          </dependencies>
-          <control type="spinner" format="integer" />
-        </setting>
-        <setting id="services.httpapibroadcastport" type="integer" label="0" help="">
-          <level>4</level>
-          <default>8278</default>
-          <constraints>
-            <minimum>1</minimum>
-            <step>1</step>
-            <maximum>65535</maximum>
-          </constraints>
-          <dependencies>
-            <dependency type="enable" setting="services.webserver">true</dependency>
-          </dependencies>
-          <control type="edit" format="integer" />
-        </setting>
-      </group>
-    </category>
     <category id="ftp" label="20173" help="">
       <group id="1">
         <setting id="services.ftpserver" type="boolean" label="305" help="">

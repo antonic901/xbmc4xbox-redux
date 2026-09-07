@@ -840,7 +840,6 @@ namespace XBMCAddon
     /// - Used format of the returned language string
     /// | Value                     | Description                                                |
     /// |--------------------------:|------------------------------------------------------------|
-    /// | xbmc.SERVER_WEBSERVER     | [To control Kodi's builtin webserver](http://kodi.wiki/view/Webserver)
     /// | xbmc.SERVER_AIRPLAYSERVER | [AirPlay is a proprietary protocol stack/suite developed by Apple Inc.](http://kodi.wiki/view/AirPlay)
     /// | xbmc.SERVER_JSONRPCSERVER | [Control JSON-RPC HTTP/TCP socket-based interface](http://kodi.wiki/view/JSON-RPC_API)
     /// | xbmc.SERVER_UPNPRENDERER  | [UPnP client (aka UPnP renderer)](http://kodi.wiki/view/UPnP/Client)
@@ -1037,7 +1036,6 @@ namespace XBMCAddon
 #endif
     //@}
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-    SWIG_CONSTANT_FROM_GETTER(int, SERVER_WEBSERVER);
     SWIG_CONSTANT_FROM_GETTER(int, SERVER_UPNPSERVER);
     SWIG_CONSTANT_FROM_GETTER(int, SERVER_UPNPRENDERER);
     SWIG_CONSTANT_FROM_GETTER(int, SERVER_EVENTSERVER);
