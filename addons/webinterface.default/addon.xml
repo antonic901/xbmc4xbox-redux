@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<addon
+  id="webinterface.default"
+  version="2.0.0"
+  name="Default"
+  provider-name="Team XBMC">
+  <requires>
+    <import addon="xbmc.gui" version="5.17.0"/>
+  </requires>
+  <extension point="xbmc.webinterface"/>
+  <extension point="xbmc.addon.metadata">
+    <platform>all</platform>
+    <summary lang="en_GB">Team XBMC Web Interface. (XBMC's default web interface)</summary>
+    <description lang="en_GB">Default web interface for XBMC; Designed for devices of all resolutions</description>
+  </extension>
+</addon>

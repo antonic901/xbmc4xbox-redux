@@ -23,6 +23,7 @@
   <addon>screensaver.xbmc.builtin.dim</addon>
   <addon>skin.estuary</addon>
   <addon>weather.xbmc.builtin</addon>
+  <addon>webinterface.default</addon>
   <addon>xbmc.addon</addon>
   <addon>xbmc.core</addon>
   <addon>xbmc.gui</addon>
