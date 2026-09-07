@@ -214,7 +214,9 @@ typedef int MHD_socket;
 #define MHD_INVALID_SOCKET (-1)
 #else /* !defined(_WIN32) || defined(_SYS_TYPES_FD_SET) */
 #define MHD_WINSOCK_SOCKETS 1
+#ifndef _XBMC
 #include <winsock2.h>
+#endif
 typedef SOCKET MHD_socket;
 #define MHD_INVALID_SOCKET (INVALID_SOCKET)
 #endif /* !defined(_WIN32) || defined(_SYS_TYPES_FD_SET) */
