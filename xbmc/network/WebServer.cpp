@@ -20,9 +20,15 @@
  */
 
 #include "WebServer.h"
+
+#include "ServiceBroker.h"
+#include "addons/Addon.h"
+#include "addons/AddonManager.h"
 #include "interfaces/json-rpc/JSONRPC.h"
 #include "filesystem/File.h"
 #include "filesystem/Directory.h"
+#include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "URL.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
@@ -31,6 +37,7 @@
 #include "XBDateTime.h"
 #include "utils/StringUtils.h"
 
+using namespace ADDON;
 using namespace XFILE;
 using namespace std;
 using namespace JSONRPC;
@@ -124,11 +131,11 @@ enum MHD_Result CWebServer::AnswerToConnection(void *cls, struct MHD_Connection 
         return (enum MHD_Result)CreateFileDownloadResponse(connection, strURL, methodType);
     }
 
-    if (strURL == "/")
-    strURL = StringUtils::Format("/%s", DEFAULT_PAGE);
-
-    std::string strFilePath = "D:\\web";
-    strURL = URIUtils::AddFileToFolder(strFilePath, strURL);
+    AddonPtr addon;
+    if (CServiceBroker::GetAddonMgr().GetAddon(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SERVICES_WEBSKIN), addon, AddonType::WEB_INTERFACE, OnlyEnabled::CHOICE_YES))
+    {
+        strURL = URIUtils::AddFileToFolder(addon->Path(), DEFAULT_PAGE);
+    }
 
     return (enum MHD_Result)CreateFileDownloadResponse(connection, strURL, methodType);
 }

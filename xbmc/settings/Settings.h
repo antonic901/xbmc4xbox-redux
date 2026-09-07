@@ -195,6 +195,11 @@ public:
   static const char* SETTING_SERVICES_UPNP;
   static const char* SETTING_SERVICES_UPNPSERVER;
   static const char* SETTING_SERVICES_UPNPRENDERER;
+  static const char* SETTING_SERVICES_WEBSERVER;
+  static const char* SETTING_SERVICES_WEBSERVERPORT;
+  static const char* SETTING_SERVICES_WEBSERVERAUTHENTICATION;
+  static const char* SETTING_SERVICES_WEBSERVERUSERNAME;
+  static const char* SETTING_SERVICES_WEBSERVERPASSWORD;
   static const char* SETTING_SERVICES_WEBSKIN;
   static const char* SETTING_SERVICES_ESENABLED;
   static const char* SETTING_SERVICES_ESPORT;

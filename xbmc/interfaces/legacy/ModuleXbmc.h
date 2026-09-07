@@ -840,12 +840,10 @@ namespace XBMCAddon
     /// - Used format of the returned language string
     /// | Value                     | Description                                                |
     /// |--------------------------:|------------------------------------------------------------|
-    /// | xbmc.SERVER_AIRPLAYSERVER | [AirPlay is a proprietary protocol stack/suite developed by Apple Inc.](http://kodi.wiki/view/AirPlay)
-    /// | xbmc.SERVER_JSONRPCSERVER | [Control JSON-RPC HTTP/TCP socket-based interface](http://kodi.wiki/view/JSON-RPC_API)
+    /// | xbmc.SERVER_WEBSERVER     | [To control Kodi's builtin webserver](http://kodi.wiki/view/Webserver)
     /// | xbmc.SERVER_UPNPRENDERER  | [UPnP client (aka UPnP renderer)](http://kodi.wiki/view/UPnP/Client)
     /// | xbmc.SERVER_UPNPSERVER    | [Control built-in UPnP A/V media server (UPnP-server)](http://kodi.wiki/view/UPnP/Server)
     /// | xbmc.SERVER_EVENTSERVER   | [Set eventServer part that accepts remote device input on all platforms](http://kodi.wiki/view/EventServer)
-    /// | xbmc.SERVER_ZEROCONF      | [Control Kodi's Avahi Zeroconf](http://kodi.wiki/view/Zeroconf)
     /// @param bStart               bool - start (True) or stop (False) a server
     /// @param bWait                [opt] bool - wait on stop before returning (not supported by all servers)
     /// @return                     bool - True or False
@@ -1036,6 +1034,7 @@ namespace XBMCAddon
 #endif
     //@}
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+    SWIG_CONSTANT_FROM_GETTER(int, SERVER_WEBSERVER);
     SWIG_CONSTANT_FROM_GETTER(int, SERVER_UPNPSERVER);
     SWIG_CONSTANT_FROM_GETTER(int, SERVER_UPNPRENDERER);
     SWIG_CONSTANT_FROM_GETTER(int, SERVER_EVENTSERVER);

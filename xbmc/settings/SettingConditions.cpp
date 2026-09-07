@@ -287,6 +287,9 @@ void CSettingConditions::Initialize()
 #ifdef HAS_TIME_SERVER
   m_simpleConditions.insert("has_time_server");
 #endif
+#ifdef HAS_WEB_SERVER
+  m_simpleConditions.insert("has_web_server");
+#endif
 #ifdef HAS_FILESYSTEM_SMB
   m_simpleConditions.insert("has_filesystem_smb");
 #endif

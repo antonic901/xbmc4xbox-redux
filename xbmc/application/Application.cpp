@@ -154,7 +154,9 @@ using namespace XbmcThreads;
 #pragma comment (lib,"lib/libXenium/XeniumSPIg.lib")
 #endif
 
+#ifdef HAS_WEB_SERVER
 #pragma comment (lib,"lib/libmicrohttpd/microhttpd.lib")
+#endif
 
 #if defined(_DEBUG) && !defined(USE_RELEASE_LIBS)
   #pragma comment (lib,"lib/libsmb/libsmbd.lib")      // SECTIONNAME=LIBSMB

@@ -568,6 +568,7 @@ namespace XBMCAddon
       HalWriteSMBusValue((BYTE)address, (BYTE)command, (BOOL)(word != 0), (BYTE)value);
     }
 
+    int getSERVER_WEBSERVER() { return CNetworkServices::ES_WEBSERVER; }
     int getSERVER_UPNPSERVER() { return CNetworkServices::ES_UPNPSERVER; }
     int getSERVER_UPNPRENDERER() { return CNetworkServices::ES_UPNPRENDERER; }
     int getSERVER_EVENTSERVER() { return CNetworkServices::ES_EVENTSERVER; }

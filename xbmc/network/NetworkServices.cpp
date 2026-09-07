@@ -40,6 +40,10 @@
 #include "network/upnp/UPnP.h"
 #endif // HAS_UPNP
 
+#ifdef HAS_WEB_SERVER
+#include "network/WebServer.h"
+#endif // HAS_WEB_SERVER
+
 #include "libFileZilla/XBFileZilla.h"
 
 using namespace KODI::MESSAGING;
@@ -48,11 +52,19 @@ using namespace EVENTSERVER;
 using namespace UPNP;
 #endif // HAS_UPNP
 
-CNetworkServices::CNetworkServices() :
+CNetworkServices::CNetworkServices()
+#ifdef HAS_WEB_SERVER
+  : m_webserver(*new CWebServer),
+#endif // HAS_WEB_SERVER
     m_sntpclient(NULL),
     m_filezilla(NULL)
 {
   std::set<std::string> settingSet;
+  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVER);
+  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVERPORT);
+  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVERAUTHENTICATION);
+  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVERUSERNAME);
+  settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVERPASSWORD);
   settingSet.insert(CSettings::SETTING_SERVICES_UPNP);
   settingSet.insert(CSettings::SETTING_SERVICES_UPNPSERVER);
   settingSet.insert(CSettings::SETTING_SERVICES_UPNPRENDERER);
@@ -75,6 +87,9 @@ CNetworkServices::CNetworkServices() :
 CNetworkServices::~CNetworkServices()
 {
   m_settings->GetSettingsManager()->UnregisterCallback(this);
+#ifdef HAS_WEB_SERVER
+  delete &m_webserver;
+#endif // HAS_WEB_SERVER
   delete m_sntpclient;
   delete m_filezilla;
 }
@@ -85,6 +100,70 @@ bool CNetworkServices::OnSettingChanging(const boost::shared_ptr<const CSetting>
     return false;
 
   const std::string &settingId = setting->GetId();
+#ifdef HAS_WEB_SERVER
+  // Ask user to confirm disabling the authentication requirement, but not when the configuration
+  // would be invalid when authentication was enabled (meaning that the change was triggered
+  // automatically)
+  if (settingId == CSettings::SETTING_SERVICES_WEBSERVERAUTHENTICATION &&
+      !boost::static_pointer_cast<const CSettingBool>(setting)->GetValue() &&
+      (!m_settings->GetBool(CSettings::SETTING_SERVICES_WEBSERVER) ||
+       (m_settings->GetBool(CSettings::SETTING_SERVICES_WEBSERVER) &&
+        !m_settings->GetString(CSettings::SETTING_SERVICES_WEBSERVERPASSWORD).empty())) &&
+      HELPERS::ShowYesNoDialogText(19098, 36634) != HELPERS::CHOICE_YES)
+  {
+    // Leave it as-is
+    return false;
+  }
+
+  if (settingId == CSettings::SETTING_SERVICES_WEBSERVER ||
+      settingId == CSettings::SETTING_SERVICES_WEBSERVERPORT ||
+      settingId == CSettings::SETTING_SERVICES_WEBSERVERAUTHENTICATION ||
+      settingId == CSettings::SETTING_SERVICES_WEBSERVERUSERNAME ||
+      settingId == CSettings::SETTING_SERVICES_WEBSERVERPASSWORD)
+  {
+    if (IsWebserverRunning() && !StopWebserver())
+      return false;
+
+    if (m_settings->GetBool(CSettings::SETTING_SERVICES_WEBSERVER))
+    {
+      // Prevent changing to an invalid configuration
+      if ((settingId == CSettings::SETTING_SERVICES_WEBSERVER ||
+           settingId == CSettings::SETTING_SERVICES_WEBSERVERAUTHENTICATION ||
+           settingId == CSettings::SETTING_SERVICES_WEBSERVERPASSWORD) &&
+          m_settings->GetBool(CSettings::SETTING_SERVICES_WEBSERVERAUTHENTICATION) &&
+          m_settings->GetString(CSettings::SETTING_SERVICES_WEBSERVERPASSWORD).empty())
+      {
+        if (settingId == CSettings::SETTING_SERVICES_WEBSERVERAUTHENTICATION)
+        {
+          HELPERS::ShowOKDialogText(257, 36636);
+        }
+        else
+        {
+          HELPERS::ShowOKDialogText(257, 36635);
+        }
+        return false;
+      }
+
+      // Ask for confirmation when enabling the web server
+      if (settingId == CSettings::SETTING_SERVICES_WEBSERVER &&
+          HELPERS::ShowYesNoDialogText(19098, 36632) != HELPERS::CHOICE_YES)
+      {
+        // Revert change, do not start server
+        return false;
+      }
+
+      if (!StartWebserver())
+      {
+        HELPERS::ShowOKDialogText(33101, 33100);
+        return false;
+      }
+    }
+  }
+  else if (settingId == CSettings::SETTING_SERVICES_ESPORT ||
+           settingId == CSettings::SETTING_SERVICES_WEBSERVERPORT)
+    return ValidatePort(boost::static_pointer_cast<const CSettingInt>(setting)->GetValue());
+  else
+#endif // HAS_WEB_SERVER
 
 #ifdef HAS_UPNP
   if (settingId == CSettings::SETTING_SERVICES_UPNP)
@@ -241,6 +320,22 @@ bool CNetworkServices::OnSettingUpdate(const boost::shared_ptr<CSetting>& settin
   if (setting == NULL)
     return false;
 
+  const std::string &settingId = setting->GetId();
+  if (settingId == CSettings::SETTING_SERVICES_WEBSERVERUSERNAME)
+  {
+    // if webserverusername is xbmc and pw is not empty we treat it as altered
+    // and don't change the username to kodi - part of rebrand
+    if (m_settings->GetString(CSettings::SETTING_SERVICES_WEBSERVERUSERNAME) == "xbmc" &&
+        !m_settings->GetString(CSettings::SETTING_SERVICES_WEBSERVERPASSWORD).empty())
+      return true;
+  }
+  if (settingId == CSettings::SETTING_SERVICES_WEBSERVERPORT)
+  {
+    // if webserverport is default but webserver is activated then treat it as altered
+    // and don't change the port to new value
+    if (m_settings->GetBool(CSettings::SETTING_SERVICES_WEBSERVER))
+      return true;
+  }
   return false;
 }
 
@@ -250,6 +345,18 @@ void CNetworkServices::Start()
     StartUPnP();
   if (m_settings->GetBool(CSettings::SETTING_SERVICES_ESENABLED) && !StartEventServer())
     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33102), g_localizeStrings.Get(33100));
+
+#ifdef HAS_WEB_SERVER
+  // Start web server after eventserver and JSON-RPC server, so users can use these interfaces
+  // to confirm the warning message below if it is shown
+  if (m_settings->GetBool(CSettings::SETTING_SERVICES_WEBSERVER))
+  {
+    // Only try to start server if configuration is OK
+    if (!StartWebserver())
+      CGUIDialogKaiToast::QueueNotification(
+          CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33101), g_localizeStrings.Get(33100));
+  }
+#endif // HAS_WEB_SERVER
 
   StartRss();
   StartTimeServer();
@@ -261,6 +368,7 @@ void CNetworkServices::Stop(bool bWait)
   if (bWait)
   {
     StopUPnP(bWait);
+    StopWebserver();
     StopRss();
     StopTimeServer();
     StopFtpServer();
@@ -282,6 +390,11 @@ bool CNetworkServices::StartServer(enum ESERVERS server, bool start)
   bool ret = false;
   switch (server)
   {
+    case ES_WEBSERVER:
+      // the callback will take care of starting/stopping webserver
+      ret = settings->SetBool(CSettings::SETTING_SERVICES_WEBSERVER, start);
+      break;
+
     case ES_UPNPSERVER:
       // the callback will take care of starting/stopping upnp server
       ret = settings->SetBool(CSettings::SETTING_SERVICES_UPNPSERVER, start);
@@ -314,6 +427,74 @@ bool CNetworkServices::StartServer(enum ESERVERS server, bool start)
   settings->Save();
 
   return ret;
+}
+
+bool CNetworkServices::StartWebserver()
+{
+#ifdef HAS_WEB_SERVER
+  if (!CServiceBroker::GetNetwork().IsAvailable())
+    return false;
+
+  if (!m_settings->GetBool(CSettings::SETTING_SERVICES_WEBSERVER))
+    return false;
+
+  if (m_settings->GetBool(CSettings::SETTING_SERVICES_WEBSERVERAUTHENTICATION) &&
+      m_settings->GetString(CSettings::SETTING_SERVICES_WEBSERVERPASSWORD).empty())
+  {
+    CLog::Log(LOGERROR, "Tried to start webserver with invalid configuration (authentication "
+                        "enabled, but no password set");
+    return false;
+  }
+
+  int webPort = m_settings->GetInt(CSettings::SETTING_SERVICES_WEBSERVERPORT);
+  if (!ValidatePort(webPort))
+  {
+    CLog::Log(LOGERROR, "Cannot start Web Server on port %i", webPort);
+    return false;
+  }
+
+  if (IsWebserverRunning())
+    return true;
+
+  std::string username;
+  std::string password;
+  if (m_settings->GetBool(CSettings::SETTING_SERVICES_WEBSERVERAUTHENTICATION))
+  {
+    username = m_settings->GetString(CSettings::SETTING_SERVICES_WEBSERVERUSERNAME);
+    password = m_settings->GetString(CSettings::SETTING_SERVICES_WEBSERVERPASSWORD);
+  }
+
+  if (!m_webserver.Start(webPort, username, password))
+    return false;
+
+  return true;
+#endif // HAS_WEB_SERVER
+  return false;
+}
+
+bool CNetworkServices::IsWebserverRunning()
+{
+#ifdef HAS_WEB_SERVER
+  return m_webserver.IsStarted();
+#endif // HAS_WEB_SERVER
+  return false;
+}
+
+bool CNetworkServices::StopWebserver()
+{
+#ifdef HAS_WEB_SERVER
+  if (!IsWebserverRunning())
+    return true;
+
+  if (!m_webserver.Stop() || m_webserver.IsStarted())
+  {
+    CLog::Log(LOGWARNING, "Webserver: Failed to stop.");
+    return false;
+  }
+
+  return true;
+#endif // HAS_WEB_SERVER
+  return false;
 }
 
 bool CNetworkServices::StartEventServer()

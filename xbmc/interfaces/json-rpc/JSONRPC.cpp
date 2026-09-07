@@ -26,8 +26,12 @@
 #include "utils/JSONVariantParser.h"
 #include "threads/SingleLock.h"
 #include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
+#include "application/ApplicationPowerHandling.h"
 #include "application/ApplicationVolumeHandling.h"
+#include "guilib/GUIAudioManager.h"
 #include "messaging/ApplicationMessenger.h"
+#include "guilib/GUIComponent.h"
 #include "PlayListPlayer.h"
 #include "playlists/PlayList.h"
 #include "FileItem.h"
@@ -208,42 +212,46 @@ static JSON_STATUS SystemReboot(const CVariant &params, CVariant &result)
 //
 static JSON_STATUS InputSendKey(uint32_t keyCode)
 {
-    if (keyCode == KEY_INVALID)
-        return InternalError;
+  CApplicationComponents &components = CServiceBroker::GetAppComponents();
+  const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
+  appPower->ResetSystemIdleTimer();
+  CGUIComponent* gui = CServiceBroker::GetGUI();
+  if (gui)
+    gui->GetAudioManager().PlayActionSound(keyCode);
 
-    CSingleLock lock(s_inputCritSection);
-    s_pendingKey = keyCode | KEY_VKEY;
-    return ACK;
+  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1,
+                                              static_cast<void*>(new CAction(keyCode)));
+  return ACK;
 }
 
 static JSON_STATUS InputLeft(const CVariant &params, CVariant &result)
 {
-    return InputSendKey(XBMCVK_LEFT);
+    return InputSendKey(ACTION_MOVE_LEFT);
 }
 
 static JSON_STATUS InputRight(const CVariant &params, CVariant &result)
 {
-    return InputSendKey(XBMCVK_RIGHT);
+    return InputSendKey(ACTION_MOVE_RIGHT);
 }
 
 static JSON_STATUS InputUp(const CVariant &params, CVariant &result)
 {
-    return InputSendKey(XBMCVK_UP);
+    return InputSendKey(ACTION_MOVE_UP);
 }
 
 static JSON_STATUS InputDown(const CVariant &params, CVariant &result)
 {
-    return InputSendKey(XBMCVK_DOWN);
+    return InputSendKey(ACTION_MOVE_DOWN);
 }
 
 static JSON_STATUS InputSelect(const CVariant &params, CVariant &result)
 {
-    return InputSendKey(XBMCVK_RETURN);
+    return InputSendKey(ACTION_SELECT_ITEM);
 }
 
 static JSON_STATUS InputBack(const CVariant &params, CVariant &result)
 {
-    return InputSendKey(XBMCVK_BACK);
+    return InputSendKey(ACTION_NAV_BACK);
 }
 
 static JSON_STATUS InputHome(const CVariant &params, CVariant &result)

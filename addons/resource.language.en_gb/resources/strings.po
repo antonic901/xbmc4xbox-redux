@@ -12523,6 +12523,12 @@ msgctxt "#36326"
 msgid "Enable the UPnP control point. This allows you to stream media to any UPnP client and control it's playback."
 msgstr ""
 
+#. Description of settings category with label #20187 "Webserver"
+#: system/settings/settings.xml
+msgctxt "#36327"
+msgid "This category contains the settings for how the web server service is handled."
+msgstr ""
+
 #. Description of setting with label #263 "Allow remote control via HTTP"
 #: system/settings/settings.xml
 msgctxt "#36328"
