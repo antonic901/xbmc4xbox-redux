@@ -116,11 +116,11 @@ typedef int socklen_t;
 #define vsnprintf _vsnprintf
 #endif
 
-/* off_t for file offset (not defined in Xbox 360 XDK) */
-#ifndef _OFF_T_DEFINED
-#define _OFF_T_DEFINED
-typedef long off_t;
-#endif
+///* off_t for file offset (not defined in Xbox 360 XDK) */
+//#ifndef _OFF_T_DEFINED
+//#define _OFF_T_DEFINED
+//typedef long off_t;
+//#endif
 
 /* HANDLE_FLAG_INHERIT - not available on Xbox 360 (no child processes) */
 #ifndef HANDLE_FLAG_INHERIT

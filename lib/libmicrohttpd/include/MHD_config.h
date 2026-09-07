@@ -33,7 +33,7 @@
 #define _MHD_NORETURN __declspec(noreturn)
 
 /* Define to 1 if your compiler supports __func__ */
-#define HAVE___FUNC__ 1
+#define HAVE___FUNC__ 0
 
 /* bool type - Xbox 360 XDK compiler (VS 2005 era) doesn't have stdbool.h in C mode */
 #ifndef __cplusplus
@@ -60,7 +60,7 @@
 #endif
 
 /* Xbox 360 is big-endian PowerPC */
-#define WORDS_BIGENDIAN 1
+#define WORDS_BIGENDIAN 0
 
 /* We are building a static library */
 #define BUILDING_MHD_LIB 1

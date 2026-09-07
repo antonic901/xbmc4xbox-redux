@@ -17,7 +17,7 @@
 #define MHD_WINSOCK_SOCKETS 1
 
 /* Xbox 360 is big-endian PowerPC */
-#define WORDS_BIGENDIAN 1
+#define WORDS_BIGENDIAN 0
 
 /* Disable HTTPS/TLS - not needed */
 /* #undef HTTPS_SUPPORT */
