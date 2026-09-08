@@ -106,6 +106,8 @@
 #include "platform/xbox/utils/LED.h"
 #include "platform/xbox/xbeheader.h"
 
+#include <boost/array.hpp>
+
 using namespace std;
 
 #define clamp(x) (x) > 255.f ? 255 : ((x) < 0 ? 0 : (BYTE)(x+0.5f)) // Valid ranges: brightness[-1 -> 1 (0 is default)] contrast[0 -> 2 (1 is default)]  gamma[0.5 -> 3.5 (1 is default)] default[ramp is linear]
@@ -693,6 +695,17 @@ bool CUtil::IsPicture(const std::string& strFile)
 {
   return URIUtils::HasExtension(strFile,
                   CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_pictureExtensions + "|.tbn|.dds");
+}
+
+std::string CUtil::GetSplashPath()
+{
+  boost::array<std::string, 4> candidates = {{ "special://home/media/splash.jpg", "special://home/media/splash.png", "special://xbmc/media/splash.jpg", "special://xbmc/media/splash.png" }};
+  for (boost::array<std::string, 4>::const_iterator it = candidates.begin(); it != candidates.end(); ++it)
+  {
+    if (XFILE::CFile::Exists(*it))
+      return CSpecialProtocol::TranslatePathConvertCase(*it);
+  }
+  throw std::runtime_error("No splash image found");
 }
 
 bool CUtil::ExcludeFileOrFolder(const std::string& strFileOrFolder, const std::vector<std::string>& regexps)

@@ -1446,9 +1446,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\windows\GUIWindowSystemInfo.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\windows\GUIWindowWeather.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\pictures\SlideShowPicture.cpp">
 				</File>
 				<File
@@ -5615,9 +5612,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\windows\GUIWindowSystemInfo.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\windows\GUIWindowWeather.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\FileSystem\HDDirectory.h">

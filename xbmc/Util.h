@@ -124,6 +124,8 @@ public:
   static bool ShortenFileName(std::string& strFileNameAndPath);
   static bool IsWritable(const std::string& strFile);
   static bool IsPicture(const std::string& strFile);
+  /// Get resolved filesystem location of splash image
+  static std::string GetSplashPath();
   static void GetDVDDriveIcon( const std::string& strPath, std::string& strIcon );
   static void RemoveTempFiles();
   static void ClearTempFonts();

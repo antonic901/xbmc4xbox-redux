@@ -119,6 +119,15 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       else
         value = CDateTime::GetCurrentDateTime().GetAsLocalizedDate(info.GetData3());
       return true;
+#ifdef HAS_XBOX_HARDWARE
+    case SYSTEM_FREE_SPACE_C:
+    case SYSTEM_FREE_SPACE_E:
+    case SYSTEM_FREE_SPACE_F:
+    case SYSTEM_FREE_SPACE_G:
+    case SYSTEM_FREE_SPACE_X:
+    case SYSTEM_FREE_SPACE_Y:
+    case SYSTEM_FREE_SPACE_Z:
+#endif
     case SYSTEM_FREE_SPACE:
     case SYSTEM_USED_SPACE:
     case SYSTEM_TOTAL_SPACE:
@@ -132,6 +141,30 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
     case SYSTEM_CPU_USAGE:
       value = GetSystemHeatInfo(info.m_info);
       return true;
+#ifdef HAS_XBOX_HARDWARE
+    case LCD_HDD_TEMPERATURE:
+    case SYSTEM_AV_PACK_INFO:
+    case SYSTEM_HDD_MODEL:
+    case SYSTEM_HDD_SERIAL:
+    case SYSTEM_HDD_FIRMWARE:
+    case SYSTEM_HDD_PASSWORD:
+    case SYSTEM_HDD_LOCKSTATE:
+    case SYSTEM_HDD_LOCKKEY:
+    case SYSTEM_HDD_BOOTDATE:
+    case SYSTEM_HDD_CYCLECOUNT:
+    case SYSTEM_HDD_TEMPERATURE:
+    case SYSTEM_DVD_MODEL:
+    case SYSTEM_DVD_FIRMWARE:
+    case SYSTEM_DVD_ZONE:
+    case SYSTEM_XBOX_MODCHIP:
+    case SYSTEM_XBOX_VERSION:
+    case SYSTEM_XBOX_SERIAL:
+    case SYSTEM_XBOX_PRODUCE_INFO:
+    case SYSTEM_XBOX_BIOS:
+    case SYSTEM_XBE_REGION:
+    case SYSTEM_MPLAYER_VERSION:
+    case NETWORK_IS_DHCP:
+#endif
     case SYSTEM_VIDEO_ENCODER_INFO:
     case NETWORK_IP_ADDRESS:
     case NETWORK_MAC_ADDRESS:
@@ -151,6 +184,23 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
     case SYSTEM_PRIVACY_POLICY:
       value = g_localizeStrings.Get(416);
       return true;
+#ifdef HAS_XBOX_HARDWARE
+  case SYSTEM_DVD_TRAY_STATE:
+      value = g_sysinfo.GetTrayState();
+      return true;
+  case SYSTEM_CONTROLLER_PORT_1:
+      value = g_sysinfo.GetUnits(1);
+      return true;
+    case SYSTEM_CONTROLLER_PORT_2:
+      value = g_sysinfo.GetUnits(2);
+      return true;
+    case SYSTEM_CONTROLLER_PORT_3:
+      value = g_sysinfo.GetUnits(3);
+      return true;
+    case SYSTEM_CONTROLLER_PORT_4:
+      value = g_sysinfo.GetUnits(4);
+      return true;
+#endif
     case SYSTEM_SCREEN_RESOLUTION:
     {
       value = StringUtils::Format("%ix%i %s %02.2f fps.",

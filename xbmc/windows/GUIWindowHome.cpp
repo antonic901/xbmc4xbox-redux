@@ -1,46 +1,35 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GUIWindowHome.h"
+
+#include "ServiceBroker.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPlayer.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
-#include "utils/JobManager.h"
-#include "utils/RecentlyAddedJob.h"
 #include "interfaces/AnnouncementManager.h"
-#include "utils/log.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
-#include "utils/Variant.h"
-#include "guilib/GUIComponent.h"
-#include "guilib/GUIWindowManager.h"
-#include "application/ApplicationComponents.h"
-#include "application/ApplicationPlayer.h"
+#include "utils/JobManager.h"
+#include "utils/RecentlyAddedJob.h"
 #include "utils/StringUtils.h"
+#include "utils/Variant.h"
+#include "utils/log.h"
 
-using namespace ANNOUNCEMENT;
 
-CGUIWindowHome::CGUIWindowHome(void) : CGUIWindow(WINDOW_HOME, "Home.xml"),
-                                       m_recentlyAddedRunning(false),
-                                       m_cumulativeUpdateFlag(0)
+CGUIWindowHome::CGUIWindowHome(void) : CGUIWindow(WINDOW_HOME, "Home.xml")
 {
+  m_recentlyAddedRunning = false;
+  m_cumulativeUpdateFlag = 0;
   m_updateRA = (Audio | Video | Program | Totals);
   m_loadType = KEEP_IN_MEMORY;
 
@@ -83,21 +72,24 @@ void CGUIWindowHome::OnInitWindow()
   CGUIWindow::OnInitWindow();
 }
 
-void CGUIWindowHome::Announce(ANNOUNCEMENT::AnnouncementFlag flag, const std::string& sender, const std::string& message, const CVariant& data)
+void CGUIWindowHome::Announce(ANNOUNCEMENT::AnnouncementFlag flag,
+                              const std::string& sender,
+                              const std::string& message,
+                              const CVariant& data)
 {
   int ra_flag = 0;
 
-  CLog::Log(LOGDEBUG, "GOT ANNOUNCEMENT, type: %i, from %s, message %s",(int)flag, sender, message);
+  CLog::Log(LOGDEBUG, "GOT ANNOUNCEMENT, type: %s, from %s, message %s",
+            AnnouncementFlagToString(flag), sender.c_str(), message.c_str());
 
   // we are only interested in library changes
-  if ((flag & (VideoLibrary | AudioLibrary)) == 0)
+  if ((flag & (ANNOUNCEMENT::VideoLibrary | ANNOUNCEMENT::AudioLibrary)) == 0)
     return;
 
   if (data.isMember("transaction") && data["transaction"].asBoolean())
     return;
 
-  if (message == "OnScanStarted" ||
-      message == "OnCleanStarted")
+  if (message == "OnScanStarted" || message == "OnCleanStarted")
     return;
 
   bool onUpdate = message == "OnUpdate";
@@ -108,9 +100,9 @@ void CGUIWindowHome::Announce(ANNOUNCEMENT::AnnouncementFlag flag, const std::st
   // always update the full list except on an OnUpdate
   if (!onUpdate)
   {
-    if (flag & VideoLibrary)
+    if (flag & ANNOUNCEMENT::VideoLibrary)
       ra_flag |= Video;
-    else if (flag & AudioLibrary)
+    else if (flag & ANNOUNCEMENT::AudioLibrary)
       ra_flag |= Audio;
   }
 
@@ -158,7 +150,7 @@ void CGUIWindowHome::OnJobComplete(unsigned int jobID, bool success, CJob *job)
     CSingleLock lockMe(*this);
 
     // the job is finished.
-    // did one come in in the meantime?
+    // did one come in the meantime?
     flag = m_cumulativeUpdateFlag;
     m_recentlyAddedRunning = false; /// we're done.
   }

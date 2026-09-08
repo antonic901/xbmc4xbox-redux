@@ -32,6 +32,7 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "network/Network.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/TimeUtils.h"
@@ -324,6 +325,56 @@ std::string CSysInfo::TranslateInfo(int info) const
     return temp.IsValid() ? g_langInfo.GetTemperatureAsString(temp) : "N/A";
   }
 #endif
+  case NETWORK_LINK_STATE:
+    {
+      DWORD dwnetstatus = XNetGetEthernetLinkStatus();
+      if (dwnetstatus & XNET_ETHERNET_LINK_ACTIVE)
+      {
+        std::string linkStatus;
+        if (dwnetstatus & XNET_ETHERNET_LINK_100MBPS)
+          linkStatus += "100mbps ";
+        if (dwnetstatus & XNET_ETHERNET_LINK_10MBPS)
+          linkStatus += "10mbps ";
+        if (dwnetstatus & XNET_ETHERNET_LINK_FULL_DUPLEX)
+          linkStatus += g_localizeStrings.Get(153);
+        if (dwnetstatus & XNET_ETHERNET_LINK_HALF_DUPLEX)
+          linkStatus += g_localizeStrings.Get(152);
+        return linkStatus;
+      }
+      else
+        return g_localizeStrings.Get(159);
+    }
+  case NETWORK_IP_ADDRESS:
+    {
+      return CServiceBroker::GetNetwork().m_networkinfo.ip;
+    }
+    break;
+  case NETWORK_SUBNET_MASK:
+    {
+      return CServiceBroker::GetNetwork().m_networkinfo.subnet;
+    }
+    break;
+  case NETWORK_GATEWAY_ADDRESS:
+    {
+      return CServiceBroker::GetNetwork().m_networkinfo.gateway;
+    }
+    break;
+  case NETWORK_DNS1_ADDRESS:
+    {
+      return CServiceBroker::GetNetwork().m_networkinfo.DNS1;
+    }
+    break;
+  case NETWORK_DNS2_ADDRESS:
+    {
+      return CServiceBroker::GetNetwork().m_networkinfo.DNS2;
+    }
+    break;
+  case NETWORK_IS_DHCP:
+  {
+    if (CServiceBroker::GetNetwork().m_networkinfo.DHCP)
+      return g_localizeStrings.Get(148);
+    return g_localizeStrings.Get(147);
+  }
   case SYSTEM_UPTIME:
     return m_info.systemUptime;
   case SYSTEM_TOTALUPTIME:
@@ -1376,11 +1427,16 @@ std::string CSysInfo::GetUnits(int iFrontPort)
   std::string strReturn;
   if (iFrontPort==4) iFrontPort = 3;
   if (iFrontPort==8) iFrontPort = 4;
-  strReturn = StringUtils::Format("%s%s%s%s%s%s%s%s%s%s%s",
-    bPad ? g_localizeStrings.Get(38730).c_str():"", bPad && bKeyb ? ", ":"", bPad && bMem ? ", ":"", bPad && (bHeadSet || bMic) ? ", ":"",
-    bHeadSet || bMic ? g_localizeStrings.Get(38733).c_str():"", (bHeadSet || bMic) && bMem ? ", ":"",
-    bMem ? g_localizeStrings.Get(38734).c_str():"", bMem && bIR ? ", ":"",
-    bIR ? g_localizeStrings.Get(38735).c_str():""
+  strReturn = StringUtils::Format("%s%s%s%s%s%s%s%s%s",
+    bPad ? g_localizeStrings.Get(38730).c_str() : "", 
+    bPad && bKeyb ? ", " : "",
+    bPad && bMem ? ", " : "",
+    bPad && (bHeadSet || bMic) ? ", " : "",
+    bHeadSet || bMic ? g_localizeStrings.Get(38733).c_str() : "",
+    (bHeadSet || bMic) && bMem ? ", " : "",
+    bMem ? g_localizeStrings.Get(38734).c_str() : "",
+    bMem && bIR ? ", " : "",
+    bIR ? g_localizeStrings.Get(38735).c_str() : ""
     );
 
   return strReturn;

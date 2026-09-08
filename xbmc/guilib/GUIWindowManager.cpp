@@ -51,10 +51,10 @@
 #include "video/windows/GUIWindowFullScreen.h"
 #include "video/windows/GUIWindowVideoNav.h"
 #include "video/windows/GUIWindowVideoPlaylist.h"
-#include "windows/GUIWindowWeather.h"
 #include "windows/GUIWindowDebugInfo.h"
 #include "windows/GUIWindowFileManager.h"
 #include "windows/GUIWindowHome.h"
+#include "windows/GUIWindowInsignia.h"
 #include "windows/GUIWindowLoginScreen.h"
 #include "windows/GUIWindowScreensaver.h"
 #include "windows/GUIWindowScreensaverDim.h"
@@ -200,9 +200,9 @@ void CGUIWindowManager::CreateWindows()
 
   Add(new CGUIDialogVideoOSD);
   Add(new CGUIWindowScreensaver);
-  Add(new CGUIWindowWeather);
   Add(new CGUIWindowStartup);
   Add(new CGUIWindowSplash);
+  Add(new CGUIWindowInsignia);
 
   Add(new CGUIDialogProgramInfo);
   Add(new CGUIDialogProgramSettings);
@@ -289,6 +289,7 @@ bool CGUIWindowManager::DestroyWindows()
     Remove(WINDOW_DIALOG_SEEK_BAR);
     Remove(WINDOW_DIALOG_VOLUME_BAR);
 
+    DestroyWindow(WINDOW_INSIGNIA);
     DestroyWindow(WINDOW_DIALOG_PROGRAM_INFO);
     DestroyWindow(WINDOW_DIALOG_PROGRAM_SETTINGS);
   }
