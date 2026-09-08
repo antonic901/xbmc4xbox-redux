@@ -31,7 +31,7 @@ class XBPython;
 #endif
 class CNetwork;
 class CWinSystemBase;
-class CWeather;
+class CWeatherManager;
 
 class CInputManager;
 class CPlayerCoreFactory;
@@ -68,7 +68,7 @@ public:
 
   CInputManager& GetInputManager();
 
-  CWeather& GetWeatherManager();
+  CWeatherManager& GetWeatherManager();
 
   CPlayerCoreFactory& GetPlayerCoreFactory();
 
@@ -88,7 +88,7 @@ protected:
   boost::movelib::unique_ptr<PLAYLIST::CPlayListPlayer> m_playlistPlayer;
   boost::movelib::unique_ptr<CInputManager> m_inputManager;
   boost::movelib::unique_ptr<CNetwork> m_network;
-  boost::movelib::unique_ptr<CWeather> m_weatherManager;
+  boost::movelib::unique_ptr<CWeatherManager> m_weatherManager;
   boost::movelib::unique_ptr<CPlayerCoreFactory> m_playerCoreFactory;
   boost::movelib::unique_ptr<CDatabaseManager> m_databaseManager;
   boost::movelib::unique_ptr<CMediaManager> m_mediaManager;

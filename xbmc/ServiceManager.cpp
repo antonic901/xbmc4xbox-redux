@@ -22,7 +22,7 @@
 #include "profiles/ProfileManager.h"
 #include "storage/MediaManager.h"
 #include "utils/log.h"
-#include "utils/Weather.h"
+#include "weather/WeatherManager.h"
 
 #include <boost/move/make_unique.hpp>
 
@@ -80,7 +80,7 @@ bool CServiceManager::InitStageTwo(const std::string& profilesUserDataFolder)
   m_inputManager = boost::movelib::make_unique<CInputManager>();
   m_inputManager->InitializeInputs();
 
-  m_weatherManager = boost::movelib::make_unique<CWeather>();
+  m_weatherManager = boost::movelib::make_unique<CWeatherManager>();
 
   m_mediaManager = boost::movelib::make_unique<CMediaManager>();
 
@@ -181,7 +181,7 @@ CNetwork& CServiceManager::GetNetwork()
   return *m_network;
 }
 
-CWeather& CServiceManager::GetWeatherManager()
+CWeatherManager& CServiceManager::GetWeatherManager()
 {
   return *m_weatherManager;
 }

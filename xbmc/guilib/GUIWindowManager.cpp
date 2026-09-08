@@ -51,6 +51,7 @@
 #include "video/windows/GUIWindowFullScreen.h"
 #include "video/windows/GUIWindowVideoNav.h"
 #include "video/windows/GUIWindowVideoPlaylist.h"
+#include "weather/GUIWindowWeather.h"
 #include "windows/GUIWindowDebugInfo.h"
 #include "windows/GUIWindowFileManager.h"
 #include "windows/GUIWindowHome.h"
@@ -200,6 +201,7 @@ void CGUIWindowManager::CreateWindows()
 
   Add(new CGUIDialogVideoOSD);
   Add(new CGUIWindowScreensaver);
+  Add(new CGUIWindowWeather);
   Add(new CGUIWindowStartup);
   Add(new CGUIWindowSplash);
   Add(new CGUIWindowInsignia);

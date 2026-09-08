@@ -1215,9 +1215,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\Variant.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\Weather.cpp">
-				</File>
-				<File
 					RelativePath=".\xbmc\XBDateTime.cpp">
 				</File>
 				<File
@@ -5467,6 +5464,28 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\pictures\PictureFolderImageFileLoader.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="weather"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\weather\GUIWindowWeather.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\weather\GUIWindowWeather.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\weather\WeatherJob.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\weather\WeatherJob.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\weather\WeatherManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\weather\WeatherManager.h">
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -5750,9 +5769,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\utils\uXstrings.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Weather.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\XBDateTime.h">

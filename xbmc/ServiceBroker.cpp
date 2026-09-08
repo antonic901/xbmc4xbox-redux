@@ -141,7 +141,7 @@ CRenderSystemBase* CServiceBroker::GetRenderSystem()
   return NULL;
 }
 
-CWeather& CServiceBroker::GetWeatherManager()
+CWeatherManager& CServiceBroker::GetWeatherManager()
 {
   return g_application.m_ServiceManager->GetWeatherManager();
 }

@@ -45,7 +45,7 @@ class CInputManager;
 class CNetwork;
 class CWinSystemBase;
 class CRenderSystemBase;
-class CWeather;
+class CWeatherManager;
 class CPlayerCoreFactory;
 class CDatabaseManager;
 class CGUIComponent;
@@ -84,7 +84,7 @@ public:
   static bool IsAddonInterfaceUp();
   static bool IsServiceManagerUp();
   static CNetwork& GetNetwork();
-  static CWeather& GetWeatherManager();
+  static CWeatherManager& GetWeatherManager();
   static CPlayerCoreFactory& GetPlayerCoreFactory();
   static CDatabaseManager& GetDatabaseManager();
   static CMediaManager& GetMediaManager();

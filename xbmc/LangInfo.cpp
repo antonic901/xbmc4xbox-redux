@@ -30,7 +30,7 @@
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
-#include "utils/Weather.h"
+#include "weather/WeatherManager.h"
 
 #include <algorithm>
 #include <stdexcept>

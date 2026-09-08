@@ -50,7 +50,7 @@
 #include "utils/Variant.h"
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
-#include "utils/Weather.h"
+#include "weather/WeatherManager.h"
 #include "video/VideoLibraryQueue.h" //! @todo Remove me
 
 #include <algorithm>
@@ -368,7 +368,7 @@ void CProfileManager::FinalizeLoadProfile()
   CContextMenuManager &contextMenuManager = CServiceBroker::GetContextMenuManager();
   CNetwork &networkManager = CServiceBroker::GetNetwork();
   ADDON::CAddonMgr &addonManager = CServiceBroker::GetAddonMgr();
-  CWeather &weatherManager = CServiceBroker::GetWeatherManager();
+  CWeatherManager &weatherManager = CServiceBroker::GetWeatherManager();
   PLAYLIST::CPlayListPlayer &playlistManager = CServiceBroker::GetPlaylistPlayer();
 
   if (m_lastUsedProfile != m_currentProfile)
