@@ -19,6 +19,7 @@
 #include "URL.h"
 #include "Util.h"
 #include "addons/Scraper.h"
+#include "favourites/FavouritesService.h"
 #include "filesystem/File.h"
 #include "guilib/GUIButtonControl.h"
 #include "guilib/GUIComponent.h"
@@ -446,6 +447,10 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
       CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "badpwdcount", "0");
       CMediaSourceSettings::GetInstance().Save();
 
+      // lock of a mediasource has been added
+      // => refresh favourites due to possible visibility changes
+      CServiceBroker::GetFavouritesService().RefreshFavourites();
+
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);
       CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
       return true;
@@ -477,6 +482,10 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
       CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "badpwdcount", "0");
       CMediaSourceSettings::GetInstance().Save();
 
+      // lock of a mediasource has been removed
+      // => refresh favourites due to possible visibility changes
+      CServiceBroker::GetFavouritesService().RefreshFavourites();
+
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);
       CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);
       return true;
@@ -491,6 +500,9 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
         // don't prompt user for mastercode when reactivating a lock
         g_passwordManager.LockSource(type, share->strName, true);
 
+        // lock of a mediasource has been reactivated
+        // => refresh favourites due to possible visibility changes
+        CServiceBroker::GetFavouritesService().RefreshFavourites();
         return true;
       }
       return false;
@@ -511,6 +523,10 @@ bool CGUIDialogContextMenu::OnContextButton(const std::string &type, const CFile
       CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "lockmode", strNewLockMode);
       CMediaSourceSettings::GetInstance().UpdateSource(type, share->strName, "badpwdcount", "0");
       CMediaSourceSettings::GetInstance().Save();
+
+      // lock of a mediasource has been changed
+      // => refresh favourites due to possible visibility changes
+      CServiceBroker::GetFavouritesService().RefreshFavourites();
 
       CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_UPDATE_SOURCES);
       CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(msg);

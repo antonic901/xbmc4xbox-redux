@@ -1029,6 +1029,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\pictures\Picture.cpp">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\PlayerUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\PlayerUtils.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\POUtils.cpp">
 				</File>
 				<File
@@ -1235,6 +1241,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\utils\XMLUtils.h">
 				</File>
+				<Filter
+					Name="guilib"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\utils\guilib\GUIContentUtils.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\utils\guilib\GUIContentUtils.h">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Database"
@@ -5484,6 +5500,82 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\weather\WeatherManager.h">
+				</File>
+			</Filter>
+			<Filter
+				Name="favourites"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\favourites\ContextMenus.cpp">
+					<FileConfiguration
+						Name="Debug|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)4.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)4.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Profile_FastCap|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)4.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)4.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release_LTCG|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)4.obj"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Debug Xbox No Memory Tracking|Xbox">
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)/$(InputName)4.obj"/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\xbmc\favourites\ContextMenus.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\favourites\FavouritesService.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\favourites\FavouritesService.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\favourites\FavouritesURL.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\favourites\FavouritesURL.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\favourites\FavouritesUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\favourites\FavouritesUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\favourites\GUIViewStateFavourites.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\favourites\GUIViewStateFavourites.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\favourites\GUIWindowFavourites.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\favourites\GUIWindowFavourites.h">
 				</File>
 			</Filter>
 		</Filter>

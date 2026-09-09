@@ -24,6 +24,7 @@
 #include "dialogs/GUIDialogGamepad.h"
 #include "guilib/GUIKeyboardFactory.h"
 #include "dialogs/GUIDialogNumeric.h"
+#include "favourites/FavouritesService.h"
 #include "dialogs/GUIDialogOK.h"
 #include "profiles/ProfileManager.h"
 #include "profiles/dialogs/GUIDialogLockSettings.h"
@@ -37,9 +38,11 @@
 #include "guilib/GUIWindowManager.h"
 #include "FileItem.h"
 #include "guilib/LocalizeStrings.h"
+#include "media/MediaLockState.h"
 #include "utils/log.h"
 #include "view/ViewStateSettings.h"
 #include "utils/Variant.h"
+#include "utils/URIUtils.h"
 
 using namespace KODI::MESSAGING;
 
@@ -104,6 +107,10 @@ bool CGUIPassword::IsItemUnlocked(CFileItem* pItem, const std::string &strType)
         sprintf(buffer,"%i",pItem->m_iBadPwdCount);
         CMediaSourceSettings::GetInstance().UpdateSource(strType, strLabel, "badpwdcount", buffer);
         CMediaSourceSettings::GetInstance().Save();
+
+        // a mediasource has been unlocked successfully
+        // => refresh favourites due to possible visibility changes
+        CServiceBroker::GetFavouritesService().RefreshFavourites();
         break;
       }
     case 1:
@@ -497,6 +504,31 @@ bool CGUIPassword::IsDatabasePathUnlocked(std::string& strPath, VECSOURCES& vecS
       return true;
 
   return false;
+}
+
+bool CGUIPassword::IsMediaFileUnlocked(const std::string& type, const std::string& file) const
+{
+  std::vector<CMediaSource>* vecSources = CMediaSourceSettings::GetInstance().GetSources(type);
+
+  if (!vecSources)
+  {
+    CLog::Log(LOGERROR,
+              "%s: CMediaSourceSettings::GetInstance().GetSources(\"%s\") returned nullptr.",
+              __FUNCTION__, type.c_str());
+    return true;
+  }
+
+  // try to find the best matching source for this file
+
+  bool isSourceName(false);
+  const std::string fileBasePath = URIUtils::GetBasePath(file);
+
+  int iIndex = CUtil::GetMatchingSource(fileBasePath, *vecSources, isSourceName);
+
+  if (iIndex > -1 && iIndex < static_cast<int>(vecSources->size()))
+    return (*vecSources)[iIndex].m_iHasLock < LOCK_STATE_LOCKED;
+
+  return true;
 }
 
 void CGUIPassword::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)

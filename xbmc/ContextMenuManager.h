@@ -41,7 +41,21 @@ public:
   void Init();
   void Deinit();
 
+  /*! \brief Checks whether context menu items are available for a file item.
+   \param fileItem the file item
+   \param root the root context menu item
+   \return true if any items are present, false otherwise
+   */
+  bool HasItems(const CFileItem& fileItem, const CContextMenuItem& root) const;
+
   ContextMenuView GetItems(const CFileItem& item, const CContextMenuItem& root = MAIN) const;
+
+  /*! \brief Checks whether addon context menu items are available for a file item.
+   \param fileItem the file item
+   \param root the root context menu item
+   \return true if any items are present, false otherwise
+   */
+  bool HasAddonItems(const CFileItem& fileItem, const CContextMenuItem& root) const;
 
   ContextMenuView GetAddonItems(const CFileItem& item, const CContextMenuItem& root = MAIN) const;
 
@@ -68,6 +82,13 @@ private:
 
 namespace CONTEXTMENU
 {
+  /*! \brief Checks whether any context menu items are available for a file item.
+  \param fileItem the file item
+  \param root the root context menu item
+  \return true if any items are present, false otherwise
+  */
+  bool HasAnyMenuItemsFor(const boost::shared_ptr<CFileItem>& fileItem, const CContextMenuItem& root);
+
   /*!
    * Starts the context menu loop for a file item.
    * */

@@ -11,6 +11,7 @@
 #include "IListProvider.h"
 #include "addons/AddonEvents.h"
 #include "addons/RepositoryUpdater.h"
+#include "favourites/FavouritesService.h"
 #include "guilib/GUIStaticItem.h"
 #include "interfaces/IAnnouncer.h"
 #include "threads/CriticalSection.h"
@@ -68,6 +69,7 @@ public:
   virtual void Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items);
   virtual void Reset();
   virtual bool OnClick(const boost::shared_ptr<CGUIListItem>& item);
+  virtual bool OnPlay(const boost::shared_ptr<CGUIListItem>& item);
   bool OnInfo(const boost::shared_ptr<CFileItem>& item);
   bool OnContextMenu(const boost::shared_ptr<CFileItem>& item);
   virtual bool OnInfo(const boost::shared_ptr<CGUIListItem>& item);
@@ -93,7 +95,7 @@ private:
   BrowseMode m_currentBrowse;
   std::vector<CGUIStaticItemPtr> m_items;
   std::vector<InfoTagType::TagType> m_itemTypes;
-  CCriticalSection m_section;
+  mutable CCriticalSection m_section;
 
   bool UpdateURL();
   bool UpdateLimit();
@@ -101,6 +103,7 @@ private:
   bool UpdateBrowse();
   void OnAddonEvent(const ADDON::AddonEvent& event);
   void OnAddonRepositoryEvent(const ADDON::CRepositoryUpdater::RepositoryUpdated& event);
+  void OnFavouritesEvent(const CFavouritesService::FavouritesUpdated& event);
   std::string GetTarget(const CFileItem& item) const;
 
   CCriticalSection m_subscriptionSection;

@@ -23,6 +23,7 @@
 #include "utils/Variant.h"
 
 class CFileItemList;
+class CProfileManager;
 class CURL;
 class CFileItem;
 
@@ -60,6 +61,9 @@ namespace XFILE
 class IDirectory
 {
 public:
+  static void RegisterProfileManager(const CProfileManager &profileManager);
+  static void UnregisterProfileManager();
+
   IDirectory(void);
   virtual ~IDirectory(void);
   /*!
@@ -185,6 +189,8 @@ protected:
    \param var the variant to localize.
    */
   std::string GetLocalized(const CVariant &var) const;
+
+  static const CProfileManager *m_profileManager;
 
   std::string m_strFileMask;  ///< Holds the file mask specified by SetMask()
 

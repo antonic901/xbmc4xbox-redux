@@ -50,9 +50,7 @@ bool CProgramInfoBase::IsVisible(const CFileItem& item) const
 
 bool CProgramInfoBase::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
-  CGUIDialogProgramInfo *dialog = static_cast<CGUIDialogProgramInfo*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRAM_INFO));
-  dialog->SetProgram(item.get());
-  dialog->Open();
+  CGUIDialogProgramInfo::ShowFor(item);
   return true;
 }
 

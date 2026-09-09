@@ -15,6 +15,7 @@
 #include "addons/Service.h"
 #include "addons/binary-addons/BinaryAddonManager.h"
 #include "cores/playercorefactory/PlayerCoreFactory.h"
+#include "favourites/FavouritesService.h"
 #include "input/InputManager.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "interfaces/python/XBPython.h"
@@ -73,6 +74,8 @@ bool CServiceManager::InitStageTwo(const std::string& profilesUserDataFolder)
 
   m_repositoryUpdater.reset(new ADDON::CRepositoryUpdater(*m_addonMgr));
 
+  m_favouritesService.reset(new CFavouritesService(profilesUserDataFolder));
+
   m_serviceAddons.reset(new ADDON::CServiceAddonManager(*m_addonMgr));
 
   m_contextMenuManager.reset(new CContextMenuManager(*m_addonMgr));
@@ -114,6 +117,7 @@ void CServiceManager::DeinitStageTwo()
   m_inputManager.reset();
   m_contextMenuManager.reset();
   m_serviceAddons.reset();
+  m_favouritesService.reset();
   m_repositoryUpdater.reset();
   m_binaryAddonManager.reset();
   m_addonMgr.reset();
@@ -169,6 +173,11 @@ CContextMenuManager& CServiceManager::GetContextMenuManager()
 PLAYLIST::CPlayListPlayer& CServiceManager::GetPlaylistPlayer()
 {
   return *m_playlistPlayer;
+}
+
+CFavouritesService& CServiceManager::GetFavouritesService()
+{
+  return *m_favouritesService;
 }
 
 CInputManager& CServiceManager::GetInputManager()

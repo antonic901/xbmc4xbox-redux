@@ -22,7 +22,7 @@
 #include "addons/addoninfo/AddonInfo.h"
 #include "addons/addoninfo/AddonType.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
-#include "filesystem/FavouritesDirectory.h"
+#include "favourites/FavouritesService.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "guilib/GUIComponent.h"
@@ -1230,7 +1230,7 @@ void CAddonUnInstallJob::ClearFavourites()
 {
   bool bSave = false;
   CFileItemList items;
-  XFILE::CFavouritesDirectory::Load(items);
+  CServiceBroker::GetFavouritesService().GetAll(items);
   for (int i = 0; i < items.Size(); i++)
   {
     if (items[i]->GetPath().find(m_addon->ID()) != std::string::npos)
@@ -1241,5 +1241,5 @@ void CAddonUnInstallJob::ClearFavourites()
   }
 
   if (bSave)
-    CFavouritesDirectory::Save(items);
+    CServiceBroker::GetFavouritesService().Save(items);
 }

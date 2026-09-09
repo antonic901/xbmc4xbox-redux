@@ -27,6 +27,7 @@
 #include <boost/make_shared.hpp>
 #include <vector>
 #include <boost/function.hpp>
+#include <boost/bind.hpp>
 
 
 template<typename Event>

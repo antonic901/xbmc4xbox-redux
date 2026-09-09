@@ -9,10 +9,13 @@
 #include "GUIDialogProgramInfo.h"
 
 #include "FileItem.h"
+#include "ServiceBroker.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIImage.h"
 #include "guilib/GUIMessage.h"
+#include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
@@ -24,6 +27,8 @@
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/URIUtils.h"
+
+#include <boost/make_shared.hpp>
 
 using namespace XFILE;
 using namespace KODI::MESSAGING;
@@ -89,9 +94,9 @@ void CGUIDialogProgramInfo::OnInitWindow()
   CGUIDialog::OnInitWindow();
 }
 
-void CGUIDialogProgramInfo::SetProgram(const CFileItem *item)
+void CGUIDialogProgramInfo::SetProgram(const boost::shared_ptr<CFileItem>& item)
 {
-  *m_programItem = *item;
+  m_programItem = boost::make_shared<CFileItem>(*item);
 
   // setup screenshot list
   ClearScreenshotList();
@@ -164,5 +169,15 @@ void CGUIDialogProgramInfo::SetLabel(int iControl, const std::string &strLabel)
   else
   {
     SET_CONTROL_LABEL(iControl, strLabel);
+  }
+}
+
+void CGUIDialogProgramInfo::ShowFor(const boost::shared_ptr<CFileItem>& item)
+{
+  CGUIDialogProgramInfo *dialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgramInfo>(WINDOW_DIALOG_PROGRAM_INFO);
+  if (dialog)
+  {
+    dialog->SetProgram(item);
+    dialog->Open();
   }
 }

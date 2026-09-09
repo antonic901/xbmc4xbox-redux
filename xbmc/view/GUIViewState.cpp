@@ -20,6 +20,7 @@
 #include "addons/PluginSource.h"
 #include "addons/gui/GUIViewStateAddonBrowser.h"
 #include "dialogs/GUIDialogSelect.h"
+#include "favourites/GUIViewStateFavourites.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
@@ -123,6 +124,9 @@ CGUIViewState* CGUIViewState::GetViewState(int windowId, const CFileItemList& it
 
   if (windowId == WINDOW_ADDON_BROWSER)
     return new CGUIViewStateAddonBrowser(items);
+
+  if (windowId == WINDOW_FAVOURITES)
+    return new CGUIViewStateFavourites(items);
 
   //  Use as fallback/default
   return new CGUIViewStateGeneral(items);

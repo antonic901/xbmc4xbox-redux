@@ -88,6 +88,11 @@ boost::shared_ptr<CSettingsComponent> CServiceBroker::GetSettingsComponent()
   return g_serviceBroker.m_pSettingsComponent;
 }
 
+CFavouritesService& CServiceBroker::GetFavouritesService()
+{
+  return g_application.m_ServiceManager->GetFavouritesService();
+}
+
 ADDON::CServiceAddonManager& CServiceBroker::GetServiceAddons()
 {
   return g_application.m_ServiceManager->GetServiceAddons();

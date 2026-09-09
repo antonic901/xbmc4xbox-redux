@@ -29,6 +29,7 @@ class CContextMenuManager;
 #ifdef HAS_PYTHON
 class XBPython;
 #endif
+class CFavouritesService;
 class CNetwork;
 class CWinSystemBase;
 class CWeatherManager;
@@ -66,6 +67,7 @@ public:
   PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
   int init_level;
 
+  CFavouritesService& GetFavouritesService();
   CInputManager& GetInputManager();
 
   CWeatherManager& GetWeatherManager();
@@ -86,6 +88,7 @@ protected:
 #endif
   boost::movelib::unique_ptr<CContextMenuManager> m_contextMenuManager;
   boost::movelib::unique_ptr<PLAYLIST::CPlayListPlayer> m_playlistPlayer;
+  boost::movelib::unique_ptr<CFavouritesService> m_favouritesService;
   boost::movelib::unique_ptr<CInputManager> m_inputManager;
   boost::movelib::unique_ptr<CNetwork> m_network;
   boost::movelib::unique_ptr<CWeatherManager> m_weatherManager;

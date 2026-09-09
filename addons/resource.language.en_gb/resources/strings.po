@@ -7495,7 +7495,15 @@ msgctxt "#19177"
 msgid "Playback"
 msgstr ""
 
-#empty strings from id 19178 to 19999
+#empty strings from id 19178 to 19348
+
+#. label for 'by user preference' sort method
+#: xbmc/utils/SortUtils.cpp
+msgctxt "#19349"
+msgid "User preference"
+msgstr ""
+
+#empty strings from id 19350 to 19999
 
 #: system/settings/settings.xml
 msgctxt "#20000"

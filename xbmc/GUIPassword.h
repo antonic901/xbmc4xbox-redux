@@ -67,6 +67,15 @@ public:
   void RemoveSourceLocks();
   bool IsDatabasePathUnlocked(std::string& strPath, VECSOURCES& VECSOURCES);
 
+  /*! \brief Helper function to test if a matching mediasource is currently unlocked
+   for a given media file
+   \note this function only returns the lock state. it does not provide unlock functionality
+   \param type The type of share being accessed, e.g. "music", "video", etc.
+   \param file The file to check lock state for
+   \return If access is granted, returns \e true
+   */
+  bool IsMediaFileUnlocked(const std::string& type, const std::string& file) const;
+
   virtual void OnSettingAction(const boost::shared_ptr<const CSetting>& setting);
 
   bool bMasterUser;

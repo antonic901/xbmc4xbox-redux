@@ -41,6 +41,8 @@
 #define WINDOW_DIALOG_PROGRAM_INFO        10062
 #define WINDOW_DIALOG_PROGRAM_SETTINGS    10063
 
+#define WINDOW_FAVOURITES 10060
+
 #define WINDOW_SCREENSAVER_DIM               97
 #define WINDOW_DEBUG_INFO                    98
 #define WINDOW_DIALOG_YES_NO              10100

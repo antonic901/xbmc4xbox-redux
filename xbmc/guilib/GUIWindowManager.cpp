@@ -21,6 +21,7 @@
 #include "application/Application.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
+#include "favourites/GUIWindowFavourites.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 #include "messaging/ApplicationMessenger.h"
@@ -204,6 +205,8 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIWindowWeather);
   Add(new CGUIWindowStartup);
   Add(new CGUIWindowSplash);
+
+  Add(new CGUIWindowFavourites);
   Add(new CGUIWindowInsignia);
 
   Add(new CGUIDialogProgramInfo);
@@ -291,7 +294,9 @@ bool CGUIWindowManager::DestroyWindows()
     Remove(WINDOW_DIALOG_SEEK_BAR);
     Remove(WINDOW_DIALOG_VOLUME_BAR);
 
+    DestroyWindow(WINDOW_FAVOURITES);
     DestroyWindow(WINDOW_INSIGNIA);
+
     DestroyWindow(WINDOW_DIALOG_PROGRAM_INFO);
     DestroyWindow(WINDOW_DIALOG_PROGRAM_SETTINGS);
   }

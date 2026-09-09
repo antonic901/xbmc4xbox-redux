@@ -20,10 +20,14 @@ public:
   CGUIDialogProgramInfo(void);
   virtual ~CGUIDialogProgramInfo(void);
   bool OnMessage(CGUIMessage& message);
-  void SetProgram(const CFileItem *item);
+
+  static void ShowFor(const boost::shared_ptr<CFileItem>& item);
 
 protected:
   void OnInitWindow();
+
+  void SetProgram(const boost::shared_ptr<CFileItem>& item);
+
   void Update();
   void SetLabel(int iControl, const std::string& strLabel);
 

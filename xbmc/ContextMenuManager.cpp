@@ -20,6 +20,7 @@
 
 #include "ContextMenuManager.h"
 #include "ContextMenuItem.h"
+#include "FileItem.h"
 #include "addons/Addon.h"
 #include "addons/AddonEvents.h"
 #include "addons/AddonManager.h"
@@ -30,6 +31,7 @@
 #include "music/ContextMenus.h"
 #include "video/ContextMenus.h"
 #include "programs/ContextMenus.h"
+#include "favourites/ContextMenus.h"
 #include "utils/log.h"
 #include "ServiceBroker.h"
 
@@ -83,6 +85,16 @@ void CContextMenuManager::Init()
   m_items.push_back(boost::make_shared<CONTEXTMENU::CScraperConfig>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CContentScan>());
   m_items.push_back(boost::make_shared<CONTEXTMENU::CScriptLaunch>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CFavouritesTargetBrowse>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CFavouritesTargetResume>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CFavouritesTargetPlay>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CFavouritesTargetInfo>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CMoveUpFavourite>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CMoveDownFavourite>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CChooseThumbnailForFavourite>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CRenameFavourite>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CRemoveFavourite>());
+  m_items.push_back(boost::make_shared<CONTEXTMENU::CFavouritesTargetContextMenu>());
   ReloadAddonItems();
 }
 
@@ -189,6 +201,17 @@ bool isItemVisible(const boost::shared_ptr<IContextMenuItem> &menu, const CFileI
   return menu->IsVisible(fileItem);
 }
 
+bool CContextMenuManager::HasItems(const CFileItem& fileItem, const CContextMenuItem& root) const
+{
+  //! @todo implement group support
+  if (&root == &CContextMenuManager::MAIN)
+  {
+    CSingleLock lock(m_criticalSection);
+    return boost::algorithm::any_of(m_items.begin(), m_items.end(), boost::bind(isItemVisible, _1, fileItem));
+  }
+  return false;
+}
+
 ContextMenuView CContextMenuManager::GetItems(const CFileItem& fileItem, const CContextMenuItem& root /*= MAIN*/) const
 {
   ContextMenuView result;
@@ -206,6 +229,13 @@ bool sortByLabel(const ContextMenuView::value_type& lhs, const ContextMenuView::
   return lhs->GetLabel(fileItem) < rhs->GetLabel(fileItem);
 }
 
+bool CContextMenuManager::HasAddonItems(const CFileItem& fileItem,
+                                        const CContextMenuItem& root) const
+{
+  CSingleLock lock(m_criticalSection);
+  return boost::algorithm::any_of(m_addonItems.begin(), m_addonItems.end(), boost::bind(&CContextMenuManager::IsVisible, this, _1, root, fileItem));
+}
+
 ContextMenuView CContextMenuManager::GetAddonItems(const CFileItem& fileItem, const CContextMenuItem& root /*= MAIN*/) const
 {
   ContextMenuView result;
@@ -221,6 +251,20 @@ ContextMenuView CContextMenuManager::GetAddonItems(const CFileItem& fileItem, co
     std::sort(result.begin(), result.end(), boost::bind(sortByLabel, _1, _2, boost::cref(fileItem)));
   }
   return result;
+}
+
+bool CONTEXTMENU::HasAnyMenuItemsFor(const boost::shared_ptr<CFileItem>& fileItem,
+                                     const CContextMenuItem& root)
+{
+  if (!fileItem)
+    return false;
+
+  if (fileItem->HasProperty("contextmenulabel(0)"))
+    return true;
+
+  const CContextMenuManager& contextMenuManager = CServiceBroker::GetContextMenuManager();
+  return (contextMenuManager.HasItems(*fileItem, root) ||
+          contextMenuManager.HasAddonItems(*fileItem, root));
 }
 
 bool CONTEXTMENU::ShowFor(const CFileItemPtr& fileItem, const CContextMenuItem& root)

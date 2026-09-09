@@ -58,6 +58,8 @@ bool CSettingsComponent::Load()
       return false;
     }
 
+    XFILE::IDirectory::RegisterProfileManager(*m_profileManager);
+
     if (!m_settings->Load())
     {
       CLog::Log(LOGFATAL, "unable to load settings");
@@ -86,6 +88,8 @@ void CSettingsComponent::Deinitialize()
     if (m_state == State::LOADED)
     {
       m_settings->Unload();
+
+      XFILE::IDirectory::UnregisterProfileManager();
     }
     m_profileManager->Uninitialize();
 

@@ -297,7 +297,8 @@ static const ActionMapping windows[] =
         {"startup"                  , WINDOW_STARTUP_ANIM},
         {"extendedprogressdialog"   , WINDOW_DIALOG_EXT_PROGRESS},
         {"mediafilter"              , WINDOW_DIALOG_MEDIA_FILTER},
-        {"addon"                    , WINDOW_ADDON_START}};
+        {"addon"                    , WINDOW_ADDON_START},
+        {"favouritesbrowser"        , WINDOW_FAVOURITES}};
 
 static const WindowMapping fallbackWindows[] =
 {

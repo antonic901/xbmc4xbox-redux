@@ -13,9 +13,9 @@
 #include "ServiceBroker.h"
 #include "Util.h"
 #include "addons/AddonManager.h"
+#include "favourites/FavouritesService.h"
 #include "addons/gui/GUIDialogAddonInfo.h"
 #include "filesystem/Directory.h"
-#include "filesystem/FavouritesDirectory.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
@@ -27,14 +27,17 @@
 #include "settings/SettingsComponent.h"
 #include "utils/ExecString.h"
 #include "utils/JobManager.h"
+#include "utils/PlayerUtils.h"
 #include "utils/SortUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
 #include "utils/XMLUtils.h"
+#include "utils/guilib/GUIContentUtils.h"
 #include "utils/log.h"
 #include "video/VideoInfoTag.h"
 #include "video/VideoThumbLoader.h"
+#include "video/VideoUtils.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "video/guilib/VideoPlayActionProcessor.h"
 #include "video/guilib/VideoSelectActionProcessor.h"
@@ -360,6 +363,13 @@ void CDirectoryProvider::OnAddonRepositoryEvent(const ADDON::CRepositoryUpdater:
   }
 }
 
+void CDirectoryProvider::OnFavouritesEvent(const CFavouritesService::FavouritesUpdated& event)
+{
+  CSingleLock lock(m_section);
+  if (URIUtils::IsProtocol(m_currentUrl, "favourites"))
+    m_updateState = INVALIDATED;
+}
+
 void CDirectoryProvider::Reset()
 {
   {
@@ -383,6 +393,7 @@ void CDirectoryProvider::Reset()
   {
     m_isSubscribed = false;
     CServiceBroker::GetAnnouncementManager()->RemoveAnnouncer(this);
+    CServiceBroker::GetFavouritesService().Events().Unsubscribe(this);
     CServiceBroker::GetRepositoryUpdater().Events().Unsubscribe(this);
     CServiceBroker::GetAddonMgr().Events().Unsubscribe(this);
   }
@@ -518,6 +529,15 @@ bool CDirectoryProvider::OnClick(const boost::shared_ptr<CGUIListItem>& item)
 {
   CFileItem targetItem = *boost::static_pointer_cast<CFileItem>(item);
 
+  if (targetItem.IsFavourite())
+  {
+    const CFileItemPtr target = CServiceBroker::GetFavouritesService().ResolveFavourite(targetItem);
+    if (!target)
+      return false;
+
+    targetItem = *target;
+  }
+
   const CExecString exec(targetItem, GetTarget(targetItem));
   const bool isPlayMedia(exec.GetFunction() == "playmedia");
 
@@ -541,30 +561,52 @@ bool CDirectoryProvider::OnClick(const boost::shared_ptr<CGUIListItem>& item)
   return ExecuteAction(CExecString(fileItem, GetTarget(fileItem)));
 }
 
-bool CDirectoryProvider::OnInfo(const boost::shared_ptr<CFileItem>& fileItem)
+bool CDirectoryProvider::OnPlay(const boost::shared_ptr<CGUIListItem>& item)
 {
-  if (fileItem->HasAddonInfo())
+  CFileItem targetItem = *boost::static_pointer_cast<CFileItem>(item);
+
+  if (targetItem.IsFavourite())
   {
-    return CGUIDialogAddonInfo::ShowForItem(fileItem);
+    const CFileItemPtr target = CServiceBroker::GetFavouritesService().ResolveFavourite(targetItem);
+    if (!target)
+      return false;
+
+    targetItem = *target;
   }
-  else if (fileItem->HasVideoInfoTag())
+
+  // video play action setting is for files and folders...
+  if (targetItem.HasVideoInfoTag() ||
+      (targetItem.m_bIsFolder && VIDEO_UTILS::IsItemPlayable(targetItem)))
   {
-    MediaType mediaType = fileItem->GetVideoInfoTag()->m_type;
-    if (mediaType == MediaTypeMovie || mediaType == MediaTypeTvShow ||
-        mediaType == MediaTypeSeason || mediaType == MediaTypeEpisode ||
-        mediaType == MediaTypeVideo || mediaType == MediaTypeVideoCollection ||
-        mediaType == MediaTypeMusicVideo)
-    {
-      CGUIDialogVideoInfo::ShowFor(*fileItem);
+    CVideoPlayActionProcessor proc(boost::make_shared<CFileItem>(targetItem));
+    if (proc.ProcessDefaultAction())
       return true;
+  }
+
+  if (CPlayerUtils::IsItemPlayable(targetItem))
+  {
+    const CExecString exec(targetItem, GetTarget(targetItem));
+    if (exec.GetFunction() == "playmedia")
+    {
+      // exec as is
+      return ExecuteAction(exec);
+    }
+    else
+    {
+      // build a playmedia execute string for given target and exec this
+      return ExecuteAction(CExecString("PlayMedia", targetItem, ""));
     }
   }
-  else if (fileItem->HasMusicInfoTag())
-  {
-    CGUIDialogMusicInfo::ShowFor(fileItem.get());
-    return true;
-  }
-  return false;
+  return true;
+}
+
+bool CDirectoryProvider::OnInfo(const boost::shared_ptr<CFileItem>& fileItem)
+{
+  const CFileItemPtr targetItem = fileItem->IsFavourite()
+                            ? CServiceBroker::GetFavouritesService().ResolveFavourite(*fileItem)
+                            : fileItem;
+
+  return UTILS::GUILIB::CGUIContentUtils::ShowInfoForItem(*targetItem);
 }
 
 bool CDirectoryProvider::OnInfo(const boost::shared_ptr<CGUIListItem>& item)
@@ -612,6 +654,7 @@ bool CDirectoryProvider::UpdateURL()
     CServiceBroker::GetAnnouncementManager()->AddAnnouncer(this);
     CServiceBroker::GetAddonMgr().Events().Subscribe(this, &CDirectoryProvider::OnAddonEvent);
     CServiceBroker::GetRepositoryUpdater().Events().Subscribe(this, &CDirectoryProvider::OnAddonRepositoryEvent);
+    CServiceBroker::GetFavouritesService().Events().Subscribe(this, &CDirectoryProvider::OnFavouritesEvent);
   }
   return true;
 }

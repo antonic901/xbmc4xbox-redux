@@ -32,6 +32,18 @@
 
 using namespace XFILE;
 
+const CProfileManager *IDirectory::m_profileManager = NULL;
+
+void IDirectory::RegisterProfileManager(const CProfileManager &profileManager)
+{
+  m_profileManager = &profileManager;
+}
+
+void IDirectory::UnregisterProfileManager()
+{
+  m_profileManager = NULL;
+}
+
 IDirectory::IDirectory(void)
 {
   m_flags = DIR_FLAG_DEFAULTS;
