@@ -38,7 +38,7 @@ public:
 
 class DllAdplug : public DllDynamic, DllAdplugInterface
 {
-  DECLARE_DLL_WRAPPER(DllAdplug, q:\\system\\players\\paplayer\\adplug.dll)
+  DECLARE_DLL_WRAPPER(DllAdplug, DLL_PATH_LIBADPLUG)
   DEFINE_METHOD0(int, Init)
   DEFINE_METHOD1(int, LoadADL, (const char* p1))
   DEFINE_METHOD1(void, FreeADL, (int p1))

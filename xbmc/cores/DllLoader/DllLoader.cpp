@@ -508,7 +508,7 @@ int DllLoader::LoadExports()
   return 0;
 }
 
-int DllLoader::ResolveExport(const char *sName, void **pAddr)
+int DllLoader::ResolveExport(const char *sName, void **pAddr, bool logging)
 {
   Export* pExport=GetExportByFunctionName(sName);
 
@@ -526,11 +526,12 @@ int DllLoader::ResolveExport(const char *sName, void **pAddr)
   if (sDllName) sDllName += 1;
   else sDllName = GetFileName();
 
-  CLog::Log(LOGDEBUG, "Unable to resolve: %s %s", sDllName, sName);
+  if (logging)
+    CLog::Log(LOGDEBUG, "Unable to resolve: %s %s", sDllName, sName);
   return 0;
 }
 
-int DllLoader::ResolveExport(unsigned long ordinal, void **pAddr)
+int DllLoader::ResolveExport(unsigned long ordinal, void **pAddr, bool logging)
 {
   Export* pExport=GetExportByOrdinal(ordinal);
 
@@ -548,7 +549,8 @@ int DllLoader::ResolveExport(unsigned long ordinal, void **pAddr)
   if (sDllName) sDllName += 1;
   else sDllName = GetFileName();
 
-  CLog::Log(LOGDEBUG, "Unable to resolve: %s %lu", sDllName, ordinal);
+  if (logging)
+    CLog::Log(LOGDEBUG, "Unable to resolve: %s %lu", sDllName, ordinal);
   return 0;
 }
 

@@ -39,7 +39,7 @@ public:
 
 class DllNosefart : public DllDynamic, DllNosefartInterface
 {
-  DECLARE_DLL_WRAPPER(DllNosefart, q:\\system\\players\\paplayer\\nosefart.dll)
+  DECLARE_DLL_WRAPPER(DllNosefart, DLL_PATH_LIBNOSEFART)
   DEFINE_METHOD1(int, LoadNSF, (const char* p1))
   DEFINE_METHOD1(void, FreeNSF, (int p1))
   DEFINE_METHOD2(int, StartPlayback, (int p1, int p2))

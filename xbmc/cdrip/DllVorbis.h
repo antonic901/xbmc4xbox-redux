@@ -47,7 +47,7 @@ public:
 
 class DllVorbis : public DllDynamic, DllVorbisInterface
 {
-  DECLARE_DLL_WRAPPER(DllVorbis, Q:\\system\\cdrip\\vorbis.dll)
+  DECLARE_DLL_WRAPPER(DllVorbis, DLL_PATH_LIBVORBIS)
   DEFINE_METHOD1(void, vorbis_info_init, (vorbis_info *p1))
   DEFINE_METHOD2(int, vorbis_bitrate_flushpacket, (vorbis_dsp_state *p1, ogg_packet *p2))
   DEFINE_METHOD1(int, vorbis_bitrate_addblock, (vorbis_block *p1))

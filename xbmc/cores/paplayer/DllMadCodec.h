@@ -32,7 +32,7 @@ public:
 
 class DllMadCodec : public DllDynamic, DllMadCodecInterface
 {
-  DECLARE_DLL_WRAPPER(DllMadCodec, Q:\\system\\players\\PAPlayer\\MADCodec.dll)
+  DECLARE_DLL_WRAPPER(DllMadCodec, DLL_PATH_LIBMADCODEC)
   DEFINE_METHOD2(IAudioDecoder*, CreateAudioDecoder, (unsigned int p1, IAudioOutput **p2))
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD(CreateAudioDecoder)

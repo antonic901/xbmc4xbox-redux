@@ -47,7 +47,7 @@ public:
 
 class DllLameEnc : public DllDynamic, DllLameEncInterface
 {
-  DECLARE_DLL_WRAPPER(DllLameEnc, Q:\\system\\cdrip\\lame_enc.dll)
+  DECLARE_DLL_WRAPPER(DllLameEnc, DLL_PATH_LIBLAME)
   DEFINE_METHOD7(int, parse_args, (lame_global_flags* p1, int p2, char** p3, char* const p4, char* const p5, char* p6[], int *p7))
   DEFINE_METHOD2(int, id3tag_set_genre, (lame_global_flags* p1, const char* p2))
   DEFINE_METHOD2(void, id3tag_set_title, (lame_global_flags* p1, const char* p2))

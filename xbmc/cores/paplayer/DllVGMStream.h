@@ -36,7 +36,7 @@ public:
 
 class DllVGM : public DllDynamic, DllVGMInterface
 {
-  DECLARE_DLL_WRAPPER(DllVGM, Q:\\system\\players\\paplayer\\vgmstream.dll)
+  DECLARE_DLL_WRAPPER(DllVGM, DLL_PATH_LIBVGMSTREAM)
   DEFINE_METHOD0(long, Init)
   DEFINE_METHOD4(long, LoadVGM, (const char* p1, int* p2, int* p3, int* p4 ))
   DEFINE_METHOD1(void, FreeVGM, (long p1))

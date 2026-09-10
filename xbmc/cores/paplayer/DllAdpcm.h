@@ -38,7 +38,7 @@ public:
 
 class DllADPCM : public DllDynamic, DllADPCMInterface
 {
-  DECLARE_DLL_WRAPPER(DllADPCM, q:\\system\\players\\paplayer\\adpcm.dll)
+  DECLARE_DLL_WRAPPER(DllADPCM, DLL_PATH_LIBADPCM)
   DEFINE_METHOD1(int, LoadXWAV, (const char* p1))
   DEFINE_METHOD1(void, FreeXWAV, (int p1))
   DEFINE_METHOD3(long, FillBuffer, (int p1, char* p2, int p3))

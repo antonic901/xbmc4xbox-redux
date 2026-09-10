@@ -45,7 +45,7 @@ typedef struct _LoadedList
   DllLoader* pDll;
   _LoadedList* pNext;
 } LoadedList;
-  
+
 class DllLoader : public CoffLoader, public LibraryLoader
 {
 public:
@@ -55,19 +55,19 @@ public:
   virtual bool Load();
   virtual void Unload();
 
-  virtual int ResolveExport(const char*, void** ptr);
-  virtual int ResolveExport(unsigned long ordinal, void** ptr);
+  virtual int ResolveExport(const char*, void** ptr, bool logging = true);
+  virtual int ResolveExport(unsigned long ordinal, void** ptr, bool logging = true);
   virtual bool HasSymbols() { return m_bLoadSymbols && !m_bUnloadSymbols; }
   virtual bool IsSystemDll() { return m_bSystemDll; }
-  virtual HMODULE GetHModule() { return (HMODULE)hModule; }  
-  
-protected:  
+  virtual HMODULE GetHModule() { return (HMODULE)hModule; }
+
+protected:
   int Parse();
   int ResolveImports();
 
   Export* GetExportByOrdinal(unsigned long ordinal);
   Export* GetExportByFunctionName(const char* sFunctionName);
-  
+
   void AddExport(unsigned long ordinal, void* function, void* track_function = NULL);
   void AddExport(char* sFunctionName, unsigned long ordinal, void* function, void* track_function = NULL);
   void AddExport(char* sFunctionName, void* function, void* track_function = NULL);
@@ -88,7 +88,7 @@ protected:
   void PrintImportLookupTable(unsigned long ImportLookupTable_RVA);
   void PrintImportTable(ImportDirTable_t *ImportDirTable);
   void PrintExportTable(ExportDirTable_t *ExportDirTable);
-  
+
   int ResolveOrdinal(char*, unsigned long, void**);
   int ResolveName(char*, char*, void **);
   char* ResolveReferencedDll(char* dll);

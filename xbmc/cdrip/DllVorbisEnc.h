@@ -33,7 +33,7 @@ public:
 
 class DllVorbisEnc : public DllDynamic, DllVorbisEncInterface
 {
-  DECLARE_DLL_WRAPPER(DllVorbisEnc, Q:\\system\\cdrip\\vorbisenc.dll)
+  DECLARE_DLL_WRAPPER(DllVorbisEnc, DLL_PATH_LIBVORBISENC)
   DEFINE_METHOD6(int, vorbis_encode_init, (vorbis_info *p1, long p2, long p3, long p4, long p5, long p6))
   DEFINE_METHOD4(int, vorbis_encode_init_vbr, (vorbis_info *p1, long p2, long p3, float p4))
   BEGIN_METHOD_RESOLVE()

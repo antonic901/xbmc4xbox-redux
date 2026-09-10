@@ -46,7 +46,7 @@ public:
 
 class DllLibRTMP : public DllDynamic, DllLibRTMPInterface
 {
-  DECLARE_DLL_WRAPPER(DllLibRTMP, Q:\\system\\players\\dvdplayer\\libRTMP.dll )
+  DECLARE_DLL_WRAPPER(DllLibRTMP, DLL_PATH_LIBRTMP )
   DEFINE_METHOD1(void, LogSetLevel,    (int p1))
   DEFINE_METHOD1(void, LogSetCallback, (RTMP_LogCallback* p1))
   DEFINE_METHOD0(RTMP *, Alloc         )

@@ -52,7 +52,7 @@ public:
 
 class DllLibMpeg2 : public DllDynamic, DllLibMpeg2Interface
 {
-  DECLARE_DLL_WRAPPER(DllLibMpeg2, Q:\\system\\players\\dvdplayer\\libmpeg2.dll)
+  DECLARE_DLL_WRAPPER(DllLibMpeg2, DLL_PATH_LIBMPEG2)
   DEFINE_METHOD1(uint32_t, mpeg2_accel, (uint32_t p1))
   DEFINE_METHOD0(mpeg2dec_t *, mpeg2_init)
   DEFINE_METHOD1(const mpeg2_info_t *, mpeg2_info, (mpeg2dec_t * p1))
@@ -64,7 +64,7 @@ class DllLibMpeg2 : public DllDynamic, DllLibMpeg2Interface
   DEFINE_METHOD3(void, mpeg2_set_buf, (mpeg2dec_t * p1, uint8_t * p2[3], void * p3))
   DEFINE_METHOD2(void, mpeg2_custom_fbuf, (mpeg2dec_t * p1, int p2))
   DEFINE_METHOD3(int, mpeg2_convert, (mpeg2dec_t * p1, mpeg2_convert_t p2, void * p3))
-  DEFINE_METHOD2(void,mpeg2_skip, (mpeg2dec_t * p1, int p2)) 
+  DEFINE_METHOD2(void,mpeg2_skip, (mpeg2dec_t * p1, int p2))
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD(mpeg2_accel)
     RESOLVE_METHOD(mpeg2_init)

@@ -42,7 +42,7 @@ public:
 
 class DllDumb : public DllDynamic, DllDumbInterface
 {
-  DECLARE_DLL_WRAPPER(DllDumb, Q:\\system\\players\\PAPlayer\\dumb.dll)
+  DECLARE_DLL_WRAPPER(DllDumb, DLL_PATH_LIBDUMB)
   DEFINE_METHOD1(int, LoadModule, (const char* p1))
   DEFINE_METHOD1(void, FreeModule, (int p1))
   DEFINE_METHOD1(int, GetModuleLength, (int p1))

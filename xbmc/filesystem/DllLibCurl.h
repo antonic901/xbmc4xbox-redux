@@ -59,7 +59,7 @@ namespace XCURL
 
   class DllLibCurl : public DllDynamic, DllLibCurlInterface
   {
-    DECLARE_DLL_WRAPPER(DllLibCurl, Q:\\system\\libcurl.dll)
+    DECLARE_DLL_WRAPPER(DllLibCurl, DLL_PATH_LIBCURL)
     DEFINE_METHOD1(CURLcode, global_init, (long p1))
     DEFINE_METHOD0(void, global_cleanup)
     DEFINE_METHOD0(CURL_HANDLE *, easy_init)

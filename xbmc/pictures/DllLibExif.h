@@ -32,7 +32,7 @@ public:
 
 class DllLibExif : public DllDynamic, DllLibExifInterface
 {
-  DECLARE_DLL_WRAPPER(DllLibExif, Q:\\system\\libexif.dll)
+  DECLARE_DLL_WRAPPER(DllLibExif, DLL_PATH_LIBEXIF)
   DEFINE_METHOD3(bool, process_jpeg, (const char *p1, ExifInfo_t *p2, IPTCInfo_t *p3))
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD(process_jpeg)

@@ -50,7 +50,7 @@ public:
 
 class DllFlacEnc : public DllDynamic, DllFlacEncInterface
 {
-  DECLARE_DLL_WRAPPER(DllFlacEnc, Q:\\system\\players\\paplayer\\libFLAC.dll)
+  DECLARE_DLL_WRAPPER(DllFlacEnc, DLL_PATH_LIBFLAC)
   DEFINE_METHOD0(FLAC__StreamEncoder*, FLAC__stream_encoder_new)
   DEFINE_METHOD2(FLAC__bool, FLAC__stream_encoder_set_verify, (FLAC__StreamEncoder *p1, FLAC__bool p2))
   DEFINE_METHOD2(FLAC__bool, FLAC__stream_encoder_set_compression_level, (FLAC__StreamEncoder *p1, unsigned p2))
@@ -74,14 +74,14 @@ class DllFlacEnc : public DllDynamic, DllFlacEncInterface
     RESOLVE_METHOD(FLAC__stream_encoder_set_verify)
     RESOLVE_METHOD(FLAC__stream_encoder_set_compression_level)
     RESOLVE_METHOD(FLAC__stream_encoder_set_channels)
-	RESOLVE_METHOD(FLAC__stream_encoder_set_bits_per_sample)
+    RESOLVE_METHOD(FLAC__stream_encoder_set_bits_per_sample)
     RESOLVE_METHOD(FLAC__stream_encoder_set_sample_rate)
     RESOLVE_METHOD(FLAC__stream_encoder_set_total_samples_estimate)
     RESOLVE_METHOD(FLAC__stream_encoder_set_metadata)
     RESOLVE_METHOD(FLAC__stream_encoder_init_stream)
     RESOLVE_METHOD(FLAC__stream_encoder_process_interleaved)
-	RESOLVE_METHOD(FLAC__stream_encoder_get_state)
-	RESOLVE_METHOD(FLAC__stream_encoder_finish)
+    RESOLVE_METHOD(FLAC__stream_encoder_get_state)
+    RESOLVE_METHOD(FLAC__stream_encoder_finish)
     RESOLVE_METHOD(FLAC__stream_encoder_delete)
     RESOLVE_METHOD(FLAC__metadata_object_new)
     RESOLVE_METHOD(FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair)

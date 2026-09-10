@@ -58,7 +58,7 @@ public:
 
 class DllLibass : public DllDynamic, DllLibassInterface
 {
-  DECLARE_DLL_WRAPPER(DllLibass, Q:\\system\\players\\dvdplayer\\libass.dll)
+  DECLARE_DLL_WRAPPER(DllLibass, DLL_PATH_LIBASS)
   DEFINE_METHOD2(void, ass_set_extract_fonts, (ass_library_t * p1, int p2))
   DEFINE_METHOD2(void, ass_set_fonts_dir, (ass_library_t * p1, const char * p2))
   DEFINE_METHOD0(ass_library_t *, ass_library_init)
