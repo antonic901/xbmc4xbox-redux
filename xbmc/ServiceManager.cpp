@@ -11,6 +11,7 @@
 #include "ContextMenuManager.h"
 #include "DatabaseManager.h"
 #include "PlayListPlayer.h"
+#include "addons/AddonManager.h"
 #include "addons/RepositoryUpdater.h"
 #include "addons/Service.h"
 #include "addons/binary-addons/BinaryAddonManager.h"

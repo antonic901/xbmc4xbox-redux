@@ -13,11 +13,12 @@
 #include "Util.h"
 #include "cores/dvdplayer/DVDFileInfo.h"
 #include "filesystem/StackDirectory.h"
+#include "threads/SingleLock.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 #include "video/VideoDatabase.h"
 
-#include <utility>
+#include <boost/make_shared.hpp>
 
 using namespace XFILE;
 

@@ -16,6 +16,8 @@
 #include "video/VideoInfoTag.h"
 #include "video/dialogs/GUIDialogVideoInfo.h"
 
+#include <boost/make_shared.hpp>
+
 using namespace UTILS::GUILIB;
 
 bool CGUIContentUtils::HasInfoForItem(const CFileItem& item)

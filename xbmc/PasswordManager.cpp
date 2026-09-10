@@ -1,34 +1,25 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "PasswordManager.h"
+
+#include "ServiceBroker.h"
+#include "URL.h"
 #include "profiles/ProfileManager.h"
 #include "profiles/dialogs/GUIDialogLockSettings.h"
-#include "URL.h"
-#include "utils/XMLUtils.h"
-#include "threads/SingleLock.h"
-#include "utils/log.h"
-#include "filesystem/File.h"
 #include "settings/SettingsComponent.h"
+#include "utils/FileUtils.h"
+#include "utils/StringUtils.h"
+#include "utils/XBMCTinyXML.h"
+#include "utils/XMLUtils.h"
+#include "utils/log.h"
 
-using namespace std;
+#include <cstring>
 
 CPasswordManager &CPasswordManager::GetInstance()
 {
@@ -48,7 +39,7 @@ bool CPasswordManager::AuthenticateURL(CURL &url)
   if (!m_loaded)
     Load();
   std::string lookup(GetLookupPath(url));
-  map<std::string, std::string>::const_iterator it = m_temporaryCache.find(lookup);
+  std::map<std::string, std::string>::const_iterator it = m_temporaryCache.find(lookup);
   if (it == m_temporaryCache.end())
   { // second step, try something that doesn't quite match
     it = m_temporaryCache.find(GetServerLookup(lookup));
@@ -56,6 +47,7 @@ bool CPasswordManager::AuthenticateURL(CURL &url)
   if (it != m_temporaryCache.end())
   {
     CURL auth(it->second);
+    url.SetDomain(auth.GetDomain());
     url.SetPassword(auth.GetPassWord());
     url.SetUserName(auth.GetUserName());
     return true;
@@ -69,13 +61,31 @@ bool CPasswordManager::PromptToAuthenticateURL(CURL &url)
 
   std::string passcode;
   std::string username = url.GetUserName();
+  std::string domain = url.GetDomain();
+  if (!domain.empty())
+    username = domain + '\\' + username;
 
   bool saveDetails = false;
   if (!CGUIDialogLockSettings::ShowAndGetUserAndPassword(username, passcode, url.GetWithoutUserDetails(), &saveDetails))
     return false;
 
+  // domain/name to domain\name
+  std::string name = username;
+  std::replace(name.begin(), name.end(), '/', '\\');
+
+  if (url.IsProtocol("smb") && name.find('\\') != std::string::npos)
+  {
+    std::vector<std::string> pair = StringUtils::Split(name, '\\', 2);
+    url.SetDomain(pair[0]);
+    url.SetUserName(pair[1]);
+  }
+  else
+  {
+    url.SetDomain("");
+    url.SetUserName(username);
+  }
+
   url.SetPassword(passcode);
-  url.SetUserName(username);
 
   // save the information for later
   SaveAuthenticatedURL(url, saveDetails);
@@ -109,12 +119,15 @@ void CPasswordManager::SaveAuthenticatedURL(const CURL &url, bool saveToProfile)
 
 bool CPasswordManager::IsURLSupported(const CURL &url)
 {
-  if ( url.IsProtocol("smb")
+  return url.IsProtocol("smb")
     || url.IsProtocol("nfs")
-    || url.IsProtocol("sftp"))
-    return true;
-
-  return false;
+    || url.IsProtocol("ftp")
+    || url.IsProtocol("ftps")
+    || url.IsProtocol("sftp")
+    || url.IsProtocol("http")
+    || url.IsProtocol("https")
+    || url.IsProtocol("dav")
+    || url.IsProtocol("davs");
 }
 
 void CPasswordManager::Clear()
@@ -127,22 +140,28 @@ void CPasswordManager::Clear()
 void CPasswordManager::Load()
 {
   Clear();
-  std::string passwordsFile = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("passwords.xml");
-  if (XFILE::CFile::Exists(passwordsFile))
+
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+
+  std::string passwordsFile = profileManager->GetUserDataItem("passwords.xml");
+  if (CFileUtils::Exists(passwordsFile))
   {
     CXBMCTinyXML doc;
     if (!doc.LoadFile(passwordsFile))
     {
-      CLog::Log(LOGERROR, "%s - Unable to load: %s, Line %d\n%s",
-        __FUNCTION__, passwordsFile.c_str(), doc.ErrorRow(), doc.ErrorDesc());
+      CLog::Log(LOGERROR, "Unable to load: %s, Line %i\n%s", passwordsFile.c_str(), doc.ErrorRow(),
+                 doc.ErrorDesc());
       return;
     }
     const TiXmlElement *root = doc.RootElement();
-    if (root->ValueStr() != "passwords")
+    if (root == NULL)
+      return;
+
+    if (std::strcmp(root->Value(), "passwords") != 0)
       return;
     // read in our passwords
     const TiXmlElement *path = root->FirstChildElement("path");
-    while (path)
+    while (path != NULL)
     {
       std::string from, to;
       if (XMLUtils::GetPath(path, "from", from) && XMLUtils::GetPath(path, "to", to))
@@ -159,24 +178,31 @@ void CPasswordManager::Load()
 
 void CPasswordManager::Save() const
 {
-  if (!m_permanentCache.size())
+  if (m_permanentCache.empty())
     return;
 
   CXBMCTinyXML doc;
   TiXmlElement rootElement("passwords");
+
   TiXmlNode *root = doc.InsertEndChild(rootElement);
-  if (!root)
+  if (root == NULL)
     return;
 
-  for (map<std::string, std::string>::const_iterator i = m_permanentCache.begin(); i != m_permanentCache.end(); ++i)
+  for (std::map<std::string, std::string>::const_iterator i = m_permanentCache.begin(); i != m_permanentCache.end(); ++i)
   {
     TiXmlElement pathElement("path");
+
     TiXmlNode *path = root->InsertEndChild(pathElement);
+    if (path == NULL)
+      continue;
+
     XMLUtils::SetPath(path, "from", i->first);
     XMLUtils::SetPath(path, "to", i->second);
   }
 
-  doc.SaveFile(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("passwords.xml"));
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+
+  doc.SaveFile(profileManager->GetUserDataItem("passwords.xml"));
 }
 
 std::string CPasswordManager::GetLookupPath(const CURL &url) const

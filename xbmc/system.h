@@ -48,11 +48,9 @@
 #define HAS_SYSINFO
 #define HAS_SCREENSAVER
 #define HAS_MIKMOD
-#define HAS_SECTIONS
 #define HAS_UPNP
 #define HAS_LCD
 #define HAS_UNDOCUMENTED
-#define HAS_SECTIONS
 #define HAS_CDDA_RIPPER
 #define HAS_PYTHON
 #define HAS_AUDIO

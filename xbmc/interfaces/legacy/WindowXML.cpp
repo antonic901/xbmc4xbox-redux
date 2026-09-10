@@ -21,6 +21,8 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 
+#include <boost/make_shared.hpp>
+
 // These #defs are for WindowXML
 #define CONTROL_BTNVIEWASICONS  2
 #define CONTROL_BTNSORTBY       3

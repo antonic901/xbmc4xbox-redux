@@ -1,28 +1,18 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "AutoSwitch.h"
-#include "GUIBaseContainer.h" // for VIEW_TYPE_*
+
 #include "FileItem.h"
+#include "ServiceBroker.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
+#include "guilib/WindowIDs.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "view/ViewState.h"
@@ -33,11 +23,9 @@
 #define METHOD_BYFILECOUNT 3
 #define METHOD_BYFOLDERTHUMBS 4
 
-CAutoSwitch::CAutoSwitch(void)
-{}
+CAutoSwitch::CAutoSwitch(void) {}
 
-CAutoSwitch::~CAutoSwitch(void)
-{}
+CAutoSwitch::~CAutoSwitch(void) {}
 
 /// \brief Generic function to add a layer of transparency to the calling window
 /// \param vecItems Vector of FileItems passed from the calling window
@@ -46,7 +34,7 @@ int CAutoSwitch::GetView(const CFileItemList &vecItems)
   int iSortMethod = -1;
   int iPercent = 0;
   int iCurrentWindow = CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow();
-  bool bHideParentFolderItems = !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showparentdiritems");
+  bool bHideParentFolderItems = !CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_SHOWPARENTDIRITEMS);
 
   switch (iCurrentWindow)
   {
@@ -65,7 +53,7 @@ int CAutoSwitch::GetView(const CFileItemList &vecItems)
 
   default:
     {
-      if(MetadataPercentage(vecItems) > 0.25)
+      if (MetadataPercentage(vecItems) > 0.25f)
         return DEFAULT_VIEW_INFO;
       else
         return DEFAULT_VIEW_LIST;
@@ -131,7 +119,7 @@ bool CAutoSwitch::ByFiles(bool bHideParentDirItems, const CFileItemList& vecItem
   bool bThumbs = false;
   int iCompare = 0;
 
-  // parent directorys are visible, incrememt
+  // parent directories are visible, increment
   if (!bHideParentDirItems)
   {
     iCompare = 1;
@@ -194,7 +182,7 @@ bool CAutoSwitch::ByFileCount(const CFileItemList& vecItems)
 {
   if (vecItems.Size() == 0) return false;
   float fPercent = (float)vecItems.GetFileCount() / vecItems.Size();
-  return (fPercent > 0.25);
+  return (fPercent > 0.25f);
 }
 
 // returns true if:
@@ -240,6 +228,5 @@ float CAutoSwitch::MetadataPercentage(const CFileItemList &vecItems)
     if(item->IsParentFolder())
       total--;
   }
-  return (float)count / total;
+  return (total != 0) ? ((float)count / total) : 0.0f;
 }
-

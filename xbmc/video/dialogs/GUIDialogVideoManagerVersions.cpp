@@ -30,6 +30,7 @@
 #include "video/VideoThumbLoader.h"
 
 #include <algorithm>
+#include <boost/make_shared.hpp>
 #include <string>
 
 static const unsigned int CONTROL_BUTTON_ADD_VERSION = 22;

@@ -1,44 +1,25 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#include "XBDateTime.h"
+
+#include "LangInfo.h"
+#include "guilib/LocalizeStrings.h"
+#include "utils/Archive.h"
+#include "utils/StringUtils.h"
+#include "utils/log.h"
 
 #include <cstdlib>
 
-#include "XBDateTime.h"
-#include "LangInfo.h"
-#include "guilib/LocalizeStrings.h"
-#include "utils/log.h"
-#include "utils/StringUtils.h"
-#include "utils/Archive.h"
-#ifdef TARGET_POSIX
-#include "XTimeUtils.h"
-#include "XFileUtils.h"
-#elif defined(_XBOX)
-#include <xtl.h>
-#else
-#include <Windows.h>
-#endif
-
-#define SECONDS_PER_DAY 86400UL
-#define SECONDS_PER_HOUR 3600UL
-#define SECONDS_PER_MINUTE 60UL
-#define SECONDS_TO_FILETIME 10000000UL
+#define SECONDS_PER_DAY 86400L
+#define SECONDS_PER_HOUR 3600L
+#define SECONDS_PER_MINUTE 60L
+#define SECONDS_TO_FILETIME 10000000L
 
 static const char *DAY_NAMES[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
 static const char *MONTH_NAMES[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
@@ -50,14 +31,14 @@ static const char *MONTH_NAMES[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "
 
 CDateTimeSpan::CDateTimeSpan()
 {
-  m_timeSpan.dwHighDateTime=0;
-  m_timeSpan.dwLowDateTime=0;
+  m_timeSpan.dwHighDateTime = 0;
+  m_timeSpan.dwLowDateTime = 0;
 }
 
 CDateTimeSpan::CDateTimeSpan(const CDateTimeSpan& span)
 {
-  m_timeSpan.dwHighDateTime=span.m_timeSpan.dwHighDateTime;
-  m_timeSpan.dwLowDateTime=span.m_timeSpan.dwLowDateTime;
+  m_timeSpan.dwHighDateTime = span.m_timeSpan.dwHighDateTime;
+  m_timeSpan.dwLowDateTime = span.m_timeSpan.dwLowDateTime;
 }
 
 CDateTimeSpan::CDateTimeSpan(int day, int hour, int minute, int second)
@@ -67,7 +48,7 @@ CDateTimeSpan::CDateTimeSpan(int day, int hour, int minute, int second)
 
 bool CDateTimeSpan::operator >(const CDateTimeSpan& right) const
 {
-  return CompareFileTime(&m_timeSpan, &right.m_timeSpan)>0;
+  return CompareFileTime(&m_timeSpan, &right.m_timeSpan) > 0;
 }
 
 bool CDateTimeSpan::operator >=(const CDateTimeSpan& right) const
@@ -77,7 +58,7 @@ bool CDateTimeSpan::operator >=(const CDateTimeSpan& right) const
 
 bool CDateTimeSpan::operator <(const CDateTimeSpan& right) const
 {
-  return CompareFileTime(&m_timeSpan, &right.m_timeSpan)<0;
+  return CompareFileTime(&m_timeSpan, &right.m_timeSpan) < 0;
 }
 
 bool CDateTimeSpan::operator <=(const CDateTimeSpan& right) const
@@ -87,7 +68,7 @@ bool CDateTimeSpan::operator <=(const CDateTimeSpan& right) const
 
 bool CDateTimeSpan::operator ==(const CDateTimeSpan& right) const
 {
-  return CompareFileTime(&m_timeSpan, &right.m_timeSpan)==0;
+  return CompareFileTime(&m_timeSpan, &right.m_timeSpan) == 0;
 }
 
 bool CDateTimeSpan::operator !=(const CDateTimeSpan& right) const
@@ -99,15 +80,15 @@ CDateTimeSpan CDateTimeSpan::operator +(const CDateTimeSpan& right) const
 {
   CDateTimeSpan left(*this);
 
-  ULARGE_INTEGER timeLeft;
-  left.ToULargeInt(timeLeft);
+  LARGE_INTEGER timeLeft;
+  left.ToLargeInt(timeLeft);
 
-  ULARGE_INTEGER timeRight;
-  right.ToULargeInt(timeRight);
+  LARGE_INTEGER timeRight;
+  right.ToLargeInt(timeRight);
 
   timeLeft.QuadPart+=timeRight.QuadPart;
 
-  left.FromULargeInt(timeLeft);
+  left.FromLargeInt(timeLeft);
 
   return left;
 }
@@ -116,72 +97,72 @@ CDateTimeSpan CDateTimeSpan::operator -(const CDateTimeSpan& right) const
 {
   CDateTimeSpan left(*this);
 
-  ULARGE_INTEGER timeLeft;
-  left.ToULargeInt(timeLeft);
+  LARGE_INTEGER timeLeft;
+  left.ToLargeInt(timeLeft);
 
-  ULARGE_INTEGER timeRight;
-  right.ToULargeInt(timeRight);
+  LARGE_INTEGER timeRight;
+  right.ToLargeInt(timeRight);
 
   timeLeft.QuadPart-=timeRight.QuadPart;
 
-  left.FromULargeInt(timeLeft);
+  left.FromLargeInt(timeLeft);
 
   return left;
 }
 
 const CDateTimeSpan& CDateTimeSpan::operator +=(const CDateTimeSpan& right)
 {
-  ULARGE_INTEGER timeThis;
-  ToULargeInt(timeThis);
+  LARGE_INTEGER timeThis;
+  ToLargeInt(timeThis);
 
-  ULARGE_INTEGER timeRight;
-  right.ToULargeInt(timeRight);
+  LARGE_INTEGER timeRight;
+  right.ToLargeInt(timeRight);
 
   timeThis.QuadPart+=timeRight.QuadPart;
 
-  FromULargeInt(timeThis);
+  FromLargeInt(timeThis);
 
   return *this;
 }
 
 const CDateTimeSpan& CDateTimeSpan::operator -=(const CDateTimeSpan& right)
 {
-  ULARGE_INTEGER timeThis;
-  ToULargeInt(timeThis);
+  LARGE_INTEGER timeThis;
+  ToLargeInt(timeThis);
 
-  ULARGE_INTEGER timeRight;
-  right.ToULargeInt(timeRight);
+  LARGE_INTEGER timeRight;
+  right.ToLargeInt(timeRight);
 
   timeThis.QuadPart-=timeRight.QuadPart;
 
-  FromULargeInt(timeThis);
+  FromLargeInt(timeThis);
 
   return *this;
 }
 
-void CDateTimeSpan::ToULargeInt(ULARGE_INTEGER& time) const
+void CDateTimeSpan::ToLargeInt(LARGE_INTEGER& time) const
 {
-  time.u.HighPart=m_timeSpan.dwHighDateTime;
-  time.u.LowPart=m_timeSpan.dwLowDateTime;
+  time.u.HighPart = m_timeSpan.dwHighDateTime;
+  time.u.LowPart = m_timeSpan.dwLowDateTime;
 }
 
-void CDateTimeSpan::FromULargeInt(const ULARGE_INTEGER& time)
+void CDateTimeSpan::FromLargeInt(const LARGE_INTEGER& time)
 {
-  m_timeSpan.dwHighDateTime=time.u.HighPart;
-  m_timeSpan.dwLowDateTime=time.u.LowPart;
+  m_timeSpan.dwHighDateTime = time.u.HighPart;
+  m_timeSpan.dwLowDateTime = time.u.LowPart;
 }
 
 void CDateTimeSpan::SetDateTimeSpan(int day, int hour, int minute, int second)
 {
-  ULARGE_INTEGER time;
-  ToULargeInt(time);
+  LARGE_INTEGER time;
+  ToLargeInt(time);
 
-  time.QuadPart=(LONGLONG)day*SECONDS_PER_DAY*SECONDS_TO_FILETIME;
-  time.QuadPart+=(LONGLONG)hour*SECONDS_PER_HOUR*SECONDS_TO_FILETIME;
-  time.QuadPart+=(LONGLONG)minute*SECONDS_PER_MINUTE*SECONDS_TO_FILETIME;
-  time.QuadPart+=(LONGLONG)second*SECONDS_TO_FILETIME;
+  time.QuadPart= static_cast<long long>(day) *SECONDS_PER_DAY*SECONDS_TO_FILETIME;
+  time.QuadPart+= static_cast<long long>(hour) *SECONDS_PER_HOUR*SECONDS_TO_FILETIME;
+  time.QuadPart+= static_cast<long long>(minute) *SECONDS_PER_MINUTE*SECONDS_TO_FILETIME;
+  time.QuadPart+= static_cast<long long>(second) *SECONDS_TO_FILETIME;
 
-  FromULargeInt(time);
+  FromLargeInt(time);
 }
 
 void CDateTimeSpan::SetFromTimeString(const std::string& time) // hh:mm
@@ -196,40 +177,40 @@ void CDateTimeSpan::SetFromTimeString(const std::string& time) // hh:mm
 
 int CDateTimeSpan::GetDays() const
 {
-  ULARGE_INTEGER time;
-  ToULargeInt(time);
+  LARGE_INTEGER time;
+  ToLargeInt(time);
 
   return (int)(time.QuadPart/SECONDS_TO_FILETIME)/SECONDS_PER_DAY;
 }
 
 int CDateTimeSpan::GetHours() const
 {
-  ULARGE_INTEGER time;
-  ToULargeInt(time);
+  LARGE_INTEGER time;
+  ToLargeInt(time);
 
   return (int)((time.QuadPart/SECONDS_TO_FILETIME)%SECONDS_PER_DAY)/SECONDS_PER_HOUR;
 }
 
 int CDateTimeSpan::GetMinutes() const
 {
-  ULARGE_INTEGER time;
-  ToULargeInt(time);
+  LARGE_INTEGER time;
+  ToLargeInt(time);
 
   return (int)((time.QuadPart/SECONDS_TO_FILETIME%SECONDS_PER_DAY)%SECONDS_PER_HOUR)/SECONDS_PER_MINUTE;
 }
 
 int CDateTimeSpan::GetSeconds() const
 {
-  ULARGE_INTEGER time;
-  ToULargeInt(time);
+  LARGE_INTEGER time;
+  ToLargeInt(time);
 
   return (int)(((time.QuadPart/SECONDS_TO_FILETIME%SECONDS_PER_DAY)%SECONDS_PER_HOUR)%SECONDS_PER_MINUTE)%SECONDS_PER_MINUTE;
 }
 
 int CDateTimeSpan::GetSecondsTotal() const
 {
-  ULARGE_INTEGER time;
-  ToULargeInt(time);
+  LARGE_INTEGER time;
+  ToLargeInt(time);
 
   return (int)(time.QuadPart/SECONDS_TO_FILETIME);
 }
@@ -261,21 +242,19 @@ CDateTime::CDateTime()
   Reset();
 }
 
-CDateTime::CDateTime(const SYSTEMTIME &time)
+CDateTime::CDateTime(const SYSTEMTIME& time)
 {
-  // we store internally as a FILETIME
+  // we store internally as a FileTime
   m_state = ToFileTime(time, m_time) ? valid : invalid;
 }
 
-CDateTime::CDateTime(const FILETIME &time)
+CDateTime::CDateTime(const FILETIME& time) : m_time(time)
 {
-  m_time=time;
   SetValid(true);
 }
 
-CDateTime::CDateTime(const CDateTime& time)
+CDateTime::CDateTime(const CDateTime& time) : m_time(time.m_time)
 {
-  m_time=time.m_time;
   m_state=time.m_state;
 }
 
@@ -310,14 +289,14 @@ CDateTime CDateTime::GetUTCDateTime()
   return time;
 }
 
-const CDateTime& CDateTime::operator =(const SYSTEMTIME& right)
+const CDateTime& CDateTime::operator=(const SYSTEMTIME& right)
 {
   m_state = ToFileTime(right, m_time) ? valid : invalid;
 
   return *this;
 }
 
-const CDateTime& CDateTime::operator =(const FILETIME& right)
+const CDateTime& CDateTime::operator=(const FILETIME& right)
 {
   m_time=right;
   SetValid(true);
@@ -369,37 +348,37 @@ bool CDateTime::operator !=(const CDateTime& right) const
   return !operator ==(right);
 }
 
-bool CDateTime::operator >(const FILETIME& right) const
+bool CDateTime::operator>(const FILETIME& right) const
 {
-  return CompareFileTime(&m_time, &right)>0;
+  return CompareFileTime(&m_time, &right) > 0;
 }
 
-bool CDateTime::operator >=(const FILETIME& right) const
+bool CDateTime::operator>=(const FILETIME& right) const
 {
   return operator >(right) || operator ==(right);
 }
 
-bool CDateTime::operator <(const FILETIME& right) const
+bool CDateTime::operator<(const FILETIME& right) const
 {
-  return CompareFileTime(&m_time, &right)<0;
+  return CompareFileTime(&m_time, &right) < 0;
 }
 
-bool CDateTime::operator <=(const FILETIME& right) const
+bool CDateTime::operator<=(const FILETIME& right) const
 {
   return operator <(right) || operator ==(right);
 }
 
-bool CDateTime::operator ==(const FILETIME& right) const
+bool CDateTime::operator==(const FILETIME& right) const
 {
-  return CompareFileTime(&m_time, &right)==0;
+  return CompareFileTime(&m_time, &right) == 0;
 }
 
-bool CDateTime::operator !=(const FILETIME& right) const
+bool CDateTime::operator!=(const FILETIME& right) const
 {
   return !operator ==(right);
 }
 
-bool CDateTime::operator >(const SYSTEMTIME& right) const
+bool CDateTime::operator>(const SYSTEMTIME& right) const
 {
   FILETIME time;
   ToFileTime(right, time);
@@ -407,12 +386,12 @@ bool CDateTime::operator >(const SYSTEMTIME& right) const
   return operator >(time);
 }
 
-bool CDateTime::operator >=(const SYSTEMTIME& right) const
+bool CDateTime::operator>=(const SYSTEMTIME& right) const
 {
   return operator >(right) || operator ==(right);
 }
 
-bool CDateTime::operator <(const SYSTEMTIME& right) const
+bool CDateTime::operator<(const SYSTEMTIME& right) const
 {
   FILETIME time;
   ToFileTime(right, time);
@@ -420,12 +399,12 @@ bool CDateTime::operator <(const SYSTEMTIME& right) const
   return operator <(time);
 }
 
-bool CDateTime::operator <=(const SYSTEMTIME& right) const
+bool CDateTime::operator<=(const SYSTEMTIME& right) const
 {
   return operator <(right) || operator ==(right);
 }
 
-bool CDateTime::operator ==(const SYSTEMTIME& right) const
+bool CDateTime::operator==(const SYSTEMTIME& right) const
 {
   FILETIME time;
   ToFileTime(right, time);
@@ -433,7 +412,7 @@ bool CDateTime::operator ==(const SYSTEMTIME& right) const
   return operator ==(time);
 }
 
-bool CDateTime::operator !=(const SYSTEMTIME& right) const
+bool CDateTime::operator!=(const SYSTEMTIME& right) const
 {
   return !operator ==(right);
 }
@@ -520,15 +499,15 @@ CDateTime CDateTime::operator +(const CDateTimeSpan& right) const
 {
   CDateTime left(*this);
 
-  ULARGE_INTEGER timeLeft;
-  left.ToULargeInt(timeLeft);
+  LARGE_INTEGER timeLeft;
+  left.ToLargeInt(timeLeft);
 
-  ULARGE_INTEGER timeRight;
-  right.ToULargeInt(timeRight);
+  LARGE_INTEGER timeRight;
+  right.ToLargeInt(timeRight);
 
   timeLeft.QuadPart+=timeRight.QuadPart;
 
-  left.FromULargeInt(timeLeft);
+  left.FromLargeInt(timeLeft);
 
   return left;
 }
@@ -537,45 +516,45 @@ CDateTime CDateTime::operator -(const CDateTimeSpan& right) const
 {
   CDateTime left(*this);
 
-  ULARGE_INTEGER timeLeft;
-  left.ToULargeInt(timeLeft);
+  LARGE_INTEGER timeLeft;
+  left.ToLargeInt(timeLeft);
 
-  ULARGE_INTEGER timeRight;
-  right.ToULargeInt(timeRight);
+  LARGE_INTEGER timeRight;
+  right.ToLargeInt(timeRight);
 
   timeLeft.QuadPart-=timeRight.QuadPart;
 
-  left.FromULargeInt(timeLeft);
+  left.FromLargeInt(timeLeft);
 
   return left;
 }
 
 const CDateTime& CDateTime::operator +=(const CDateTimeSpan& right)
 {
-  ULARGE_INTEGER timeThis;
-  ToULargeInt(timeThis);
+  LARGE_INTEGER timeThis;
+  ToLargeInt(timeThis);
 
-  ULARGE_INTEGER timeRight;
-  right.ToULargeInt(timeRight);
+  LARGE_INTEGER timeRight;
+  right.ToLargeInt(timeRight);
 
   timeThis.QuadPart+=timeRight.QuadPart;
 
-  FromULargeInt(timeThis);
+  FromLargeInt(timeThis);
 
   return *this;
 }
 
 const CDateTime& CDateTime::operator -=(const CDateTimeSpan& right)
 {
-  ULARGE_INTEGER timeThis;
-  ToULargeInt(timeThis);
+  LARGE_INTEGER timeThis;
+  ToLargeInt(timeThis);
 
-  ULARGE_INTEGER timeRight;
-  right.ToULargeInt(timeRight);
+  LARGE_INTEGER timeRight;
+  right.ToLargeInt(timeRight);
 
   timeThis.QuadPart-=timeRight.QuadPart;
 
-  FromULargeInt(timeThis);
+  FromLargeInt(timeThis);
 
   return *this;
 }
@@ -584,18 +563,18 @@ CDateTimeSpan CDateTime::operator -(const CDateTime& right) const
 {
   CDateTimeSpan left;
 
-  ULARGE_INTEGER timeLeft;
-  left.ToULargeInt(timeLeft);
+  LARGE_INTEGER timeLeft;
+  left.ToLargeInt(timeLeft);
 
-  ULARGE_INTEGER timeThis;
-  ToULargeInt(timeThis);
+  LARGE_INTEGER timeThis;
+  ToLargeInt(timeThis);
 
-  ULARGE_INTEGER timeRight;
-  right.ToULargeInt(timeRight);
+  LARGE_INTEGER timeRight;
+  right.ToLargeInt(timeRight);
 
   timeLeft.QuadPart=timeThis.QuadPart-timeRight.QuadPart;
 
-  left.FromULargeInt(timeLeft);
+  left.FromLargeInt(timeLeft);
 
   return left;
 }
@@ -621,7 +600,7 @@ void CDateTime::Archive(CArchive& ar)
   {
     Reset();
     int state;
-    ar >> (int &)state;
+    ar >> state;
     m_state = CDateTime::STATE(state);
     if (m_state==valid)
     {
@@ -650,15 +629,17 @@ bool CDateTime::IsValid() const
 
 bool CDateTime::ToFileTime(const SYSTEMTIME& time, FILETIME& fileTime) const
 {
-  return SystemTimeToFileTime(&time, &fileTime) == TRUE &&
+  return SystemTimeToFileTime(&time, &fileTime) == 1 &&
          (fileTime.dwLowDateTime > 0 || fileTime.dwHighDateTime > 0);
 }
 
 bool CDateTime::ToFileTime(const time_t& time, FILETIME& fileTime) const
 {
-  LONGLONG ll = Int32x32To64(time, 10000000)+0x19DB1DED53E8000LL;
+  long long ll = time;
+  ll *= 10000000ll;
+  ll += 0x19DB1DED53E8000LL;
 
-  fileTime.dwLowDateTime  = (DWORD)(ll & 0xFFFFFFFF);
+  fileTime.dwLowDateTime = (DWORD)(ll & 0xFFFFFFFF);
   fileTime.dwHighDateTime = (DWORD)(ll >> 32);
 
   return true;
@@ -669,27 +650,27 @@ bool CDateTime::ToFileTime(const tm& time, FILETIME& fileTime) const
   SYSTEMTIME st;
   ZeroMemory(&st, sizeof(SYSTEMTIME));
 
-  st.wYear=time.tm_year+1900;
-  st.wMonth=time.tm_mon+1;
-  st.wDayOfWeek=time.tm_wday;
-  st.wDay=time.tm_mday;
-  st.wHour=time.tm_hour;
-  st.wMinute=time.tm_min;
-  st.wSecond=time.tm_sec;
+  st.wYear = time.tm_year + 1900;
+  st.wMonth = time.tm_mon + 1;
+  st.wDayOfWeek = time.tm_wday;
+  st.wDay = time.tm_mday;
+  st.wHour = time.tm_hour;
+  st.wMinute = time.tm_min;
+  st.wSecond = time.tm_sec;
 
-  return SystemTimeToFileTime(&st, &fileTime)==TRUE;
+  return SystemTimeToFileTime(&st, &fileTime) == 1;
 }
 
-void CDateTime::ToULargeInt(ULARGE_INTEGER& time) const
+void CDateTime::ToLargeInt(LARGE_INTEGER& time) const
 {
-  time.u.HighPart=m_time.dwHighDateTime;
-  time.u.LowPart=m_time.dwLowDateTime;
+  time.u.HighPart = m_time.dwHighDateTime;
+  time.u.LowPart = m_time.dwLowDateTime;
 }
 
-void CDateTime::FromULargeInt(const ULARGE_INTEGER& time)
+void CDateTime::FromLargeInt(const LARGE_INTEGER& time)
 {
-  m_time.dwHighDateTime=time.u.HighPart;
-  m_time.dwLowDateTime=time.u.LowPart;
+  m_time.dwHighDateTime = time.u.HighPart;
+  m_time.dwLowDateTime = time.u.LowPart;
 }
 
 bool CDateTime::SetFromDateString(const std::string &date)
@@ -720,10 +701,10 @@ bool CDateTime::SetFromDateString(const std::string &date)
   if (strMonth.empty())
     return false;
 
-  size_t iPos2 = date.find(",");
+  size_t iPos2 = date.find(',');
   std::string strDay = (date.size() >= iPos) ? date.substr(iPos, iPos2-iPos) : "";
   std::string strYear = date.substr(date.find(' ', iPos2) + 1);
-  while (months[j] && stricmp(strMonth.c_str(),months[j]) != 0)
+  while (months[j] && StringUtils::CompareNoCase(strMonth, months[j]) != 0)
     j++;
   if (!months[j])
     return false;
@@ -791,7 +772,7 @@ int CDateTime::GetMinuteOfDay() const
 {
   SYSTEMTIME st;
   GetAsSystemTime(st);
-  return st.wHour*60+st.wMinute;
+  return st.wHour * 60 + st.wMinute;
 }
 
 bool CDateTime::SetDateTime(int year, int month, int day, int hour, int minute, int second)
@@ -799,12 +780,12 @@ bool CDateTime::SetDateTime(int year, int month, int day, int hour, int minute, 
   SYSTEMTIME st;
   ZeroMemory(&st, sizeof(SYSTEMTIME));
 
-  st.wYear=year;
-  st.wMonth=month;
-  st.wDay=day;
-  st.wHour=hour;
-  st.wMinute=minute;
-  st.wSecond=second;
+  st.wYear = year;
+  st.wMonth = month;
+  st.wDay = day;
+  st.wHour = hour;
+  st.wMinute = minute;
+  st.wSecond = second;
 
   m_state = ToFileTime(st, m_time) ? valid : invalid;
   return m_state == valid;
@@ -829,8 +810,7 @@ void CDateTime::GetAsSystemTime(SYSTEMTIME& time) const
 #define UNIX_BASE_TIME 116444736000000000LL /* nanoseconds since epoch */
 void CDateTime::GetAsTime(time_t& time) const
 {
-  LONGLONG ll;
-  ll = ((LONGLONG)m_time.dwHighDateTime << 32) + m_time.dwLowDateTime;
+  long long ll = (static_cast<long long>(m_time.dwHighDateTime) << 32) + m_time.dwLowDateTime;
   time=(time_t)((ll - UNIX_BASE_TIME) / 10000000);
 }
 
@@ -839,20 +819,21 @@ void CDateTime::GetAsTm(tm& time) const
   SYSTEMTIME st;
   GetAsSystemTime(st);
 
-  time.tm_year=st.wYear-1900;
-  time.tm_mon=st.wMonth-1;
-  time.tm_wday=st.wDayOfWeek;
-  time.tm_mday=st.wDay;
-  time.tm_hour=st.wHour;
-  time.tm_min=st.wMinute;
-  time.tm_sec=st.wSecond;
+  time.tm_year = st.wYear - 1900;
+  time.tm_mon = st.wMonth - 1;
+  time.tm_wday = st.wDayOfWeek;
+  time.tm_mday = st.wDay;
+  time.tm_hour = st.wHour;
+  time.tm_min = st.wMinute;
+  time.tm_sec = st.wSecond;
+  time.tm_isdst = -1;
 
   mktime(&time);
 }
 
 void CDateTime::GetAsTimeStamp(FILETIME& time) const
 {
-  ::LocalFileTimeToFileTime(&m_time, &time);
+  LocalFileTimeToFileTime(&m_time, &time);
 }
 
 std::string CDateTime::GetAsDBDate() const
@@ -876,7 +857,8 @@ std::string CDateTime::GetAsDBDateTime() const
   SYSTEMTIME st;
   GetAsSystemTime(st);
 
-  return StringUtils::Format("%04i-%02i-%02i %02i:%02i:%02i", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+  return StringUtils::Format("%04i-%02i-%02i %02i:%02i:%02i", st.wYear, st.wMonth, st.wDay,
+                             st.wHour, st.wMinute, st.wSecond);
 }
 
 std::string CDateTime::GetAsSaveString() const
@@ -884,7 +866,8 @@ std::string CDateTime::GetAsSaveString() const
   SYSTEMTIME st;
   GetAsSystemTime(st);
 
-  return StringUtils::Format("%04i%02i%02i_%02i%02i%02i", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+  return StringUtils::Format("%04i%02i%02i_%02i%02i%02i", st.wYear, st.wMonth, st.wDay, st.wHour,
+                             st.wMinute, st.wSecond);
 }
 
 bool CDateTime::SetFromUTCDateTime(const CDateTime &dateTime)
@@ -939,7 +922,7 @@ bool CDateTime::SetFromW3CDate(const std::string &dateTime)
 {
   std::string date;
 
-  size_t posT = dateTime.find("T");
+  size_t posT = dateTime.find('T');
   if(posT != std::string::npos)
     date = dateTime.substr(0, posT);
   else
@@ -967,7 +950,7 @@ bool CDateTime::SetFromW3CDateTime(const std::string &dateTime, bool ignoreTimez
 {
   std::string date, time, zone;
 
-  size_t posT = dateTime.find("T");
+  size_t posT = dateTime.find('T');
   if(posT != std::string::npos)
   {
     date = dateTime.substr(0, posT);
@@ -1019,9 +1002,9 @@ bool CDateTime::SetFromW3CDateTime(const std::string &dateTime, bool ignoreTimez
       if (zoneSpan.GetSecondsTotal() != 0)
       {
         if (StringUtils::StartsWith(zone, "+"))
-          tmpDateTime += zoneSpan;
-        else if (StringUtils::StartsWith(zone, "-"))
           tmpDateTime -= zoneSpan;
+        else if (StringUtils::StartsWith(zone, "-"))
+          tmpDateTime += zoneSpan;
       }
     }
   }
@@ -1079,7 +1062,6 @@ bool CDateTime::SetFromDBTime(const std::string &time)
 
   int second = 0;
   // HH:MM or HH:MM:SS
-
   hour   = atoi(time.substr(0, 2).c_str());
   minute = atoi(time.substr(3, 2).c_str());
   // HH:MM:SS
@@ -1193,7 +1175,8 @@ std::string CDateTime::GetAsLocalizedTime(const std::string &format, bool withSe
   GetAsSystemTime(dateTime);
 
   // Prefetch meridiem symbol
-  const std::string& strMeridiem = CLangInfo::MeridiemSymbolToString(dateTime.wHour > 11 ? MeridiemSymbolPM : MeridiemSymbolAM);
+  const std::string& strMeridiem =
+      CLangInfo::MeridiemSymbolToString(dateTime.wHour > 11 ? MeridiemSymbolPM : MeridiemSymbolAM);
 
   size_t length = strFormat.size();
   for (size_t i=0; i < length; ++i)
@@ -1242,7 +1225,7 @@ std::string CDateTime::GetAsLocalizedTime(const std::string &format, bool withSe
         i=length;
       }
 
-      int hour=dateTime.wHour;
+      int hour = dateTime.wHour;
       if (c=='h')
       { // recalc to 12 hour clock
         if (hour > 11)
@@ -1254,9 +1237,9 @@ std::string CDateTime::GetAsLocalizedTime(const std::string &format, bool withSe
       // Format hour string with the length of the mask
       std::string str;
       if (partLength==1)
-        str = StringUtils::Format("%d", hour);
+        str = std::to_string(hour);
       else
-        str = StringUtils::Format("%02d", hour);
+        str = StringUtils::Format("%02i", hour);
 
       strOut+=str;
     }
@@ -1281,9 +1264,9 @@ std::string CDateTime::GetAsLocalizedTime(const std::string &format, bool withSe
       // Format minute string with the length of the mask
       std::string str;
       if (partLength==1)
-        str = StringUtils::Format("%d", dateTime.wMinute);
+        str = std::to_string(dateTime.wMinute);
       else
-        str = StringUtils::Format("%02d", dateTime.wMinute);
+        str = StringUtils::Format("%02i", dateTime.wMinute);
 
       strOut+=str;
     }
@@ -1310,9 +1293,9 @@ std::string CDateTime::GetAsLocalizedTime(const std::string &format, bool withSe
         // Format seconds string with the length of the mask
         std::string str;
         if (partLength==1)
-          str = StringUtils::Format("%d", dateTime.wSecond);
+          str = std::to_string(dateTime.wSecond);
         else
-          str = StringUtils::Format("%02d", dateTime.wSecond);
+          str = StringUtils::Format("%02i", dateTime.wSecond);
 
         strOut+=str;
       }
@@ -1349,7 +1332,14 @@ std::string CDateTime::GetAsLocalizedDate(bool longDate/*=false*/) const
 
 std::string CDateTime::GetAsLocalizedDate(const std::string &strFormat) const
 {
+  return GetAsLocalizedDate(strFormat, ReturnFormat::CHOICE_NO);
+}
+
+std::string CDateTime::GetAsLocalizedDate(const std::string& strFormat,
+                                          ReturnFormat returnFormat) const
+{
   std::string strOut;
+  std::string fmtOut;
 
   SYSTEMTIME dateTime;
   GetAsSystemTime(dateTime);
@@ -1381,6 +1371,7 @@ std::string CDateTime::GetAsLocalizedDate(const std::string &strFormat) const
       }
       StringUtils::Replace(strPart, "''", "'");
       strOut+=strPart;
+      fmtOut += strPart;
     }
     else if (c=='D' || c=='d') // parse days
     {
@@ -1403,14 +1394,23 @@ std::string CDateTime::GetAsLocalizedDate(const std::string &strFormat) const
       // Format string with the length of the mask
       std::string str;
       if (partLength==1) // single-digit number
-        str = StringUtils::Format("%d", dateTime.wDay);
+      {
+        str = std::to_string(dateTime.wDay);
+        fmtOut += "%-d";
+      }
       else if (partLength==2) // two-digit number
-        str = StringUtils::Format("%02d", dateTime.wDay);
+      {
+        str = StringUtils::Format("%02i", dateTime.wDay);
+        fmtOut += "%d";
+      }
       else // Day of week string
       {
         int wday = dateTime.wDayOfWeek;
         if (wday < 1 || wday > 7) wday = 7;
-        str = g_localizeStrings.Get((c =='d' ? 40 : 10) + wday);
+        {
+          str = g_localizeStrings.Get((c == 'd' ? 40 : 10) + wday);
+          fmtOut += (c == 'd' ? "%a" : "%A");
+        }
       }
       strOut+=str;
     }
@@ -1435,14 +1435,23 @@ std::string CDateTime::GetAsLocalizedDate(const std::string &strFormat) const
       // Format string with the length of the mask
       std::string str;
       if (partLength==1) // single-digit number
-        str = StringUtils::Format("%d", dateTime.wMonth);
+      {
+        str = std::to_string(dateTime.wMonth);
+        fmtOut += "%-m";
+      }
       else if (partLength==2) // two-digit number
-        str = StringUtils::Format("%02d", dateTime.wMonth);
+      {
+        str = StringUtils::Format("%02i", dateTime.wMonth);
+        fmtOut += "%m";
+      }
       else // Month string
       {
         int wmonth = dateTime.wMonth;
         if (wmonth < 1 || wmonth > 12) wmonth = 12;
-        str = g_localizeStrings.Get((c =='m' ? 50 : 20) + wmonth);
+        {
+          str = g_localizeStrings.Get((c == 'm' ? 50 : 20) + wmonth);
+          fmtOut += (c == 'm' ? "%b" : "%B");
+        }
       }
       strOut+=str;
     }
@@ -1465,17 +1474,27 @@ std::string CDateTime::GetAsLocalizedDate(const std::string &strFormat) const
       }
 
       // Format string with the length of the mask
-      std::string str = StringUtils::Format("%d", dateTime.wYear); // four-digit number
+      std::string str = std::to_string(dateTime.wYear); // four-digit number
       if (partLength <= 2)
+      {
         str.erase(0, 2); // two-digit number
+        fmtOut += "%y";
+      }
+      else
+      {
+        fmtOut += "%Y";
+      }
 
-      strOut+=str;
+      strOut += str;
     }
     else // everything else pass to output
+    {
       strOut+=c;
+      fmtOut += c;
+    }
   }
 
-  return strOut;
+  return (returnFormat == ReturnFormat::CHOICE_YES ? fmtOut : strOut);
 }
 
 std::string CDateTime::GetAsLocalizedDateTime(bool longDate/*=false*/, bool withSeconds/*=true*/) const
@@ -1542,7 +1561,8 @@ std::string CDateTime::GetAsRFC1123DateTime() const
   else if (weekDay > 6)
     weekDay = 6;
   if (weekDay != time.GetDayOfWeek())
-    CLog::Log(LOGWARNING, "Invalid day of week %d in %s", time.GetDayOfWeek(), time.GetAsDBDateTime().c_str());
+    CLog::Log(LOGWARNING, "Invalid day of week %i in %s", time.GetDayOfWeek(),
+              time.GetAsDBDateTime().c_str());
 
   int month = time.GetMonth();
   if (month < 1)
@@ -1550,9 +1570,11 @@ std::string CDateTime::GetAsRFC1123DateTime() const
   else if (month > 12)
     month = 12;
   if (month != time.GetMonth())
-    CLog::Log(LOGWARNING, "Invalid month %d in %s", time.GetMonth(), time.GetAsDBDateTime().c_str());
+    CLog::Log(LOGWARNING, "Invalid month %i in %s", time.GetMonth(), time.GetAsDBDateTime().c_str());
 
-  return StringUtils::Format("%s, %02i %s %04i %02i:%02i:%02i GMT", DAY_NAMES[weekDay], time.GetDay(), MONTH_NAMES[month - 1], time.GetYear(), time.GetHour(), time.GetMinute(), time.GetSecond());
+  return StringUtils::Format("%s, %02i %s %04i %02i:%02i:%02i GMT", DAY_NAMES[weekDay],
+                             time.GetDay(), MONTH_NAMES[month - 1], time.GetYear(), time.GetHour(),
+                             time.GetMinute(), time.GetSecond());
 }
 
 std::string CDateTime::GetAsW3CDate() const
@@ -1571,12 +1593,14 @@ std::string CDateTime::GetAsW3CDateTime(bool asUtc /* = false */) const
   SYSTEMTIME st;
   w3cDate.GetAsSystemTime(st);
 
-  std::string result = StringUtils::Format("%04i-%02i-%02iT%02i:%02i:%02i", st.wYear, st.wMonth, st.wDay, st.wHour, st.wMinute, st.wSecond);
+  std::string result = StringUtils::Format("%04i-%02i-%02iT%02i:%02i:%02i", st.wYear, st.wMonth,
+                                           st.wDay, st.wHour, st.wMinute, st.wSecond);
   if (asUtc)
     return result + "Z";
 
   CDateTimeSpan bias = GetTimezoneBias();
-  return result + StringUtils::Format("%c%02i:%02i", (bias.GetSecondsTotal() >= 0 ? '+' : '-'), abs(bias.GetHours()), abs(bias.GetMinutes())).c_str();
+  return result + StringUtils::Format("%c%02i:%02i", (bias.GetSecondsTotal() >= 0 ? '+' : '-'),
+                                      abs(bias.GetHours()), abs(bias.GetMinutes()));
 }
 
 int CDateTime::MonthStringToMonthNum(const std::string& month)

@@ -10,6 +10,7 @@
 
 #include "dialogs/GUIDialogSelect.h"
 #include "FileItem.h"
+#include "GUIPassword.h"
 #include "filesystem/Directory.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"

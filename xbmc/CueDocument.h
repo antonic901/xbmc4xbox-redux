@@ -1,29 +1,17 @@
+/*
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
 #pragma once
 
-/*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
- *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
- */
+#include "music/Song.h"
 
 #include <string>
 #include <vector>
-
-#include "music/Song.h"
 
 #define MAX_PATH_SIZE 1024
 
@@ -34,12 +22,7 @@ class CCueDocument
   class CCueTrack
   {
   public:
-    CCueTrack()
-      : iTrackNumber(0)
-      , iStartTime(0)
-      , iEndTime(0)
-    {
-    }
+    CCueTrack() : iTrackNumber(0), iStartTime(0), iEndTime(0) {}
     std::string strArtist;
     std::string strTitle;
     std::string strFile;
@@ -49,13 +32,12 @@ class CCueDocument
     ReplayGain::Info replayGain;
   };
 public:
-  CCueDocument(void);
+  CCueDocument() : m_iYear(0), m_iTrack(0), m_iDiscNumber(0), m_bOneFilePerTrack(false) {}
   ~CCueDocument(void);
   // USED
   bool ParseFile(const std::string &strFilePath);
   bool ParseTag(const std::string &strContent);
   void GetSongs(VECSONGS &songs);
-  bool GetSong(int aTrackNumber, CSong& aSong);
   std::string GetMediaPath();
   std::string GetMediaTitle();
   void GetMediaFiles(std::vector<std::string>& mediaFiles);

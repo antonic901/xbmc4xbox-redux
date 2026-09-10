@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -52,20 +40,21 @@
 //
 ////////////////////////////////////////////////////////////////////////////////////
 
-#include <cstdlib>
-
 #include "CueDocument.h"
-#include "ServiceBroker.h"
-#include "utils/log.h"
-#include "utils/URIUtils.h"
-#include "utils/StringUtils.h"
-#include "utils/CharsetConverter.h"
-#include "filesystem/File.h"
-#include "filesystem/Directory.h"
+
 #include "FileItem.h"
+#include "ServiceBroker.h"
+#include "Util.h"
+#include "filesystem/Directory.h"
+#include "filesystem/File.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
+#include "utils/CharsetConverter.h"
+#include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
+#include "utils/log.h"
 
+#include <cstdlib>
 #include <set>
 
 using namespace XFILE;
@@ -85,8 +74,9 @@ class FileReader
   : public CueReader
 {
 public:
-  FileReader(const std::string &strFile)
+  explicit FileReader(const std::string &strFile)
   {
+    memset(m_szBuffer, 0, sizeof(m_szBuffer));
     m_opened = m_file.Open(strFile);
   }
   virtual bool ReadLine(std::string &line)
@@ -123,11 +113,7 @@ class BufferReader
   : public CueReader
 {
 public:
-  BufferReader(const std::string &strContent)
-    : m_data(strContent)
-    , m_pos(0)
-  {
-  }
+  explicit BufferReader(const std::string& strContent) : m_data(strContent), m_pos(0) {}
   virtual bool ReadLine(std::string &line)
   {
     // Read the next line.
@@ -146,7 +132,9 @@ public:
         line.push_back(ch);
       }
     }
-    return false;
+
+    StringUtils::Trim(line);
+    return !line.empty();
   }
   virtual bool ready() const
   {
@@ -157,16 +145,7 @@ private:
   size_t m_pos;
 };
 
-CCueDocument::CCueDocument()
-  : m_iYear(0)
-  , m_iTrack(0)
-  , m_iDiscNumber(0)
-  , m_bOneFilePerTrack(false)
-{
-}
-
-CCueDocument::~CCueDocument()
-{}
+CCueDocument::~CCueDocument() {}
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Function: ParseFile()
@@ -194,11 +173,45 @@ bool CCueDocument::ParseTag(const std::string &strContent)
 //////////////////////////////////////////////////////////////////////////////////
 void CCueDocument::GetSongs(VECSONGS &songs)
 {
-  for (size_t i = 0; i < m_tracks.size(); ++i)
+  const boost::shared_ptr<CAdvancedSettings> advancedSettings = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings();
+
+  for (Tracks::const_iterator track = m_tracks.begin(); track != m_tracks.end(); ++track)
   {
-    CSong song;
-    GetSong(i, song);
-    songs.push_back(song);
+    CSong aSong;
+    //Pass artist to MusicInfoTag object by setting artist description string only.
+    //Artist credits not used during loading from cue sheet.
+    if (track->strArtist.empty() && !m_strArtist.empty())
+      aSong.strArtistDesc = m_strArtist;
+    else
+      aSong.strArtistDesc = track->strArtist;
+    //Pass album artist to MusicInfoTag object by setting album artist vector.
+    aSong.SetAlbumArtist(StringUtils::Split(m_strArtist, advancedSettings->m_musicItemSeparator));
+    aSong.strAlbum = m_strAlbum;
+    aSong.genre = StringUtils::Split(m_strGenre, advancedSettings->m_musicItemSeparator);
+    aSong.strReleaseDate = StringUtils::Format("%04i", m_iYear);
+    aSong.iTrack = track->iTrackNumber;
+    if (m_iDiscNumber > 0)
+      aSong.iTrack |= (m_iDiscNumber << 16); // see CMusicInfoTag::GetDiscNumber()
+    if (track->strTitle.length() == 0) // No track information for this track!
+      aSong.strTitle = StringUtils::Format("Track %2d", track->iTrackNumber);
+    else
+      aSong.strTitle = track->strTitle;
+    aSong.strFileName = track->strFile;
+    aSong.iStartOffset = track->iStartTime;
+    aSong.iEndOffset = track->iEndTime;
+    if (aSong.iEndOffset)
+      // Convert offset in frames (75 per second) to duration in whole seconds with rounding
+      aSong.iDuration = CUtil::ConvertMilliSecsToSecsIntRounded(aSong.iEndOffset - aSong.iStartOffset);
+    else
+      aSong.iDuration = 0;
+
+    if (m_albumReplayGain.Valid())
+      aSong.replayGain.Set(ReplayGain::ALBUM, m_albumReplayGain);
+
+    if (track->replayGain.Valid())
+      aSong.replayGain.Set(ReplayGain::TRACK, track->replayGain);
+
+    songs.push_back(aSong);
   }
 }
 
@@ -237,45 +250,6 @@ bool CCueDocument::IsOneFilePerTrack() const
   return m_bOneFilePerTrack;
 }
 
-bool CCueDocument::GetSong(int aTrackNumber, CSong& aSong)
-{
-  if (aTrackNumber < 0 || aTrackNumber >= static_cast<int>(m_tracks.size()))
-    return false;
-  const CCueTrack& track = m_tracks[aTrackNumber];
-  //Pass artist to MusicInfoTag object by setting artist description string only.
-  //Artist credits not used during loading from cue sheet.
-  if ((track.strArtist.length() == 0) && (m_strArtist.length() > 0))
-    aSong.strArtistDesc = m_strArtist;
-  else
-    aSong.strArtistDesc = track.strArtist;
-  //Pass album artist to MusicInfoTag object by setting album artist vector.
-  aSong.SetAlbumArtist(StringUtils::Split(m_strArtist, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator));
-  aSong.strAlbum = m_strAlbum;
-  aSong.genre = StringUtils::Split(m_strGenre, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_musicItemSeparator);
-  aSong.strReleaseDate = StringUtils::Format("%04i", m_iYear);
-  aSong.iTrack = track.iTrackNumber;
-  if (m_iDiscNumber > 0)
-    aSong.iTrack |= (m_iDiscNumber << 16); // see CMusicInfoTag::GetDiscNumber()
-  if (track.strTitle.length() == 0) // No track information for this track!
-    aSong.strTitle = StringUtils::Format("Track %2d", track.iTrackNumber);
-  else
-    aSong.strTitle = track.strTitle;
-  aSong.strFileName = track.strFile;
-  aSong.iStartOffset = track.iStartTime;
-  aSong.iEndOffset = track.iEndTime;
-  if (aSong.iEndOffset)
-    aSong.iDuration = (aSong.iEndOffset - aSong.iStartOffset + 37) / 75;
-  else
-    aSong.iDuration = 0;
-
-  if (m_albumReplayGain.Valid())
-    aSong.replayGain.Set(ReplayGain::ALBUM, m_albumReplayGain);
-
-  if (track.replayGain.Valid())
-    aSong.replayGain.Set(ReplayGain::TRACK, track.replayGain);
-  return true;
-}
-
 // Private Functions start here
 
 void CCueDocument::Clear()
@@ -307,10 +281,8 @@ bool CCueDocument::Parse(CueReader& reader, const std::string& strFile)
   int numberFiles = -1;
 
   // Run through the .CUE file and extract the tracks...
-  while (true)
+  while (reader.ReadLine(strLine))
   {
-    if (!reader.ReadLine(strLine))
-      break;
     if (StringUtils::StartsWithNoCase(strLine, "INDEX 01"))
     {
       if (bCurrentFileChanged)
@@ -465,7 +437,7 @@ int CCueDocument::ExtractTimeFromIndex(const std::string &index)
   int secs = atoi(time[1].c_str());
   int frames = atoi(time[2].c_str());
 
-  return (mins*60 + secs)*75 + frames;
+  return CUtil::ConvertSecsToMilliSecs(mins*60 + secs) + frames * 1000 / 75;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -506,7 +478,7 @@ bool CCueDocument::ResolvePath(std::string &strPath, const std::string &strBase)
         return true;
       }
     }
-    CLog::Log(LOGERROR,"Could not find '%s' referenced in cue, case sensitivity issue?", strPath.c_str());
+    CLog::Log(LOGERROR, "Could not find '%s' referenced in cue, case sensitivity issue?", strPath.c_str());
     return false;
   }
 

@@ -6,11 +6,17 @@
  *  See LICENSES/README.md for more information.
  */
 #include "SectionLoader.h"
+#include "GUIPassword.h"
 #include "utils/LangCodeExpander.h"
+#include "PartyModeManager.h"
 #include "guilib/LocalizeStrings.h"
 
   CLangCodeExpander  g_LangCodeExpander;
   CLocalizeStrings   g_localizeStrings;
   CLocalizeStrings   g_localizeStringsTemp;
+
+  CGUIPassword       g_passwordManager;
+
+  CPartyModeManager     g_partyModeManager;
 
   CSectionLoader     g_sectionLoader;

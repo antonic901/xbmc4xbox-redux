@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <boost/algorithm/cxx11/any_of.hpp>
 #include <boost/bind.hpp>
+#include <boost/make_shared.hpp>
 #include <boost/move/make_unique.hpp>
 #include <string>
 

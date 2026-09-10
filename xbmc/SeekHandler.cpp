@@ -1,27 +1,12 @@
 /*
- *      Copyright (C) 2012-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2012-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "SeekHandler.h"
-
-#include <cmath>
-#include <stdlib.h>
 
 #include "FileItem.h"
 #include "ServiceBroker.h"
@@ -31,25 +16,21 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 #include "settings/AdvancedSettings.h"
-#include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "utils/log.h"
+#include "settings/lib/Setting.h"
+#include "settings/lib/SettingDefinitions.h"
 #include "utils/MathUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
+#include "utils/log.h"
 #include "windowing/GraphicContext.h"
 
-CSeekHandler::CSeekHandler()
-: m_seekDelay(500),
-  m_requireSeek(false),
-  m_seekChanged(false),
-  m_analogSeek(false),
-  m_seekSize(0),
-  m_seekStep(0)
-{
-}
+#include <cmath>
+#include <stdlib.h>
 
 CSeekHandler::~CSeekHandler()
 {
@@ -62,23 +43,25 @@ void CSeekHandler::Configure()
 {
   Reset();
 
+  const boost::shared_ptr<CSettings> settings = CServiceBroker::GetSettingsComponent()->GetSettings();
+
   m_seekDelays.clear();
-  m_seekDelays.insert(std::make_pair(SEEK_TYPE_VIDEO, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("videoplayer.seekdelay")));
-  m_seekDelays.insert(std::make_pair(SEEK_TYPE_MUSIC, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("musicplayer.seekdelay")));
+  m_seekDelays.insert(std::make_pair(SEEK_TYPE_VIDEO, settings->GetInt(CSettings::SETTING_VIDEOPLAYER_SEEKDELAY)));
+  m_seekDelays.insert(std::make_pair(SEEK_TYPE_MUSIC, settings->GetInt(CSettings::SETTING_MUSICPLAYER_SEEKDELAY)));
 
   m_forwardSeekSteps.clear();
   m_backwardSeekSteps.clear();
 
   std::map<SeekType, std::string> seekTypeSettingMap;
-  seekTypeSettingMap.insert(std::make_pair(SEEK_TYPE_VIDEO, "videoplayer.seeksteps"));
-  seekTypeSettingMap.insert(std::make_pair(SEEK_TYPE_MUSIC, "musicplayer.seeksteps"));
+  seekTypeSettingMap.insert(std::make_pair(SEEK_TYPE_VIDEO, CSettings::SETTING_VIDEOPLAYER_SEEKSTEPS));
+  seekTypeSettingMap.insert(std::make_pair(SEEK_TYPE_MUSIC, CSettings::SETTING_MUSICPLAYER_SEEKSTEPS));
 
   for (std::map<SeekType, std::string>::iterator it = seekTypeSettingMap.begin(); it!=seekTypeSettingMap.end(); ++it)
   {
     std::vector<int> forwardSeekSteps;
     std::vector<int> backwardSeekSteps;
 
-    std::vector<CVariant> seekSteps = CServiceBroker::GetSettingsComponent()->GetSettings()->GetList(it->second);
+    std::vector<CVariant> seekSteps = settings->GetList(it->second);
     for (std::vector<CVariant>::iterator itt = seekSteps.begin(); itt != seekSteps.end(); ++itt)
     {
       int stepSeconds = static_cast<int>((*itt).asInteger());
@@ -112,7 +95,8 @@ int CSeekHandler::GetSeekStepSize(SeekType type, int step)
   if (seekSteps.empty())
   {
     CLog::Log(LOGERROR, "SeekHandler - %s - No %s %s seek steps configured.", __FUNCTION__,
-              (type == SEEK_TYPE_VIDEO ? "video" : "music"), (step > 0 ? "forward" : "backward"));
+              (type == SEEK_TYPE_VIDEO ? "video" : "music"),
+              (step > 0 ? "forward" : "backward"));
     return 0;
   }
 
@@ -160,11 +144,11 @@ void CSeekHandler::Seek(bool forward, float amount, float duration /* = 0 */, bo
     if (totalTime < 0)
       totalTime = 0;
 
-    double seekSize = (amount * amount * speed) * totalTime / 100;
+    double seekSize = static_cast<double>(amount * amount * speed) * totalTime / 100.0;
     if (forward)
-      m_seekSize += seekSize;
+      SetSeekSize(m_seekSize + seekSize);
     else
-      m_seekSize -= seekSize;
+      SetSeekSize(m_seekSize - seekSize);
   }
   else
   {
@@ -172,7 +156,7 @@ void CSeekHandler::Seek(bool forward, float amount, float duration /* = 0 */, bo
     int seekSeconds = GetSeekStepSize(type, m_seekStep);
     if (seekSeconds != 0)
     {
-      m_seekSize = seekSeconds;
+      SetSeekSize(seekSeconds);
     }
     else
     {
@@ -191,7 +175,7 @@ void CSeekHandler::SeekSeconds(int seconds)
     return;
 
   CSingleLock lock(m_critSection);
-  m_seekSize = seconds;
+  SetSeekSize(seconds);
 
   // perform relative seek
   CApplicationComponents &components = CServiceBroker::GetAppComponents();
@@ -204,6 +188,11 @@ void CSeekHandler::SeekSeconds(int seconds)
 int CSeekHandler::GetSeekSize() const
 {
   return MathUtils::round_int(m_seekSize);
+}
+
+void CSeekHandler::SetSeekSize(double seekSize)
+{
+  m_seekSize = seekSize;
 }
 
 bool CSeekHandler::InProgress() const
@@ -253,7 +242,7 @@ void CSeekHandler::SettingOptionsSeekStepsFiller(const SettingConstPtr& setting,
     else
       label = StringUtils::Format(g_localizeStrings.Get(14045).c_str(), seconds);
 
-    list.insert(list.begin(), IntegerSettingOption("-" + label, seconds*-1));
+    list.insert(list.begin(), IntegerSettingOption("-" + label, seconds * -1));
     list.push_back(IntegerSettingOption(label, seconds));
   }
 }
@@ -263,10 +252,10 @@ void CSeekHandler::OnSettingChanged(const boost::shared_ptr<const CSetting>& set
   if (setting == NULL)
     return;
 
-  if (setting->GetId() == "videoplayer.seekdelay" ||
-      setting->GetId() == "videoplayer.seeksteps" ||
-      setting->GetId() == "musicplayer.seekdelay" ||
-      setting->GetId() == "musicplayer.seeksteps")
+  if (setting->GetId() == CSettings::SETTING_VIDEOPLAYER_SEEKDELAY ||
+      setting->GetId() == CSettings::SETTING_VIDEOPLAYER_SEEKSTEPS ||
+      setting->GetId() == CSettings::SETTING_MUSICPLAYER_SEEKDELAY ||
+      setting->GetId() == CSettings::SETTING_MUSICPLAYER_SEEKSTEPS)
     Configure();
 }
 
@@ -334,6 +323,14 @@ bool CSeekHandler::OnAction(const CAction &action)
     case REMOTE_7:
     case REMOTE_8:
     case REMOTE_9:
+    case ACTION_JUMP_SMS2:
+    case ACTION_JUMP_SMS3:
+    case ACTION_JUMP_SMS4:
+    case ACTION_JUMP_SMS5:
+    case ACTION_JUMP_SMS6:
+    case ACTION_JUMP_SMS7:
+    case ACTION_JUMP_SMS8:
+    case ACTION_JUMP_SMS9:
     {
       if (!g_application.CurrentFileItem().IsLiveTV())
       {

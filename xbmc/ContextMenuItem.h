@@ -1,46 +1,41 @@
-#pragma once
 /*
- *      Copyright (C) 2015 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2015-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
+#include "system.h" // <xtl.h>
+#include <stdint.h>
 #include <map>
+#include <boost/shared_ptr.hpp>
+#include <string>
+#include <vector>
 
-#include "addons/IAddon.h"
-#include "addons/AddonManager.h"
-#include "addons/Repository.h"
-#include "addons/RepositoryUpdater.h"
-#include "addons/gui/GUIDialogAddonInfo.h"
-#include "addons/gui/GUIDialogAddonSettings.h"
-
+class CFileItem;
 
 namespace ADDON
 {
   class CContextMenuAddon;
 }
 
+namespace INFO
+{
+class InfoBool;
+}
+
 class IContextMenuItem
 {
 public:
+  virtual ~IContextMenuItem() {}
   virtual bool IsVisible(const CFileItem& item) const = 0;
-  virtual bool Execute(const CFileItemPtr& item) const = 0;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const = 0;
   virtual std::string GetLabel(const CFileItem& item) const = 0;
   virtual bool IsGroup() const { return false; }
+  virtual bool HasParent() const { return false; }
 };
 
 
@@ -58,13 +53,14 @@ private:
 class CContextMenuItem : public IContextMenuItem
 {
 public:
-  CContextMenuItem() : m_infoBoolRegistered(false) {};
+  CContextMenuItem() : m_infoBoolRegistered(false) {}
 
-  std::string GetLabel(const CFileItem& item) const { return m_label; }
-  bool IsVisible(const CFileItem& item) const ;
+  virtual std::string GetLabel(const CFileItem& item) const { return m_label; }
+  virtual bool IsVisible(const CFileItem& item) const ;
   bool IsParentOf(const CContextMenuItem& menuItem) const;
-  bool IsGroup() const ;
-  bool Execute(const CFileItemPtr& item) const;
+  virtual bool IsGroup() const ;
+  virtual bool HasParent() const;
+  virtual bool Execute(const boost::shared_ptr<CFileItem>& item) const;
   bool operator==(const CContextMenuItem& other) const;
   std::string ToString() const;
 
@@ -93,6 +89,6 @@ private:
   std::vector<std::string> m_args;
 
   std::string m_visibilityCondition;
-  mutable INFO::InfoPtr m_infoBool;
+  mutable boost::shared_ptr<INFO::InfoBool> m_infoBool;
   mutable bool m_infoBoolRegistered;
 };

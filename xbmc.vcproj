@@ -404,6 +404,48 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\ContextMenuManager.h">
 			</File>
 			<File
+				RelativePath=".\xbmc\ContextMenus.cpp">
+				<FileConfiguration
+					Name="Debug|Xbox">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)5.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Profile|Xbox">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)5.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Profile_FastCap|Xbox">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)5.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Xbox">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)5.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release_LTCG|Xbox">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)5.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug Xbox No Memory Tracking|Xbox">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)5.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath=".\xbmc\ContextMenus.h">
+			</File>
+			<File
 				RelativePath=".\xbmc\CueDocument.cpp">
 			</File>
 			<File
@@ -811,12 +853,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\Archive.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\AsyncFileCopy.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\AsyncFileCopy.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\auto_buffer.cpp">
@@ -4264,12 +4300,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\music\ContextMenus.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\music\CueInfoLoader.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\music\CueInfoLoader.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\music\GUIViewStateMusic.cpp">

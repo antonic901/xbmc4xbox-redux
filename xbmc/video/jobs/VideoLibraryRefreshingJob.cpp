@@ -35,7 +35,7 @@
 #include "video/tags/VideoInfoTagLoaderFactory.h"
 #include "video/tags/VideoTagLoaderPlugin.h"
 
-#include <memory>
+#include <boost/make_shared.hpp>
 #include <utility>
 
 using namespace KODI::MESSAGING;

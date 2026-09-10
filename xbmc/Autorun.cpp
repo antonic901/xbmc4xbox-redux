@@ -35,6 +35,8 @@
 #include "profiles/ProfileManager.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "settings/lib/Setting.h"
+#include "settings/lib/SettingDefinitions.h"
 #include "playlists/PlayList.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"

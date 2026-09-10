@@ -57,6 +57,8 @@
 #include "guiinfo/GUIInfoLabels.h"
 #include "utils/MathUtils.h"
 #include "utils/ColorUtils.h"
+#include "input/actions/Action.h"
+#include "input/actions/ActionIDs.h"
 
 #include <stdio.h>
 

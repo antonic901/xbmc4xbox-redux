@@ -1,27 +1,17 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include "utils/UrlOptions.h"
 
 #include <stdlib.h>
 #include <string>
-#include "utils/UrlOptions.h"
 
 #ifdef TARGET_WINDOWS
 #undef SetPort // WIN32INCLUDES this is defined as SetPortA in WinSpool.h which is being included _somewhere_
@@ -30,43 +20,28 @@
 class CURL
 {
 public:
-  explicit CURL(const std::string& strURL)
-  {
-    Parse(strURL);
-  }
+  explicit CURL(std::string strURL) : m_iPort(0) { Parse(strURL); }
 
-  CURL():m_iPort(0) {}
+  CURL() : m_iPort(0) {}
   virtual ~CURL(void);
 
   // explicit equals operator for std::string comparison
   bool operator==(const std::string &url) const { return Get() == url; }
 
   void Reset();
-  void Parse(const std::string& strURL);
-  void SetFileName(const std::string& strFileName);
-  void SetHostName(const std::string& strHostName)
-  {
-    m_strHostName = strHostName;
-  }
+  void Parse(std::string strURL);
+  void SetFileName(std::string strFileName);
+  void SetHostName(std::string strHostName) { m_strHostName = strHostName; }
 
-  void SetUserName(const std::string& strUserName)
-  {
-    m_strUserName = strUserName;
-  }
+  void SetUserName(std::string strUserName) { m_strUserName = strUserName; }
 
-  void SetDomain(std::string strDomain)
-  {
-    m_strDomain = strDomain;
-  }
+  void SetDomain(std::string strDomain) { m_strDomain = strDomain; }
 
-  void SetPassword(const std::string& strPassword)
-  {
-    m_strPassword = strPassword;
-  }
+  void SetPassword(std::string strPassword) { m_strPassword = strPassword; }
 
-  void SetProtocol(const std::string& strProtocol);
-  void SetOptions(const std::string& strOptions);
-  void SetProtocolOptions(const std::string& strOptions);
+  void SetProtocol(std::string strProtocol);
+  void SetOptions(std::string strOptions);
+  void SetProtocolOptions(std::string strOptions);
   void SetPort(int port)
   {
     m_iPort = port;
@@ -112,7 +87,7 @@ public:
     return m_strProtocol;
   }
 
-  const std::string GetTranslatedProtocol() const;
+  std::string GetTranslatedProtocol() const;
 
   const std::string& GetFileType() const
   {
@@ -134,7 +109,7 @@ public:
     return m_strProtocolOptions;
   }
 
-  const std::string GetFileNameWithoutPath() const; /* return the filename excluding path */
+  std::string GetFileNameWithoutPath() const; /* return the filename excluding path */
 
   char GetDirectorySeparator() const;
 
@@ -143,7 +118,7 @@ public:
   std::string GetWithoutUserDetails(bool redact = false) const;
   std::string GetWithoutFilename() const;
   std::string GetRedacted() const;
-  static std::string GetRedacted(const std::string& path);
+  static std::string GetRedacted(std::string path);
   bool IsLocal() const;
   bool IsLocalHost() const;
   static bool IsFileOnly(const std::string &url); ///< return true if there are no directories in the url.

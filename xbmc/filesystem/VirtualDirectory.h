@@ -8,10 +8,11 @@
 
 #pragma once
 
+#include "system.h" // <xtl.h>
 #include "IDirectory.h"
 #include "MediaSource.h"
 
-#include <memory>
+#include <boost/shared_ptr.hpp>
 #include <string>
 
 namespace XFILE

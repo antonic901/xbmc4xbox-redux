@@ -1,31 +1,25 @@
-#pragma once
 /*
- *      Copyright (C) 2013-2015 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
+#include "ContextMenuItem.h"
+#include "threads/CriticalSection.h"
+
+#include <memory>
 #include <utility>
 #include <vector>
 
-#include "addons/ContextMenuAddon.h"
-#include "ContextMenuItem.h"
-#include "dialogs/GUIDialogContextMenu.h"
-
+namespace ADDON
+{
+struct AddonEvent;
+class CAddonMgr;
+} // namespace ADDON
 
 typedef std::vector<boost::shared_ptr<const IContextMenuItem> > ContextMenuView;
 
@@ -35,7 +29,7 @@ public:
   static const CContextMenuItem MAIN;
   static const CContextMenuItem MANAGE;
 
-  CContextMenuManager(ADDON::CAddonMgr& addonMgr);
+  explicit CContextMenuManager(ADDON::CAddonMgr& addonMgr);
   ~CContextMenuManager();
 
   void Init();
@@ -48,7 +42,13 @@ public:
    */
   bool HasItems(const CFileItem& fileItem, const CContextMenuItem& root) const;
 
-  ContextMenuView GetItems(const CFileItem& item, const CContextMenuItem& root = MAIN) const;
+  /*! \brief Gets the context menu items available for a file item.
+   \param fileItem the file item
+   \param root the root context menu item
+   \return the items
+   \sa ContextMenuView
+   */
+  ContextMenuView GetItems(const CFileItem& fileItem, const CContextMenuItem& root) const;
 
   /*! \brief Checks whether addon context menu items are available for a file item.
    \param fileItem the file item
@@ -57,13 +57,17 @@ public:
    */
   bool HasAddonItems(const CFileItem& fileItem, const CContextMenuItem& root) const;
 
-  ContextMenuView GetAddonItems(const CFileItem& item, const CContextMenuItem& root = MAIN) const;
-
-  bool Unload(const ADDON::CContextMenuAddon& addon);
+  /*! \brief Gets the addon context menu items available for a file item.
+   \param fileItem the file item
+   \param root the root context menu item
+   \return the items
+   \sa ContextMenuView
+   */
+  ContextMenuView GetAddonItems(const CFileItem& fileItem, const CContextMenuItem& root) const;
 
 private:
   CContextMenuManager(const CContextMenuManager&);
-  CContextMenuManager const& operator=(CContextMenuManager const&);
+  CContextMenuManager& operator=(CContextMenuManager const&);
 
   bool IsVisible(
     const CContextMenuItem& menuItem,
@@ -75,27 +79,31 @@ private:
 
   ADDON::CAddonMgr& m_addonMgr;
 
-  CCriticalSection m_criticalSection;
+  mutable CCriticalSection m_criticalSection;
   std::vector<CContextMenuItem> m_addonItems;
   std::vector<boost::shared_ptr<IContextMenuItem> > m_items;
 };
 
 namespace CONTEXTMENU
 {
-  /*! \brief Checks whether any context menu items are available for a file item.
-  \param fileItem the file item
-  \param root the root context menu item
-  \return true if any items are present, false otherwise
-  */
-  bool HasAnyMenuItemsFor(const boost::shared_ptr<CFileItem>& fileItem, const CContextMenuItem& root);
+/*! \brief Checks whether any context menu items are available for a file item.
+ \param fileItem the file item
+ \param root the root context menu item
+ \return true if any items are present, false otherwise
+ */
+bool HasAnyMenuItemsFor(const boost::shared_ptr<CFileItem>& fileItem, const CContextMenuItem& root);
 
-  /*!
-   * Starts the context menu loop for a file item.
-   * */
-  bool ShowFor(const CFileItemPtr& fileItem, const CContextMenuItem& root=CContextMenuManager::MAIN);
+/*! \brief Starts the context menu loop for a file item.
+ \param fileItem the file item
+ \param root the root context menu item
+ \return true on success, false otherwise
+ */
+bool ShowFor(const boost::shared_ptr<CFileItem>& fileItem, const CContextMenuItem& root);
 
-  /*!
-   * Shortcut for continuing the context menu loop from an exisiting menu item.
-   */
-  bool LoopFrom(const IContextMenuItem& menu, const CFileItemPtr& fileItem);
+/*! \brief Shortcut for continuing the context menu loop from an existing menu item.
+ \param menu the menu item
+ \param fileItem the file item
+ \return true on success, false otherwise
+ */
+bool LoopFrom(const IContextMenuItem& menu, const boost::shared_ptr<CFileItem>& fileItem);
 }

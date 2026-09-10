@@ -31,6 +31,7 @@
 #include "video/guilib/VideoSelectActionProcessor.h"
 #include "video/guilib/VideoVersionHelper.h"
 
+#include <boost/make_shared.hpp>
 #include <utility>
 
 namespace CONTEXTMENU

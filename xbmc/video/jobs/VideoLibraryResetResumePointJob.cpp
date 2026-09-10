@@ -22,6 +22,8 @@
 #include "utils/URIUtils.h"
 #include "video/VideoDatabase.h"
 
+#include <boost/make_shared.hpp>
+
 CVideoLibraryResetResumePointJob::CVideoLibraryResetResumePointJob(
     const boost::shared_ptr<CFileItem>& item)
   : m_item(item)

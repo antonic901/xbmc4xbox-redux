@@ -20,7 +20,7 @@
 #include "utils/URIUtils.h"
 #include "video/VideoDatabase.h"
 
-#include <memory>
+#include <boost/make_shared.hpp>
 #include <vector>
 
 CVideoLibraryMarkWatchedJob::CVideoLibraryMarkWatchedJob(const boost::shared_ptr<CFileItem>& item,
