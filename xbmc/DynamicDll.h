@@ -113,8 +113,8 @@ public: \
     typedef result (linkage * name##_METHOD) args; \
   public: \
     union { \
-      name##_METHOD name; \
-      void*         name##_ptr; \
+      name##_METHOD m_##name; \
+      void*         m_##name##_ptr; \
     };
 
 #define DEFINE_METHOD_LINKAGE_BASE(result, linkage, name, args, args2) \
@@ -348,7 +348,7 @@ public: \
     return false;
 
 #define RESOLVE_METHOD_FP(method) \
-  if (!m_dll->ResolveExport( #method , & method##_ptr )) \
+  if (!m_dll->ResolveExport( #method , & m_##method##_ptr )) \
     return false;
 
 
@@ -368,8 +368,8 @@ public: \
    m_dll->ResolveExport( #method , & m_##method##_ptr, false );
 
 #define RESOLVE_METHOD_OPTIONAL_FP(method) \
-   method##_ptr = NULL; \
-   m_dll->ResolveExport( #method , & method##_ptr, false );
+   m_##method##_ptr = NULL; \
+   m_dll->ResolveExport( #method , & m_##method##_ptr, false );
 
 
 
@@ -392,7 +392,7 @@ public: \
   m_dll->ResolveExport( #dllmethod , & m_##method##_ptr, false );
 
 #define RESOLVE_METHOD_RENAME_FP(dllmethod, method) \
-  if (!m_dll->ResolveExport( #dllmethod , & method##_ptr )) \
+  if (!m_dll->ResolveExport( #dllmethod , & m_##method##_ptr )) \
     return false;
 
 

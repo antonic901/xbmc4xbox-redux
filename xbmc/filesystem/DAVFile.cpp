@@ -66,7 +66,7 @@ bool CDAVFile::Execute(const CURL& url)
     return false;
 
   char* efurl;
-  if (CURLE_OK == g_curlInterface.easy_getinfo(m_state->m_easyHandle, CURLINFO_EFFECTIVE_URL,&efurl) && efurl)
+  if (CURLE_OK == g_curlInterface.m_easy_getinfo(m_state->m_easyHandle, CURLINFO_EFFECTIVE_URL,&efurl) && efurl)
     m_url = efurl;
 
   if (lastResponseCode == 207)
