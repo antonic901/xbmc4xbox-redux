@@ -16,6 +16,8 @@
 #include "filesystem/SpecialProtocol.h"
 std::map<std::string, std::string> CSpecialProtocol::m_pathMap;
 
+#include "filesystem/ZipManager.h"
+
   CLangCodeExpander  g_LangCodeExpander;
   CLocalizeStrings   g_localizeStrings;
   CLocalizeStrings   g_localizeStringsTemp;
@@ -27,3 +29,5 @@ std::map<std::string, std::string> CSpecialProtocol::m_pathMap;
   CPartyModeManager     g_partyModeManager;
 
   CSectionLoader     g_sectionLoader;
+
+  CZipManager g_ZipManager;
