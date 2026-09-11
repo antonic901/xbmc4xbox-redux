@@ -58,6 +58,7 @@ bool CSettingsComponent::Load()
       return false;
     }
 
+    CSpecialProtocol::RegisterProfileManager(*m_profileManager);
     XFILE::IDirectory::RegisterProfileManager(*m_profileManager);
 
     if (!m_settings->Load())
@@ -90,6 +91,7 @@ void CSettingsComponent::Deinitialize()
       m_settings->Unload();
 
       XFILE::IDirectory::UnregisterProfileManager();
+      CSpecialProtocol::UnregisterProfileManager();
     }
     m_profileManager->Uninitialize();
 

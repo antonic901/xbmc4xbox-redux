@@ -13,8 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "utils/auto_buffer.h"
-
 namespace UTILS
 {
 namespace FONT
@@ -49,7 +47,7 @@ std::string GetSystemFontPath(const std::string& filename);
  *  \param familyNames The font family names
  *  \return True if success, otherwise false when an error occurs
  */
-bool GetFontFamilyNames(const XUTILS::auto_buffer& buffer, std::set<std::string>& familyNames);
+bool GetFontFamilyNames(const std::vector<uint8_t>& buffer, std::set<std::string>& familyNames);
 
 /*!
  *  \brief Get the font family name from a font file,
@@ -66,7 +64,7 @@ bool GetFontFamilyNames(const std::string& filepath, std::set<std::string>& fami
  *  \param buffer The font data
  *  \return The font family name, otherwise empty if fails
  */
-std::string GetFontFamily(XUTILS::auto_buffer& buffer);
+std::string GetFontFamily(std::vector<uint8_t>& buffer);
 
 /*!
  *  \brief Get the font family name from a font file,

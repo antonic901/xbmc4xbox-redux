@@ -1,43 +1,29 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <stdlib.h>
 #include "StackDirectory.h"
-#include "ServiceBroker.h"
-#include "utils/log.h"
-#include "utils/URIUtils.h"
+
 #include "FileItem.h"
-#include "utils/StringUtils.h"
+#include "ServiceBroker.h"
+#include "URL.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
-#include "URL.h"
+#include "utils/StringUtils.h"
+#include "utils/URIUtils.h"
+#include "utils/log.h"
+
+#include <stdlib.h>
 
 namespace XFILE
 {
-  CStackDirectory::CStackDirectory()
-  {
-  }
+  CStackDirectory::CStackDirectory() {}
 
-  CStackDirectory::~CStackDirectory()
-  {
-  }
+  CStackDirectory::~CStackDirectory() {}
 
   bool CStackDirectory::GetDirectory(const CURL& url, CFileItemList& items)
   {
@@ -70,7 +56,8 @@ namespace XFILE
       if (tempRE.GetCaptureTotal() == 4)
         RegExps.push_back(tempRE);
       else
-        CLog::Log(LOGERROR, "Invalid video stack RE (%s). Must have exactly 4 captures.", itRegExp->c_str());
+        CLog::Log(LOGERROR, "Invalid video stack RE (%s). Must have exactly 4 captures.",
+                  itRegExp->c_str());
       ++itRegExp;
     }
     return GetStackedTitlePath(strPath, RegExps);
@@ -160,7 +147,7 @@ namespace XFILE
   std::string CStackDirectory::GetFirstStackedFile(const std::string &strPath)
   {
     // the stacked files are always in volume order, so just get up to the first filename
-    // occurence of " , "
+    // occurrence of " , "
     std::string file, folder;
     size_t pos = strPath.find(" , ");
     if (pos != std::string::npos)
@@ -188,7 +175,7 @@ namespace XFILE
     if (vecPaths.empty())
       return false;
 
-    // because " , " is used as a seperator any "," in the real paths are double escaped
+    // because " , " is used as a separator any "," in the real paths are double escaped
     for (std::vector<std::string>::iterator itPath = vecPaths.begin(); itPath != vecPaths.end(); ++itPath)
       StringUtils::Replace(*itPath, ",,", ",");
 
@@ -204,7 +191,7 @@ namespace XFILE
     std::string folder, file;
     URIUtils::Split(items[stack[0]]->GetPath(), folder, file);
     stackedPath += folder;
-    // double escape any occurence of commas
+    // double escape any occurrence of commas
     StringUtils::Replace(file, ",", ",,");
     stackedPath += file;
     for (unsigned int i = 1; i < stack.size(); ++i)
@@ -212,7 +199,7 @@ namespace XFILE
       stackedPath += " , ";
       file = items[stack[i]]->GetPath();
 
-      // double escape any occurence of commas
+      // double escape any occurrence of commas
       StringUtils::Replace(file, ",", ",,");
       stackedPath += file;
     }
@@ -227,7 +214,7 @@ namespace XFILE
     std::string folder, file;
     URIUtils::Split(paths[0], folder, file);
     stackedPath += folder;
-    // double escape any occurence of commas
+    // double escape any occurrence of commas
     StringUtils::Replace(file, ",", ",,");
     stackedPath += file;
     for (unsigned int i = 1; i < paths.size(); ++i)
@@ -235,7 +222,7 @@ namespace XFILE
       stackedPath += " , ";
       file = paths[i];
 
-      // double escape any occurence of commas
+      // double escape any occurrence of commas
       StringUtils::Replace(file, ",", ",,");
       stackedPath += file;
     }

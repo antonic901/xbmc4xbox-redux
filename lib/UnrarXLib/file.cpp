@@ -38,18 +38,6 @@ File::~File()
 }
 
 
-void File::operator = (File &SrcFile)
-{
-  //hFile=SrcFile.hFile;
-  m_File = SrcFile.m_File;
-  strcpy(FileName,SrcFile.FileName);
-  NewFile=SrcFile.NewFile;
-  LastWrite=SrcFile.LastWrite;
-  HandleType=SrcFile.HandleType;
-  SrcFile.SkipClose=true;
-}
-
-
 bool File::Open(const char *Name,const wchar *NameW,bool OpenShared,bool Update)
 {
   /*ErrorType=FILE_SUCCESS;

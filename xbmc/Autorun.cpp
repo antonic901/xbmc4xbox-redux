@@ -113,7 +113,7 @@ void CAutorun::RunCdda()
   CFileItemList vecItems;
 
   const CURL pathToUrl("cdda://local/");
-  auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( pathToUrl ) );
+  auto_ptr<IDirectory> pDir ( CDirectoryFactory::Create( pathToUrl ) );
   if ( !pDir->GetDirectory( pathToUrl, vecItems ) )
     return ;
 
@@ -149,7 +149,7 @@ void CAutorun::RunMedia(bool bypassSettings, bool restart)
   int nSize = CServiceBroker::GetPlaylistPlayer().GetPlaylist( PLAYLIST::TYPE_MUSIC ).size();
   int nAddedToPlaylist = 0;
 #ifndef _XBOX
-  auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( CServiceBroker::GetMediaManager().TranslateDevicePath("") ));
+  auto_ptr<IDirectory> pDir ( CDirectoryFactory::Create( CServiceBroker::GetMediaManager().TranslateDevicePath("") ));
   bool bPlaying = RunDisc(pDir.get(), CServiceBroker::GetMediaManager().TranslateDevicePath(""), nAddedToPlaylist, true, bypassSettings, restart);
 #else
   CCdInfo* pInfo = CDetectDVDMedia::GetCdInfo();
@@ -161,13 +161,13 @@ void CAutorun::RunMedia(bool bypassSettings, bool restart)
   if (pInfo->IsISOUDF(1) || pInfo->IsISOHFS(1) || pInfo->IsIso9660(1) || pInfo->IsIso9660Interactive(1))
   {
     const CURL pathToUrl("iso9660://");
-    auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( pathToUrl ));
+    auto_ptr<IDirectory> pDir ( CDirectoryFactory::Create( pathToUrl ));
     bPlaying = RunDisc(pDir.get(), "iso9660://", nAddedToPlaylist, true, bypassSettings, restart);
   }
   else
   {
     const CURL pathToUrl("D:\\");
-    auto_ptr<IDirectory> pDir ( CFactoryDirectory::Create( pathToUrl ));
+    auto_ptr<IDirectory> pDir ( CDirectoryFactory::Create( pathToUrl ));
     bPlaying = RunDisc(pDir.get(), "D:\\", nAddedToPlaylist, true, bypassSettings, restart);
   }
 #endif

@@ -1,26 +1,17 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
 
 #include <map>
 #include <string>
+
+class CProfileManager;
 
 // static class for path translation from our special:// URLs.
 
@@ -28,23 +19,24 @@
 
  special://xbmc/          - the main XBMC folder (i.e. where the app resides).
  special://home/          - a writeable version of the main XBMC folder
-                             Linux: ~/.xbmc/
-                             OS X:  ~/Library/Application Support/XBMC/
-                             Win32: FIXME: Currently the same as special://home/
+                             Linux: ~/.kodi/
+                             OS X:  ~/Library/Application Support/Kodi/
+                             Win32: ~/Application Data/XBMC/
+ special://envhome/       - on posix systems this will be equal to the $HOME
  special://userhome/      - a writable version of the user home directory
-                             Linux, OS X: ~/.xbmc
+                             Linux, OS X: ~/.kodi
                              Win32: home directory of user
  special://masterprofile/ - the master users userdata folder - usually special://home/userdata
-                             Linux: ~/.xbmc/userdata/
-                             OS X:  ~/Library/Application Support/XBMC/UserData/
+                             Linux: ~/.kodi/userdata/
+                             OS X:  ~/Library/Application Support/Kodi/UserData/
                              Win32: ~/Application Data/XBMC/UserData/
  special://profile/       - the current users userdata folder - usually special://masterprofile/profiles/<current_profile>
-                             Linux: ~/.xbmc/userdata/profiles/<current_profile>
-                             OS X:  ~/Library/Application Support/XBMC/UserData/profiles/<current_profile>
+                             Linux: ~/.kodi/userdata/profiles/<current_profile>
+                             OS X:  ~/Library/Application Support/Kodi/UserData/profiles/<current_profile>
                              Win32: ~/Application Data/XBMC/UserData/profiles/<current_profile>
 
  special://temp/          - the temporary directory.
-                             Linux: ~/tmp/xbmc<username>
+                             Linux: ~/.kodi/temp
                              OS X:  ~/
                              Win32: ~/Application Data/XBMC/cache
 */
@@ -52,12 +44,17 @@ class CURL;
 class CSpecialProtocol
 {
 public:
+  static void RegisterProfileManager(const CProfileManager &profileManager);
+  static void UnregisterProfileManager();
+
   static void SetProfilePath(const std::string &path);
   static void SetXBMCPath(const std::string &path);
   static void SetXBMCBinPath(const std::string &path);
   static void SetXBMCBinAddonPath(const std::string &path);
+  static void SetXBMCAltBinAddonPath(const std::string &path);
   static void SetHomePath(const std::string &path);
   static void SetUserHomePath(const std::string &path);
+  static void SetEnvHomePath(const std::string &path);
   static void SetMasterProfilePath(const std::string &path);
   static void SetTempPath(const std::string &path);
   static void SetLogPath(const std::string &dir);
@@ -70,13 +67,15 @@ public:
   static std::string TranslatePathConvertCase(const std::string& path);
 
 private:
+  static const CProfileManager *m_profileManager;
+
   static void SetPath(const std::string &key, const std::string &path);
   static std::string GetPath(const std::string &key);
 
   static std::map<std::string, std::string> m_pathMap;
 };
 
-#ifdef _WIN32
+#ifdef TARGET_WINDOWS
 #define PATH_SEPARATOR_CHAR '\\'
 #define PATH_SEPARATOR_STRING "\\"
 #else

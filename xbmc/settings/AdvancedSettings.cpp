@@ -272,6 +272,8 @@ void CAdvancedSettings::Initialize()
 
   m_bFTPThumbs = false;
 
+  m_bShoutcastArt = true;
+
   m_bMusicLibraryAllItemsOnBottom = false;
   m_bMusicLibraryCleanOnUpdate = false;
   m_bMusicLibraryArtistSortOnUpdate = false;
@@ -751,6 +753,8 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
   XMLUtils::GetBoolean(pRootElement, "uselocalecollation", m_useLocaleCollation);
   XMLUtils::GetBoolean(pRootElement, "detectasudf", m_detectAsUdf);
 
+  // show art for shoutcast v2 streams (set to false for devices with limited storage)
+  XMLUtils::GetBoolean(pRootElement, "shoutcastart", m_bShoutcastArt);
   // music filename->tag filters
   TiXmlElement* filters = pRootElement->FirstChildElement("musicfilenamefilters");
   if (filters)

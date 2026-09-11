@@ -84,7 +84,7 @@ namespace XFILE
     for (std::vector<std::string>::const_iterator virtualFolder = virtualFolders.begin(); virtualFolder != virtualFolders.end(); ++virtualFolder)
     {
       CFileItemPtr pItem = boost::make_shared<CFileItem>(*virtualFolder, true);
-      IFileDirectory *dir = CFactoryFileDirectory::Create(pItem->GetURL(), pItem.get());
+      IFileDirectory *dir = CFileDirectoryFactory::Create(pItem->GetURL(), pItem.get());
 
       if (dir != NULL)
       {

@@ -397,7 +397,7 @@ bool MP3Codec::CanInit()
 
 bool MP3Codec::SkipNext()
 {
-  return m_file.SkipNext();
+  return false;
 }
 
 bool MP3Codec::CanSeek()

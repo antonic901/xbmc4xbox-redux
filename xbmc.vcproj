@@ -545,6 +545,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\settings\MediaSourceSettings.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\settings\ServicesSettings.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\settings\ServicesSettings.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\settings\SettingAddon.cpp">
 				</File>
 				<File
@@ -853,12 +859,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\Archive.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\auto_buffer.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\auto_buffer.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\AutoPtrHandle.cpp">
@@ -1713,10 +1713,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\FileSystem\ISO9660Directory.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\ISOFile.cpp">
+					RelativePath=".\xbmc\FileSystem\ISO9660File.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\FileSystem\ISOFile.h">
+					RelativePath=".\xbmc\FileSystem\ISO9660File.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\LibraryDirectory.cpp">
@@ -1816,6 +1816,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\PluginDirectory.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\PluginFile.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\filesystem\PluginFile.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\filesystem\ProgramDatabaseDirectory.cpp">

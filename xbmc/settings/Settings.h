@@ -267,6 +267,9 @@ public:
   static const char* SETTING_SOURCE_MUSIC;
   static const char* SETTING_SOURCE_PICTURES;
   static const char* SETTING_FILECACHE_BUFFERMODE;
+  static const char* SETTING_FILECACHE_MEMORYSIZE;
+  static const char* SETTING_FILECACHE_READFACTOR;
+  static const char* SETTING_FILECACHE_CHUNKSIZE;
   static const char* SETTING_HDD_REMOTE_PLAY_SPINDOWN;
   static const char* SETTING_HDD_REMOTE_PLAY_SPINDOWN_DURATION;
   static const char* SETTING_HDD_REMOTE_PLAY_SPINDOWN_DELAY;

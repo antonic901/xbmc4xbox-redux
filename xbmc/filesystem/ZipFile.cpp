@@ -21,7 +21,6 @@
 #include "ZipFile.h"
 #include "URL.h"
 #include "utils/URIUtils.h"
-#include "utils/auto_buffer.h"
 #include "utils/log.h"
 
 #include <ctime>
@@ -173,7 +172,7 @@ int64_t CZipFile::Seek(int64_t iFilePosition, int iWhence)
   if (mZipItem.method == 8)
   {
     static const int blockSize = 128 * 1024;
-    XUTILS::auto_buffer buf(blockSize);
+    std::vector<char> buf(blockSize);
     switch (iWhence)
     {
     case SEEK_SET:
@@ -197,7 +196,7 @@ int64_t CZipFile::Seek(int64_t iFilePosition, int iWhence)
         while (m_iFilePos < iFilePosition)
         {
           unsigned int iToRead = (iFilePosition - m_iFilePos)>blockSize ? blockSize : (int)(iFilePosition - m_iFilePos);
-          if (Read(buf.get(),iToRead) != iToRead)
+          if (Read(&buf[0],iToRead) != iToRead)
             return -1;
         }
         return m_iFilePos;
@@ -216,7 +215,7 @@ int64_t CZipFile::Seek(int64_t iFilePosition, int iWhence)
       while (m_iFilePos < iFilePosition)
       {
         unsigned int iToRead = (iFilePosition - m_iFilePos)>blockSize ? blockSize : (int)(iFilePosition - m_iFilePos);
-        if (Read(buf.get(), iToRead) != iToRead)
+        if (Read(&buf[0], iToRead) != iToRead)
           return -1;
       }
       return m_iFilePos;
@@ -229,7 +228,7 @@ int64_t CZipFile::Seek(int64_t iFilePosition, int iWhence)
       while( (int)m_ZStream.total_out < mZipItem.usize+iFilePosition)
       {
         unsigned int iToRead = (mZipItem.usize + iFilePosition - m_ZStream.total_out > blockSize) ? blockSize : (int)(mZipItem.usize + iFilePosition - m_ZStream.total_out);
-        if (Read(buf.get(), iToRead) != iToRead)
+        if (Read(&buf[0], iToRead) != iToRead)
           return -1;
       }
       return m_iFilePos;

@@ -1,48 +1,35 @@
 /*
- *      Copyright (c) 2002 Frodo
+ *  Copyright (c) 2002 Frodo
  *      Portions Copyright (c) by the authors of ffmpeg and xvid
- *      Copyright (C) 2002-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2002-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
 
 // File.h: interface for the CFile class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#pragma once
-
-#include <iostream>
-#include <stdio.h>
-#include <string>
-#include "utils/auto_buffer.h"
 #include "IFileTypes.h"
 #include "URL.h"
 
-#include "platform/xbox/PlatformDefs.h"
-
+#include <iostream>
 #include <boost/move/unique_ptr.hpp>
+#include <stdio.h>
+#include <string>
+#include <vector>
+
+#include "PlatformDefs.h"
 
 class BitstreamStats;
 
 namespace XFILE
 {
 
-using ::XUTILS::auto_buffer;
 class IFile;
 
 class CFileStreamBuffer;
@@ -65,7 +52,7 @@ public:
   *
   * Remarks: Open can only be called once. Calling
   * Open() on an already opened file will fail
-  * exept flag READ_REOPEN is set and the underlying
+  * except if flag READ_REOPEN is set and the underlying
   * file has an implementation of ReOpen().
   */
   bool Open(const CURL& file, const unsigned int flags = 0);
@@ -74,7 +61,7 @@ public:
   bool OpenForWrite(const CURL& file, bool bOverWrite = false);
   bool OpenForWrite(const std::string& strFileName, bool bOverWrite = false);
 
-  ssize_t LoadFile(const CURL &file, auto_buffer& outputBuffer);
+  ssize_t LoadFile(const CURL& file, std::vector<uint8_t>& outputBuffer);
 
   /**
    * Attempt to read bufSize bytes from currently opened file into buffer bufPtr.
@@ -103,25 +90,16 @@ public:
   void Close();
   int GetChunkSize();
   const std::string GetProperty(XFILE::FileProperty type, const std::string &name = "") const;
-  ssize_t LoadFile(const std::string &filename, auto_buffer& outputBuffer);
+  const std::vector<std::string> GetPropertyValues(XFILE::FileProperty type, const std::string &name = "") const;
+  ssize_t LoadFile(const std::string& filename, std::vector<uint8_t>& outputBuffer);
 
+  static int DetermineChunkSize(const int srcChunkSize, const int reqChunkSize);
 
-  // will return a size, that is aligned to chunk size
-  // but always greater or equal to the file's chunk size
-  static int GetChunkSize(int chunk, int minimum)
-  {
-    if(chunk)
-      return chunk * ((minimum + chunk - 1) / chunk);
-    else
-      return minimum;
-  }
-
-  bool SkipNext();
-  BitstreamStats* GetBitstreamStats() { return m_bitStreamStats; }
+  const boost::movelib::unique_ptr<BitstreamStats>& GetBitstreamStats() const { return m_bitStreamStats; }
 
   int IoControl(EIoControl request, void* param);
 
-  IFile *GetImplementation() const { return m_pFile; }
+  IFile* GetImplementation() const { return m_pFile.get(); }
 
   // CURL interface
   static bool Exists(const CURL& file, bool bUseCache = true);
@@ -177,11 +155,28 @@ public:
   double GetDownloadSpeed();
 
 private:
-  unsigned int        m_flags;
+  /*!
+   * \brief Determines if CFileStreamBuffer should be used to read a file.
+   *
+   * In general, should be used for ALL media files (only when is not used FileCache)
+   * and NOT used for non-media files e.g. small local files as config/settings xml files.
+   * Enables basic buffer that allows read sources with 64K chunk size even if FFmpeg only reads
+   * data with small 4K chunks or Blu-Ray sector size (6144 bytes):
+   *
+   * [FFmpeg] <-----4K chunks----- [CFileStreamBuffer] <-----64K chunks----- [Source file / Network]
+   *
+   * NOTE: in case of SMB / NFS default 64K chunk size is replaced with value configured in
+   * settings for the protocol.
+   * This improves performance when reads big files through Network.
+   * \param url Source file info as CULR class.
+   */
+  bool ShouldUseStreamBuffer(const CURL& url);
+
+  unsigned int m_flags;
   CURL                m_curl;
-  IFile*              m_pFile;
-  CFileStreamBuffer*  m_pBuffer;
-  BitstreamStats*     m_bitStreamStats;
+  boost::movelib::unique_ptr<IFile> m_pFile;
+  boost::movelib::unique_ptr<CFileStreamBuffer> m_pBuffer;
+  boost::movelib::unique_ptr<BitstreamStats> m_bitStreamStats;
 };
 
 // streambuf for file io, only supports buffered input currently
@@ -189,8 +184,8 @@ class CFileStreamBuffer
   : public std::streambuf
 {
 public:
-  ~CFileStreamBuffer();
-  CFileStreamBuffer(int backsize = 0);
+  virtual ~CFileStreamBuffer();
+  explicit CFileStreamBuffer(int backsize = 0);
 
   void Attach(IFile *file);
   void Detach();
@@ -212,8 +207,8 @@ class CFileStream
   : public std::istream
 {
 public:
-  CFileStream(int backsize = 0);
-  ~CFileStream();
+  explicit CFileStream(int backsize = 0);
+  virtual ~CFileStream();
 
   bool Open(const std::string& filename);
   bool Open(const CURL& filename);
@@ -222,7 +217,7 @@ public:
   int64_t GetLength();
 private:
   CFileStreamBuffer m_buffer;
-  IFile*            m_file;
+  boost::movelib::unique_ptr<IFile> m_file;
 };
 
 }

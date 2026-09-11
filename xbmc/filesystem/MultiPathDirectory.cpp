@@ -1,36 +1,26 @@
 /*
- *      Copyright (C) 2005-2015 Team Kodi
- *      http://kodi.tv
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with Kodi; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "threads/SystemClock.h"
 #include "MultiPathDirectory.h"
+
 #include "Directory.h"
-#include "Util.h"
+#include "FileItem.h"
+#include "ServiceBroker.h"
 #include "URL.h"
+#include "Util.h"
+#include "dialogs/GUIDialogProgress.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
-#include "dialogs/GUIDialogProgress.h"
-#include "FileItem.h"
+#include "threads/SystemClock.h"
 #include "utils/StringUtils.h"
-#include "utils/log.h"
-#include "utils/Variant.h"
 #include "utils/URIUtils.h"
+#include "utils/Variant.h"
+#include "utils/log.h"
 
 using namespace XFILE;
 
@@ -41,15 +31,13 @@ using namespace XFILE;
 // multipath:// style url.
 //
 
-CMultiPathDirectory::CMultiPathDirectory()
-{}
+CMultiPathDirectory::CMultiPathDirectory() {}
 
-CMultiPathDirectory::~CMultiPathDirectory()
-{}
+CMultiPathDirectory::~CMultiPathDirectory() {}
 
 bool CMultiPathDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
-  CLog::Log(LOGDEBUG,"CMultiPathDirectory::GetDirectory(%s)", url.GetRedacted().c_str());
+  CLog::Log(LOGDEBUG, "CMultiPathDirectory::GetDirectory(%s)", url.GetRedacted().c_str());
 
   std::vector<std::string> vecPaths;
   if (!GetPaths(url, vecPaths))
@@ -64,7 +52,7 @@ bool CMultiPathDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     // show the progress dialog if we have passed our time limit
     if (progressTime.IsTimePast() && !dlgProgress)
     {
-      dlgProgress = (CGUIDialogProgress *)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS);
+      dlgProgress = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
       if (dlgProgress)
       {
         dlgProgress->SetHeading(15310);
@@ -86,12 +74,12 @@ bool CMultiPathDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     }
 
     CFileItemList tempItems;
-    CLog::Log(LOGDEBUG,"Getting Directory (%s)", vecPaths[i].c_str());
+    CLog::Log(LOGDEBUG, "Getting Directory (%s)", CURL::GetRedacted(vecPaths[i]).c_str());
     if (CDirectory::GetDirectory(vecPaths[i], tempItems, m_strFileMask, m_flags))
       items.Append(tempItems);
     else
     {
-      CLog::Log(LOGERROR,"Error Getting Directory (%s)", vecPaths[i].c_str());
+      CLog::Log(LOGERROR, "Error Getting Directory (%s)", CURL::GetRedacted(vecPaths[i]).c_str());
       iFailures++;
     }
 
@@ -116,7 +104,7 @@ bool CMultiPathDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
 bool CMultiPathDirectory::Exists(const CURL& url)
 {
-  CLog::Log(LOGDEBUG,"Testing Existence (%s)", url.GetRedacted().c_str());
+  CLog::Log(LOGDEBUG, "Testing Existence (%s)", url.GetRedacted().c_str());
 
   std::vector<std::string> vecPaths;
   if (!GetPaths(url, vecPaths))
@@ -124,7 +112,7 @@ bool CMultiPathDirectory::Exists(const CURL& url)
 
   for (unsigned int i = 0; i < vecPaths.size(); ++i)
   {
-    CLog::Log(LOGDEBUG,"Testing Existence (%s)", vecPaths[i].c_str());
+    CLog::Log(LOGDEBUG, "Testing Existence (%s)", CURL::GetRedacted(vecPaths[i]).c_str());
     if (CDirectory::Exists(vecPaths[i]))
       return true;
   }
@@ -148,7 +136,7 @@ bool CMultiPathDirectory::Remove(const CURL& url)
 
 std::string CMultiPathDirectory::GetFirstPath(const std::string &strPath)
 {
-  size_t pos = strPath.find("/", 12);
+  size_t pos = strPath.find('/', 12);
   if (pos != std::string::npos)
     return CURL::Decode(strPath.substr(12, pos - 12));
   return "";
@@ -245,8 +233,8 @@ std::string CMultiPathDirectory::ConstructMultiPath(const std::set<std::string> 
 
 void CMultiPathDirectory::MergeItems(CFileItemList &items)
 {
-  CLog::Log(LOGDEBUG, "CMultiPathDirectory::MergeItems, items = %i", (int)items.Size());
-  unsigned int time = XbmcThreads::SystemClockMillis();
+  CLog::Log(LOGDEBUG, "CMultiPathDirectory::MergeItems, items = %i", items.Size());
+  unsigned int start = XbmcThreads::SystemClockMillis();
   if (items.Size() == 0)
     return;
   // sort items by label
@@ -267,7 +255,7 @@ void CMultiPathDirectory::MergeItems(CFileItemList &items)
 
     std::vector<int> stack;
     stack.push_back(i);
-    CLog::Log(LOGDEBUG,"Testing path: [%03i] %s", i, pItem1->GetPath().c_str());
+    CLog::Log(LOGDEBUG, "Testing path: [%03i] %s", i, CURL::GetRedacted(pItem1->GetPath().c_str()));
 
     int j = i + 1;
     do
@@ -281,7 +269,7 @@ void CMultiPathDirectory::MergeItems(CFileItemList &items)
       if (!pItem2->IsFileFolder())
       {
         stack.push_back(j);
-        CLog::Log(LOGDEBUG,"  Adding path: [%03i] %s", j, pItem2->GetPath().c_str());
+        CLog::Log(LOGDEBUG, "  Adding path: [%03i] %s", j, CURL::GetRedacted(pItem2->GetPath()).c_str());
       }
       j++;
     }
@@ -295,15 +283,14 @@ void CMultiPathDirectory::MergeItems(CFileItemList &items)
       for (unsigned int k = stack.size() - 1; k > 0; --k)
         items.Remove(stack[k]);
       pItem1->SetPath(newPath);
-      CLog::Log(LOGDEBUG,"  New path: %s", pItem1->GetPath().c_str());
+      CLog::Log(LOGDEBUG, "  New path: %s", CURL::GetRedacted(pItem1->GetPath()).c_str());
     }
 
     i++;
   }
 
-  CLog::Log(LOGDEBUG,
-            "CMultiPathDirectory::MergeItems, items = %i,  took %d ms",
-            items.Size(), XbmcThreads::SystemClockMillis() - time);
+  CLog::Log(LOGDEBUG, "CMultiPathDirectory::MergeItems, items = %i,  took %u ms", items.Size(),
+            XbmcThreads::SystemClockMillis() - start);
 }
 
 bool CMultiPathDirectory::SupportsWriteFileOperations(const std::string &strPath)

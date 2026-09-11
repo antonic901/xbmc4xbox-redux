@@ -57,8 +57,7 @@ protected:
 
   unsigned int   GetExifOrientation(unsigned char* exif_data, unsigned int exif_data_size);
 
-  unsigned char  *m_inputBuff;
-  unsigned int   m_inputBuffSize;
+  std::vector<uint8_t> m_inputBuff;
   struct         jpeg_decompress_struct m_cinfo;
   std::string     m_texturePath;
 

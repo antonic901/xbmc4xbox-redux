@@ -1,44 +1,30 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2020 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "SourcesDirectory.h"
+
+#include "FileItem.h"
 #include "ServiceBroker.h"
-#include "utils/URIUtils.h"
 #include "URL.h"
 #include "Util.h"
-#include "FileItem.h"
-#include "File.h"
+#include "guilib/TextureManager.h"
+#include "media/MediaLockState.h"
 #include "profiles/ProfileManager.h"
 #include "settings/MediaSourceSettings.h"
-#include "settings/SettingsComponent.h"
-#include "guilib/TextureManager.h"
+#include "storage/MediaManager.h"
+#include "utils/FileUtils.h"
+#include "utils/URIUtils.h"
 
 using namespace XFILE;
 
-CSourcesDirectory::CSourcesDirectory(void)
-{
-}
+CSourcesDirectory::CSourcesDirectory(void) {}
 
-CSourcesDirectory::~CSourcesDirectory(void)
-{
-}
+CSourcesDirectory::~CSourcesDirectory(void) {}
 
 bool CSourcesDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
@@ -73,16 +59,17 @@ bool CSourcesDirectory::GetDirectory(const VECSOURCES &sources, CFileItemList &i
       CUtil::GetDVDDriveIcon( pItem->GetPath(), strIcon );
       // CDetectDVDMedia::SetNewDVDShareUrl() caches disc thumb as special://temp/dvdicon.tbn
       std::string strThumb = "special://temp/dvdicon.tbn";
-      if (XFILE::CFile::Exists(strThumb))
+      if (CFileUtils::Exists(strThumb))
         pItem->SetArt("thumb", strThumb);
     }
     else if (URIUtils::IsProtocol(pItem->GetPath(), "addons"))
       strIcon = "DefaultHardDisk.png";
+    else if (   pItem->IsPath("special://musicplaylists/")
+             || pItem->IsPath("special://videoplaylists/"))
+      strIcon = "DefaultPlaylist.png";
     else if (   pItem->IsVideoDb()
              || pItem->IsMusicDb()
              || pItem->IsPlugin()
-             || pItem->IsPath("special://musicplaylists/")
-             || pItem->IsPath("special://videoplaylists/")
              || pItem->IsPath("musicsearch://"))
       strIcon = "DefaultFolder.png";
     else if (pItem->IsRemote())
@@ -99,7 +86,8 @@ bool CSourcesDirectory::GetDirectory(const VECSOURCES &sources, CFileItemList &i
       strIcon = "DefaultHardDisk.png";
 
     pItem->SetArt("icon", strIcon);
-    if (share.m_iHasLock == 2 && CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
+    if (share.m_iHasLock == LOCK_STATE_LOCKED &&
+        m_profileManager->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
       pItem->SetOverlayImage(CGUIListItem::ICON_OVERLAY_LOCKED);
     else
       pItem->SetOverlayImage(CGUIListItem::ICON_OVERLAY_NONE);

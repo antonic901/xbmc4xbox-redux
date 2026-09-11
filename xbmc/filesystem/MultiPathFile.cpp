@@ -1,40 +1,24 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "MultiPathFile.h"
-#include "MultiPathDirectory.h"
-#include "utils/URIUtils.h"
-#include "URL.h"
 
-using namespace XFILE;
-using namespace std;
+#include "MultiPathDirectory.h"
+#include "URL.h"
+#include "utils/URIUtils.h"
+
 using namespace XFILE;
 
 CMultiPathFile::CMultiPathFile(void)
-{
-}
+  : COverrideFile(false)
+{ }
 
-CMultiPathFile::~CMultiPathFile(void)
-{
-  Close();
-}
+CMultiPathFile::~CMultiPathFile(void) {}
 
 bool CMultiPathFile::Open(const CURL& url)
 {
@@ -94,27 +78,7 @@ int CMultiPathFile::Stat(const CURL& url, struct __stat64* buffer)
   return -1;
 }
 
-ssize_t CMultiPathFile::Read(void* lpBuf, size_t uiBufSize)
+std::string CMultiPathFile::TranslatePath(const CURL& url)
 {
-  return m_file.Read(lpBuf, uiBufSize);
-}
-
-int64_t CMultiPathFile::Seek(int64_t iFilePosition, int iWhence /*=SEEK_SET*/)
-{
-  return m_file.Seek(iFilePosition, iWhence);
-}
-
-void CMultiPathFile::Close()
-{
-  m_file.Close();
-}
-
-int64_t CMultiPathFile::GetPosition()
-{
-  return m_file.GetPosition();
-}
-
-int64_t CMultiPathFile::GetLength()
-{
-  return m_file.GetLength();
+  return url.Get();
 }

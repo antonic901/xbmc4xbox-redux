@@ -664,7 +664,7 @@ extern "C"
     std::string strURL = url.Get();
     bVecDirsInited = true;
     vecDirsOpen[iDirSlot].items.Clear();
-    vecDirsOpen[iDirSlot].Directory = CFactoryDirectory::Create(url);
+    vecDirsOpen[iDirSlot].Directory = CDirectoryFactory::Create(url);
     vecDirsOpen[iDirSlot].Directory->SetMask(strMask);
     vecDirsOpen[iDirSlot].Directory->GetDirectory(CURL(strURL+fName),vecDirsOpen[iDirSlot].items);
     if (vecDirsOpen[iDirSlot].items.Size())

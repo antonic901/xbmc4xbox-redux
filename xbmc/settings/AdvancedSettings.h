@@ -198,6 +198,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     bool m_bHTTPDirectoryStatFilesize;
 
     bool m_bFTPThumbs;
+    bool m_bShoutcastArt;
 
     int m_iMusicLibraryRecentlyAddedItems;
     int m_iMusicLibraryDateAdded;

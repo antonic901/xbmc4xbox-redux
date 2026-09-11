@@ -1,40 +1,26 @@
 /*
- *      Copyright (c) 2002 Frodo
+ *  Copyright (c) 2002 Frodo
  *      Portions Copyright (c) by the authors of ffmpeg and xvid
- *      Copyright (C) 2002-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2002-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
 
 // IFile.h: interface for the IFile class.
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_IFILE_H__7EE73AC7_36BC_4822_93FF_44F3B0C766F6__INCLUDED_)
-#define AFX_IFILE_H__7EE73AC7_36BC_4822_93FF_44F3B0C766F6__INCLUDED_
-
-#pragma once
-
-#include "platform/xbox/PlatformDefs.h" // for __stat64, ssize_t
+#include "PlatformDefs.h" // for __stat64, ssize_t
 
 #include <stdio.h>
 #include <stdint.h>
 #include <sys/stat.h>
 #include <string>
+#include <vector>
 
 #if !defined(SIZE_MAX) || !defined(SSIZE_MAX)
 #include <limits.h>
@@ -60,8 +46,8 @@ public:
   virtual ~IFile();
 
   virtual bool Open(const CURL& url) = 0;
-  virtual bool OpenForWrite(const CURL& url, bool bOverWrite = false) { return false; };
-  virtual bool ReOpen(const CURL& url) { return false; };
+  virtual bool OpenForWrite(const CURL& url, bool bOverWrite = false) { return false; }
+  virtual bool ReOpen(const CURL& url) { return false; }
   virtual bool Exists(const CURL& url) = 0;
   /**
    * Fills struct __stat64 with information about file specified by url.
@@ -112,18 +98,16 @@ public:
   virtual int64_t GetPosition() = 0;
   virtual int64_t GetLength() = 0;
   virtual void Flush() { }
-  virtual int Truncate(int64_t size) { return -1;};
+  virtual int Truncate(int64_t size) { return -1; }
 
-  /* Returns the minium size that can be read from input stream.   *
+  /* Returns the minimum size that can be read from input stream.  *
    * For example cdrom access where access could be sector based.  *
    * This will cause file system to buffer read requests, to       *
    * to meet the requirement of CFile.                             *
    * It can also be used to indicate a file system is non buffered *
    * but accepts any read size, have it return the value 1         */
   virtual int  GetChunkSize() {return 0;}
-  virtual double GetDownloadSpeed(){ return 0.0f; };
-
-  virtual bool SkipNext(){return false;}
+  virtual double GetDownloadSpeed() { return 0.0; }
 
   virtual bool Delete(const CURL& url) { return false; }
   virtual bool Rename(const CURL& url, const CURL& urlnew) { return false; }
@@ -135,6 +119,17 @@ public:
   {
     return type == XFILE::FILE_PROPERTY_CONTENT_TYPE ? "application/octet-stream" : "";
   };
+
+  virtual const std::vector<std::string> GetPropertyValues(XFILE::FileProperty type, const std::string &name = "") const
+  {
+    std::vector<std::string> values;
+    std::string value = GetProperty(type, name);
+    if (!value.empty())
+    {
+      values.push_back(value);
+    }
+    return values;
+  }
 };
 
 class CRedirectException
@@ -149,5 +144,3 @@ public:
 };
 
 }
-
-#endif // !defined(AFX_IFILE_H__7EE73AC7_36BC_4822_93FF_44F3B0C766F6__INCLUDED_)

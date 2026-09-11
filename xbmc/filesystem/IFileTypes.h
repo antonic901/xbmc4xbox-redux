@@ -1,24 +1,11 @@
-
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
 #pragma once
 
 #include <stdint.h>
@@ -38,7 +25,7 @@ namespace XFILE
 /* open without caching. regardless to file type. */
   static const unsigned int READ_NO_CACHE = 0x08;
 
-/* calcuate bitrate for file while reading */
+/* calculate bitrate for file while reading */
   static const unsigned int READ_BITRATE = 0x10;
 
 /* indicate to the caller we will seek between multiple streams in the file frequently */
@@ -53,18 +40,22 @@ namespace XFILE
 /* indicate that caller want to reopen a file if its already open  */
   static const unsigned int READ_REOPEN = 0x100;
 
+/* indicate that caller want open a file without intermediate buffer regardless to file type */
+  static const unsigned int READ_NO_BUFFER = 0x200;
+
 struct SNativeIoControl
 {
-  int   request;
-  void* param;
+  unsigned long int   request;
+  void*               param;
 };
 
 struct SCacheStatus
 {
-  uint64_t forward;  /**< number of bytes cached forward of current position */
-  unsigned maxrate;  /**< maximum number of bytes per second cache is allowed to fill */
-  unsigned currate;  /**< average read rate from source file since last position change */
-  float    level;    /**< cache level (0.0 - 1.0) */
+  uint64_t maxforward; /**< forward cache max capacity in bytes */
+  uint64_t forward; /**< number of bytes cached forward of current position */
+  uint32_t maxrate; /**< maximum allowed read(fill) rate (bytes/second) */
+  uint32_t currate; /**< average read rate (bytes/second) since last position change */
+  uint32_t lowrate; /**< low speed read rate (bytes/second) (if any, else 0) */
 };
 
 enum CACHE_BUFFER_MODES
@@ -88,7 +79,7 @@ typedef enum {
 enum CURLOPTIONTYPE
 {
   CURL_OPTION_OPTION,     /**< Set a general option   */
-  CURL_OPTION_PROTOCOL,   /**< Set a protocol option  */
+  CURL_OPTION_PROTOCOL,   /**< Set a protocol option (see below)  */
   CURL_OPTION_CREDENTIALS,/**< Set User and password  */
   CURL_OPTION_HEADER      /**< Add a Header           */
 };

@@ -37,7 +37,7 @@ CPODocument::~CPODocument() {}
 bool CPODocument::LoadFile(const std::string &pofilename)
 {
   XFILE::CFile file;
-  XFILE::auto_buffer buf;
+  std::vector<uint8_t> buf;
   if (file.LoadFile(pofilename, buf) < 18) // at least a size of a minimalistic header
   {
     CLog::Log(LOGERROR, "%s: can't load file \"%s\" or file is too small", __FUNCTION__,  pofilename.c_str());
@@ -45,7 +45,7 @@ bool CPODocument::LoadFile(const std::string &pofilename)
   }
 
   m_strBuffer = '\n';
-  m_strBuffer.append(buf.get(), buf.size());
+  m_strBuffer.append(reinterpret_cast<char*>(&buf[0]), buf.size());
   buf.clear();
 
   ConvertLineEnds(pofilename);
@@ -216,7 +216,7 @@ std::string CPODocument::UnescapeString(const std::string &strInput)
         case '\'': oescchar = '\''; break;
         case '\\': oescchar = '\\'; break;
 
-        default: 
+        default:
         {
           CLog::Log(LOGERROR,
                     "POParser: warning, unhandled escape character. Problematic entry: %s",

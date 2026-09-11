@@ -6,14 +6,21 @@
  *  See LICENSES/README.md for more information.
  */
 #include "SectionLoader.h"
+#include "filesystem/DirectoryCache.h"
 #include "GUIPassword.h"
 #include "utils/LangCodeExpander.h"
 #include "PartyModeManager.h"
 #include "guilib/LocalizeStrings.h"
 
+// Guarantee that CSpecialProtocol is initialized before and uninitialized after ZipManager
+#include "filesystem/SpecialProtocol.h"
+std::map<std::string, std::string> CSpecialProtocol::m_pathMap;
+
   CLangCodeExpander  g_LangCodeExpander;
   CLocalizeStrings   g_localizeStrings;
   CLocalizeStrings   g_localizeStringsTemp;
+
+  XFILE::CDirectoryCache g_directoryCache;
 
   CGUIPassword       g_passwordManager;
 

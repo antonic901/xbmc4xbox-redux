@@ -1,26 +1,16 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <string>
+#pragma once
+
 #include "utils/Variant.h"
+
+#include <string>
 
 class CFileItemList;
 class CProfileManager;
@@ -54,9 +44,9 @@ namespace XFILE
  \ingroup filesystem
  \brief Interface to the directory on a file system.
 
- This Interface is retrieved from CFactoryDirectory and can be used to
+ This Interface is retrieved from CDirectoryFactory and can be used to
  access the directories on a filesystem.
- \sa CFactoryDirectory
+ \sa CDirectoryFactory
  */
 class IDirectory
 {
@@ -64,14 +54,14 @@ public:
   static void RegisterProfileManager(const CProfileManager &profileManager);
   static void UnregisterProfileManager();
 
-  IDirectory(void);
+  IDirectory();
   virtual ~IDirectory(void);
   /*!
    \brief Get the \e items of the directory \e strPath.
    \param url Directory to read.
    \param items Retrieves the directory entries.
-   \return Returns \e true, if successfull.
-   \sa CFactoryDirectory
+   \return Returns \e true, if successful.
+   \sa CDirectoryFactory
    */
   virtual bool GetDirectory(const CURL& url, CFileItemList &items) = 0;
   /*!
@@ -79,37 +69,44 @@ public:
    \return the progress as a float in the range 0..100.
    \sa GetDirectory, CancelDirectory
    */
-  virtual float GetProgress() const { return 0.0f; };
+  virtual float GetProgress() const { return 0.0f; }
   /*!
    \brief Cancel the current directory fetch (if possible).
    \sa GetDirectory
    */
-  virtual void CancelDirectory() { };
+  virtual void CancelDirectory() {}
   /*!
   \brief Create the directory
   \param url Directory to create.
   \return Returns \e true, if directory is created or if it already exists
-  \sa CFactoryDirectory
+  \sa CDirectoryFactory
   */
   virtual bool Create(const CURL& url) { return false; }
   /*!
   \brief Check for directory existence
   \param url Directory to check.
   \return Returns \e true, if directory exists
-  \sa CFactoryDirectory
+  \sa CDirectoryFactory
   */
   virtual bool Exists(const CURL& url) { return false; }
   /*!
   \brief Removes the directory
   \param url Directory to remove.
-  \return Returns \e false if not succesfull
+  \return Returns \e false if not successful
   */
   virtual bool Remove(const CURL& url) { return false; }
 
   /*!
+  \brief Provided a path, attempts to resolve to a mount point
+  \param path Path to resolve
+  \return Returns the mountpoint if found, else the provided path
+  */
+  virtual std::string ResolveMountPoint(const std::string& path) const { return path; }
+
+  /*!
   \brief Recursively removes the directory
   \param url Directory to remove.
-  \return Returns \e false if not succesful
+  \return Returns \e false if not successful
   */
   virtual bool RemoveRecursive(const CURL& url) { return false; }
 
@@ -130,7 +127,7 @@ public:
   \param url Directory at hand.
   \return Returns the cache type.
   */
-  virtual DIR_CACHE_TYPE GetCacheType(const CURL& url) const { return DIR_CACHE_ONCE; };
+  virtual DIR_CACHE_TYPE GetCacheType(const CURL& url) const { return DIR_CACHE_ONCE; }
 
   void SetMask(const std::string& strMask);
   void SetFlags(int flags);
@@ -162,7 +159,7 @@ protected:
    \return true if keyboard input has been received. False if it hasn't.
    \sa ProcessRequirements
    */
-  bool GetKeyboardInput(const CVariant &heading, std::string &input);
+  bool GetKeyboardInput(const CVariant &heading, std::string &input, bool hiddenInput = false);
 
   /*! \brief Show an error dialog on failure of GetDirectory call
    Call this method from the GetDirectory method to set an error message to be shown to the user
@@ -182,13 +179,6 @@ protected:
    \sa ProcessRequirements
    */
   void RequireAuthentication(const CURL& url);
-
-  /*! \brief Get a localized string from a variant
-   If the varaint is already a string we return directly, else if it's an integer we return the corresponding
-   localized string.
-   \param var the variant to localize.
-   */
-  std::string GetLocalized(const CVariant &var) const;
 
   static const CProfileManager *m_profileManager;
 

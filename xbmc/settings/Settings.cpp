@@ -26,6 +26,7 @@
 #include "settings/DisplaySettings.h"
 #include "settings/MediaSettings.h"
 #include "settings/MediaSourceSettings.h"
+#include "settings/ServicesSettings.h"
 #include "settings/SettingConditions.h"
 #include "settings/SettingsComponent.h"
 #include "settings/SkinSettings.h"
@@ -288,6 +289,9 @@ const char* CSettings::SETTING_SOURCE_VIDEOS = "source.videos";
 const char* CSettings::SETTING_SOURCE_MUSIC = "source.music";
 const char* CSettings::SETTING_SOURCE_PICTURES = "source.pictures";
 const char* CSettings::SETTING_FILECACHE_BUFFERMODE = "filecache.buffermode";
+const char* CSettings::SETTING_FILECACHE_MEMORYSIZE = "filecache.memorysize"; // in MBytes
+const char* CSettings::SETTING_FILECACHE_READFACTOR = "filecache.readfactor"; // as integer (x100)
+const char* CSettings::SETTING_FILECACHE_CHUNKSIZE = "filecache.chunksize"; // in Bytes
 const char* CSettings::SETTING_HDD_REMOTE_PLAY_SPINDOWN = "harddisk.remoteplayspindown";
 const char* CSettings::SETTING_HDD_REMOTE_PLAY_SPINDOWN_DURATION = "harddisk.remoteplayspindownminduration";
 const char* CSettings::SETTING_HDD_REMOTE_PLAY_SPINDOWN_DELAY = "harddisk.remoteplayspindowndelay";
@@ -605,6 +609,14 @@ void CSettings::InitializeOptionFillers()
   GetSettingsManager()->RegisterSettingOptionsFiller("timezones", XBTimeZone::SettingOptionsTimezonesFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller(
       "keyboardlayouts", KEYBOARD::CKeyboardLayoutManager::SettingOptionsKeyboardLayoutsFiller);
+  GetSettingsManager()->RegisterSettingOptionsFiller(
+      "filecachebuffermodes", CServicesSettings::SettingOptionsBufferModesFiller);
+  GetSettingsManager()->RegisterSettingOptionsFiller(
+      "filecachememorysizes", CServicesSettings::SettingOptionsMemorySizesFiller);
+  GetSettingsManager()->RegisterSettingOptionsFiller(
+      "filecachereadfactors", CServicesSettings::SettingOptionsReadFactorsFiller);
+  GetSettingsManager()->RegisterSettingOptionsFiller(
+      "filecachechunksizes", CServicesSettings::SettingOptionsCacheChunkSizesFiller);
   GetSettingsManager()->RegisterSettingOptionsFiller("voicemasks", CCdgParser::SettingOptionsVoiceMasksFiller);
 }
 
@@ -637,6 +649,10 @@ void CSettings::UninitializeOptionFillers()
   GetSettingsManager()->UnregisterSettingOptionsFiller("targettemperatures");
   GetSettingsManager()->UnregisterSettingOptionsFiller("timezones");
   GetSettingsManager()->UnregisterSettingOptionsFiller("keyboardlayouts");
+  GetSettingsManager()->UnregisterSettingOptionsFiller("filecachebuffermodes");
+  GetSettingsManager()->UnregisterSettingOptionsFiller("filecachememorysizes");
+  GetSettingsManager()->UnregisterSettingOptionsFiller("filecachereadfactors");
+  GetSettingsManager()->UnregisterSettingOptionsFiller("filecachechunksizes");
   GetSettingsManager()->UnregisterSettingOptionsFiller("voicemasks");
 }
 

@@ -13207,7 +13207,77 @@ msgctxt "#37045"
 msgid "Extract chapter thumbnails for presentation in the chapters / bookmarks dialogue. This might increase CPU load."
 msgstr ""
 
-#empty strings from id 37046 to 38009
+#empty strings from id 37046 to 37109
+
+#. Value of setting - NONE
+#: xbmc/settings/SevicesSettings.cpp
+msgctxt "#37110"
+msgid "No buffer"
+msgstr ""
+
+#. Value of setting - TRUE INTERNET
+#: xbmc/settings/SevicesSettings.cpp
+msgctxt "#37111"
+msgid "Only buffer true internet streams: HTTP, HTTPS, etc."
+msgstr ""
+
+#. Value of setting - INTERNET
+#: xbmc/settings/SevicesSettings.cpp
+msgctxt "#37112"
+msgid "Buffer all internet filesystems, including: FTP, WebDAV, etc."
+msgstr ""
+
+#. Value of setting - NETWORK
+#: xbmc/settings/SevicesSettings.cpp
+msgctxt "#37113"
+msgid "Buffer all network filesystems, including: SMB, NFS, etc."
+msgstr ""
+
+#. Value of setting - ALL
+#: xbmc/settings/SevicesSettings.cpp
+msgctxt "#37114"
+msgid "Buffer all filesystems, including local files"
+msgstr ""
+
+#. Value of setting #37105 "Memory Size"
+#: xbmc/settings/SevicesSettings.cpp
+msgctxt "#37115"
+msgid "Caches entire file on disk storage"
+msgstr ""
+
+#. Value of setting #37107 "Read Factor"
+#: xbmc/settings/SevicesSettings.cpp
+msgctxt "#37116"
+msgid "Adaptive"
+msgstr ""
+
+#empty strings from id 37117 to 37119
+
+#. Value of setting - Byte
+#: xbmc/settings/SevicesSettings.cpp
+msgctxt "#37120"
+msgid "%d Byte"
+msgstr ""
+
+#. Value of setting - KByte
+#: xbmc/settings/SevicesSettings.cpp
+msgctxt "#37121"
+msgid "%d KB"
+msgstr ""
+
+#. Value of setting - MByte
+#: xbmc/settings/SevicesSettings.cpp
+msgctxt "#37122"
+msgid "%d MB"
+msgstr ""
+
+#. Value of setting - GByte
+#: xbmc/settings/SevicesSettings.cpp
+msgctxt "#37123"
+msgid "%d GB"
+msgstr ""
+
+#empty strings from id 37124 to 38009
 
 #. Setting #38011 "Show All Items entry"
 #: system/settings/settings.xml

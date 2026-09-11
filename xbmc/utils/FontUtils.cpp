@@ -80,7 +80,7 @@ std::string GetFamilyNameFromSfnt(FT_Face face)
 }
 } // unnamed namespace
 
-bool UTILS::FONT::GetFontFamilyNames(const XUTILS::auto_buffer& buffer,
+bool UTILS::FONT::GetFontFamilyNames(const std::vector<uint8_t>& buffer,
                                      std::set<std::string>& familyNames)
 {
   FT_Library m_library = NULL;
@@ -93,7 +93,7 @@ bool UTILS::FONT::GetFontFamilyNames(const XUTILS::auto_buffer& buffer,
 
   FT_Open_Args args = {};
   args.flags = FT_OPEN_MEMORY;
-  args.memory_base = reinterpret_cast<const FT_Byte*>(buffer.get());
+  args.memory_base = reinterpret_cast<const FT_Byte*>(&buffer[0]);
   args.memory_size = static_cast<FT_Long>(buffer.size());
 
   FT_Long numFaces = 0;
@@ -154,7 +154,7 @@ bool UTILS::FONT::GetFontFamilyNames(const XUTILS::auto_buffer& buffer,
 bool UTILS::FONT::GetFontFamilyNames(const std::string& filepath,
                                      std::set<std::string>& familyNames)
 {
-  XUTILS::auto_buffer buffer;
+  std::vector<uint8_t> buffer;
   if (filepath.empty())
     return false;
 
@@ -166,7 +166,7 @@ bool UTILS::FONT::GetFontFamilyNames(const std::string& filepath,
   return GetFontFamilyNames(buffer, familyNames);
 }
 
-std::string UTILS::FONT::GetFontFamily(XUTILS::auto_buffer& buffer)
+std::string UTILS::FONT::GetFontFamily(std::vector<uint8_t>& buffer)
 {
   FT_Library m_library = NULL;
   FT_Init_FreeType(&m_library);
@@ -179,7 +179,7 @@ std::string UTILS::FONT::GetFontFamily(XUTILS::auto_buffer& buffer)
   // Load the font face
   FT_Face face;
   std::string familyName;
-  if (FT_New_Memory_Face(m_library, reinterpret_cast<const FT_Byte*>(buffer.get()), buffer.size(),
+  if (FT_New_Memory_Face(m_library, reinterpret_cast<const FT_Byte*>(&buffer[0]), buffer.size(),
                          0, &face) == 0)
   {
     familyName = GetFamilyNameFromSfnt(face);
@@ -205,7 +205,7 @@ std::string UTILS::FONT::GetFontFamily(XUTILS::auto_buffer& buffer)
 
 std::string UTILS::FONT::GetFontFamily(const std::string& filepath)
 {
-  XUTILS::auto_buffer buffer;
+  std::vector<uint8_t> buffer;
   if (filepath.empty())
     return "";
   if (XFILE::CFile().LoadFile(filepath, buffer) <= 0)

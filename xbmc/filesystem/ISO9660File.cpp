@@ -18,7 +18,7 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "ISOFile.h"
+#include "ISO9660File.h"
 #include "URL.h"
 
 #include <sys/stat.h>
@@ -30,13 +30,13 @@ using namespace XFILE;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 //*********************************************************************************************
-CISOFile::CISOFile()
+CISO9660File::CISO9660File()
 {
   m_bOpened = false;
 }
 
 //*********************************************************************************************
-CISOFile::~CISOFile()
+CISO9660File::~CISO9660File()
 {
   if (m_bOpened)
   {
@@ -44,7 +44,7 @@ CISOFile::~CISOFile()
   }
 }
 //*********************************************************************************************
-bool CISOFile::Open(const CURL& url)
+bool CISO9660File::Open(const CURL& url)
 {
   string strFName = "\\";
   strFName += url.GetFileName();
@@ -64,7 +64,7 @@ bool CISOFile::Open(const CURL& url)
 }
 
 //*********************************************************************************************
-ssize_t CISOFile::Read(void *lpBuf, size_t uiBufSize)
+ssize_t CISO9660File::Read(void *lpBuf, size_t uiBufSize)
 {
   if (!m_bOpened)
     return -1;
@@ -101,18 +101,18 @@ ssize_t CISOFile::Read(void *lpBuf, size_t uiBufSize)
     return lTotalBytesRead;
   }
 
-  return m_isoReader.ReadFile( m_hFile, (uint8_t*)pData, (long)uiBufSize);;
+  return m_isoReader.ReadFile( m_hFile, (uint8_t*)pData, (long)uiBufSize);
 }
 
 //*********************************************************************************************
-void CISOFile::Close()
+void CISO9660File::Close()
 {
   if (!m_bOpened) return ;
   m_isoReader.CloseFile( m_hFile);
 }
 
 //*********************************************************************************************
-int64_t CISOFile::Seek(int64_t iFilePosition, int iWhence)
+int64_t CISO9660File::Seek(int64_t iFilePosition, int iWhence)
 {
   if (!m_bOpened) return -1;
   int64_t lNewPos = m_isoReader.Seek(m_hFile, iFilePosition, iWhence);
@@ -122,20 +122,20 @@ int64_t CISOFile::Seek(int64_t iFilePosition, int iWhence)
 }
 
 //*********************************************************************************************
-int64_t CISOFile::GetLength()
+int64_t CISO9660File::GetLength()
 {
   if (!m_bOpened) return -1;
   return m_isoReader.GetFileSize(m_hFile);
 }
 
 //*********************************************************************************************
-int64_t CISOFile::GetPosition()
+int64_t CISO9660File::GetPosition()
 {
   if (!m_bOpened) return -1;
   return m_isoReader.GetFilePosition(m_hFile);
 }
 
-bool CISOFile::Exists(const CURL& url)
+bool CISO9660File::Exists(const CURL& url)
 {
   string strFName = "\\";
   strFName += url.GetFileName();
@@ -151,7 +151,7 @@ bool CISOFile::Exists(const CURL& url)
   return true;
 }
 
-int CISOFile::Stat(const CURL& url, struct __stat64* buffer)
+int CISO9660File::Stat(const CURL& url, struct __stat64* buffer)
 {
   string strFName = "\\";
   strFName += url.GetFileName();

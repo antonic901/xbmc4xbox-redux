@@ -554,10 +554,10 @@ bool CAddonInfoBuilder::ParseXML(const AddonInfoPtr& addon,
         if (CFile::Exists(changelog))
         {
           CFile file;
-          XFILE::auto_buffer buf;
+          std::vector<uint8_t> buf;
           if (file.LoadFile(changelog, buf) > 0)
             addon->m_changelog[KODI_ADDON_DEFAULT_LANGUAGE_CODE].assign(
-                reinterpret_cast<char*>(buf.get()), buf.length());
+                reinterpret_cast<char*>(&buf[0]), buf.size());
         }
       }
     }

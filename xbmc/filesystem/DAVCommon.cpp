@@ -1,27 +1,17 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "DAVCommon.h"
+
 #include "utils/StringUtils.h"
 #include "utils/log.h"
+
+#include <tinyxml/tinyxml.h>
 
 using namespace XFILE;
 
@@ -30,24 +20,21 @@ using namespace XFILE;
  *
  * if pElement is <DAV:foo> and value is foo then ValueWithoutNamespace is true
  */
-bool CDAVCommon::ValueWithoutNamespace(const TiXmlNode *pNode, const std::string& value)
+bool CDAVCommon::ValueWithoutNamespace(const TiXmlNode* node, const std::string& value)
 {
-  std::vector<std::string> tag;
-  const TiXmlElement *pElement;
-
-  if (!pNode)
+  if (!node)
   {
     return false;
   }
 
-  pElement = pNode->ToElement();
+  const TiXmlElement* element = node->ToElement();
 
-  if (!pElement)
+  if (!element)
   {
     return false;
   }
 
-  tag = StringUtils::Split(pElement->Value(), ":", 2);
+  std::vector<std::string> tag = StringUtils::Split(element->Value(), ":", 2);
 
   if (tag.size() == 1 && tag[0] == value)
   {
@@ -59,7 +46,8 @@ bool CDAVCommon::ValueWithoutNamespace(const TiXmlNode *pNode, const std::string
   }
   else if (tag.size() > 2)
   {
-    CLog::Log(LOGERROR, "%s - Splitting %s failed, size(): %lu, value: %s", __FUNCTION__, pElement->Value(), (unsigned long int)tag.size(), value.c_str());
+    CLog::Log(LOGERROR, "Splitting %s failed, size(): % "PRIuS", value: %s", element->Value(), tag.size(),
+               value.c_str());
   }
 
   return false;
@@ -68,18 +56,15 @@ bool CDAVCommon::ValueWithoutNamespace(const TiXmlNode *pNode, const std::string
 /*
  * Search for <status> and return its content
  */
-std::string CDAVCommon::GetStatusTag(const TiXmlElement *pElement)
+std::string CDAVCommon::GetStatusTag(const TiXmlElement* element)
 {
-  const TiXmlElement *pChild;
-
-  for (pChild = pElement->FirstChild()->ToElement(); pChild != 0; pChild = pChild->NextSibling()->ToElement())
+  for (const TiXmlElement* child = element->FirstChildElement(); child; child = child->NextSiblingElement())
   {
-    if (ValueWithoutNamespace(pChild, "status"))
+    if (ValueWithoutNamespace(child, "status"))
     {
-      return std::string(pChild->GetText());
+      return child->NoChildren() ? "" : child->FirstChild()->Value();
     }
   }
 
   return "";
 }
-

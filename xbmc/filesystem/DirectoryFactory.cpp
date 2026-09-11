@@ -1,37 +1,25 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include <stdlib.h>
 #include "network/Network.h"
-#include "system.h"
 #include "DirectoryFactory.h"
-#include "HDDirectory.h"
 #include "SpecialProtocolDirectory.h"
+#include "MemUnitDirectory.h"
 #include "MultiPathDirectory.h"
 #include "StackDirectory.h"
 #include "FileDirectoryFactory.h"
+#include "GameSavesDirectory.h"
 #include "PlaylistDirectory.h"
+#include "ProgramDatabaseDirectory.h"
 #include "MusicDatabaseDirectory.h"
 #include "MusicSearchDirectory.h"
 #include "VideoDatabaseDirectory.h"
-#include "ProgramDatabaseDirectory.h"
 #include "FavouritesDirectory.h"
 #include "LibraryDirectory.h"
 #include "AddonsDirectory.h"
@@ -39,40 +27,29 @@
 #include "FTPDirectory.h"
 #include "HTTPDirectory.h"
 #include "DAVDirectory.h"
-#include "application/Application.h"
-#include "utils/StringUtils.h"
-#include "addons/Addon.h"
 #include "utils/log.h"
 
+#include "HDDirectory.h"
 #ifdef HAS_FILESYSTEM_SMB
-#ifdef _WIN32PC
-#include "WINSMBDirectory.h"
-#else
 #include "SMBDirectory.h"
 #endif
-#endif
-#ifdef HAS_FILESYSTEM_CDDA
 #include "CDDADirectory.h"
-#endif
 #include "PluginDirectory.h"
-#ifdef HAS_FILESYSTEM
 #include "ISO9660Directory.h"
-#include "SMBDirectory.h"
-#include "CDDADirectory.h"
-#include "SndtrkDirectory.h"
-#include "MemUnitDirectory.h"
-#include "GameSavesDirectory.h"
-#endif
 #ifdef HAS_UPNP
 #include "UPnPDirectory.h"
 #endif
-#include "network/Network.h"
 #include "ZipDirectory.h"
-#include "RarDirectory.h"
 #include "FileItem.h"
 #include "URL.h"
+#include "RarDirectory.h"
 #include "RSSDirectory.h"
 #include "ResourceDirectory.h"
+#include "ServiceBroker.h"
+#include "SndtrkDirectory.h"
+#include "utils/StringUtils.h"
+
+using namespace ADDON;
 
 using namespace XFILE;
 
@@ -82,7 +59,7 @@ using namespace XFILE;
  \return IDirectory object to access the directories on the share.
  \sa IDirectory
  */
-IDirectory* CFactoryDirectory::Create(const CFileItem& item)
+IDirectory* CDirectoryFactory::Create(const CFileItem& item)
 {
   CURL curl(item.GetDynPath());
 
@@ -100,10 +77,10 @@ IDirectory* CFactoryDirectory::Create(const CFileItem& item)
  \return IDirectory object to access the directories on the share.
  \sa IDirectory
  */
-IDirectory* CFactoryDirectory::Create(const CURL& url)
+IDirectory* CDirectoryFactory::Create(const CURL& url)
 {
-  CFileItem item(url.Get(), false);
-  IFileDirectory* pDir=CFactoryFileDirectory::Create(url, &item);
+  CFileItem item(url.Get(), true);
+  IFileDirectory* pDir = CFileDirectoryFactory::Create(url, &item);
   if (pDir)
     return pDir;
 
@@ -111,13 +88,11 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
   if (url.IsProtocol("special")) return new CSpecialProtocolDirectory();
   if (url.IsProtocol("sources")) return new CSourcesDirectory();
   if (url.IsProtocol("addons")) return new CAddonsDirectory();
-#ifdef HAS_FILESYSTEM_CDDA
+#if defined(HAS_OPTICAL_DRIVE)
   if (url.IsProtocol("cdda")) return new CCDDADirectory();
 #endif
-#ifdef HAS_FILESYSTEM
   if (url.IsProtocol("iso9660")) return new CISO9660Directory();
   if (url.IsProtocol("soundtrack")) return new CSndtrkDirectory();
-#endif
   if (url.IsProtocol("plugin")) return new CPluginDirectory();
   if (url.IsProtocol("zip")) return new CZipDirectory();
   if (url.IsProtocol("rar")) return new CRarDirectory();
@@ -131,33 +106,24 @@ IDirectory* CFactoryDirectory::Create(const CURL& url)
   if (url.IsProtocol("programdb")) return new CProgramDatabaseDirectory();
   if (url.IsProtocol("library")) return new CLibraryDirectory();
   if (url.IsProtocol("favourites")) return new CFavouritesDirectory();
-  if (url.IsProtocol("filereader"))
-  {
-    CURL url2(url.GetFileName());
-    return CFactoryDirectory::Create(url2);
-  }
-#ifdef HAS_XBOX_HARDWARE
-  if (url.IsProtocol("gamesaves")) return new CGameSavesDirectory();
-  // Is this same as url.IsProtocol("mem")?
-  if (StringUtils::StartsWith(url.GetProtocol(), "mem")) return new CMemUnitDirectory();
-#endif
   if (url.IsProtocol("resource")) return new CResourceDirectory();
 
-  if( CServiceBroker::GetNetwork().IsAvailable(true) )
-  {
-    if (url.IsProtocol("ftp") ||  url.IsProtocol("ftpx") ||  url.IsProtocol("ftps")) return new CFTPDirectory();
-    if (url.IsProtocol("http") || url.IsProtocol("https")) return new CHTTPDirectory();
-    if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVDirectory();
-#ifdef HAS_FILESYSTEM
-    if (url.IsProtocol("smb")) return new CSMBDirectory();
+  if (url.IsProtocol("ftp") || url.IsProtocol("ftps") || url.IsProtocol("ftpx")) return new CFTPDirectory();
+  if (url.IsProtocol("http") || url.IsProtocol("https")) return new CHTTPDirectory();
+  if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVDirectory();
+#ifdef HAS_FILESYSTEM_SMB
+  if (url.IsProtocol("smb")) return new CSMBDirectory();
 #endif
 #ifdef HAS_UPNP
-    if (url.IsProtocol("upnp")) return new CUPnPDirectory();
+  if (url.IsProtocol("upnp")) return new CUPnPDirectory();
 #endif
-    if (url.IsProtocol("rss")) return new CRSSDirectory();
-  }
+  if (url.IsProtocol("rss") || url.IsProtocol("rsss")) return new CRSSDirectory();
 
-  CLog::Log(LOGWARNING, "%s - Unsupported protocol(%s) in %s", __FUNCTION__, url.GetProtocol().c_str(), url.Get().c_str() );
+  if (url.IsProtocol("gamesaves")) return new CGameSavesDirectory();
+  if (url.IsProtocol("mem")) return new CMemUnitDirectory();
+
+  CLog::Log(LOGWARNING, "%s - unsupported protocol(%s) in %s", __FUNCTION__, url.GetProtocol().c_str(),
+            url.GetRedacted().c_str());
   return NULL;
 }
 

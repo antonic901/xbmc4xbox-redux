@@ -1,36 +1,20 @@
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2012-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "ImageFile.h"
+
 #include "ServiceBroker.h"
-#include "utils/URIUtils.h"
-#include "URL.h"
 #include "TextureCache.h"
+#include "URL.h"
 
 using namespace XFILE;
-using namespace std;
 
-CImageFile::CImageFile(void)
-{
-}
+CImageFile::CImageFile(void) {}
 
 CImageFile::~CImageFile(void)
 {
@@ -41,7 +25,8 @@ bool CImageFile::Open(const CURL& url)
 {
   std::string file = url.Get();
   bool needsRecaching = false;
-  std::string cachedFile = CServiceBroker::GetTextureCache()->CheckCachedImage(file, needsRecaching);
+  std::string cachedFile =
+      CServiceBroker::GetTextureCache()->CheckCachedImage(file, needsRecaching);
   if (cachedFile.empty())
   { // not in the cache, so cache it
     cachedFile = CServiceBroker::GetTextureCache()->CacheImage(file);
@@ -57,23 +42,29 @@ bool CImageFile::Open(const CURL& url)
 bool CImageFile::Exists(const CURL& url)
 {
   bool needsRecaching = false;
-  std::string cachedFile = CServiceBroker::GetTextureCache()->CheckCachedImage(url.Get(), needsRecaching);
+  std::string cachedFile =
+      CServiceBroker::GetTextureCache()->CheckCachedImage(url.Get(), needsRecaching);
   if (!cachedFile.empty())
-    return CFile::Exists(cachedFile);
+  {
+    if (CFile::Exists(cachedFile, false))
+      return true;
+    else
+      // Remove from cache so it gets cached again on next Open()
+      CServiceBroker::GetTextureCache()->ClearCachedImage(url.Get());
+  }
 
   // need to check if the original can be cached on demand and that the file exists
-  if (!url.GetUserName().empty())
-    return false; // not in the cache, and can't be cached on demand
+  if (!CTextureCache::CanCacheImageURL(url))
+    return false;
 
-  std::string image = url.GetHostName();
-  CURL::Decode(image);
-  return CFile::Exists(image);
+  return CFile::Exists(url.GetHostName());
 }
 
 int CImageFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   bool needsRecaching = false;
-  std::string cachedFile = CServiceBroker::GetTextureCache()->CheckCachedImage(url.Get(), needsRecaching);
+  std::string cachedFile =
+      CServiceBroker::GetTextureCache()->CheckCachedImage(url.Get(), needsRecaching);
   if (!cachedFile.empty())
     return CFile::Stat(cachedFile, buffer);
 

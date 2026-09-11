@@ -129,6 +129,7 @@ void CURL::Parse(std::string strURL1)
     IsProtocol("stack") ||
     IsProtocol("virtualpath") ||
     IsProtocol("multipath") ||
+    IsProtocol("filereader") ||
     IsProtocol("special") ||
     IsProtocol("resource")
     )

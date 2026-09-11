@@ -1,68 +1,66 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-
-#include "system.h"
-#include "Util.h"
-#include "utils/URIUtils.h"
 #include "FileDirectoryFactory.h"
-#ifdef HAS_FILESYSTEM
+
+#include "ISO9660Directory.h"
+#include "RSSDirectory.h"
+#include "utils/URIUtils.h"
+#include "Directory.h"
+#include "FileItem.h"
+#include "PlaylistFileDirectory.h"
+#include "RarDirectory.h"
+#include "ServiceBroker.h"
+#include "SmartPlaylistDirectory.h"
+#include "URL.h"
+#include "ZipDirectory.h"
+#include "addons/addoninfo/AddonInfo.h"
+#include "filesystem/File.h"
+#include "playlists/PlayListFactory.h"
+#include "playlists/SmartPlayList.h"
+#include "utils/StringUtils.h"
+#include "utils/log.h"
+
+// These were replaced by Audio Encoder addons
 #include "OGGFileDirectory.h"
 #include "NSFFileDirectory.h"
 #include "SIDFileDirectory.h"
 #include "ASAPFileDirectory.h"
-#include "RSSDirectory.h"
 #include "cores/paplayer/ASAPCodec.h"
-#endif
-#include "RarDirectory.h"
-#include "ZipDirectory.h"
-#include "SmartPlaylistDirectory.h"
-#include "playlists/SmartPlayList.h"
-#include "PlaylistFileDirectory.h"
-#include "playlists/PlayListFactory.h"
-#include "filesystem/Directory.h"
-#include "filesystem/File.h"
-#include "filesystem/RarManager.h"
-#include "filesystem/ZipManager.h"
-#include "settings/AdvancedSettings.h"
-#include "FileItem.h"
-#include "utils/StringUtils.h"
-#include "URL.h"
 
+using namespace ADDON;
 using namespace XFILE;
 using namespace PLAYLIST;
-using namespace std;
 
-CFactoryFileDirectory::CFactoryFileDirectory(void)
-{}
+CFileDirectoryFactory::CFileDirectoryFactory(void) {}
 
-CFactoryFileDirectory::~CFactoryFileDirectory(void)
-{}
+CFileDirectoryFactory::~CFileDirectoryFactory(void) {}
 
 // return NULL + set pItem->m_bIsFolder to remove it completely from list.
-IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem, const std::string& strMask)
+IFileDirectory* CFileDirectoryFactory::Create(const CURL& url, CFileItem* pItem, const std::string& strMask)
 {
   if (url.IsProtocol("stack")) // disqualify stack as we need to work with each of the parts instead
     return NULL;
 
-#ifdef HAS_FILESYSTEM
+  /**
+   * Check available binary addons which can contain files with underlaid
+   * folders / files.
+   * Currently in vfs and audiodecoder addons.
+   *
+   * @note The file extensions are absolutely necessary for these in order to
+   * identify the associated add-on.
+   */
+  /**@{*/
+
+  // Get file extensions to find addon related to it.
+  std::string strExtension = URIUtils::GetExtension(url);
+  StringUtils::ToLower(strExtension);
+
   if ((url.IsFileType("ogg") || url.IsFileType("oga")) && CFile::Exists(url))
   {
     IFileDirectory* pDir=new COGGFileDirectory;
@@ -109,7 +107,18 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
   if (pItem->IsRSS())
     return new CRSSDirectory();
 
-#endif
+
+  if (pItem->IsDiscImage())
+  {
+    CISO9660Directory* iso = new CISO9660Directory();
+    if (iso->Exists(pItem->GetURL()))
+      return iso;
+
+    delete iso;
+
+    return NULL;
+  }
+
   if (url.IsFileType("zip"))
   {
     CURL zipURL = URIUtils::CreateArchivePath("zip", url);
@@ -118,7 +127,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
     CDirectory::GetDirectory(zipURL, items, strMask, DIR_FLAG_DEFAULTS);
     if (items.Size() == 0) // no files
       pItem->m_bIsFolder = true;
-    else if (items.Size() == 1 && items[0]->m_idepth == 0)
+    else if (items.Size() == 1 && items[0]->m_idepth == 0 && !items[0]->m_bIsFolder)
     {
       // one STORED file - collapse it down
       *pItem = *items[0];
@@ -132,7 +141,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
   }
   if (url.IsFileType("rar") || url.IsFileType("001"))
   {
-    vector<std::string> tokens;
+    std::vector<std::string> tokens;
     const std::string strPath = url.Get();
     StringUtils::Tokenize(strPath,tokens,".");
     if (tokens.size() > 2)
@@ -205,6 +214,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
     delete pDir;
     return NULL;
   }
+
   return NULL;
 }
 

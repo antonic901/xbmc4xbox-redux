@@ -48,8 +48,6 @@ CJpegIO::CJpegIO()
   m_originalwidth = 0;
   m_originalheight = 0;
   m_orientation = 0;
-  m_inputBuffSize = 0;
-  m_inputBuff = NULL;
   m_texturePath = "";
 }
 
@@ -60,9 +58,7 @@ CJpegIO::~CJpegIO()
 
 void CJpegIO::Close()
 {
-  free(m_inputBuff);
-  m_inputBuff = NULL;
-  m_inputBuffSize = 0;
+  m_inputBuff.clear();
 }
 
 bool CJpegIO::Open(const std::string &texturePath, unsigned int minx, unsigned int miny, bool read)
@@ -72,14 +68,10 @@ bool CJpegIO::Open(const std::string &texturePath, unsigned int minx, unsigned i
   m_texturePath = texturePath;
 
   XFILE::CFile file;
-  XFILE::auto_buffer buf;
-  if (file.LoadFile(texturePath, buf) <= 0)
+  if (file.LoadFile(texturePath, m_inputBuff) <= 0)
     return false;
 
-  m_inputBuffSize = buf.size();
-  m_inputBuff = (unsigned char*)buf.detach();
-
-  return Read(m_inputBuff, m_inputBuffSize, minx, miny);
+  return Read(reinterpret_cast<unsigned char*>(&m_inputBuff[0]), m_inputBuff.size(), minx, miny);
 }
 
 bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int minx, unsigned int miny)
@@ -234,7 +226,7 @@ bool CJpegIO::CreateThumbnail(const std::string& sourceFile, const std::string& 
   if (!Open(sourceFile, minx, miny, false))
     return false;
 
-  return CreateThumbnailFromMemory(m_inputBuff, m_inputBuffSize, destFile, minx, miny);
+  return CreateThumbnailFromMemory(reinterpret_cast<unsigned char*>(&m_inputBuff[0]), m_inputBuff.size(), destFile, minx, miny);
 }
 
 bool CJpegIO::CreateThumbnailFromMemory(unsigned char* buffer, unsigned int bufSize, const std::string& destFile, unsigned int minx, unsigned int miny)

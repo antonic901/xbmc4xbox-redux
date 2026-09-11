@@ -1,43 +1,30 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "Directory.h"
+
+#include "DirectoryCache.h"
 #include "DirectoryFactory.h"
 #include "FileDirectoryFactory.h"
-#include "commons/Exception.h"
 #include "FileItem.h"
-#include "DirectoryCache.h"
+#include "PasswordManager.h"
+#include "ServiceBroker.h"
+#include "URL.h"
+#include "commons/Exception.h"
+#include "dialogs/GUIDialogBusy.h"
+#include "guilib/GUIWindowManager.h"
+#include "messaging/ApplicationMessenger.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "utils/log.h"
 #include "utils/Job.h"
 #include "utils/JobManager.h"
-#include "application/Application.h"
-#include "messaging/ApplicationMessenger.h"
-#include "guilib/GUIComponent.h"
-#include "guilib/GUIWindowManager.h"
-#include "dialogs/GUIDialogBusy.h"
-#include "threads/SingleLock.h"
 #include "utils/URIUtils.h"
-#include "URL.h"
-#include "PasswordManager.h"
+#include "utils/log.h"
 
 using namespace XFILE;
 
@@ -54,7 +41,7 @@ private:
     CFileItemList m_list;
     CURL          m_dir;
     CURL          m_listDir;
-    bool          m_result;
+    bool m_result;
   };
 
   struct CGetJob
@@ -83,14 +70,15 @@ public:
   CGetDirectory(boost::shared_ptr<IDirectory>& imp, const CURL& dir, const CURL& listDir)
     : m_result(new CResult(dir, listDir))
   {
-    m_id = CServiceBroker::GetJobManager()->AddJob(new CGetJob(imp, m_result)
-                                           , NULL
-                                           , CJob::PRIORITY_HIGH);
+    m_id = CServiceBroker::GetJobManager()->AddJob(new CGetJob(imp, m_result), nullptr,
+                                                   CJob::PRIORITY_HIGH);
+    if (m_id == 0)
+    {
+      CGetJob job(imp, m_result);
+      job.DoWork();
+    }
   }
- ~CGetDirectory()
-  {
-    CServiceBroker::GetJobManager()->CancelJob(m_id);
-  }
+  ~CGetDirectory() { CServiceBroker::GetJobManager()->CancelJob(m_id); }
 
   CEvent& GetEvent()
   {
@@ -105,7 +93,7 @@ public:
   bool GetDirectory(CFileItemList& list)
   {
     /* if it was not finished or failed, return failure */
-    if(!m_result->m_event.WaitMSec(0) || !m_result->m_result)
+    if (!m_result->m_event.WaitMSec(0) || !m_result->m_result)
     {
       list.Clear();
       return false;
@@ -119,11 +107,9 @@ public:
 };
 
 
-CDirectory::CDirectory()
-{}
+CDirectory::CDirectory() {}
 
-CDirectory::~CDirectory()
-{}
+CDirectory::~CDirectory() {}
 
 bool CDirectory::GetDirectory(const std::string& strPath, CFileItemList &items, const std::string &strMask, int flags)
 {
@@ -134,8 +120,11 @@ bool CDirectory::GetDirectory(const std::string& strPath, CFileItemList &items, 
   return GetDirectory(pathToUrl, items, hints);
 }
 
-bool CDirectory::GetDirectory(const std::string& strPath, boost::shared_ptr<IDirectory> pDirectory,
-                              CFileItemList &items, const std::string &strMask, int flags)
+bool CDirectory::GetDirectory(const std::string& strPath,
+                              const boost::shared_ptr<IDirectory>& pDirectory,
+                              CFileItemList& items,
+                              const std::string& strMask,
+                              int flags)
 {
   CHints hints;
   hints.flags = flags;
@@ -161,17 +150,19 @@ bool CDirectory::GetDirectory(const CURL& url, CFileItemList &items, const std::
 bool CDirectory::GetDirectory(const CURL& url, CFileItemList &items, const CHints &hints)
 {
   CURL realURL = URIUtils::SubstitutePath(url);
-  boost::shared_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realURL));
+  boost::shared_ptr<IDirectory> pDirectory(CDirectoryFactory::Create(realURL));
   return CDirectory::GetDirectory(url, pDirectory, items, hints);
 }
 
-bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDirectory,
-                              CFileItemList &items, const CHints &hints)
+bool CDirectory::GetDirectory(const CURL& url,
+                              const boost::shared_ptr<IDirectory>& pDirectory,
+                              CFileItemList& items,
+                              const CHints& hints)
 {
   try
   {
     CURL realURL = URIUtils::SubstitutePath(url);
-    if (!pDirectory.get())
+    if (!pDirectory)
       return false;
 
     // check our cache for this path
@@ -186,10 +177,10 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
 
       pDirectory->SetFlags(hints.flags);
 
-      bool result = false, cancel = false;
-      CURL authUrl = CURL(realURL);
+      bool result = false;
+      CURL authUrl = realURL;
 
-      while (!result && !cancel)
+      while (!result)
       {
         const std::string pathToUrl(url.Get());
 
@@ -202,15 +193,17 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
 
         if (!result)
         {
-          if (!cancel)
+          // @TODO ProcessRequirements() can bring up the keyboard input dialog
+          // filesystem must not depend on GUI
+          if (CServiceBroker::GetAppMessenger()->IsProcessThread() &&
+              pDirectory->ProcessRequirements())
           {
-            if (CServiceBroker::GetAppMessenger()->IsProcessThread() && pDirectory->ProcessRequirements())
-            {
-              authUrl.SetUserName("");
-              authUrl.SetPassword("");
-              continue;
-            }
+            authUrl.SetDomain("");
+            authUrl.SetUserName("");
+            authUrl.SetPassword("");
+            continue;
           }
+
           CLog::Log(LOGERROR, "%s - Error getting %s", __FUNCTION__, url.GetRedacted().c_str());
           return false;
         }
@@ -219,31 +212,37 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
       // hide credentials if necessary
       if (CPasswordManager::GetInstance().IsURLSupported(realURL))
       {
-        for (int i = 0; i < items.Size(); ++i)
+        bool hide = false;
+        // for explicitly credentials
+        if (!realURL.GetUserName().empty())
         {
-          CFileItemPtr item = items[i];
-          CURL itemUrl = item->GetURL();
-          // for explicitly credetials
-          if (!realURL.GetUserName().empty())
+          // credentials was changed i.e. were stored in the password
+          // manager, in this case we can hide them from an item URL,
+          // otherwise we have to keep credentials in an item URL
+          if ( realURL.GetUserName() != authUrl.GetUserName()
+            || realURL.GetPassWord() != authUrl.GetPassWord()
+            || realURL.GetDomain() != authUrl.GetDomain())
           {
-            // credentials was changed i.e. were stored in the password
-            // manager, in this case we can hide them from an item URL,
-            // otherwise we have to keep cretendials in an item URL
-            if ( realURL.GetUserName() != authUrl.GetUserName()
-              || realURL.GetPassWord() != authUrl.GetPassWord())
-            {
-              // hide credentials
-              itemUrl.SetUserName("");
-              itemUrl.SetPassword("");
-            }
+            hide = true;
           }
-          else
+        }
+        else
+        {
+          // hide credentials in any other cases
+          hide = true;
+        }
+
+        if (hide)
+        {
+          for (int i = 0; i < items.Size(); ++i)
           {
-            // hide credentials in any other cases
+            CFileItemPtr item = items[i];
+            CURL itemUrl = item->GetURL();
+            itemUrl.SetDomain("");
             itemUrl.SetUserName("");
             itemUrl.SetPassword("");
+            item->SetPath(itemUrl.Get());
           }
-          item->SetPath(itemUrl.Get());
         }
       }
 
@@ -268,7 +267,7 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
     }
     // filter hidden files
     //! @todo we shouldn't be checking the gui setting here, callers should use getHidden instead
-    if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("filelists.showhidden") && !(hints.flags & DIR_FLAG_GET_HIDDEN))
+    if (!CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_FILELISTS_SHOWHIDDEN) && !(hints.flags & DIR_FLAG_GET_HIDDEN))
     {
       for (int i = 0; i < items.Size(); ++i)
       {
@@ -300,10 +299,7 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
     return true;
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
-  }
+  catch (...) { CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__); }
   CLog::Log(LOGERROR, "%s - Error getting %s", __FUNCTION__, url.GetRedacted().c_str());
   return false;
 }
@@ -325,8 +321,9 @@ bool CDirectory::EnumerateDirectory(
   // process all files
   for (int i = 0; i < items.Size(); ++i)
   {
-    if (!items[i]->m_bIsFolder)
-      callback(items[i]);
+    const CFileItemPtr &item = items[i];
+    if (!item->m_bIsFolder)
+      callback(item);
   }
 
   // process all directories
@@ -361,16 +358,13 @@ bool CDirectory::Create(const CURL& url)
     if (CPasswordManager::GetInstance().IsURLSupported(realURL) && realURL.GetUserName().empty())
       CPasswordManager::GetInstance().AuthenticateURL(realURL);
 
-    boost::movelib::unique_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realURL));
-    if (pDirectory.get())
+    boost::movelib::unique_ptr<IDirectory> pDirectory(CDirectoryFactory::Create(realURL));
+    if (pDirectory)
       if(pDirectory->Create(realURL))
         return true;
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
-  }
+  catch (...) { CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__); }
   CLog::Log(LOGERROR, "%s - Error creating %s", __FUNCTION__, url.GetRedacted().c_str());
   return false;
 }
@@ -400,15 +394,12 @@ bool CDirectory::Exists(const CURL& url, bool bUseCache /* = true */)
     if (CPasswordManager::GetInstance().IsURLSupported(realURL) && realURL.GetUserName().empty())
       CPasswordManager::GetInstance().AuthenticateURL(realURL);
 
-    boost::movelib::unique_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realURL));
-    if (pDirectory.get())
+    boost::movelib::unique_ptr<IDirectory> pDirectory(CDirectoryFactory::Create(realURL));
+    if (pDirectory)
       return pDirectory->Exists(realURL);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
-  }
+  catch (...) { CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__); }
   CLog::Log(LOGERROR, "%s - Error checking for %s", __FUNCTION__, url.GetRedacted().c_str());
   return false;
 }
@@ -433,8 +424,8 @@ bool CDirectory::Remove(const CURL& url)
     if (CPasswordManager::GetInstance().IsURLSupported(authUrl) && authUrl.GetUserName().empty())
       CPasswordManager::GetInstance().AuthenticateURL(authUrl);
 
-    boost::movelib::unique_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realURL));
-    if (pDirectory.get())
+    boost::movelib::unique_ptr<IDirectory> pDirectory(CDirectoryFactory::Create(realURL));
+    if (pDirectory)
       if(pDirectory->Remove(authUrl))
       {
         g_directoryCache.ClearFile(realURL.Get());
@@ -442,10 +433,7 @@ bool CDirectory::Remove(const CURL& url)
       }
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
-  }
+  catch (...) { CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__); }
   CLog::Log(LOGERROR, "%s - Error removing %s", __FUNCTION__, url.GetRedacted().c_str());
   return false;
 }
@@ -459,8 +447,8 @@ bool CDirectory::RemoveRecursive(const CURL& url)
     if (CPasswordManager::GetInstance().IsURLSupported(authUrl) && authUrl.GetUserName().empty())
       CPasswordManager::GetInstance().AuthenticateURL(authUrl);
 
-    boost::movelib::unique_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realURL));
-    if (pDirectory.get())
+    boost::movelib::unique_ptr<IDirectory> pDirectory(CDirectoryFactory::Create(realURL));
+    if (pDirectory)
       if(pDirectory->RemoveRecursive(authUrl))
       {
         g_directoryCache.ClearFile(realURL.Get());
@@ -468,10 +456,7 @@ bool CDirectory::RemoveRecursive(const CURL& url)
       }
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
-  }
+  catch (...) { CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__); }
   CLog::Log(LOGERROR, "%s - Error removing %s", __FUNCTION__, url.GetRedacted().c_str());
   return false;
 }
@@ -485,8 +470,8 @@ void CDirectory::FilterFileDirectories(CFileItemList &items, const std::string &
     EFileFolderType mode = expandImages && pItem->IsDiscImage() ? EFILEFOLDER_TYPE_ONBROWSE : EFILEFOLDER_TYPE_ALWAYS;
     if (!pItem->m_bIsFolder && pItem->IsFileFolder(mode))
     {
-      boost::movelib::unique_ptr<IFileDirectory> pDirectory(CFactoryFileDirectory::Create(pItem->GetURL(),pItem.get(),mask));
-      if (pDirectory.get())
+      boost::movelib::unique_ptr<IFileDirectory> pDirectory(CFileDirectoryFactory::Create(pItem->GetURL(),pItem.get(),mask));
+      if (pDirectory)
         pItem->m_bIsFolder = true;
       else
         if (pItem->m_bIsFolder)

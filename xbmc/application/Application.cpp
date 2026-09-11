@@ -1766,7 +1766,7 @@ bool CApplication::PlayFile(CFileItem item, const std::string& player, bool bRes
     return false;
 
   // Translate/Resolve the url if needed
-  const boost::movelib::unique_ptr<IDirectory> dir(CFactoryDirectory::Create(item));
+  const boost::movelib::unique_ptr<IDirectory> dir(CDirectoryFactory::Create(item));
   if (dir && !dir->Resolve(item))
   {
     return false;

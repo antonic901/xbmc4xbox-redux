@@ -1,33 +1,22 @@
-#pragma once
 /*
- *      Copyright (C) 2015 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2015-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <string>
-#include <utility>
-#include <vector>
+#pragma once
 
 #include "FileItem.h"
 #include "URL.h"
 #include "utils/CharsetConverter.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
+
+#include <string>
+#include <utility>
+#include <vector>
 
 namespace XFILE
 {
@@ -51,7 +40,6 @@ namespace XFILE
   {
     typedef std::pair<std::string, TEntry> Type;
   };
-
   template<class TEntry>
   struct DirectorizeEntries
   {
@@ -67,13 +55,13 @@ namespace XFILE
    * \param items Resulting item list
    */
   template<class TEntry>
-  static void Directorize(const CURL& url, const typename DirectorizeEntries<TEntry>::Type& entries, typename DirectorizeEntryToFileItemFunction<TEntry>::Type converter, CFileItemList& items)
+    static void Directorize(const CURL& url, const typename DirectorizeEntries<TEntry>::Type& entries, typename DirectorizeEntryToFileItemFunction<TEntry>::Type converter, CFileItemList& items)
   {
     if (url.Get().empty() || entries.empty())
       return;
 
-    std::string options = url.GetOptions();
-    std::string filePath = url.GetFileName();
+    const std::string& options = url.GetOptions();
+    const std::string& filePath = url.GetFileName();
 
     CURL baseUrl(url);
     baseUrl.SetOptions(""); // delete options to have a clean path to add stuff too
@@ -88,14 +76,19 @@ namespace XFILE
 
     bool fastLookup = items.GetFastLookup();
     items.SetFastLookup(true);
-    for (typename std::vector<typename DirectorizeEntry<TEntry>::Type>::const_iterator it = entries.begin(); it != entries.end(); ++it)
+    for (typename std::vector<typename DirectorizeEntry<TEntry>::Type>::const_iterator entry = entries.begin(); entry != entries.end(); ++entry)
     {
-      std::string entryPath = it->first;
+      std::string entryPath = entry->first;
       std::string entryFileName = entryPath;
       StringUtils::Replace(entryFileName, '\\', '/');
 
       // skip the requested entry
       if (entryFileName == filePath)
+        continue;
+
+      // Disregard Apple Resource Fork data
+      std::size_t found = entryPath.find("__MACOSX");
+      if (found != std::string::npos)
         continue;
 
       std::vector<std::string> pathTokens;
@@ -142,7 +135,7 @@ namespace XFILE
       g_charsetConverter.unknownToUTF8(label);
 
       // convert the entry into a CFileItem
-      CFileItemPtr item = converter(it->second, label, itemPath, isFolder);
+      CFileItemPtr item = converter(entry->second, label, itemPath, isFolder);
       item->SetPath(itemPath);
       item->m_bIsFolder = isFolder;
       if (isFolder)

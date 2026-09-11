@@ -29,6 +29,7 @@
 #include "Util.h"
 #include "storage/DetectDVDType.h"
 #include "Autorun.h"
+#include "filesystem/Directory.h"
 #include "filesystem/HDDirectory.h"
 #include "filesystem/StackDirectory.h"
 #include "filesystem/MultiPathDirectory.h"

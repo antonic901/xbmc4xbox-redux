@@ -1,23 +1,12 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
 
 #include "system.h" // <xtl.h>
 #include "IDirectory.h"
@@ -43,9 +32,7 @@ public:
   class CHints
   {
   public:
-    CHints() : flags(DIR_FLAG_DEFAULTS)
-    {
-    };
+    CHints() : flags(DIR_FLAG_DEFAULTS) {}
     std::string mask;
     int flags;
   };
@@ -56,17 +43,36 @@ public:
                            , int flags);
 
   static bool GetDirectory(const CURL& url,
-                           boost::shared_ptr<IDirectory> pDirectory,
-                           CFileItemList &items,
-                           const CHints &hints);
+                           const boost::shared_ptr<IDirectory>& pDirectory,
+                           CFileItemList& items,
+                           const CHints& hints);
 
   static bool GetDirectory(const CURL& url
                            , CFileItemList &items
                            , const CHints &hints);
 
+  static bool Create(const CURL& url);
+  static bool Exists(const CURL& url, bool bUseCache = true);
+  static bool Remove(const CURL& url);
+  static bool RemoveRecursive(const CURL& url);
+
+  static bool GetDirectory(const std::string& strPath
+                           , CFileItemList &items
+                           , const std::string &strMask
+                           , int flags);
+
+  static bool GetDirectory(const std::string& strPath,
+                           const boost::shared_ptr<IDirectory>& pDirectory,
+                           CFileItemList& items,
+                           const std::string& strMask,
+                           int flags);
+
+  static bool GetDirectory(const std::string& strPath
+                           , CFileItemList &items
+                           , const CHints &hints);
+
   typedef boost::function<void(const boost::shared_ptr<CFileItem>& item)> DirectoryEnumerationCallback;
   typedef boost::function<bool(const boost::shared_ptr<CFileItem>& folder)> DirectoryFilter;
-
   static bool DirectoryFilterDefault(const boost::shared_ptr<CFileItem>&) { return true; }
 
   /*!
@@ -86,26 +92,6 @@ public:
       bool fileOnly = false,
       const std::string& mask = "",
       int flags = DIR_FLAG_DEFAULTS);
-
-  static bool Create(const CURL& url);
-  static bool Exists(const CURL& url, bool bUseCache = true);
-  static bool Remove(const CURL& url);
-  static bool RemoveRecursive(const CURL& url);
-
-  static bool GetDirectory(const std::string& strPath
-                           , CFileItemList &items
-                           , const std::string &strMask
-                           , int flags);
-
-  static bool GetDirectory(const std::string& strPath,
-                           boost::shared_ptr<IDirectory> pDirectory,
-                           CFileItemList &items,
-                           const std::string &strMask,
-                           int flags);
-
-  static bool GetDirectory(const std::string& strPath
-                           , CFileItemList &items
-                           , const CHints &hints);
 
   static bool Create(const std::string& strPath);
   static bool Exists(const std::string& strPath, bool bUseCache = true);

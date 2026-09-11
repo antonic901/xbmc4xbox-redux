@@ -1,23 +1,25 @@
-
 /*
- * XBMC Media Center
- * Copyright (c) 2002 Frodo
- * Portions Copyright (c) by the authors of ffmpeg and xvid
+ *      Copyright (c) 2002 Frodo
+ *      Portions Copyright (c) by the authors of ffmpeg and xvid
+ *      Copyright (C) 2002-2013 Team XBMC
+ *      http://xbmc.org
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
+ *
+ */
+
 #include "FileReaderFile.h"
 #include "URL.h"
 
@@ -28,18 +30,18 @@ using namespace XFILE;
 //////////////////////////////////////////////////////////////////////
 
 //*********************************************************************************************
-CFileFileReader::CFileFileReader()
+CFileReaderFile::CFileReaderFile()
 {
 }
 
 //*********************************************************************************************
-CFileFileReader::~CFileFileReader()
+CFileReaderFile::~CFileReaderFile()
 {
   Close();
 }
 
 //*********************************************************************************************
-bool CFileFileReader::Open(const CURL& url)
+bool CFileReaderFile::Open(const CURL& url)
 {
   // URL is of the form filereader://<foo>
   std::string strURL = url.Get();
@@ -47,57 +49,56 @@ bool CFileFileReader::Open(const CURL& url)
   return m_reader.Open(strURL,READ_CACHED);
 }
 
-bool CFileFileReader::Exists(const CURL& url)
+bool CFileReaderFile::Exists(const CURL& url)
 {
   return CFile::Exists(url.Get().substr(13));
 }
 
-int CFileFileReader::Stat(const CURL& url, struct __stat64* buffer)
+int CFileReaderFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   return CFile::Stat(url.Get().substr(13), buffer);
 }
 
 
 //*********************************************************************************************
-bool CFileFileReader::OpenForWrite(const CURL& url, bool bOverWrite)
+bool CFileReaderFile::OpenForWrite(const CURL& url, bool bOverWrite)
 {
   return false;
 }
 
 //*********************************************************************************************
-ssize_t CFileFileReader::Read(void *lpBuf, size_t uiBufSize)
+ssize_t CFileReaderFile::Read(void *lpBuf, size_t uiBufSize)
 {
   return m_reader.Read(lpBuf,uiBufSize);
 }
 
 //*********************************************************************************************
-ssize_t CFileFileReader::Write(const void *lpBuf, size_t uiBufSize)
+ssize_t CFileReaderFile::Write(const void *lpBuf, size_t uiBufSize)
 {
-  return 0;
+  return -1;
 }
 
 //*********************************************************************************************
-void CFileFileReader::Close()
+void CFileReaderFile::Close()
 {
   m_reader.Close();
 }
 
 //*********************************************************************************************
-int64_t CFileFileReader::Seek(int64_t iFilePosition, int iWhence)
+int64_t CFileReaderFile::Seek(int64_t iFilePosition, int iWhence)
 {
   return m_reader.Seek(iFilePosition,iWhence);
 }
 
 //*********************************************************************************************
-int64_t CFileFileReader::GetLength()
+int64_t CFileReaderFile::GetLength()
 {
   return m_reader.GetLength();
 }
 
 //*********************************************************************************************
-int64_t CFileFileReader::GetPosition()
+int64_t CFileReaderFile::GetPosition()
 {
   return m_reader.GetPosition();
 }
-
 
