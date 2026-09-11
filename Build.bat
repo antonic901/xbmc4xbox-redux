@@ -1,9 +1,9 @@
 @ECHO OFF
 rem CLS
 COLOR 1B
-TITLE XBMC Build Prepare Script
+TITLE Xodi Build Prepare Script
 rem ----PURPOSE----
-rem - Create a working XBMC build with a single click
+rem - Create a working Xodi build with a single click
 rem -------------------------------------------------------------
 rem Usage: built.bat [noprompt] [nocompress] [noclean] [build1-4]
 rem -------------------------------------------------------------
@@ -114,37 +114,14 @@ pause
 GOTO:EOF
 
 :MENU
-  ECHO    ВВВВВВВББББББББААААААА
-  ECHO  ВлллллллллллллллллллллллВВВВВВБББББАААААА     пппВмм
-  ECHO олллллллллллллллллллллллллллллллллллллллллВВВВБББАА  ппм
-  ECHO ВлллллллллллллллллллллллллллллллллллллллллллллллллллВА  н
-  ECHO ВлллллллллллллллллллплллллллллллллллллллллллллллллллллА В
-  ECHO БллллллллллллллллллнАлллллллллллллллллллллллллллллллллл о
-  ECHO АллллллВБА  плп           плллп    пВп    плллп   АВллл о
-  ECHO  ллллллллллн   млллн Влллм олн мВлм   мллм ол  мллллллл о
-  ECHO  Влллллллллл  лллллн лллллн л оллллн оллллн н олллллллл В
-  ECHO  Блллллллллн олллллн лллллн л лллллн лллллн   ВлллллллВ н
-  ECHO  АВлллллллп   пллллн плллп он лллллн лллллн А плллллллн н
-  ECHO   БлллВБА мллм АБВллм     млВмллллллмлллллВ лм   АВлллно
-  ECHO   АВлллллллллллллллллллллллллллллллллллллллллллллллллл В
-  ECHO    Блллллпппплпплппллпллпллллпплпплппплпплпплппллллллл н
-  ECHO    АВлллл но л пл л л лнмоллл лл пл л лнол пл пмлллллБ н
-  ECHO     Блллл но л пл пмл л м ллл пл пл л лнол пл л лллллАо
-  ECHO     АВллллллллллллллллллллллллллллллллллллллллллллллВ
-  ECHO      БАммммммммммммммммммммммммммммммммммммм  АБВВВВ
-  ECHO      АВллллллллллллллллллллллллллллллллллллллВААБВп
-  ECHO       БВлллллллллллллллллллллллллллллВлВВпппп
-  ECHO        ВВллллллллллллллллллВлВВпппп
-  ECHO         пВллллВлВВВпппппп
   ECHO ------------------------------------------------------------
-  ECHO XBMC prepare menu
+  ECHO Xodi prepare menu
   ECHO ------------------------------------------------------------
-  ECHO [1] Build XBMC XBE      ( for XBOX use )
-  ECHO [2] Build LTCG XBMC XBE ( for XBOX use )
+  ECHO [1] Build RELEASE XBE   ( for XBOX use )
+  ECHO [2] Build LTCG XBE      ( for XBOX use )
   ECHO [3] Build DEBUG XBE     ( for XBOX use )
-  ECHO [4] Build XBMC_WIN32    ( for Windows use)
   ECHO ------------------------------------------------------------
-  SET /P XBMC_COMPILE_ANSWER=Please enter the number you want to build [1/2/3/4]:
+  SET /P XBMC_COMPILE_ANSWER=Please enter the number you want to build [1/2/3]:
   GOTO:EOF
 
 :BIN_EXISTS
@@ -243,13 +220,13 @@ GOTO:EOF
 
 :COMPRESS
   ECHO ------------------------------------------------------------
-  ECHO Compressing build to XBMC4XBOX.zip file...
+  ECHO Compressing build to Xodi.zip file...
   ECHO ------------------------------------------------------------
   IF EXIST "%COMPRESS%" (
-    DEL XBMC4Xbox.zip
-	DEL XBMC4Xbox.tar
-    "%COMPRESS%" a XBMC4Xbox.zip "%~1"
-	"%COMPRESS%" a XBMC4Xbox.tar "%~1"
+    DEL Xodi.zip
+	DEL Xodi.tar
+    "%COMPRESS%" a Xodi.zip "%~1"
+	"%COMPRESS%" a Xodi.tar "%~1"
   ) ELSE ( 
     ECHO 7-Zip not installed!  Skipping compression...
   )
