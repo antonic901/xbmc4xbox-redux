@@ -1,29 +1,22 @@
 /*
-* XBMC Media Center
-* Copyright (c) 2002 Frodo
-* Portions Copyright (c) by the authors of ffmpeg and xvid
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
+ *  Copyright (c) 2002 Frodo
+ *      Portions Copyright (c) by the authors of ffmpeg and xvid
+ *  Copyright (C) 2002-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 
 #include "ISO9660File.h"
+
 #include "URL.h"
+#include "iso9660.h"
+
+#include <algorithm>
 
 #include <sys/stat.h>
 
-using namespace std;
 using namespace XFILE;
 
 //////////////////////////////////////////////////////////////////////
@@ -31,6 +24,7 @@ using namespace XFILE;
 //////////////////////////////////////////////////////////////////////
 //*********************************************************************************************
 CISO9660File::CISO9660File()
+  : m_hFile(INVALID_HANDLE_VALUE)
 {
   m_bOpened = false;
 }
@@ -46,13 +40,13 @@ CISO9660File::~CISO9660File()
 //*********************************************************************************************
 bool CISO9660File::Open(const CURL& url)
 {
-  string strFName = "\\";
+  std::string strFName = "\\";
   strFName += url.GetFileName();
   for (int i = 0; i < (int)strFName.size(); ++i )
   {
     if (strFName[i] == '/') strFName[i] = '\\';
   }
-  m_hFile = m_isoReader.OpenFile((char*)strFName.c_str());
+  m_hFile = m_isoReader.OpenFile(strFName.c_str());
   if (m_hFile == INVALID_HANDLE_VALUE)
   {
     m_bOpened = false;
@@ -64,26 +58,25 @@ bool CISO9660File::Open(const CURL& url)
 }
 
 //*********************************************************************************************
-ssize_t CISO9660File::Read(void *lpBuf, size_t uiBufSize)
+ssize_t CISO9660File::Read(void *buffer, size_t size)
 {
   if (!m_bOpened)
     return -1;
-  if (uiBufSize > SSIZE_MAX)
-    uiBufSize = SSIZE_MAX;
+  if (size > SSIZE_MAX)
+    size = SSIZE_MAX;
 
-  char *pData = (char *)lpBuf;
+  char *pData = (char *)buffer;
 
   if (m_cache.getSize() > 0)
   {
-    long lTotalBytesRead = 0;    
-    while (uiBufSize > 0)
+    long lTotalBytesRead = 0;
+    while (size > 0)
     {
       if (m_cache.getMaxReadSize() )
       {
-        long lBytes2Read = m_cache.getMaxReadSize();
-        if (lBytes2Read > uiBufSize) lBytes2Read = (long)uiBufSize;
+        unsigned int lBytes2Read = std::min(m_cache.getMaxReadSize(), static_cast<unsigned int>(size));
         m_cache.ReadData(pData, lBytes2Read );
-        uiBufSize -= lBytes2Read ;
+        size -= lBytes2Read ;
         pData += lBytes2Read;
         lTotalBytesRead += lBytes2Read ;
       }
@@ -101,7 +94,7 @@ ssize_t CISO9660File::Read(void *lpBuf, size_t uiBufSize)
     return lTotalBytesRead;
   }
 
-  return m_isoReader.ReadFile( m_hFile, (uint8_t*)pData, (long)uiBufSize);
+  return m_isoReader.ReadFile( m_hFile, (uint8_t*)pData, (long)size);
 }
 
 //*********************************************************************************************
@@ -112,10 +105,10 @@ void CISO9660File::Close()
 }
 
 //*********************************************************************************************
-int64_t CISO9660File::Seek(int64_t iFilePosition, int iWhence)
+int64_t CISO9660File::Seek(int64_t filePosition, int whence)
 {
   if (!m_bOpened) return -1;
-  int64_t lNewPos = m_isoReader.Seek(m_hFile, iFilePosition, iWhence);
+  int64_t lNewPos = m_isoReader.Seek(m_hFile, filePosition, whence);
   if(lNewPos >= 0)
     m_cache.Clear();
   return lNewPos;
@@ -137,13 +130,13 @@ int64_t CISO9660File::GetPosition()
 
 bool CISO9660File::Exists(const CURL& url)
 {
-  string strFName = "\\";
+  std::string strFName = "\\";
   strFName += url.GetFileName();
   for (int i = 0; i < (int)strFName.size(); ++i )
   {
     if (strFName[i] == '/') strFName[i] = '\\';
   }
-  m_hFile = m_isoReader.OpenFile((char*)strFName.c_str());
+  m_hFile = m_isoReader.OpenFile(strFName.c_str());
   if (m_hFile == INVALID_HANDLE_VALUE)
     return false;
 
@@ -153,13 +146,13 @@ bool CISO9660File::Exists(const CURL& url)
 
 int CISO9660File::Stat(const CURL& url, struct __stat64* buffer)
 {
-  string strFName = "\\";
+  std::string strFName = "\\";
   strFName += url.GetFileName();
   for (int i = 0; i < (int)strFName.size(); ++i )
   {
     if (strFName[i] == '/') strFName[i] = '\\';
   }
-  m_hFile = m_isoReader.OpenFile((char*)strFName.c_str());
+  m_hFile = m_isoReader.OpenFile(strFName.c_str());
   if (m_hFile != INVALID_HANDLE_VALUE)
   {
     memset(buffer, 0, sizeof(struct __stat64));
