@@ -6,6 +6,7 @@
  *  See LICENSES/README.md for more information.
  */
 #include "SectionLoader.h"
+#include "filesystem/DllLibCurl.h"
 #include "filesystem/DirectoryCache.h"
 #include "GUIPassword.h"
 #include "utils/LangCodeExpander.h"
@@ -26,6 +27,7 @@ std::map<std::string, std::string> CSpecialProtocol::m_pathMap;
 
   CGUIPassword       g_passwordManager;
 
+  XCURL::DllLibCurlGlobal g_curlInterface;
   CPartyModeManager     g_partyModeManager;
 
   CSectionLoader     g_sectionLoader;

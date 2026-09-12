@@ -31,7 +31,6 @@ using namespace XCURL;
 /* okey this is damn ugly. our dll loader doesn't allow for postload, preunload functions */
 static long g_curlReferences = 0;
 static unsigned int g_curlTimeout = 0;
-DllLibCurlGlobal g_curlInterface;
 
 bool DllLibCurlGlobal::Load()
 {
@@ -121,7 +120,7 @@ void DllLibCurlGlobal::CheckIdle()
     Unload();
 }
 
-void DllLibCurlGlobal::easy_aquire(const char *protocol, const char *hostname, CURL_HANDLE** easy_handle, CURLM** multi_handle)
+void DllLibCurlGlobal::easy_acquire(const char *protocol, const char *hostname, CURL_HANDLE** easy_handle, CURLM** multi_handle)
 {
   assert(easy_handle != NULL);
 
