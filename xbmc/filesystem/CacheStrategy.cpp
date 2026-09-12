@@ -382,7 +382,7 @@ bool CDoubleCache::Reset(int64_t iSourcePosition)
   if (!m_pCache->IsCachedPosition(iSourcePosition))
   {
     CLog::Log(LOGDEBUG, "CDoubleCache::%s - (%p) Cache miss for %u with new=%u-%u and old=%u-%u",
-              __FUNCTION__, this, iSourcePosition, m_pCache->CachedDataStartPos(),
+              __FUNCTION__, (void*)this, iSourcePosition, m_pCache->CachedDataStartPos(),
               m_pCache->CachedDataEndPos(), m_pCacheOld->CachedDataStartPos(),
               m_pCacheOld->CachedDataEndPos());
   }
