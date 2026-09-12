@@ -22,7 +22,7 @@
 
 #include "IFileDirectory.h"
 
-namespace XFILE 
+namespace XFILE
 {
   class CRarDirectory : public IFileDirectory
   {

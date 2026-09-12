@@ -18,36 +18,42 @@
  *
  */
 
+#include "system.h"
 #include "RarFile.h"
+#include <algorithm>
 #include <sys/stat.h>
+#include "ServiceBroker.h"
 #include "Util.h"
 #include "utils/CharsetConverter.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
 #include "Directory.h"
 #include "RarManager.h"
-#include "dialogs/GUIDialogOK.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
 #include "FileItem.h"
-#include "utils/StringUtils.h"
 #include "utils/log.h"
 #include "UnrarXLib/rar.hpp"
+#include "utils/StringUtils.h"
+#include "messaging/helpers/DialogOKHelper.h"
 
+#ifndef TARGET_POSIX
 #include <process.h>
+#endif
+
+#ifdef TARGET_POSIX
+#include "linux/XTimeUtils.h"
+#endif
 
 using namespace XFILE;
-using namespace std;
-
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
-//*********************************************************************************************
 
 #define SEEKTIMOUT 30000
 
-CRarFileExtractThread::CRarFileExtractThread() : CThread("CFileRarExtractThread"), hRunning(true), hQuit(true)
+CRarFileExtractThread::CRarFileExtractThread()
+  : CThread("RarFileExtract")
+  , hRunning(true)
+  , hQuit(true)
+  , m_iSize(0)
 {
   m_pArc = NULL;
   m_pCmd = NULL;
@@ -131,9 +137,11 @@ CRarFile::CRarFile()
   m_bUseFile = false;
   m_bOpen = false;
   m_bSeekable = true;
+  m_iFilePosition = 0;
+  m_iFileSize = 0;
+  m_iBufferStart = 0;
 }
 
-//*********************************************************************************************
 CRarFile::~CRarFile()
 {
   if (!m_bOpen)
@@ -154,7 +162,7 @@ CRarFile::~CRarFile()
     }
   }
 }
-//*********************************************************************************************
+
 bool CRarFile::Open(const CURL& url)
 {
   InitFromUrl(url);
@@ -196,9 +204,9 @@ bool CRarFile::Open(const CURL& url)
     }
     else
     {
-      if (items[i]->m_dwSize > ((int64_t)4)*1024*1024*1024) // 4 gig limit of fat-x
+      if (items[i]->m_dwSize > ((int64_t)4) * 1024 * 1024 * 1024) // 4GB limit of FATx
       {
-        CGUIDialogOK::ShowAndGetInput(257,21395,-1,-1);
+        KODI::MESSAGING::HELPERS::ShowOKDialogText(257, 21395);
         CLog::Log(LOGERROR,"CRarFile::Open: Can't cache files bigger than 4GB due to fat-x limits.");
         return false;
       }
@@ -233,7 +241,14 @@ bool CRarFile::Open(const CURL& url)
 bool CRarFile::Exists(const CURL& url)
 {
   InitFromUrl(url);
-  std::string strPathInCache;
+
+  // First step:
+  // Make sure that the archive exists in the filesystem.
+  if (!CFile::Exists(m_strRarPath, false))
+    return false;
+
+  // Second step:
+  // Make sure that the requested file exists in the archive.
   bool bResult;
 
   if (!g_RarManager.IsFileInRar(bResult, m_strRarPath, m_strPathInRar))
@@ -241,7 +256,7 @@ bool CRarFile::Exists(const CURL& url)
 
   return bResult;
 }
-//*********************************************************************************************
+
 int CRarFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   memset(buffer, 0, sizeof(struct __stat64));
@@ -264,14 +279,11 @@ int CRarFile::Stat(const CURL& url, struct __stat64* buffer)
   return -1;
 }
 
-
-//*********************************************************************************************
-bool CRarFile::OpenForWrite(const CURL& url)
+bool CRarFile::OpenForWrite(const CURL&, bool)
 {
   return false;
 }
 
-//*********************************************************************************************
 ssize_t CRarFile::Read(void *lpBuf, size_t uiBufSize)
 {
   if (!m_bOpen)
@@ -293,11 +305,11 @@ ssize_t CRarFile::Read(void *lpBuf, size_t uiBufSize)
   }
 
 
-  byte* pBuf = (byte*)lpBuf;
+  uint8_t* pBuf = (uint8_t*)lpBuf;
   int64_t uicBufSize = uiBufSize;
   if (m_iDataInBuffer > 0)
   {
-    int64_t iCopy = uiBufSize<m_iDataInBuffer?uiBufSize:m_iDataInBuffer;
+    int64_t iCopy = std::min(static_cast<int64_t>(uiBufSize), m_iDataInBuffer);
     memcpy(lpBuf,m_szStartOfBuffer,size_t(iCopy));
     m_szStartOfBuffer += iCopy;
     m_iDataInBuffer -= int(iCopy);
@@ -359,7 +371,6 @@ ssize_t CRarFile::Read(void *lpBuf, size_t uiBufSize)
   return (ssize_t)(uiBufSize-uicBufSize);
 }
 
-//*********************************************************************************************
 void CRarFile::Close()
 {
   if (!m_bOpen)
@@ -383,7 +394,6 @@ void CRarFile::Close()
   }
 }
 
-//*********************************************************************************************
 int64_t CRarFile::Seek(int64_t iFilePosition, int iWhence)
 {
   if (!m_bOpen)
@@ -498,7 +508,6 @@ int64_t CRarFile::Seek(int64_t iFilePosition, int iWhence)
   return m_iFilePosition;
 }
 
-//*********************************************************************************************
 int64_t CRarFile::GetLength()
 {
   if (!m_bOpen)
@@ -510,7 +519,6 @@ int64_t CRarFile::GetLength()
   return m_iFileSize;
 }
 
-//*********************************************************************************************
 int64_t CRarFile::GetPosition()
 {
   if (!m_bOpen)
@@ -532,6 +540,7 @@ void CRarFile::Flush()
   if (m_bUseFile)
     m_File.Flush();
 }
+
 void CRarFile::InitFromUrl(const CURL& url)
 {
   m_strCacheDir = CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_cachePath;//url.GetDomain();
@@ -540,16 +549,16 @@ void CRarFile::InitFromUrl(const CURL& url)
   m_strPassword = url.GetUserName();
   m_strPathInRar = url.GetFileName();
 
-  vector<std::string> options;
+  std::vector<std::string> options;
   if (!url.GetOptions().empty())
     StringUtils::Tokenize(url.GetOptions().substr(1), options, "&");
 
   m_bFileOptions = 0;
 
-  for( vector<std::string>::iterator it = options.begin();it != options.end(); it++)
+  for(std::vector<std::string>::iterator it = options.begin();it != options.end(); ++it)
   {
-    int iEqual = (*it).find('=');
-    if( iEqual >= 0 )
+    size_t iEqual = (*it).find('=');
+    if(iEqual != std::string::npos)
     {
       std::string strOption = StringUtils::Left((*it), iEqual);
       std::string strValue = StringUtils::Mid((*it), iEqual+1);
@@ -638,11 +647,10 @@ bool CRarFile::OpenInArchive()
     AddEndSlash(m_pCmd->ExtrPath);
 
     // Set password for encrypted archives
-    if ((m_strPassword.size() > 0) &&
-        (m_strPassword.size() < sizeof (m_pCmd->Password)))
-    {
-      strcpy(m_pCmd->Password, m_strPassword.c_str());
-    }
+    if (m_strPassword.length() > MAXPASSWORD - 1)
+      CLog::Log(LOGWARNING,"OpenInArchive: Supplied password is too long %d", (int) m_strPassword.length());
+    strncpy(m_pCmd->Password, m_strPassword.c_str(), sizeof (m_pCmd->Password) - 1);
+    m_pCmd->Password[sizeof (m_pCmd->Password) - 1] = 0;
 
     m_pCmd->ParseDone();
 
@@ -711,7 +719,7 @@ bool CRarFile::OpenInArchive()
       m_pArc->SeekToNext();
     }
 
-    m_szBuffer = new byte[MAXWINMEMSIZE];
+    m_szBuffer = new uint8_t[MAXWINMEMSIZE];
     m_szStartOfBuffer = m_szBuffer;
     m_pExtract->GetDataIO().SetUnpackToMemory(m_szBuffer,0);
     m_iDataInBuffer = -1;
@@ -735,5 +743,4 @@ bool CRarFile::OpenInArchive()
     return false;
   }
 }
-
 

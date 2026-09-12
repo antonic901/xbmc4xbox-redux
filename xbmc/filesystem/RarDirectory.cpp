@@ -18,14 +18,12 @@
  *
  */
 
-
 #include "RarDirectory.h"
 #include "RarManager.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
 #include "FileItem.h"
-#include "utils/StringUtils.h"
 
 namespace XFILE
 {
@@ -62,9 +60,9 @@ namespace XFILE
       {
         if (items[iEntry]->IsParentFolder())
           continue;
-        items[iEntry]->SetPath(URIUtils::AddFileToFolder(strSlashPath,items[iEntry]->GetPath()+strOptions));
+        items[iEntry]->SetPath(URIUtils::AddFileToFolder(strSlashPath, items[iEntry]->GetPath() + strOptions));
         items[iEntry]->m_iDriveType = 0;
-        //CLog::Log(LOGDEBUG, "RarDirectory::GetDirectory() retrieved file: %s", items[iEntry]->m_strPath.c_str());
+        //CLog::Log(LOGDEBUG, "RarXFILE::GetDirectory() retrieved file: %s", items[iEntry]->m_strPath.c_str());
       }
       return( true);
     }

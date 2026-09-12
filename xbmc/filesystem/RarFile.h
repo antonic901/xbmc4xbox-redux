@@ -59,9 +59,9 @@ namespace XFILE
   };
 
   class CRarFile : public IFile
-    {
-    public:
-        CRarFile();
+  {
+  public:
+    CRarFile();
     CRarFile(bool bSeekable); // used for caching files
     virtual ~CRarFile();
     virtual int64_t       GetPosition();
@@ -75,7 +75,7 @@ namespace XFILE
     virtual void          Close();
     virtual void          Flush();
 
-    virtual bool          OpenForWrite(const CURL& url);
+    virtual bool          OpenForWrite(const CURL& url, bool);
     unsigned int          Write(void *lpBuf, int64_t uiBufSize);
 
   protected:
@@ -100,11 +100,11 @@ namespace XFILE
     CommandData* m_pCmd;
     CmdExtract* m_pExtract;
     CRarFileExtractThread* m_pExtractThread;
-    byte* m_szBuffer;
-    byte* m_szStartOfBuffer;
+    uint8_t* m_szBuffer;
+    uint8_t* m_szStartOfBuffer;
     int64_t m_iDataInBuffer;
     int64_t m_iBufferStart;
-    };
+  };
 
 }
 

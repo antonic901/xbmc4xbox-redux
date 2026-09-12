@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *      Copyright (C) 2005-2015 Team Kodi
+ *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,11 +13,12 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
+ *  along with Kodi; see the file COPYING.  If not, see
  *  <http://www.gnu.org/licenses/>.
  *
  */
 
+#include "system.h"
 #include "RarManager.h"
 #include "Util.h"
 #include "utils/CharsetConverter.h"
@@ -30,32 +31,29 @@
 #include "FileItem.h"
 #include "utils/log.h"
 #include "filesystem/File.h"
-#include "utils/StringUtils.h"
 #include "URL.h"
 
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogProgress.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
+#include "messaging/ApplicationMessenger.h"
+#include "messaging/helpers/DialogHelper.h"
+#include "utils/StringUtils.h"
+#include "utils/Variant.h"
 
 #include <set>
 
 #define EXTRACTION_WARN_SIZE 50*1024*1024
 
-using namespace std;
+using namespace KODI::MESSAGING;
 using namespace XFILE;
 
-CRarManager g_RarManager;
-
 CFileInfo::CFileInfo()
-{
-  m_strCachedPath.clear();
-  m_bAutoDel = true;
-  m_iUsed = 0;
-  m_iIsSeekable = -1;
-}
-
-CFileInfo::~CFileInfo()
+  : m_bAutoDel(true)
+  , m_iUsed(0)
+  , m_iOffset(0)
+  , m_iIsSeekable(-1)
 {
 }
 
@@ -77,10 +75,10 @@ public:
   }
   ~progress_info()
   {
-    if (shown)
+    if (shown && CServiceBroker::GetAppMessenger()->IsProcessThread())
     {
       // close progress dialog
-      CGUIDialogProgress* dlg = (CGUIDialogProgress*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS);
+      CGUIDialogProgress* dlg = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
       if (dlg)
         dlg->Close();
     }
@@ -91,10 +89,10 @@ public:
   bool progress(int progress, const char *text)
   {
     bool cont(true);
-    if (shown || showTime.IsTimePast())
+    if ((shown || showTime.IsTimePast()) && CServiceBroker::GetAppMessenger()->IsProcessThread())
     {
       // grab the busy and show it
-      CGUIDialogProgress* dlg = (CGUIDialogProgress*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS);
+      CGUIDialogProgress* dlg = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
       if (dlg)
       {
         if (!shown)
@@ -140,7 +138,7 @@ bool CRarManager::CacheRarredFile(std::string& strPathInCache, const std::string
 
   //If file is listed in the cache, then use listed copy or cleanup before overwriting.
   bool bOverwrite = (bOptions & EXFILE_OVERWRITE) != 0;
-  map<std::string, pair<ArchiveList_struct*,vector<CFileInfo> > >::iterator j = m_ExFiles.find( strRarPath );
+  std::map<std::string, std::pair<ArchiveList_struct*, std::vector<CFileInfo> > >::iterator j = m_ExFiles.find( strRarPath );
   CFileInfo* pFile=NULL;
   if( j != m_ExFiles.end() )
   {
@@ -165,20 +163,12 @@ bool CRarManager::CacheRarredFile(std::string& strPathInCache, const std::string
     }
   }
 
-  int iRes = 0;
+  unsigned int iRes = 0;
   if (iSize > EXTRACTION_WARN_SIZE)
   {
-    CGUIDialogYesNo* pDialog = (CGUIDialogYesNo*)CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_YES_NO);
-    if (pDialog)
+    if(HELPERS::ShowYesNoDialogLines(120, 645, URIUtils::GetFileName(strPathInRar), "") == HELPERS::CHOICE_CANCELLED)
     {
-      pDialog->SetHeading(120);
-      pDialog->SetLine(0, 645);
-      pDialog->SetLine(1, URIUtils::GetFileName(strPathInRar));
-      pDialog->SetLine(2, "");
-      pDialog->Open();
-
-      if (!pDialog->IsConfirmed())
-        iRes = 2; // pretend to be canceled
+      iRes = 2; // pretend to be canceled
     }
   }
   if (CheckFreeSpace(strDir) < iSize && iRes != 2)
@@ -191,7 +181,6 @@ bool CRarManager::CacheRarredFile(std::string& strPathInCache, const std::string
       items.Sort(SortBySize, SortOrderDescending);
       while (items.Size() && CheckFreeSpace(strDir) < iSize)
       {
-        std::string strPath = items[0]->GetPath();
         if (!items[0]->m_bIsFolder)
           if (!CFile::Delete(items[0]->GetPath()))
             break;
@@ -204,10 +193,13 @@ bool CRarManager::CacheRarredFile(std::string& strPathInCache, const std::string
   }
 
   std::string strPath = strPathInRar;
+#ifndef TARGET_POSIX
   StringUtils::Replace(strPath, '/', '\\');
+#endif
   //g_charsetConverter.unknownToUTF8(strPath);
-  std::string strCachedPath = URIUtils::AddFileToFolder(strDir + "rarfolder%04d",
-                                           URIUtils::GetFileName(strPathInRar));
+  std::string strCachedPath = URIUtils::AddFileToFolder(
+                                 CSpecialProtocol::TranslatePath(strDir), "rarfolder%04d",
+                                 URIUtils::GetFileName(strPathInRar));
   strCachedPath = CUtil::GetNextPathname(strCachedPath, 9999);
   if (strCachedPath.empty())
   {
@@ -229,9 +221,9 @@ bool CRarManager::CacheRarredFile(std::string& strPathInCache, const std::string
     }
 
 
-    if (iOffset == -1)  // grab from list
+    if (iOffset == -1 && j != m_ExFiles.end())  // grab from list
     {
-      for( ArchiveList_struct* pIterator = j->second.first; pIterator  ; pIterator ? pIterator = pIterator->next : NULL)
+      for( ArchiveList_struct* pIterator = j->second.first; pIterator; pIterator = pIterator->next)
       {
         std::string strName;
 
@@ -274,7 +266,7 @@ bool CRarManager::CacheRarredFile(std::string& strPathInCache, const std::string
       ArchiveList_struct* pArchiveList;
       if(ListArchive(strRarPath,pArchiveList))
       {
-        m_ExFiles.insert(make_pair(strRarPath,make_pair(pArchiveList,vector<CFileInfo>())));
+        m_ExFiles.insert(std::make_pair(strRarPath, std::make_pair(pArchiveList, std::vector<CFileInfo>())));
         j = m_ExFiles.find(strRarPath);
       }
       else
@@ -295,7 +287,6 @@ bool CRarManager::CacheRarredFile(std::string& strPathInCache, const std::string
     CFile::Delete(pFile->m_strCachedPath);
     return false;
   }
-
   return true;
 }
 
@@ -306,11 +297,11 @@ bool CRarManager::GetFilesInRar(CFileItemList& vecpItems, const std::string& str
   CSingleLock lock(m_CritSection);
 
   ArchiveList_struct* pFileList = NULL;
-  map<std::string,pair<ArchiveList_struct*,vector<CFileInfo> > >::iterator it = m_ExFiles.find(strRarPath);
+  std::map<std::string, std::pair<ArchiveList_struct*, std::vector<CFileInfo> > >::iterator it = m_ExFiles.find(strRarPath);
   if (it == m_ExFiles.end())
   {
     if( urarlib_list((char*) strRarPath.c_str(), &pFileList, NULL) )
-      m_ExFiles.insert(make_pair(strRarPath,make_pair(pFileList,vector<CFileInfo>())));
+      m_ExFiles.insert(std::make_pair(strRarPath, std::make_pair(pFileList, std::vector<CFileInfo>())));
     else
     {
       if( pFileList ) urarlib_freelist(pFileList);
@@ -321,8 +312,8 @@ bool CRarManager::GetFilesInRar(CFileItemList& vecpItems, const std::string& str
     pFileList = it->second.first;
 
   CFileItemPtr pFileItem;
-  vector<std::string> vec;
-  set<std::string> dirSet;
+  std::vector<std::string> vec;
+  std::set<std::string> dirSet;
   StringUtils::Tokenize(strPathInRar,vec,"/");
   unsigned int iDepth = vec.size();
 
@@ -330,9 +321,8 @@ bool CRarManager::GetFilesInRar(CFileItemList& vecpItems, const std::string& str
   std::string strCompare = strPathInRar;
   if (!URIUtils::HasSlashAtEnd(strCompare) && !strCompare.empty())
     strCompare += '/';
-  for( pIterator = pFileList; pIterator  ; pIterator ? pIterator = pIterator->next : NULL)
+  for( pIterator = pFileList; pIterator  ; pIterator = pIterator->next )
   {
-    std::string strDirDelimiter = (pIterator->item.HostOS==3 ? "/":"\\"); // win32 or unix paths?
     std::string strName;
 
     /* convert to utf8 */
@@ -371,14 +361,14 @@ bool CRarManager::GetFilesInRar(CFileItemList& vecpItems, const std::string& str
         pFileItem->m_bIsFolder = true;
         pFileItem->m_idepth = pIterator->item.Method;
         pFileItem->m_iDriveType = pIterator->item.HostOS;
-        //pFileItem->SetEndOffset(static_cast<int64_t>(pIterator->item.iOffset));
+        //pFileItem->m_lEndOffset = long(pIterator->item.iOffset);
       }
     }
     else
     {
       if (vec.size() == iDepth+1 || !bMask)
       {
-        if (vec.size() == 0)
+        if (vec.empty())
           pFileItem.reset(new CFileItem(strName));
         else
           pFileItem.reset(new CFileItem(vec[iDepth]));
@@ -386,7 +376,7 @@ bool CRarManager::GetFilesInRar(CFileItemList& vecpItems, const std::string& str
         pFileItem->m_dwSize = pIterator->item.UnpSize;
         pFileItem->m_idepth = pIterator->item.Method;
         pFileItem->m_iDriveType = pIterator->item.HostOS;
-        //pFileItem->SetEndOffset(static_cast<int64_t>(pIterator->item.iOffset));
+        //pFileItem->m_lEndOffset = long(pIterator->item.iOffset);
       }
     }
     if (pFileItem)
@@ -404,11 +394,11 @@ bool CRarManager::ListArchive(const std::string& strRarPath, ArchiveList_struct*
 
 CFileInfo* CRarManager::GetFileInRar(const std::string& strRarPath, const std::string& strPathInRar)
 {
-  map<std::string,pair<ArchiveList_struct*,vector<CFileInfo> > >::iterator j = m_ExFiles.find(strRarPath);
+  std::map<std::string, std::pair<ArchiveList_struct*, std::vector<CFileInfo> > >::iterator j = m_ExFiles.find(strRarPath);
   if (j == m_ExFiles.end())
     return NULL;
 
-  for (vector<CFileInfo>::iterator it2=j->second.second.begin(); it2 != j->second.second.end(); ++it2)
+  for (std::vector<CFileInfo>::iterator it2=j->second.second.begin(); it2 != j->second.second.end(); ++it2)
     if (it2->m_strPathInRar == strPathInRar)
       return &(*it2);
 
@@ -417,14 +407,13 @@ CFileInfo* CRarManager::GetFileInRar(const std::string& strRarPath, const std::s
 
 bool CRarManager::GetPathInCache(std::string& strPathInCache, const std::string& strRarPath, const std::string& strPathInRar)
 {
-  map<std::string,pair<ArchiveList_struct*,vector<CFileInfo> > >::iterator j = m_ExFiles.find(strRarPath);
+  std::map<std::string, std::pair<ArchiveList_struct*, std::vector<CFileInfo> > >::iterator j = m_ExFiles.find(strRarPath);
   if (j == m_ExFiles.end())
     return false;
 
-  for (vector<CFileInfo>::iterator it2=j->second.second.begin(); it2 != j->second.second.end(); ++it2)
+  for (std::vector<CFileInfo>::iterator it2=j->second.second.begin(); it2 != j->second.second.end(); ++it2)
     if (it2->m_strPathInRar == strPathInRar)
       return CFile::Exists(it2->m_strCachedPath);
-
   return false;
 }
 
@@ -451,11 +440,11 @@ bool CRarManager::IsFileInRar(bool& bResult, const std::string& strRarPath, cons
 void CRarManager::ClearCache(bool force)
 {
   CSingleLock lock(m_CritSection);
-  map<std::string, pair<ArchiveList_struct*,vector<CFileInfo> > >::iterator j;
-  for (j = m_ExFiles.begin() ; j != m_ExFiles.end() ; j++)
+  std::map<std::string, std::pair<ArchiveList_struct*, std::vector<CFileInfo> > >::iterator j;
+  for (j = m_ExFiles.begin() ; j != m_ExFiles.end() ; ++j)
   {
 
-    for (vector<CFileInfo>::iterator it2 = j->second.second.begin(); it2 != j->second.second.end(); ++it2)
+    for (std::vector<CFileInfo>::iterator it2 = j->second.second.begin(); it2 != j->second.second.end(); ++it2)
     {
       CFileInfo* pFile = &(*it2);
       if (pFile->m_bAutoDel && (pFile->m_iUsed < 1 || force))
@@ -471,13 +460,13 @@ void CRarManager::ClearCachedFile(const std::string& strRarPath, const std::stri
 {
   CSingleLock lock(m_CritSection);
 
-  map<std::string,pair<ArchiveList_struct*,vector<CFileInfo> > >::iterator j = m_ExFiles.find(strRarPath);
+  std::map<std::string, std::pair<ArchiveList_struct*, std::vector<CFileInfo> > >::iterator j = m_ExFiles.find(strRarPath);
   if (j == m_ExFiles.end())
   {
     return; // no such subpath
   }
 
-  for (vector<CFileInfo>::iterator it = j->second.second.begin(); it != j->second.second.end(); ++it)
+  for (std::vector<CFileInfo>::iterator it = j->second.second.begin(); it != j->second.second.end(); ++it)
   {
     if (it->m_strPathInRar == strPathInRar)
       if (it->m_iUsed > 0)
@@ -497,12 +486,13 @@ void CRarManager::ExtractArchive(const std::string& strArchive, const std::strin
     CLog::Log(LOGERROR,"rarmanager::extractarchive error while extracting %s", strArchive.c_str());
     return;
   }
- }
+}
 
 int64_t CRarManager::CheckFreeSpace(const std::string& strDrive)
 {
   ULARGE_INTEGER lTotalFreeBytes;
-  if (GetDiskFreeSpaceEx(CSpecialProtocol::TranslatePath(strDrive.c_str()).c_str(), NULL, NULL, &lTotalFreeBytes))
+  std::string path = CSpecialProtocol::TranslatePath(strDrive);
+  if (GetDiskFreeSpaceEx(path.c_str(), NULL, NULL, &lTotalFreeBytes))
     return lTotalFreeBytes.QuadPart;
 
   return 0;
