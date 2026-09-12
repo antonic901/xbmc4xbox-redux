@@ -227,17 +227,14 @@ bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const cha
   }
   else if (iAssignment == NETWORK_INSIGNIA)
   {
-    m_networkinfo.DHCP = false;
-    strcpy(m_networkinfo.ip, szLocalAddress);
-    strcpy(m_networkinfo.subnet, szLocalSubnet);
-    strcpy(m_networkinfo.gateway, szLocalGateway);
-
-    // Insignia DNS
-    strcpy(m_networkinfo.DNS1, "46.101.64.175");
-    strcpy(m_networkinfo.DNS2, szNameServerAlt);
+    m_networkinfo.DHCP = true;
+    strcpy(m_networkinfo.ip, "0.0.0.0");
     
+    // Insignia DNS1 + Google DNS2
+    strcpy(m_networkinfo.DNS1, "46.101.64.175");
+    strcpy(m_networkinfo.DNS2, "8.8.8.8");    
     TranslateConfig(m_networkinfo, params);
-    CLog::Log(LOGNOTICE, "Network: Using Insignia IP settings");
+    CLog::Log(LOGNOTICE, "Network: Using Insignia DNS + DHCP IP settings");
   }
   else
   {
