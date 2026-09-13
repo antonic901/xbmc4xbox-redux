@@ -40,6 +40,7 @@ CGUIAudioManager g_audioManager;
 
 CGUIAudioManager::CGUIAudioManager()
 {
+  m_bEnabled = false;
   m_actionSound=NULL;
 }
 
@@ -173,7 +174,7 @@ void CGUIAudioManager::FreeUnused()
 void CGUIAudioManager::PlayActionSound(const CAction& action)
 {
   // it's not possible to play gui sounds when passthrough is active
-  if (g_audioContext.IsPassthroughActive())
+  if (!m_bEnabled || g_audioContext.IsPassthroughActive())
     return;
 
   CSingleLock lock(m_cs);
@@ -204,7 +205,7 @@ void CGUIAudioManager::PlayActionSound(const CAction& action)
 void CGUIAudioManager::PlayWindowSound(int id, WINDOW_SOUND event)
 {
   // it's not possible to play gui sounds when passthrough is active
-  if (g_audioContext.IsPassthroughActive())
+  if (!m_bEnabled || g_audioContext.IsPassthroughActive())
     return;
 
   CSingleLock lock(m_cs);
@@ -254,7 +255,7 @@ void CGUIAudioManager::PlayWindowSound(int id, WINDOW_SOUND event)
 void CGUIAudioManager::PlayPythonSound(const CStdString& strFileName)
 {
   // it's not possible to play gui sounds when passthrough is active
-  if (g_audioContext.IsPassthroughActive())
+  if (!m_bEnabled || g_audioContext.IsPassthroughActive())
     return;
 
   CSingleLock lock(m_cs);
@@ -412,6 +413,10 @@ void CGUIAudioManager::Enable(bool bEnable)
   // Enable/Disable has no effect if nav sounds are turned off
   if (CSettings::GetInstance().GetString("lookandfeel.soundskin")=="OFF")
     bEnable = false;
+
+  CSingleLock lock(m_cs);
+
+  m_bEnabled = bEnable;
 
   if (bEnable)
     Initialize(CAudioContext::DEFAULT_DEVICE);
