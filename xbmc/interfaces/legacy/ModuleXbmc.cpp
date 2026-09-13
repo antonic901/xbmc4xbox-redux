@@ -29,6 +29,7 @@
 #include "settings/Settings.h"
 #include "guilib/TextureManager.h"
 #include "Util.h"
+#include "Undocumented.h"
 #include "input/ButtonTranslator.h"
 #include "storage/MediaManager.h"
 #include "utils/LangCodeExpander.h"
@@ -540,6 +541,25 @@ namespace XBMCAddon
     String getUserAgent()
     {
       return CSysInfo::GetUserAgent();
+    }
+
+    int readSMBus(int address, int command, bool word /* = false */)
+    {
+      XBMC_TRACE;
+      unsigned long data = 0;
+      long ret = HalReadSMBusValue((UCHAR)address, (UCHAR)command, (UCHAR)(word != 0), (LPBYTE)&data);
+      if (ret != 0)
+      {
+        return -1;
+      }
+      if (word)
+        return (int)(data & 0xFFFF);
+      return (int)(data & 0xFF);
+    }
+
+    void writeSMBus(int address, int command, int value, bool word /* = false */)
+    {
+      HalWriteSMBusValue((BYTE)address, (BYTE)command, (BOOL)(word != 0), (BYTE)value);
     }
 
     int getSERVER_WEBSERVER() { return CApplication::ES_WEBSERVER; }
