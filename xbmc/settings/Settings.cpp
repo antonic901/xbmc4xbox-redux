@@ -188,6 +188,7 @@ const char* CSettings::SETTING_MUSICPLAYER_CROSSFADE = "musicplayer.crossfade";
 const char* CSettings::SETTING_MUSICPLAYER_CROSSFADEALBUMTRACKS = "musicplayer.crossfadealbumtracks";
 const char* CSettings::SETTING_MUSICPLAYER_VISUALISATION = "musicplayer.visualisation";
 const char* CSettings::SETTING_MUSICPLAYER_DEFAULTPLAYER = "musicplayer.defaultplayer";
+const char* CSettings::SETTING_MUSICPLAYER_OUTPUT_TO_ALL_SPEAKERS = "musicplayer.outputtoallspeakers";
 const char* CSettings::SETTING_MUSICFILES_SELECTACTION = "musicfiles.selectaction";
 const char* CSettings::SETTING_MUSICFILES_USETAGS = "musicfiles.usetags";
 const char* CSettings::SETTING_MUSICFILES_TRACKFORMAT = "musicfiles.trackformat";

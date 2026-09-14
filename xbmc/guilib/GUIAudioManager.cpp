@@ -84,14 +84,6 @@ bool CGUIAudioManager::OnSettingUpdate(const boost::shared_ptr<CSetting>& settin
 
 void CGUIAudioManager::Initialize(int iDevice)
 {
-  CSingleLock lock(m_cs);
-
-  if (iDevice==CAudioContext::DEFAULT_DEVICE)
-  {
-    bool bAudioOnAllSpeakers=false;
-    g_audioContext.SetupSpeakerConfig(2, bAudioOnAllSpeakers);
-    g_audioContext.SetActiveDevice(CAudioContext::DIRECTSOUND_DEVICE);
-  }
 }
 
 void CGUIAudioManager::DeInitialize(int iDevice)

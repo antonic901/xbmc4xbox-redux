@@ -126,6 +126,7 @@
 #include "pictures/GUIWindowSlideShow.h"
 #include "utils/CharsetConverter.h"
 
+#include "AudioContext.h"
 #include "platform/xbox/XKHDD.h"
 #include "platform/xbox/filesystem/MemoryUnitManager.h"
 
@@ -446,6 +447,8 @@ void checkForAddonUpdates(CEvent& event, ADDON::AddonInfos& incompatibleAddons)
 bool CApplication::Initialize()
 {
   GetComponent<CApplicationXbox>()->StartServices();
+
+  g_audioContext.SetActiveDevice(CAudioContext::DEFAULT_DEVICE);
 
   // load the language and its translated strings
   if (!LoadLanguage(false))

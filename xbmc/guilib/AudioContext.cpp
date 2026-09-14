@@ -1,241 +1,157 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2026 Team Xodi
+ *  This file is part of Xodi - https://xodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "include.h"
 #include "AudioContext.h"
+
 #include "ServiceBroker.h"
-#include "GUIComponent.h"
-#include "GUIAudioManager.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIAudioManager.h"
 #include "settings/MediaSettings.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "XBAudioConfig.h"
 #include "utils/log.h"
 
-#ifndef _XBOX
-extern HWND g_hWnd;
-#endif
-
-
-CAudioContext g_audioContext;
+#include "platform/xbox/XBAudioConfig.h"
 
 CAudioContext::CAudioContext()
 {
-  m_bAC3EncoderActive=false;
-  m_iDevice=DEFAULT_DEVICE;
-#ifdef HAS_AUDIO
-#ifdef HAS_AUDIO_PASS_THROUGH
-  m_pAC97Device=NULL;
-#endif
-  m_pDirectSoundDevice=NULL;
-#endif
+  m_pDirectSoundDevice = NULL;
+  m_pAC97Device = NULL;
+  m_iDevice = NONE;
 }
 
-CAudioContext::~CAudioContext()
+bool CAudioContext::SetActiveDevice(const AUDIO_DEVICE& iDevice)
 {
-}
+  if (m_iDevice == iDevice)
+    return true;
 
-// \brief Create a new device by type (DEFAULT_DEVICE, DIRECTSOUND_DEVICE, AC97_DEVICE)
-void CAudioContext::SetActiveDevice(int iDevice)
-{
-  /* if device is the same, no need to bother */
-  if(m_iDevice == iDevice)
-    return;
-
-  if (iDevice==DEFAULT_DEVICE)
+  if (iDevice == DEFAULT_DEVICE)
   {
-    /* we just tell callbacks to init, it will setup audio */
-    CServiceBroker::GetGUI()->GetAudioManager().Initialize(iDevice);
-    return;
+    bool audioOnAllSpeakers(false);
+    SetupSpeakerConfig(2, audioOnAllSpeakers);
+    return SetActiveDevice(DIRECTSOUND_DEVICE);
   }
 
-  /* deinit current device */
+  // remove current active device
   RemoveActiveDevice();
 
-  m_iDevice=iDevice;
-
-#ifdef HAS_AUDIO
-  if (iDevice==DIRECTSOUND_DEVICE)
+  m_iDevice = iDevice;
+  if (m_iDevice == DIRECTSOUND_DEVICE)
   {
-    // Create DirectSound
-    if (FAILED(DirectSoundCreate( NULL, &m_pDirectSoundDevice, NULL )))
+    if (DirectSoundCreate(NULL, &m_pDirectSoundDevice, NULL) < 0)
     {
-      CLog::Log(LOGERROR, "DirectSoundCreate() Failed");
-      return;
-    }
-#ifndef _XBOX
-    if (FAILED(m_pDirectSoundDevice->SetCooperativeLevel(g_hWnd, DSSCL_PRIORITY)))
-    {
-      CLog::Log(LOGERROR, "DirectSoundDevice::SetCooperativeLevel() Failed");
-      return;
-    }
-#endif
-  }
-  else if (iDevice==AC97_DEVICE)
-  {
-#ifdef HAS_AUDIO_PASS_THROUGH
-    // Create AC97 Device
-    if (FAILED(Ac97CreateMediaObject(DSAC97_CHANNEL_DIGITAL, NULL, NULL, &m_pAC97Device)))
-#endif
-    {
-      CLog::Log(LOGERROR, "Failed to create digital Ac97CreateMediaObject()");
-      return;
+      CLog::Log(LOGERROR, "%s - Failed to create DirectSound device!", __FUNCTION__);
+      return false;
     }
   }
-#endif
-  CServiceBroker::GetGUI()->GetAudioManager().Initialize(m_iDevice);
+  else if (m_iDevice == AC97_DEVICE)
+  {
+    if (Ac97CreateMediaObject(DSAC97_CHANNEL_DIGITAL, NULL, NULL, &m_pAC97Device) < 0)
+    {
+      CLog::Log(LOGERROR, "%s - Failed to create AC97 device!", __FUNCTION__);
+      return false;
+    }
+  }
+  return true;
 }
 
-// \brief Return the active device type (NONE, DEFAULT_DEVICE, DIRECTSOUND_DEVICE, AC97_DEVICE)
-int CAudioContext::GetActiveDevice()
-{
-  return m_iDevice;
-}
-
-// \brief Remove the current sound device, eg. to setup new speaker config
 void CAudioContext::RemoveActiveDevice()
 {
   CServiceBroker::GetGUI()->GetAudioManager().DeInitialize(m_iDevice);
-  m_iDevice=NONE;
+  m_iDevice = NONE;
 
-#ifdef HAS_AUDIO
-#ifdef HAS_AUDIO_PASS_THROUGH
-  SAFE_RELEASE(m_pAC97Device);
-#endif
-  SAFE_RELEASE(m_pDirectSoundDevice);
-#endif
+  if (m_pAC97Device)
+  {
+    m_pAC97Device->Release();
+    m_pAC97Device = NULL;
+  }
+  if (m_pDirectSoundDevice)
+  {
+    m_pDirectSoundDevice->Release();
+    m_pDirectSoundDevice = NULL;
+  }
 }
 
-// \brief set a new speaker config
 void CAudioContext::SetupSpeakerConfig(int iChannels, bool& bAudioOnAllSpeakers, bool bIsMusic)
 {
-  m_bAC3EncoderActive = false;
   bAudioOnAllSpeakers = false;
 
-#ifdef HAS_AUDIO
   DWORD spconfig = DSSPEAKER_USE_DEFAULT;
   if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH))
   {
-    if (((CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("musicplayer.outputtoallspeakers")) && (bIsMusic)) || (CMediaSettings::GetInstance().GetCurrentVideoSettings().m_OutputToAllSpeakers && !bIsMusic))
+    bool outputToAllSpeakers =
+        (bIsMusic && CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_MUSICPLAYER_OUTPUT_TO_ALL_SPEAKERS)) ||
+        (!bIsMusic && CMediaSettings::GetInstance().GetCurrentVideoSettings().m_OutputToAllSpeakers);
+    if (outputToAllSpeakers && g_audioConfig.GetAC3Enabled())
     {
-      if( g_audioConfig.GetAC3Enabled() )
-      {
-        bAudioOnAllSpeakers = true;
-        m_bAC3EncoderActive = true;
-        spconfig = DSSPEAKER_USE_DEFAULT; //Allows ac3 encoder should it be enabled
-      }
-      else
-      {
-        if (iChannels == 1)
-          spconfig = DSSPEAKER_MONO;
-        else
-        {
-#ifdef HAS_XBOX_AUDIO
-          // check if surround mode is allowed, if not then use normal stereo
-          // don't always set it to default as that enabled ac3 encoder if that is allowed in dash
-          // ruining quality
-          if( XC_AUDIO_FLAGS_BASIC( XGetAudioFlags() ) == XC_AUDIO_FLAGS_SURROUND )
-            spconfig = DSSPEAKER_SURROUND;
-          else
-#endif
-            spconfig = DSSPEAKER_STEREO;
-        }
-      }
+      bAudioOnAllSpeakers = true;
     }
-    else
+    else if (iChannels == 1)
     {
-      if (iChannels == 1)
-        spconfig = DSSPEAKER_MONO;
-      else if (iChannels == 2)
-        spconfig = DSSPEAKER_STEREO;
-      else
-      {
-        spconfig = DSSPEAKER_USE_DEFAULT; //Allows ac3 encoder should it be enabled
-        m_bAC3EncoderActive = g_audioConfig.GetAC3Enabled();
-      }
-    }
-  }
-  else // We don't want to use the Dolby Digital Encoder output. Downmix to surround instead.
-  {
-    if (iChannels == 1)
       spconfig = DSSPEAKER_MONO;
-    else
+    }
+    else if (outputToAllSpeakers)
     {
       // check if surround mode is allowed, if not then use normal stereo
-      // don't always set it to default as that enabled ac3 encoder if that is allowed in dash
-      // ruining quality
-#ifdef HAS_XBOX_AUDIO
-      if( XC_AUDIO_FLAGS_BASIC( XGetAudioFlags() ) == XC_AUDIO_FLAGS_SURROUND )
+      spconfig = DSSPEAKER_STEREO;
+      if (XC_AUDIO_FLAGS_BASIC(XGetAudioFlags()) == XC_AUDIO_FLAGS_SURROUND)
         spconfig = DSSPEAKER_SURROUND;
-      else
-#endif
-        spconfig = DSSPEAKER_STEREO;
     }
+    else if (iChannels == 2)
+    {
+      spconfig = DSSPEAKER_STEREO;
+    }
+  }
+  else
+  {
+    // check if surround mode is allowed, if not then use normal stereo
+    spconfig = DSSPEAKER_STEREO;
+    if (iChannels == 1)
+      spconfig = DSSPEAKER_MONO;
+    else if (XC_AUDIO_FLAGS_BASIC(XGetAudioFlags()) == XC_AUDIO_FLAGS_SURROUND)
+      spconfig = DSSPEAKER_SURROUND;
   }
 
   DWORD spconfig_old = DSSPEAKER_USE_DEFAULT;
-  if(m_pDirectSoundDevice)
+  if (m_pDirectSoundDevice)
   {
     m_pDirectSoundDevice->GetSpeakerConfig(&spconfig_old);
-#ifdef HAS_XBOX_AUDIO
     DWORD spconfig_default = XGetAudioFlags();
     if (spconfig_old == spconfig_default)
-#endif
       spconfig_old = DSSPEAKER_USE_DEFAULT;
   }
 
-  /* speaker config identical, no need to do anything */
-  if(spconfig == spconfig_old) return;
-#endif
-
-  /* speaker config has changed, caller need to recreate it */
-  RemoveActiveDevice();
-#ifdef HAS_XBOX_AUDIO
-  DirectSoundOverrideSpeakerConfig(spconfig);
-#endif
+  if (spconfig != spconfig_old)
+  {
+    // speaker config has changed, caller need to recreate it
+    RemoveActiveDevice();
+    DirectSoundOverrideSpeakerConfig(spconfig);
+  }
 }
 
 bool CAudioContext::IsAC3EncoderActive() const
 {
-  return m_bAC3EncoderActive;
+  return g_audioConfig.GetAC3Enabled();
 }
 
-bool CAudioContext::IsPassthroughActive() const
-{
-  return (m_iDevice == AC97_DEVICE);
-}
-
-#ifdef HAS_XBOX_AUDIO
 bool CAudioContext::GetMixBin(DSMIXBINVOLUMEPAIR* dsmbvp, int* MixBinCount, DWORD* dwChannelMask, int Type, int Channels)
 {
   //3, 5, >6 channel are invalid XBOX wav formats thus can not be processed at this stage
 
-  if(Type == 0 || Type == DSMIXBINTYPE_DMO)
+  if (Type == 0 || Type == DSMIXBINTYPE_DMO)
   { // FL, FR, C, LFE, BL, BR, (FLC, FRC, BC, SL, SR, TC, TFL, TFC, TFR, TBL, TBC, TBR)
     // This is the standard windows format, any channel can be left out, the channel mask indicate
     // wich ones are present. Let's use the standard features for this.
 
     *MixBinCount = 0;
-    if(*dwChannelMask == 0)
+    if (*dwChannelMask == 0)
     { // no channel mask specified, generate one
-      switch(Channels)
+      switch (Channels)
       {
         case 6:
           *dwChannelMask = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT;
@@ -401,4 +317,3 @@ bool CAudioContext::GetMixBin(DSMIXBINVOLUMEPAIR* dsmbvp, int* MixBinCount, DWOR
   CLog::Log(LOGERROR, "Invalid Mixbin channels specified, get MixBins failed");
   return false;
 }
-#endif

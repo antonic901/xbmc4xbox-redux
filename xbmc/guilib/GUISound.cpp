@@ -78,11 +78,7 @@ bool CGUISound::Load(const std::string& strFile)
 void CGUISound::Play()
 {
   if (m_soundBuffer)
-#ifdef HAS_XBOX_AUDIO
     m_soundBuffer->Play(0, 0, DSBPLAY_FROMSTART);
-#else
-    m_soundBuffer->Play(0, 0, 0);
-#endif
 }
 
 // \brief returns true if the sound is playing
@@ -103,11 +99,7 @@ void CGUISound::Stop()
 {
   if (m_soundBuffer)
   {
-#ifdef HAS_XBOX_AUDIO
     m_soundBuffer->StopEx( 0, DSBSTOPEX_IMMEDIATE );
-#else
-    m_soundBuffer->Stop();
-#endif
 
     while(IsPlaying()) {}
   }
@@ -122,7 +114,6 @@ void CGUISound::SetVolume(float level)
 
 bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
 {
-#ifdef HAS_XBOX_AUDIO
   //  Use a volume pair preset
   DSMIXBINVOLUMEPAIR vp[2] = { DSMIXBINVOLUMEPAIRS_DEFAULT_STEREO };
 
@@ -130,19 +121,13 @@ bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
   DSMIXBINS mixbins;
   mixbins.dwMixBinCount=2;
   mixbins.lpMixBinVolumePairs=vp;
-#endif
 
   //  Set up DSBUFFERDESC structure
   DSBUFFERDESC dsbdesc;
   memset(&dsbdesc, 0, sizeof(DSBUFFERDESC));
   dsbdesc.dwSize=sizeof(DSBUFFERDESC);
-#ifdef HAS_XBOX_AUDIO
   dsbdesc.dwFlags=0;
   dsbdesc.lpMixBins=&mixbins;
-#else
-  // directsound requires ctrlvolume to be set
-  dsbdesc.dwFlags = DSBCAPS_CTRLVOLUME;
-#endif
   dsbdesc.dwBufferBytes=iLength;
   dsbdesc.lpwfxFormat=wfx;
 
@@ -162,13 +147,11 @@ bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
   const CApplicationComponents &components = CServiceBroker::GetAppComponents();
   const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
   m_soundBuffer->SetVolume(IDirectSoundRenderer::ConvertVolumeToDSVolume(appVolume->GetVolumeRatio()));
-#ifdef HAS_XBOX_AUDIO
   m_soundBuffer->SetHeadroom(0);
 
   // Set the default mixbins headroom to appropriate level as set in the settings file (to allow the maximum volume)
   for (DWORD i = 0; i < mixbins.dwMixBinCount;i++)
     directSound->SetMixBinHeadroom(i, DWORD(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_audioHeadRoom / 6));
-#endif
 
   return true;
 }

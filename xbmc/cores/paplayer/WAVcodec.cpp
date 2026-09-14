@@ -18,11 +18,7 @@
  *
  */
 
-#include "system.h" // HAS_XBOX_AUDIO
 #include "WAVcodec.h"
-#ifndef HAS_XBOX_AUDIO
-#include "mmreg.h"
-#endif
 #include "filesystem/IFileTypes.h"
 
 typedef struct

@@ -779,9 +779,6 @@ void CCdgParser::FillInVoiceMaskValues(unsigned int port, std::string strCurMask
 {
     if (StringUtils::CompareNoCase(strCurMask, "None") == 0 || StringUtils::CompareNoCase(strCurMask, "Custom") == 0 )
     {
-  #ifndef HAS_XBOX_AUDIO
-  #define XVOICE_MASK_PARAM_DISABLED (-1.0f)
-  #endif
       const CApplicationComponents &components = CServiceBroker::GetAppComponents();
       const boost::shared_ptr<const CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
       VOICE_MASK karaokeVoiceMask = appXbox->GetKaraokeVoiceMask(port);
