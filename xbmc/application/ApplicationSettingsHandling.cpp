@@ -46,6 +46,7 @@ void CApplicationSettingsHandling::RegisterSettings()
   settingsMgr->RegisterSettingsHandler(this);
 
   std::set<std::string> temp;
+  temp.insert(CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH);
   temp.insert(CSettings::SETTING_AUDIOOUTPUT_AACPASSTHROUGH);
   temp.insert(CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH);
   temp.insert(CSettings::SETTING_AUDIOOUTPUT_DTSPASSTHROUGH);
@@ -148,7 +149,11 @@ void CApplicationSettingsHandling::OnSettingChanged(const boost::shared_ptr<cons
 
   const std::string& settingId = setting->GetId();
 
-  if (StringUtils::StartsWithNoCase(settingId, "audiooutput."))
+  if (settingId == CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH)
+  {
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_RESTART);
+  }
+  else if (StringUtils::StartsWithNoCase(settingId, "audiooutput."))
   {
     if (settingId == CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH)
       g_audioConfig.SetAC3Enabled(boost::static_pointer_cast<const CSettingBool>(setting)->GetValue());
