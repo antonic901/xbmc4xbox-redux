@@ -64,7 +64,7 @@ public:
   virtual void Seek(bool bPlus = true, bool bLargeStep = false, bool bChapterOverride = false);
   virtual void SeekPercentage(float fPercent = 0.0f);
   virtual float GetPercentage() const;
-  virtual void SetVolume(long nVolume);
+  virtual void SetVolume(float volume);
   virtual void SetDynamicRangeCompression(long drc);
   virtual void GetAudioInfo( std::string& strAudioInfo) {}
   virtual void GetVideoInfo( std::string& strVideoInfo) {}

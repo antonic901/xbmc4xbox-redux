@@ -199,7 +199,7 @@ CUPnPRenderer::UpdateState()
     const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
 
     std::string buffer;
-    int volume;
+    float volume;
     if (appVolume->IsMuted()) {
         rct->SetStateVariable("Mute", "1");
     } else {
@@ -503,7 +503,7 @@ CUPnPRenderer::OnSetVolume(PLT_ActionReference& action)
 
     NPT_String volume;
     NPT_CHECK_SEVERE(action->GetArgumentValue("DesiredVolume", volume));
-    appVolume->SetVolume(atoi((const char*)volume));
+    appVolume->SetVolume(atof((const char*)volume));
     return NPT_SUCCESS;
 }
 

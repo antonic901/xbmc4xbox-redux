@@ -107,7 +107,7 @@ void CResampleDirectSound::DoWork()
 }
 
 HRESULT CResampleDirectSound::Deinitialize()
-{  
+{
   return m_pRenderer->Deinitialize();
 }
 
@@ -146,9 +146,9 @@ void CResampleDirectSound::Mute(bool bMute)
   return m_pRenderer->Mute(bMute);
 }
 
-HRESULT CResampleDirectSound::SetCurrentVolume(LONG nVolume)
+HRESULT CResampleDirectSound::SetCurrentVolume(float volume)
 {
-  return m_pRenderer->SetCurrentVolume(nVolume);
+  return m_pRenderer->SetCurrentVolume(volume);
 }
 
 FLOAT CResampleDirectSound::GetDelay()
@@ -198,7 +198,7 @@ void CResampleDirectSound::SwitchChannels(int iAudioStream, bool bAudioOnAllSpea
   m_pRenderer->SwitchChannels(iAudioStream, bAudioOnAllSpeakers);
 }
 
-void CResampleDirectSound::SetDynamicRangeCompression(long drc) 
-{ 
-  m_pRenderer->SetDynamicRangeCompression(drc); 
+void CResampleDirectSound::SetDynamicRangeCompression(long drc)
+{
+  m_pRenderer->SetDynamicRangeCompression(drc);
 }

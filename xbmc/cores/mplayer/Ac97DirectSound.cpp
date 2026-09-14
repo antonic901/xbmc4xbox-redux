@@ -202,10 +202,10 @@ void CAc97DirectSound::Mute(bool bMute)
 }
 
 //***********************************************************************************************
-HRESULT CAc97DirectSound::SetCurrentVolume(LONG nVolume)
+HRESULT CAc97DirectSound::SetCurrentVolume(float volume)
 {
   if (!m_bIsAllocated) return -1;
-  if (nVolume == CApplicationVolumeHandling::VOLUME_MINIMUM)
+  if (volume == CApplicationVolumeHandling::VOLUME_MINIMUM)
     m_bMute = true;
   else
     m_bMute = false;

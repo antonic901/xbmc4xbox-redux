@@ -58,7 +58,7 @@ public:
   virtual LONG GetMaximumVolume() const;
   virtual LONG GetCurrentVolume() const;
   virtual void Mute(bool bMute);
-  virtual HRESULT SetCurrentVolume(LONG nVolume);
+  virtual HRESULT SetCurrentVolume(float volume);
   static void CALLBACK StaticStreamCallback(LPVOID pStreamContext, LPVOID pPacketContext, DWORD dwStatus);
   void StreamCallback(LPVOID pPacketContext, DWORD dwStatus);
   virtual int SetPlaySpeed(int iSpeed);
@@ -70,7 +70,7 @@ private:
   LONG m_lFadeVolume;
   bool FindFreePacket( DWORD& pdwIndex );
 
-  LPAC97MEDIAOBJECT m_pDigitalOutput;  
+  LPAC97MEDIAOBJECT m_pDigitalOutput;
   DWORD m_dwPacketSize;
   DWORD m_dwNumPackets;
   PBYTE m_pbSampleData[64];
@@ -78,7 +78,7 @@ private:
   DWORD m_dwTotalBytesAdded;
   bool m_bPause;
   bool m_bMute;
-  bool m_bIsAllocated;  
+  bool m_bIsAllocated;
   LPDIRECTSOUND8 m_pDSound;
 
   //add for 44.1KHz 2 Channel audio Passthrough after software resample

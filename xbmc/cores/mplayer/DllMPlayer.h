@@ -111,7 +111,7 @@ extern "C"
   int mplayer_getTime();
   __int64 mplayer_getCurrentTime();
   void mplayer_ToFFRW(int iSpeed);
-  void mplayer_setVolume(long nVolume);
+  void mplayer_setVolume(float volume);
   void mplayer_setDRC(long drc);
   int mplayer_getVolume();
   void mplayer_get_current_module(char* s, int n);

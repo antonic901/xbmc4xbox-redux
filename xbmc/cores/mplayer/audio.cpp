@@ -67,11 +67,11 @@ extern "C" int mplayer_getVolume()
     }*/
 }
 
-extern "C" void mplayer_setVolume(long nVolume)
+extern "C" void mplayer_setVolume(float volume)
 {
   CSingleLock lock(m_critAudio);
   if (!m_pAudioDecoder) return ;
-  m_pAudioDecoder->SetCurrentVolume(nVolume);
+  m_pAudioDecoder->SetCurrentVolume(volume);
 }
 
 extern "C" void mplayer_setDRC(long drc)

@@ -14,6 +14,7 @@
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
 #include "application/ApplicationVolumeHandling.h"
+#include "cores/AudioEngine/Utils/AEUtil.h"
 #include "cores/IPlayer.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "guilib/GUIMessage.h"
@@ -59,7 +60,7 @@ void CGUIDialogAudioSettings::FrameMove()
   // update the volume setting if necessary
   const CApplicationComponents &components = CServiceBroker::GetAppComponents();
   const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
-  int newVolume = appVolume->GetVolumeRatio();
+  float newVolume = appVolume->GetVolumeRatio();
   if (newVolume != m_volume)
     GetSettingsManager()->SetNumber(SETTING_AUDIO_VOLUME, static_cast<double>(newVolume));
 
@@ -96,8 +97,7 @@ std::string CGUIDialogAudioSettings::FormatDecibel(float value)
 
 std::string CGUIDialogAudioSettings::FormatPercentAsDecibel(float value)
 {
-  // TODO: calculate volume gain
-  return StringUtils::Format(g_localizeStrings.Get(14054).c_str(), value);
+  return StringUtils::Format(g_localizeStrings.Get(14054).c_str(), CAEUtil::PercentToGain(value));
 }
 
 void CGUIDialogAudioSettings::OnSettingChanged(const boost::shared_ptr<const CSetting>& setting)
@@ -113,7 +113,7 @@ void CGUIDialogAudioSettings::OnSettingChanged(const boost::shared_ptr<const CSe
   const std::string &settingId = setting->GetId();
   if (settingId == SETTING_AUDIO_VOLUME)
   {
-    m_volume = static_cast<int>(boost::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
+    m_volume = static_cast<float>(boost::static_pointer_cast<const CSettingNumber>(setting)->GetValue());
     const boost::shared_ptr<CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
     appVolume->SetVolume(m_volume, false); // false - value is not in percent
   }
@@ -245,10 +245,10 @@ void CGUIDialogAudioSettings::InitializeSettings()
   const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
   m_volume = appVolume->GetVolumeRatio();
   boost::shared_ptr<CSettingNumber> settingAudioVolume =
-      AddSlider(groupAudio, SETTING_AUDIO_VOLUME, 13376, SettingLevel::Basic, static_cast<float>(m_volume), 14054,
-                CApplicationVolumeHandling::VOLUME_MINIMUM * 0.01f,
-                (CApplicationVolumeHandling::VOLUME_MAXIMUM - CApplicationVolumeHandling::VOLUME_MINIMUM) * 0.0001f,
-                CApplicationVolumeHandling::VOLUME_MAXIMUM * 0.01f);
+      AddSlider(groupAudio, SETTING_AUDIO_VOLUME, 13376, SettingLevel::Basic, m_volume, 14054,
+                CApplicationVolumeHandling::VOLUME_MINIMUM,
+                CApplicationVolumeHandling::VOLUME_MAXIMUM / 100.0f,
+                CApplicationVolumeHandling::VOLUME_MAXIMUM);
   boost::static_pointer_cast<CSettingControlSlider>(settingAudioVolume->GetControl())->SetFormatter(SettingFormatterPercentAsDecibel);
 
   // audio volume amplification setting

@@ -224,7 +224,7 @@ CASyncDirectSound::CASyncDirectSound(IAudioCallback* pCallback, int iChannels, u
   const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
 
   // set volume (from settings)
-  m_nCurrentVolume = appVolume->GetVolumeRatio();
+  m_nCurrentVolume = CASyncDirectSound::ConvertVolumeToDSVolume(appVolume->GetVolumeRatio());
   m_pStream->SetVolume( m_nCurrentVolume );
 
   // Set the headroom of the stream to 0 (to allow the maximum volume)
@@ -372,10 +372,10 @@ void CASyncDirectSound::Mute(bool bMute)
 }
 
 //***********************************************************************************************
-HRESULT CASyncDirectSound::SetCurrentVolume(LONG nVolume)
+HRESULT CASyncDirectSound::SetCurrentVolume(float volume)
 {
   if (!m_bIsAllocated) return -1;
-  m_nCurrentVolume = nVolume;
+  m_nCurrentVolume = CASyncDirectSound::ConvertVolumeToDSVolume(volume);
   return m_pStream->SetVolume( m_nCurrentVolume );
 }
 

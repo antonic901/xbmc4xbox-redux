@@ -6568,10 +6568,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\cores\paplayer\OGGcodec.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\cores\paplayer\paplayer.h">
+					RelativePath=".\xbmc\cores\paplayer\paplayer.cpp">
 				</File>
 				<File
-					RelativePath=".\xbmc\cores\paplayer\paplayer_xbox.cpp">
+					RelativePath=".\xbmc\cores\paplayer\paplayer.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\cores\paplayer\ReplayGain.cpp">
@@ -6881,6 +6881,17 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				<File
 					RelativePath=".\xbmc\cores\playercorefactory\PlayerSelectionRule.h">
 				</File>
+			</Filter>
+			<Filter
+				Name="AudioEngine"
+				Filter="">
+				<Filter
+					Name="Utils"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\cores\AudioEngine\Utils\AEUtil.h">
+					</File>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

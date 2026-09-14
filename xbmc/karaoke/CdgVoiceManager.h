@@ -59,7 +59,7 @@ public:
   ~CCdgChatter();
   HRESULT Initialize(CCdgVoiceManager* pManager, DWORD dwPort, CDG_DEVICE_TYPE device);
   HRESULT ProcessVoice(PFNCDGVOICEDATACALLBACK pfnVoiceDataCallback, VOID* pCallbackContext);
-  void SetVolume(long lVol);
+  void SetVolume(float lVol);
   void Shutdown();
 private:
   void LoadSettings();
@@ -92,7 +92,7 @@ private:
   BYTE* m_pbCompletedPackets;
   BYTE* m_pbMicrophoneBuffer;
   WAVEFORMATEX m_wfx;
-  long m_lVolume;
+  float m_lVolume;
   CCdgVoiceManager* m_pVoiceManager;      // Pointer to CVoiceManager
   LPDIRECTSOUNDSTREAM m_pOutputStream;      // DSound mixing stream
   CCriticalSection m_CritSection;

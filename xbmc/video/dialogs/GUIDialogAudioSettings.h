@@ -63,7 +63,7 @@ protected:
       const CVariant& step,
       const CVariant& maximum);
 
-  int m_volume;
+  float m_volume;
   int m_audioStream;
   bool m_passthrough;
 };

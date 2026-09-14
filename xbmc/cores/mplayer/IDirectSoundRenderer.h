@@ -61,12 +61,14 @@ public:
   virtual LONG GetMaximumVolume() const = 0;
   virtual LONG GetCurrentVolume() const = 0;
   virtual void Mute(bool bMute) = 0;
-  virtual HRESULT SetCurrentVolume(LONG nVolume) = 0;
+  virtual HRESULT SetCurrentVolume(float volume) = 0;
   virtual void SetDynamicRangeCompression(long drc) {};
   virtual int SetPlaySpeed(int iSpeed) = 0;
   virtual void WaitCompletion() = 0;
   virtual void DoWork() {}
   virtual void SwitchChannels(int iAudioStream, bool bAudioOnAllSpeakers) = 0;
+
+  static long ConvertVolumeToDSVolume(const float volume) { return static_cast<long>(volume * 6000.0f - 6000.0f); }
 
 private:
 };

@@ -118,7 +118,7 @@ public:
   void SetSubTitleDelay(float fValue = 0.0f);
   void SetSubtitleVisible(bool bVisible);
 
-  void SetVolume(int volume);
+  void SetVolume(float volume);
 
   // These were removed at some point
   bool CanRecord();

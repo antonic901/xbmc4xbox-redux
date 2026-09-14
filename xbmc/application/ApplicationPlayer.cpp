@@ -271,7 +271,7 @@ void CApplicationPlayer::SetMute(bool bOnOff)
     player->SetMute(bOnOff);
 }
 
-void CApplicationPlayer::SetVolume(int volume)
+void CApplicationPlayer::SetVolume(float volume)
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)

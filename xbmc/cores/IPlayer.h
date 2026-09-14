@@ -129,7 +129,7 @@ public:
   virtual float GetPercentage() const { return 0; }
   virtual float GetCachePercentage() const { return 0; }
   virtual void SetMute(bool bOnOff){}
-  virtual void SetVolume(long nVolume){}
+  virtual void SetVolume(float volume){}
   virtual void SetDynamicRangeCompression(long drc){}
   virtual void GetAudioInfo( std::string& strAudioInfo) = 0;
   virtual void GetVideoInfo( std::string& strVideoInfo) = 0;

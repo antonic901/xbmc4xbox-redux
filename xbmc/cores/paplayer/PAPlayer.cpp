@@ -32,8 +32,9 @@
 #include "application/ApplicationVolumeHandling.h"
 #include "karaoke/CdgParser.h"
 #include "FileItem.h"
+#include "cores/mplayer/IDirectSoundRenderer.h"
 
-#define VOLUME_FFWD_MUTE 900 // 9dB
+#define VOLUME_FFWD_MUTE 1.15f // 9dB
 
 #define FADE_TIME 2 * 2048.0f / 48000.0f      // 2 packets
 
@@ -416,7 +417,7 @@ bool PAPlayer::CreateStream(int num, int channels, int samplerate, int bitspersa
 
   m_pStream[num]->SetEG(&dsed);
   m_pStream[num]->SetHeadroom(0);
-  m_pStream[num]->SetVolume(appVolume->GetVolumeRatio());
+  m_pStream[num]->SetVolume(IDirectSoundRenderer::ConvertVolumeToDSVolume(appVolume->GetVolumeRatio()));
   m_pStream[num]->Pause(DSSTREAMPAUSE_PAUSE);
 
   // TODO: How do we best handle the callback, given that our samplerate etc. may be
@@ -455,10 +456,10 @@ void PAPlayer::Pause()
   }
 }
 
-void PAPlayer::SetVolume(long nVolume)
+void PAPlayer::SetVolume(float volume)
 {
   if (m_pStream[m_currentStream])
-    m_pStream[m_currentStream]->SetVolume(nVolume);
+    m_pStream[m_currentStream]->SetVolume(IDirectSoundRenderer::ConvertVolumeToDSVolume(volume));
 }
 
 void PAPlayer::SetDynamicRangeCompression(long drc)
@@ -742,7 +743,7 @@ bool PAPlayer::ProcessPAP()
       {
         CLog::Log(LOGDEBUG, "Finished Crossfading");
         m_currentlyCrossFading = false;
-        SetStreamVolume(m_currentStream, appVolume->GetVolumeRatio());
+        SetStreamVolume(m_currentStream, IDirectSoundRenderer::ConvertVolumeToDSVolume(appVolume->GetVolumeRatio()));
         FreeStream(1 - m_currentStream);
         m_decoder[1 - m_currentDecoder].Destroy();
       }
@@ -754,8 +755,8 @@ bool PAPlayer::ProcessPAP()
         if (fraction < -0.499f) fraction = -0.499f;
         float volumeCurrent = 2000.0f * log10(0.5f - fraction);
         float volumeNext = 2000.0f * log10(0.5f + fraction);
-        SetStreamVolume(m_currentStream, appVolume->GetVolumeRatio() + (int)volumeCurrent);
-        SetStreamVolume(1 - m_currentStream, appVolume->GetVolumeRatio() + (int)volumeNext);
+        SetStreamVolume(m_currentStream, IDirectSoundRenderer::ConvertVolumeToDSVolume(appVolume->GetVolumeRatio()) + (int)volumeCurrent);
+        SetStreamVolume(1 - m_currentStream, IDirectSoundRenderer::ConvertVolumeToDSVolume(appVolume->GetVolumeRatio()) + (int)volumeNext);
         if (AddPacketsToStream(1 - m_currentStream, m_decoder[1 - m_currentDecoder]))
           retVal2 = RET_SUCCESS;
       }

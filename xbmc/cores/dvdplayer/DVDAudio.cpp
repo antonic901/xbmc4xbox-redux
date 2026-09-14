@@ -17,17 +17,13 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #include "system.h"
 #include "utils/log.h"
 #include "threads/SingleLock.h"
 #include "DVDAudio.h"
-#ifdef _XBOX
 #include "cores/mplayer/ASyncDirectSound.h"
 #include "cores/mplayer/ac97directsound.h"
-#else
-#include "cores/mplayer/Win32DirectSound.h"
-#endif
 #include "DVDClock.h"
 #include "DVDCodecs/DVDCodecs.h"
 #include "DVDPlayerAudio.h"
@@ -99,7 +95,7 @@ double CPTSOutputQueue::Current(double timestamp)
 *   \param[in] src Pointer to a memory block.
 *   \param[in] len New size of the memory block.
 *   \exception realloc failed
-*   \return A pointer to the reallocated memory block. 
+*   \return A pointer to the reallocated memory block.
 */
 static void* realloc_or_free(void* src, int len) throw(exception)
 {
@@ -177,19 +173,11 @@ bool CDVDAudio::Create(const DVDAudioFrame &audioframe, AVCodecID codec)
   else
     codecstring = "PCM";
 
-#ifdef _XBOX
   // we don't allow resampling now, there is a bug in sscc that causes it to return the wrong chunklen.
   if( audioframe.passthrough )
     m_pAudioDecoder = new CAc97DirectSound(m_pCallback, audioframe.channels, audioframe.sample_rate, audioframe.bits_per_sample, true); // true = resample, 128 buffers
   else
     m_pAudioDecoder = new CASyncDirectSound(m_pCallback, audioframe.channels, audioframe.sample_rate, audioframe.bits_per_sample, codecstring);
-#else
-
-  if( audioframe.passthrough )
-    return false;
-
-  m_pAudioDecoder = new CWin32DirectSound(m_pCallback, audioframe.channels, audioframe.sample_rate, audioframe.bits_per_sample, false, codecstring);
-#endif
 
   if (!m_pAudioDecoder) return false;
 
@@ -369,10 +357,10 @@ void CDVDAudio::Drain()
     m_pAudioDecoder->WaitCompletion();
 }
 
-void CDVDAudio::SetVolume(int iVolume)
+void CDVDAudio::SetVolume(float volume)
 {
   CSingleLock lock (m_critSection);
-  if (m_pAudioDecoder) m_pAudioDecoder->SetCurrentVolume(iVolume);
+  if (m_pAudioDecoder) m_pAudioDecoder->SetCurrentVolume(volume);
 }
 
 void CDVDAudio::SetDynamicRangeCompression(long drc)

@@ -37,17 +37,17 @@ public:
   };
 
   float GetVolumePercent() const;
-  int GetVolumeRatio() const;
+  float GetVolumeRatio() const;
   bool IsMuted() const;
 
-  void SetVolume(int iValue, bool isPercentage = true);
+  void SetVolume(float iValue, bool isPercentage = true);
   void SetMute(bool mute);
   void ToggleMute(void);
 
   const ReplayGainSettings& GetReplayGainSettings() const { return m_replayGainSettings; }
 
-  static const int VOLUME_MINIMUM = -6000; // -60dB
-  static const int VOLUME_MAXIMUM = 0; // 0dB
+  static const float VOLUME_MINIMUM;
+  static const float VOLUME_MAXIMUM;
 
   bool Load(const TiXmlNode* settings);
   bool Save(TiXmlNode* settings) const;
@@ -62,11 +62,11 @@ protected:
   void Mute();
   void UnMute();
 
-  void SetHardwareVolume(int hardwareVolume);
+  void SetHardwareVolume(float hardwareVolume);
 
   void VolumeChanged();
 
   bool m_muted;
-  int m_volumeLevel;
+  float m_volumeLevel;
   ReplayGainSettings m_replayGainSettings;
 };

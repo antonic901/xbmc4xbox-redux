@@ -166,7 +166,7 @@ static JSON_STATUS ApplicationSetVolume(const CVariant &params, CVariant &result
     CApplicationComponents &components = CServiceBroker::GetAppComponents();
     const boost::shared_ptr<CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
     int oldVolume = static_cast<int>(appVolume->GetVolumePercent());
-    int volume = static_cast<int>(params["volume"].asInteger());
+    float volume = static_cast<float>(params["volume"].asFloat());
 
     appVolume->SetVolume(volume, true);
 

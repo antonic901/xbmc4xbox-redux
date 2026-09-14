@@ -17,6 +17,7 @@
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
 #include "application/ApplicationVolumeHandling.h"
+#include "cores/AudioEngine/Utils/AEUtil.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIDialog.h"
 #include "guilib/GUIWindowManager.h"
@@ -204,7 +205,7 @@ bool CPlayerGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       return true;
     case PLAYER_VOLUME:
       value =
-          StringUtils::Format("%2.1f dB", (float)(m_appVolume->GetVolumeRatio()) * 0.01f);
+          StringUtils::Format("%2.1f dB", CAEUtil::PercentToGain(m_appVolume->GetVolumeRatio()));
       return true;
     case PLAYER_SUBTITLE_DELAY:
       value = StringUtils::Format("%2.3f s", CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleDelay);
@@ -331,7 +332,7 @@ bool CPlayerGUIInfo::GetInt(int& value, const CGUIListItem *gitem, int contextWi
     // PLAYER_*
     ///////////////////////////////////////////////////////////////////////////////////////////////
     case PLAYER_VOLUME:
-      value = m_appVolume->GetVolumePercent();
+      value = static_cast<int>(m_appVolume->GetVolumePercent());
       return true;
     case PLAYER_PROGRESS:
       value = MathUtils::round_int(g_application.GetPercentage());
@@ -380,7 +381,8 @@ bool CPlayerGUIInfo::GetBool(bool& value, const CGUIListItem *gitem, int context
       value = m_playerShowTime;
       return true;
     case PLAYER_MUTED:
-      value = (m_appVolume->IsMuted() || m_appVolume->GetVolumeRatio() <= CApplicationVolumeHandling::VOLUME_MINIMUM);
+      value = (m_appVolume->IsMuted() ||
+               m_appVolume->GetVolumeRatio() <= CApplicationVolumeHandling::VOLUME_MINIMUM);
       return true;
     case PLAYER_HAS_MEDIA:
       value = m_appPlayer->IsPlaying();

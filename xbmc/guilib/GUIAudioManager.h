@@ -65,7 +65,7 @@ public:
   void FreeUnused();
 
   void Enable(bool bEnable);
-  void SetVolume(int iLevel);
+  void SetVolume(float iLevel);
   void Stop();
 private:
   bool LoadWindowSound(TiXmlNode* pWindowNode, const std::string& strIdentifier, std::string& strFile);

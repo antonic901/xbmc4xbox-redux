@@ -99,7 +99,7 @@ static int SetVolume(const std::vector<std::string>& params)
   CApplicationComponents &components = CServiceBroker::GetAppComponents();
   const boost::shared_ptr<CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
   float oldVolume = appVolume->GetVolumePercent();
-  int volume = atoi(params[0].c_str());
+  float volume = static_cast<float>(atof(params[0].c_str()));
 
   appVolume->SetVolume(volume);
   if (oldVolume != volume)

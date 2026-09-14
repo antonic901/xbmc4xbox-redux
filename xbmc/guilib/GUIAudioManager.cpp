@@ -430,7 +430,7 @@ void CGUIAudioManager::Enable(bool bEnable)
 }
 
 // \brief Sets the volume of all playing sounds
-void CGUIAudioManager::SetVolume(int iLevel)
+void CGUIAudioManager::SetVolume(float iLevel)
 {
   CSingleLock lock(m_cs);
 

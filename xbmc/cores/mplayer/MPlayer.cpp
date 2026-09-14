@@ -1633,9 +1633,9 @@ void CMPlayer::SeekRelativeTime(int iSeconds)
   WaitOnCommand();
 }
 
-void CMPlayer::SetVolume(long nVolume)
+void CMPlayer::SetVolume(float volume)
 {
-  mplayer_setVolume(nVolume);
+  mplayer_setVolume(volume);
 }
 
 void CMPlayer::SetDynamicRangeCompression(long drc)

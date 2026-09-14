@@ -1064,10 +1064,10 @@ bool CApplication::OnAction(const CAction &action)
     const boost::shared_ptr<CApplicationVolumeHandling> appVolume = GetComponent<CApplicationVolumeHandling>();
     if (appVolume->IsMuted())
       appVolume->UnMute();
-    int volume = appVolume->GetVolumeRatio();
+    float volume = appVolume->GetVolumeRatio();
 
     // calculate speed so that a full press will equal 1 second from min to max
-    float speed = float(CApplicationVolumeHandling::VOLUME_MAXIMUM - CApplicationVolumeHandling::VOLUME_MINIMUM);
+    float speed = CApplicationVolumeHandling::VOLUME_MAXIMUM - CApplicationVolumeHandling::VOLUME_MINIMUM;
 
     if (action.GetRepeat())
       speed *= action.GetRepeat();
@@ -1075,11 +1075,11 @@ bool CApplication::OnAction(const CAction &action)
       speed /= 50; //50 fps
 
     if (action.GetID() == ACTION_VOLUME_UP)
-      volume += (int)((float)fabs(action.GetAmount()) * action.GetAmount() * speed);
+      volume += (float)fabs(action.GetAmount()) * action.GetAmount() * speed;
     else if (action.GetID() == ACTION_VOLUME_DOWN)
-      volume -= (int)((float)fabs(action.GetAmount()) * action.GetAmount() * speed);
+      volume -= (float)fabs(action.GetAmount()) * action.GetAmount() * speed;
     else
-      volume = static_cast<int>(action.GetAmount() * speed);
+      volume = action.GetAmount() * speed;
     if (volume != appVolume->GetVolumeRatio())
       appVolume->SetVolume(volume, false);
     // show visual feedback of volume or passthrough indicator

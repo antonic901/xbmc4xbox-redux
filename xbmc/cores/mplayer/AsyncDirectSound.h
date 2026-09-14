@@ -58,7 +58,7 @@ public:
   virtual LONG GetMaximumVolume() const;
   virtual LONG GetCurrentVolume() const;
   virtual void Mute(bool bMute);
-  virtual HRESULT SetCurrentVolume(LONG nVolume);
+  virtual HRESULT SetCurrentVolume(float volume);
   static void CALLBACK StaticStreamCallback(LPVOID pStreamContext, LPVOID pPacketContext, DWORD dwStatus);
   void StreamCallback(LPVOID pPacketContext, DWORD dwStatus);
   virtual int SetPlaySpeed(int iSpeed);

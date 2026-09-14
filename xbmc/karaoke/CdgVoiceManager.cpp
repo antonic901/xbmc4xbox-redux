@@ -24,6 +24,7 @@
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationVolumeHandling.h"
 #include "application/ApplicationXbox.h"
+#include "cores/mplayer/IDirectSoundRenderer.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
@@ -150,7 +151,7 @@ HRESULT CCdgChatter::Initialize(CCdgVoiceManager* pManager, DWORD dwPort, CDG_DE
   if ( FAILED( hr ) ) return hr;
   // Set the stream headroom to 0
   m_pOutputStream->SetHeadroom( 0 );
-  m_pOutputStream->SetVolume(m_lVolume);
+  m_pOutputStream->SetVolume(IDirectSoundRenderer::ConvertVolumeToDSVolume(m_lVolume));
 
   // Allocate buffer for stream data
   if ( ! m_pbStreamBuffer )
@@ -220,8 +221,7 @@ void CCdgChatter::LoadSettings()
   int iPercent = CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(strSetting);
   if (iPercent < 0) iPercent = 0;
   if (iPercent > 100) iPercent = 100;
-  float fHardwareVolume = ((float)iPercent) / 100.0f * (CApplicationVolumeHandling::VOLUME_MAXIMUM - CApplicationVolumeHandling::VOLUME_MINIMUM) + CApplicationVolumeHandling::VOLUME_MINIMUM;
-  m_lVolume = (long)fHardwareVolume;
+  float m_lVolume = static_cast<float>(iPercent) / 100.0f;
   //Load the voice mask
   strSetting = StringUtils::Format("karaoke.port%ivoicemask", m_dwPort);
   strSetting = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(strSetting);
@@ -261,12 +261,12 @@ void CCdgChatter::LoadSettings()
   m_wfx.wFormatTag = WAVE_FORMAT_PCM;
 }
 
-void CCdgChatter::SetVolume(long lVol)
+void CCdgChatter::SetVolume(float lVol)
 {
   CSingleLock lock (m_CritSection);
   m_lVolume = lVol;
   if (m_pOutputStream)
-    m_pOutputStream->SetVolume(m_lVolume);
+    m_pOutputStream->SetVolume(IDirectSoundRenderer::ConvertVolumeToDSVolume(m_lVolume));
 }
 HRESULT CCdgChatter::ProcessVoice(PFNCDGVOICEDATACALLBACK pfnVoiceDataCallback, VOID* pCallbackContext)
 {

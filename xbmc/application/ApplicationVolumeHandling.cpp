@@ -12,6 +12,7 @@
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationPlayer.h"
 #include "dialogs/GUIDialogVolumeBar.h"
+#include "guilib/GUIAudioManager.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "interfaces/AnnouncementManager.h"
@@ -22,18 +23,21 @@
 
 #include <tinyxml/tinyxml.h>
 
+const float CApplicationVolumeHandling::VOLUME_MINIMUM = 0.0f; // -60dB
+const float CApplicationVolumeHandling::VOLUME_MAXIMUM = 1.0f; // 0dB
+
 float CApplicationVolumeHandling::GetVolumePercent() const
 {
   // converts the hardware volume to a percentage
-  return (m_volumeLevel - VOLUME_MINIMUM) * 100.0f / (VOLUME_MAXIMUM - VOLUME_MINIMUM);
+  return m_volumeLevel * 100.0f;
 }
 
-int CApplicationVolumeHandling::GetVolumeRatio() const
+float CApplicationVolumeHandling::GetVolumeRatio() const
 {
   return m_volumeLevel;
 }
 
-void CApplicationVolumeHandling::SetHardwareVolume(int hardwareVolume)
+void CApplicationVolumeHandling::SetHardwareVolume(float hardwareVolume)
 {
   m_volumeLevel = hardwareVolume;
   if (m_volumeLevel > VOLUME_MAXIMUM)
@@ -62,6 +66,7 @@ void CApplicationVolumeHandling::VolumeChanged()
     appPlayer->SetVolume(m_volumeLevel);
     appPlayer->SetMute(m_muted);
   }
+  CServiceBroker::GetGUI()->GetAudioManager().SetVolume(m_volumeLevel);
 }
 
 void CApplicationVolumeHandling::ShowVolumeBar(const CAction* action)
@@ -110,12 +115,12 @@ void CApplicationVolumeHandling::UnMute()
   VolumeChanged();
 }
 
-void CApplicationVolumeHandling::SetVolume(int iValue, bool isPercentage)
+void CApplicationVolumeHandling::SetVolume(float iValue, bool isPercentage)
 {
-  int hardwareVolume = iValue;
+  float hardwareVolume = iValue;
 
   if (isPercentage)
-    hardwareVolume = static_cast<int>(iValue * 0.01f * (VOLUME_MAXIMUM - VOLUME_MINIMUM) + VOLUME_MINIMUM);
+    hardwareVolume /= 100.0f;
 
   SetHardwareVolume(hardwareVolume);
   VolumeChanged();
@@ -141,7 +146,7 @@ bool CApplicationVolumeHandling::Load(const TiXmlNode* settings)
   if (audioElement)
   {
     XMLUtils::GetBoolean(audioElement, "mute", m_muted);
-    if (!XMLUtils::GetInt(audioElement, "volumelevel", m_volumeLevel, VOLUME_MINIMUM,
+    if (!XMLUtils::GetFloat(audioElement, "fvolumelevel", m_volumeLevel, VOLUME_MINIMUM,
                             VOLUME_MAXIMUM))
       m_volumeLevel = VOLUME_MAXIMUM;
   }
@@ -160,7 +165,7 @@ bool CApplicationVolumeHandling::Save(TiXmlNode* settings) const
     return false;
 
   XMLUtils::SetBoolean(audioNode, "mute", m_muted);
-  XMLUtils::SetInt(audioNode, "volumelevel", m_volumeLevel);
+  XMLUtils::SetFloat(audioNode, "fvolumelevel", m_volumeLevel);
 
   return true;
 }

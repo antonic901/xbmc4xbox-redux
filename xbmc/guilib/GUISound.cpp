@@ -20,15 +20,17 @@
 
 #include "GUISound.h"
 
-#include "application/Application.h"
+#include "ServiceBroker.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationVolumeHandling.h"
-#include "AudioContext.h"
-#include "ServiceBroker.h"
+#include "cores/mplayer/IDirectSoundRenderer.h"
 #include "filesystem/File.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
+#include "threads/SingleLock.h"
 #include "utils/log.h"
+
+#include "AudioContext.h"
 
 typedef struct
 {
@@ -112,10 +114,10 @@ void CGUISound::Stop()
 }
 
 // \brief Sets the volume of the sound
-void CGUISound::SetVolume(int level)
+void CGUISound::SetVolume(float level)
 {
   if (m_soundBuffer)
-    m_soundBuffer->SetVolume(level);
+    m_soundBuffer->SetVolume(IDirectSoundRenderer::ConvertVolumeToDSVolume(level));
 }
 
 bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
@@ -159,7 +161,7 @@ bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
   //  Make effects as loud as possible
   const CApplicationComponents &components = CServiceBroker::GetAppComponents();
   const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
-  m_soundBuffer->SetVolume(appVolume->GetVolumeRatio());
+  m_soundBuffer->SetVolume(IDirectSoundRenderer::ConvertVolumeToDSVolume(appVolume->GetVolumeRatio()));
 #ifdef HAS_XBOX_AUDIO
   m_soundBuffer->SetHeadroom(0);
 

@@ -179,7 +179,7 @@ public:
   virtual float GetPercentage() const;
   virtual float GetCachePercentage() const;
 
-  virtual void SetVolume(long nVolume)                          { m_dvdPlayerAudio.SetVolume(nVolume); }
+  virtual void SetVolume(float volume)                          { m_dvdPlayerAudio.SetVolume(volume); }
   virtual void SetDynamicRangeCompression(long drc)             { m_dvdPlayerAudio.SetDynamicRangeCompression(drc); }
   virtual void GetAudioInfo(std::string& strAudioInfo);
   virtual void GetVideoInfo(std::string& strVideoInfo);

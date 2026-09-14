@@ -33,7 +33,7 @@ public:
   void        Play();
   void        Stop();
   bool        IsPlaying();
-  void        SetVolume(int level);
+  void        SetVolume(float level);
 
 private:
   bool        LoadWav(const std::string& strFile, WAVEFORMATEX* wfx, LPBYTE* ppWavData, int* pDataSize);
