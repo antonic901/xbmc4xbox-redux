@@ -338,7 +338,7 @@ void CSetting::Copy(const CSetting &setting)
 CSettingList::CSettingList(const std::string& id,
                            boost::shared_ptr<CSetting> settingDefinition,
                            CSettingsManager* settingsManager /* = NULL */)
-  : CSetting(id, settingsManager), m_definition(boost::move(settingDefinition)), m_delimiter("|"), m_minimumItems(0), m_maximumItems(1)
+  : CSetting(id, settingsManager), m_definition(boost::move(settingDefinition)), m_delimiter("|"), m_minimumItems(0), m_maximumItems(-1)
 {
 }
 
@@ -346,7 +346,7 @@ CSettingList::CSettingList(const std::string& id,
                            boost::shared_ptr<CSetting> settingDefinition,
                            int label,
                            CSettingsManager* settingsManager /* = NULL */)
-  : CSetting(id, settingsManager), m_definition(boost::move(settingDefinition)), m_delimiter("|"), m_minimumItems(0), m_maximumItems(1)
+  : CSetting(id, settingsManager), m_definition(boost::move(settingDefinition)), m_delimiter("|"), m_minimumItems(0), m_maximumItems(-1)
 {
   SetLabel(label);
 }
