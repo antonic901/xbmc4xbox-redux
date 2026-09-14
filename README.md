@@ -80,7 +80,7 @@ OpenJDK Runtime Environment (build 1.8.0_452-b09)
 OpenJDK 64-Bit Server VM (build 25.452-b09, mixed mode)
 ```
 
-After that, download `doxygen` and `swig` tools from this [link](https://www.dropbox.com/scl/fi/5ymtc9cqnjjpx7gw8i6zz/BuildDependencies.zip?rlkey=o2rygnv6lrv18zm01v8q5azq3&st=k51dwl2y&dl=1). Unzip archive and put `BuildDependencies` inside `tools` folder.
+After that, download `doxygen` and `swig` tools from this [link](https://www.dropbox.com/scl/fi/dfshmmoxt3b40wgptxxtu/BuildDependencies.zip?rlkey=dshzyv7u2bnkpum81xh8a7kj5&st=eg603jk8&dl=1). Unzip archive and put `BuildDependencies` inside `tools` folder.
 
 First step is to generate Python binding code. You can do that by navigating to `tools->codegenerator` and running generator script:
 ```bash
