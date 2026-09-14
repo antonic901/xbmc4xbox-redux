@@ -20,8 +20,7 @@
  *
  */
 
-#include "cores/mplayer/IDirectSoundRenderer.h"
-#include "cores/IAudioCallback.h"
+#include "cores/AudioEngine/Engines/IDirectSoundRenderer.h"
 #include "threads/CriticalSection.h"
 #include "PlatformDefs.h"
 #include <queue>

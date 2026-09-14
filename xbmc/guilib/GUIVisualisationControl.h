@@ -9,7 +9,7 @@
 #pragma once
 
 #include "GUIControl.h"
-#include "cores/IAudioCallback.h"
+#include "cores/AudioEngine/Interfaces/IAudioCallback.h"
 
 #include <list>
 #include <string>
@@ -53,7 +53,7 @@ public:
 
   // Child functions related to IAudioCallback
   virtual void OnInitialize(int channels, int samplesPerSec, int bitsPerSample);
-  virtual void OnAudioData(const float* audioData, int audioDataLength);
+  virtual void OnAudioData(const float* audioData, unsigned int audioDataLength);
 
   // Child functions related to CGUIControl
   virtual void FreeResources(bool immediately = false);

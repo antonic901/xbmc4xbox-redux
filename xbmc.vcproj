@@ -5620,9 +5620,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath=".\xbmc\cores\mplayer\Ac97DirectSound.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\utils\AlarmClock.h">
 			</File>
 			<File
@@ -5639,9 +5636,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\ArtistDirectory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\cores\mplayer\AsyncDirectSound.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\cores\mplayer\audio.h">
@@ -5929,12 +5923,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			<Filter
 				Name="mplayer"
 				Filter="">
-				<File
-					RelativePath=".\xbmc\cores\mplayer\Ac97DirectSound.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\mplayer\AsyncDirectSound.cpp">
-				</File>
 				<File
 					RelativePath=".\xbmc\cores\mplayer\audio.cpp">
 				</File>
@@ -6890,6 +6878,32 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					Filter="">
 					<File
 						RelativePath=".\xbmc\cores\AudioEngine\Utils\AEUtil.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="Engines"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\cores\AudioEngine\Engines\Ac97DirectSound.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\cores\AudioEngine\Engines\Ac97DirectSound.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\cores\AudioEngine\Engines\AsyncDirectSound.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\cores\AudioEngine\Engines\AsyncDirectSound.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\cores\AudioEngine\Engines\IDirectSoundRenderer.h">
+					</File>
+				</Filter>
+				<Filter
+					Name="Interfaces"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\cores\AudioEngine\Interfaces\IAudioCallback.h">
 					</File>
 				</Filter>
 			</Filter>

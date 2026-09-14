@@ -23,7 +23,7 @@
 #include "ServiceBroker.h"
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationVolumeHandling.h"
-#include "cores/mplayer/IDirectSoundRenderer.h"
+#include "cores/AudioEngine/Engines/IDirectSoundRenderer.h"
 #include "filesystem/File.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"

@@ -1,32 +1,18 @@
 /*
-* XBMC Media Center
-* Copyright (c) 2002 d7o3g4q and RUNTiME
-* Portions Copyright (c) by the authors of ffmpeg and xvid
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
+ *  Copyright (C) 2005-2018 Team Xodi
+ *  This file is part of Xodi - https://xodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 
+#include "Ac97DirectSound.h"
 
-#include "utils/log.h"
+#include "AudioContext.h"
+#include "ServiceBroker.h"
 #include "application/Application.h"
 #include "application/ApplicationVolumeHandling.h"
-#include "Ac97DirectSound.h"
-#include "AudioContext.h"
-
-#define VOLUME_MIN  DSBVOLUME_MIN
-#define VOLUME_MAX  DSBVOLUME_MAX
+#include "utils/log.h"
 
 //***********************************************************************************************
 void CALLBACK CAc97DirectSound::StaticStreamCallback(LPVOID pStreamContext, LPVOID pPacketContext, DWORD dwStatus)
@@ -180,19 +166,19 @@ HRESULT CAc97DirectSound::Stop()
 //***********************************************************************************************
 LONG CAc97DirectSound::GetMinimumVolume() const
 {
-  return VOLUME_MIN;
+  return DSBVOLUME_MIN;
 }
 
 //***********************************************************************************************
 LONG CAc97DirectSound::GetMaximumVolume() const
 {
-  return VOLUME_MAX;
+  return DSBVOLUME_MAX;
 }
 
 //***********************************************************************************************
 LONG CAc97DirectSound::GetCurrentVolume() const
 {
-  return VOLUME_MAX;
+  return DSBVOLUME_MAX;
 }
 
 //***********************************************************************************************

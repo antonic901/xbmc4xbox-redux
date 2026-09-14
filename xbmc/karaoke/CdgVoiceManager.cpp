@@ -24,7 +24,7 @@
 #include "application/ApplicationComponents.h"
 #include "application/ApplicationVolumeHandling.h"
 #include "application/ApplicationXbox.h"
-#include "cores/mplayer/IDirectSoundRenderer.h"
+#include "cores/AudioEngine/Engines/IDirectSoundRenderer.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"

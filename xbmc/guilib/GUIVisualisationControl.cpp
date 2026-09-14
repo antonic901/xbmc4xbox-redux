@@ -253,7 +253,7 @@ void CGUIVisualisationControl::OnInitialize(int channels, int samplesPerSec, int
   m_callStart = true;
 }
 
-void CGUIVisualisationControl::OnAudioData(const float* audioData, int audioDataLength)
+void CGUIVisualisationControl::OnAudioData(const float* audioData, unsigned int audioDataLength)
 {
   if (!m_instance || !m_alreadyStarted || !audioData || audioDataLength == 0)
     return;

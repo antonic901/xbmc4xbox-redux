@@ -19,7 +19,7 @@
 */
 
 #include "ResampleDirectSound.h"
-#include "AsyncDirectSound.h"
+#include "cores/AudioEngine/Engines/AsyncDirectSound.h"
 
 #include <string>
 

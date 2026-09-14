@@ -24,8 +24,7 @@
 
 #pragma once
 
-#include "IDirectSoundRenderer.h"
-#include "cores/IAudioCallback.h"
+#include "cores/AudioEngine/Engines/IDirectSoundRenderer.h"
 #include "cores/ssrc.h"
 
 class CResampleDirectSound : public IDirectSoundRenderer

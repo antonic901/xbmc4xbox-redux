@@ -32,7 +32,7 @@
 #include "application/ApplicationVolumeHandling.h"
 #include "karaoke/CdgParser.h"
 #include "FileItem.h"
-#include "cores/mplayer/IDirectSoundRenderer.h"
+#include "cores/AudioEngine/Engines/IDirectSoundRenderer.h"
 
 #define VOLUME_FFWD_MUTE 1.15f // 9dB
 

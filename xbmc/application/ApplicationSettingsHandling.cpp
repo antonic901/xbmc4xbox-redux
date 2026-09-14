@@ -170,6 +170,10 @@ void CApplicationSettingsHandling::OnSettingChanged(const boost::shared_ptr<cons
 
     g_audioConfig.Save();
   }
+  else if (settingId == CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH)
+  {
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_MEDIA_RESTART);
+  }
 }
 
 void CApplicationSettingsHandling::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
