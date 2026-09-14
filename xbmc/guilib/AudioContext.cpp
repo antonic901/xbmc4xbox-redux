@@ -62,7 +62,7 @@ bool CAudioContext::SetActiveDevice(const AUDIO_DEVICE& iDevice)
 
 void CAudioContext::RemoveActiveDevice()
 {
-  CServiceBroker::GetGUI()->GetAudioManager().DeInitialize(m_iDevice);
+  CServiceBroker::GetGUI()->GetAudioManager().DeInitialize();
   m_iDevice = NONE;
 
   if (m_pAC97Device)

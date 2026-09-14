@@ -14471,6 +14471,12 @@ msgctxt "#39150"
 msgid "Limit the music video artwork fetched locally or applied from scraper remote art results to just those art types in the whitelist"
 msgstr ""
 
+#. Helper text for gui sound volume setting
+#: system/settings/settings.xml
+msgctxt "#39176"
+msgid "Relative volume for gui sounds"
+msgstr ""
+
 #: system/settings/settings.xml
 msgctxt "#39192"
 msgid "Disable screensaver when playing audio"

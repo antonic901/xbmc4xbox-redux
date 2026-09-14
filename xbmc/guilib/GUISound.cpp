@@ -45,9 +45,10 @@ typedef struct
   char rifftype[4];
 } WAVE_RIFFHEADER;
 
-CGUISound::CGUISound()
+CGUISound::CGUISound(const std::string& strFile)
 {
-  m_soundBuffer=NULL;
+  m_strFile = strFile;
+  m_soundBuffer = NULL;
 }
 
 CGUISound::~CGUISound()
@@ -56,12 +57,12 @@ CGUISound::~CGUISound()
 }
 
 // \brief Loads a wav file by filename
-bool CGUISound::Load(const std::string& strFile)
+bool CGUISound::Load()
 {
   LPBYTE pbData=NULL;
   WAVEFORMATEX wfx;
   int size=0;
-  if (!LoadWav(strFile, &wfx, &pbData, &size))
+  if (!LoadWav(m_strFile, &wfx, &pbData, &size))
     return false;
 
   bool bReady=(CreateBuffer(&wfx, size) && FillBuffer(pbData, size));
@@ -72,6 +73,13 @@ bool CGUISound::Load(const std::string& strFile)
   delete[] pbData;
 
   return bReady;
+}
+
+bool CGUISound::LoadOnDemand()
+{
+  if (m_soundBuffer == NULL)
+    return Load();
+  return true;
 }
 
 // \brief Starts playback of the sound

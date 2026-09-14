@@ -224,6 +224,7 @@ public:
   static const char* SETTING_VIDEOSCREEN_HD480p;
   static const char* SETTING_VIDEOSCREEN_HD720p;
   static const char* SETTING_VIDEOSCREEN_HD1080i;
+  static const char* SETTING_AUDIOOUTPUT_GUISOUNDVOLUME;
   static const char* SETTING_AUDIOOUTPUT_PASSTHROUGH;
   static const char* SETTING_AUDIOOUTPUT_AACPASSTHROUGH;
   static const char* SETTING_AUDIOOUTPUT_AC3PASSTHROUGH;

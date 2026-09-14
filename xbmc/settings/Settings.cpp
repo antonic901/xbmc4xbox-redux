@@ -246,6 +246,7 @@ const char* CSettings::SETTING_VIDEOSCREEN_ASPECT = "videooutput.aspect";
 const char* CSettings::SETTING_VIDEOSCREEN_HD480p = "videooutput.hd480p";
 const char* CSettings::SETTING_VIDEOSCREEN_HD720p = "videooutput.hd720p";
 const char* CSettings::SETTING_VIDEOSCREEN_HD1080i = "videooutput.hd1080i";
+const char* CSettings::SETTING_AUDIOOUTPUT_GUISOUNDVOLUME = "audiooutput.guisoundvolume";
 const char* CSettings::SETTING_AUDIOOUTPUT_PASSTHROUGH = "audiooutput.passthrough";
 const char* CSettings::SETTING_AUDIOOUTPUT_AACPASSTHROUGH = "audiooutput.aacpassthrough";
 const char* CSettings::SETTING_AUDIOOUTPUT_AC3PASSTHROUGH = "audiooutput.ac3passthrough";

@@ -1555,6 +1555,11 @@
         </setting>
       </group>
       <group id="2" label="15108">
+        <setting id="audiooutput.guisoundvolume" type="integer" label="13376" help="39176">
+          <level>1</level>
+          <default>100</default>
+          <control type="slider" format="percentage" range="0,100" />
+        </setting>
         <setting id="lookandfeel.soundskin" type="addon" label="24006" help="36110">
           <level>0</level>
           <default>resource.uisounds.kodi</default>

@@ -1582,7 +1582,7 @@ bool CApplication::Stop(int exitCode)
 
     CGUIComponent *gui = CServiceBroker::GetGUI();
     if (gui)
-      gui->GetAudioManager().DeInitialize(1);
+      gui->GetAudioManager().DeInitialize();
 
     GetComponent<CApplicationXbox>()->StopServices();
 
