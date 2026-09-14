@@ -330,6 +330,7 @@
             <options>
               <option label="716">1</option> <!-- NETWORK_DHCP -->
               <option label="717">2</option> <!-- NETWORK_STATIC -->
+              <option label="38904">3</option> <!-- NETWORK_INSIGNIA -->
               <option label="38694">0</option> <!-- NETWORK_DASH -->
             </options>
           </constraints>
