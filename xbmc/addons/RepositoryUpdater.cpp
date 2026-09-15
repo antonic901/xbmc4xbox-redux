@@ -38,12 +38,11 @@
 namespace ADDON
 {
 
-CRepositoryUpdater::CRepositoryUpdater() :
-  m_timer(this),
-  m_doneEvent(true)
-{}
+CRepositoryUpdater::CRepositoryUpdater() : m_timer(this), m_doneEvent(true)
+{
+}
 
-CRepositoryUpdater &CRepositoryUpdater::GetInstance()
+CRepositoryUpdater& CRepositoryUpdater::GetInstance()
 {
   static CRepositoryUpdater instance;
   return instance;
@@ -70,13 +69,13 @@ void CRepositoryUpdater::OnJobComplete(unsigned int jobID, bool success, CJob* j
       if (!updates.empty())
       {
         if (updates.size() == 1)
-          CGUIDialogKaiToast::QueueNotification(
-              updates[0]->Icon(), updates[0]->Name(), g_localizeStrings.Get(24068),
-              TOAST_DISPLAY_TIME, false, TOAST_DISPLAY_TIME);
+          CGUIDialogKaiToast::QueueNotification(updates[0]->Icon(), updates[0]->Name(),
+                                                g_localizeStrings.Get(24068), TOAST_DISPLAY_TIME,
+                                                false, TOAST_DISPLAY_TIME);
         else
-          CGUIDialogKaiToast::QueueNotification(
-              "", g_localizeStrings.Get(24001), g_localizeStrings.Get(24061),
-              TOAST_DISPLAY_TIME, false, TOAST_DISPLAY_TIME);
+          CGUIDialogKaiToast::QueueNotification("", g_localizeStrings.Get(24001),
+                                                g_localizeStrings.Get(24061), TOAST_DISPLAY_TIME,
+                                                false, TOAST_DISPLAY_TIME);
       }
     }
 
@@ -108,7 +107,8 @@ bool CRepositoryUpdater::CheckForUpdates(bool showProgress)
 
 static void SetProgressIndicator(CRepositoryUpdateJob* job)
 {
-  CGUIDialogExtendedProgressBar *dialog = static_cast<CGUIDialogExtendedProgressBar*>(g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS));
+  CGUIDialogExtendedProgressBar* dialog = static_cast<CGUIDialogExtendedProgressBar*>(
+      g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS));
   if (dialog)
     job->SetProgressIndicators(dialog->GetHandle(g_localizeStrings.Get(24092)), nullptr);
 }
@@ -121,13 +121,12 @@ bool CompareJobWithRepo(const ADDON::CRepositoryUpdateJob* job, const ADDON::Rep
 void CRepositoryUpdater::CheckForUpdates(const ADDON::RepositoryPtr& repo, bool showProgress)
 {
   CSingleLock lock(m_criticalSection);
-  std::vector<ADDON::CRepositoryUpdateJob *>::iterator job = std::find_if(m_jobs.begin(), m_jobs.end(),
-      boost::bind(CompareJobWithRepo, _1, boost::cref(repo))
-  );
+  std::vector<ADDON::CRepositoryUpdateJob*>::iterator job = std::find_if(
+      m_jobs.begin(), m_jobs.end(), boost::bind(CompareJobWithRepo, _1, boost::cref(repo)));
 
   if (job == m_jobs.end())
   {
-    ADDON::CRepositoryUpdateJob *job = new CRepositoryUpdateJob(repo);
+    ADDON::CRepositoryUpdateJob* job = new CRepositoryUpdateJob(repo);
     m_jobs.push_back(job);
     m_doneEvent.Reset();
     if (showProgress)
@@ -152,12 +151,12 @@ void CRepositoryUpdater::OnTimeout()
   if (g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO ||
       g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW)
   {
-    CLog::Log(LOGDEBUG,"CRepositoryUpdater: busy playing. postponing scheduled update");
+    CLog::Log(LOGDEBUG, "CRepositoryUpdater: busy playing. postponing scheduled update");
     m_timer.RestartAsync(2 * 60 * 1000);
     return;
   }
 
-  CLog::Log(LOGDEBUG,"CRepositoryUpdater: running scheduled update");
+  CLog::Log(LOGDEBUG, "CRepositoryUpdater: running scheduled update");
   CheckForUpdates();
 }
 
@@ -185,8 +184,7 @@ CDateTime CRepositoryUpdater::LastUpdated() const
   db.Open();
   std::vector<CDateTime> updateTimes;
   std::transform(repos.begin(), repos.end(), std::back_inserter(updateTimes),
-    boost::bind(TransformRepo, _1, boost::ref(db))
-  );
+                 boost::bind(TransformRepo, _1, boost::ref(db)));
 
   return *std::min_element(updateTimes.begin(), updateTimes.end());
 }
@@ -208,10 +206,10 @@ void CRepositoryUpdater::ScheduleUpdate()
   CDateTime next = std::max(CDateTime::GetCurrentDateTime(), prev + interval);
   int delta = std::max(1, (next - CDateTime::GetCurrentDateTime()).GetSecondsTotal() * 1000);
 
-  CLog::Log(LOGDEBUG,"CRepositoryUpdater: previous update at %s, next at %s",
-      prev.GetAsLocalizedDateTime().c_str(), next.GetAsLocalizedDateTime().c_str());
+  CLog::Log(LOGDEBUG, "CRepositoryUpdater: previous update at %s, next at %s",
+            prev.GetAsLocalizedDateTime().c_str(), next.GetAsLocalizedDateTime().c_str());
 
   if (!m_timer.Start(delta))
-    CLog::Log(LOGERROR,"CRepositoryUpdater: failed to start timer");
+    CLog::Log(LOGERROR, "CRepositoryUpdater: failed to start timer");
 }
-}
+} // namespace ADDON

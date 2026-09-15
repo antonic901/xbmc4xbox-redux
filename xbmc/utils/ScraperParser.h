@@ -28,7 +28,7 @@
 
 namespace ADDON
 {
-  class CScraper;
+class CScraper;
 }
 
 class TiXmlElement;
@@ -42,16 +42,14 @@ public:
   CScraperParser();
   CScraperParser(const CScraperParser& parser);
   ~CScraperParser();
-  CScraperParser& operator= (const CScraperParser& parser);
+  CScraperParser& operator=(const CScraperParser& parser);
   bool Load(const std::string& strXMLFile);
   bool IsNoop() const { return m_isNoop; };
 
   void Clear();
   const std::string& GetFilename() const { return m_strFile; }
-  std::string GetSearchStringEncoding() const
-    { return m_SearchStringEncoding; }
-  const std::string Parse(const std::string& strTag,
-                         ADDON::CScraper* scraper);
+  std::string GetSearchStringEncoding() const { return m_SearchStringEncoding; }
+  const std::string Parse(const std::string& strTag, ADDON::CScraper* scraper);
 
   void AddDocument(const CXBMCTinyXML* doc);
 
@@ -60,7 +58,10 @@ public:
 private:
   bool LoadFromXML();
   void ReplaceBuffers(std::string& strDest);
-  void ParseExpression(const std::string& input, std::string& dest, TiXmlElement* element, bool bAppend);
+  void ParseExpression(const std::string& input,
+                       std::string& dest,
+                       TiXmlElement* element,
+                       bool bAppend);
 
   /*! \brief Parse an 'XSLT' declaration from the scraper
    This allow us to transform an inbound XML document using XSLT
@@ -74,7 +75,7 @@ private:
   void ParseXSLT(const std::string& input, std::string& dest, TiXmlElement* element, bool bAppend);
   void ParseNext(TiXmlElement* element);
   void Clean(std::string& strDirty);
-  void ConvertJSON(std::string &string);
+  void ConvertJSON(std::string& string);
   void ClearBuffers();
   void GetBufferParams(bool* result, const char* attribute, bool defvalue);
   void InsertToken(std::string& strOutput, int buf, const char* token);
@@ -90,5 +91,3 @@ private:
 };
 
 #endif
-
-

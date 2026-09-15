@@ -38,15 +38,15 @@
 // our free type library (debug)
 #ifdef _XBOX
 #if defined(_DEBUG) && !defined(USE_RELEASE_LIBS)
-  #pragma comment (lib,"lib/freetype/libs/freetype2410_D.lib")
+#pragma comment(lib, "lib/freetype/libs/freetype2410_D.lib")
 #else
-  #pragma comment (lib,"lib/freetype/libs/freetype2410.lib")
+#pragma comment(lib, "lib/freetype/libs/freetype2410.lib")
 #endif
 #else
 #if defined(_DEBUG) && !defined(USE_RELEASE_LIBS)
-  #pragma comment (lib,"../../lib/freetype/libs/freetype2410_D.li")
+#pragma comment(lib, "../../lib/freetype/libs/freetype2410_D.li")
 #elif !defined(__GNUC__)
-  #pragma comment (lib,"../../lib/freetype/libs/freetype2410.lib")
+#pragma comment(lib, "../../lib/freetype/libs/freetype2410.lib")
 #endif
 #endif
 
@@ -65,21 +65,19 @@ using namespace std;
 #define TEXT_RENDER_LIMIT 1024
 
 #define CHARS_PER_TEXTURE_LINE 20 // number of characters to cache per texture line
-#define CHAR_CHUNK    64      // 64 chars allocated at a time (1024 bytes)
+#define CHAR_CHUNK 64 // 64 chars allocated at a time (1024 bytes)
 
-int CGUIFontTTF::justification_word_weight = 6;   // weight of word spacing over letter spacing when justifying.
-                                                  // A larger number means more of the "dead space" is placed between
-                                                  // words rather than between letters.
+int CGUIFontTTF::justification_word_weight =
+    6; // weight of word spacing over letter spacing when justifying.
+// A larger number means more of the "dead space" is placed between
+// words rather than between letters.
 
-unsigned int CGUIFontTTF::max_texture_size = 4096;         // max texture size - 4096 for xbox
+unsigned int CGUIFontTTF::max_texture_size = 4096; // max texture size - 4096 for xbox
 
 class CFreeTypeLibrary
 {
 public:
-  CFreeTypeLibrary()
-  {
-    m_library = NULL;
-  }
+  CFreeTypeLibrary() { m_library = NULL; }
 
   virtual ~CFreeTypeLibrary()
   {
@@ -87,7 +85,7 @@ public:
       FT_Done_FreeType(m_library);
   }
 
-  FT_Face GetFont(const CStdString &filename, float size, float aspect)
+  FT_Face GetFont(const CStdString& filename, float size, float aspect)
   {
     // don't have it yet - create it
     if (!m_library)
@@ -101,7 +99,7 @@ public:
     FT_Face face;
 
     // ok, now load the font face
-    if (FT_New_Face( m_library, CSpecialProtocol::TranslatePath(filename).c_str(), 0, &face ))
+    if (FT_New_Face(m_library, CSpecialProtocol::TranslatePath(filename).c_str(), 0, &face))
       return NULL;
 
     unsigned int ydpi = 72; // 72 points to the inch is the freetype default
@@ -111,7 +109,7 @@ public:
     // we cache our characters (for rendering speed) so it's probably
     // not a good idea to allow free scaling of fonts - rather, just
     // scaling to pixel ratio on screen perhaps?
-    if (FT_Set_Char_Size( face, 0, (int)(size*64 + 0.5f), xdpi, ydpi ))
+    if (FT_Set_Char_Size(face, 0, (int)(size * 64 + 0.5f), xdpi, ydpi))
     {
       FT_Done_Face(face);
       return NULL;
@@ -119,7 +117,7 @@ public:
 
     return face;
   };
-  
+
   FT_Stroker GetStroker()
   {
     if (!m_library)
@@ -137,7 +135,7 @@ public:
     assert(face);
     FT_Done_Face(face);
   };
-  
+
   void ReleaseStroker(FT_Stroker stroker)
   {
     assert(stroker);
@@ -145,7 +143,7 @@ public:
   }
 
 private:
-  FT_Library   m_library;
+  FT_Library m_library;
 };
 
 CFreeTypeLibrary g_freeTypeLibrary; // our freetype library
@@ -223,7 +221,8 @@ void CGUIFontTTF::Clear()
   m_stroker = NULL;
 }
 
-bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect, float lineSpacing, bool border)
+bool CGUIFontTTF::Load(
+    const CStdString& strFilename, float height, float aspect, float lineSpacing, bool border)
 {
   // create our character texture + font shader
   m_pD3DDevice = g_graphicsContext.Get3DDevice();
@@ -251,7 +250,7 @@ bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect
      m_cellHeight  _ _ _ _ _ p _ _ _ _ _ _/_ _ _ _ _  bbox.yMin, descender
    */
   int cellDescender = std::min<int>(m_face->bbox.yMin, m_face->descender);
-  int cellAscender  = std::max<int>(m_face->bbox.yMax, m_face->ascender);
+  int cellAscender = std::max<int>(m_face->bbox.yMax, m_face->ascender);
 
   if (border)
   {
@@ -259,12 +258,12 @@ bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect
      add on the strength of any border - the non-bordered font needs
      aligning with the bordered font by utilising GetTextBaseLine()
      */
-    FT_Pos strength = FT_MulFix( m_face->units_per_EM, m_face->size->metrics.y_scale) / 12;
+    FT_Pos strength = FT_MulFix(m_face->units_per_EM, m_face->size->metrics.y_scale) / 12;
     if (strength < 128)
       strength = 128;
 
     cellDescender -= strength;
-    cellAscender  += strength;
+    cellAscender += strength;
 
     m_stroker = g_freeTypeLibrary.GetStroker();
     if (m_stroker)
@@ -272,12 +271,12 @@ bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect
   }
 
   // scale to pixel sizing, rounding so that maximal extent is obtained
-  float scaler  = height / m_face->units_per_EM;
-  cellDescender = MathUtils::round_int(cellDescender * scaler - 0.5f);   // round down
-  cellAscender  = MathUtils::round_int(cellAscender  * scaler + 0.5f);   // round up
+  float scaler = height / m_face->units_per_EM;
+  cellDescender = MathUtils::round_int(cellDescender * scaler - 0.5f); // round down
+  cellAscender = MathUtils::round_int(cellAscender * scaler + 0.5f); // round up
 
   m_cellBaseLine = cellAscender;
-  m_cellHeight   = cellAscender - cellDescender;
+  m_cellHeight = cellAscender - cellDescender;
 
   m_height = height;
 
@@ -295,20 +294,28 @@ bool CGUIFontTTF::Load(const CStdString& strFilename, float height, float aspect
 
   m_textureHeight = 0;
   m_textureWidth = ((m_cellHeight * CHARS_PER_TEXTURE_LINE) & ~63) + 64;
-  if (m_textureWidth > max_texture_size) m_textureWidth = max_texture_size;
+  if (m_textureWidth > max_texture_size)
+    m_textureWidth = max_texture_size;
 
   // set the posX and posY so that our texture will be created on first character write.
   m_posX = m_textureWidth;
   m_posY = -(int)GetTextureLineHeight();
 
   // cache the ellipses width
-  Character *ellipse = GetCharacter(L'.');
-  if (ellipse) m_ellipsesWidth = ellipse->advance;
+  Character* ellipse = GetCharacter(L'.');
+  if (ellipse)
+    m_ellipsesWidth = ellipse->advance;
 
   return true;
 }
 
-void CGUIFontTTF::DrawTextInternal(float x, float y, const vecColors &colors, const vecText &text, uint32_t alignment, float maxPixelWidth, bool scrolling)
+void CGUIFontTTF::DrawTextInternal(float x,
+                                   float y,
+                                   const vecColors& colors,
+                                   const vecText& text,
+                                   uint32_t alignment,
+                                   float maxPixelWidth,
+                                   bool scrolling)
 {
   if (text.empty())
   {
@@ -322,44 +329,44 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const vecColors &colors, co
   m_originY = y;
 
   // Check if we will really need to truncate or justify the text
-  if ( alignment & XBFONT_TRUNCATED )
+  if (alignment & XBFONT_TRUNCATED)
   {
-    if ( maxPixelWidth <= 0.0f || GetTextWidthInternal(text.begin(), text.end()) <= maxPixelWidth)
+    if (maxPixelWidth <= 0.0f || GetTextWidthInternal(text.begin(), text.end()) <= maxPixelWidth)
       alignment &= ~XBFONT_TRUNCATED;
   }
-  else if ( alignment & XBFONT_JUSTIFIED )
+  else if (alignment & XBFONT_JUSTIFIED)
   {
-    if ( maxPixelWidth <= 0.0f )
+    if (maxPixelWidth <= 0.0f)
       alignment &= ~XBFONT_JUSTIFIED;
   }
 
   // calculate sizing information
   float startX = 0;
-  float startY = (alignment & XBFONT_CENTER_Y) ? -0.5f*m_cellHeight : 0;  // vertical centering
+  float startY = (alignment & XBFONT_CENTER_Y) ? -0.5f * m_cellHeight : 0; // vertical centering
 
-  if ( alignment & (XBFONT_RIGHT | XBFONT_CENTER_X) )
+  if (alignment & (XBFONT_RIGHT | XBFONT_CENTER_X))
   {
     // Get the extent of this line
-    float w = GetTextWidthInternal( text.begin(), text.end() );
+    float w = GetTextWidthInternal(text.begin(), text.end());
 
-    if ( alignment & XBFONT_TRUNCATED && w > maxPixelWidth + 0.5f ) // + 0.5f due to rounding issues
+    if (alignment & XBFONT_TRUNCATED && w > maxPixelWidth + 0.5f) // + 0.5f due to rounding issues
       w = maxPixelWidth;
 
-    if ( alignment & XBFONT_CENTER_X)
+    if (alignment & XBFONT_CENTER_X)
       w *= 0.5f;
     // Offset this line's starting position
     startX -= w;
   }
 
   float spacePerLetter = 0; // for justification effects
-  if ( alignment & XBFONT_JUSTIFIED )
+  if (alignment & XBFONT_JUSTIFIED)
   {
     // first compute the size of the text to render in both characters and pixels
     unsigned int lineChars = 0;
     float linePixels = 0;
     for (vecText::const_iterator pos = text.begin(); pos != text.end(); pos++)
     {
-      Character *ch = GetCharacter(*pos);
+      Character* ch = GetCharacter(*pos);
       if (ch)
       { // spaces have multiple times the justification spacing of normal letters
         lineChars += ((*pos & 0xffff) == L' ') ? justification_word_weight : 1;
@@ -379,17 +386,18 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const vecColors &colors, co
     GetCharacter(L'.');
   for (vecText::const_iterator pos = text.begin(); pos != text.end(); ++pos)
   {
-    Character *ch = GetCharacter(*pos);
+    Character* ch = GetCharacter(*pos);
     if (!ch)
     {
-      Character null = { 0 };
+      Character null = {0};
       characters.push(null);
       continue;
     }
     characters.push(*ch);
 
     if (maxPixelWidth > 0 &&
-        cursorX + (alignment & XBFONT_TRUNCATED ? ch->advance + 3 * m_ellipsesWidth : 0) > maxPixelWidth)
+        cursorX + (alignment & XBFONT_TRUNCATED ? ch->advance + 3 * m_ellipsesWidth : 0) >
+            maxPixelWidth)
       break;
     cursorX += ch->advance;
   }
@@ -405,21 +413,21 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const vecColors &colors, co
     color = colors[color];
 
     // grab the next character
-    Character *ch = &characters.front();
+    Character* ch = &characters.front();
     if (ch->letterAndStyle == 0)
     {
       characters.pop();
       continue;
     }
 
-    if ( alignment & XBFONT_TRUNCATED )
+    if (alignment & XBFONT_TRUNCATED)
     {
       // Check if we will be exceeded the max allowed width
-      if ( cursorX + ch->advance + 3 * m_ellipsesWidth > maxPixelWidth )
+      if (cursorX + ch->advance + 3 * m_ellipsesWidth > maxPixelWidth)
       {
         // Yup. Let's draw the ellipses, then bail
         // Perhaps we should really bail to the next line in this case??
-        Character *period = GetCharacter(L'.');
+        Character* period = GetCharacter(L'.');
         if (!period)
           break;
 
@@ -432,10 +440,10 @@ void CGUIFontTTF::DrawTextInternal(float x, float y, const vecColors &colors, co
       }
     }
     else if (maxPixelWidth > 0 && cursorX > maxPixelWidth)
-      break;  // exceeded max allowed width - stop rendering
+      break; // exceeded max allowed width - stop rendering
 
     RenderCharacter(startX + cursorX, startY, ch, color, !scrolling);
-    if ( alignment & XBFONT_JUSTIFIED )
+    if (alignment & XBFONT_JUSTIFIED)
     {
       if ((*pos & 0xffff) == L' ')
         cursorX += ch->advance + spacePerLetter * justification_word_weight;
@@ -456,16 +464,18 @@ float CGUIFontTTF::GetTextWidthInternal(vecText::const_iterator start, vecText::
   float width = 0;
   while (start != end)
   {
-    Character *c = GetCharacter(*start++);
-    if (c) width += c->advance;
+    Character* c = GetCharacter(*start++);
+    if (c)
+      width += c->advance;
   }
   return width;
 }
 
 float CGUIFontTTF::GetCharWidthInternal(character_t ch)
 {
-  Character *c = GetCharacter(ch);
-  if (c) return c->advance;
+  Character* c = GetCharacter(ch);
+  if (c)
+    return c->advance;
   return 0;
 }
 
@@ -526,7 +536,7 @@ CGUIFontTTF::Character* CGUIFontTTF::GetCharacter(character_t chr)
   // increase the size of the buffer if we need it
   if (m_numChars >= m_maxChars)
   { // need to increase the size of the buffer
-    Character *newTable = new Character[m_maxChars + CHAR_CHUNK];
+    Character* newTable = new Character[m_maxChars + CHAR_CHUNK];
     if (m_char)
     {
       memcpy(newTable, m_char, low * sizeof(Character));
@@ -535,7 +545,6 @@ CGUIFontTTF::Character* CGUIFontTTF::GetCharacter(character_t chr)
     }
     m_char = newTable;
     m_maxChars += CHAR_CHUNK;
-
   }
   else
   { // just move the data along as necessary
@@ -545,43 +554,50 @@ CGUIFontTTF::Character* CGUIFontTTF::GetCharacter(character_t chr)
   // must End() as we can't render text to our texture during a Begin(), End() block
   unsigned int nestedBeginCount = m_nestedBeginCount;
   m_nestedBeginCount = 1;
-  if (nestedBeginCount) End();
+  if (nestedBeginCount)
+    End();
   if (!CacheCharacter(letter, style, m_char + low))
   { // unable to cache character - try clearing them all out and starting over
-    CLog::Log(LOGDEBUG, "GUIFontTTF::GetCharacter: Unable to cache character.  Clearing character cache of %i characters", m_numChars);
+    CLog::Log(LOGDEBUG,
+              "GUIFontTTF::GetCharacter: Unable to cache character.  Clearing character cache of "
+              "%i characters",
+              m_numChars);
     ClearCharacterCache();
     low = 0;
     if (!CacheCharacter(letter, style, m_char + low))
     {
       CLog::Log(LOGERROR, "GUIFontTTF::GetCharacter: Unable to cache character (out of memory?)");
-      if (nestedBeginCount) Begin();
+      if (nestedBeginCount)
+        Begin();
       m_nestedBeginCount = nestedBeginCount;
       return NULL;
     }
   }
-  if (nestedBeginCount) Begin();
+  if (nestedBeginCount)
+    Begin();
   m_nestedBeginCount = nestedBeginCount;
 
   // fixup quick access
   memset(m_charquick, 0, sizeof(m_charquick));
-  for(int i=0;i<m_numChars;i++)
+  for (int i = 0; i < m_numChars; i++)
   {
     if ((m_char[i].letterAndStyle & 0xffff) < 255)
     {
-      character_t ch = ((m_char[i].letterAndStyle & 0xffff0000) >> 8) | (m_char[i].letterAndStyle & 0xff);
-      m_charquick[ch] = m_char+i;
+      character_t ch =
+          ((m_char[i].letterAndStyle & 0xffff0000) >> 8) | (m_char[i].letterAndStyle & 0xff);
+      m_charquick[ch] = m_char + i;
     }
   }
 
   return m_char + low;
 }
 
-bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character *ch)
+bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character* ch)
 {
-  int glyph_index = FT_Get_Char_Index( m_face, letter );
+  int glyph_index = FT_Get_Char_Index(m_face, letter);
 
   FT_Glyph glyph = NULL;
-  if (FT_Load_Glyph( m_face, glyph_index, FT_LOAD_TARGET_LIGHT ))
+  if (FT_Load_Glyph(m_face, glyph_index, FT_LOAD_TARGET_LIGHT))
   {
     CLog::Log(LOGDEBUG, "%s Failed to load glyph %x", __FUNCTION__, letter);
     return false;
@@ -622,7 +638,7 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character *ch)
     if (bitGlyph->left < 0)
       m_posX += -bitGlyph->left;
 
-    if(m_posY + GetTextureLineHeight() >= m_textureHeight)
+    if (m_posY + GetTextureLineHeight() >= m_textureHeight)
     {
       // create the new larger texture
       unsigned int newHeight = m_posY + GetTextureLineHeight();
@@ -630,15 +646,23 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character *ch)
       // check for max height (can't be more than max_texture_size texels
       if (newHeight > max_texture_size)
       {
-        CLog::Log(LOGDEBUG, "GUIFontTTF::CacheCharacter: New cache texture is too large (%u > %u pixels long)", newHeight, max_texture_size);
+        CLog::Log(
+            LOGDEBUG,
+            "GUIFontTTF::CacheCharacter: New cache texture is too large (%u > %u pixels long)",
+            newHeight, max_texture_size);
         FT_Done_Glyph(glyph);
         return false;
       }
-      if (D3D_OK != D3DXCreateTexture(m_pD3DDevice, m_textureWidth, newHeight, 1, 0, D3DFMT_LIN_A8, D3DPOOL_MANAGED, &newTexture))
+      if (D3D_OK != D3DXCreateTexture(m_pD3DDevice, m_textureWidth, newHeight, 1, 0, D3DFMT_LIN_A8,
+                                      D3DPOOL_MANAGED, &newTexture))
       {
-        CLog::Log(LOGDEBUG, "GUIFontTTF::CacheCharacter: Error creating new cache texture for size %f", m_height);
+        CLog::Log(LOGDEBUG,
+                  "GUIFontTTF::CacheCharacter: Error creating new cache texture for size %f",
+                  m_height);
         FT_Done_Glyph(glyph);
-        CLog::Log(LOGDEBUG, "GUIFontTTF::CacheCharacter: Failed to allocate new texture of height %u", newHeight);
+        CLog::Log(LOGDEBUG,
+                  "GUIFontTTF::CacheCharacter: Failed to allocate new texture of height %u",
+                  newHeight);
         return false;
       }
       // correct texture sizes
@@ -669,7 +693,7 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character *ch)
     }
   }
 
-  if(m_texture == NULL)
+  if (m_texture == NULL)
   {
     CLog::Log(LOGDEBUG, "GUIFontTTF::CacheCharacter: no texture to cache character to");
     return false;
@@ -683,7 +707,7 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character *ch)
   ch->top = (float)m_posY + ch->offsetY;
   ch->right = ch->left + bitmap.width;
   ch->bottom = ch->top + bitmap.rows;
-  ch->advance = ROUND( (float)m_face->glyph->advance.x / 64 );
+  ch->advance = ROUND((float)m_face->glyph->advance.x / 64);
 
   // we need only render if we actually have some pixels
   if (bitmap.width * bitmap.rows)
@@ -698,16 +722,16 @@ bool CGUIFontTTF::CacheCharacter(wchar_t letter, uint32_t style, Character *ch)
     LPDIRECT3DSURFACE8 target;
     m_texture->GetSurfaceLevel(0, &target);
 
-    RECT sourcerect = { 0, 0, bitmap.width, bitmap.rows };
-    RECT targetrect = { x1, y1, x2, y2 };
+    RECT sourcerect = {0, 0, bitmap.width, bitmap.rows};
+    RECT targetrect = {x1, y1, x2, y2};
 
-    D3DXLoadSurfaceFromMemory( target, NULL, &targetrect,
-      bitmap.buffer, D3DFMT_LIN_A8, bitmap.pitch, NULL, &sourcerect,
-      D3DX_FILTER_NONE, 0x00000000);
+    D3DXLoadSurfaceFromMemory(target, NULL, &targetrect, bitmap.buffer, D3DFMT_LIN_A8, bitmap.pitch,
+                              NULL, &sourcerect, D3DX_FILTER_NONE, 0x00000000);
 
     SAFE_RELEASE(target);
   }
-  m_posX += spacing_between_characters_in_texture + (unsigned short)max(ch->right - ch->left + ch->offsetX, ch->advance);
+  m_posX += spacing_between_characters_in_texture +
+            (unsigned short)max(ch->right - ch->left + ch->offsetX, ch->advance);
   m_numChars++;
 
   // free the glyph
@@ -721,29 +745,29 @@ void CGUIFontTTF::Begin()
   if (m_nestedBeginCount == 0)
   {
     // just have to blit from our texture.
-    m_pD3DDevice->SetTexture( 0, m_texture );
+    m_pD3DDevice->SetTexture(0, m_texture);
 
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP );
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP );
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR );
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_MINFILTER, D3DTEXF_LINEAR );
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_SELECTARG1 ); // only use diffuse
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
-    m_pD3DDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_MAGFILTER, D3DTEXF_LINEAR);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_MINFILTER, D3DTEXF_LINEAR);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1); // only use diffuse
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+    m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
 
     // no other texture stages needed
-    m_pD3DDevice->SetTextureStageState( 1, D3DTSS_COLOROP, D3DTOP_DISABLE);
+    m_pD3DDevice->SetTextureStageState(1, D3DTSS_COLOROP, D3DTOP_DISABLE);
 
-    m_pD3DDevice->SetRenderState( D3DRS_ZENABLE, FALSE );
-    m_pD3DDevice->SetRenderState( D3DRS_FOGENABLE, FALSE );
-    m_pD3DDevice->SetRenderState( D3DRS_FILLMODE, D3DFILL_SOLID );
-    m_pD3DDevice->SetRenderState( D3DRS_CULLMODE, D3DCULL_NONE );
-    m_pD3DDevice->SetRenderState( D3DRS_ALPHABLENDENABLE, TRUE );
-    m_pD3DDevice->SetRenderState( D3DRS_SRCBLEND, D3DBLEND_SRCALPHA );
-    m_pD3DDevice->SetRenderState( D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA );
-    m_pD3DDevice->SetRenderState( D3DRS_LIGHTING, FALSE);
+    m_pD3DDevice->SetRenderState(D3DRS_ZENABLE, FALSE);
+    m_pD3DDevice->SetRenderState(D3DRS_FOGENABLE, FALSE);
+    m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, D3DFILL_SOLID);
+    m_pD3DDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+    m_pD3DDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
+    m_pD3DDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+    m_pD3DDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+    m_pD3DDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
     m_pD3DDevice->SetVertexShader(D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1);
 
@@ -770,12 +794,13 @@ void CGUIFontTTF::End()
   m_pD3DDevice->SetScreenSpaceOffset(0, 0);
 #endif
   m_pD3DDevice->SetTexture(0, NULL);
-  m_pD3DDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
+  m_pD3DDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 
   m_numCharactersRendered = 0;
 }
 
-void CGUIFontTTF::RenderCharacter(float posX, float posY, const Character *ch, D3DCOLOR dwColor, bool roundX)
+void CGUIFontTTF::RenderCharacter(
+    float posX, float posY, const Character* ch, D3DCOLOR dwColor, bool roundX)
 {
   // actual image width isn't same as the character width as that is
   // just baseline width and height should include the descent
@@ -842,22 +867,23 @@ void CGUIFontTTF::RenderCharacter(float posX, float posY, const Character *ch, D
     m_pD3DDevice->Begin(D3DPT_QUADLIST);
     m_numCharactersRendered = 1;
   }
-  m_pD3DDevice->SetVertexDataColor( D3DVSDE_DIFFUSE, dwColor);
+  m_pD3DDevice->SetVertexDataColor(D3DVSDE_DIFFUSE, dwColor);
 
-  m_pD3DDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, texture.x1, texture.y1);
-  m_pD3DDevice->SetVertexData4f( D3DVSDE_VERTEX, x[0], y1, z1, 1);
-  m_pD3DDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, texture.x2, texture.y1);
-  m_pD3DDevice->SetVertexData4f( D3DVSDE_VERTEX, x[1], y2, z2, 1);
-  m_pD3DDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, texture.x2, texture.y2);
-  m_pD3DDevice->SetVertexData4f( D3DVSDE_VERTEX, x[2], y3, z3, 1);
-  m_pD3DDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, texture.x1, texture.y2);
-  m_pD3DDevice->SetVertexData4f( D3DVSDE_VERTEX, x[3], y4, z4, 1);
+  m_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, texture.x1, texture.y1);
+  m_pD3DDevice->SetVertexData4f(D3DVSDE_VERTEX, x[0], y1, z1, 1);
+  m_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, texture.x2, texture.y1);
+  m_pD3DDevice->SetVertexData4f(D3DVSDE_VERTEX, x[1], y2, z2, 1);
+  m_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, texture.x2, texture.y2);
+  m_pD3DDevice->SetVertexData4f(D3DVSDE_VERTEX, x[2], y3, z3, 1);
+  m_pD3DDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, texture.x1, texture.y2);
+  m_pD3DDevice->SetVertexData4f(D3DVSDE_VERTEX, x[3], y4, z4, 1);
 
 #else
-struct CUSTOMVERTEX {
-      FLOAT x, y, z;
-      DWORD color;
-      FLOAT tu, tv;   // Texture coordinates
+  struct CUSTOMVERTEX
+  {
+    FLOAT x, y, z;
+    DWORD color;
+    FLOAT tu, tv; // Texture coordinates
   };
 
   // tex coords converted to 0..1 range
@@ -866,12 +892,10 @@ struct CUSTOMVERTEX {
   float tt = texture.y1 / m_textureHeight;
   float tb = texture.y2 / m_textureHeight;
 
-  CUSTOMVERTEX verts[4] =  {
-    { x[0], y1, z1, dwColor, tl, tt},
-    { x[1], y2, z2, dwColor, tr, tt},
-    { x[2], y3, z3, dwColor, tr, tb},
-    { x[3], y4, z4, dwColor, tl, tb}
-  };
+  CUSTOMVERTEX verts[4] = {{x[0], y1, z1, dwColor, tl, tt},
+                           {x[1], y2, z2, dwColor, tr, tt},
+                           {x[2], y3, z3, dwColor, tr, tb},
+                           {x[3], y4, z4, dwColor, tl, tb}};
 
   m_pD3DDevice->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, verts, sizeof(CUSTOMVERTEX));
 #endif
@@ -881,7 +905,7 @@ struct CUSTOMVERTEX {
 void CGUIFontTTF::ObliqueGlyph(FT_GlyphSlot slot)
 {
   /* only oblique outline glyphs */
-  if ( slot->format != FT_GLYPH_FORMAT_OUTLINE )
+  if (slot->format != FT_GLYPH_FORMAT_OUTLINE)
     return;
 
   /* we don't touch the advance width */
@@ -889,63 +913,60 @@ void CGUIFontTTF::ObliqueGlyph(FT_GlyphSlot slot)
   /* For italic, simply apply a shear transform, with an angle */
   /* of about 12 degrees.                                      */
 
-  FT_Matrix    transform;
+  FT_Matrix transform;
   transform.xx = 0x10000L;
   transform.yx = 0x00000L;
 
   transform.xy = 0x06000L;
   transform.yy = 0x10000L;
 
-  FT_Outline_Transform( &slot->outline, &transform );
+  FT_Outline_Transform(&slot->outline, &transform);
 }
-
 
 // Embolden code - original taken from freetype2 (ftsynth.c)
 void CGUIFontTTF::EmboldenGlyph(FT_GlyphSlot slot)
 {
-  if ( slot->format != FT_GLYPH_FORMAT_OUTLINE )
+  if (slot->format != FT_GLYPH_FORMAT_OUTLINE)
     return;
 
   /* some reasonable strength */
-  FT_Pos strength = FT_MulFix( m_face->units_per_EM,
-                    m_face->size->metrics.y_scale ) / 24;
+  FT_Pos strength = FT_MulFix(m_face->units_per_EM, m_face->size->metrics.y_scale) / 24;
 
   FT_BBox bbox_before, bbox_after;
-  FT_Outline_Get_CBox( &slot->outline, &bbox_before );
-  FT_Outline_Embolden( &slot->outline, strength );  // ignore error
-  FT_Outline_Get_CBox( &slot->outline, &bbox_after );
+  FT_Outline_Get_CBox(&slot->outline, &bbox_before);
+  FT_Outline_Embolden(&slot->outline, strength); // ignore error
+  FT_Outline_Get_CBox(&slot->outline, &bbox_after);
 
   FT_Pos dx = bbox_after.xMax - bbox_before.xMax;
   FT_Pos dy = bbox_after.yMax - bbox_before.yMax;
 
-  if ( slot->advance.x )
+  if (slot->advance.x)
     slot->advance.x += dx;
 
-  if ( slot->advance.y )
+  if (slot->advance.y)
     slot->advance.y += dy;
 
-  slot->metrics.width        += dx;
-  slot->metrics.height       += dy;
+  slot->metrics.width += dx;
+  slot->metrics.height += dy;
   slot->metrics.horiBearingY += dy;
-  slot->metrics.horiAdvance  += dx;
+  slot->metrics.horiAdvance += dx;
   slot->metrics.vertBearingX -= dx / 2;
   slot->metrics.vertBearingY += dy;
-  slot->metrics.vertAdvance  += dy;
+  slot->metrics.vertAdvance += dy;
 }
 
-// Lighten code - original taken from freetype2 (ftsynth.c)  
+// Lighten code - original taken from freetype2 (ftsynth.c)
 void CGUIFontTTF::LightenGlyph(FT_GlyphSlot slot)
 {
   if (slot->format != FT_GLYPH_FORMAT_OUTLINE)
     return;
 
   /* some reasonable strength */
-  FT_Pos strength = FT_MulFix(m_face->units_per_EM,
-                              m_face->size->metrics.y_scale) / -48;
+  FT_Pos strength = FT_MulFix(m_face->units_per_EM, m_face->size->metrics.y_scale) / -48;
 
   FT_BBox bbox_before, bbox_after;
   FT_Outline_Get_CBox(&slot->outline, &bbox_before);
-  FT_Outline_Embolden(&slot->outline, strength);  // ignore error  
+  FT_Outline_Embolden(&slot->outline, strength); // ignore error
   FT_Outline_Get_CBox(&slot->outline, &bbox_after);
 
   FT_Pos dx = bbox_after.xMax - bbox_before.xMax;

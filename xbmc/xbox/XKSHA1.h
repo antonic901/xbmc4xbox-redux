@@ -70,20 +70,19 @@ Reason: Prepared for Public Release
 
 */
 #pragma once
-#if defined (_WINDOWS)
- #pragma message ("Compiling for WINDOWS: " __FILE__)
+#if defined(_WINDOWS)
+#pragma message("Compiling for WINDOWS: " __FILE__)
 // #include <afxwin.h>         // MFC core and standard components
-#elif defined (_XBOX)
- #pragma message ("Compiling for XBOX: " __FILE__)
- #include <xtl.h>
- #include <stdlib.h>
+#elif defined(_XBOX)
+#pragma message("Compiling for XBOX: " __FILE__)
+#include <xtl.h>
+#include <stdlib.h>
 #else
- #error ERR: Have to Define _WINDOWS or _XBOX !!
+#error ERR: Have to Define _WINDOWS or _XBOX !!
 #endif
 
 #define SHA1HashSize 20
-#define SHA1CircularShift(bits,word) \
-                (((word) << (bits)) | ((word) >> (32-(bits))))
+#define SHA1CircularShift(bits, word) (((word) << (bits)) | ((word) >> (32 - (bits))))
 
 class XKSHA1
 {
@@ -91,44 +90,48 @@ class XKSHA1
   {
     UINT32 Intermediate_Hash[SHA1HashSize / 4]; /* Message Digest  */
 
-    UINT32 Length_Low;   /* Message length in bits      */
-    UINT32 Length_High;   /* Message length in bits      */
+    UINT32 Length_Low; /* Message length in bits      */
+    UINT32 Length_High; /* Message length in bits      */
 
     DWORD Message_Block_Index; /* Index into message block array   */
-    UCHAR Message_Block[64];    /* 512-bit message blocks      */
+    UCHAR Message_Block[64]; /* 512-bit message blocks      */
 
-    int Computed;    /* Is the digest computed?         */
-    int Corrupted;    /* Is the message digest corrupted? */
+    int Computed; /* Is the digest computed?         */
+    int Corrupted; /* Is the message digest corrupted? */
   };
 
   enum
   {
     shaSuccess = 0,
-    shaNull,             /* Null pointer parameter */
-    shaInputTooLong,     /* input data too long */
-    shaStateError       /* called Input after Result */
+    shaNull, /* Null pointer parameter */
+    shaInputTooLong, /* input data too long */
+    shaStateError /* called Input after Result */
   };
 
 public:
   XKSHA1(void);
   ~XKSHA1(void);
 
-  void HMAC_SHA1(UCHAR* result, UCHAR* key, int key_length, UCHAR* text1, int text1_length, UCHAR* text2, int text2_length);
-  void quick_SHA1( UCHAR* SHA1_result, ... );
+  void HMAC_SHA1(UCHAR* result,
+                 UCHAR* key,
+                 int key_length,
+                 UCHAR* text1,
+                 int text1_length,
+                 UCHAR* text2,
+                 int text2_length);
+  void quick_SHA1(UCHAR* SHA1_result, ...);
 
   //Skip the Key used from eeprom.. Kudos franz@caos.at
-  void XBOX_HMAC_SHA1(int version, UCHAR* result, ... );
+  void XBOX_HMAC_SHA1(int version, UCHAR* result, ...);
 
 private:
   int SHA1Reset(SHA1Context*);
-  int SHA1Input(SHA1Context*, const UCHAR* , unsigned int);
+  int SHA1Input(SHA1Context*, const UCHAR*, unsigned int);
   int SHA1Result(SHA1Context*, UCHAR Message_Digest[SHA1HashSize]);
   void SHA1ProcessMessageBlock(SHA1Context* context);
   void SHA1PadMessage(SHA1Context* context);
 
   //Skip the Key used from eeprom.. Kudos franz@caos.at
-  int HMAC1Reset(int version, SHA1Context *context);
-  int HMAC2Reset(int version, SHA1Context *context);
-
+  int HMAC1Reset(int version, SHA1Context* context);
+  int HMAC2Reset(int version, SHA1Context* context);
 };
-

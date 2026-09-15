@@ -18,7 +18,6 @@
  *
  */
 
-
 #include "ISO9660Directory.h"
 #include "xbox/IoSupport.h"
 #include "iso9660.h"
@@ -30,12 +29,14 @@
 using namespace XFILE;
 
 CISO9660Directory::CISO9660Directory(void)
-{}
+{
+}
 
 CISO9660Directory::~CISO9660Directory(void)
-{}
+{
+}
 
-bool CISO9660Directory::GetDirectory(const CURL& url, CFileItemList &items)
+bool CISO9660Directory::GetDirectory(const CURL& url, CFileItemList& items)
 {
   CStdString strRoot = url.Get();
   URIUtils::AddSlashAtEnd(strRoot);
@@ -59,9 +60,10 @@ bool CISO9660Directory::GetDirectory(const CURL& url, CFileItemList &items)
   {
     strSearchMask = "\\";
   }
-  for (int i = 0; i < (int)strSearchMask.size(); ++i )
+  for (int i = 0; i < (int)strSearchMask.size(); ++i)
   {
-    if (strSearchMask[i] == '/') strSearchMask[i] = '\\';
+    if (strSearchMask[i] == '/')
+      strSearchMask[i] = '\\';
   }
 
   hFind = m_isoReader.FindFirstFile((char*)strSearchMask.c_str(), &wfd);
@@ -72,7 +74,7 @@ bool CISO9660Directory::GetDirectory(const CURL& url, CFileItemList &items)
   {
     if (wfd.cFileName[0] != 0)
     {
-      if ( (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) )
+      if ((wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
       {
         CStdString strDir = wfd.cFileName;
         if (strDir != "." && strDir != "..")
@@ -84,7 +86,7 @@ bool CISO9660Directory::GetDirectory(const CURL& url, CFileItemList &items)
           pItem->m_bIsFolder = true;
           FILETIME localTime;
           FileTimeToLocalFileTime(&wfd.ftLastWriteTime, &localTime);
-          pItem->m_dateTime=localTime;
+          pItem->m_dateTime = localTime;
           items.Add(pItem);
         }
       }
@@ -96,12 +98,11 @@ bool CISO9660Directory::GetDirectory(const CURL& url, CFileItemList &items)
         pItem->m_dwSize = CUtil::ToInt64(wfd.nFileSizeHigh, wfd.nFileSizeLow);
         FILETIME localTime;
         FileTimeToLocalFileTime(&wfd.ftLastWriteTime, &localTime);
-        pItem->m_dateTime=localTime;
+        pItem->m_dateTime = localTime;
         items.Add(pItem);
       }
     }
-  }
-  while (m_isoReader.FindNextFile(hFind, &wfd));
+  } while (m_isoReader.FindNextFile(hFind, &wfd));
   m_isoReader.FindClose(hFind);
 
   return true;
@@ -110,7 +111,7 @@ bool CISO9660Directory::GetDirectory(const CURL& url, CFileItemList &items)
 bool CISO9660Directory::Exists(const CURL& url)
 {
   CFileItemList items;
-  if (GetDirectory(url,items))
+  if (GetDirectory(url, items))
     return true;
 
   return false;

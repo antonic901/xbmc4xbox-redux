@@ -19,17 +19,17 @@
  *
  */
 
-
 #include "MusicFileDirectory.h"
 
 namespace XFILE
 {
-  class COGGFileDirectory : public CMusicFileDirectory
-  {
-    public:
-      COGGFileDirectory(void);
-      virtual ~COGGFileDirectory(void);
-    protected:
-      virtual int GetTrackCount(const std::string& strPath);
-  };
-}
+class COGGFileDirectory : public CMusicFileDirectory
+{
+public:
+  COGGFileDirectory(void);
+  virtual ~COGGFileDirectory(void);
+
+protected:
+  virtual int GetTrackCount(const std::string& strPath);
+};
+} // namespace XFILE

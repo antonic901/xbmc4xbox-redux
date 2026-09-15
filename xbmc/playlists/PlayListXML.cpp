@@ -62,24 +62,24 @@ using namespace XFILE;
 </streams>
 */
 
-
 CPlayListXML::CPlayListXML(void)
-{}
+{
+}
 
 CPlayListXML::~CPlayListXML(void)
-{}
+{
+}
 
-
-static inline std::string GetString( const TiXmlElement* pRootElement, const char *tagName )
+static inline std::string GetString(const TiXmlElement* pRootElement, const char* tagName)
 {
   std::string strValue;
-  if ( XMLUtils::GetString(pRootElement, tagName, strValue) )
+  if (XMLUtils::GetString(pRootElement, tagName, strValue))
     return strValue;
 
   return "";
 }
 
-bool CPlayListXML::Load( const std::string& strFileName )
+bool CPlayListXML::Load(const std::string& strFileName)
 {
   CXBMCTinyXML xmlDoc;
 
@@ -89,16 +89,16 @@ bool CPlayListXML::Load( const std::string& strFileName )
   Clear();
 
   // Try to load the file as XML. If it does not load, return an error.
-  if ( !xmlDoc.LoadFile( strFileName ) )
+  if (!xmlDoc.LoadFile(strFileName))
   {
     CLog::Log(LOGERROR, "Playlist %s has invalid format/malformed xml", strFileName.c_str());
     return false;
   }
 
-  TiXmlElement *pRootElement = xmlDoc.RootElement();
+  TiXmlElement* pRootElement = xmlDoc.RootElement();
 
   // If the stream does not contain "streams", still ok. Not an error.
-  if ( !pRootElement || stricmp( pRootElement->Value(), "streams" ) )
+  if (!pRootElement || stricmp(pRootElement->Value(), "streams"))
   {
     CLog::Log(LOGERROR, "Playlist %s has no <streams> root", strFileName.c_str());
     return false;
@@ -106,57 +106,58 @@ bool CPlayListXML::Load( const std::string& strFileName )
 
   TiXmlElement* pSet = pRootElement->FirstChildElement("stream");
 
-  while ( pSet )
+  while (pSet)
   {
     // Get parameters
-    std::string url = GetString( pSet, "url" );
-    std::string name = GetString( pSet, "name" );
-    std::string category = GetString( pSet, "category" );
-    std::string lang = GetString( pSet, "lang" );
-    std::string channel = GetString( pSet, "channel" );
-    std::string lockpass = GetString( pSet, "lockpassword" );
+    std::string url = GetString(pSet, "url");
+    std::string name = GetString(pSet, "name");
+    std::string category = GetString(pSet, "category");
+    std::string lang = GetString(pSet, "lang");
+    std::string channel = GetString(pSet, "channel");
+    std::string lockpass = GetString(pSet, "lockpassword");
 
     // If url is empty, it doesn't make any sense
-    if ( !url.empty() )
+    if (!url.empty())
     {
-       // If the name is empty, use url
-       if ( name.empty() )
-         name = url;
+      // If the name is empty, use url
+      if (name.empty())
+        name = url;
 
-       // Append language to the name, and also set as metadata
-       if ( !lang.empty() )
-         name += " [" + lang + "]";
+      // Append language to the name, and also set as metadata
+      if (!lang.empty())
+        name += " [" + lang + "]";
 
-       std::string info = name;
-       CFileItemPtr newItem( new CFileItem(info) );
-       newItem->SetPath(url);
+      std::string info = name;
+      CFileItemPtr newItem(new CFileItem(info));
+      newItem->SetPath(url);
 
-       // Set language as metadata
-       if ( !lang.empty() )
-         newItem->SetProperty("language", lang.c_str() );
+      // Set language as metadata
+      if (!lang.empty())
+        newItem->SetProperty("language", lang.c_str());
 
-       // Set category as metadata
-       if ( !category.empty() )
-         newItem->SetProperty("category", category.c_str() );
+      // Set category as metadata
+      if (!category.empty())
+        newItem->SetProperty("category", category.c_str());
 
-       // Set channel as extra info and as metadata
-       if ( !channel.empty() )
-       {
-         newItem->SetProperty("remotechannel", channel.c_str() );
-         newItem->SetExtraInfo( "Channel: " + channel );
-       }
+      // Set channel as extra info and as metadata
+      if (!channel.empty())
+      {
+        newItem->SetProperty("remotechannel", channel.c_str());
+        newItem->SetExtraInfo("Channel: " + channel);
+      }
 
-       if ( !lockpass.empty() )
-       {
-         newItem->m_strLockCode = lockpass;
-         newItem->m_iHasLock = 2;
-         newItem->m_iLockMode = LOCK_MODE_NUMERIC;
-       }
+      if (!lockpass.empty())
+      {
+        newItem->m_strLockCode = lockpass;
+        newItem->m_iHasLock = 2;
+        newItem->m_iLockMode = LOCK_MODE_NUMERIC;
+      }
 
-       Add(newItem);
+      Add(newItem);
     }
     else
-       CLog::Log(LOGERROR, "Playlist entry %s in file %s has missing <url> tag", name.c_str(), strFileName.c_str());
+      CLog::Log(LOGERROR, "Playlist entry %s in file %s has missing <url> tag", name.c_str(),
+                strFileName.c_str());
 
     pSet = pSet->NextSiblingElement("stream");
   }
@@ -164,16 +165,16 @@ bool CPlayListXML::Load( const std::string& strFileName )
   return true;
 }
 
-
 void CPlayListXML::Save(const std::string& strFileName) const
 {
-  if (!m_vecItems.size()) return ;
+  if (!m_vecItems.size())
+    return;
   std::string strPlaylist = CUtil::MakeLegalPath(strFileName);
   CFile file;
   if (!file.OpenForWrite(strPlaylist, true))
   {
     CLog::Log(LOGERROR, "Could not save WPL playlist: [%s]", strPlaylist.c_str());
-    return ;
+    return;
   }
   std::string write;
   write += StringUtils::Format("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n");
@@ -181,23 +182,26 @@ void CPlayListXML::Save(const std::string& strFileName) const
   for (int i = 0; i < (int)m_vecItems.size(); ++i)
   {
     CFileItemPtr item = m_vecItems[i];
-    write += StringUtils::Format("  <stream>\n" );
-    write += StringUtils::Format("    <url>%s</url>", item->GetPath().c_str() );
-    write += StringUtils::Format("    <name>%s</name>", item->GetLabel().c_str() );
+    write += StringUtils::Format("  <stream>\n");
+    write += StringUtils::Format("    <url>%s</url>", item->GetPath().c_str());
+    write += StringUtils::Format("    <name>%s</name>", item->GetLabel().c_str());
 
-    if ( !item->GetProperty("language").empty() )
-      write += StringUtils::Format("    <lang>%s</lang>", item->GetProperty("language").c_str() );
+    if (!item->GetProperty("language").empty())
+      write += StringUtils::Format("    <lang>%s</lang>", item->GetProperty("language").c_str());
 
-    if ( !item->GetProperty("category").empty() )
-      write += StringUtils::Format("    <category>%s</category>", item->GetProperty("category").c_str() );
+    if (!item->GetProperty("category").empty())
+      write +=
+          StringUtils::Format("    <category>%s</category>", item->GetProperty("category").c_str());
 
-    if ( !item->GetProperty("remotechannel").empty() )
-      write += StringUtils::Format("    <channel>%s</channel>", item->GetProperty("remotechannel").c_str() );
+    if (!item->GetProperty("remotechannel").empty())
+      write += StringUtils::Format("    <channel>%s</channel>",
+                                   item->GetProperty("remotechannel").c_str());
 
-    if ( item->m_iHasLock > 0 )
-      write += StringUtils::Format("    <lockpassword>%s<lockpassword>", item->m_strLockCode.c_str() );
+    if (item->m_iHasLock > 0)
+      write +=
+          StringUtils::Format("    <lockpassword>%s<lockpassword>", item->m_strLockCode.c_str());
 
-    write += StringUtils::Format("  </stream>\n\n" );
+    write += StringUtils::Format("  </stream>\n\n");
   }
 
   write += StringUtils::Format("</streams>\n");

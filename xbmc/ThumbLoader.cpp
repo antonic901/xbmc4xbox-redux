@@ -29,8 +29,7 @@
 
 using namespace XFILE;
 
-CThumbLoader::CThumbLoader() :
-  CBackgroundInfoLoader()
+CThumbLoader::CThumbLoader() : CBackgroundInfoLoader()
 {
   m_textureDatabase = new CTextureDatabase();
 }
@@ -50,7 +49,7 @@ void CThumbLoader::OnLoaderFinish()
   m_textureDatabase->Close();
 }
 
-std::string CThumbLoader::GetCachedImage(const CFileItem &item, const std::string &type)
+std::string CThumbLoader::GetCachedImage(const CFileItem& item, const std::string& type)
 {
   if (!item.GetPath().empty() && m_textureDatabase->Open())
   {
@@ -61,7 +60,9 @@ std::string CThumbLoader::GetCachedImage(const CFileItem &item, const std::strin
   return "";
 }
 
-void CThumbLoader::SetCachedImage(const CFileItem &item, const std::string &type, const std::string &image)
+void CThumbLoader::SetCachedImage(const CFileItem& item,
+                                  const std::string& type,
+                                  const std::string& image)
 {
   if (!item.GetPath().empty() && m_textureDatabase->Open())
   {
@@ -78,15 +79,15 @@ CProgramThumbLoader::~CProgramThumbLoader()
 {
 }
 
-bool CProgramThumbLoader::LoadItem(CFileItem *pItem)
+bool CProgramThumbLoader::LoadItem(CFileItem* pItem)
 {
-  bool result  = LoadItemCached(pItem);
-       result |= LoadItemLookup(pItem);
+  bool result = LoadItemCached(pItem);
+  result |= LoadItemLookup(pItem);
 
   return result;
 }
 
-bool CProgramThumbLoader::LoadItemCached(CFileItem *pItem)
+bool CProgramThumbLoader::LoadItemCached(CFileItem* pItem)
 {
   if (pItem->IsParentFolder())
     return false;
@@ -94,12 +95,12 @@ bool CProgramThumbLoader::LoadItemCached(CFileItem *pItem)
   return FillThumb(*pItem);
 }
 
-bool CProgramThumbLoader::LoadItemLookup(CFileItem *pItem)
+bool CProgramThumbLoader::LoadItemLookup(CFileItem* pItem)
 {
   return false;
 }
 
-bool CProgramThumbLoader::FillThumb(CFileItem &item)
+bool CProgramThumbLoader::FillThumb(CFileItem& item)
 {
   // no need to do anything if we already have a thumb set
   std::string thumb = item.GetArt("thumb");
@@ -123,7 +124,7 @@ bool CProgramThumbLoader::FillThumb(CFileItem &item)
   return true;
 }
 
-std::string CProgramThumbLoader::GetLocalThumb(const CFileItem &item)
+std::string CProgramThumbLoader::GetLocalThumb(const CFileItem& item)
 {
   if (item.IsAddonsPath())
     return "";
@@ -137,18 +138,18 @@ std::string CProgramThumbLoader::GetLocalThumb(const CFileItem &item)
   }
   else
 #endif
-  // look for the thumb
-  if (item.m_bIsFolder)
-  {
-    std::string folderThumb = item.GetFolderThumb();
-    if (CFile::Exists(folderThumb))
-      return folderThumb;
-  }
-  else
-  {
-    std::string fileThumb(item.GetTBNFile());
-    if (CFile::Exists(fileThumb))
-      return fileThumb;
-  }
+    // look for the thumb
+    if (item.m_bIsFolder)
+    {
+      std::string folderThumb = item.GetFolderThumb();
+      if (CFile::Exists(folderThumb))
+        return folderThumb;
+    }
+    else
+    {
+      std::string fileThumb(item.GetTBNFile());
+      if (CFile::Exists(fileThumb))
+        return fileThumb;
+    }
   return "";
 }

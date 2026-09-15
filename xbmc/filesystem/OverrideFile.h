@@ -47,9 +47,9 @@ public:
   virtual int64_t GetLength();
 
 protected:
-  virtual std::string TranslatePath(const CURL &url) = 0;
+  virtual std::string TranslatePath(const CURL& url) = 0;
 
   CFile m_file;
   bool m_writable;
 };
-}
+} // namespace XFILE

@@ -28,7 +28,7 @@
 
 namespace VIDEO
 {
-  struct SScanSettings;
+struct SScanSettings;
 }
 class CFileItemList;
 
@@ -47,7 +47,7 @@ public:
   const ADDON::ScraperPtr& GetScraper() const { return m_scraper; }
   void SetScraper(ADDON::ScraperPtr scraper) { m_scraper = scraper; }
 
-  void SetScanSettings(const VIDEO::SScanSettings &scanSettings);
+  void SetScanSettings(const VIDEO::SScanSettings& scanSettings);
   bool GetScanRecursive() const { return m_scanRecursive; }
   bool GetUseDirectoryNames() const { return m_useDirectoryNames; }
   bool GetContainsSingleItem() const { return m_containsSingleItem; }
@@ -55,15 +55,17 @@ public:
   bool GetNoUpdating() const { return m_noUpdating; }
 
   static bool Show(ADDON::ScraperPtr& scraper, CONTENT_TYPE content = CONTENT_NONE);
-  static bool Show(ADDON::ScraperPtr& scraper, VIDEO::SScanSettings& settings, CONTENT_TYPE content = CONTENT_NONE);
+  static bool Show(ADDON::ScraperPtr& scraper,
+                   VIDEO::SScanSettings& settings,
+                   CONTENT_TYPE content = CONTENT_NONE);
 
 protected:
   // specializations of CGUIWindow
   void OnInitWindow();
 
   // implementations of ISettingCallback
-  void OnSettingChanged(const CSetting *setting);
-  void OnSettingAction(const CSetting *setting);
+  void OnSettingChanged(const CSetting* setting);
+  void OnSettingAction(const CSetting* setting);
 
   // specialization of CGUIDialogSettingsBase
   bool AllowResettingSettings() const { return false; }
@@ -74,9 +76,9 @@ protected:
   void InitializeSettings();
 
 private:
-  void SetLabel2(const std::string &settingid, const std::string &label);
-  void ToggleState(const std::string &settingid, bool enabled);
-  void SetFocus(const std::string &settingid);
+  void SetLabel2(const std::string& settingid, const std::string& label);
+  void ToggleState(const std::string& settingid, bool enabled);
+  void SetFocus(const std::string& settingid);
 
   /*!
   * @brief The currently selected content type

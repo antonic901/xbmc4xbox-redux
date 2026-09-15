@@ -27,7 +27,7 @@
 
 using namespace std;
 
-const char MEDIA_SOURCES_XML[] = { "Q:\\system\\mediasources.xml" };
+const char MEDIA_SOURCES_XML[] = {"Q:\\system\\mediasources.xml"};
 
 class CMediaManager g_mediaManager;
 
@@ -42,21 +42,22 @@ bool CMediaManager::LoadSources()
 
   // load xml file...
   CXBMCTinyXML xmlDoc;
-  if ( !xmlDoc.LoadFile( MEDIA_SOURCES_XML ) )
+  if (!xmlDoc.LoadFile(MEDIA_SOURCES_XML))
     return false;
 
   TiXmlElement* pRootElement = xmlDoc.RootElement();
-  if ( !pRootElement || strcmpi(pRootElement->Value(), "mediasources") != 0)
+  if (!pRootElement || strcmpi(pRootElement->Value(), "mediasources") != 0)
   {
-    CLog::Log(LOGERROR, "Error loading %s, Line %d (%s)", MEDIA_SOURCES_XML, xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
+    CLog::Log(LOGERROR, "Error loading %s, Line %d (%s)", MEDIA_SOURCES_XML, xmlDoc.ErrorRow(),
+              xmlDoc.ErrorDesc());
     return false;
   }
 
   // load the <network> block
-  TiXmlNode *pNetwork = pRootElement->FirstChild("network");
+  TiXmlNode* pNetwork = pRootElement->FirstChild("network");
   if (pNetwork)
   {
-    TiXmlElement *pLocation = pNetwork->FirstChildElement("location");
+    TiXmlElement* pLocation = pNetwork->FirstChildElement("location");
     while (pLocation)
     {
       CNetworkLocation location;
@@ -76,11 +77,12 @@ bool CMediaManager::SaveSources()
 {
   CXBMCTinyXML xmlDoc;
   TiXmlElement xmlRootElement("mediasources");
-  TiXmlNode *pRoot = xmlDoc.InsertEndChild(xmlRootElement);
-  if (!pRoot) return false;
+  TiXmlNode* pRoot = xmlDoc.InsertEndChild(xmlRootElement);
+  if (!pRoot)
+    return false;
 
   TiXmlElement networkNode("network");
-  TiXmlNode *pNetworkNode = pRoot->InsertEndChild(networkNode);
+  TiXmlNode* pNetworkNode = pRoot->InsertEndChild(networkNode);
   if (pNetworkNode)
   {
     for (vector<CNetworkLocation>::iterator it = m_locations.begin(); it != m_locations.end(); it++)
@@ -95,12 +97,12 @@ bool CMediaManager::SaveSources()
   return xmlDoc.SaveFile(MEDIA_SOURCES_XML);
 }
 
-void CMediaManager::GetLocalDrives(VECSOURCES &localDrives, bool includeQ)
+void CMediaManager::GetLocalDrives(VECSOURCES& localDrives, bool includeQ)
 {
   // Local shares
   CMediaSource share;
   share.strPath = "C:\\";
-  share.strName.Format(g_localizeStrings.Get(21438).c_str(),'C');
+  share.strName.Format(g_localizeStrings.Get(21438).c_str(), 'C');
   share.m_ignore = true;
   share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
   localDrives.push_back(share);
@@ -110,16 +112,22 @@ void CMediaManager::GetLocalDrives(VECSOURCES &localDrives, bool includeQ)
   localDrives.push_back(share);
   share.strPath = "E:\\";
   share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
-  share.strName.Format(g_localizeStrings.Get(21438).c_str(),'E');
+  share.strName.Format(g_localizeStrings.Get(21438).c_str(), 'E');
   localDrives.push_back(share);
-  for (int driveCount=EXTEND_PARTITION_BEGIN;driveCount<=(EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT-1);driveCount++)
+  for (int driveCount = EXTEND_PARTITION_BEGIN;
+       driveCount <= (EXTEND_PARTITION_BEGIN + EXTEND_PARTITIONS_LIMIT - 1); driveCount++)
   {
-    if (CIoSupport::DriveExists(CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN)))
+    if (CIoSupport::DriveExists(
+            CIoSupport::GetExtendedPartitionDriveLetter(driveCount - EXTEND_PARTITION_BEGIN)))
     {
       CMediaSource share;
-      share.strPath.Format("%c:\\", CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
-      CLog::Log(LOGNOTICE, "  Local Source Drive %c:", CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
-      share.strName.Format(g_localizeStrings.Get(21438).c_str(),CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
+      share.strPath.Format("%c:\\", CIoSupport::GetExtendedPartitionDriveLetter(
+                                        driveCount - EXTEND_PARTITION_BEGIN));
+      CLog::Log(LOGNOTICE, "  Local Source Drive %c:",
+                CIoSupport::GetExtendedPartitionDriveLetter(driveCount - EXTEND_PARTITION_BEGIN));
+      share.strName.Format(
+          g_localizeStrings.Get(21438).c_str(),
+          CIoSupport::GetExtendedPartitionDriveLetter(driveCount - EXTEND_PARTITION_BEGIN));
       share.m_ignore = true;
       localDrives.push_back(share);
     }
@@ -128,13 +136,13 @@ void CMediaManager::GetLocalDrives(VECSOURCES &localDrives, bool includeQ)
   {
     CMediaSource share;
     share.strPath = "Q:\\";
-    share.strName.Format(g_localizeStrings.Get(21438).c_str(),'Q');
+    share.strName.Format(g_localizeStrings.Get(21438).c_str(), 'Q');
     share.m_ignore = true;
     localDrives.push_back(share);
   }
 }
 
-void CMediaManager::GetNetworkLocations(VECSOURCES &locations)
+void CMediaManager::GetNetworkLocations(VECSOURCES& locations)
 {
   // Load our xml file
   LoadSources();
@@ -148,7 +156,7 @@ void CMediaManager::GetNetworkLocations(VECSOURCES &locations)
   }
 }
 
-bool CMediaManager::AddNetworkLocation(const CStdString &path)
+bool CMediaManager::AddNetworkLocation(const CStdString& path)
 {
   CNetworkLocation location;
   location.path = path;
@@ -159,7 +167,7 @@ bool CMediaManager::AddNetworkLocation(const CStdString &path)
 
 bool CMediaManager::HasLocation(const CStdString& path) const
 {
-  for (unsigned int i=0;i<m_locations.size();++i)
+  for (unsigned int i = 0; i < m_locations.size(); ++i)
   {
     if (m_locations[i].path == path)
       return true;
@@ -168,15 +176,14 @@ bool CMediaManager::HasLocation(const CStdString& path) const
   return false;
 }
 
-
 bool CMediaManager::RemoveLocation(const CStdString& path)
 {
-  for (unsigned int i=0;i<m_locations.size();++i)
+  for (unsigned int i = 0; i < m_locations.size(); ++i)
   {
     if (m_locations[i].path == path)
     {
-      // prompt for sources, remove, cancel, 
-      m_locations.erase(m_locations.begin()+i);
+      // prompt for sources, remove, cancel,
+      m_locations.erase(m_locations.begin() + i);
       return SaveSources();
     }
   }
@@ -186,7 +193,7 @@ bool CMediaManager::RemoveLocation(const CStdString& path)
 
 bool CMediaManager::SetLocationPath(const CStdString& oldPath, const CStdString& newPath)
 {
-  for (unsigned int i=0;i<m_locations.size();++i)
+  for (unsigned int i = 0; i < m_locations.size(); ++i)
   {
     if (m_locations[i].path == oldPath)
     {
@@ -197,4 +204,3 @@ bool CMediaManager::SetLocationPath(const CStdString& oldPath, const CStdString&
 
   return false;
 }
-

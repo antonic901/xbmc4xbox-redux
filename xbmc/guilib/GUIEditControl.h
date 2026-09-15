@@ -41,34 +41,42 @@
 class CGUIEditControl : public CGUIButtonControl
 {
 public:
-  enum INPUT_TYPE {
-                    INPUT_TYPE_READONLY = -1,
-                    INPUT_TYPE_TEXT = 0,
-                    INPUT_TYPE_NUMBER,
-                    INPUT_TYPE_SECONDS,
-                    INPUT_TYPE_TIME,
-                    INPUT_TYPE_DATE,
-                    INPUT_TYPE_IPADDRESS,
-                    INPUT_TYPE_PASSWORD,
-                    INPUT_TYPE_PASSWORD_MD5,
-                    INPUT_TYPE_SEARCH,
-                    INPUT_TYPE_FILTER,
-                    INPUT_TYPE_PASSWORD_NUMBER_VERIFY_NEW
-                  };
+  enum INPUT_TYPE
+  {
+    INPUT_TYPE_READONLY = -1,
+    INPUT_TYPE_TEXT = 0,
+    INPUT_TYPE_NUMBER,
+    INPUT_TYPE_SECONDS,
+    INPUT_TYPE_TIME,
+    INPUT_TYPE_DATE,
+    INPUT_TYPE_IPADDRESS,
+    INPUT_TYPE_PASSWORD,
+    INPUT_TYPE_PASSWORD_MD5,
+    INPUT_TYPE_SEARCH,
+    INPUT_TYPE_FILTER,
+    INPUT_TYPE_PASSWORD_NUMBER_VERIFY_NEW
+  };
 
-  CGUIEditControl(int parentID, int controlID, float posX, float posY,
-                  float width, float height, const CTextureInfo &textureFocus, const CTextureInfo &textureNoFocus,
-                  const CLabelInfo& labelInfo, const std::string &text);
-  CGUIEditControl(const CGUIButtonControl &button);
+  CGUIEditControl(int parentID,
+                  int controlID,
+                  float posX,
+                  float posY,
+                  float width,
+                  float height,
+                  const CTextureInfo& textureFocus,
+                  const CTextureInfo& textureNoFocus,
+                  const CLabelInfo& labelInfo,
+                  const std::string& text);
+  CGUIEditControl(const CGUIButtonControl& button);
   virtual ~CGUIEditControl(void);
-  virtual CGUIEditControl *Clone() const { return new CGUIEditControl(*this); };
+  virtual CGUIEditControl* Clone() const { return new CGUIEditControl(*this); };
 
-  virtual bool OnMessage(CGUIMessage &message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction& action);
   virtual void OnClick();
 
-  virtual void SetLabel(const std::string &text);
-  virtual void SetLabel2(const std::string &text);
+  virtual void SetLabel(const std::string& text);
+  virtual void SetLabel2(const std::string& text);
   void SetHint(const CGUIInfoLabel& hint);
 
   virtual std::string GetLabel2() const;
@@ -78,12 +86,15 @@ public:
 
   void SetInputType(INPUT_TYPE type, CVariant heading);
 
-  void SetTextChangeActions(const CGUIAction& textChangeActions) { m_textChangeActions = textChangeActions; };
+  void SetTextChangeActions(const CGUIAction& textChangeActions)
+  {
+    m_textChangeActions = textChangeActions;
+  };
 
   bool HasTextChangeActions() const { return m_textChangeActions.HasActionsMeetingCondition(); };
 
   virtual bool HasInvalidInput() const { return m_invalidInput; }
-  virtual void SetInputValidation(StringValidation::Validator inputValidator, void *data = NULL);
+  virtual void SetInputValidation(StringValidation::Validator inputValidator, void* data = NULL);
 
 protected:
   virtual void SetFocus(bool focus);
@@ -92,7 +103,7 @@ protected:
   virtual CGUILabel::COLOR GetTextColor() const;
   std::wstring GetDisplayedText() const;
   std::string GetDescriptionByIndex(int index) const;
-  bool SetStyledText(const std::wstring &text);
+  bool SetStyledText(const std::wstring& text);
   void RecalcLabelPosition();
   void ValidateCursor();
   void UpdateText(bool sendUpdate = true);
@@ -100,7 +111,7 @@ protected:
   void OnSMSCharacter(unsigned int key);
   void DefaultConstructor();
 
-  virtual bool ValidateInput(const std::wstring &data) const;
+  virtual bool ValidateInput(const std::wstring& data) const;
   void ValidateInput();
 
   /*! \brief Clear out the current text input if it's an MD5 password.
@@ -109,7 +120,7 @@ protected:
   bool ClearMD5();
 
   std::wstring m_text2;
-  std::string  m_text;
+  std::string m_text;
   CGUIInfoLabel m_hintInfo;
   float m_textOffset;
   float m_textWidth;
@@ -128,17 +139,17 @@ protected:
 
   bool m_invalidInput;
   StringValidation::Validator m_inputValidator;
-  void *m_inputValidatorData;
+  void* m_inputValidatorData;
 
   unsigned int m_smsKeyIndex;
   unsigned int m_smsLastKey;
-  CStopWatch   m_smsTimer;
+  CStopWatch m_smsTimer;
 
   std::wstring m_edit;
-  int          m_editOffset;
-  int          m_editLength;
+  int m_editOffset;
+  int m_editLength;
 
-  static const char*        smsLetters[10];
+  static const char* smsLetters[10];
   static const unsigned int smsDelay;
 };
 #endif

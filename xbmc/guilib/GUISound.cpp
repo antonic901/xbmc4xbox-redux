@@ -40,7 +40,7 @@ typedef struct
 
 CGUISound::CGUISound()
 {
-  m_soundBuffer=NULL;
+  m_soundBuffer = NULL;
 }
 
 CGUISound::~CGUISound()
@@ -51,13 +51,13 @@ CGUISound::~CGUISound()
 // \brief Loads a wav file by filename
 bool CGUISound::Load(const CStdString& strFile)
 {
-  LPBYTE pbData=NULL;
+  LPBYTE pbData = NULL;
   WAVEFORMATEX wfx;
-  int size=0;
+  int size = 0;
   if (!LoadWav(strFile, &wfx, &pbData, &size))
     return false;
 
-  bool bReady=(CreateBuffer(&wfx, size) && FillBuffer(pbData, size));
+  bool bReady = (CreateBuffer(&wfx, size) && FillBuffer(pbData, size));
 
   if (!bReady)
     FreeBuffer();
@@ -97,12 +97,14 @@ void CGUISound::Stop()
   if (m_soundBuffer)
   {
 #ifdef HAS_XBOX_AUDIO
-    m_soundBuffer->StopEx( 0, DSBSTOPEX_IMMEDIATE );
+    m_soundBuffer->StopEx(0, DSBSTOPEX_IMMEDIATE);
 #else
     m_soundBuffer->Stop();
 #endif
 
-    while(IsPlaying()) {}
+    while (IsPlaying())
+    {
+    }
   }
 }
 
@@ -117,29 +119,29 @@ bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
 {
 #ifdef HAS_XBOX_AUDIO
   //  Use a volume pair preset
-  DSMIXBINVOLUMEPAIR vp[2] = { DSMIXBINVOLUMEPAIRS_DEFAULT_STEREO };
+  DSMIXBINVOLUMEPAIR vp[2] = {DSMIXBINVOLUMEPAIRS_DEFAULT_STEREO};
 
   //  Set up DSMIXBINS structure
   DSMIXBINS mixbins;
-  mixbins.dwMixBinCount=2;
-  mixbins.lpMixBinVolumePairs=vp;
+  mixbins.dwMixBinCount = 2;
+  mixbins.lpMixBinVolumePairs = vp;
 #endif
 
   //  Set up DSBUFFERDESC structure
   DSBUFFERDESC dsbdesc;
   memset(&dsbdesc, 0, sizeof(DSBUFFERDESC));
-  dsbdesc.dwSize=sizeof(DSBUFFERDESC);
+  dsbdesc.dwSize = sizeof(DSBUFFERDESC);
 #ifdef HAS_XBOX_AUDIO
-  dsbdesc.dwFlags=0;
-  dsbdesc.lpMixBins=&mixbins;
+  dsbdesc.dwFlags = 0;
+  dsbdesc.lpMixBins = &mixbins;
 #else
   // directsound requires ctrlvolume to be set
   dsbdesc.dwFlags = DSBCAPS_CTRLVOLUME;
 #endif
-  dsbdesc.dwBufferBytes=iLength;
-  dsbdesc.lpwfxFormat=wfx;
+  dsbdesc.dwBufferBytes = iLength;
+  dsbdesc.lpwfxFormat = wfx;
 
-  LPDIRECTSOUND directSound=g_audioContext.GetDirectSoundDevice();
+  LPDIRECTSOUND directSound = g_audioContext.GetDirectSoundDevice();
   if (!directSound)
     return false;
 
@@ -147,7 +149,7 @@ bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
   if (FAILED(directSound->CreateSoundBuffer(&dsbdesc, &m_soundBuffer, NULL)))
   {
     m_soundBuffer = NULL;
-    CLog::Log(LOGERROR, __FUNCTION__" Creating sound buffer failed!");
+    CLog::Log(LOGERROR, __FUNCTION__ " Creating sound buffer failed!");
     return false;
   }
 
@@ -157,7 +159,7 @@ bool CGUISound::CreateBuffer(LPWAVEFORMATEX wfx, int iLength)
   m_soundBuffer->SetHeadroom(0);
 
   // Set the default mixbins headroom to appropriate level as set in the settings file (to allow the maximum volume)
-  for (DWORD i = 0; i < mixbins.dwMixBinCount;i++)
+  for (DWORD i = 0; i < mixbins.dwMixBinCount; i++)
     directSound->SetMixBinHeadroom(i, DWORD(g_advancedSettings.m_audioHeadRoom / 6));
 #endif
 
@@ -170,7 +172,7 @@ bool CGUISound::FillBuffer(LPBYTE pbData, int iLength)
     return false;
 
   LPVOID lpvWrite;
-  DWORD  dwLength;
+  DWORD dwLength;
 
   if (SUCCEEDED(m_soundBuffer->Lock(0, 0, &lpvWrite, &dwLength, NULL, NULL, DSBLOCK_ENTIREBUFFER)))
   {
@@ -179,7 +181,7 @@ bool CGUISound::FillBuffer(LPBYTE pbData, int iLength)
     return true;
   }
 
-  CLog::Log(LOGERROR, __FUNCTION__" Filling sound buffer failed!");
+  CLog::Log(LOGERROR, __FUNCTION__ " Filling sound buffer failed!");
 
   return false;
 }
@@ -192,7 +194,10 @@ void CGUISound::FreeBuffer()
   SAFE_RELEASE(m_soundBuffer);
 }
 
-bool CGUISound::LoadWav(const CStdString& strFile, WAVEFORMATEX* wfx, LPBYTE* ppWavData, int* pDataSize)
+bool CGUISound::LoadWav(const CStdString& strFile,
+                        WAVEFORMATEX* wfx,
+                        LPBYTE* ppWavData,
+                        int* pDataSize)
 {
   XFILE::CFile file;
   if (!file.Open(strFile))
@@ -203,13 +208,13 @@ bool CGUISound::LoadWav(const CStdString& strFile, WAVEFORMATEX* wfx, LPBYTE* pp
   file.Read(&riffh, sizeof(WAVE_RIFFHEADER));
 
   // file valid?
-  if (strncmp(riffh.riff, "RIFF", 4)!=0 && strncmp(riffh.rifftype, "WAVE", 4)!=0)
+  if (strncmp(riffh.riff, "RIFF", 4) != 0 && strncmp(riffh.rifftype, "WAVE", 4) != 0)
   {
     file.Close();
     return false;
   }
 
-  long offset=0;
+  long offset = 0;
   offset += sizeof(WAVE_RIFFHEADER);
   offset -= sizeof(WAVE_CHUNK);
 
@@ -227,14 +232,14 @@ bool CGUISound::LoadWav(const CStdString& strFile, WAVEFORMATEX* wfx, LPBYTE* pp
       memset(wfx, 0, sizeof(WAVEFORMATEX));
       file.Read(wfx, 16);
       // we only need 16 bytes of the fmt chunk
-      if (chunk.chunksize-16>0)
-        file.Seek(chunk.chunksize-16, SEEK_CUR);
+      if (chunk.chunksize - 16 > 0)
+        file.Seek(chunk.chunksize - 16, SEEK_CUR);
     }
     else if (!strncmp(chunk.chunk_id, "data", 4))
     { // data chunk
-      *ppWavData=new BYTE[chunk.chunksize+1];
+      *ppWavData = new BYTE[chunk.chunksize + 1];
       file.Read(*ppWavData, chunk.chunksize);
-      *pDataSize=chunk.chunksize;
+      *pDataSize = chunk.chunksize;
 
       if (chunk.chunksize & 1)
         offset++;
@@ -244,14 +249,13 @@ bool CGUISound::LoadWav(const CStdString& strFile, WAVEFORMATEX* wfx, LPBYTE* pp
       file.Seek(chunk.chunksize, SEEK_CUR);
     }
 
-    offset+=(chunk.chunksize+sizeof(WAVE_CHUNK));
+    offset += (chunk.chunksize + sizeof(WAVE_CHUNK));
 
     if (offset & 1)
       offset++;
 
-  } while (offset+(int)sizeof(WAVE_CHUNK) < riffh.filesize);
+  } while (offset + (int)sizeof(WAVE_CHUNK) < riffh.filesize);
 
   file.Close();
-  return (*ppWavData!=NULL);
+  return (*ppWavData != NULL);
 }
-

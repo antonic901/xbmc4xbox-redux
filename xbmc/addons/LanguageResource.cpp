@@ -33,25 +33,29 @@ using namespace KODI::MESSAGING;
 
 using namespace KODI::MESSAGING::HELPERS;
 
-#define LANGUAGE_ADDON_PREFIX   "resource.language."
+#define LANGUAGE_ADDON_PREFIX "resource.language."
 
 namespace ADDON
 {
 
- boost::movelib::unique_ptr<CLanguageResource> CLanguageResource::FromExtension(AddonProps props, const cp_extension_t* ext)
+boost::movelib::unique_ptr<CLanguageResource> CLanguageResource::FromExtension(
+    AddonProps props, const cp_extension_t* ext)
 {
   // parse <extension> attributes
-  CLocale locale = CLocale::FromString(CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "@locale"));
+  CLocale locale =
+      CLocale::FromString(CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "@locale"));
 
   // parse <charsets>
   std::string charsetGui;
   bool forceUnicodeFont(false);
   std::string charsetSubtitle;
-  cp_cfg_element_t *charsetsElement = CServiceBroker::GetAddonMgr().GetExtElement(ext->configuration, "charsets");
+  cp_cfg_element_t* charsetsElement =
+      CServiceBroker::GetAddonMgr().GetExtElement(ext->configuration, "charsets");
   if (charsetsElement != NULL)
   {
     charsetGui = CServiceBroker::GetAddonMgr().GetExtValue(charsetsElement, "gui");
-    forceUnicodeFont = CServiceBroker::GetAddonMgr().GetExtValue(charsetsElement, "gui@unicodefont") == "true";
+    forceUnicodeFont =
+        CServiceBroker::GetAddonMgr().GetExtValue(charsetsElement, "gui@unicodefont") == "true";
     charsetSubtitle = CServiceBroker::GetAddonMgr().GetExtValue(charsetsElement, "subtitle");
   }
 
@@ -59,7 +63,8 @@ namespace ADDON
   std::string dvdLanguageMenu;
   std::string dvdLanguageAudio;
   std::string dvdLanguageSubtitle;
-  cp_cfg_element_t *dvdElement = CServiceBroker::GetAddonMgr().GetExtElement(ext->configuration, "dvd");
+  cp_cfg_element_t* dvdElement =
+      CServiceBroker::GetAddonMgr().GetExtElement(ext->configuration, "dvd");
   if (dvdElement != NULL)
   {
     dvdLanguageMenu = CServiceBroker::GetAddonMgr().GetExtValue(dvdElement, "menu");
@@ -76,47 +81,42 @@ namespace ADDON
 
   // parse <sorttokens>
   std::set<std::string> sortTokens;
-  cp_cfg_element_t *sorttokensElement = CServiceBroker::GetAddonMgr().GetExtElement(ext->configuration, "sorttokens");
+  cp_cfg_element_t* sorttokensElement =
+      CServiceBroker::GetAddonMgr().GetExtElement(ext->configuration, "sorttokens");
   if (sorttokensElement != NULL)
   {
     for (size_t i = 0; i < sorttokensElement->num_children; ++i)
     {
-      cp_cfg_element_t &tokenElement = sorttokensElement->children[i];
+      cp_cfg_element_t& tokenElement = sorttokensElement->children[i];
       if (tokenElement.name != NULL && strcmp(tokenElement.name, "token") == 0 &&
           tokenElement.value != NULL)
       {
         std::string token(tokenElement.value);
-        std::string separators = CServiceBroker::GetAddonMgr().GetExtValue(&tokenElement, "@separators");
+        std::string separators =
+            CServiceBroker::GetAddonMgr().GetExtValue(&tokenElement, "@separators");
         if (separators.empty())
           separators = " ._";
 
-        for (std::string::const_iterator separator = separators.begin(); separator != separators.end(); ++separator)
+        for (std::string::const_iterator separator = separators.begin();
+             separator != separators.end(); ++separator)
           sortTokens.insert(token + *separator);
       }
     }
   }
   return boost::movelib::unique_ptr<CLanguageResource>(new CLanguageResource(
-      boost::move(props),
-      locale,
-      charsetGui,
-      forceUnicodeFont,
-      charsetSubtitle,
-      dvdLanguageMenu,
-      dvdLanguageAudio,
-      dvdLanguageSubtitle,
-      sortTokens));
+      boost::move(props), locale, charsetGui, forceUnicodeFont, charsetSubtitle, dvdLanguageMenu,
+      dvdLanguageAudio, dvdLanguageSubtitle, sortTokens));
 }
 
-CLanguageResource::CLanguageResource(
-    AddonProps props,
-    const CLocale& locale,
-    const std::string& charsetGui,
-    bool forceUnicodeFont,
-    const std::string& charsetSubtitle,
-    const std::string& dvdLanguageMenu,
-    const std::string& dvdLanguageAudio,
-    const std::string& dvdLanguageSubtitle,
-    const std::set<std::string>& sortTokens)
+CLanguageResource::CLanguageResource(AddonProps props,
+                                     const CLocale& locale,
+                                     const std::string& charsetGui,
+                                     bool forceUnicodeFont,
+                                     const std::string& charsetSubtitle,
+                                     const std::string& dvdLanguageMenu,
+                                     const std::string& dvdLanguageAudio,
+                                     const std::string& dvdLanguageSubtitle,
+                                     const std::set<std::string>& sortTokens)
   : CResource(boost::move(props)),
     m_locale(locale),
     m_charsetGui(charsetGui),
@@ -126,7 +126,8 @@ CLanguageResource::CLanguageResource(
     m_dvdLanguageAudio(dvdLanguageAudio),
     m_dvdLanguageSubtitle(dvdLanguageSubtitle),
     m_sortTokens(sortTokens)
-{ }
+{
+}
 
 bool CLanguageResource::IsInUse() const
 {
@@ -138,9 +139,7 @@ void CLanguageResource::OnPostInstall(bool update, bool modal)
   if (!g_SkinInfo)
     return;
 
-  if (IsInUse() ||
-     (!update && !modal &&
-       (HELPERS::ShowYesNoDialogText(Name(), 24132) == YES)))
+  if (IsInUse() || (!update && !modal && (HELPERS::ShowYesNoDialogText(Name(), 24132) == YES)))
   {
     if (IsInUse())
       g_langInfo.SetLanguage(ID());
@@ -149,10 +148,9 @@ void CLanguageResource::OnPostInstall(bool update, bool modal)
   }
 }
 
-bool CLanguageResource::IsAllowed(const std::string &file) const
+bool CLanguageResource::IsAllowed(const std::string& file) const
 {
-  return file.empty() ||
-         StringUtils::EqualsNoCase(file.c_str(), "langinfo.xml") ||
+  return file.empty() || StringUtils::EqualsNoCase(file.c_str(), "langinfo.xml") ||
          StringUtils::EqualsNoCase(file.c_str(), "strings.po") ||
          StringUtils::EqualsNoCase(file.c_str(), "strings.xml");
 }
@@ -170,7 +168,7 @@ std::string CLanguageResource::GetAddonId(const std::string& locale)
   return addonId;
 }
 
-bool CLanguageResource::FindLegacyLanguage(const std::string &locale, std::string &legacyLanguage)
+bool CLanguageResource::FindLegacyLanguage(const std::string& locale, std::string& legacyLanguage)
 {
   if (locale.empty())
     return false;
@@ -185,7 +183,9 @@ bool CLanguageResource::FindLegacyLanguage(const std::string &locale, std::strin
   return true;
 }
 
-bool CLanguageResource::FindLanguageAddonByName(const std::string &legacyLanguage, std::string &addonId, const VECADDONS &languageAddons /* = VECADDONS() */)
+bool CLanguageResource::FindLanguageAddonByName(const std::string& legacyLanguage,
+                                                std::string& addonId,
+                                                const VECADDONS& languageAddons /* = VECADDONS() */)
 {
   if (legacyLanguage.empty())
     return false;
@@ -193,7 +193,8 @@ bool CLanguageResource::FindLanguageAddonByName(const std::string &legacyLanguag
   VECADDONS addons;
   if (!languageAddons.empty())
     addons = languageAddons;
-  else if (!CServiceBroker::GetAddonMgr().GetInstalledAddons(addons, ADDON_RESOURCE_LANGUAGE) || addons.empty())
+  else if (!CServiceBroker::GetAddonMgr().GetInstalledAddons(addons, ADDON_RESOURCE_LANGUAGE) ||
+           addons.empty())
     return false;
 
   // try to find a language that matches the old language in name or id
@@ -215,4 +216,4 @@ bool CLanguageResource::FindLanguageAddonByName(const std::string &legacyLanguag
   return false;
 }
 
-}
+} // namespace ADDON

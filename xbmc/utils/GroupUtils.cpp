@@ -32,13 +32,22 @@
 
 typedef std::map<int, std::set<CFileItemPtr> > SetMap;
 
-bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileItemList &items, CFileItemList &groupedItems, GroupAttribute groupAttributes /* = GroupAttributeNone */)
+bool GroupUtils::Group(GroupBy groupBy,
+                       const std::string& baseDir,
+                       const CFileItemList& items,
+                       CFileItemList& groupedItems,
+                       GroupAttribute groupAttributes /* = GroupAttributeNone */)
 {
   CFileItemList ungroupedItems;
   return Group(groupBy, baseDir, items, groupedItems, ungroupedItems, groupAttributes);
 }
 
-bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileItemList &items, CFileItemList &groupedItems, CFileItemList &ungroupedItems, GroupAttribute groupAttributes /* = GroupAttributeNone */)
+bool GroupUtils::Group(GroupBy groupBy,
+                       const std::string& baseDir,
+                       const CFileItemList& items,
+                       CFileItemList& groupedItems,
+                       CFileItemList& ungroupedItems,
+                       GroupAttribute groupAttributes /* = GroupAttributeNone */)
 {
   if (groupBy == GroupByNone)
     return false;
@@ -54,8 +63,7 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
     const CFileItemPtr item = items.Get(index);
 
     // group by sets
-    if ((groupBy & GroupBySet) &&
-      item->HasVideoInfoTag() && item->GetVideoInfoTag()->m_set.id > 0)
+    if ((groupBy & GroupBySet) && item->HasVideoInfoTag() && item->GetVideoInfoTag()->m_set.id > 0)
     {
       ungrouped = false;
       setMap[item->GetVideoInfoTag()->m_set.id].insert(item);
@@ -104,7 +112,8 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
       float totalRatings = 0;
       int iWatched = 0; // have all the movies been played at least once?
       std::set<std::string> pathSet;
-      for (std::set<CFileItemPtr>::const_iterator movie = set->second.begin(); movie != set->second.end(); ++movie)
+      for (std::set<CFileItemPtr>::const_iterator movie = set->second.begin();
+           movie != set->second.end(); ++movie)
       {
         CVideoInfoTag* movieInfo = (*movie)->GetVideoInfoTag();
         // handle rating
@@ -143,7 +152,8 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
       if (ratings > 1)
         pItem->GetVideoInfoTag()->SetRating(totalRatings / ratings);
 
-      setInfo->m_playCount = iWatched >= (int)set->second.size() ? (setInfo->m_playCount / set->second.size()) : 0;
+      setInfo->m_playCount =
+          iWatched >= (int)set->second.size() ? (setInfo->m_playCount / set->second.size()) : 0;
       pItem->SetProperty("total", (int)set->second.size());
       pItem->SetProperty("watched", iWatched);
       pItem->SetProperty("unwatched", (int)set->second.size() - iWatched);
@@ -156,7 +166,11 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
   return true;
 }
 
-bool GroupUtils::GroupAndMix(GroupBy groupBy, const std::string &baseDir, const CFileItemList &items, CFileItemList &groupedItemsMixed, GroupAttribute groupAttributes /* = GroupAttributeNone */)
+bool GroupUtils::GroupAndMix(GroupBy groupBy,
+                             const std::string& baseDir,
+                             const CFileItemList& items,
+                             CFileItemList& groupedItemsMixed,
+                             GroupAttribute groupAttributes /* = GroupAttributeNone */)
 {
   CFileItemList ungroupedItems;
   if (!Group(groupBy, baseDir, items, groupedItemsMixed, ungroupedItems, groupAttributes))

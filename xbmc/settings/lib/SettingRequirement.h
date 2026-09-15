@@ -27,10 +27,11 @@
 class CSettingRequirementCondition : public CSettingConditionItem
 {
 public:
-  CSettingRequirementCondition(CSettingsManager *settingsManager = NULL)
+  CSettingRequirementCondition(CSettingsManager* settingsManager = NULL)
     : CSettingConditionItem(settingsManager)
-  { }
-  virtual ~CSettingRequirementCondition() { }
+  {
+  }
+  virtual ~CSettingRequirementCondition() {}
 
   virtual bool Check() const;
 };
@@ -38,21 +39,28 @@ public:
 class CSettingRequirementConditionCombination : public CSettingConditionCombination
 {
 public:
-  CSettingRequirementConditionCombination(CSettingsManager *settingsManager = NULL)
+  CSettingRequirementConditionCombination(CSettingsManager* settingsManager = NULL)
     : CSettingConditionCombination(settingsManager)
-  { }
-  virtual ~CSettingRequirementConditionCombination() { }
+  {
+  }
+  virtual ~CSettingRequirementConditionCombination() {}
 
   virtual bool Check() const;
 
 private:
-  virtual CBooleanLogicOperation* newOperation() { return new CSettingRequirementConditionCombination(m_settingsManager); }
-  virtual CBooleanLogicValue* newValue() { return new CSettingRequirementCondition(m_settingsManager); }
+  virtual CBooleanLogicOperation* newOperation()
+  {
+    return new CSettingRequirementConditionCombination(m_settingsManager);
+  }
+  virtual CBooleanLogicValue* newValue()
+  {
+    return new CSettingRequirementCondition(m_settingsManager);
+  }
 };
 
 class CSettingRequirement : public CSettingCondition
 {
 public:
-  CSettingRequirement(CSettingsManager *settingsManager = NULL);
-  virtual ~CSettingRequirement() { }
+  CSettingRequirement(CSettingsManager* settingsManager = NULL);
+  virtual ~CSettingRequirement() {}
 };

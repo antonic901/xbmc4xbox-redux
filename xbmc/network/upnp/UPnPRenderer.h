@@ -27,43 +27,44 @@ namespace UPNP
 class CRendererReferenceHolder
 {
 public:
-    PLT_DeviceHostReference m_Device;
+  PLT_DeviceHostReference m_Device;
 };
 
 class CUPnPRenderer : public PLT_MediaRenderer
 {
 public:
-    CUPnPRenderer(const char*  friendly_name,
-                  bool         show_ip = false,
-                  const char*  uuid = NULL,
-                  unsigned int port = 0) : PLT_MediaRenderer(friendly_name, show_ip, uuid, port) {}
+  CUPnPRenderer(const char* friendly_name,
+                bool show_ip = false,
+                const char* uuid = NULL,
+                unsigned int port = 0)
+    : PLT_MediaRenderer(friendly_name, show_ip, uuid, port)
+  {
+  }
 
-    void UpdateState();
+  void UpdateState();
 
-    // Http server handler
-    virtual NPT_Result ProcessHttpRequest(NPT_HttpRequest&              request,
-                                          const NPT_HttpRequestContext& context,
-                                          NPT_HttpResponse&             response);
+  // Http server handler
+  virtual NPT_Result ProcessHttpRequest(NPT_HttpRequest& request,
+                                        const NPT_HttpRequestContext& context,
+                                        NPT_HttpResponse& response);
 
-    // AVTransport methods
-    virtual NPT_Result OnNext(PLT_ActionReference& action);
-    virtual NPT_Result OnPause(PLT_ActionReference& action);
-    virtual NPT_Result OnPlay(PLT_ActionReference& action);
-    virtual NPT_Result OnPrevious(PLT_ActionReference& action);
-    virtual NPT_Result OnStop(PLT_ActionReference& action);
-    virtual NPT_Result OnSeek(PLT_ActionReference& action);
-    virtual NPT_Result OnSetAVTransportURI(PLT_ActionReference& action);
+  // AVTransport methods
+  virtual NPT_Result OnNext(PLT_ActionReference& action);
+  virtual NPT_Result OnPause(PLT_ActionReference& action);
+  virtual NPT_Result OnPlay(PLT_ActionReference& action);
+  virtual NPT_Result OnPrevious(PLT_ActionReference& action);
+  virtual NPT_Result OnStop(PLT_ActionReference& action);
+  virtual NPT_Result OnSeek(PLT_ActionReference& action);
+  virtual NPT_Result OnSetAVTransportURI(PLT_ActionReference& action);
 
-    // RenderingControl methods
-    virtual NPT_Result OnSetVolume(PLT_ActionReference& action);
-    virtual NPT_Result OnSetMute(PLT_ActionReference& action);
+  // RenderingControl methods
+  virtual NPT_Result OnSetVolume(PLT_ActionReference& action);
+  virtual NPT_Result OnSetMute(PLT_ActionReference& action);
 
 private:
-    NPT_Result SetupServices(PLT_DeviceData& data);
-    NPT_Result GetMetadata(NPT_String& meta);
-    NPT_Result PlayMedia(const char* uri,
-                         const char* metadata = NULL,
-                         PLT_Action* action = NULL);
+  NPT_Result SetupServices(PLT_DeviceData& data);
+  NPT_Result GetMetadata(NPT_String& meta);
+  NPT_Result PlayMedia(const char* uri, const char* metadata = NULL, PLT_Action* action = NULL);
 };
 
 } /* namespace UPNP */

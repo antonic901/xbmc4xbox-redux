@@ -23,13 +23,13 @@
 
 namespace XFILE
 {
-  class CMusicSearchDirectory : public IDirectory
-  {
-  public:
-    CMusicSearchDirectory(void);
-    virtual ~CMusicSearchDirectory(void);
-    virtual bool GetDirectory(const CURL& url, CFileItemList &items);
-    virtual bool Exists(const CURL& url);
-    virtual bool AllowAll() const { return true; }
-  };
-}
+class CMusicSearchDirectory : public IDirectory
+{
+public:
+  CMusicSearchDirectory(void);
+  virtual ~CMusicSearchDirectory(void);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool Exists(const CURL& url);
+  virtual bool AllowAll() const { return true; }
+};
+} // namespace XFILE

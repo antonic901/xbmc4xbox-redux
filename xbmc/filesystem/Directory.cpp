@@ -43,66 +43,59 @@ using namespace XFILE;
 class CGetDirectory
 {
 private:
-
   struct CResult
   {
-    CResult(const CURL& dir, const CURL& listDir) : m_event(true), m_dir(dir), m_listDir(listDir), m_result(false) {}
-    CEvent        m_event;
+    CResult(const CURL& dir, const CURL& listDir)
+      : m_event(true),
+        m_dir(dir),
+        m_listDir(listDir),
+        m_result(false)
+    {
+    }
+    CEvent m_event;
     CFileItemList m_list;
-    CURL          m_dir;
-    CURL          m_listDir;
-    bool          m_result;
+    CURL m_dir;
+    CURL m_listDir;
+    bool m_result;
   };
 
-  struct CGetJob
-    : CJob
+  struct CGetJob : CJob
   {
-    CGetJob(boost::shared_ptr<IDirectory>& imp
-          , boost::shared_ptr<CResult>& result)
-      : m_result(result)
-      , m_imp(imp)
-    {}
+    CGetJob(boost::shared_ptr<IDirectory>& imp, boost::shared_ptr<CResult>& result)
+      : m_result(result),
+        m_imp(imp)
+    {
+    }
+
   public:
     virtual bool DoWork()
     {
       m_result->m_list.SetURL(m_result->m_listDir);
-      m_result->m_result         = m_imp->GetDirectory(m_result->m_dir, m_result->m_list);
+      m_result->m_result = m_imp->GetDirectory(m_result->m_dir, m_result->m_list);
       m_result->m_event.Set();
       return m_result->m_result;
     }
 
-    boost::shared_ptr<CResult>    m_result;
+    boost::shared_ptr<CResult> m_result;
     boost::shared_ptr<IDirectory> m_imp;
   };
 
 public:
-
   CGetDirectory(boost::shared_ptr<IDirectory>& imp, const CURL& dir, const CURL& listDir)
     : m_result(new CResult(dir, listDir))
   {
-    m_id = CJobManager::GetInstance().AddJob(new CGetJob(imp, m_result)
-                                           , NULL
-                                           , CJob::PRIORITY_HIGH);
+    m_id = CJobManager::GetInstance().AddJob(new CGetJob(imp, m_result), NULL, CJob::PRIORITY_HIGH);
   }
- ~CGetDirectory()
-  {
-    CJobManager::GetInstance().CancelJob(m_id);
-  }
+  ~CGetDirectory() { CJobManager::GetInstance().CancelJob(m_id); }
 
-  CEvent& GetEvent()
-  {
-    return m_result->m_event;
-  }
+  CEvent& GetEvent() { return m_result->m_event; }
 
-  bool Wait(unsigned int timeout)
-  {
-    return m_result->m_event.WaitMSec(timeout);
-  }
+  bool Wait(unsigned int timeout) { return m_result->m_event.WaitMSec(timeout); }
 
   bool GetDirectory(CFileItemList& list)
   {
     /* if it was not finished or failed, return failure */
-    if(!m_result->m_event.WaitMSec(0) || !m_result->m_result)
+    if (!m_result->m_event.WaitMSec(0) || !m_result->m_result)
     {
       list.Clear();
       return false;
@@ -112,17 +105,21 @@ public:
     return true;
   }
   boost::shared_ptr<CResult> m_result;
-  unsigned int               m_id;
+  unsigned int m_id;
 };
 
-
 CDirectory::CDirectory()
-{}
+{
+}
 
 CDirectory::~CDirectory()
-{}
+{
+}
 
-bool CDirectory::GetDirectory(const std::string& strPath, CFileItemList &items, const std::string &strMask, int flags)
+bool CDirectory::GetDirectory(const std::string& strPath,
+                              CFileItemList& items,
+                              const std::string& strMask,
+                              int flags)
 {
   CHints hints;
   hints.flags = flags;
@@ -131,8 +128,11 @@ bool CDirectory::GetDirectory(const std::string& strPath, CFileItemList &items, 
   return GetDirectory(pathToUrl, items, hints);
 }
 
-bool CDirectory::GetDirectory(const std::string& strPath, boost::shared_ptr<IDirectory> pDirectory,
-                              CFileItemList &items, const std::string &strMask, int flags)
+bool CDirectory::GetDirectory(const std::string& strPath,
+                              boost::shared_ptr<IDirectory> pDirectory,
+                              CFileItemList& items,
+                              const std::string& strMask,
+                              int flags)
 {
   CHints hints;
   hints.flags = flags;
@@ -141,13 +141,16 @@ bool CDirectory::GetDirectory(const std::string& strPath, boost::shared_ptr<IDir
   return GetDirectory(pathToUrl, pDirectory, items, hints);
 }
 
-bool CDirectory::GetDirectory(const std::string& strPath, CFileItemList &items, const CHints &hints)
+bool CDirectory::GetDirectory(const std::string& strPath, CFileItemList& items, const CHints& hints)
 {
   const CURL pathToUrl(strPath);
   return GetDirectory(pathToUrl, items, hints);
 }
 
-bool CDirectory::GetDirectory(const CURL& url, CFileItemList &items, const std::string &strMask, int flags)
+bool CDirectory::GetDirectory(const CURL& url,
+                              CFileItemList& items,
+                              const std::string& strMask,
+                              int flags)
 {
   CHints hints;
   hints.flags = flags;
@@ -155,15 +158,17 @@ bool CDirectory::GetDirectory(const CURL& url, CFileItemList &items, const std::
   return GetDirectory(url, items, hints);
 }
 
-bool CDirectory::GetDirectory(const CURL& url, CFileItemList &items, const CHints &hints)
+bool CDirectory::GetDirectory(const CURL& url, CFileItemList& items, const CHints& hints)
 {
   CURL realURL = URIUtils::SubstitutePath(url);
   boost::shared_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realURL));
   return CDirectory::GetDirectory(url, pDirectory, items, hints);
 }
 
-bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDirectory,
-                              CFileItemList &items, const CHints &hints)
+bool CDirectory::GetDirectory(const CURL& url,
+                              boost::shared_ptr<IDirectory> pDirectory,
+                              CFileItemList& items,
+                              const CHints& hints)
 {
   try
   {
@@ -172,7 +177,8 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
       return false;
 
     // check our cache for this path
-    if (g_directoryCache.GetDirectory(realURL.Get(), items, (hints.flags & DIR_FLAG_READ_CACHE) == DIR_FLAG_READ_CACHE))
+    if (g_directoryCache.GetDirectory(realURL.Get(), items,
+                                      (hints.flags & DIR_FLAG_READ_CACHE) == DIR_FLAG_READ_CACHE))
       items.SetURL(url);
     else
     {
@@ -191,7 +197,8 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
         const std::string pathToUrl(url.Get());
 
         // don't change auth if it's set explicitly
-        if (CPasswordManager::GetInstance().IsURLSupported(authUrl) && authUrl.GetUserName().empty())
+        if (CPasswordManager::GetInstance().IsURLSupported(authUrl) &&
+            authUrl.GetUserName().empty())
           CPasswordManager::GetInstance().AuthenticateURL(authUrl);
 
         items.SetURL(url);
@@ -220,14 +227,14 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
         {
           CFileItemPtr item = items[i];
           CURL itemUrl = item->GetURL();
-          // for explicitly credetials 
+          // for explicitly credetials
           if (!realURL.GetUserName().empty())
           {
             // credentials was changed i.e. were stored in the password
             // manager, in this case we can hide them from an item URL,
             // otherwise we have to keep cretendials in an item URL
-            if ( realURL.GetUserName() != authUrl.GetUserName()
-              || realURL.GetPassWord() != authUrl.GetPassWord())
+            if (realURL.GetUserName() != authUrl.GetUserName() ||
+                realURL.GetPassWord() != authUrl.GetPassWord())
             {
               // hide credentials
               itemUrl.SetUserName("");
@@ -265,7 +272,8 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
     }
     // filter hidden files
     //! @todo we shouldn't be checking the gui setting here, callers should use getHidden instead
-    if (!CSettings::GetInstance().GetBool("filelists.showhidden") && !(hints.flags & DIR_FLAG_GET_HIDDEN))
+    if (!CSettings::GetInstance().GetBool("filelists.showhidden") &&
+        !(hints.flags & DIR_FLAG_GET_HIDDEN))
     {
       for (int i = 0; i < items.Size(); ++i)
       {
@@ -279,7 +287,8 @@ bool CDirectory::GetDirectory(const CURL& url, boost::shared_ptr<IDirectory> pDi
 
     //  Should any of the files we read be treated as a directory?
     //  Disable for database folders, as they already contain the extracted items
-    if (!(hints.flags & DIR_FLAG_NO_FILE_DIRS) && !items.IsMusicDb() && !items.IsVideoDb() && !items.IsSmartPlayList())
+    if (!(hints.flags & DIR_FLAG_NO_FILE_DIRS) && !items.IsMusicDb() && !items.IsVideoDb() &&
+        !items.IsSmartPlayList())
       FilterFileDirectories(items, hints.mask);
 
     // Correct items for path substitution
@@ -322,7 +331,7 @@ bool CDirectory::Create(const CURL& url)
 
     boost::movelib::unique_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realURL));
     if (pDirectory.get())
-      if(pDirectory->Create(realURL))
+      if (pDirectory->Create(realURL))
         return true;
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
@@ -380,7 +389,7 @@ bool CDirectory::Remove(const std::string& strPath)
 
 bool CDirectory::RemoveRecursive(const std::string& strPath)
 {
-  return RemoveRecursive(CURL( strPath ));
+  return RemoveRecursive(CURL(strPath));
 }
 
 bool CDirectory::Remove(const CURL& url)
@@ -394,7 +403,7 @@ bool CDirectory::Remove(const CURL& url)
 
     boost::movelib::unique_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realURL));
     if (pDirectory.get())
-      if(pDirectory->Remove(authUrl))
+      if (pDirectory->Remove(authUrl))
       {
         g_directoryCache.ClearFile(realURL.Get());
         return true;
@@ -420,7 +429,7 @@ bool CDirectory::RemoveRecursive(const CURL& url)
 
     boost::movelib::unique_ptr<IDirectory> pDirectory(CFactoryDirectory::Create(realURL));
     if (pDirectory.get())
-      if(pDirectory->RemoveRecursive(authUrl))
+      if (pDirectory->RemoveRecursive(authUrl))
       {
         g_directoryCache.ClearFile(realURL.Get());
         return true;
@@ -435,22 +444,22 @@ bool CDirectory::RemoveRecursive(const CURL& url)
   return false;
 }
 
-void CDirectory::FilterFileDirectories(CFileItemList &items, const std::string &mask)
+void CDirectory::FilterFileDirectories(CFileItemList& items, const std::string& mask)
 {
-  for (int i=0; i< items.Size(); ++i)
+  for (int i = 0; i < items.Size(); ++i)
   {
-    CFileItemPtr pItem=items[i];
+    CFileItemPtr pItem = items[i];
     if (!pItem->m_bIsFolder && pItem->IsFileFolder(EFILEFOLDER_TYPE_ALWAYS))
     {
-      boost::movelib::unique_ptr<IFileDirectory> pDirectory(CFactoryFileDirectory::Create(pItem->GetURL(),pItem.get(),mask));
+      boost::movelib::unique_ptr<IFileDirectory> pDirectory(
+          CFactoryFileDirectory::Create(pItem->GetURL(), pItem.get(), mask));
       if (pDirectory.get())
         pItem->m_bIsFolder = true;
-      else
-        if (pItem->m_bIsFolder)
-        {
-          items.Remove(i);
-          i--; // don't confuse loop
-        }
+      else if (pItem->m_bIsFolder)
+      {
+        items.Remove(i);
+        i--; // don't confuse loop
+      }
     }
   }
 }

@@ -91,7 +91,7 @@ bool CBuiltins::HasCommand(const std::string& execString)
   CUtil::SplitExecFunction(execString, function, parameters);
   StringUtils::ToLower(function);
 
-  const CBuiltins::CommandMap::iterator &it = m_command.find(function);
+  const CBuiltins::CommandMap::iterator& it = m_command.find(function);
   if (it != m_command.end())
   {
     if (it->second.parameters == 0 || it->second.parameters <= parameters.size())
@@ -109,12 +109,8 @@ bool CBuiltins::IsSystemPowerdownCommand(const std::string& execString)
   StringUtils::ToLower(execute);
 
   // Check if action is resulting in system powerdown.
-  if (execute == "reboot"    ||
-      execute == "restart"   ||
-      execute == "reset"     ||
-      execute == "powerdown" ||
-      execute == "hibernate" ||
-      execute == "suspend" )
+  if (execute == "reboot" || execute == "restart" || execute == "reset" || execute == "powerdown" ||
+      execute == "hibernate" || execute == "suspend")
   {
     return true;
   }
@@ -138,7 +134,7 @@ bool CBuiltins::IsSystemPowerdownCommand(const std::string& execString)
   return false;
 }
 
-void CBuiltins::GetHelp(std::string &help)
+void CBuiltins::GetHelp(std::string& help)
 {
   help.clear();
 
@@ -159,15 +155,17 @@ int CBuiltins::Execute(const std::string& execString)
   CUtil::SplitExecFunction(execString, execute, params);
   StringUtils::ToLower(execute);
 
-  const CBuiltins::CommandMap::iterator &it = m_command.find(execute);
+  const CBuiltins::CommandMap::iterator& it = m_command.find(execute);
   if (it != m_command.end())
   {
     if (it->second.parameters == 0 || params.size() >= it->second.parameters)
       return it->second.Execute(params);
     else
     {
-      CLog::Log(LOGERROR, "%s called with invalid number of parameters (should be: %" PRIdS ", is %" PRIdS")",
-                          execute.c_str(), it->second.parameters, params.size());
+      CLog::Log(LOGERROR,
+                "%s called with invalid number of parameters (should be: %" PRIdS ", is %" PRIdS
+                ")",
+                execute.c_str(), it->second.parameters, params.size());
       return -1;
     }
   }

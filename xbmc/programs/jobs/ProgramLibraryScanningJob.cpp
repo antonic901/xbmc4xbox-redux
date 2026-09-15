@@ -22,14 +22,17 @@
 #include "programs/ProgramDatabase.h"
 #include "Util.h"
 
-CProgramLibraryScanningJob::CProgramLibraryScanningJob(const std::string& directory, bool showProgress /* = true */)
+CProgramLibraryScanningJob::CProgramLibraryScanningJob(const std::string& directory,
+                                                       bool showProgress /* = true */)
   : m_scanner(),
     m_directory(directory),
     m_showProgress(showProgress)
-{ }
+{
+}
 
 CProgramLibraryScanningJob::~CProgramLibraryScanningJob()
-{ }
+{
+}
 
 bool CProgramLibraryScanningJob::Cancel()
 {
@@ -45,14 +48,15 @@ bool CProgramLibraryScanningJob::operator==(const CJob* job) const
   if (strcmp(job->GetType(), GetType()) != 0)
     return false;
 
-  const CProgramLibraryScanningJob* scanningJob = dynamic_cast<const CProgramLibraryScanningJob*>(job);
+  const CProgramLibraryScanningJob* scanningJob =
+      dynamic_cast<const CProgramLibraryScanningJob*>(job);
   if (scanningJob == NULL)
     return false;
 
   return m_directory == scanningJob->m_directory;
 }
 
-bool CProgramLibraryScanningJob::Work(CProgramDatabase &db)
+bool CProgramLibraryScanningJob::Work(CProgramDatabase& db)
 {
   m_scanner.ShowDialog(m_showProgress);
   m_scanner.Start(m_directory);

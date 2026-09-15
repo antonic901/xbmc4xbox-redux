@@ -31,8 +31,8 @@
 #include "GUITexture.h"
 #include "GUIControl.h"
 
-#define ALLOWED_DIRECTIONS_ALL   0
-#define ALLOWED_DIRECTIONS_UPDOWN  1
+#define ALLOWED_DIRECTIONS_ALL 0
+#define ALLOWED_DIRECTIONS_UPDOWN 1
 #define ALLOWED_DIRECTIONS_LEFTRIGHT 2
 
 #define DIRECTION_NONE 0
@@ -42,8 +42,8 @@
 #define DIRECTION_RIGHT 4
 
 // normal alignment is TOP LEFT 0 = topleft, 1 = topright
-#define ALIGN_RIGHT   1
-#define ALIGN_BOTTOM  2
+#define ALIGN_RIGHT 1
+#define ALIGN_BOTTOM 2
 
 /*!
  \ingroup controls
@@ -52,16 +52,21 @@
 class CGUIMoverControl : public CGUIControl
 {
 public:
-  CGUIMoverControl(int parentID, int controlID,
-                   float posX, float posY, float width, float height,
-                   const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus);
+  CGUIMoverControl(int parentID,
+                   int controlID,
+                   float posX,
+                   float posY,
+                   float width,
+                   float height,
+                   const CTextureInfo& textureFocus,
+                   const CTextureInfo& textureNoFocus);
 
   virtual ~CGUIMoverControl(void);
-  virtual CGUIMoverControl *Clone() const { return new CGUIMoverControl(*this); };
+  virtual CGUIMoverControl* Clone() const { return new CGUIMoverControl(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual void OnUp();
   virtual void OnDown();
   virtual void OnLeft();
@@ -74,8 +79,8 @@ public:
   virtual void SetPosition(float posX, float posY);
   void SetLimits(int iX1, int iY1, int iX2, int iY2);
   void SetLocation(int iLocX, int iLocY, bool bSetPosition = true);
-  int GetXLocation() const { return m_iLocationX;};
-  int GetYLocation() const { return m_iLocationY;};
+  int GetXLocation() const { return m_iLocationX; };
+  int GetYLocation() const { return m_iLocationY; };
   virtual bool CanFocus() const { return true; };
 
 protected:

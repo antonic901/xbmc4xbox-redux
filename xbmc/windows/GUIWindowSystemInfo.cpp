@@ -28,19 +28,19 @@
 #include "storage/MediaManager.h"
 #include "guiinfo/GUIInfoLabels.h"
 
-#define CONTROL_BT_HDD			92
-#define CONTROL_BT_DVD      93
-#define CONTROL_BT_STORAGE  94
-#define CONTROL_BT_DEFAULT  95
-#define CONTROL_BT_NETWORK  96
-#define CONTROL_BT_VIDEO    97
+#define CONTROL_BT_HDD 92
+#define CONTROL_BT_DVD 93
+#define CONTROL_BT_STORAGE 94
+#define CONTROL_BT_DEFAULT 95
+#define CONTROL_BT_NETWORK 96
+#define CONTROL_BT_VIDEO 97
 #define CONTROL_BT_HARDWARE 98
 
-#define CONTROL_START       CONTROL_BT_HDD
-#define CONTROL_END         CONTROL_BT_HARDWARE
+#define CONTROL_START CONTROL_BT_HDD
+#define CONTROL_END CONTROL_BT_HARDWARE
 
-CGUIWindowSystemInfo::CGUIWindowSystemInfo(void) :
-    CGUIWindow(WINDOW_SYSTEM_INFORMATION, "SettingsSystemInfo.xml")
+CGUIWindowSystemInfo::CGUIWindowSystemInfo(void)
+  : CGUIWindow(WINDOW_SYSTEM_INFORMATION, "SettingsSystemInfo.xml")
 {
   m_section = CONTROL_BT_DEFAULT;
   m_loadType = KEEP_IN_MEMORY;
@@ -74,7 +74,8 @@ bool CGUIWindowSystemInfo::OnMessage(CGUIMessage& message)
     {
       CGUIWindow::OnMessage(message);
       int focusedControl = GetFocusedControlID();
-      if (m_section != focusedControl && focusedControl >= CONTROL_START && focusedControl <= CONTROL_END)
+      if (m_section != focusedControl && focusedControl >= CONTROL_START &&
+          focusedControl <= CONTROL_END)
       {
         ResetLabels();
         m_section = focusedControl;
@@ -103,9 +104,9 @@ void CGUIWindowSystemInfo::FrameMove()
     SetControlLabel(i++, "%s: %s", 12394, SYSTEM_TOTALUPTIME);
   }
 
-  else if(m_section == CONTROL_BT_HDD)
+  else if (m_section == CONTROL_BT_HDD)
   {
-    SET_CONTROL_LABEL(40,g_localizeStrings.Get(20156));
+    SET_CONTROL_LABEL(40, g_localizeStrings.Get(20156));
     SetControlLabel(i++, "%s %s", 38725, SYSTEM_HDD_MODEL);
     SetControlLabel(i++, "%s %s", 38726, SYSTEM_HDD_SERIAL);
     SetControlLabel(i++, "%s %s", 38727, SYSTEM_HDD_FIRMWARE);
@@ -117,9 +118,9 @@ void CGUIWindowSystemInfo::FrameMove()
     SetControlLabel(i++, "%s %s", 38722, SYSTEM_HDD_TEMPERATURE);
   }
 
-  else if(m_section == CONTROL_BT_DVD)
+  else if (m_section == CONTROL_BT_DVD)
   {
-    SET_CONTROL_LABEL(40,g_localizeStrings.Get(20157));
+    SET_CONTROL_LABEL(40, g_localizeStrings.Get(20157));
     SetControlLabel(i++, "%s %s", 38723, SYSTEM_DVD_MODEL);
     SetControlLabel(i++, "%s %s", 38724, SYSTEM_DVD_FIRMWARE);
     SetControlLabel(i++, "%s %s", 13294, SYSTEM_DVD_ZONE);
@@ -141,12 +142,12 @@ void CGUIWindowSystemInfo::FrameMove()
     SET_CONTROL_LABEL(9, g_infoManager.GetLabel(SYSTEM_FREE_SPACE_Z));
     SetControlLabel(10, "%s: %s", 20161, SYSTEM_TOTAL_SPACE);
     SetControlLabel(11, "%s: %s", 20161, SYSTEM_USED_SPACE_PERCENT);
-    SET_CONTROL_LABEL(12,g_infoManager.GetLabel(SYSTEM_FREE_SPACE_PERCENT));
+    SET_CONTROL_LABEL(12, g_infoManager.GetLabel(SYSTEM_FREE_SPACE_PERCENT));
   }
 
   else if (m_section == CONTROL_BT_NETWORK)
   {
-    SET_CONTROL_LABEL(40,g_localizeStrings.Get(20158));
+    SET_CONTROL_LABEL(40, g_localizeStrings.Get(20158));
     SetControlLabel(i++, "%s %s", 146, NETWORK_IS_DHCP);
     SetControlLabel(i++, "%s %s", 151, NETWORK_LINK_STATE);
     SetControlLabel(i++, "%s: %s", 149, NETWORK_MAC_ADDRESS);
@@ -160,7 +161,7 @@ void CGUIWindowSystemInfo::FrameMove()
 
   else if (m_section == CONTROL_BT_VIDEO)
   {
-    SET_CONTROL_LABEL(40,g_localizeStrings.Get(20159));
+    SET_CONTROL_LABEL(40, g_localizeStrings.Get(20159));
     SetControlLabel(i++, "%s %s", 13286, SYSTEM_VIDEO_ENCODER_INFO);
     SetControlLabel(i++, "%s %s", 13287, SYSTEM_SCREEN_RESOLUTION);
     SetControlLabel(i++, "%s %s", 13292, SYSTEM_AV_PACK_INFO);
@@ -169,7 +170,7 @@ void CGUIWindowSystemInfo::FrameMove()
 
   else if (m_section == CONTROL_BT_HARDWARE)
   {
-    SET_CONTROL_LABEL(40,g_localizeStrings.Get(20160));
+    SET_CONTROL_LABEL(40, g_localizeStrings.Get(20160));
     SetControlLabel(i++, "%s %s", 38738, SYSTEM_XBOX_VERSION);
     SetControlLabel(i++, "%s %s", 38739, SYSTEM_XBOX_SERIAL);
     SetControlLabel(i++, "%s %s", 13284, SYSTEM_CPUFREQUENCY);
@@ -193,9 +194,9 @@ void CGUIWindowSystemInfo::ResetLabels()
   }
 }
 
-void CGUIWindowSystemInfo::SetControlLabel(int id, const char *format, int label, int info)
+void CGUIWindowSystemInfo::SetControlLabel(int id, const char* format, int label, int info)
 {
   std::string tmpStr = StringUtils::Format(format, g_localizeStrings.Get(label).c_str(),
-      g_infoManager.GetLabel(info).c_str());
+                                           g_infoManager.GetLabel(info).c_str());
   SET_CONTROL_LABEL(id, tmpStr);
 }

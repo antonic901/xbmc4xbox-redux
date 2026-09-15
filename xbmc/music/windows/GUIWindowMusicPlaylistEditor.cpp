@@ -35,17 +35,17 @@
 #include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
 
-#define CONTROL_LABELFILES        12
+#define CONTROL_LABELFILES 12
 
-#define CONTROL_LOAD_PLAYLIST      6
-#define CONTROL_SAVE_PLAYLIST      7
-#define CONTROL_CLEAR_PLAYLIST     8
+#define CONTROL_LOAD_PLAYLIST 6
+#define CONTROL_SAVE_PLAYLIST 7
+#define CONTROL_CLEAR_PLAYLIST 8
 
-#define CONTROL_PLAYLIST         100
-#define CONTROL_LABEL_PLAYLIST   101
+#define CONTROL_PLAYLIST 100
+#define CONTROL_LABEL_PLAYLIST 101
 
 CGUIWindowMusicPlaylistEditor::CGUIWindowMusicPlaylistEditor(void)
-    : CGUIWindowMusicBase(WINDOW_MUSIC_PLAYLIST_EDITOR, "MyMusicPlaylistEditor.xml")
+  : CGUIWindowMusicBase(WINDOW_MUSIC_PLAYLIST_EDITOR, "MyMusicPlaylistEditor.xml")
 {
   m_playlistThumbLoader.SetObserver(this);
   m_playlist = new CFileItemList;
@@ -65,17 +65,17 @@ bool CGUIWindowMusicPlaylistEditor::OnBack(int actionID)
 
 bool CGUIWindowMusicPlaylistEditor::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_DEINIT:
-    if (m_thumbLoader.IsLoading())
-      m_thumbLoader.StopThread();
-    if (m_playlistThumbLoader.IsLoading())
-      m_playlistThumbLoader.StopThread();
-    CGUIWindowMusicBase::OnMessage(message);
-    return true;
+    case GUI_MSG_WINDOW_DEINIT:
+      if (m_thumbLoader.IsLoading())
+        m_thumbLoader.StopThread();
+      if (m_playlistThumbLoader.IsLoading())
+        m_playlistThumbLoader.StopThread();
+      CGUIWindowMusicBase::OnMessage(message);
+      return true;
 
-  case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_INIT:
     {
       if (m_vecItems->GetPath() == "?")
         m_vecItems->SetPath("");
@@ -88,14 +88,14 @@ bool CGUIWindowMusicPlaylistEditor::OnMessage(CGUIMessage& message)
     }
     break;
 
-  case GUI_MSG_NOTIFY_ALL:
+    case GUI_MSG_NOTIFY_ALL:
     {
-      if (message.GetParam1()==GUI_MSG_REMOVED_MEDIA)
+      if (message.GetParam1() == GUI_MSG_REMOVED_MEDIA)
         DeleteRemoveableMediaDirectoryCache();
     }
     break;
 
-  case GUI_MSG_CLICKED:
+    case GUI_MSG_CLICKED:
     {
       int control = message.GetSenderId();
       if (control == CONTROL_PLAYLIST)
@@ -104,7 +104,8 @@ bool CGUIWindowMusicPlaylistEditor::OnMessage(CGUIMessage& message)
         int action = message.GetParam1();
         if (action == ACTION_CONTEXT_MENU || action == ACTION_MOUSE_RIGHT_CLICK)
           OnPlaylistContext();
-        else if (action == ACTION_QUEUE_ITEM || action == ACTION_DELETE_ITEM || action == ACTION_MOUSE_MIDDLE_CLICK)
+        else if (action == ACTION_QUEUE_ITEM || action == ACTION_DELETE_ITEM ||
+                 action == ACTION_MOUSE_MIDDLE_CLICK)
           OnDeletePlaylistItem(item);
         else if (action == ACTION_MOVE_ITEM_UP)
           OnMovePlaylistItem(item, -1);
@@ -134,7 +135,8 @@ bool CGUIWindowMusicPlaylistEditor::OnMessage(CGUIMessage& message)
   return CGUIWindowMusicBase::OnMessage(message);
 }
 
-bool CGUIWindowMusicPlaylistEditor::GetDirectory(const std::string &strDirectory, CFileItemList &items)
+bool CGUIWindowMusicPlaylistEditor::GetDirectory(const std::string& strDirectory,
+                                                 CFileItemList& items)
 {
   items.Clear();
   if (strDirectory.empty())
@@ -171,7 +173,7 @@ bool CGUIWindowMusicPlaylistEditor::GetDirectory(const std::string &strDirectory
   return true;
 }
 
-void CGUIWindowMusicPlaylistEditor::OnPrepareFileItems(CFileItemList &items)
+void CGUIWindowMusicPlaylistEditor::OnPrepareFileItems(CFileItemList& items)
 {
   CGUIWindowMusicBase::OnPrepareFileItems(items);
 
@@ -183,7 +185,8 @@ void CGUIWindowMusicPlaylistEditor::UpdateButtons()
   CGUIWindowMusicBase::UpdateButtons();
 
   // Update object count label
-  std::string items = StringUtils::Format("%i %s", m_vecItems->GetObjectCount(), g_localizeStrings.Get(127).c_str()); // " 14 Objects"
+  std::string items = StringUtils::Format("%i %s", m_vecItems->GetObjectCount(),
+                                          g_localizeStrings.Get(127).c_str()); // " 14 Objects"
   SET_CONTROL_LABEL(CONTROL_LABELFILES, items);
 }
 
@@ -223,7 +226,8 @@ void CGUIWindowMusicPlaylistEditor::OnQueueItem(int iItem)
   AppendToPlaylist(newItems);
 }
 
-bool CGUIWindowMusicPlaylistEditor::Update(const std::string &strDirectory, bool updateFilterPath /* = true */)
+bool CGUIWindowMusicPlaylistEditor::Update(const std::string& strDirectory,
+                                           bool updateFilterPath /* = true */)
 {
   if (m_thumbLoader.IsLoading())
     m_thumbLoader.StopThread();
@@ -261,7 +265,8 @@ void CGUIWindowMusicPlaylistEditor::UpdatePlaylist()
   OnMessage(msg);
 
   // indicate how many songs we have
-  std::string items = StringUtils::Format("%i %s", m_playlist->Size(), g_localizeStrings.Get(134).c_str()); // "123 Songs"
+  std::string items = StringUtils::Format("%i %s", m_playlist->Size(),
+                                          g_localizeStrings.Get(134).c_str()); // "123 Songs"
   SET_CONTROL_LABEL(CONTROL_LABEL_PLAYLIST, items);
 
   m_playlistThumbLoader.Load(*m_playlist);
@@ -279,7 +284,8 @@ int CGUIWindowMusicPlaylistEditor::GetCurrentPlaylistItem()
 
 void CGUIWindowMusicPlaylistEditor::OnDeletePlaylistItem(int item)
 {
-  if (item < 0) return;
+  if (item < 0)
+    return;
   m_playlist->Remove(item);
   UpdatePlaylist();
   // select the next item
@@ -289,7 +295,8 @@ void CGUIWindowMusicPlaylistEditor::OnDeletePlaylistItem(int item)
 
 void CGUIWindowMusicPlaylistEditor::OnMovePlaylistItem(int item, int direction)
 {
-  if (item < 0) return;
+  if (item < 0)
+    return;
   if (item + direction >= m_playlist->Size() || item + direction < 0)
     return;
   m_playlist->Swap(item, item + direction);
@@ -298,7 +305,7 @@ void CGUIWindowMusicPlaylistEditor::OnMovePlaylistItem(int item, int direction)
   OnMessage(msg);
 }
 
-void CGUIWindowMusicPlaylistEditor::GetContextButtons(int itemNumber, CContextButtons &buttons)
+void CGUIWindowMusicPlaylistEditor::GetContextButtons(int itemNumber, CContextButtons& buttons)
 {
   CFileItemPtr item;
   if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
@@ -322,19 +329,19 @@ bool CGUIWindowMusicPlaylistEditor::OnContextButton(int itemNumber, CONTEXT_BUTT
 {
   switch (button)
   {
-  case CONTEXT_BUTTON_MOVE_ITEM_UP:
-    OnMovePlaylistItem(GetCurrentPlaylistItem(), -1);
-    return true;
+    case CONTEXT_BUTTON_MOVE_ITEM_UP:
+      OnMovePlaylistItem(GetCurrentPlaylistItem(), -1);
+      return true;
 
-  case CONTEXT_BUTTON_MOVE_ITEM_DOWN:
-    OnMovePlaylistItem(GetCurrentPlaylistItem(), 1);
-    return true;
+    case CONTEXT_BUTTON_MOVE_ITEM_DOWN:
+      OnMovePlaylistItem(GetCurrentPlaylistItem(), 1);
+      return true;
 
-  case CONTEXT_BUTTON_DELETE:
-    OnDeletePlaylistItem(GetCurrentPlaylistItem());
-    return true;
-  default:
-    break;
+    case CONTEXT_BUTTON_DELETE:
+      OnDeletePlaylistItem(GetCurrentPlaylistItem());
+      return true;
+    default:
+      break;
   }
   return CGUIWindowMusicBase::OnContextButton(itemNumber, button);
 }
@@ -351,11 +358,12 @@ void CGUIWindowMusicPlaylistEditor::OnLoadPlaylist()
   share.strPath = "special://musicplaylists/";
   if (find(shares.begin(), shares.end(), share) == shares.end())
     shares.push_back(share);
-  if (CGUIDialogFileBrowser::ShowAndGetFile(shares, ".m3u|.pls|.b4s|.wpl", g_localizeStrings.Get(656), playlist))
+  if (CGUIDialogFileBrowser::ShowAndGetFile(shares, ".m3u|.pls|.b4s|.wpl",
+                                            g_localizeStrings.Get(656), playlist))
     LoadPlaylist(playlist);
 }
 
-void CGUIWindowMusicPlaylistEditor::LoadPlaylist(const std::string &playlist)
+void CGUIWindowMusicPlaylistEditor::LoadPlaylist(const std::string& playlist)
 {
   const CURL pathToUrl(playlist);
   if (pathToUrl.IsProtocol("newplaylist"))
@@ -386,19 +394,19 @@ void CGUIWindowMusicPlaylistEditor::OnSavePlaylist()
     PLAYLIST::CPlayListM3U playlist;
     playlist.Add(*m_playlist);
     std::string path = URIUtils::AddFileToFolder(
-      CSettings::GetInstance().GetString("system.playlistspath"),
-      "music",
-      name + ".m3u");
+        CSettings::GetInstance().GetString("system.playlistspath"), "music", name + ".m3u");
 
     playlist.Save(path);
     m_strLoadedPlaylist = name;
   }
 }
 
-void CGUIWindowMusicPlaylistEditor::AppendToPlaylist(CFileItemList &newItems)
+void CGUIWindowMusicPlaylistEditor::AppendToPlaylist(CFileItemList& newItems)
 {
   OnRetrieveMusicInfo(newItems);
-  FormatItemLabels(newItems, LABEL_MASKS(CSettings::GetInstance().GetString("musicfiles.trackformat"), "%D", "%L", ""));
+  FormatItemLabels(
+      newItems,
+      LABEL_MASKS(CSettings::GetInstance().GetString("musicfiles.trackformat"), "%D", "%L", ""));
   m_playlist->Append(newItems);
   UpdatePlaylist();
 }

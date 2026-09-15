@@ -36,19 +36,19 @@ D3DFORMAT GetD3DFormat(XB_D3DFORMAT format)
 {
   switch (format)
   {
-  case XB_D3DFMT_A8R8G8B8:
-  case XB_D3DFMT_LIN_A8R8G8B8:
-    return D3DFMT_LIN_A8R8G8B8;
-  case XB_D3DFMT_DXT1:
-    return D3DFMT_DXT1;
-  case XB_D3DFMT_DXT2:
-    return D3DFMT_DXT2;
-  case XB_D3DFMT_DXT4:
-    return D3DFMT_DXT4;
-  case XB_D3DFMT_P8:
-    return D3DFMT_LIN_A8R8G8B8;
-  default:
-    return D3DFMT_UNKNOWN;
+    case XB_D3DFMT_A8R8G8B8:
+    case XB_D3DFMT_LIN_A8R8G8B8:
+      return D3DFMT_LIN_A8R8G8B8;
+    case XB_D3DFMT_DXT1:
+      return D3DFMT_DXT1;
+    case XB_D3DFMT_DXT2:
+      return D3DFMT_DXT2;
+    case XB_D3DFMT_DXT4:
+      return D3DFMT_DXT4;
+    case XB_D3DFMT_P8:
+      return D3DFMT_LIN_A8R8G8B8;
+    default:
+      return D3DFMT_UNKNOWN;
   }
 }
 
@@ -56,16 +56,16 @@ DWORD BytesPerPixelFromFormat(XB_D3DFORMAT format)
 {
   switch (format)
   {
-  case XB_D3DFMT_A8R8G8B8:
-  case XB_D3DFMT_LIN_A8R8G8B8:
-  case XB_D3DFMT_DXT4:
-    return 4;
-  case XB_D3DFMT_P8:
-  case XB_D3DFMT_DXT1:
-  case XB_D3DFMT_DXT2:
-    return 1;
-  default:
-    return 0;
+    case XB_D3DFMT_A8R8G8B8:
+    case XB_D3DFMT_LIN_A8R8G8B8:
+    case XB_D3DFMT_DXT4:
+      return 4;
+    case XB_D3DFMT_P8:
+    case XB_D3DFMT_DXT1:
+    case XB_D3DFMT_DXT2:
+      return 1;
+    default:
+      return 0;
   }
 }
 
@@ -76,7 +76,8 @@ bool IsPalettedFormat(XB_D3DFORMAT format)
   return false;
 }
 
-void ParseTextureHeader(D3DTexture *tex, XB_D3DFORMAT &fmt, DWORD &width, DWORD &height, DWORD &pitch, DWORD &offset)
+void ParseTextureHeader(
+    D3DTexture* tex, XB_D3DFORMAT& fmt, DWORD& width, DWORD& height, DWORD& pitch, DWORD& offset)
 {
   fmt = (XB_D3DFORMAT)((tex->Format & 0xff00) >> 8);
   offset = tex->Data;
@@ -98,15 +99,15 @@ bool IsSwizzledFormat(XB_D3DFORMAT format)
 {
   switch (format)
   {
-  case XB_D3DFMT_A8R8G8B8:
-  case XB_D3DFMT_P8:
-    return true;
-  default:
-    return false;
+    case XB_D3DFMT_A8R8G8B8:
+    case XB_D3DFMT_P8:
+      return true;
+    default:
+      return false;
   }
 }
 
-HRESULT XGWriteSurfaceToFile(LPDIRECT3DSURFACE8 pSurface, const char *fileName)
+HRESULT XGWriteSurfaceToFile(LPDIRECT3DSURFACE8 pSurface, const char* fileName)
 {
   D3DLOCKED_RECT lr;
   D3DSURFACE_DESC desc;
@@ -118,8 +119,8 @@ HRESULT XGWriteSurfaceToFile(LPDIRECT3DSURFACE8 pSurface, const char *fileName)
     {
       // create a 24bit BMP header
       BMPHEAD bh;
-      memset((char *)&bh,0,sizeof(BMPHEAD));
-      memcpy(bh.id,"BM",2);
+      memset((char*)&bh, 0, sizeof(BMPHEAD));
+      memcpy(bh.id, "BM", 2);
       bh.headersize = 54L;
       bh.infoSize = 0x28L;
       bh.width = desc.Width;
@@ -138,15 +139,15 @@ HRESULT XGWriteSurfaceToFile(LPDIRECT3DSURFACE8 pSurface, const char *fileName)
       // filesize = headersize + bytesPerLine * number of lines
       bh.filesize = bh.headersize + bytesPerLine * bh.height;
 
-      file.Write(&bh.id, sizeof(bh) - 2*sizeof(char));
+      file.Write(&bh.id, sizeof(bh) - 2 * sizeof(char));
 
-      BYTE *lineBuf = new BYTE[bytesPerLine];
+      BYTE* lineBuf = new BYTE[bytesPerLine];
       memset(lineBuf, 0, bytesPerLine);
       // lines are stored in BMPs upside down
       for (UINT y = desc.Height; y; --y)
       {
-        BYTE *s = (BYTE *)lr.pBits + (y - 1) * lr.Pitch;
-        BYTE *d = lineBuf;
+        BYTE* s = (BYTE*)lr.pBits + (y - 1) * lr.Pitch;
+        BYTE* d = lineBuf;
         for (UINT x = 0; x < desc.Width; x++)
         {
           *d++ = *(s + x * 4);
@@ -172,7 +173,8 @@ HRESULT XGWriteSurfaceToFile(LPDIRECT3DSURFACE8 pSurface, const char *fileName)
 // 10 11 14 15 ...
 
 // Currently only works for 32bit and 8bit textures, with power of 2 width and height
-void Unswizzle(const void *src, unsigned int depth, unsigned int width, unsigned int height, void *dest)
+void Unswizzle(
+    const void* src, unsigned int depth, unsigned int width, unsigned int height, void* dest)
 {
   for (UINT y = 0; y < height; y++)
   {
@@ -180,54 +182,55 @@ void Unswizzle(const void *src, unsigned int depth, unsigned int width, unsigned
     if (y < width)
     {
       for (int bit = 0; bit < 16; bit++)
-        sy |= ((y >> bit) & 1) << (2*bit);
+        sy |= ((y >> bit) & 1) << (2 * bit);
       sy <<= 1; // y counts twice
     }
     else
     {
       UINT y_mask = y % width;
       for (int bit = 0; bit < 16; bit++)
-        sy |= ((y_mask >> bit) & 1) << (2*bit);
+        sy |= ((y_mask >> bit) & 1) << (2 * bit);
       sy <<= 1; // y counts twice
       sy += (y / width) * width * width;
     }
-    BYTE *d = (BYTE *)dest + y * width * depth;
+    BYTE* d = (BYTE*)dest + y * width * depth;
     for (UINT x = 0; x < width; x++)
     {
       UINT sx = 0;
       if (x < height * 2)
       {
         for (int bit = 0; bit < 16; bit++)
-          sx |= ((x >> bit) & 1) << (2*bit);
+          sx |= ((x >> bit) & 1) << (2 * bit);
       }
       else
       {
-        int x_mask = x % (2*height);
+        int x_mask = x % (2 * height);
         for (int bit = 0; bit < 16; bit++)
-          sx |= ((x_mask >> bit) & 1) << (2*bit);
+          sx |= ((x_mask >> bit) & 1) << (2 * bit);
         sx += (x / (2 * height)) * 2 * height * height;
       }
-      BYTE *s = (BYTE *)src + (sx + sy)*depth;
+      BYTE* s = (BYTE*)src + (sx + sy) * depth;
       for (unsigned int i = 0; i < depth; ++i)
         *d++ = *s++;
     }
   }
 }
 
-void GetTextureFromData(D3DTexture *pTex, void *texData, LPDIRECT3DTEXTURE8 *ppTexture)
+void GetTextureFromData(D3DTexture* pTex, void* texData, LPDIRECT3DTEXTURE8* ppTexture)
 {
   XB_D3DFORMAT fmt;
   DWORD width, height, pitch, offset;
   ParseTextureHeader(pTex, fmt, width, height, pitch, offset);
-  D3DXCreateTexture(g_graphicsContext.Get3DDevice(), width, height, 1, 0, GetD3DFormat(fmt), D3DPOOL_MANAGED, ppTexture);
+  D3DXCreateTexture(g_graphicsContext.Get3DDevice(), width, height, 1, 0, GetD3DFormat(fmt),
+                    D3DPOOL_MANAGED, ppTexture);
   D3DLOCKED_RECT lr;
   if (D3D_OK == (*ppTexture)->LockRect(0, &lr, NULL, 0))
   {
-    BYTE *texDataStart = (BYTE *)texData;
-    DWORD *color = (DWORD *)texData;
+    BYTE* texDataStart = (BYTE*)texData;
+    DWORD* color = (DWORD*)texData;
     texDataStart += offset;
     DWORD destPitch = lr.Pitch;
-    if (fmt == XB_D3DFMT_DXT1)  // Not sure if these are 100% correct, but they seem to work :P
+    if (fmt == XB_D3DFMT_DXT1) // Not sure if these are 100% correct, but they seem to work :P
     {
       pitch /= 2;
       destPitch /= 4;
@@ -243,7 +246,7 @@ void GetTextureFromData(D3DTexture *pTex, void *texData, LPDIRECT3DTEXTURE8 *ppT
     }
     if (IsSwizzledFormat(fmt))
     { // first we unswizzle
-      BYTE *unswizzled = new BYTE[pitch * height];
+      BYTE* unswizzled = new BYTE[pitch * height];
       Unswizzle(texDataStart, BytesPerPixelFromFormat(fmt), width, height, unswizzled);
       texDataStart = unswizzled;
     }
@@ -251,8 +254,8 @@ void GetTextureFromData(D3DTexture *pTex, void *texData, LPDIRECT3DTEXTURE8 *ppT
     {
       for (unsigned int y = 0; y < height; y++)
       {
-        BYTE *src = texDataStart + y * pitch;
-        DWORD *dest = (DWORD *)((BYTE *)lr.pBits + y * destPitch);
+        BYTE* src = texDataStart + y * pitch;
+        DWORD* dest = (DWORD*)((BYTE*)lr.pBits + y * destPitch);
         for (unsigned int x = 0; x < width; x++)
           *dest++ = color[*src++];
       }
@@ -261,8 +264,8 @@ void GetTextureFromData(D3DTexture *pTex, void *texData, LPDIRECT3DTEXTURE8 *ppT
     {
       for (unsigned int y = 0; y < height; y++)
       {
-        BYTE *src = texDataStart + y * pitch;
-        BYTE *dest = (BYTE *)lr.pBits + y * destPitch;
+        BYTE* src = texDataStart + y * pitch;
+        BYTE* dest = (BYTE*)lr.pBits + y * destPitch;
         memcpy(dest, src, min(pitch, destPitch));
       }
     }
@@ -286,10 +289,10 @@ CXBPackedResource::~CXBPackedResource()
   m_buffer = NULL;
 }
 
-HRESULT CXBPackedResource::Create(const char *fileName, int unused, void *unusedVoid)
+HRESULT CXBPackedResource::Create(const char* fileName, int unused, void* unusedVoid)
 {
   // load the file
-  FILE *file = fopen(fileName, "rb");
+  FILE* file = fopen(fileName, "rb");
   if (!file)
     return -1;
 
@@ -310,9 +313,9 @@ LPDIRECT3DTEXTURE8 CXBPackedResource::GetTexture(UINT unused)
   // now here's where the fun starts...
   LPDIRECT3DTEXTURE8 pTexture = NULL;
 
-  D3DTexture *pTex = (D3DTexture *)(m_buffer + sizeof(XPR_HEADER));
+  D3DTexture* pTex = (D3DTexture*)(m_buffer + sizeof(XPR_HEADER));
 
-  XPR_HEADER *hdr = (XPR_HEADER *)m_buffer;
+  XPR_HEADER* hdr = (XPR_HEADER*)m_buffer;
   GetTextureFromData(pTex, m_buffer + hdr->dwHeaderSize, &pTexture);
 
   return pTexture;

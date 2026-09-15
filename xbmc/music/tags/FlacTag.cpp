@@ -38,15 +38,15 @@ using namespace XFILE;
 using namespace MUSIC_INFO;
 using namespace std;
 
-#define CHUNK_SIZE 8192  // should suffice for most tags
+#define CHUNK_SIZE 8192 // should suffice for most tags
 
 CFlacTag::CFlacTag()
 {
-
 }
 
 CFlacTag::~CFlacTag()
-{}
+{
+}
 
 // overridden from COggTag
 bool CFlacTag::Read(const CStdString& strFile)
@@ -68,7 +68,8 @@ bool CFlacTag::Read(const CStdString& strFile)
   //
   // first find our FLAC header
   int iPos = ReadFlacHeader(); // position in the file
-  if (!iPos) return false;
+  if (!iPos)
+    return false;
   // Find vorbis header
   m_file->Seek(iPos, SEEK_SET); // past the fLaC header and STREAMINFO buffer (compulsory)
   // see what type it is:
@@ -82,12 +83,12 @@ bool CFlacTag::Read(const CStdString& strFile)
     if ((metaBlock & 0x7F000000) == 0x4000000) // found a VORBIS_COMMENT tag
     { // read it in
       unsigned int size = (metaBlock & 0xffffff);
-      char *tag = new char[size];
+      char* tag = new char[size];
       if (tag)
       {
         m_file->Read((void*)tag, size);
         // Process this tag info
-        ProcessVorbisComment(tag,size);
+        ProcessVorbisComment(tag, size);
         foundTag = true;
         delete[] tag;
       }
@@ -96,19 +97,18 @@ bool CFlacTag::Read(const CStdString& strFile)
     {
       // read the type of the image
       unsigned int picType = ReadUnsigned();
-      if (picType == 3 && !cover)  // 3 == Cover (front)
+      if (picType == 3 && !cover) // 3 == Cover (front)
         cover = iPos + 8;
       else if (picType == 0 && !second_cover) // 0 == Other
         second_cover = iPos + 8;
       else
         third_cover = iPos + 8;
     }
-    else if (metaBlock & 0x80000000)  // break if it's the last one
+    else if (metaBlock & 0x80000000) // break if it's the last one
       break;
     iPos += (metaBlock & 0xffffff) + 4;
     m_file->Seek(iPos, SEEK_SET);
-  }
-  while (true);
+  } while (true);
 
   if (!cover)
     cover = second_cover;
@@ -122,16 +122,16 @@ bool CFlacTag::Read(const CStdString& strFile)
 
     // read the mime type
     unsigned int size = ReadUnsigned();
-    m_file->Read(info, min(size, (unsigned int) 1023));
-    info[min(size, (unsigned int) 1023)] = 0;
+    m_file->Read(info, min(size, (unsigned int)1023));
+    info[min(size, (unsigned int)1023)] = 0;
     if (size > 1023)
       m_file->Seek(size - 1023, SEEK_CUR);
     CStdString mimeType = info;
 
     // now the description
     size = ReadUnsigned();
-    m_file->Read(info, min(size, (unsigned int) 1023));
-    info[min(size, (unsigned int) 1023)] = 0;
+    m_file->Read(info, min(size, (unsigned int)1023));
+    info[min(size, (unsigned int)1023)] = 0;
     if (size > 1023)
       m_file->Seek(size - 1023, SEEK_CUR);
 
@@ -143,7 +143,7 @@ bool CFlacTag::Read(const CStdString& strFile)
     m_musicInfoTag.SetCoverArtInfo(picSize, mimeType);
     if (m_art)
     {
-      uint8_t *picData = new uint8_t[picSize];
+      uint8_t* picData = new uint8_t[picSize];
       if (picData)
       {
         m_file->Read(picData, picSize);
@@ -161,16 +161,19 @@ int CFlacTag::ReadFlacHeader(void)
   unsigned char buffer[8];
   // Check to see if we have a STREAM_INFO header:
   int iPos = FindFlacHeader();
-  if (!iPos) return 0;
+  if (!iPos)
+    return 0;
   // Okay, we have found the correct start of a fLaC file
-  m_file->Seek(iPos, SEEK_SET);  // seek to right after the "fLaC" header string
-  m_file->Read(buffer, 4);    // read the header bit
-  if ((buffer[0]&0x7F) != 0) return 0; // no Flac header details at all!
+  m_file->Seek(iPos, SEEK_SET); // seek to right after the "fLaC" header string
+  m_file->Read(buffer, 4); // read the header bit
+  if ((buffer[0] & 0x7F) != 0)
+    return 0; // no Flac header details at all!
   // get details out of the stream
-  m_file->Seek(iPos + 14, SEEK_SET);  // seek to the frequency and duration data
-  m_file->Read(buffer, 8);    // read 64 bits of data
+  m_file->Seek(iPos + 14, SEEK_SET); // seek to the frequency and duration data
+  m_file->Read(buffer, 8); // read 64 bits of data
   int iFreq = (buffer[0] << 12) | (buffer[1] << 4) | (buffer[2] >> 4);
-  __int64 iNumSamples = ( (__int64) (buffer[3] & 0x0F) << 32) | ( (__int64) buffer[4] << 24) | (buffer[5] << 16) | (buffer[6] << 8) | buffer[7];
+  __int64 iNumSamples = ((__int64)(buffer[3] & 0x0F) << 32) | ((__int64)buffer[4] << 24) |
+                        (buffer[5] << 16) | (buffer[6] << 8) | buffer[7];
   m_musicInfoTag.SetDuration((int)((iNumSamples) / iFreq));
   return iPos + 38;
 }
@@ -184,13 +187,13 @@ int CFlacTag::ReadFlacHeader(void)
 int CFlacTag::FindFlacHeader(void)
 {
   char tag[BYTES_TO_CHECK_FOR_BAD_TAGS];
-  m_file->Read( (void*) tag, BYTES_TO_CHECK_FOR_BAD_TAGS );
+  m_file->Read((void*)tag, BYTES_TO_CHECK_FOR_BAD_TAGS);
 
   // Find flac header "fLaC"
   int i = 0;
-  while ( i < BYTES_TO_CHECK_FOR_BAD_TAGS )
+  while (i < BYTES_TO_CHECK_FOR_BAD_TAGS)
   {
-    if ( tag[i] == 'f' && tag[i + 1] == 'L' && tag[i + 2] == 'a' && tag[i + 3] == 'C')
+    if (tag[i] == 'f' && tag[i + 1] == 'L' && tag[i + 2] == 'a' && tag[i + 3] == 'C')
     {
       return i + 4;
     }
@@ -200,30 +203,30 @@ int CFlacTag::FindFlacHeader(void)
   return 0;
 }
 
-void CFlacTag::ProcessVorbisComment(const char *pBuffer, size_t bufsize)
+void CFlacTag::ProcessVorbisComment(const char* pBuffer, size_t bufsize)
 {
-  unsigned int Pos = 0;      // position in the buffer
+  unsigned int Pos = 0; // position in the buffer
   unsigned int I1 = SDL_SwapLE32(*(unsigned int*)(pBuffer + Pos)); // length of vendor string
-  Pos += I1 + 4;     // just pass the vendor string
+  Pos += I1 + 4; // just pass the vendor string
   unsigned int Count = SDL_SwapLE32(*(unsigned int*)(pBuffer + Pos)); // number of comments
-  Pos += 4;    // Start of the first comment
+  Pos += 4; // Start of the first comment
   char C1[CHUNK_SIZE];
   for (unsigned int I2 = 0; I2 < Count; I2++) // Run through the comments
   {
     if (Pos >= bufsize)
     {
-      CLog::Log(LOGWARNING,"flac tag overflow");
+      CLog::Log(LOGWARNING, "flac tag overflow");
       return;
     }
-    I1 = SDL_SwapLE32(*(unsigned int*)(pBuffer + Pos));   // Length of comment
+    I1 = SDL_SwapLE32(*(unsigned int*)(pBuffer + Pos)); // Length of comment
     if (I1 < CHUNK_SIZE)
     {
       strncpy(C1, pBuffer + Pos + 4, I1);
       C1[I1] = '\0';
       CStdString strItem;
-      strItem=C1;
+      strItem = C1;
       // Parse the tag entry
-      ParseTagEntry( strItem );
+      ParseTagEntry(strItem);
     }
     // Increment our position in the file buffer
     Pos += I1 + 4;
@@ -234,6 +237,6 @@ unsigned int CFlacTag::ReadUnsigned()
 {
   unsigned char size[4];
   m_file->Read(size, 4);
-  return ((unsigned int)size[0] << 24) + ((unsigned int)size[1] << 16) + ((unsigned int)size[2] << 8) + (unsigned int)size[3];
+  return ((unsigned int)size[0] << 24) + ((unsigned int)size[1] << 16) +
+         ((unsigned int)size[2] << 8) + (unsigned int)size[3];
 }
-

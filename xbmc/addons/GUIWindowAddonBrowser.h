@@ -28,7 +28,6 @@
 #include "ThumbLoader.h"
 #include "windows/GUIMediaWindow.h"
 
-
 class CFileItem;
 class CFileItemList;
 
@@ -49,8 +48,20 @@ public:
    \param showMore whether to show the "Get More" button (only makes sense if showInstalled is true and showInstallable is false)
    \return 1 if an addon was selected or multiple selection was specified, 2 if "Get More" was chosen, 0 if the selection process was cancelled or -1 if an error occurred or
    */
-  static int SelectAddonID(ADDON::TYPE type, std::string &addonID, bool showNone = false, bool showDetails = true, bool showInstalled = true, bool showInstallable = false, bool showMore = true);
-  static int SelectAddonID(const std::vector<ADDON::TYPE> &types, std::string &addonID, bool showNone = false, bool showDetails = true, bool showInstalled = true, bool showInstallable = false, bool showMore = true);
+  static int SelectAddonID(ADDON::TYPE type,
+                           std::string& addonID,
+                           bool showNone = false,
+                           bool showDetails = true,
+                           bool showInstalled = true,
+                           bool showInstallable = false,
+                           bool showMore = true);
+  static int SelectAddonID(const std::vector<ADDON::TYPE>& types,
+                           std::string& addonID,
+                           bool showNone = false,
+                           bool showDetails = true,
+                           bool showInstalled = true,
+                           bool showInstallable = false,
+                           bool showMore = true);
   /*! \brief Popup a selection dialog with a list of addons of the given type
    \param type the type of addon wanted
    \param addonIDs [in/out] array of (pre) selected addon IDs
@@ -62,17 +73,31 @@ public:
    \param showMore whether to show the "Get More" button (only makes sense if showInstalled is true and showInstallable is false)
    \return 1 if an addon was selected or multiple selection was specified, 2 if "Get More" was chosen, 0 if the selection process was cancelled or -1 if an error occurred or
    */
-  static int SelectAddonID(ADDON::TYPE type, std::vector<std::string> &addonIDs, bool showNone = false, bool showDetails = true, bool multipleSelection = true, bool showInstalled = true, bool showInstallable = false, bool showMore = true);
-  static int SelectAddonID(const std::vector<ADDON::TYPE> &types, std::vector<std::string> &addonIDs, bool showNone = false, bool showDetails = true, bool multipleSelection = true, bool showInstalled = true, bool showInstallable = false, bool showMore = true);
+  static int SelectAddonID(ADDON::TYPE type,
+                           std::vector<std::string>& addonIDs,
+                           bool showNone = false,
+                           bool showDetails = true,
+                           bool multipleSelection = true,
+                           bool showInstalled = true,
+                           bool showInstallable = false,
+                           bool showMore = true);
+  static int SelectAddonID(const std::vector<ADDON::TYPE>& types,
+                           std::vector<std::string>& addonIDs,
+                           bool showNone = false,
+                           bool showDetails = true,
+                           bool multipleSelection = true,
+                           bool showInstalled = true,
+                           bool showInstallable = false,
+                           bool showMore = true);
 
   bool UseFileDirectories() { return false; }
 
 protected:
-  virtual bool OnClick(int iItem, const std::string &player = "");
+  virtual bool OnClick(int iItem, const std::string& player = "");
   virtual void UpdateButtons();
-  virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
-  virtual bool Update(const std::string &strDirectory, bool updateFilterPath = true);
-  virtual std::string GetStartFolder(const std::string &dir);
+  virtual bool GetDirectory(const std::string& strDirectory, CFileItemList& items);
+  virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);
+  virtual std::string GetStartFolder(const std::string& dir);
 
   std::string GetRootPath() const { return "addons://"; }
 
@@ -83,4 +108,3 @@ private:
   void OnEvent(const ADDON::AddonEvent& event);
   CProgramThumbLoader m_thumbLoader;
 };
-

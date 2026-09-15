@@ -33,4 +33,3 @@ protected:
   virtual std::string GetExtensions();
   virtual VECSOURCES& GetSources();
 };
-

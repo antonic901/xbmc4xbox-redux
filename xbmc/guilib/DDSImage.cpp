@@ -77,7 +77,7 @@ unsigned int CDDSImage::GetFormat() const
     return 0; // Not supported
   if (m_desc.pixelFormat.flags & DDPF_FOURCC)
   {
-    if (strncmp((const char *)&m_desc.pixelFormat.fourcc, "DXT1", 4) == 0)
+    if (strncmp((const char*)&m_desc.pixelFormat.fourcc, "DXT1", 4) == 0)
       return XB_FMT_DXT1;
     /*
     //We are only supporting DXT1 at this time.
@@ -99,37 +99,37 @@ unsigned int CDDSImage::GetSize() const
   return m_desc.linearSize;
 }
 
-unsigned char *CDDSImage::GetData() const
+unsigned char* CDDSImage::GetData() const
 {
   return m_data;
 }
 
-bool CDDSImage::ReadFile(const std::string &inputFile)
+bool CDDSImage::ReadFile(const std::string& inputFile)
 {
   // open the file
   CFile file;
   if (!file.Open(inputFile))
   {
-	  CLog::Log(LOGERROR, "%s - CFile.Open failed %s", __FUNCTION__, inputFile.c_str());   
-	  return false;
+    CLog::Log(LOGERROR, "%s - CFile.Open failed %s", __FUNCTION__, inputFile.c_str());
+    return false;
   }
 
   // read the header
   uint32_t magic;
   if (file.Read(&magic, 4) != 4)
   {
-    CLog::Log(LOGERROR, "%s - Magic Header not found %s", __FUNCTION__, inputFile.c_str());   
+    CLog::Log(LOGERROR, "%s - Magic Header not found %s", __FUNCTION__, inputFile.c_str());
     return false;
   }
   if (file.Read(&m_desc, sizeof(m_desc)) != sizeof(m_desc))
   {
-    CLog::Log(LOGERROR, "%s - Description Invalid %s", __FUNCTION__, inputFile.c_str());   
+    CLog::Log(LOGERROR, "%s - Description Invalid %s", __FUNCTION__, inputFile.c_str());
     return false;
   }
   if (!GetFormat())
   {
-    CLog::Log(LOGERROR, "%s - GetFormat returned false %s", __FUNCTION__, inputFile.c_str());   
-    return false;  // not supported
+    CLog::Log(LOGERROR, "%s - GetFormat returned false %s", __FUNCTION__, inputFile.c_str());
+    return false; // not supported
   }
 
   //This is temporary to make sure a "generic" .dds file is not read in at this point
@@ -137,22 +137,23 @@ bool CDDSImage::ReadFile(const std::string &inputFile)
   //that such support is needed)
   if (m_desc.xbmcMagic != DD_XBMC_MAGIC)
   {
-    CLog::Log(LOGERROR, "%s - DDS file was not marked for xbmc use %s", __FUNCTION__, inputFile.c_str());   
-    return false;  // not supported
+    CLog::Log(LOGERROR, "%s - DDS file was not marked for xbmc use %s", __FUNCTION__,
+              inputFile.c_str());
+    return false; // not supported
   }
 
   // allocate our data
   m_data = new unsigned char[m_desc.linearSize];
   if (!m_data)
   {
-    CLog::Log(LOGERROR, "%s - No Data %s", __FUNCTION__, inputFile.c_str());   
+    CLog::Log(LOGERROR, "%s - No Data %s", __FUNCTION__, inputFile.c_str());
     return false;
   }
 
   // and read it in
   if (file.Read(m_data, m_desc.linearSize) != m_desc.linearSize)
   {
-    CLog::Log(LOGERROR, "%s - Data doesn't match header size %s", __FUNCTION__, inputFile.c_str());   
+    CLog::Log(LOGERROR, "%s - Data doesn't match header size %s", __FUNCTION__, inputFile.c_str());
     return false;
   }
 
@@ -160,7 +161,7 @@ bool CDDSImage::ReadFile(const std::string &inputFile)
   return true;
 }
 
-bool CDDSImage::WriteFile(const std::string &outputFile) const
+bool CDDSImage::WriteFile(const std::string& outputFile) const
 {
   // open the file
   CFile file;
@@ -168,24 +169,25 @@ bool CDDSImage::WriteFile(const std::string &outputFile) const
     return false;
 
   // write the header
-  return file.Write("DDS ", 4) == 4 &&
-    file.Write(&m_desc, sizeof(m_desc)) == sizeof(m_desc) &&
-  // now the data
-    file.Write(m_data, m_desc.linearSize) == m_desc.linearSize;
+  return file.Write("DDS ", 4) == 4 && file.Write(&m_desc, sizeof(m_desc)) == sizeof(m_desc) &&
+         // now the data
+         file.Write(m_data, m_desc.linearSize) == m_desc.linearSize;
 }
 
-unsigned int CDDSImage::GetStorageRequirements(unsigned int width, unsigned int height, unsigned int format) const
+unsigned int CDDSImage::GetStorageRequirements(unsigned int width,
+                                               unsigned int height,
+                                               unsigned int format) const
 {
   switch (format)
   {
-  case XB_FMT_DXT1:
-    return ((width + 3) / 4) * ((height + 3) / 4) * 8;
-  case XB_FMT_DXT3:
-  case XB_FMT_DXT5:
-    return ((width + 3) / 4) * ((height + 3) / 4) * 16;
-  case XB_FMT_A8R8G8B8:
-  default:
-    return width * height * 4;
+    case XB_FMT_DXT1:
+      return ((width + 3) / 4) * ((height + 3) / 4) * 8;
+    case XB_FMT_DXT3:
+    case XB_FMT_DXT5:
+      return ((width + 3) / 4) * ((height + 3) / 4) * 16;
+    case XB_FMT_A8R8G8B8:
+    default:
+      return width * height * 4;
   }
 }
 
@@ -205,18 +207,18 @@ void CDDSImage::Allocate(unsigned int width, unsigned int height, unsigned int f
   m_data = new unsigned char[m_desc.linearSize];
 }
 
-const char *CDDSImage::GetFourCC(unsigned int format) const
+const char* CDDSImage::GetFourCC(unsigned int format) const
 {
   switch (format)
   {
-  case XB_FMT_DXT1:
-    return "DXT1";
-  case XB_FMT_DXT3:
-    return "DXT3";
-  case XB_FMT_DXT5:
-    return "DXT5";
-  case XB_FMT_A8R8G8B8:
-  default:
-    return "ARGB";
+    case XB_FMT_DXT1:
+      return "DXT1";
+    case XB_FMT_DXT3:
+      return "DXT3";
+    case XB_FMT_DXT5:
+      return "DXT5";
+    case XB_FMT_A8R8G8B8:
+    default:
+      return "ARGB";
   }
 }

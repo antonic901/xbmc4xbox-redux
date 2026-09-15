@@ -23,14 +23,15 @@
 
 namespace XFILE
 {
-  class CHTTPDirectory : public IDirectory
-  {
-    public:
-      CHTTPDirectory(void);
-      virtual ~CHTTPDirectory(void);
-      virtual bool GetDirectory(const CURL& url, CFileItemList &items);
-      virtual bool Exists(const CURL& url);
-      virtual DIR_CACHE_TYPE GetCacheType(const CURL& url) const { return DIR_CACHE_ONCE; };
-    private:
-  };
-}
+class CHTTPDirectory : public IDirectory
+{
+public:
+  CHTTPDirectory(void);
+  virtual ~CHTTPDirectory(void);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool Exists(const CURL& url);
+  virtual DIR_CACHE_TYPE GetCacheType(const CURL& url) const { return DIR_CACHE_ONCE; };
+
+private:
+};
+} // namespace XFILE

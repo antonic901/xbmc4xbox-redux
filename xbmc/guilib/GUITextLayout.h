@@ -20,7 +20,6 @@
  *
  */
 
-
 #include <string>
 #include <stdint.h>
 #include <vector>
@@ -65,21 +64,41 @@ public:
 class CGUITextLayout
 {
 public:
-  CGUITextLayout(CGUIFont *font, bool wrap, float fHeight=0.0f, CGUIFont *borderFont = NULL);  // this may need changing - we may just use this class to replace CLabelInfo completely
+  CGUITextLayout(
+      CGUIFont* font,
+      bool wrap,
+      float fHeight = 0.0f,
+      CGUIFont* borderFont =
+          NULL); // this may need changing - we may just use this class to replace CLabelInfo completely
 
-  bool UpdateScrollinfo(CScrollInfo &scrollInfo);
+  bool UpdateScrollinfo(CScrollInfo& scrollInfo);
 
   // main function to render strings
-  void Render(float x, float y, float angle, color_t color, color_t shadowColor, uint32_t alignment, float maxWidth, bool solid = false);
-  void RenderScrolling(float x, float y, float angle, color_t color, color_t shadowColor, uint32_t alignment, float maxWidth, const CScrollInfo &scrollInfo);
-  void RenderOutline(float x, float y, color_t color, color_t outlineColor, uint32_t alignment, float maxWidth);
+  void Render(float x,
+              float y,
+              float angle,
+              color_t color,
+              color_t shadowColor,
+              uint32_t alignment,
+              float maxWidth,
+              bool solid = false);
+  void RenderScrolling(float x,
+                       float y,
+                       float angle,
+                       color_t color,
+                       color_t shadowColor,
+                       uint32_t alignment,
+                       float maxWidth,
+                       const CScrollInfo& scrollInfo);
+  void RenderOutline(
+      float x, float y, color_t color, color_t outlineColor, uint32_t alignment, float maxWidth);
 
   /*! \brief Returns the precalculated width and height of the text to be rendered (in constant time).
    \param width [out] width of text
    \param height [out] height of text
    \sa GetTextWidth, CalcTextExtent
    */
-  void GetTextExtent(float &width, float &height) const;
+  void GetTextExtent(float& width, float& height) const;
 
   /*! \brief Returns the precalculated width of the text to be rendered (in constant time).
    \return width of text
@@ -87,9 +106,15 @@ public:
    */
   float GetTextWidth() const { return m_textWidth; };
 
-  float GetTextWidth(const std::wstring &text) const;
-  bool Update(const std::string &text, float maxWidth = 0, bool forceUpdate = false, bool forceLTRReadingOrder = false);
-  bool UpdateW(const std::wstring &text, float maxWidth = 0, bool forceUpdate = false, bool forceLTRReadingOrder = false);
+  float GetTextWidth(const std::wstring& text) const;
+  bool Update(const std::string& text,
+              float maxWidth = 0,
+              bool forceUpdate = false,
+              bool forceLTRReadingOrder = false);
+  bool UpdateW(const std::wstring& text,
+               float maxWidth = 0,
+               bool forceUpdate = false,
+               bool forceLTRReadingOrder = false);
 
   /*! \brief Update text from a pre-styled vecText/vecColors combination
    Allows styled text to be passed directly to the text layout.
@@ -98,26 +123,34 @@ public:
    \param maxWidth the maximum width for wrapping text, defaults to 0 (no max width).
    \param forceLTRReadingOrder whether to force left to right reading order, defaults to false.
    */
-  void UpdateStyled(const vecText &text, const vecColors &colors, float maxWidth = 0, bool forceLTRReadingOrder = false);
+  void UpdateStyled(const vecText& text,
+                    const vecColors& colors,
+                    float maxWidth = 0,
+                    bool forceLTRReadingOrder = false);
 
   unsigned int GetTextLength() const;
-  void GetFirstText(vecText &text) const;
+  void GetFirstText(vecText& text) const;
   void Reset();
 
-  void SetWrap(bool bWrap=true);
+  void SetWrap(bool bWrap = true);
   void SetMaxHeight(float fHeight);
 
-
-  static void DrawText(CGUIFont *font, float x, float y, color_t color, color_t shadowColor, const std::string &text, uint32_t align);
-  static void Filter(std::string &text);
+  static void DrawText(CGUIFont* font,
+                       float x,
+                       float y,
+                       color_t color,
+                       color_t shadowColor,
+                       const std::string& text,
+                       uint32_t align);
+  static void Filter(std::string& text);
 
 protected:
-  void LineBreakText(const vecText &text, std::vector<CGUIString> &lines);
-  void WrapText(const vecText &text, float maxWidth);
-  static void BidiTransform(std::vector<CGUIString> &lines, bool forceLTRReadingOrder);
-  static std::wstring BidiFlip(const std::wstring &text, bool forceLTRReadingOrder);
+  void LineBreakText(const vecText& text, std::vector<CGUIString>& lines);
+  void WrapText(const vecText& text, float maxWidth);
+  static void BidiTransform(std::vector<CGUIString>& lines, bool forceLTRReadingOrder);
+  static std::wstring BidiFlip(const std::wstring& text, bool forceLTRReadingOrder);
   void CalcTextExtent();
-  void UpdateCommon(const std::wstring &text, float maxWidth, bool forceLTRReadingOrder);
+  void UpdateCommon(const std::wstring& text, float maxWidth, bool forceLTRReadingOrder);
 
   /*! \brief Returns the text, utf8 encoded
    \return utf8 text
@@ -130,19 +163,20 @@ protected:
   typedef std::vector<CGUIString>::iterator iLine;
 
   // the layout and font details
-  CGUIFont *m_font;        // has style, colour info
-  CGUIFont *m_borderFont;  // only used for outlined text
+  CGUIFont* m_font; // has style, colour info
+  CGUIFont* m_borderFont; // only used for outlined text
 
-  bool  m_wrap;            // wrapping (true if justify is enabled!)
+  bool m_wrap; // wrapping (true if justify is enabled!)
   float m_maxHeight;
   // the default color (may differ from the font objects defaults)
   color_t m_textColor;
 
   std::string m_lastUtf8Text;
   std::wstring m_lastText;
-  bool        m_lastUpdateW; ///< true if the last string we updated was the wstring version
+  bool m_lastUpdateW; ///< true if the last string we updated was the wstring version
   float m_textWidth;
   float m_textHeight;
+
 private:
   inline bool IsSpace(character_t letter) const XBMC_FORCE_INLINE
   {
@@ -151,10 +185,13 @@ private:
   inline bool CanWrapAtLetter(character_t letter) const XBMC_FORCE_INLINE
   {
     character_t ch = letter & 0xffff;
-    return ch == L' ' || (ch >=0x4e00 && ch <= 0x9fff);
+    return ch == L' ' || (ch >= 0x4e00 && ch <= 0x9fff);
   };
-  static void AppendToUTF32(const std::string &utf8, character_t colStyle, vecText &utf32);
-  static void AppendToUTF32(const std::wstring &utf16, character_t colStyle, vecText &utf32);
-  static void ParseText(const std::wstring &text, uint32_t defaultStyle, color_t defaultColor, vecColors &colors, vecText &parsedText);
+  static void AppendToUTF32(const std::string& utf8, character_t colStyle, vecText& utf32);
+  static void AppendToUTF32(const std::wstring& utf16, character_t colStyle, vecText& utf32);
+  static void ParseText(const std::wstring& text,
+                        uint32_t defaultStyle,
+                        color_t defaultColor,
+                        vecColors& colors,
+                        vecText& parsedText);
 };
-

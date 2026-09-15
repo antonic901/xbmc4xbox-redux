@@ -34,14 +34,14 @@ public:
   virtual bool OnBack(int actionID);
 
 protected:
-  virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
+  virtual bool GetDirectory(const std::string& strDirectory, CFileItemList& items);
   virtual void UpdateButtons();
-  virtual bool Update(const std::string &strDirectory, bool updateFilterPath = true);
-  virtual void OnPrepareFileItems(CFileItemList &items);
-  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);
+  virtual void OnPrepareFileItems(CFileItemList& items);
+  virtual void GetContextButtons(int itemNumber, CContextButtons& buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   virtual void OnQueueItem(int iItem);
-  virtual std::string GetStartFolder(const std::string &dir) { return ""; };
+  virtual std::string GetStartFolder(const std::string& dir) { return ""; };
 
   void OnPlaylistContext();
   int GetCurrentPlaylistItem();
@@ -50,10 +50,10 @@ protected:
   void ClearPlaylist();
   void OnSavePlaylist();
   void OnLoadPlaylist();
-  void AppendToPlaylist(CFileItemList &newItems);
+  void AppendToPlaylist(CFileItemList& newItems);
   void OnMovePlaylistItem(int item, int direction);
 
-  void LoadPlaylist(const std::string &playlist);
+  void LoadPlaylist(const std::string& playlist);
 
   // new method
   virtual void PlayItem(int iItem);

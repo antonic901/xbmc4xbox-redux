@@ -32,9 +32,9 @@ public:
   virtual ~CGUIWindowSystemInfo(void);
   virtual bool OnMessage(CGUIMessage& message);
   virtual void FrameMove();
-private:
-  int  m_section;
-  void ResetLabels();
-  void SetControlLabel(int id, const char *format, int label, int info);
-};
 
+private:
+  int m_section;
+  void ResetLabels();
+  void SetControlLabel(int id, const char* format, int label, int info);
+};

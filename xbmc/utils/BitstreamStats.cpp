@@ -43,7 +43,7 @@ BitstreamStats::~BitstreamStats()
 
 void BitstreamStats::AddSampleBytes(unsigned int nBytes)
 {
-  AddSampleBits(nBytes*8);
+  AddSampleBits(nBytes * 8);
 }
 
 void BitstreamStats::AddSampleBits(unsigned int nBits)
@@ -79,7 +79,3 @@ void BitstreamStats::CalculateBitrate()
     Start();
   }
 }
-
-
-
-

@@ -35,16 +35,16 @@ class CGUIListGroup : public CGUIControlGroup
 {
 public:
   CGUIListGroup(int parentID, int controlID, float posX, float posY, float width, float height);
-  CGUIListGroup(const CGUIListGroup &right);
+  CGUIListGroup(const CGUIListGroup& right);
   virtual ~CGUIListGroup(void);
-  virtual CGUIListGroup *Clone() const { return new CGUIListGroup(*this); };
+  virtual CGUIListGroup* Clone() const { return new CGUIListGroup(*this); };
 
-  virtual void AddControl(CGUIControl *control, int position = -1);
+  virtual void AddControl(CGUIControl* control, int position = -1);
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void ResetAnimation(ANIMATION_TYPE type);
-  virtual void UpdateVisibility(const CGUIListItem *item = NULL);
-  virtual void UpdateInfo(const CGUIListItem *item);
+  virtual void UpdateVisibility(const CGUIListItem* item = NULL);
+  virtual void UpdateInfo(const CGUIListItem* item);
   virtual void SetInvalid();
 
   void EnlargeWidth(float difference);
@@ -54,9 +54,8 @@ public:
   bool MoveLeft();
   bool MoveRight();
   void SetState(bool selected, bool focused);
-  void SelectItemFromPoint(const CPoint &point);
+  void SelectItemFromPoint(const CPoint& point);
 
 protected:
-  const CGUIListItem *m_item;
+  const CGUIListItem* m_item;
 };
-

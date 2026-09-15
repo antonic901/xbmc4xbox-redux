@@ -64,12 +64,14 @@ Reason: Prepared for Public Release
 #include "XKRC4.h"
 
 XKRC4::XKRC4(void)
-{}
+{
+}
 
 XKRC4::~XKRC4(void)
-{}
+{
+}
 
-void XKRC4::InitRC4Key(UCHAR* pRC4KeyData, int KeyLen, RC4KEY *pRC4Key)
+void XKRC4::InitRC4Key(UCHAR* pRC4KeyData, int KeyLen, RC4KEY* pRC4Key)
 {
   UCHAR index1;
   UCHAR index2;
@@ -94,7 +96,7 @@ void XKRC4::InitRC4Key(UCHAR* pRC4KeyData, int KeyLen, RC4KEY *pRC4Key)
   }
 }
 
-void XKRC4::RC4EnDecrypt(UCHAR* pData, int DataLen, RC4KEY *pRC4key)
+void XKRC4::RC4EnDecrypt(UCHAR* pData, int DataLen, RC4KEY* pRC4key)
 {
   unsigned char x;
   unsigned char y;
@@ -106,7 +108,7 @@ void XKRC4::RC4EnDecrypt(UCHAR* pData, int DataLen, RC4KEY *pRC4key)
   y = pRC4key->y;
   state = &pRC4key->state[0];
 
-  for (counter = 0; counter < DataLen; counter ++)
+  for (counter = 0; counter < DataLen; counter++)
   {
     x = (x + 1) % 256;
     y = (state[x] + y) % 256;
@@ -119,7 +121,7 @@ void XKRC4::RC4EnDecrypt(UCHAR* pData, int DataLen, RC4KEY *pRC4key)
   pRC4key->y = y;
 }
 
-void XKRC4::swap_byte(unsigned char *a, unsigned char *b)
+void XKRC4::swap_byte(unsigned char* a, unsigned char* b)
 {
   unsigned char swapByte;
   swapByte = *a;

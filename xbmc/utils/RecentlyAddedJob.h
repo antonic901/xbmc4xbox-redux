@@ -38,6 +38,7 @@ public:
   static bool UpdateMusic();
   static bool UpdateTotal();
   virtual bool DoWork();
+
 private:
   int m_flag;
 };

@@ -105,14 +105,14 @@ public:
    *         zero if no bytes were written and no detectable error occur,
    *         -1 in case of any explicit error
    */
-  virtual ssize_t Write(const void* bufPtr, size_t bufSize) { return -1;}
-  virtual bool ReadString(char *szLine, int iLineLength);
+  virtual ssize_t Write(const void* bufPtr, size_t bufSize) { return -1; }
+  virtual bool ReadString(char* szLine, int iLineLength);
   virtual int64_t Seek(int64_t iFilePosition, int iWhence = SEEK_SET) = 0;
   virtual void Close() = 0;
   virtual int64_t GetPosition() = 0;
   virtual int64_t GetLength() = 0;
-  virtual void Flush() { }
-  virtual int Truncate(int64_t size) { return -1;};
+  virtual void Flush() {}
+  virtual int Truncate(int64_t size) { return -1; };
 
   /* Returns the minium size that can be read from input stream.   *
    * For example cdrom access where access could be sector based.  *
@@ -120,10 +120,10 @@ public:
    * to meet the requirement of CFile.                             *
    * It can also be used to indicate a file system is non buffered *
    * but accepts any read size, have it return the value 1         */
-  virtual int  GetChunkSize() {return 0;}
-  virtual double GetDownloadSpeed(){ return 0.0f; };
+  virtual int GetChunkSize() { return 0; }
+  virtual double GetDownloadSpeed() { return 0.0f; };
 
-  virtual bool SkipNext(){return false;}
+  virtual bool SkipNext() { return false; }
 
   virtual bool Delete(const CURL& url) { return false; }
   virtual bool Rename(const CURL& url, const CURL& urlnew) { return false; }
@@ -131,21 +131,21 @@ public:
 
   virtual int IoControl(EIoControl request, void* param) { return -1; }
 
-  virtual std::string GetContent()                           { return "application/octet-stream"; }
-  virtual std::string GetContentCharset(void)                { return ""; }
+  virtual std::string GetContent() { return "application/octet-stream"; }
+  virtual std::string GetContentCharset(void) { return ""; }
 };
 
 class CRedirectException
 {
 public:
-  IFile *m_pNewFileImp;
-  CURL  *m_pNewUrl;
+  IFile* m_pNewFileImp;
+  CURL* m_pNewUrl;
 
   CRedirectException();
 
-  CRedirectException(IFile *pNewFileImp, CURL *pNewUrl=NULL);
+  CRedirectException(IFile* pNewFileImp, CURL* pNewUrl = NULL);
 };
 
-}
+} // namespace XFILE
 
 #endif // !defined(AFX_IFILE_H__7EE73AC7_36BC_4822_93FF_44F3B0C766F6__INCLUDED_)

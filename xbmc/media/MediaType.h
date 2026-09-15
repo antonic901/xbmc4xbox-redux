@@ -25,38 +25,43 @@
 
 typedef std::string MediaType;
 
-#define MediaTypeNone             ""
-#define MediaTypeMusic            "music"
-#define MediaTypeArtist           "artist"
-#define MediaTypeAlbum            "album"
-#define MediaTypeSong             "song"
-#define MediaTypeVideo            "video"
-#define MediaTypeVideoCollection  "set"
-#define MediaTypeMusicVideo       "musicvideo"
-#define MediaTypeMovie            "movie"
-#define MediaTypeTvShow           "tvshow"
-#define MediaTypeSeason           "season"
-#define MediaTypeEpisode          "episode"
+#define MediaTypeNone ""
+#define MediaTypeMusic "music"
+#define MediaTypeArtist "artist"
+#define MediaTypeAlbum "album"
+#define MediaTypeSong "song"
+#define MediaTypeVideo "video"
+#define MediaTypeVideoCollection "set"
+#define MediaTypeMusicVideo "musicvideo"
+#define MediaTypeMovie "movie"
+#define MediaTypeTvShow "tvshow"
+#define MediaTypeSeason "season"
+#define MediaTypeEpisode "episode"
 
 class CMediaTypes
 {
 public:
-  static bool IsValidMediaType(const MediaType &mediaType);
-  static bool IsMediaType(const std::string &strMediaType, const MediaType &mediaType);
-  static MediaType FromString(const std::string &strMediaType);
-  static MediaType ToPlural(const MediaType &mediaType);
+  static bool IsValidMediaType(const MediaType& mediaType);
+  static bool IsMediaType(const std::string& strMediaType, const MediaType& mediaType);
+  static MediaType FromString(const std::string& strMediaType);
+  static MediaType ToPlural(const MediaType& mediaType);
 
-  static bool IsContainer(const MediaType &mediaType);
+  static bool IsContainer(const MediaType& mediaType);
 
-  static std::string GetLocalization(const MediaType &mediaType);
-  static std::string GetPluralLocalization(const MediaType &mediaType);
-  static std::string GetCapitalLocalization(const MediaType &mediaType);
-  static std::string GetCapitalPluralLocalization(const MediaType &mediaType);
+  static std::string GetLocalization(const MediaType& mediaType);
+  static std::string GetPluralLocalization(const MediaType& mediaType);
+  static std::string GetCapitalLocalization(const MediaType& mediaType);
+  static std::string GetCapitalPluralLocalization(const MediaType& mediaType);
 
-  typedef struct MediaTypeInfo {
-    MediaTypeInfo(const MediaType &mediaType, const std::string &plural, bool container,
-                  int localizationSingular, int localizationPlural,
-                  int localizationSingularCapital, int localizationPluralCapital)
+  typedef struct MediaTypeInfo
+  {
+    MediaTypeInfo(const MediaType& mediaType,
+                  const std::string& plural,
+                  bool container,
+                  int localizationSingular,
+                  int localizationPlural,
+                  int localizationSingularCapital,
+                  int localizationPluralCapital)
       : mediaType(mediaType),
         plural(plural),
         container(container),
@@ -64,7 +69,8 @@ public:
         localizationPlural(localizationPlural),
         localizationSingularCapital(localizationSingularCapital),
         localizationPluralCapital(localizationPluralCapital)
-    { }
+    {
+    }
 
     MediaType mediaType;
     std::string plural;
@@ -76,7 +82,8 @@ public:
   } MediaTypeInfo;
 
 private:
-  static std::map<std::string, MediaTypeInfo>::const_iterator findMediaType(const std::string &mediaType);
+  static std::map<std::string, MediaTypeInfo>::const_iterator findMediaType(
+      const std::string& mediaType);
 
   static std::map<std::string, MediaTypeInfo> m_mediaTypes;
 };

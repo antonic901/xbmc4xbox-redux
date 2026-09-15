@@ -50,11 +50,12 @@ public:
   virtual ssize_t Read(void* lpBuf, size_t uiBufSize);
   virtual int64_t Seek(int64_t iFilePosition, int iWhence = SEEK_SET);
   virtual void Close();
+
 protected:
   bool m_bOpened;
   HANDLE m_hFile;
   CRingBuffer m_cache;
 };
-}
+} // namespace XFILE
 
 #endif // !defined(AFX_FILEISO_H__C2FB9C6D_3319_4182_AB45_65E57EFAC8D1__INCLUDED_)

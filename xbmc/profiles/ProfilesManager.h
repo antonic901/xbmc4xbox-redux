@@ -44,7 +44,7 @@ public:
     after special://masterprofile/ has been defined.
     \param file XML file to load.
     */
-  bool Load(const std::string &file);
+  bool Load(const std::string& file);
 
   bool Save();
   /*! \brief Save the user profile information to disk
@@ -52,7 +52,7 @@ public:
     \param file XML file to save.
     \return true on success, false on failure to save
     */
-  bool Save(const std::string &file) const;
+  bool Save(const std::string& file) const;
 
   void Clear();
 
@@ -87,7 +87,7 @@ public:
     \param name name of the profile index to retrieve
     \return index of this profile, -1 if invalid.
     */
-  int GetProfileIndex(const std::string &name) const;
+  int GetProfileIndex(const std::string& name) const;
 
   /*! \brief Retrieve the number of profiles
     \return number of profiles
@@ -97,7 +97,7 @@ public:
   /*! \brief Add a new profile
     \param profile CProfile to add
     */
-  void AddProfile(const CProfile &profile);
+  void AddProfile(const CProfile& profile);
 
   /*! \brief Are we using the login screen?
     \return true if we're using the login screen, false otherwise

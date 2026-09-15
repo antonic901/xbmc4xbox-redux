@@ -25,4 +25,3 @@
 #elif (defined TARGET_WINDOWS) || (defined _XBOX)
 #include "threads/platform/win/Condition.h"
 #endif
-

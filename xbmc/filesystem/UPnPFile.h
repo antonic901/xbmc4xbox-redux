@@ -23,19 +23,19 @@
 
 namespace XFILE
 {
-  class CUPnPFile : public IFile
-  {
-    public:
-      CUPnPFile();
-      virtual ~CUPnPFile();
-      virtual bool Open(const CURL& url);      
-      virtual bool Exists(const CURL& url);
-      virtual int Stat(const CURL& url, struct __stat64* buffer);
-      
-      virtual ssize_t Read(void* lpBuf, size_t uiBufSize) {return -1;}
-      virtual int64_t Seek(int64_t iFilePosition, int iWhence = SEEK_SET) {return -1;}
-      virtual void Close(){}
-      virtual int64_t GetPosition() {return -1;}
-      virtual int64_t GetLength() {return -1;}
-  };
-}
+class CUPnPFile : public IFile
+{
+public:
+  CUPnPFile();
+  virtual ~CUPnPFile();
+  virtual bool Open(const CURL& url);
+  virtual bool Exists(const CURL& url);
+  virtual int Stat(const CURL& url, struct __stat64* buffer);
+
+  virtual ssize_t Read(void* lpBuf, size_t uiBufSize) { return -1; }
+  virtual int64_t Seek(int64_t iFilePosition, int iWhence = SEEK_SET) { return -1; }
+  virtual void Close() {}
+  virtual int64_t GetPosition() { return -1; }
+  virtual int64_t GetLength() { return -1; }
+};
+} // namespace XFILE

@@ -70,7 +70,9 @@ void CHttpHeader::Parse(const std::string& strData)
   }
 }
 
-void CHttpHeader::AddParam(const std::string& param, const std::string& value, const bool overwrite /*= false*/)
+void CHttpHeader::AddParam(const std::string& param,
+                           const std::string& value,
+                           const bool overwrite /*= false*/)
 {
   if (param.empty() || value.empty())
     return;
@@ -105,7 +107,8 @@ std::string CHttpHeader::GetValue(const std::string& strParam) const
 std::string CHttpHeader::GetValueRaw(const std::string& strParam) const
 {
   // look in reverse to find last parameter (probably most important)
-  for (HeaderParams::const_reverse_iterator iter = m_params.rbegin(); iter != m_params.rend(); ++iter)
+  for (HeaderParams::const_reverse_iterator iter = m_params.rbegin(); iter != m_params.rend();
+       ++iter)
   {
     if (iter->first == strParam)
       return iter->second;

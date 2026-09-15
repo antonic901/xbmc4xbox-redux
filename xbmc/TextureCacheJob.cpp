@@ -36,10 +36,10 @@
 #include "cores/omxplayer/OMXImage.h"
 #endif
 
-CTextureCacheJob::CTextureCacheJob(const std::string &url, const std::string &oldHash):
-  m_url(url),
-  m_oldHash(oldHash),
-  m_cachePath(CTextureCache::GetCacheFile(m_url))
+CTextureCacheJob::CTextureCacheJob(const std::string& url, const std::string& oldHash)
+  : m_url(url),
+    m_oldHash(oldHash),
+    m_cachePath(CTextureCache::GetCacheFile(m_url))
 {
 }
 
@@ -49,7 +49,7 @@ CTextureCacheJob::~CTextureCacheJob()
 
 bool CTextureCacheJob::operator==(const CJob* job) const
 {
-  if (strcmp(job->GetType(),GetType()) == 0)
+  if (strcmp(job->GetType(), GetType()) == 0)
   {
     const CTextureCacheJob* cacheJob = dynamic_cast<const CTextureCacheJob*>(job);
     if (cacheJob && cacheJob->m_cachePath == m_cachePath)
@@ -62,8 +62,10 @@ bool CTextureCacheJob::DoWork()
 {
   if (ShouldCancel(0, 0))
     return false;
-  if (ShouldCancel(1, 0)) // HACK: second check is because we cancel the job in the first callback, but we don't detect it
-    return false;         //       until the second
+  if (ShouldCancel(
+          1,
+          0)) // HACK: second check is because we cancel the job in the first callback, but we don't detect it
+    return false; //       until the second
 
   // check whether we need cache the job anyway
   bool needsRecaching = false;
@@ -73,7 +75,7 @@ bool CTextureCacheJob::DoWork()
   return CacheTexture();
 }
 
-bool CTextureCacheJob::CacheTexture(CBaseTexture **out_texture)
+bool CTextureCacheJob::CacheTexture(CBaseTexture** out_texture)
 {
   // unwrap the URL as required
   std::string additional_info;
@@ -90,18 +92,22 @@ bool CTextureCacheJob::CacheTexture(CBaseTexture **out_texture)
     return true;
 
 #if defined(HAS_OMXPLAYER)
-  if (COMXImage::CreateThumb(image, width, height, additional_info, CTextureCache::GetCachedPath(m_cachePath + ".jpg")))
+  if (COMXImage::CreateThumb(image, width, height, additional_info,
+                             CTextureCache::GetCachedPath(m_cachePath + ".jpg")))
   {
     m_details.width = width;
     m_details.height = height;
     m_details.file = m_cachePath + ".jpg";
     if (out_texture)
-      *out_texture = LoadImage(CTextureCache::GetCachedPath(m_details.file), width, height, "" /* already flipped */);
-    CLog::Log(LOGDEBUG, "Fast %s image '%s' to '%s': %p", m_oldHash.empty() ? "Caching" : "Recaching", CURL::GetRedacted(image).c_str(), m_details.file.c_str(), out_texture);
+      *out_texture = LoadImage(CTextureCache::GetCachedPath(m_details.file), width, height,
+                               "" /* already flipped */);
+    CLog::Log(LOGDEBUG, "Fast %s image '%s' to '%s': %p",
+              m_oldHash.empty() ? "Caching" : "Recaching", CURL::GetRedacted(image).c_str(),
+              m_details.file.c_str(), out_texture);
     return true;
   }
 #endif
-  CBaseTexture *texture = LoadImage(image, width, height, additional_info);
+  CBaseTexture* texture = LoadImage(image, width, height, additional_info);
   if (texture)
   {
     if (texture->HasAlpha())
@@ -109,9 +115,11 @@ bool CTextureCacheJob::CacheTexture(CBaseTexture **out_texture)
     else
       m_details.file = m_cachePath + ".jpg";
 
-    CLog::Log(LOGDEBUG, "%s image '%s' to '%s':", m_oldHash.empty() ? "Caching" : "Recaching", CURL::GetRedacted(image).c_str(), m_details.file.c_str());
+    CLog::Log(LOGDEBUG, "%s image '%s' to '%s':", m_oldHash.empty() ? "Caching" : "Recaching",
+              CURL::GetRedacted(image).c_str(), m_details.file.c_str());
 
-    if (CPicture::CacheTexture(texture, width, height, CTextureCache::GetCachedPath(m_details.file)))
+    if (CPicture::CacheTexture(texture, width, height,
+                               CTextureCache::GetCachedPath(m_details.file)))
     {
       m_details.width = width;
       m_details.height = height;
@@ -119,7 +127,9 @@ bool CTextureCacheJob::CacheTexture(CBaseTexture **out_texture)
 #ifdef _XBOX
       { // load cached image
         delete texture;
-        *out_texture = CBaseTexture::LoadFromFile(CTextureCache::GetCachedPath(m_details.file), width, height, CSettings::GetInstance().GetBool("pictures.useexifrotation"));
+        *out_texture = CBaseTexture::LoadFromFile(
+            CTextureCache::GetCachedPath(m_details.file), width, height,
+            CSettings::GetInstance().GetBool("pictures.useexifrotation"));
       }
 #else
         *out_texture = texture;
@@ -133,7 +143,10 @@ bool CTextureCacheJob::CacheTexture(CBaseTexture **out_texture)
   return false;
 }
 
-std::string CTextureCacheJob::DecodeImageURL(const std::string &url, unsigned int &width, unsigned int &height, std::string &additional_info)
+std::string CTextureCacheJob::DecodeImageURL(const std::string& url,
+                                             unsigned int& width,
+                                             unsigned int& height,
+                                             std::string& additional_info)
 {
   // unwrap the URL as required
   std::string image(url);
@@ -167,7 +180,10 @@ std::string CTextureCacheJob::DecodeImageURL(const std::string &url, unsigned in
   return image;
 }
 
-CBaseTexture *CTextureCacheJob::LoadImage(const std::string &image, unsigned int width, unsigned int height, const std::string &additional_info)
+CBaseTexture* CTextureCacheJob::LoadImage(const std::string& image,
+                                          unsigned int width,
+                                          unsigned int height,
+                                          const std::string& additional_info)
 {
   if (additional_info == "music")
   { // special case for embedded music images
@@ -179,11 +195,14 @@ CBaseTexture *CTextureCacheJob::LoadImage(const std::string &image, unsigned int
   // Validate file URL to see if it is an image
   CFileItem file(image, false);
   file.FillInMimeType();
-  if (!(file.IsPicture() && !(file.IsZIP() || file.IsRAR() || file.IsCBR() || file.IsCBZ() ))
-      && !StringUtils::StartsWithNoCase(file.GetMimeType(), "image/") && !StringUtils::EqualsNoCase(file.GetMimeType(), "application/octet-stream")) // ignore non-pictures
+  if (!(file.IsPicture() && !(file.IsZIP() || file.IsRAR() || file.IsCBR() || file.IsCBZ())) &&
+      !StringUtils::StartsWithNoCase(file.GetMimeType(), "image/") &&
+      !StringUtils::EqualsNoCase(file.GetMimeType(),
+                                 "application/octet-stream")) // ignore non-pictures
     return NULL;
 
-  CBaseTexture *texture = CBaseTexture::LoadFromFile(image, width, height, CSettings::GetInstance().GetBool("pictures.useexifrotation"));
+  CBaseTexture* texture = CBaseTexture::LoadFromFile(
+      image, width, height, CSettings::GetInstance().GetBool("pictures.useexifrotation"));
   if (!texture)
     return NULL;
 
@@ -196,16 +215,15 @@ CBaseTexture *CTextureCacheJob::LoadImage(const std::string &image, unsigned int
   return texture;
 }
 
-bool CTextureCacheJob::UpdateableURL(const std::string &url) const
+bool CTextureCacheJob::UpdateableURL(const std::string& url) const
 {
   // we don't constantly check online images
-  if (StringUtils::StartsWith(url, "http://") ||
-      StringUtils::StartsWith(url, "https://"))
+  if (StringUtils::StartsWith(url, "http://") || StringUtils::StartsWith(url, "https://"))
     return false;
   return true;
 }
 
-std::string CTextureCacheJob::GetImageHash(const std::string &url)
+std::string CTextureCacheJob::GetImageHash(const std::string& url)
 {
   struct __stat64 st;
   if (XFILE::CFile::Stat(url, &st) == 0)
@@ -214,7 +232,7 @@ std::string CTextureCacheJob::GetImageHash(const std::string &url)
     if (!time)
       time = st.st_ctime;
     if (time || st.st_size)
-      return StringUtils::Format("d%" PRId64"s%" PRId64, time, st.st_size);
+      return StringUtils::Format("d%" PRId64 "s%" PRId64, time, st.st_size);
 
     // the image exists but we couldn't determine the mtime/ctime and/or size
     // so set an obviously bad hash
@@ -224,13 +242,14 @@ std::string CTextureCacheJob::GetImageHash(const std::string &url)
   return "";
 }
 
-CTextureUseCountJob::CTextureUseCountJob(const std::vector<CTextureDetails> &textures) : m_textures(textures)
+CTextureUseCountJob::CTextureUseCountJob(const std::vector<CTextureDetails>& textures)
+  : m_textures(textures)
 {
 }
 
 bool CTextureUseCountJob::operator==(const CJob* job) const
 {
-  if (strcmp(job->GetType(),GetType()) == 0)
+  if (strcmp(job->GetType(), GetType()) == 0)
   {
     const CTextureUseCountJob* useJob = dynamic_cast<const CTextureUseCountJob*>(job);
     if (useJob && useJob->m_textures == m_textures)
@@ -245,7 +264,8 @@ bool CTextureUseCountJob::DoWork()
   if (db.Open())
   {
     db.BeginTransaction();
-    for (std::vector<CTextureDetails>::const_iterator i = m_textures.begin(); i != m_textures.end(); ++i)
+    for (std::vector<CTextureDetails>::const_iterator i = m_textures.begin(); i != m_textures.end();
+         ++i)
       db.IncrementUseCount(*i);
     db.CommitTransaction();
   }

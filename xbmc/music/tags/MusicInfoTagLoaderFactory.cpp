@@ -48,10 +48,12 @@
 using namespace MUSIC_INFO;
 
 CMusicInfoTagLoaderFactory::CMusicInfoTagLoaderFactory()
-{}
+{
+}
 
 CMusicInfoTagLoaderFactory::~CMusicInfoTagLoaderFactory()
-{}
+{
+}
 
 IMusicInfoTagLoader* CMusicInfoTagLoaderFactory::CreateLoader(const CFileItem& item)
 {
@@ -71,97 +73,97 @@ IMusicInfoTagLoader* CMusicInfoTagLoaderFactory::CreateLoader(const CFileItem& i
 
   if (strExtension == "mp3")
   {
-    CMusicInfoTagLoaderMP3 *pTagLoader = new CMusicInfoTagLoaderMP3();
+    CMusicInfoTagLoaderMP3* pTagLoader = new CMusicInfoTagLoaderMP3();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "ogg" || strExtension == "oggstream")
   {
-    CMusicInfoTagLoaderOgg *pTagLoader = new CMusicInfoTagLoaderOgg();
+    CMusicInfoTagLoaderOgg* pTagLoader = new CMusicInfoTagLoaderOgg();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "wma")
   {
-    CMusicInfoTagLoaderWMA *pTagLoader = new CMusicInfoTagLoaderWMA();
+    CMusicInfoTagLoaderWMA* pTagLoader = new CMusicInfoTagLoaderWMA();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "flac")
   {
-    CMusicInfoTagLoaderFlac *pTagLoader = new CMusicInfoTagLoaderFlac();
+    CMusicInfoTagLoaderFlac* pTagLoader = new CMusicInfoTagLoaderFlac();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "m4a" || strExtension == "mp4")
   {
-    CMusicInfoTagLoaderMP4 *pTagLoader = new CMusicInfoTagLoaderMP4();
+    CMusicInfoTagLoaderMP4* pTagLoader = new CMusicInfoTagLoaderMP4();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "cdda")
   {
-    CMusicInfoTagLoaderCDDA *pTagLoader = new CMusicInfoTagLoaderCDDA();
+    CMusicInfoTagLoaderCDDA* pTagLoader = new CMusicInfoTagLoaderCDDA();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "ape" || strExtension == "mac")
   {
-    CMusicInfoTagLoaderApe *pTagLoader = new CMusicInfoTagLoaderApe();
+    CMusicInfoTagLoaderApe* pTagLoader = new CMusicInfoTagLoaderApe();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "mpc" || strExtension == "mpp" || strExtension == "mp+")
   {
-    CMusicInfoTagLoaderMPC *pTagLoader = new CMusicInfoTagLoaderMPC();
+    CMusicInfoTagLoaderMPC* pTagLoader = new CMusicInfoTagLoaderMPC();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "shn")
   {
-    CMusicInfoTagLoaderSHN *pTagLoader = new CMusicInfoTagLoaderSHN();
+    CMusicInfoTagLoaderSHN* pTagLoader = new CMusicInfoTagLoaderSHN();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "sid" || strExtension == "sidstream")
   {
-    CMusicInfoTagLoaderSid *pTagLoader = new CMusicInfoTagLoaderSid();
+    CMusicInfoTagLoaderSid* pTagLoader = new CMusicInfoTagLoaderSid();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "wav")
   {
-    CMusicInfoTagLoaderWAV *pTagLoader = new CMusicInfoTagLoaderWAV();
+    CMusicInfoTagLoaderWAV* pTagLoader = new CMusicInfoTagLoaderWAV();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "aac")
   {
-    CMusicInfoTagLoaderAAC *pTagLoader = new CMusicInfoTagLoaderAAC();
+    CMusicInfoTagLoaderAAC* pTagLoader = new CMusicInfoTagLoaderAAC();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "wv")
   {
-    CMusicInfoTagLoaderWAVPack *pTagLoader = new CMusicInfoTagLoaderWAVPack();
+    CMusicInfoTagLoaderWAVPack* pTagLoader = new CMusicInfoTagLoaderWAVPack();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "nsf" || strExtension == "nsfstream")
   {
-    CMusicInfoTagLoaderNSF *pTagLoader = new CMusicInfoTagLoaderNSF();
+    CMusicInfoTagLoaderNSF* pTagLoader = new CMusicInfoTagLoaderNSF();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "spc")
   {
-    CMusicInfoTagLoaderSPC *pTagLoader = new CMusicInfoTagLoaderSPC();
+    CMusicInfoTagLoaderSPC* pTagLoader = new CMusicInfoTagLoaderSPC();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "gym")
   {
-    CMusicInfoTagLoaderGYM *pTagLoader = new CMusicInfoTagLoaderGYM();
+    CMusicInfoTagLoaderGYM* pTagLoader = new CMusicInfoTagLoaderGYM();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (strExtension == "ym")
   {
-    CMusicInfoTagLoaderYM *pTagLoader = new CMusicInfoTagLoaderYM();
+    CMusicInfoTagLoaderYM* pTagLoader = new CMusicInfoTagLoaderYM();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (AdplugCodec::IsSupportedFormat(strExtension))
   {
-    CMusicInfoTagLoaderAdplug *pTagLoader = new CMusicInfoTagLoaderAdplug();
+    CMusicInfoTagLoaderAdplug* pTagLoader = new CMusicInfoTagLoaderAdplug();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
   else if (ASAPCodec::IsSupportedFormat(strExtension) || strExtension == "asapstream")
   {
-    CMusicInfoTagLoaderASAP *pTagLoader = new CMusicInfoTagLoaderASAP();
+    CMusicInfoTagLoaderASAP* pTagLoader = new CMusicInfoTagLoaderASAP();
     return (IMusicInfoTagLoader*)pTagLoader;
   }
 

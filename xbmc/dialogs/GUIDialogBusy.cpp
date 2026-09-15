@@ -28,10 +28,15 @@
 class CBusyWaiter : public CThread
 {
   boost::shared_ptr<CEvent> m_done;
-  IRunnable *m_runnable;
+  IRunnable* m_runnable;
+
 public:
-  explicit CBusyWaiter(IRunnable *runnable) :
-  CThread(runnable, "waiting"), m_done(new CEvent()),  m_runnable(runnable) { }
+  explicit CBusyWaiter(IRunnable* runnable)
+    : CThread(runnable, "waiting"),
+      m_done(new CEvent()),
+      m_runnable(runnable)
+  {
+  }
 
   bool Wait(unsigned int displaytime, bool allowCancel)
   {
@@ -58,10 +63,9 @@ public:
     CThread::Process();
     (*e_done).Set();
   }
-
 };
 
-bool CGUIDialogBusy::Wait(IRunnable *runnable, unsigned int displaytime, bool allowCancel)
+bool CGUIDialogBusy::Wait(IRunnable* runnable, unsigned int displaytime, bool allowCancel)
 {
   if (!runnable)
     return false;
@@ -73,7 +77,10 @@ bool CGUIDialogBusy::Wait(IRunnable *runnable, unsigned int displaytime, bool al
   return true;
 }
 
-bool CGUIDialogBusy::WaitOnEvent(CEvent &event, unsigned int displaytime /* = 100 */, bool allowCancel /* = true */, bool isFromDvdPlayer /* = false */)
+bool CGUIDialogBusy::WaitOnEvent(CEvent& event,
+                                 unsigned int displaytime /* = 100 */,
+                                 bool allowCancel /* = true */,
+                                 bool isFromDvdPlayer /* = false */)
 {
   bool cancelled = false;
   if (!event.WaitMSec(displaytime))
@@ -84,7 +91,7 @@ bool CGUIDialogBusy::WaitOnEvent(CEvent &event, unsigned int displaytime /* = 10
     {
       dialog->Open();
 
-      while(!event.WaitMSec(1))
+      while (!event.WaitMSec(1))
       {
         dialog->ProcessRenderLoop(isFromDvdPlayer);
         if (allowCancel && dialog->IsCanceled())
@@ -113,7 +120,7 @@ CGUIDialogBusy::~CGUIDialogBusy(void)
 {
 }
 
-void CGUIDialogBusy::Open_Internal(const std::string &param /* = "" */)
+void CGUIDialogBusy::Open_Internal(const std::string& param /* = "" */)
 {
   m_bCanceled = false;
   m_bLastVisible = true;
@@ -122,19 +129,18 @@ void CGUIDialogBusy::Open_Internal(const std::string &param /* = "" */)
   CGUIDialog::Open_Internal(false, param);
 }
 
-
-void CGUIDialogBusy::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIDialogBusy::DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   bool visible = g_windowManager.GetTopMostModalDialogID() == WINDOW_DIALOG_BUSY;
-  if(!visible && m_bLastVisible)
+  if (!visible && m_bLastVisible)
     dirtyregions.push_back(m_renderRegion);
   m_bLastVisible = visible;
 
   // update the progress control if available
-  const CGUIControl *control = GetControl(PROGRESS_CONTROL);
+  const CGUIControl* control = GetControl(PROGRESS_CONTROL);
   if (control && control->GetControlType() == CGUIControl::GUICONTROL_PROGRESS)
   {
-    CGUIProgressControl *progress = (CGUIProgressControl *)control;
+    CGUIProgressControl* progress = (CGUIProgressControl*)control;
     progress->SetPercentage(m_progress);
     progress->SetVisible(m_progress > -1);
   }
@@ -144,7 +150,7 @@ void CGUIDialogBusy::DoProcess(unsigned int currentTime, CDirtyRegionList &dirty
 
 void CGUIDialogBusy::Render()
 {
-  if(!m_bLastVisible)
+  if (!m_bLastVisible)
     return;
   CGUIDialog::Render();
 }

@@ -24,19 +24,19 @@
 #ifdef __GNUC__
 // for use in functions that take printf format string as first parameter and additional printf parameters as second parameter
 // for example: int myprintf(const char* format, ...) PARAM1_PRINTF_FORMAT;
-#define PARAM1_PRINTF_FORMAT __attribute__((format(printf,1,2)))
+#define PARAM1_PRINTF_FORMAT __attribute__((format(printf, 1, 2)))
 
 // for use in functions that take printf format string as second parameter and additional printf parameters as third parameter
 // for example: bool log_string(int logLevel, const char* format, ...) PARAM2_PRINTF_FORMAT;
 // note: all non-static class member functions take pointer to class object as hidden first parameter
 // another example: class A { int myprintf(const char* format, ...) PARAM2_PRINTF_FORMAT; };
-#define PARAM2_PRINTF_FORMAT __attribute__((format(printf,2,3)))
+#define PARAM2_PRINTF_FORMAT __attribute__((format(printf, 2, 3)))
 
 // for use in functions that take printf format string as third parameter and additional printf parameters as fourth parameter
 // note: all non-static class member functions take pointer to class object as hidden first parameter
 // for example: class A { bool log_string(int logLevel, const char* format, ...) PARAM3_PRINTF_FORMAT; };
-#define PARAM3_PRINTF_FORMAT __attribute__((format(printf,3,4)))
-#else  // ! __GNUC__
+#define PARAM3_PRINTF_FORMAT __attribute__((format(printf, 3, 4)))
+#else // ! __GNUC__
 #define PARAM1_PRINTF_FORMAT
 #define PARAM2_PRINTF_FORMAT
 #define PARAM3_PRINTF_FORMAT
@@ -60,7 +60,7 @@
 // specify that parameter must be zero-terminated string or NULL
 // for example: bool SetAdditionalName(IN_OPT_STRING const char* addName);
 #define IN_OPT_STRING _In_opt_z_
-#else  // ! _MSC_VER
+#else // ! _MSC_VER
 #define PRINTF_FORMAT_STRING
 #define IN_STRING
 #define IN_OPT_STRING

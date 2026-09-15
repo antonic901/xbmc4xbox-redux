@@ -25,13 +25,12 @@
 class CFileItem;
 class CFileItemList;
 
-class CGUIDialogFavourites :
-      public CGUIDialog
+class CGUIDialogFavourites : public CGUIDialog
 {
 public:
   CGUIDialogFavourites(void);
   virtual ~CGUIDialogFavourites(void);
-  virtual bool OnMessage(CGUIMessage &message);
+  virtual bool OnMessage(CGUIMessage& message);
   virtual void OnInitWindow();
 
   virtual CFileItemPtr GetCurrentListItem(int offset = 0);

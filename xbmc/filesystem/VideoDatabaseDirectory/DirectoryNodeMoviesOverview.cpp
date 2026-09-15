@@ -28,21 +28,16 @@
 using namespace XFILE::VIDEODATABASEDIRECTORY;
 
 Node MovieChildren[] = {
-                        { NODE_TYPE_GENRE,        "genres",     135 },
-                        { NODE_TYPE_TITLE_MOVIES, "titles",     369 },
-                        { NODE_TYPE_YEAR,         "years",      562 },
-                        { NODE_TYPE_ACTOR,        "actors",     344 },
-                        { NODE_TYPE_DIRECTOR,     "directors",  20348 },
-                        { NODE_TYPE_STUDIO,       "studios",    20388 },
-                        { NODE_TYPE_SETS,         "sets",       20434 },
-                        { NODE_TYPE_COUNTRY,      "countries",  20451 },
-                        { NODE_TYPE_TAGS,         "tags",       20459 }
-                       };
+    {NODE_TYPE_GENRE, "genres", 135},         {NODE_TYPE_TITLE_MOVIES, "titles", 369},
+    {NODE_TYPE_YEAR, "years", 562},           {NODE_TYPE_ACTOR, "actors", 344},
+    {NODE_TYPE_DIRECTOR, "directors", 20348}, {NODE_TYPE_STUDIO, "studios", 20388},
+    {NODE_TYPE_SETS, "sets", 20434},          {NODE_TYPE_COUNTRY, "countries", 20451},
+    {NODE_TYPE_TAGS, "tags", 20459}};
 
-CDirectoryNodeMoviesOverview::CDirectoryNodeMoviesOverview(const std::string& strName, CDirectoryNode* pParent)
+CDirectoryNodeMoviesOverview::CDirectoryNodeMoviesOverview(const std::string& strName,
+                                                           CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_MOVIES_OVERVIEW, strName, pParent)
 {
-
 }
 
 NODE_TYPE CDirectoryNodeMoviesOverview::GetChildType() const

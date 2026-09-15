@@ -28,7 +28,7 @@
 #include "utils/GlobalsHandling.h"
 
 #ifdef __GNUC__
-#define ATTRIB_LOG_FORMAT __attribute__((format(printf,2,3)))
+#define ATTRIB_LOG_FORMAT __attribute__((format(printf, 2, 3)))
 #else
 #define ATTRIB_LOG_FORMAT
 #endif
@@ -36,30 +36,36 @@
 class CLog
 {
 public:
-
   class CLogGlobals
   {
   public:
-    CLogGlobals() : m_file(NULL), m_repeatCount(0), m_repeatLogLevel(-1), m_logLevel(LOG_LEVEL_DEBUG) {}
-    FILE*       m_file;
-    int         m_repeatCount;
-    int         m_repeatLogLevel;
+    CLogGlobals()
+      : m_file(NULL),
+        m_repeatCount(0),
+        m_repeatLogLevel(-1),
+        m_logLevel(LOG_LEVEL_DEBUG)
+    {
+    }
+    FILE* m_file;
+    int m_repeatCount;
+    int m_repeatLogLevel;
     std::string m_repeatLine;
-    int         m_logLevel;
-    int         m_extraLogLevels;
+    int m_logLevel;
+    int m_extraLogLevels;
     CCriticalSection critSec;
   };
 
   CLog();
   virtual ~CLog(void);
   static void Close();
-  static void Log(int loglevel, const char *format, ... ) ATTRIB_LOG_FORMAT;
-  static void DebugLog(const char *format, ...) { Log(LOGDEBUG, format); };
-  static void MemDump(char *pData, int length);
+  static void Log(int loglevel, const char* format, ...) ATTRIB_LOG_FORMAT;
+  static void DebugLog(const char* format, ...) { Log(LOGDEBUG, format); };
+  static void MemDump(char* pData, int length);
   static bool Init(const char* path);
   static void SetLogLevel(int level);
-  static int  GetLogLevel();
+  static int GetLogLevel();
   static void SetExtraLogLevels(int level);
+
 private:
   static void OutputDebugString(const std::string& line);
 };
@@ -68,11 +74,11 @@ private:
 
 namespace XbmcUtils
 {
-  class LogImplementation : public XbmcCommons::ILogger
-  {
-  public:
-    inline virtual void log(int logLevel, const char* message) { CLog::Log(logLevel,"%s",message); }
-  };
-}
+class LogImplementation : public XbmcCommons::ILogger
+{
+public:
+  inline virtual void log(int logLevel, const char* message) { CLog::Log(logLevel, "%s", message); }
+};
+} // namespace XbmcUtils
 
-XBMC_GLOBAL_REF(CLog::CLogGlobals,g_log_globals);
+XBMC_GLOBAL_REF(CLog::CLogGlobals, g_log_globals);

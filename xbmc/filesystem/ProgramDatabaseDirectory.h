@@ -11,12 +11,12 @@
 
 namespace XFILE
 {
-  class CProgramDatabaseDirectory : public IDirectory
-  {
-  public:
-    CProgramDatabaseDirectory(void);
-    virtual ~CProgramDatabaseDirectory(void);
-    virtual bool GetDirectory(const CURL& url, CFileItemList &items);
-    virtual bool AllowAll() const { return true; }
-  };
-}
+class CProgramDatabaseDirectory : public IDirectory
+{
+public:
+  CProgramDatabaseDirectory(void);
+  virtual ~CProgramDatabaseDirectory(void);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool AllowAll() const { return true; }
+};
+} // namespace XFILE

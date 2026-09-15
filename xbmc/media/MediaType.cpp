@@ -26,29 +26,53 @@ static std::map<std::string, CMediaTypes::MediaTypeInfo> fillDefaultMediaTypes()
 {
   std::map<std::string, CMediaTypes::MediaTypeInfo> mediaTypes;
 
-  mediaTypes.insert(std::make_pair(MediaTypeMusic,            CMediaTypes::MediaTypeInfo(MediaTypeMusic,           MediaTypeMusic,               true,  36914, 36915,   249,   249)));
-  mediaTypes.insert(std::make_pair(MediaTypeArtist,           CMediaTypes::MediaTypeInfo(MediaTypeArtist,          MediaTypeArtist "s",          true,  36916, 36917,   557,   133)));
-  mediaTypes.insert(std::make_pair(MediaTypeAlbum,            CMediaTypes::MediaTypeInfo(MediaTypeAlbum,           MediaTypeAlbum "s",           true,  36918, 36919,   558,   132)));
-  mediaTypes.insert(std::make_pair(MediaTypeSong,             CMediaTypes::MediaTypeInfo(MediaTypeSong,            MediaTypeSong "s",            false, 36920, 36921,   172,   134)));
-  mediaTypes.insert(std::make_pair(MediaTypeVideo,            CMediaTypes::MediaTypeInfo(MediaTypeVideo,           MediaTypeVideo "s",           true,  36912, 36913,   291,     3)));
-  mediaTypes.insert(std::make_pair(MediaTypeVideoCollection,  CMediaTypes::MediaTypeInfo(MediaTypeVideoCollection, MediaTypeVideoCollection "s", true,  36910, 36911, 20141, 20434)));
-  mediaTypes.insert(std::make_pair(MediaTypeMusicVideo,       CMediaTypes::MediaTypeInfo(MediaTypeMusicVideo,      MediaTypeMusicVideo "s",      false, 36908, 36909, 20391, 20389)));
-  mediaTypes.insert(std::make_pair(MediaTypeMovie,            CMediaTypes::MediaTypeInfo(MediaTypeMovie,           MediaTypeMovie "s",           false, 36900, 36901, 20338, 20342)));
-  mediaTypes.insert(std::make_pair(MediaTypeTvShow,           CMediaTypes::MediaTypeInfo(MediaTypeTvShow,          MediaTypeTvShow "s",          true,  36902, 36903, 36902, 36903)));
-  mediaTypes.insert(std::make_pair(MediaTypeSeason,           CMediaTypes::MediaTypeInfo(MediaTypeSeason,          MediaTypeSeason "s",          true,  36904, 36905, 20373, 33054)));
-  mediaTypes.insert(std::make_pair(MediaTypeEpisode,          CMediaTypes::MediaTypeInfo(MediaTypeEpisode,         MediaTypeEpisode "s",         false, 36906, 36907, 20359, 20360)));
+  mediaTypes.insert(
+      std::make_pair(MediaTypeMusic, CMediaTypes::MediaTypeInfo(MediaTypeMusic, MediaTypeMusic,
+                                                                true, 36914, 36915, 249, 249)));
+  mediaTypes.insert(std::make_pair(MediaTypeArtist,
+                                   CMediaTypes::MediaTypeInfo(MediaTypeArtist, MediaTypeArtist "s",
+                                                              true, 36916, 36917, 557, 133)));
+  mediaTypes.insert(
+      std::make_pair(MediaTypeAlbum, CMediaTypes::MediaTypeInfo(MediaTypeAlbum, MediaTypeAlbum "s",
+                                                                true, 36918, 36919, 558, 132)));
+  mediaTypes.insert(
+      std::make_pair(MediaTypeSong, CMediaTypes::MediaTypeInfo(MediaTypeSong, MediaTypeSong "s",
+                                                               false, 36920, 36921, 172, 134)));
+  mediaTypes.insert(
+      std::make_pair(MediaTypeVideo, CMediaTypes::MediaTypeInfo(MediaTypeVideo, MediaTypeVideo "s",
+                                                                true, 36912, 36913, 291, 3)));
+  mediaTypes.insert(std::make_pair(MediaTypeVideoCollection,
+                                   CMediaTypes::MediaTypeInfo(MediaTypeVideoCollection,
+                                                              MediaTypeVideoCollection "s", true,
+                                                              36910, 36911, 20141, 20434)));
+  mediaTypes.insert(std::make_pair(
+      MediaTypeMusicVideo, CMediaTypes::MediaTypeInfo(MediaTypeMusicVideo, MediaTypeMusicVideo "s",
+                                                      false, 36908, 36909, 20391, 20389)));
+  mediaTypes.insert(std::make_pair(MediaTypeMovie,
+                                   CMediaTypes::MediaTypeInfo(MediaTypeMovie, MediaTypeMovie "s",
+                                                              false, 36900, 36901, 20338, 20342)));
+  mediaTypes.insert(std::make_pair(MediaTypeTvShow,
+                                   CMediaTypes::MediaTypeInfo(MediaTypeTvShow, MediaTypeTvShow "s",
+                                                              true, 36902, 36903, 36902, 36903)));
+  mediaTypes.insert(std::make_pair(MediaTypeSeason,
+                                   CMediaTypes::MediaTypeInfo(MediaTypeSeason, MediaTypeSeason "s",
+                                                              true, 36904, 36905, 20373, 33054)));
+  mediaTypes.insert(std::make_pair(
+      MediaTypeEpisode, CMediaTypes::MediaTypeInfo(MediaTypeEpisode, MediaTypeEpisode "s", false,
+                                                   36906, 36907, 20359, 20360)));
 
   return mediaTypes;
 }
 
-std::map<std::string, CMediaTypes::MediaTypeInfo> CMediaTypes::m_mediaTypes = fillDefaultMediaTypes();
+std::map<std::string, CMediaTypes::MediaTypeInfo> CMediaTypes::m_mediaTypes =
+    fillDefaultMediaTypes();
 
-bool CMediaTypes::IsValidMediaType(const MediaType &mediaType)
+bool CMediaTypes::IsValidMediaType(const MediaType& mediaType)
 {
   return findMediaType(mediaType) != m_mediaTypes.end();
 }
 
-bool CMediaTypes::IsMediaType(const std::string &strMediaType, const MediaType &mediaType)
+bool CMediaTypes::IsMediaType(const std::string& strMediaType, const MediaType& mediaType)
 {
   std::map<std::string, MediaTypeInfo>::const_iterator strMediaTypeIt = findMediaType(strMediaType);
   std::map<std::string, MediaTypeInfo>::const_iterator mediaTypeIt = findMediaType(mediaType);
@@ -57,7 +81,7 @@ bool CMediaTypes::IsMediaType(const std::string &strMediaType, const MediaType &
          strMediaTypeIt->first.compare(mediaTypeIt->first) == 0;
 }
 
-MediaType CMediaTypes::FromString(const std::string &strMediaType)
+MediaType CMediaTypes::FromString(const std::string& strMediaType)
 {
   std::map<std::string, MediaTypeInfo>::const_iterator mediaTypeIt = findMediaType(strMediaType);
   if (mediaTypeIt == m_mediaTypes.end())
@@ -66,7 +90,7 @@ MediaType CMediaTypes::FromString(const std::string &strMediaType)
   return mediaTypeIt->first;
 }
 
-MediaType CMediaTypes::ToPlural(const MediaType &mediaType)
+MediaType CMediaTypes::ToPlural(const MediaType& mediaType)
 {
   std::map<std::string, MediaTypeInfo>::const_iterator mediaTypeIt = findMediaType(mediaType);
   if (mediaTypeIt == m_mediaTypes.end())
@@ -75,7 +99,7 @@ MediaType CMediaTypes::ToPlural(const MediaType &mediaType)
   return mediaTypeIt->second.plural;
 }
 
-bool CMediaTypes::IsContainer(const MediaType &mediaType)
+bool CMediaTypes::IsContainer(const MediaType& mediaType)
 {
   std::map<std::string, MediaTypeInfo>::const_iterator mediaTypeIt = findMediaType(mediaType);
   if (mediaTypeIt == m_mediaTypes.end())
@@ -84,7 +108,8 @@ bool CMediaTypes::IsContainer(const MediaType &mediaType)
   return mediaTypeIt->second.container;
 }
 
-std::map<std::string, CMediaTypes::MediaTypeInfo>::const_iterator CMediaTypes::findMediaType(const std::string &mediaType)
+std::map<std::string, CMediaTypes::MediaTypeInfo>::const_iterator CMediaTypes::findMediaType(
+    const std::string& mediaType)
 {
   std::string strMediaType = mediaType;
   StringUtils::ToLower(strMediaType);
@@ -102,41 +127,37 @@ std::map<std::string, CMediaTypes::MediaTypeInfo>::const_iterator CMediaTypes::f
   return m_mediaTypes.end();
 }
 
-std::string CMediaTypes::GetLocalization(const MediaType &mediaType)
+std::string CMediaTypes::GetLocalization(const MediaType& mediaType)
 {
   std::map<std::string, MediaTypeInfo>::const_iterator mediaTypeIt = findMediaType(mediaType);
-  if (mediaTypeIt == m_mediaTypes.end() ||
-    mediaTypeIt->second.localizationSingular <= 0)
+  if (mediaTypeIt == m_mediaTypes.end() || mediaTypeIt->second.localizationSingular <= 0)
     return "";
 
   return g_localizeStrings.Get(mediaTypeIt->second.localizationSingular);
 }
 
-std::string CMediaTypes::GetPluralLocalization(const MediaType &mediaType)
+std::string CMediaTypes::GetPluralLocalization(const MediaType& mediaType)
 {
   std::map<std::string, MediaTypeInfo>::const_iterator mediaTypeIt = findMediaType(mediaType);
-  if (mediaTypeIt == m_mediaTypes.end() ||
-    mediaTypeIt->second.localizationPlural <= 0)
+  if (mediaTypeIt == m_mediaTypes.end() || mediaTypeIt->second.localizationPlural <= 0)
     return "";
 
   return g_localizeStrings.Get(mediaTypeIt->second.localizationPlural);
 }
 
-std::string CMediaTypes::GetCapitalLocalization(const MediaType &mediaType)
+std::string CMediaTypes::GetCapitalLocalization(const MediaType& mediaType)
 {
   std::map<std::string, MediaTypeInfo>::const_iterator mediaTypeIt = findMediaType(mediaType);
-  if (mediaTypeIt == m_mediaTypes.end() ||
-    mediaTypeIt->second.localizationSingular <= 0)
+  if (mediaTypeIt == m_mediaTypes.end() || mediaTypeIt->second.localizationSingular <= 0)
     return "";
 
   return g_localizeStrings.Get(mediaTypeIt->second.localizationSingularCapital);
 }
 
-std::string CMediaTypes::GetCapitalPluralLocalization(const MediaType &mediaType)
+std::string CMediaTypes::GetCapitalPluralLocalization(const MediaType& mediaType)
 {
   std::map<std::string, MediaTypeInfo>::const_iterator mediaTypeIt = findMediaType(mediaType);
-  if (mediaTypeIt == m_mediaTypes.end() ||
-    mediaTypeIt->second.localizationPlural <= 0)
+  if (mediaTypeIt == m_mediaTypes.end() || mediaTypeIt->second.localizationPlural <= 0)
     return "";
 
   return g_localizeStrings.Get(mediaTypeIt->second.localizationPluralCapital);

@@ -50,11 +50,11 @@ using namespace std;
 CEventServer* CEventServer::m_pInstance = NULL;
 CEventServer::CEventServer() : CThread("CEventServer")
 {
-  m_pSocket       = NULL;
+  m_pSocket = NULL;
   m_pPacketBuffer = NULL;
-  m_bStop         = false;
-  m_pThread       = NULL;
-  m_bRunning      = false;
+  m_bStop = false;
+  m_pThread = NULL;
+  m_bRunning = false;
   m_bRefreshSettings = false;
 
   // default timeout in ms for receiving a single packet
@@ -66,7 +66,7 @@ void CEventServer::RemoveInstance()
   if (m_pInstance)
   {
     delete m_pInstance;
-    m_pInstance=NULL;
+    m_pInstance = NULL;
   }
 }
 
@@ -133,7 +133,7 @@ void CEventServer::Cleanup()
       delete iter->second;
     }
     m_clients.erase(iter);
-    iter =  m_clients.begin();
+    iter = m_clients.begin();
   }
 }
 
@@ -151,7 +151,7 @@ void CEventServer::Process()
 
 #ifndef _XBOX
   if (!CSettings::GetInstance().GetBool("services.esallinterfaces"))
-    any_addr.SetAddress ("127.0.0.1");  // only listen on localhost
+    any_addr.SetAddress("127.0.0.1"); // only listen on localhost
 #endif
 
   CLog::Log(LOGNOTICE, "ES: Starting UDP Event server on %s:%d", any_addr.Address(), m_iPort);
@@ -165,7 +165,7 @@ void CEventServer::Process()
     CLog::Log(LOGERROR, "ES: Could not create socket, aborting!");
     return;
   }
-  m_pPacketBuffer = (unsigned char *)malloc(PACKET_SIZE);
+  m_pPacketBuffer = (unsigned char*)malloc(PACKET_SIZE);
 
   if (!m_pPacketBuffer)
   {
@@ -197,7 +197,7 @@ void CEventServer::Process()
     if (listener.Listen(m_iListenTimeout))
     {
       CAddress addr;
-      if ((packetSize = m_pSocket->Read(addr, PACKET_SIZE, (void *)m_pPacketBuffer)) > -1)
+      if ((packetSize = m_pSocket->Read(addr, PACKET_SIZE, (void*)m_pPacketBuffer)) > -1)
       {
         ProcessPacket(addr, packetSize);
       }
@@ -222,7 +222,7 @@ void CEventServer::ProcessPacket(CAddress& addr, int pSize)
 {
   // check packet validity
   CEventPacket* packet = new CEventPacket(pSize, m_pPacketBuffer);
-  if(packet == NULL)
+  if (packet == NULL)
   {
     CLog::Log(LOGERROR, "ES: Out of memory, cannot accept packet");
     return;
@@ -246,9 +246,9 @@ void CEventServer::ProcessPacket(CAddress& addr, int pSize)
   // first check if we have a client for this address
   map<unsigned long, CEventClient*>::iterator iter = m_clients.find(clientToken);
 
-  if ( iter == m_clients.end() )
+  if (iter == m_clients.end())
   {
-    if ( m_clients.size() >= (unsigned int)m_iMaxClients)
+    if (m_clients.size() >= (unsigned int)m_iMaxClients)
     {
       CLog::Log(LOGWARNING, "ES: Cannot accept any more clients, maximum client count reached");
       delete packet;
@@ -256,8 +256,8 @@ void CEventServer::ProcessPacket(CAddress& addr, int pSize)
     }
 
     // new client
-    CEventClient* client = new CEventClient ( addr );
-    if (client==NULL)
+    CEventClient* client = new CEventClient(addr);
+    if (client == NULL)
     {
       CLog::Log(LOGERROR, "ES: Out of memory, cannot accept new client connection");
       delete packet;
@@ -274,9 +274,9 @@ void CEventServer::RefreshClients()
   CSingleLock lock(m_critSection);
   map<unsigned long, CEventClient*>::iterator iter = m_clients.begin();
 
-  while ( iter != m_clients.end() )
+  while (iter != m_clients.end())
   {
-    if (! (iter->second->Alive()))
+    if (!(iter->second->Alive()))
     {
       CLog::Log(LOGNOTICE, "ES: Client %s from %s timed out", iter->second->Name().c_str(),
                 iter->second->Address().Address());
@@ -321,13 +321,13 @@ bool CEventServer::ExecuteNextAction()
     {
       // Leave critical section before processing action
       lock.Leave();
-      switch(actionEvent.actionType)
+      switch (actionEvent.actionType)
       {
-      case AT_EXEC_BUILTIN:
-        CBuiltins::GetInstance().Execute(actionEvent.actionName);
-        break;
+        case AT_EXEC_BUILTIN:
+          CBuiltins::GetInstance().Execute(actionEvent.actionName);
+          break;
 
-      case AT_BUTTON:
+        case AT_BUTTON:
         {
           int actionID;
           CButtonTranslator::TranslateActionString(actionEvent.actionName.c_str(), actionID);

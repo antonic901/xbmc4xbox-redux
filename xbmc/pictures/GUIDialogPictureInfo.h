@@ -24,13 +24,12 @@
 
 class CFileItemList;
 
-class CGUIDialogPictureInfo :
-      public CGUIDialog
+class CGUIDialogPictureInfo : public CGUIDialog
 {
 public:
   CGUIDialogPictureInfo(void);
   virtual ~CGUIDialogPictureInfo(void);
-  void SetPicture(CFileItem *item);
+  void SetPicture(CFileItem* item);
   virtual void FrameMove();
 
 protected:
@@ -40,5 +39,5 @@ protected:
   void UpdatePictureInfo();
 
   CFileItemList* m_pictureInfo;
-  std::string    m_currentPicture;
+  std::string m_currentPicture;
 };

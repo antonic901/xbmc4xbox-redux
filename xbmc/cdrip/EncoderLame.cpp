@@ -25,7 +25,7 @@
 #include "settings/Settings.h"
 
 #ifdef _WIN32PC
-extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
+extern "C" FILE* fopen_utf8(const char* _Filename, const char* _Mode);
 #else
 #define fopen_utf8 fopen
 #endif
@@ -33,12 +33,14 @@ extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
 using namespace MUSIC_INFO;
 
 // taken from Lame from main.c
-int CEncoderLame::parse_args_from_string(lame_global_flags * const gfp, const char *p,
-                            char *inPath, char *outPath)
-{                       /* Quick & very Dirty */
-  char *q;
-  char *f;
-  char *r[128];
+int CEncoderLame::parse_args_from_string(lame_global_flags* const gfp,
+                                         const char* p,
+                                         char* inPath,
+                                         char* outPath)
+{ /* Quick & very Dirty */
+  char* q;
+  char* f;
+  char* r[128];
   int c = 0;
   int ret;
 
@@ -75,10 +77,12 @@ CEncoderLame::CEncoderLame()
 bool CEncoderLame::Init(const char* strFile, int iInChannels, int iInRate, int iInBits)
 {
   // we only accept 2 / 44100 / 16 atm
-  if (iInChannels != 2 || iInRate != 44100 || iInBits != 16) return false;
+  if (iInChannels != 2 || iInRate != 44100 || iInBits != 16)
+    return false;
 
   // set input stream information and open the file
-  if (!CEncoder::Init(strFile, iInChannels, iInRate, iInBits)) return false;
+  if (!CEncoder::Init(strFile, iInChannels, iInRate, iInBits))
+    return false;
 
   // load the lame dll
   if (!m_dll.Load())
@@ -96,7 +100,8 @@ bool CEncoderLame::Init(const char* strFile, int iInChannels, int iInRate, int i
   {
     // use cbr and specified bitrate from settings
     CStdString strSettings;
-    strSettings.Format("%s%i", "--preset cbr ", CSettings::GetInstance().GetInt("audiocds.bitrate"));
+    strSettings.Format("%s%i", "--preset cbr ",
+                       CSettings::GetInstance().GetInt("audiocds.bitrate"));
     parse_args_from_string(m_pGlobalFlags, strSettings.c_str(), m_inPath, m_outPath);
     //lame_set_mode(pGlobalFlags, JOINT_STEREO);
     //lame_set_brate(pGlobalFlags, g_settings.m_iRipBitRate);
@@ -107,9 +112,21 @@ bool CEncoderLame::Init(const char* strFile, int iInChannels, int iInRate, int i
     CStdString strSettings;
     switch (CSettings::GetInstance().GetInt("audiocds.quality"))
     {
-    case CDDARIP_QUALITY_MEDIUM: { strSettings = "--preset fast medium"; break;}  // 150-180kbps
-    case CDDARIP_QUALITY_STANDARD: { strSettings = "--preset fast standard"; break;}  // 170-210kbps
-    case CDDARIP_QUALITY_EXTREME: { strSettings = "--preset fast extreme"; break;} // 200-240kbps
+      case CDDARIP_QUALITY_MEDIUM:
+      {
+        strSettings = "--preset fast medium";
+        break;
+      } // 150-180kbps
+      case CDDARIP_QUALITY_STANDARD:
+      {
+        strSettings = "--preset fast standard";
+        break;
+      } // 170-210kbps
+      case CDDARIP_QUALITY_EXTREME:
+      {
+        strSettings = "--preset fast extreme";
+        break;
+      } // 200-240kbps
     }
     parse_args_from_string(m_pGlobalFlags, strSettings.c_str(), m_inPath, m_outPath);
   }
@@ -131,7 +148,8 @@ bool CEncoderLame::Init(const char* strFile, int iInChannels, int iInRate, int i
 
 int CEncoderLame::Encode(int nNumBytesRead, BYTE* pbtStream)
 {
-  int iBytes = m_dll.lame_encode_buffer_interleaved(m_pGlobalFlags, (short*)pbtStream, nNumBytesRead / 4, m_buffer, sizeof(m_buffer));
+  int iBytes = m_dll.lame_encode_buffer_interleaved(m_pGlobalFlags, (short*)pbtStream,
+                                                    nNumBytesRead / 4, m_buffer, sizeof(m_buffer));
 
   if (iBytes < 0)
   {
@@ -189,7 +207,7 @@ bool CEncoderLame::Close()
   tag.SetTitle(m_strTitle);
   tag.SetTrackNumber(atoi(m_strTrack.c_str()));
   SYSTEMTIME time;
-  time.wYear=atoi(m_strYear.c_str());
+  time.wYear = atoi(m_strYear.c_str());
   tag.SetReleaseDate(time);
   id3tag.SetMusicInfoTag(tag);
   id3tag.Write(m_strFile);

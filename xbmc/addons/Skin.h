@@ -27,7 +27,7 @@
 
 #include "addons/Addon.h"
 #include "guilib/GraphicContext.h" // needed for the RESOLUTION members
-#include "guilib/GUIIncludes.h"    // needed for the GUIInclude member
+#include "guilib/GUIIncludes.h" // needed for the GUIInclude member
 
 #define CREDIT_LINE_LENGTH 50
 
@@ -41,7 +41,7 @@ class CSkinSettingUpdateHandler;
 class CSkinSetting
 {
 public:
-  virtual ~CSkinSetting() { }
+  virtual ~CSkinSetting() {}
 
   bool Serialize(TiXmlElement* parent) const;
 
@@ -60,7 +60,7 @@ typedef boost::shared_ptr<CSkinSetting> CSkinSettingPtr;
 class CSkinSettingString : public CSkinSetting
 {
 public:
-  virtual ~CSkinSettingString() { }
+  virtual ~CSkinSettingString() {}
 
   virtual std::string GetType() const { return "string"; }
 
@@ -77,10 +77,8 @@ typedef boost::shared_ptr<CSkinSettingString> CSkinSettingStringPtr;
 class CSkinSettingBool : public CSkinSetting
 {
 public:
-  CSkinSettingBool()
-    : value(false)
-  { }
-  virtual ~CSkinSettingBool() { }
+  CSkinSettingBool() : value(false) {}
+  virtual ~CSkinSettingBool() {}
 
   virtual std::string GetType() const { return "bool"; }
 
@@ -100,27 +98,22 @@ public:
   class CStartupWindow
   {
   public:
-    CStartupWindow(int id, const char *name):
-        m_id(id), m_name(name)
-    {
-    };
+    CStartupWindow(int id, const char* name) : m_id(id), m_name(name) {};
     int m_id;
     std::string m_name;
   };
 
-  static boost::movelib::unique_ptr<CSkinInfo> FromExtension(AddonProps props, const cp_extension_t* ext);
+  static boost::movelib::unique_ptr<CSkinInfo> FromExtension(AddonProps props,
+                                                             const cp_extension_t* ext);
 
   //FIXME: CAddonCallbacksGUI/WindowXML hack
-  explicit CSkinInfo(
-      AddonProps props,
-      const RESOLUTION_INFO& resolution = RESOLUTION_INFO());
+  explicit CSkinInfo(AddonProps props, const RESOLUTION_INFO& resolution = RESOLUTION_INFO());
 
-  CSkinInfo(
-      AddonProps props,
-      const RESOLUTION_INFO& resolution,
-      const std::vector<RESOLUTION_INFO>& resolutions,
-      float effectsSlowDown,
-      bool debugging);
+  CSkinInfo(AddonProps props,
+            const RESOLUTION_INFO& resolution,
+            const std::vector<RESOLUTION_INFO>& resolutions,
+            float effectsSlowDown,
+            bool debugging);
 
   ~CSkinInfo();
 
@@ -128,7 +121,7 @@ public:
    */
   void Start();
 
-  bool HasSkinFile(const std::string &strFile) const;
+  bool HasSkinFile(const std::string& strFile) const;
 
   /*! \brief Get the full path to the specified file in the skin
    We search for XML files in the skin folder that best matches the current resolution.
@@ -137,7 +130,9 @@ public:
    \param baseDir [in] If non-empty, the given directory is searched instead of the skin's directory.  Defaults to empty.
    \return path to the XML file
    */
-  std::string GetSkinPath(const std::string& file, RESOLUTION_INFO *res = NULL, const std::string& baseDir = "") const;
+  std::string GetSkinPath(const std::string& file,
+                          RESOLUTION_INFO* res = NULL,
+                          const std::string& baseDir = "") const;
 
   /*! \brief Return whether skin debugging is enabled
    \return true if skin debugging (set via <debugging>true</debugging> in addon.xml) is enabled.
@@ -162,18 +157,19 @@ public:
    \param res [out] the resolution structure if name is valid
    \return true if the resolution is valid, false otherwise
    */
-  static bool TranslateResolution(const std::string &name, RESOLUTION_INFO &res);
+  static bool TranslateResolution(const std::string& name, RESOLUTION_INFO& res);
 
-  void ResolveIncludes(TiXmlElement *node, std::map<INFO::InfoPtr, bool>* xmlIncludeConditions = NULL);
+  void ResolveIncludes(TiXmlElement* node,
+                       std::map<INFO::InfoPtr, bool>* xmlIncludeConditions = NULL);
 
   float GetEffectsSlowdown() const { return m_effectsSlowDown; };
 
-  const std::vector<CStartupWindow> &GetStartupWindows() const { return m_startupWindows; };
+  const std::vector<CStartupWindow>& GetStartupWindows() const { return m_startupWindows; };
 
   /*! \brief Retrieve the skin paths to search for skin XML files
    \param paths [out] vector of paths to search, in order.
    */
-  void GetSkinPaths(std::vector<std::string> &paths) const;
+  void GetSkinPaths(std::vector<std::string>& paths) const;
 
   bool IsInUse() const;
 
@@ -183,31 +179,46 @@ public:
   void ToggleDebug();
   const INFO::CSkinVariableString* CreateSkinVariable(const std::string& name, int context);
 
-  static void SettingOptionsSkinColorsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsSkinFontsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsSkinThemesFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
-  static void SettingOptionsStartupWindowsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+  static void SettingOptionsSkinColorsFiller(
+      const CSetting* setting,
+      std::vector<std::pair<std::string, std::string> >& list,
+      std::string& current,
+      void* data);
+  static void SettingOptionsSkinFontsFiller(const CSetting* setting,
+                                            std::vector<std::pair<std::string, std::string> >& list,
+                                            std::string& current,
+                                            void* data);
+  static void SettingOptionsSkinThemesFiller(
+      const CSetting* setting,
+      std::vector<std::pair<std::string, std::string> >& list,
+      std::string& current,
+      void* data);
+  static void SettingOptionsStartupWindowsFiller(const CSetting* setting,
+                                                 std::vector<std::pair<std::string, int> >& list,
+                                                 int& current,
+                                                 void* data);
 
   /*! \brief Don't handle skin settings like normal addon settings
    */
   virtual bool HasSettings() { return false; }
   virtual bool HasUserSettings() { return false; }
 
-  int TranslateString(const std::string &setting);
+  int TranslateString(const std::string& setting);
   const std::string& GetString(int setting) const;
-  void SetString(int setting, const std::string &label);
+  void SetString(int setting, const std::string& label);
 
-  int TranslateBool(const std::string &setting);
+  int TranslateBool(const std::string& setting);
   bool GetBool(int setting) const;
   void SetBool(int setting, bool set);
 
-  void Reset(const std::string &setting);
+  void Reset(const std::string& setting);
   void Reset();
 
   static std::set<CSkinSettingPtr> ParseSettings(const TiXmlElement* rootElement);
 
   virtual void OnPreInstall();
   virtual void OnPostInstall(bool update, bool modal);
+
 protected:
   /*! \brief Given a resolution, retrieve the corresponding directory name
    \param res RESOLUTION to translate
@@ -221,16 +232,19 @@ protected:
    \param res resolution to return
    \return true if we find a valid resolution, false otherwise
    */
-  void GetDefaultResolution(const cp_extension_t *ext, const char *tag, RESOLUTION &res, const RESOLUTION &def) const;
+  void GetDefaultResolution(const cp_extension_t* ext,
+                            const char* tag,
+                            RESOLUTION& res,
+                            const RESOLUTION& def) const;
 
-  bool LoadStartupWindows(const cp_extension_t *ext);
+  bool LoadStartupWindows(const cp_extension_t* ext);
 
   static CSkinSettingPtr ParseSetting(const TiXmlElement* element);
 
   virtual bool HasSettingsDefinition() const { return false; }
   virtual bool HasSettingsToSave() const;
-  virtual bool SettingsFromXML(const CXBMCTinyXML &doc, bool loadDefaults = false);
-  virtual void SettingsToXML(CXBMCTinyXML &doc) const;
+  virtual bool SettingsFromXML(const CXBMCTinyXML& doc, bool loadDefaults = false);
+  virtual void SettingsToXML(CXBMCTinyXML& doc) const;
 
   RESOLUTION_INFO m_defaultRes;
   std::vector<RESOLUTION_INFO> m_resolutions;

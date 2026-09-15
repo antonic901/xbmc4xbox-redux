@@ -22,7 +22,7 @@ class CTrainer;
 
 #define PROGRAMDB_MAX_COLUMNS 24
 
-  // TODO: clean this up - copy/paste from CVideoDatabase
+// TODO: clean this up - copy/paste from CVideoDatabase
 #define PROGRAMDB_TYPE_UNUSED 0
 #define PROGRAMDB_TYPE_STRING 1
 #define PROGRAMDB_TYPE_INT 2
@@ -33,9 +33,9 @@ class CTrainer;
 #define PROGRAMDB_TYPE_DATE 7
 #define PROGRAMDB_TYPE_DATETIME 8
 
-#define PROGRAMDB_DETAILS_PROGRAM_PLAYCOUNT         PROGRAMDB_MAX_COLUMNS + 1
-#define PROGRAMDB_DETAILS_PROGRAM_LASTPLAYED        PROGRAMDB_MAX_COLUMNS + 2
-#define PROGRAMDB_DETAILS_PROGRAM_DATEADDED         PROGRAMDB_MAX_COLUMNS + 3
+#define PROGRAMDB_DETAILS_PROGRAM_PLAYCOUNT PROGRAMDB_MAX_COLUMNS + 1
+#define PROGRAMDB_DETAILS_PROGRAM_LASTPLAYED PROGRAMDB_MAX_COLUMNS + 2
+#define PROGRAMDB_DETAILS_PROGRAM_DATEADDED PROGRAMDB_MAX_COLUMNS + 3
 
 typedef enum
 {
@@ -63,32 +63,31 @@ typedef enum
   PROGRAMDB_ID_MAX
 } PROGRAMDB_IDS;
 
-const struct SDbTableOffsets DbProgramOffsets[] =
-{
-  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strFileNameAndPath) },
-  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strUniqueID) },
-  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_type) },
-  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strTitle) },
-  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strPlot) },
-  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strSystem) },
-  { PROGRAMDB_TYPE_FLOAT, my_offsetof(CProgramInfoTag,m_rating) },
-  { PROGRAMDB_TYPE_BOOL, my_offsetof(CProgramInfoTag,m_bExclusive) },
-  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strESRB) },
-  { PROGRAMDB_TYPE_UNUSED, 0 }, // unused
-  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_developer) },
-  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_publisher) },
-  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_genre) },
-  { PROGRAMDB_TYPE_UNUSED, 0 }, // unused
-  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_generalFeature) },
-  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_onlineFeature) },
-  { PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag,m_platform) },
-  { PROGRAMDB_TYPE_UNUSED, 0 }, // unused
-  { PROGRAMDB_TYPE_UNUSED, 0 }, // unused
-  { PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag,m_strTrailer) },
-  { PROGRAMDB_TYPE_UNUSED, 0 }, // unused
-  { PROGRAMDB_TYPE_UNUSED, 0 }, // unused
-  { PROGRAMDB_TYPE_DATE, my_offsetof(CProgramInfoTag,m_releaseDate) },
-  { PROGRAMDB_TYPE_UNUSED, 0 } // unused
+const struct SDbTableOffsets DbProgramOffsets[] = {
+    {PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag, m_strFileNameAndPath)},
+    {PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag, m_strUniqueID)},
+    {PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag, m_type)},
+    {PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag, m_strTitle)},
+    {PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag, m_strPlot)},
+    {PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag, m_strSystem)},
+    {PROGRAMDB_TYPE_FLOAT, my_offsetof(CProgramInfoTag, m_rating)},
+    {PROGRAMDB_TYPE_BOOL, my_offsetof(CProgramInfoTag, m_bExclusive)},
+    {PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag, m_strESRB)},
+    {PROGRAMDB_TYPE_UNUSED, 0}, // unused
+    {PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag, m_developer)},
+    {PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag, m_publisher)},
+    {PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag, m_genre)},
+    {PROGRAMDB_TYPE_UNUSED, 0}, // unused
+    {PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag, m_generalFeature)},
+    {PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag, m_onlineFeature)},
+    {PROGRAMDB_TYPE_STRINGARRAY, my_offsetof(CProgramInfoTag, m_platform)},
+    {PROGRAMDB_TYPE_UNUSED, 0}, // unused
+    {PROGRAMDB_TYPE_UNUSED, 0}, // unused
+    {PROGRAMDB_TYPE_STRING, my_offsetof(CProgramInfoTag, m_strTrailer)},
+    {PROGRAMDB_TYPE_UNUSED, 0}, // unused
+    {PROGRAMDB_TYPE_UNUSED, 0}, // unused
+    {PROGRAMDB_TYPE_DATE, my_offsetof(CProgramInfoTag, m_releaseDate)},
+    {PROGRAMDB_TYPE_UNUSED, 0} // unused
 };
 
 class CProgramDatabase : public CDatabase
@@ -100,9 +99,9 @@ public:
   virtual bool Open();
 
   // Trainers
-  bool AddTrainer(int idTitle, CTrainer &trainer);
+  bool AddTrainer(int idTitle, CTrainer& trainer);
   bool RemoveTrainer(int idTrainer);
-  bool SetTrainer(int idTitle, CTrainer *trainer);
+  bool SetTrainer(int idTitle, CTrainer* trainer);
   bool GetTrainers(CFileItemList& items, unsigned int idTitle = 0);
   bool GetTrainerOptions(int idTrainer, unsigned int iTitleId, unsigned char* data, int numOptions);
   bool HasTrainer(const std::string& strTrainerPath);
@@ -115,8 +114,8 @@ public:
   int AddPath(const std::string& strPath);
   int AddProgram(const std::string& strFilenameAndPath, const int idPath);
 
-  bool GetPathContent(const std::string& strPath, CFileItemList &items);
-  bool GetPathContent(const int idPath, CFileItemList &items);
+  bool GetPathContent(const std::string& strPath, CFileItemList& items);
+  bool GetPathContent(const int idPath, CFileItemList& items);
 
   int SetDetailsForItem(const CFileItem* item);
 
@@ -142,21 +141,29 @@ public:
 
   std::string GetXBEPathByTitleId(const std::string& idTitle);
 
-  bool GetRecentlyPlayedGames(CFileItemList &items);
+  bool GetRecentlyPlayedGames(CFileItemList& items);
 
 protected:
-  void GetDetailsForItem(boost::movelib::unique_ptr<dbiplus::Dataset> &pDS, CFileItem* pItem);
+  void GetDetailsForItem(boost::movelib::unique_ptr<dbiplus::Dataset>& pDS, CFileItem* pItem);
 
 private:
   virtual void CreateTables();
   virtual void CreateAnalytics();
 
   virtual int GetSchemaVersion() const;
-  const char *GetBaseDBName() const { return "MyPrograms"; };
+  const char* GetBaseDBName() const { return "MyPrograms"; };
 
-  int RunQuery(const std::string &sql);
+  int RunQuery(const std::string& sql);
 
   // TODO: clean this up - copy/paste from CVideoDatabase
-  std::string GetValueString(const CProgramInfoTag &details, int min, int max, const SDbTableOffsets *offsets) const;
-  void GetDetailsFromDB(const dbiplus::sql_record* const record, int min, int max, const SDbTableOffsets *offsets, CProgramInfoTag &details, int idxOffset = 2);
+  std::string GetValueString(const CProgramInfoTag& details,
+                             int min,
+                             int max,
+                             const SDbTableOffsets* offsets) const;
+  void GetDetailsFromDB(const dbiplus::sql_record* const record,
+                        int min,
+                        int max,
+                        const SDbTableOffsets* offsets,
+                        CProgramInfoTag& details,
+                        int idxOffset = 2);
 };

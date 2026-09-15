@@ -45,8 +45,12 @@ class CBaseTexture
 {
 
 public:
-  CBaseTexture(unsigned int width = 0, unsigned int height = 0, unsigned int format = XB_FMT_A8R8G8B8,
-               IDirect3DTexture8* texture = NULL, IDirect3DPalette8* palette = NULL, bool packed = false);
+  CBaseTexture(unsigned int width = 0,
+               unsigned int height = 0,
+               unsigned int format = XB_FMT_A8R8G8B8,
+               IDirect3DTexture8* texture = NULL,
+               IDirect3DPalette8* palette = NULL,
+               bool packed = false);
   virtual ~CBaseTexture();
 
   /*! \brief Load a texture from a file
@@ -58,7 +62,9 @@ public:
    \param autoRotate whether the textures should be autorotated based on EXIF information (defaults to false).
    \return a CBaseTexture pointer to the created texture - NULL if the texture failed to load.
    */
-  static CBaseTexture *LoadFromFile(const CStdString& texturePath, unsigned int idealWidth = 0, unsigned int idealHeight = 0,
+  static CBaseTexture* LoadFromFile(const CStdString& texturePath,
+                                    unsigned int idealWidth = 0,
+                                    unsigned int idealHeight = 0,
                                     bool autoRotate = false);
 
   /*! \brief Load a texture from a file in memory
@@ -71,10 +77,18 @@ public:
    \param idealHeight the ideal height of the texture (defaults to 0, no ideal height).
    \return a CBaseTexture pointer to the created texture - NULL if the texture failed to load.
    */
-  static CBaseTexture *LoadFromFileInMemory(unsigned char* buffer, size_t bufferSize, const std::string& mimeType,
-                                            unsigned int idealWidth = 0, unsigned int idealHeight = 0);                                  
+  static CBaseTexture* LoadFromFileInMemory(unsigned char* buffer,
+                                            size_t bufferSize,
+                                            const std::string& mimeType,
+                                            unsigned int idealWidth = 0,
+                                            unsigned int idealHeight = 0);
 
-  bool LoadPaletted(unsigned int width, unsigned int height, unsigned int pitch, unsigned int format, const unsigned char *pixels, IDirect3DPalette8 *palette);
+  bool LoadPaletted(unsigned int width,
+                    unsigned int height,
+                    unsigned int pitch,
+                    unsigned int format,
+                    const unsigned char* pixels,
+                    IDirect3DPalette8* palette);
 
   bool HasAlpha() const;
 
@@ -106,13 +120,19 @@ public:
 
 private:
   // no copy constructor
-  CBaseTexture(const CBaseTexture &copy);
+  CBaseTexture(const CBaseTexture& copy);
 
 protected:
-  bool LoadFromFileInMem(unsigned char* buffer, size_t size, const std::string& mimeType,
-                         unsigned int maxWidth, unsigned int maxHeight);
-  bool LoadFromFileInternal(const CStdString& texturePath, unsigned int maxWidth, unsigned int maxHeight, bool autoRotate);
-  void LoadFromImage(ImageInfo &image, bool autoRotate = false);
+  bool LoadFromFileInMem(unsigned char* buffer,
+                         size_t size,
+                         const std::string& mimeType,
+                         unsigned int maxWidth,
+                         unsigned int maxHeight);
+  bool LoadFromFileInternal(const CStdString& texturePath,
+                            unsigned int maxWidth,
+                            unsigned int maxHeight,
+                            bool autoRotate);
+  void LoadFromImage(ImageInfo& image, bool autoRotate = false);
   // helpers for computation of texture parameters for compressed textures
   unsigned int GetRows(unsigned int height) const;
 
@@ -120,8 +140,8 @@ protected:
   unsigned int m_imageHeight;
   unsigned int m_textureWidth;
   unsigned int m_textureHeight;
-  unsigned int m_originalWidth;   ///< original image width before scaling or cropping
-  unsigned int m_originalHeight;  ///< original image height before scaling or cropping
+  unsigned int m_originalWidth; ///< original image width before scaling or cropping
+  unsigned int m_originalHeight; ///< original image height before scaling or cropping
 
   IDirect3DTexture8* m_texture;
   /* NOTICE for future:

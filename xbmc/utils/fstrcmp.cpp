@@ -44,7 +44,7 @@
 #include "fstrcmp.h"
 
 #ifndef __GNUC__
-#pragma warning( disable : 4244 )
+#pragma warning(disable : 4244)
 #endif
 
 /*
@@ -53,7 +53,7 @@
 struct string_data
 {
   /* The string to be compared. */
-  const char *data;
+  const char* data;
 
   /* The length of the string to be compared. */
   int data_length;
@@ -77,16 +77,15 @@ static int heuristic;
 
 #endif
 
-
 /* Vector, indexed by diagonal, containing 1 + the X coordinate of the
    point furthest along the given diagonal in the forward search of the
    edit matrix.  */
-static int *fdiag;
+static int* fdiag;
 
 /* Vector, indexed by diagonal, containing the X coordinate of the point
    furthest along the given diagonal in the backward search of the edit
    matrix.  */
-static int *bdiag;
+static int* bdiag;
 
 /* Edit scripts longer than this are too expensive to compute.  */
 static int too_expensive;
@@ -105,7 +104,6 @@ struct partition
   /* Likewise for high half.  */
   int hi_minimal;
 };
-
 
 /* NAME
  diag - find diagonal path
@@ -151,24 +149,23 @@ struct partition
  cause suboptimal diff output.  It cannot cause incorrect diff
  output.  */
 
-static int diag PARAMS ((int, int, int, int, int, struct partition *));
+static int diag PARAMS((int, int, int, int, int, struct partition*));
 
-static int
-diag (int xoff, int xlim, int yoff, int ylim, int minimal, struct partition *part)
+static int diag(int xoff, int xlim, int yoff, int ylim, int minimal, struct partition* part)
 {
-  int *const fd = fdiag; /* Give the compiler a chance. */
-  int *const bd = bdiag; /* Additional help for the compiler. */
-  const char *const xv = string[0].data; /* Still more help for the compiler. */
-  const char *const yv = string[1].data; /* And more and more . . . */
+  int* const fd = fdiag; /* Give the compiler a chance. */
+  int* const bd = bdiag; /* Additional help for the compiler. */
+  const char* const xv = string[0].data; /* Still more help for the compiler. */
+  const char* const yv = string[1].data; /* And more and more . . . */
   const int dmin = xoff - ylim; /* Minimum valid diagonal. */
   const int dmax = xlim - yoff; /* Maximum valid diagonal. */
   const int fmid = xoff - yoff; /* Center diagonal of top-down search. */
   const int bmid = xlim - ylim; /* Center diagonal of bottom-up search. */
   int fmin = fmid;
-  int fmax = fmid;  /* Limits of top-down search. */
+  int fmax = fmid; /* Limits of top-down search. */
   int bmin = bmid;
-  int bmax = bmid;  /* Limits of bottom-up search. */
-  int c;   /* Cost. */
+  int bmax = bmid; /* Limits of bottom-up search. */
+  int c; /* Cost. */
   int odd = (fmid - bmid) & 1;
 
   /*
@@ -179,7 +176,7 @@ diag (int xoff, int xlim, int yoff, int ylim, int minimal, struct partition *par
   bd[bmid] = xlim;
   for (c = 1;; ++c)
   {
-    int d;   /* Active diagonal. */
+    int d; /* Active diagonal. */
     int big_snake;
 
     big_snake = 0;
@@ -200,8 +197,7 @@ diag (int xoff, int xlim, int yoff, int ylim, int minimal, struct partition *par
       int tlo;
       int thi;
 
-      tlo = fd[d - 1],
-            thi = fd[d + 1];
+      tlo = fd[d - 1], thi = fd[d + 1];
 
       if (tlo >= thi)
         x = tlo + 1;
@@ -242,8 +238,7 @@ diag (int xoff, int xlim, int yoff, int ylim, int minimal, struct partition *par
       int tlo;
       int thi;
 
-      tlo = bd[d - 1],
-            thi = bd[d + 1];
+      tlo = bd[d - 1], thi = bd[d + 1];
       if (tlo < thi)
         x = tlo;
       else
@@ -297,18 +292,8 @@ diag (int xoff, int xlim, int yoff, int ylim, int minimal, struct partition *par
 
         if (v > 12 * (c + (dd < 0 ? -dd : dd)))
         {
-          if
-          (
-            v > best
-            &&
-            xoff + SNAKE_LIMIT <= x
-            &&
-            x < xlim
-            &&
-            yoff + SNAKE_LIMIT <= y
-            &&
-            y < ylim
-          )
+          if (v > best && xoff + SNAKE_LIMIT <= x && x < xlim && yoff + SNAKE_LIMIT <= y &&
+              y < ylim)
           {
             /* We have a good enough best diagonal; now insist
             that it end with a significant snake.  */
@@ -348,8 +333,8 @@ diag (int xoff, int xlim, int yoff, int ylim, int minimal, struct partition *par
 
         if (v > 12 * (c + (dd < 0 ? -dd : dd)))
         {
-          if (v > best && xoff < x && x <= xlim - SNAKE_LIMIT &&
-              yoff < y && y <= ylim - SNAKE_LIMIT)
+          if (v > best && xoff < x && x <= xlim - SNAKE_LIMIT && yoff < y &&
+              y <= ylim - SNAKE_LIMIT)
           {
             /* We have a good enough best diagonal; now insist
             that it end with a significant snake.  */
@@ -452,7 +437,6 @@ diag (int xoff, int xlim, int yoff, int ylim, int minimal, struct partition *par
   }
 }
 
-
 /* NAME
  compareseq - find edit sequence
  
@@ -472,16 +456,15 @@ diag (int xoff, int xlim, int yoff, int ylim, int minimal, struct partition *par
  If MINIMAL is nonzero, find a minimal difference no matter how
  expensive it is.  */
 
-static void compareseq PARAMS ((int, int, int, int, int));
+static void compareseq PARAMS((int, int, int, int, int));
 
-static void
-compareseq (int xoff, int xlim, int yoff, int ylim, int minimal)
+static void compareseq(int xoff, int xlim, int yoff, int ylim, int minimal)
 {
-  const char *const xv = string[0].data; /* Help the compiler.  */
-  const char *const yv = string[1].data;
+  const char* const xv = string[0].data; /* Help the compiler.  */
+  const char* const yv = string[1].data;
 
   if (string[1].edit_count + string[0].edit_count > max_edits)
-    return ;
+    return;
 
   /* Slide down the bottom initial diagonal. */
   while (xoff < xlim && yoff < ylim && xv[xoff] == yv[yoff])
@@ -520,7 +503,7 @@ compareseq (int xoff, int xlim, int yoff, int ylim, int minimal)
     struct partition part;
 
     /* Find a point of correspondence in the middle of the strings.  */
-    c = diag (xoff, xlim, yoff, ylim, minimal, &part);
+    c = diag(xoff, xlim, yoff, ylim, minimal, &part);
     if (c == 1)
     {
       /*
@@ -543,12 +526,11 @@ compareseq (int xoff, int xlim, int yoff, int ylim, int minimal)
     else
     {
       /* Use the partitions to split this problem into subproblems.  */
-      compareseq (xoff, part.xmid, yoff, part.ymid, part.lo_minimal);
-      compareseq (part.xmid, xlim, part.ymid, ylim, part.hi_minimal);
+      compareseq(xoff, part.xmid, yoff, part.ymid, part.lo_minimal);
+      compareseq(part.xmid, xlim, part.ymid, ylim, part.hi_minimal);
     }
   }
 }
-
 
 /* NAME
  fstrcmp - fuzzy string compare
@@ -567,20 +549,19 @@ compareseq (int xoff, int xlim, int yoff, int ylim, int minimal)
  strings are identical, and a number in between if they are
  similar.  */
 
-double
-fstrcmp (const char *string1, const char *string2, double minimum)
+double fstrcmp(const char* string1, const char* string2, double minimum)
 {
   int i;
 
   size_t fdiag_len;
-  static int *fdiag_buf;
+  static int* fdiag_buf;
   static size_t fdiag_max;
 
   /* set the info for each string.  */
   string[0].data = string1;
-  string[0].data_length = (int)strlen (string1);
+  string[0].data_length = (int)strlen(string1);
   string[1].data = string2;
-  string[1].data_length = (int)strlen (string2);
+  string[1].data_length = (int)strlen(string2);
 
   /* short-circuit obvious comparisons */
   if (string[0].data_length == 0 && string[1].data_length == 0)
@@ -604,24 +585,23 @@ fstrcmp (const char *string1, const char *string2, double minimum)
   if (fdiag_len > fdiag_max)
   {
     fdiag_max = fdiag_len;
-    fdiag_buf = (int*)realloc (fdiag_buf, fdiag_max * (2 * sizeof (int)));
+    fdiag_buf = (int*)realloc(fdiag_buf, fdiag_max * (2 * sizeof(int)));
   }
   fdiag = fdiag_buf + string[1].data_length + 1;
   bdiag = fdiag + fdiag_len;
 
-  max_edits = (int) (1 + (string[0].data_length + string[1].data_length) * (1. - minimum));
+  max_edits = (int)(1 + (string[0].data_length + string[1].data_length) * (1. - minimum));
 
   /* Now do the main comparison algorithm */
   string[0].edit_count = 0;
   string[1].edit_count = 0;
-  compareseq (0, string[0].data_length, 0, string[1].data_length, 0);
+  compareseq(0, string[0].data_length, 0, string[1].data_length, 0);
 
   /* The result is
   ((number of chars in common) / (average length of the strings)).
      This is admittedly biased towards finding that the strings are
-     similar, however it does produce meaningful results.  */ 
-  return ((double)
-          (string[0].data_length + string[1].data_length - string[1].edit_count - string[0].edit_count)
-          / (string[0].data_length + string[1].data_length));
-
+     similar, however it does produce meaningful results.  */
+  return ((double)(string[0].data_length + string[1].data_length - string[1].edit_count -
+                   string[0].edit_count) /
+          (string[0].data_length + string[1].data_length));
 }

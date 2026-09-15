@@ -29,7 +29,7 @@
 
 class TiXmlElement;
 
-#define WEATHER_LABEL_LOCATION   10
+#define WEATHER_LABEL_LOCATION 10
 #define WEATHER_IMAGE_CURRENT_ICON 21
 #define WEATHER_LABEL_CURRENT_COND 22
 #define WEATHER_LABEL_CURRENT_TEMP 23
@@ -98,13 +98,16 @@ public:
 
   virtual bool DoWork();
 
-  const CWeatherInfo &GetInfo() const;
+  const CWeatherInfo& GetInfo() const;
+
 private:
 #ifdef _XBOX
-  bool FetchInternalWeather(const std::string& strLocationID, const std::string& strLocation, const int maxLocations) const;
+  bool FetchInternalWeather(const std::string& strLocationID,
+                            const std::string& strLocation,
+                            const int maxLocations) const;
 #endif
-  void LocalizeOverview(std::string &str);
-  void LocalizeOverviewToken(std::string &str);
+  void LocalizeOverview(std::string& str);
+  void LocalizeOverviewToken(std::string& str);
   void LoadLocalizedToken();
   static int ConvertSpeed(int speed);
 
@@ -114,22 +117,22 @@ private:
    \param text the string to format
    \param temp the temperature (in degrees celcius).
    */
-  static void FormatTemperature(std::string &text, double temp);
+  static void FormatTemperature(std::string& text, double temp);
 
   struct ci_less : std::binary_function<std::string, std::string, bool>
   {
     // case-independent (ci) compare_less binary function
-    struct nocase_compare : public std::binary_function<unsigned char,unsigned char,bool>
+    struct nocase_compare : public std::binary_function<unsigned char, unsigned char, bool>
     {
-      bool operator() (const unsigned char& c1, const unsigned char& c2) const {
-          return tolower (c1) < tolower (c2);
+      bool operator()(const unsigned char& c1, const unsigned char& c2) const
+      {
+        return tolower(c1) < tolower(c2);
       }
     };
-    bool operator() (const std::string & s1, const std::string & s2) const {
-      return std::lexicographical_compare
-        (s1.begin (), s1.end (),
-        s2.begin (), s2.end (),
-        nocase_compare ());
+    bool operator()(const std::string& s1, const std::string& s2) const
+    {
+      return std::lexicographical_compare(s1.begin(), s1.end(), s2.begin(), s2.end(),
+                                          nocase_compare());
     }
   };
 
@@ -142,33 +145,32 @@ private:
   static bool m_imagesOkay;
 };
 
-class CWeather : public CInfoLoader,
-                 public ISettingCallback
+class CWeather : public CInfoLoader, public ISettingCallback
 {
 public:
   CWeather(void);
   virtual ~CWeather(void);
-  static bool GetSearchResults(const std::string &strSearch, std::string &strResult);
+  static bool GetSearchResults(const std::string& strSearch, std::string& strResult);
 
   std::string GetLocation(int iLocation);
-  const std::string &GetLastUpdateTime() const { return m_info.lastUpdateTime; };
-  const day_forecast &GetForecast(int day) const;
+  const std::string& GetLastUpdateTime() const { return m_info.lastUpdateTime; };
+  const day_forecast& GetForecast(int day) const;
   bool IsFetched();
   void Reset();
 
   void SetArea(int iLocation);
   int GetArea() const;
+
 protected:
-  virtual CJob *GetJob() const;
+  virtual CJob* GetJob() const;
   virtual std::string TranslateInfo(int info) const;
   virtual std::string BusyInfo(int info) const;
-  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob* job);
 
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingChanged(const CSetting* setting);
+  virtual void OnSettingAction(const CSetting* setting);
 
 private:
-
   CWeatherInfo m_info;
 };
 

@@ -34,7 +34,7 @@ CInfoLoader::~CInfoLoader()
 {
 }
 
-void CInfoLoader::OnJobComplete(unsigned int jobID, bool success, CJob *job)
+void CInfoLoader::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 {
   m_refreshTime = CTimeUtils::GetFrameTime() + m_timeToRefresh;
   m_busy = false;
@@ -69,4 +69,3 @@ void CInfoLoader::Refresh()
 {
   m_refreshTime = CTimeUtils::GetFrameTime();
 }
-

@@ -22,7 +22,7 @@
 #include "XBDateTime.h"
 #include "threads/SystemClock.h"
 
-#if   defined(TARGET_DARWIN)
+#if defined(TARGET_DARWIN)
 #include <mach/mach_time.h>
 #include <CoreVideo/CVHostTime.h>
 #elif defined(TARGET_WINDOWS)
@@ -35,29 +35,29 @@
 
 int64_t CurrentHostCounter(void)
 {
-#if   defined(TARGET_DARWIN)
-  return( (int64_t)CVGetCurrentHostTime() );
+#if defined(TARGET_DARWIN)
+  return ((int64_t)CVGetCurrentHostTime());
 #elif defined(TARGET_WINDOWS) || defined(_XBOX)
   LARGE_INTEGER PerformanceCount;
   QueryPerformanceCounter(&PerformanceCount);
-  return( (int64_t)PerformanceCount.QuadPart );
+  return ((int64_t)PerformanceCount.QuadPart);
 #else
   struct timespec now;
   clock_gettime(CLOCK_MONOTONIC, &now);
-  return( ((int64_t)now.tv_sec * 1000000000L) + now.tv_nsec );
+  return (((int64_t)now.tv_sec * 1000000000L) + now.tv_nsec);
 #endif
 }
 
 int64_t CurrentHostFrequency(void)
 {
 #if defined(TARGET_DARWIN)
-  return( (int64_t)CVGetHostClockFrequency() );
+  return ((int64_t)CVGetHostClockFrequency());
 #elif defined(TARGET_WINDOWS) || defined(_XBOX)
   LARGE_INTEGER Frequency;
   QueryPerformanceFrequency(&Frequency);
-  return( (int64_t)Frequency.QuadPart );
+  return ((int64_t)Frequency.QuadPart);
 #else
-  return( (int64_t)1000000000L );
+  return ((int64_t)1000000000L);
 #endif
 }
 
@@ -81,7 +81,7 @@ CDateTime CTimeUtils::GetLocalTime(time_t time)
 {
   CDateTime result;
 
-  tm *local = localtime(&time); // Conversion to local time
+  tm* local = localtime(&time); // Conversion to local time
   /*
    * Microsoft implementation of localtime returns NULL if on or before epoch.
    * http://msdn.microsoft.com/en-us/library/bf12f0hc(VS.80).aspx

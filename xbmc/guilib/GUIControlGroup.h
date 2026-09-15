@@ -38,14 +38,14 @@ class CGUIControlGroup : public CGUIControl
 public:
   CGUIControlGroup();
   CGUIControlGroup(int parentID, int controlID, float posX, float posY, float width, float height);
-  CGUIControlGroup(const CGUIControlGroup &from);
+  CGUIControlGroup(const CGUIControlGroup& from);
   virtual ~CGUIControlGroup(void);
-  virtual CGUIControlGroup *Clone() const { return new CGUIControlGroup(*this); };
+  virtual CGUIControlGroup* Clone() const { return new CGUIControlGroup(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
   virtual void RenderEx();
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool SendControlMessage(CGUIMessage& message);
   virtual bool HasFocus() const;
@@ -54,7 +54,7 @@ public:
   virtual void DynamicResourceAlloc(bool bOnOff);
   virtual bool CanFocus() const;
 
-  virtual void UnfocusFromPoint(const CPoint &point);
+  virtual void UnfocusFromPoint(const CPoint& point);
 
   virtual void SetInitialVisibility();
 
@@ -68,20 +68,24 @@ public:
   virtual bool HasVisibleID(int id) const;
 
   int GetFocusedControlID() const;
-  CGUIControl *GetFocusedControl() const;
-  const CGUIControl *GetControl(int id) const;
-  CGUIControl *GetControl(int id);
-  virtual CGUIControl *GetFirstFocusableControl(int id);
-  void GetContainers(std::vector<CGUIControl *> &containers) const;
+  CGUIControl* GetFocusedControl() const;
+  const CGUIControl* GetControl(int id) const;
+  CGUIControl* GetControl(int id);
+  virtual CGUIControl* GetFirstFocusableControl(int id);
+  void GetContainers(std::vector<CGUIControl*>& containers) const;
 
-  virtual void AddControl(CGUIControl *control, int position = -1);
-  bool InsertControl(CGUIControl *control, const CGUIControl *insertPoint);
-  virtual bool RemoveControl(const CGUIControl *control);
+  virtual void AddControl(CGUIControl* control, int position = -1);
+  bool InsertControl(CGUIControl* control, const CGUIControl* insertPoint);
+  virtual bool RemoveControl(const CGUIControl* control);
   virtual void ClearAll();
-  void SetDefaultControl(int id, bool always) { m_defaultControl = id; m_defaultAlways = always; };
+  void SetDefaultControl(int id, bool always)
+  {
+    m_defaultControl = id;
+    m_defaultAlways = always;
+  };
   void SetRenderFocusedLast(bool renderLast) { m_renderFocusedLast = renderLast; };
 
-  virtual void SaveStates(std::vector<CControlState> &states);
+  virtual void SaveStates(std::vector<CControlState>& states);
 
   virtual bool IsGroup() const { return true; };
 
@@ -96,25 +100,24 @@ protected:
    \param control to check
    \return true if the control is valid, false otherwise.
    */
-  bool IsValidControl(const CGUIControl *control) const;
+  bool IsValidControl(const CGUIControl* control) const;
 
   // sub controls
-  std::vector<CGUIControl *> m_children;
-  typedef std::vector<CGUIControl *>::iterator iControls;
-  typedef std::vector<CGUIControl *>::const_iterator ciControls;
-  typedef std::vector<CGUIControl *>::reverse_iterator rControls;
-  typedef std::vector<CGUIControl *>::const_reverse_iterator crControls;
+  std::vector<CGUIControl*> m_children;
+  typedef std::vector<CGUIControl*>::iterator iControls;
+  typedef std::vector<CGUIControl*>::const_iterator ciControls;
+  typedef std::vector<CGUIControl*>::reverse_iterator rControls;
+  typedef std::vector<CGUIControl*>::const_reverse_iterator crControls;
 
   // fast lookup by id
-  typedef std::multimap<int, CGUIControl *> LookupMap;
-  void AddLookup(CGUIControl *control);
-  void RemoveLookup(CGUIControl *control);
-  const LookupMap &GetLookup() const { return m_lookup; };
+  typedef std::multimap<int, CGUIControl*> LookupMap;
+  void AddLookup(CGUIControl* control);
+  void RemoveLookup(CGUIControl* control);
+  const LookupMap& GetLookup() const { return m_lookup; };
   LookupMap m_lookup;
 
-  int  m_defaultControl;
+  int m_defaultControl;
   bool m_defaultAlways;
   int m_focusedControl;
   bool m_renderFocusedLast;
 };
-

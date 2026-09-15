@@ -38,12 +38,12 @@ public:
 protected:
   void GotoBookmark(int iItem);
   void ClearBookmarks();
-  void AddBookmark(CVideoInfoTag* tag=NULL);
+  void AddBookmark(CVideoInfoTag* tag = NULL);
   void Clear();
   void Update();
   void AddEpisodeBookmark();
 
-  CGUIControl *GetFirstFocusableControl(int id);
+  CGUIControl* GetFirstFocusableControl(int id);
 
   CFileItemList* m_vecItems;
   CGUIViewControl m_viewControl;

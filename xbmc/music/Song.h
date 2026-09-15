@@ -54,21 +54,24 @@ class CFileItem;
  \brief Class to store and read song information from CMusicDatabase
  \sa CAlbum, CMusicDatabase
  */
-class CSong: public ISerializable
+class CSong : public ISerializable
 {
 public:
-  CSong() ;
+  CSong();
   CSong(CFileItem& item);
-  virtual ~CSong(){};
-  void Clear() ;
+  virtual ~CSong() {};
+  void Clear();
   void MergeScrapedSong(const CSong& source, bool override);
   virtual void Serialize(CVariant& value) const;
 
-  bool operator<(const CSong &song) const
+  bool operator<(const CSong& song) const
   {
-    if (strFileName < song.strFileName) return true;
-    if (strFileName > song.strFileName) return false;
-    if (iTrack < song.iTrack) return true;
+    if (strFileName < song.strFileName)
+      return true;
+    if (strFileName > song.strFileName)
+      return false;
+    if (iTrack < song.iTrack)
+      return true;
     return false;
   }
 
@@ -129,7 +132,10 @@ public:
    Normalised album artist data belongs to album and is stored in album artist credits
   \param album artist names as a vector of strings
   */
-  void SetAlbumArtist(const std::vector<std::string>& albumartists) { m_albumArtist = albumartists; }
+  void SetAlbumArtist(const std::vector<std::string>& albumartists)
+  {
+    m_albumArtist = albumartists;
+  }
 
   /*! \brief Whether this song has any artists in artist credits vector
     Tests if artist credits has been populated yet, during processing there can be
@@ -150,7 +156,7 @@ public:
   /*! \brief whether the art from this song matches the art from another
    Tests both the strThumb and embeddedArt members.
    */
-  bool ArtMatches(const CSong &right) const;
+  bool ArtMatches(const CSong& right) const;
 
   long idSong;
   int idAlbum;
@@ -179,13 +185,18 @@ public:
   int iStartOffset;
   int iEndOffset;
   bool bCompilation;
-  std::string strRecordLabel; // Record label from tag for album processing by CMusicInfoScanner::FileItemsToAlbums
-  std::string strAlbumType; // (Musicbrainz release type) album type from tag for album processing by CMusicInfoScanner::FileItemsToAlbums
+  std::string
+      strRecordLabel; // Record label from tag for album processing by CMusicInfoScanner::FileItemsToAlbums
+  std::string
+      strAlbumType; // (Musicbrainz release type) album type from tag for album processing by CMusicInfoScanner::FileItemsToAlbums
 
   ReplayGain replayGain;
+
 private:
-  std::vector<std::string> m_albumArtist; // Album artist from tag for album processing, no desc or MBID
-  std::string m_strAlbumArtistSort; // Albumartist sort string from tag for album processing by CMusicInfoScanner::FileItemsToAlbums
+  std::vector<std::string>
+      m_albumArtist; // Album artist from tag for album processing, no desc or MBID
+  std::string
+      m_strAlbumArtistSort; // Albumartist sort string from tag for album processing by CMusicInfoScanner::FileItemsToAlbums
   std::string m_strComposerSort;
   VECMUSICROLES m_musicRoles;
 };

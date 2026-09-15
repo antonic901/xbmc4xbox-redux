@@ -26,12 +26,10 @@ using namespace MUSIC_INFO;
 
 CVorbisTag::CVorbisTag()
 {
-
 }
 
 CVorbisTag::~CVorbisTag()
 {
-
 }
 
 int CVorbisTag::ParseTagEntry(CStdString& strTagEntry)
@@ -40,122 +38,124 @@ int CVorbisTag::ParseTagEntry(CStdString& strTagEntry)
   CStdString strTagType;
 
   // Split tag entry like ARTIST=Sublime
-  SplitEntry( strTagEntry, strTagType, strTagValue);
+  SplitEntry(strTagEntry, strTagType, strTagValue);
 
   // Save tag entry to members
 
-  CMusicInfoTag& tag=m_musicInfoTag;
+  CMusicInfoTag& tag = m_musicInfoTag;
 
-  if ( strTagType == "ARTIST" )
+  if (strTagType == "ARTIST")
   {
     tag.AppendArtist(strTagValue);
     tag.SetLoaded();
   }
 
-  if ( strTagType == "ALBUMARTIST" || strTagType == "ALBUM ARTIST" || strTagType == "ENSEMBLE")
+  if (strTagType == "ALBUMARTIST" || strTagType == "ALBUM ARTIST" || strTagType == "ENSEMBLE")
   {
     tag.AppendAlbumArtist(strTagValue);
     tag.SetLoaded();
   }
 
-  if ( strTagType == "TITLE" )
+  if (strTagType == "TITLE")
   {
     tag.SetTitle(strTagValue);
     tag.SetLoaded();
   }
 
-  if ( strTagType == "ALBUM" )
+  if (strTagType == "ALBUM")
   {
     tag.SetAlbum(strTagValue);
     tag.SetLoaded();
   }
 
-  if ( strTagType == "TRACKNUMBER" )
+  if (strTagType == "TRACKNUMBER")
   {
     tag.SetTrackNumber(atoi(strTagValue));
   }
 
-  if ( strTagType == "DISCNUMBER" )
+  if (strTagType == "DISCNUMBER")
   {
     tag.SetDiscNumber(atoi(strTagValue));
   }
 
-  if ( strTagType == "DATE" )
+  if (strTagType == "DATE")
   {
     SYSTEMTIME dateTime;
     dateTime.wYear = atoi(strTagValue);
     tag.SetReleaseDate(dateTime);
   }
 
-  if ( strTagType == "GENRE" )
+  if (strTagType == "GENRE")
   {
     tag.AppendGenre(strTagValue);
   }
 
-  if ( strTagType == "MUSICBRAINZ_TRACKID" )
+  if (strTagType == "MUSICBRAINZ_TRACKID")
   {
     tag.SetMusicBrainzTrackID(strTagValue);
   }
 
-  if ( strTagType == "MUSICBRAINZ_ARTISTID" )
+  if (strTagType == "MUSICBRAINZ_ARTISTID")
   {
-    tag.SetMusicBrainzArtistID(StringUtils::Split(strTagValue, g_advancedSettings.m_musicItemSeparator));
+    tag.SetMusicBrainzArtistID(
+        StringUtils::Split(strTagValue, g_advancedSettings.m_musicItemSeparator));
   }
 
-  if ( strTagType == "MUSICBRAINZ_ALBUMID" )
+  if (strTagType == "MUSICBRAINZ_ALBUMID")
   {
     tag.SetMusicBrainzAlbumID(strTagValue);
   }
 
-  if ( strTagType == "MUSICBRAINZ_ALBUMARTISTID" )
+  if (strTagType == "MUSICBRAINZ_ALBUMARTISTID")
   {
-    tag.SetMusicBrainzAlbumArtistID(StringUtils::Split(strTagValue, g_advancedSettings.m_musicItemSeparator));
+    tag.SetMusicBrainzAlbumArtistID(
+        StringUtils::Split(strTagValue, g_advancedSettings.m_musicItemSeparator));
   }
 
-  if ( strTagType == "COMMENT" || strTagType == "DESCRIPTION" )
+  if (strTagType == "COMMENT" || strTagType == "DESCRIPTION")
     tag.SetComment(strTagValue);
 
-  if ( strTagType == "LYRICS" )
+  if (strTagType == "LYRICS")
     tag.SetLyrics(strTagValue);
 
-
-  if ( strTagType == "RATING" && strTagValue.GetLength() == 1 && strTagValue[0] > '0' && strTagValue[0] < '6')
+  if (strTagType == "RATING" && strTagValue.GetLength() == 1 && strTagValue[0] > '0' &&
+      strTagValue[0] < '6')
     tag.SetRating(strTagValue[0]);
 
   //  Get new style replay gain info
-  if (strTagType=="REPLAYGAIN_TRACK_GAIN")
+  if (strTagType == "REPLAYGAIN_TRACK_GAIN")
   {
     m_replayGain.iTrackGain = (int)(atof(strTagValue.c_str()) * 100 + 0.5);
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_TRACK_INFO;
   }
-  else if (strTagType=="REPLAYGAIN_TRACK_PEAK")
+  else if (strTagType == "REPLAYGAIN_TRACK_PEAK")
   {
     m_replayGain.fTrackPeak = (float)atof(strTagValue.c_str());
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_TRACK_PEAK;
   }
-  else if (strTagType=="REPLAYGAIN_ALBUM_GAIN")
+  else if (strTagType == "REPLAYGAIN_ALBUM_GAIN")
   {
     m_replayGain.iAlbumGain = (int)(atof(strTagValue.c_str()) * 100 + 0.5);
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_ALBUM_INFO;
   }
-  else if (strTagType=="REPLAYGAIN_ALBUM_PEAK")
+  else if (strTagType == "REPLAYGAIN_ALBUM_PEAK")
   {
     m_replayGain.fAlbumPeak = (float)atof(strTagValue.c_str());
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_ALBUM_PEAK;
   }
 
   //  Get old style replay gain info
-  if (strTagType=="RG_RADIO")
+  if (strTagType == "RG_RADIO")
   {
     m_replayGain.iTrackGain = (int)(atof(strTagValue.c_str()) * 100 + 0.5);
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_TRACK_INFO;
   }
-  else if (strTagType=="RG_PEAK")
+  else if (strTagType == "RG_PEAK")
   {
     m_replayGain.fTrackPeak = (float)atof(strTagValue.c_str());
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_TRACK_PEAK;
   }
-  else if (strTagType=="RG_AUDIOPHILE")
+  else if (strTagType == "RG_AUDIOPHILE")
   {
     m_replayGain.iAlbumGain = (int)(atof(strTagValue.c_str()) * 100 + 0.5);
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_ALBUM_INFO;
@@ -163,15 +163,17 @@ int CVorbisTag::ParseTagEntry(CStdString& strTagEntry)
   return 0;
 }
 
-void CVorbisTag::SplitEntry(const CStdString& strTagEntry, CStdString& strTagType, CStdString& strTagValue)
+void CVorbisTag::SplitEntry(const CStdString& strTagEntry,
+                            CStdString& strTagType,
+                            CStdString& strTagValue)
 {
-  int nPos = strTagEntry.Find( '=' );
+  int nPos = strTagEntry.Find('=');
 
-  if ( nPos > -1 )
+  if (nPos > -1)
   {
     // we use UTF-8 internally
-    strTagValue = strTagEntry.Mid( nPos + 1 );
-    strTagType = strTagEntry.Left( nPos );
+    strTagValue = strTagEntry.Mid(nPos + 1);
+    strTagType = strTagEntry.Left(nPos);
     strTagType.ToUpper();
   }
 }

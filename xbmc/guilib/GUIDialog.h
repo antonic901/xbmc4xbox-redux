@@ -39,25 +39,27 @@ enum DialogModalityType
  \ingroup winmsg
  \brief
  */
-class CGUIDialog :
-      public CGUIWindow
+class CGUIDialog : public CGUIWindow
 {
 public:
-  CGUIDialog(int id, const std::string &xmlFile, DialogModalityType modalityType = MODAL);
+  CGUIDialog(int id, const std::string& xmlFile, DialogModalityType modalityType = MODAL);
   virtual ~CGUIDialog(void);
 
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
 
-  void Open(const std::string &param = "");
+  void Open(const std::string& param = "");
 
   virtual bool OnBack(int actionID);
 
   virtual bool IsDialogRunning() const { return m_active; };
-  virtual bool IsDialog() const { return true;};
-  virtual bool IsModalDialog() const { return m_modalityType == MODAL || m_modalityType == PARENTLESS_MODAL; };
+  virtual bool IsDialog() const { return true; };
+  virtual bool IsModalDialog() const
+  {
+    return m_modalityType == MODAL || m_modalityType == PARENTLESS_MODAL;
+  };
   virtual DialogModalityType GetModalityType() const { return m_modalityType; };
 
   void SetAutoClose(unsigned int timeoutMs);
@@ -68,13 +70,13 @@ public:
   virtual bool IsSoundEnabled() const { return m_enableSound; };
 
 protected:
-  bool Load(TiXmlElement *pRootElement);
+  bool Load(TiXmlElement* pRootElement);
   virtual void SetDefaults();
   virtual void OnWindowLoaded();
   virtual void UpdateVisibility();
 
-  virtual void Open_Internal(const std::string &param = "");
-  virtual void Open_Internal(bool bProcessRenderLoop, const std::string &param = "");
+  virtual void Open_Internal(const std::string& param = "");
+  virtual void Open_Internal(bool bProcessRenderLoop, const std::string& param = "");
   virtual void OnDeinitWindow(int nextWindowID);
 
   void ProcessRenderLoop(bool renderOnly = false);

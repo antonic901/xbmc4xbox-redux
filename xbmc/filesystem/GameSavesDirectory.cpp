@@ -27,7 +27,7 @@ CGameSavesDirectory::~CGameSavesDirectory(void)
 {
 }
 
-bool CGameSavesDirectory::GetDirectory(const CURL& url, CFileItemList &items)
+bool CGameSavesDirectory::GetDirectory(const CURL& url, CFileItemList& items)
 {
   // URL in Format: gamesaves://{title_id}/{savegame_id}
   std::string strRootPath = "E:\\UDATA\\";
@@ -59,7 +59,7 @@ bool CGameSavesDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       continue;
 
     // Read title name
-    WCHAR *yo = new WCHAR[(int)file.GetLength() + 1];
+    WCHAR* yo = new WCHAR[(int)file.GetLength() + 1];
     file.Read(yo, file.GetLength());
     yo[file.GetLength()] = L'\0';
     std::string strLabel;
@@ -67,7 +67,7 @@ bool CGameSavesDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     int poss = strLabel.find("Name=");
     if (poss == -1)
     {
-      wchar_t *chrtxt = new wchar_t[(int)file.GetLength() + 2];
+      wchar_t* chrtxt = new wchar_t[(int)file.GetLength() + 2];
       file.Seek(0);
       file.Read(chrtxt, file.GetLength());
       chrtxt[(int)file.GetLength() + 1] = '\n';
@@ -76,7 +76,7 @@ bool CGameSavesDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     }
     file.Close();
     int pose = strLabel.find("\n", poss + 1);
-    strLabel = strLabel.substr(poss+5, pose - poss-6);
+    strLabel = strLabel.substr(poss + 5, pose - poss - 6);
     strLabel = CUtil::MakeLegalFileName(strLabel, LEGAL_NONE);
 
     // Format path in format: gamesaves://{title_id}/{savegame_id}
@@ -92,12 +92,13 @@ bool CGameSavesDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     if (mode == 1)
     {
       CFileItemList items2;
-      if(CDirectory::GetDirectory(pItem->GetPath(), items2, "", DIR_FLAG_BYPASS_CACHE))
+      if (CDirectory::GetDirectory(pItem->GetPath(), items2, "", DIR_FLAG_BYPASS_CACHE))
       {
         int total = 0;
         for (int j = 0; j < items2.Size(); ++j)
         {
-          if (items2[j]->m_bIsFolder && CFile::Exists(URIUtils::AddFileToFolder(items2[j]->GetPath(), "savemeta.xbx")))
+          if (items2[j]->m_bIsFolder &&
+              CFile::Exists(URIUtils::AddFileToFolder(items2[j]->GetPath(), "savemeta.xbx")))
             total++;
         }
         if (total > 0)

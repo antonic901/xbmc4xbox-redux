@@ -60,13 +60,14 @@ bool CInsigniaJob::DoWork()
   if (!MakeRequest(strURL, strResponse))
     return false;
 
-  CVariant body = CJSONVariantParser::Parse((const unsigned char *)strResponse.c_str(), strResponse.size());
+  CVariant body =
+      CJSONVariantParser::Parse((const unsigned char*)strResponse.c_str(), strResponse.size());
   if (body.isMember("games") && body["games"].isArray())
   {
-    const CVariant &value = body["games"];
+    const CVariant& value = body["games"];
     for (CVariant::const_iterator_array it = value.begin_array(); it != value.end_array(); it++)
     {
-      const CVariant &val = *it;
+      const CVariant& val = *it;
       game_info game;
       if (val.isMember("code") && val["code"].isString())
         game.code = val["code"].asString();
@@ -107,8 +108,10 @@ bool CInsigniaJob::DoWork()
       if (val.isMember("has_leaderboards_feature") && val["has_leaderboards_feature"].isBoolean())
         game.has_leaderboards_feature = val["has_leaderboards_feature"].asBoolean();
 
-      if (val.isMember("has_user_generated_content_feature") && val["has_user_generated_content_feature"].isBoolean())
-        game.has_user_generated_content_feature = val["has_user_generated_content_feature"].asBoolean();
+      if (val.isMember("has_user_generated_content_feature") &&
+          val["has_user_generated_content_feature"].isBoolean())
+        game.has_user_generated_content_feature =
+            val["has_user_generated_content_feature"].asBoolean();
 
       m_info.m_games.push_back(game);
     }
@@ -118,10 +121,10 @@ bool CInsigniaJob::DoWork()
   if (!MakeRequest(strURL, strResponse))
     return false;
 
-  body = CJSONVariantParser::Parse((const unsigned char *)strResponse.c_str(), strResponse.size());
+  body = CJSONVariantParser::Parse((const unsigned char*)strResponse.c_str(), strResponse.size());
   if (body.isMember("stats") && body["stats"].isObject())
   {
-    const CVariant &obj = body["stats"];
+    const CVariant& obj = body["stats"];
     if (obj.isMember("games_supported") && obj["games_supported"].isString())
       m_info.games_supported = obj["games_supported"].asString();
 
@@ -138,13 +141,13 @@ bool CInsigniaJob::DoWork()
   SetWindowProperties();
 
   // send a message that we're done
-  CGUIMessage msg(GUI_MSG_NOTIFY_ALL,0,0,GUI_MSG_INSIGNIA_FETCHED);
+  CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_INSIGNIA_FETCHED);
   g_windowManager.SendThreadMessage(msg);
 
   return true;
 }
 
-const CInsigniaInfo &CInsigniaJob::GetInfo() const
+const CInsigniaInfo& CInsigniaJob::GetInfo() const
 {
   return m_info;
 }
@@ -157,9 +160,11 @@ void CInsigniaJob::SetWindowProperties()
     CGUIBaseContainer* gamesContainer = window->GetGamesContainer();
     if (!gamesContainer)
     {
-      CGUIControl *control = window->GetControl(CONTROL_GAMES_LIST);
-      if (control && (control->GetControlType() == CGUIControl::GUICONTAINER_LIST || control->GetControlType() == CGUIControl::GUICONTAINER_WRAPLIST ||
-                      control->GetControlType() == CGUIControl::GUICONTAINER_FIXEDLIST || control->GetControlType() == CGUIControl::GUICONTAINER_PANEL))
+      CGUIControl* control = window->GetControl(CONTROL_GAMES_LIST);
+      if (control && (control->GetControlType() == CGUIControl::GUICONTAINER_LIST ||
+                      control->GetControlType() == CGUIControl::GUICONTAINER_WRAPLIST ||
+                      control->GetControlType() == CGUIControl::GUICONTAINER_FIXEDLIST ||
+                      control->GetControlType() == CGUIControl::GUICONTAINER_PANEL))
       {
         gamesContainer = (CGUIBaseContainer*)control;
         window->InitializeGamesContainer(gamesContainer);
@@ -169,7 +174,8 @@ void CInsigniaJob::SetWindowProperties()
     }
 
     std::vector<CGUIStaticItemPtr> items;
-    for (std::vector<game_info>::const_iterator it = m_info.m_games.begin(); it != m_info.m_games.end(); ++it)
+    for (std::vector<game_info>::const_iterator it = m_info.m_games.begin();
+         it != m_info.m_games.end(); ++it)
     {
       CFileItemPtr item(new CFileItem(it->name));
       item->SetIconImage(it->thumbnail);
@@ -185,7 +191,8 @@ void CInsigniaJob::SetWindowProperties()
       item->SetProperty("has_live_aware_feature", it->has_live_aware_feature);
       item->SetProperty("has_matchmaking_feature", it->has_matchmaking_feature);
       item->SetProperty("has_leaderboards_feature", it->has_leaderboards_feature);
-      item->SetProperty("has_user_generated_content_feature", it->has_user_generated_content_feature);
+      item->SetProperty("has_user_generated_content_feature",
+                        it->has_user_generated_content_feature);
       CGUIStaticItemPtr staticItem(new CGUIStaticItem(*item));
       items.push_back(staticItem);
     }
@@ -205,9 +212,12 @@ CInsignia::~CInsignia(void)
 
 std::string CInsignia::TranslateInfo(int info) const
 {
-  if (info == INSIGNIA_LABEL_GAMES_SUPPORTED) return m_info.games_supported;
-  else if (info == INSIGNIA_LABEL_REGISTERED_USERS) return m_info.registered_users;
-  else if (info == INSIGNIA_LABEL_ONLINE_USERS) return m_info.users_online_now;
+  if (info == INSIGNIA_LABEL_GAMES_SUPPORTED)
+    return m_info.games_supported;
+  else if (info == INSIGNIA_LABEL_REGISTERED_USERS)
+    return m_info.registered_users;
+  else if (info == INSIGNIA_LABEL_ONLINE_USERS)
+    return m_info.users_online_now;
   return "";
 }
 
@@ -223,13 +233,13 @@ bool CInsignia::IsFetched()
   return !m_info.lastUpdateTime.empty();
 }
 
-CJob *CInsignia::GetJob() const
+CJob* CInsignia::GetJob() const
 {
   return new CInsigniaJob();
 }
 
-void CInsignia::OnJobComplete(unsigned int jobID, bool success, CJob *job)
+void CInsignia::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 {
-  m_info = ((CInsigniaJob *)job)->GetInfo();
+  m_info = ((CInsigniaJob*)job)->GetInfo();
   CInfoLoader::OnJobComplete(jobID, success, job);
 }

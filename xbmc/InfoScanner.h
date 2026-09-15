@@ -42,7 +42,7 @@ public:
   };
 
   //! \brief Empty destructor.
-  virtual ~CInfoScanner() { };
+  virtual ~CInfoScanner() {};
 
   virtual bool DoScan(const std::string& strDirectory) = 0;
 
@@ -51,7 +51,7 @@ public:
    \param regexps Regular expression to exclude from the scan
    \return true if there is a .nomedia file or one of the regexps is a match
    */
-  bool IsExcluded(const std::string& strDirectory, const std::vector<std::string> &regexps);
+  bool IsExcluded(const std::string& strDirectory, const std::vector<std::string>& regexps);
 
   //! \brief Set whether or not to show a progress dialog.
   void ShowDialog(bool show) { m_showDialog = show; }
@@ -62,12 +62,11 @@ public:
 protected:
   //! \brief Protected constructor to only allow subclass instances.
   CInfoScanner()
-    : m_showDialog(false)
-    , m_handle(NULL)
-    , m_bRunning(false)
-    , m_bCanInterrupt(false)
-    , m_bClean(false)
-  { };
+    : m_showDialog(false),
+      m_handle(NULL),
+      m_bRunning(false),
+      m_bCanInterrupt(false),
+      m_bClean(false) {};
 
   std::set<std::string> m_pathsToScan; //!< Set of paths to scan
   bool m_showDialog; //!< Whether or not to show progress bar dialog

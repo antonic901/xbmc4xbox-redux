@@ -50,9 +50,9 @@ static int LoadProfile(const std::vector<std::string>& params)
   int index = CProfilesManager::Get().GetProfileIndex(params[0]);
   bool prompt = (params.size() == 2 && StringUtils::EqualsNoCase(params[1], "prompt"));
   bool bCanceled;
-  if (index >= 0
-      && (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE
-        || g_passwordManager.IsProfileLockUnlocked(index,bCanceled,prompt)))
+  if (index >= 0 &&
+      (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE ||
+       g_passwordManager.IsProfileLockUnlocked(index, bCanceled, prompt)))
   {
     CApplicationMessenger::Get().PostMsg(TMSG_LOADPROFILE, index);
   }
@@ -80,7 +80,7 @@ static int LogOff(const std::vector<std::string>& params)
 
   CServiceBroker::GetAddonMgr().StopServices(true);
 
-  g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
+  g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN, 1);
 #ifdef HAS_XBOX_HARDWARE
   CFanController::Instance()->Stop();
 #endif
@@ -90,8 +90,10 @@ static int LogOff(const std::vector<std::string>& params)
   g_application.ResetScreenSaverWindow();
   g_windowManager.ActivateWindow(WINDOW_LOGIN_SCREEN, std::vector<string>(), false);
 
-  if (!CNetworkServices::Get().StartEventServer()) // event server could be needed in some situations
-    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33102), g_localizeStrings.Get(33100));
+  if (!CNetworkServices::Get()
+           .StartEventServer()) // event server could be needed in some situations
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33102),
+                                          g_localizeStrings.Get(33100));
 
   return 0;
 }
@@ -105,13 +107,15 @@ static int MasterMode(const std::vector<std::string>& params)
   {
     g_passwordManager.bMasterUser = false;
     g_passwordManager.LockSources(true);
-    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(20052),g_localizeStrings.Get(20053));
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(20052),
+                                          g_localizeStrings.Get(20053));
   }
   else if (g_passwordManager.IsMasterLockUnlocked(true))
   {
     g_passwordManager.LockSources(false);
     g_passwordManager.bMasterUser = true;
-    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(20052),g_localizeStrings.Get(20054));
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(20052),
+                                          g_localizeStrings.Get(20054));
   }
 
   CUtil::DeleteVideoDatabaseDirectoryCache();
@@ -120,7 +124,6 @@ static int MasterMode(const std::vector<std::string>& params)
 
   return 0;
 }
-
 
 // Note: For new Texts with comma add a "\" before!!! Is used for table text.
 //
@@ -160,7 +163,8 @@ CBuiltins::CommandMap CProfileBuiltins::GetOperations() const
 {
   CBuiltins::CommandMap commands;
 
-  CBuiltins::BUILT_IN builtin1 = {"Load the specified profile (note; if locks are active it won't work)", 1, LoadProfile};
+  CBuiltins::BUILT_IN builtin1 = {
+      "Load the specified profile (note; if locks are active it won't work)", 1, LoadProfile};
   commands.insert(std::make_pair("loadprofile", builtin1));
 
   CBuiltins::BUILT_IN builtin2 = {"Control master mode", 0, MasterMode};

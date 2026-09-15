@@ -56,4 +56,3 @@ public:
 };
 
 typedef std::vector<CBookmark> VECBOOKMARKS;
-

@@ -35,7 +35,9 @@ CMusicInfoTagLoaderAdplug::~CMusicInfoTagLoaderAdplug()
 {
 }
 
-bool CMusicInfoTagLoaderAdplug::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderAdplug::Load(const CStdString& strFileName,
+                                     CMusicInfoTag& tag,
+                                     EmbeddedArt* art)
 {
   tag.SetLoaded(false);
 
@@ -45,7 +47,7 @@ bool CMusicInfoTagLoaderAdplug::Load(const CStdString& strFileName, CMusicInfoTa
   m_adl = m_dll.LoadADL(strFileName.c_str());
   if (!m_adl)
   {
-    CLog::Log(LOGERROR,"MusicInfoTagLoaderAdplug: failed to open %s",strFileName.c_str());
+    CLog::Log(LOGERROR, "MusicInfoTagLoaderAdplug: failed to open %s", strFileName.c_str());
     return false;
   }
 
@@ -53,26 +55,25 @@ bool CMusicInfoTagLoaderAdplug::Load(const CStdString& strFileName, CMusicInfoTa
 
   tag.SetLoaded(false);
   const char* szTitle = m_dll.GetTitle(m_adl); // no alloc
-  CLog::Log(LOGDEBUG,"got title %p %s!",szTitle,szTitle);
+  CLog::Log(LOGDEBUG, "got title %p %s!", szTitle, szTitle);
   if (szTitle)
-    if( strcmp(szTitle,"") )
+    if (strcmp(szTitle, ""))
     {
       tag.SetTitle(szTitle);
       tag.SetLoaded(true);
     }
 
   const char* szArtist = m_dll.GetArtist(m_adl); // no alloc
-  CLog::Log(LOGDEBUG,"got artist %p %s!",szArtist,szArtist);
-  if( strcmp(szArtist,"") && tag.Loaded() )
+  CLog::Log(LOGDEBUG, "got artist %p %s!", szArtist, szArtist);
+  if (strcmp(szArtist, "") && tag.Loaded())
     tag.SetArtist(szArtist);
 
-  tag.SetDuration(m_dll.GetLength(m_adl)/1000);
+  tag.SetDuration(m_dll.GetLength(m_adl) / 1000);
 
-  CLog::Log(LOGDEBUG,"call free!");
+  CLog::Log(LOGDEBUG, "call free!");
   m_dll.FreeADL(m_adl);
-  CLog::Log(LOGDEBUG,"free called!");
+  CLog::Log(LOGDEBUG, "free called!");
   m_adl = 0;
 
   return tag.Loaded();
 }
-

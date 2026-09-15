@@ -26,7 +26,10 @@
 #include <string>
 
 class TiXmlElement;
-namespace XFILE { class CCurlFile; }
+namespace XFILE
+{
+class CCurlFile;
+}
 
 class CScraperUrl
 {
@@ -58,27 +61,37 @@ public:
   bool ParseString(std::string); // copies by intention
   bool ParseElement(const TiXmlElement*);
   bool ParseEpisodeGuide(std::string strUrls); // copies by intention
-  void AddElement(std::string url, std::string aspect = "", std::string referrer = "", std::string cache = "", bool post = false, bool isgz = false, int season = -1);
+  void AddElement(std::string url,
+                  std::string aspect = "",
+                  std::string referrer = "",
+                  std::string cache = "",
+                  bool post = false,
+                  bool isgz = false,
+                  int season = -1);
 
-  const SUrlEntry GetFirstThumb(const std::string &type = "") const;
-  const SUrlEntry GetSeasonThumb(int season, const std::string &type = "") const;
+  const SUrlEntry GetFirstThumb(const std::string& type = "") const;
+  const SUrlEntry GetSeasonThumb(int season, const std::string& type = "") const;
   unsigned int GetMaxSeasonThumb() const;
 
   /*! \brief fetch the full URL (including referrer) of a thumb
    \param URL entry to use to create the full URL
    \return the full URL, including referrer
    */
-  static std::string GetThumbURL(const CScraperUrl::SUrlEntry &entry);
+  static std::string GetThumbURL(const CScraperUrl::SUrlEntry& entry);
 
   /*! \brief fetch the full URL (including referrer) of thumbs
    \param thumbs [out] vector of thumb URLs to fill
    \param type the type of thumb URLs to fetch, if empty (the default) picks any
    \param season number of season that we want thumbs for, -1 indicates no season (the default)
    */
-  void GetThumbURLs(std::vector<std::string> &thumbs, const std::string &type = "", int season = -1) const;
+  void GetThumbURLs(std::vector<std::string>& thumbs,
+                    const std::string& type = "",
+                    int season = -1) const;
   void Clear();
-  static bool Get(const SUrlEntry&, std::string&, XFILE::CCurlFile& http,
-                 const std::string& cacheContext);
+  static bool Get(const SUrlEntry&,
+                  std::string&,
+                  XFILE::CCurlFile& http,
+                  const std::string& cacheContext);
 
   std::string m_xml;
   std::string m_spoof; // for backwards compatibility only!
@@ -89,5 +102,3 @@ public:
 };
 
 #endif
-
-

@@ -33,10 +33,10 @@ class CFileItem;
 class CFileItemList;
 namespace ADDON
 {
-  class CSkinInfo;
-  class IAddon;
-  typedef boost::shared_ptr<IAddon> AddonPtr;
-}
+class CSkinInfo;
+class IAddon;
+typedef boost::shared_ptr<IAddon> AddonPtr;
+} // namespace ADDON
 
 #include "utils/Idle.h"
 #include "utils/DelayController.h"
@@ -55,16 +55,16 @@ class CNetwork;
 
 namespace VIDEO
 {
-  class CVideoInfoScanner;
+class CVideoInfoScanner;
 }
 
 namespace MUSIC_INFO
 {
-  class CMusicInfoScanner;
+class CMusicInfoScanner;
 }
 
-#define VOLUME_MINIMUM -6000  // -60dB
-#define VOLUME_MAXIMUM 0      // 0dB
+#define VOLUME_MINIMUM -6000 // -60dB
+#define VOLUME_MAXIMUM 0 // 0dB
 
 // replay gain settings struct for quick access by the player multiple
 // times per second (saves doing settings lookup)
@@ -76,7 +76,8 @@ struct ReplayGainSettings
   bool bAvoidClipping;
 };
 
-struct VOICE_MASK {
+struct VOICE_MASK
+{
   float energy;
   float pitch;
   float robotic;
@@ -91,13 +92,17 @@ class CProfile;
 class CSplash;
 class CGUITextLayout;
 
-class CApplication : public CXBApplicationEx, public IPlayerCallback, public IMsgTargetCallback,
-                     public ISettingCallback, public ISettingsHandler, public ISubSettings,
+class CApplication : public CXBApplicationEx,
+                     public IPlayerCallback,
+                     public IMsgTargetCallback,
+                     public ISettingCallback,
+                     public ISettingsHandler,
+                     public ISubSettings,
                      public KODI::MESSAGING::IMessageTarget
 {
   friend class CApplicationPlayer;
-public:
 
+public:
   enum ESERVERS
   {
     ES_WEBSERVER = 1,
@@ -151,11 +156,14 @@ public:
   virtual void OnPlayBackSeekChapter(int iChapter);
   virtual void OnPlayBackSpeedChanged(int iSpeed);
 
-  virtual int  GetMessageMask();
+  virtual int GetMessageMask();
   virtual void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
 
-  bool PlayMedia(const CFileItem& item, const std::string &player, int iPlaylist = PLAYLIST_MUSIC);
-  bool ProcessAndStartPlaylist(const CStdString& strPlayList, PLAYLIST::CPlayList& playlist, int iPlaylist, int track=0);
+  bool PlayMedia(const CFileItem& item, const std::string& player, int iPlaylist = PLAYLIST_MUSIC);
+  bool ProcessAndStartPlaylist(const CStdString& strPlayList,
+                               PLAYLIST::CPlayList& playlist,
+                               int iPlaylist,
+                               int track = 0);
   PlayBackRet PlayFile(CFileItem item, const std::string& player, bool bRestart = false);
   void SaveFileState(bool bForeground = false);
   void UpdateFileState();
@@ -169,13 +177,13 @@ public:
   bool IsStartingPlayback() const { return m_bPlaybackStarting; }
   bool IsFullScreen();
   bool OnKey(CKey& key);
-  bool OnAction(CAction &action);
+  bool OnAction(CAction& action);
   void RenderMemoryStatus();
   bool MustBlockHDSpinDown(bool bCheckThisForNormalSpinDown = true);
   void CheckNetworkHDSpinDown(bool playbackStarted = false);
   void CheckHDSpindown();
   void CheckShutdown();
-  void CheckScreenSaver();   // CB: SCREENSAVER PATCH
+  void CheckScreenSaver(); // CB: SCREENSAVER PATCH
   void CheckPlayingProgress();
   void ActivateScreenSaver(bool forceType = false);
 
@@ -189,7 +197,7 @@ public:
   bool IsMuted() const;
   void ToggleMute(void);
   void SetMute(bool mute);
-  void ShowVolumeBar(const CAction *action = NULL);
+  void ShowVolumeBar(const CAction* action = NULL);
   int GetSubtitleDelay() const;
   int GetAudioDelay() const;
   bool IsButtonDown(DWORD code);
@@ -211,7 +219,7 @@ public:
   float GetCachePercentage() const;
 
   void SeekPercentage(float percent);
-  void SeekTime( double dTime = 0.0 );
+  void SeekTime(double dTime = 0.0);
 
   void StopVideoScan();
   void StopMusicScan();
@@ -230,7 +238,7 @@ public:
    \param userInitiated Whether the action was initiated by the user (either via GUI or any other method) or not.  It is meant to hide or show dialogs.
    \param scanAll Whether to scan everything not already scanned (regardless of whether the user normally doesn't want a folder scanned).
    */
-  void StartVideoScan(const std::string &path, bool userInitiated = true, bool scanAll = false);
+  void StartVideoScan(const std::string& path, bool userInitiated = true, bool scanAll = false);
 
   /*!
   \brief Starts a music library cleanup.
@@ -244,7 +252,7 @@ public:
    \param userInitiated Whether the action was initiated by the user (either via GUI or any other method) or not.  It is meant to hide or show dialogs.
    \param flags Flags for controlling the scanning process.  See xbmc/music/infoscanner/MusicInfoScanner.h for possible values.
    */
-  void StartMusicScan(const std::string &path, bool userInitiated = true, int flags = 0);
+  void StartMusicScan(const std::string& path, bool userInitiated = true, int flags = 0);
   void StartMusicAlbumScan(const std::string& strDirectory, bool refresh = false);
   void StartMusicArtistScan(const std::string& strDirectory, bool refresh = false);
 
@@ -254,7 +262,7 @@ public:
 
   CNetwork& getNetwork();
 
-  bool ExecuteXBMCAction(std::string action, const CGUIListItemPtr &item = CGUIListItemPtr());
+  bool ExecuteXBMCAction(std::string action, const CGUIListItemPtr& item = CGUIListItemPtr());
 
   CIdleThread m_idleThread;
   MEDIA_DETECT::CAutorun m_Autorun;
@@ -291,12 +299,9 @@ public:
 
   int GlobalIdleTime();
 
-  bool IsStandAlone()
-  {
-    return true;
-  }
+  bool IsStandAlone() { return true; }
 
-  bool SetLanguage(const std::string &strLanguage);
+  bool SetLanguage(const std::string& strLanguage);
   bool LoadLanguage(bool reload);
 
   ReplayGainSettings& GetReplayGainSettings() { return m_replayGainSettings; }
@@ -307,12 +312,12 @@ public:
    \brief Register an action listener.
    \param listener The listener to register
    */
-  void RegisterActionListener(IActionListener *listener);
+  void RegisterActionListener(IActionListener* listener);
   /*!
    \brief Unregister an action listener.
    \param listener The listener to unregister
    */
-  void UnregisterActionListener(IActionListener *listener);
+  void UnregisterActionListener(IActionListener* listener);
 
   boost::movelib::unique_ptr<CServiceManager> m_ServiceManager;
 
@@ -321,12 +326,14 @@ public:
 protected:
   virtual bool OnSettingsSaving() const;
 
-  virtual bool Load(const TiXmlNode *settings);
-  virtual bool Save(TiXmlNode *settings) const;
+  virtual bool Load(const TiXmlNode* settings);
+  virtual bool Save(TiXmlNode* settings) const;
 
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingAction(const CSetting *setting);
-  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
+  virtual void OnSettingChanged(const CSetting* setting);
+  virtual void OnSettingAction(const CSetting* setting);
+  virtual bool OnSettingUpdate(CSetting*& setting,
+                               const char* oldSettingId,
+                               const TiXmlNode* oldSettingNode);
 
   bool LoadSkin(const std::string& skinID);
 
@@ -335,7 +342,7 @@ protected:
    \param action The action
    \return true, if the action was taken by one of the action listener.
    */
-  bool NotifyActionListeners(const CAction &action) const;
+  bool NotifyActionListeners(const CAction& action) const;
 
   bool m_skinReverting;
   bool m_ignoreSkinSettingChanges;
@@ -363,7 +370,8 @@ protected:
   CFileItemPtr m_stackFileItemToUpdate;
 
   CStdString m_prevMedia;
-  DWORD m_threadID;       // application thread ID.  Used in applicationMessanger to know where we are firing a thread with delay from.
+  DWORD
+  m_threadID; // application thread ID.  Used in applicationMessanger to know where we are firing a thread with delay from.
   bool m_bInitializing;
 
   CBookmark m_progressTrackingVideoResumeBookmark;
@@ -373,15 +381,15 @@ protected:
   int m_currentStackPosition;
   int m_nextPlaylistItem;
 
-  CGUITextLayout *m_debugLayout;
+  CGUITextLayout* m_debugLayout;
 
-  static LONG WINAPI UnhandledExceptionFilter(struct _EXCEPTION_POINTERS *ExceptionInfo);
+  static LONG WINAPI UnhandledExceptionFilter(struct _EXCEPTION_POINTERS* ExceptionInfo);
 
-  MUSIC_INFO::CMusicInfoScanner *m_musicInfoScanner;
+  MUSIC_INFO::CMusicInfoScanner* m_musicInfoScanner;
 
   bool m_muted;
-  int m_volumeLevel;                     // measured in milliBels -60dB -> 0dB range.
-  int m_dynamicRangeCompressionLevel;    // measured in milliBels  0dB -> 30dB range.
+  int m_volumeLevel; // measured in milliBels -60dB -> 0dB range.
+  int m_dynamicRangeCompressionLevel; // measured in milliBels  0dB -> 30dB range.
 
   VOICE_MASK m_karaokeVoiceMask[4];
 
@@ -400,7 +408,11 @@ protected:
   bool ProcessGamepad(float frameTime);
   bool ProcessEventServer(float frameTime);
 
-  bool ProcessJoystickEvent(const std::string& joystickName, int button, bool isAxis, float fAmount, unsigned int holdTime = 0);
+  bool ProcessJoystickEvent(const std::string& joystickName,
+                            int button,
+                            bool isAxis,
+                            float fAmount,
+                            unsigned int holdTime = 0);
   bool ExecuteInputAction(CAction action);
 
   void CheckForDebugButtonCombo();
@@ -413,21 +425,22 @@ protected:
   void InitDirectoriesXbox();
   void CreateUserDirs() const;
 
-  CNetwork    *m_network;
-  
+  CNetwork* m_network;
+
 #ifdef HAS_EVENT_SERVER
   std::map<std::string, std::map<int, float> > m_lastAxisMap;
 #endif
 
   ReplayGainSettings m_replayGainSettings;
 
-  std::vector<IActionListener *> m_actionListeners;
+  std::vector<IActionListener*> m_actionListeners;
 
   bool m_fallbackLanguageLoaded;
 
 private:
-  CCriticalSection                m_critSection;                 /*!< critical section for all changes to this class, except for changes to triggers */
+  CCriticalSection
+      m_critSection; /*!< critical section for all changes to this class, except for changes to triggers */
 };
 
-XBMC_GLOBAL_REF(CApplication,g_application);
+XBMC_GLOBAL_REF(CApplication, g_application);
 #define g_application XBMC_GLOBAL_USE(CApplication)

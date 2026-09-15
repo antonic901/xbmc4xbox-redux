@@ -38,35 +38,50 @@ class CJpegIO
 public:
   CJpegIO();
   ~CJpegIO();
-  bool           Open(const CStdString& m_texturePath,  unsigned int minx=0, unsigned int miny=0, bool read=true);
-  bool           Read(unsigned char* buffer, unsigned int bufSize, unsigned int minx, unsigned int miny);
-  bool           Decode(const unsigned char *pixels, unsigned int pitch, unsigned int format);
-  bool           CreateThumbnail(const CStdString& sourceFile, const CStdString& destFile, int minx, int miny);
-  bool           CreateThumbnailFromMemory(unsigned char* buffer, unsigned int bufSize, const CStdString& destFile, unsigned int minx, unsigned int miny);
-  bool           CreateThumbnailFromSurface(unsigned char* buffer, unsigned int width, unsigned int height, unsigned int format, unsigned int pitch, const CStdString& destFile);
-  void           Close();
+  bool Open(const CStdString& m_texturePath,
+            unsigned int minx = 0,
+            unsigned int miny = 0,
+            bool read = true);
+  bool Read(unsigned char* buffer, unsigned int bufSize, unsigned int minx, unsigned int miny);
+  bool Decode(const unsigned char* pixels, unsigned int pitch, unsigned int format);
+  bool CreateThumbnail(const CStdString& sourceFile,
+                       const CStdString& destFile,
+                       int minx,
+                       int miny);
+  bool CreateThumbnailFromMemory(unsigned char* buffer,
+                                 unsigned int bufSize,
+                                 const CStdString& destFile,
+                                 unsigned int minx,
+                                 unsigned int miny);
+  bool CreateThumbnailFromSurface(unsigned char* buffer,
+                                  unsigned int width,
+                                  unsigned int height,
+                                  unsigned int format,
+                                  unsigned int pitch,
+                                  const CStdString& destFile);
+  void Close();
 
-  unsigned int   Width()       { return m_width; }
-  unsigned int   Height()      { return m_height; }
-  unsigned int   OrgWidth()       { return m_originalwidth; }
-  unsigned int   OrgHeight()      { return m_originalheight; }
-  unsigned int   Orientation() { return m_orientation; }
+  unsigned int Width() { return m_width; }
+  unsigned int Height() { return m_height; }
+  unsigned int OrgWidth() { return m_originalwidth; }
+  unsigned int OrgHeight() { return m_originalheight; }
+  unsigned int Orientation() { return m_orientation; }
 
 protected:
-  static  void   jpeg_error_exit(j_common_ptr cinfo);
+  static void jpeg_error_exit(j_common_ptr cinfo);
 
-  unsigned int   GetExifOrientation(unsigned char* exif_data, unsigned int exif_data_size);
+  unsigned int GetExifOrientation(unsigned char* exif_data, unsigned int exif_data_size);
 
-  unsigned char  *m_inputBuff;
-  unsigned int   m_inputBuffSize;
-  struct         jpeg_decompress_struct m_cinfo;
-  CStdString     m_texturePath;
+  unsigned char* m_inputBuff;
+  unsigned int m_inputBuffSize;
+  struct jpeg_decompress_struct m_cinfo;
+  CStdString m_texturePath;
 
-  unsigned int   m_width;
-  unsigned int   m_height;
-  unsigned int   m_originalwidth;
-  unsigned int   m_originalheight;
-  unsigned int   m_orientation;
+  unsigned int m_width;
+  unsigned int m_height;
+  unsigned int m_originalwidth;
+  unsigned int m_originalheight;
+  unsigned int m_orientation;
 };
 
 #endif

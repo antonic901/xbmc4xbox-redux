@@ -33,7 +33,8 @@
 static int RunDashboard(const std::vector<std::string>& params)
 {
   if (CSettings::GetInstance().GetBool("myprograms.usedashpath"))
-    LAUNCHERS::CProgramLauncher::LaunchProgram(CSettings::GetInstance().GetString("myprograms.dashboard"));
+    LAUNCHERS::CProgramLauncher::LaunchProgram(
+        CSettings::GetInstance().GetString("myprograms.dashboard"));
   else
     CUtil::BootToDash();
 
@@ -69,25 +70,25 @@ static int PWMControl(const std::vector<std::string>& params)
 {
   int iTrTime = 0;
   std::string parameter = params.size() ? params[0] : "";
-  std::vector<std::string> arSplit = StringUtils::Split(parameter,",");
-  std::string strTemp ,strRgbA, strRgbB, strWhiteA, strWhiteB, strTran;
+  std::vector<std::string> arSplit = StringUtils::Split(parameter, ",");
+  std::string strTemp, strRgbA, strRgbB, strWhiteA, strWhiteB, strTran;
 
   if ((int)arSplit.size() >= 6)
   {
-    strRgbA  = arSplit[0].c_str();
-    strRgbB  = arSplit[1].c_str();
-    strWhiteA= arSplit[2].c_str();
-    strWhiteB= arSplit[3].c_str();
-    strTran  = arSplit[4].c_str();
-    iTrTime  = atoi(arSplit[5].c_str());
+    strRgbA = arSplit[0].c_str();
+    strRgbB = arSplit[1].c_str();
+    strWhiteA = arSplit[2].c_str();
+    strWhiteB = arSplit[3].c_str();
+    strTran = arSplit[4].c_str();
+    iTrTime = atoi(arSplit[5].c_str());
   }
-  else if(parameter.size() > 6)
+  else if (parameter.size() > 6)
   {
     strRgbA = strRgbB = parameter;
     strWhiteA = strWhiteB = "#000000";
     strTran = "none";
   }
-  CUtil::PWMControl(strRgbA,strRgbB,strWhiteA,strWhiteB,strTran, iTrTime);
+  CUtil::PWMControl(strRgbA, strRgbB, strWhiteA, strWhiteB, strTran, iTrTime);
 
   return 0;
 }
@@ -133,7 +134,7 @@ static int Backup(const std::vector<std::string>& params)
 ///   \table_row2_l{
 ///     <b>`BackupSystemInfo`</b>
 ///     ,
-///     Backup BIOS, EEPROM, HDD key and other systen informations 
+///     Backup BIOS, EEPROM, HDD key and other systen informations
 ///   }
 /// \table_end
 ///
@@ -152,7 +153,7 @@ CBuiltins::CommandMap CXboxBuiltins::GetOperations() const
   commands.insert(std::make_pair("pwmcontrol", builtin3));
 
   CBuiltins::BUILT_IN builtin4 = {"Backup System Informations to local hdd", 0, Backup};
-  commands.insert(std::make_pair("backupsysteminfo",  builtin4));
+  commands.insert(std::make_pair("backupsysteminfo", builtin4));
 
   return commands;
 }

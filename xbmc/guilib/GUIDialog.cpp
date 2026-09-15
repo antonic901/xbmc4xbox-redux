@@ -30,8 +30,10 @@
 
 using namespace KODI::MESSAGING;
 
-CGUIDialog::CGUIDialog(int id, const std::string &xmlFile, DialogModalityType modalityType /* = MODAL */)
-    : CGUIWindow(id, xmlFile)
+CGUIDialog::CGUIDialog(int id,
+                       const std::string& xmlFile,
+                       DialogModalityType modalityType /* = MODAL */)
+  : CGUIWindow(id, xmlFile)
 {
   m_modalityType = modalityType;
   m_wasRunning = false;
@@ -44,7 +46,8 @@ CGUIDialog::CGUIDialog(int id, const std::string &xmlFile, DialogModalityType mo
 }
 
 CGUIDialog::~CGUIDialog(void)
-{}
+{
+}
 
 bool CGUIDialog::Load(TiXmlElement* pRootElement)
 {
@@ -85,7 +88,7 @@ void CGUIDialog::OnWindowLoaded()
   }
 }
 
-bool CGUIDialog::OnAction(const CAction &action)
+bool CGUIDialog::OnAction(const CAction& action)
 {
   // keyboard or controller movement should prevent autoclosing
   if (!action.IsMouse() && m_autoClosing)
@@ -102,14 +105,14 @@ bool CGUIDialog::OnBack(int actionID)
 
 bool CGUIDialog::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_DEINIT:
+    case GUI_MSG_WINDOW_DEINIT:
     {
       CGUIWindow::OnMessage(message);
       return true;
     }
-  case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_INIT:
     {
       CGUIWindow::OnMessage(message);
       m_showStartTime = 0;
@@ -130,7 +133,7 @@ void CGUIDialog::OnDeinitWindow(int nextWindowID)
   CGUIWindow::OnDeinitWindow(nextWindowID);
 }
 
-void CGUIDialog::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIDialog::DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   UpdateVisibility();
 
@@ -172,12 +175,12 @@ void CGUIDialog::UpdateVisibility()
   }
 }
 
-void CGUIDialog::Open_Internal(const std::string &param /* = "" */)
+void CGUIDialog::Open_Internal(const std::string& param /* = "" */)
 {
   CGUIDialog::Open_Internal(m_modalityType != MODELESS, param);
 }
 
-void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param /* = "" */)
+void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string& param /* = "" */)
 {
   // Lock graphic context here as it is sometimes called from non rendering threads
   // maybe we should have a critical section per window instead??
@@ -214,7 +217,7 @@ void CGUIDialog::Open_Internal(bool bProcessRenderLoop, const std::string &param
   }
 }
 
-void CGUIDialog::Open(const std::string &param /* = "" */)
+void CGUIDialog::Open(const std::string& param /* = "" */)
 {
 #ifdef HAS_XBOX_D3D
   if (!g_application.IsCurrentThread() && !g_graphicsContext.IsFullScreenVideo())
@@ -224,7 +227,8 @@ void CGUIDialog::Open(const std::string &param /* = "" */)
   {
     // make sure graphics lock is not held
     CSingleExit leaveIt(g_graphicsContext);
-    CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_OPEN, -1, -1, static_cast<void*>(this), param);
+    CApplicationMessenger::Get().SendMsg(TMSG_GUI_DIALOG_OPEN, -1, -1, static_cast<void*>(this),
+                                         param);
   }
   else
     Open_Internal(param);
@@ -246,9 +250,9 @@ void CGUIDialog::SetDefaults()
 
 void CGUIDialog::SetAutoClose(unsigned int timeoutMs)
 {
-   m_autoClosing = true;
-   m_showDuration = timeoutMs;
-   ResetAutoClose();
+  m_autoClosing = true;
+  m_showDuration = timeoutMs;
+  ResetAutoClose();
 }
 
 void CGUIDialog::ResetAutoClose(void)

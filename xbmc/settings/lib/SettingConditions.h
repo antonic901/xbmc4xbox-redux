@@ -30,31 +30,33 @@
 class CSettingsManager;
 class CSetting;
 
-typedef bool (*SettingConditionCheck)(const std::string &condition, const std::string &value, const CSetting *setting, void *data);
+typedef bool (*SettingConditionCheck)(const std::string& condition,
+                                      const std::string& value,
+                                      const CSetting* setting,
+                                      void* data);
 
 class ISettingCondition
 {
 public:
-  ISettingCondition(CSettingsManager *settingsManager)
-    : m_settingsManager(settingsManager)
-  { }
-  virtual ~ISettingCondition() { }
+  ISettingCondition(CSettingsManager* settingsManager) : m_settingsManager(settingsManager) {}
+  virtual ~ISettingCondition() {}
 
   virtual bool Check() const = 0;
 
 protected:
-  CSettingsManager *m_settingsManager;
+  CSettingsManager* m_settingsManager;
 };
 
 class CSettingConditionItem : public CBooleanLogicValue, public ISettingCondition
 {
 public:
-  CSettingConditionItem(CSettingsManager *settingsManager = NULL)
+  CSettingConditionItem(CSettingsManager* settingsManager = NULL)
     : ISettingCondition(settingsManager)
-  { }
-  virtual ~CSettingConditionItem() { }
+  {
+  }
+  virtual ~CSettingConditionItem() {}
 
-  virtual bool Deserialize(const TiXmlNode *node);
+  virtual bool Deserialize(const TiXmlNode* node);
   virtual const char* GetTag() const { return SETTING_XML_ELM_CONDITION; }
   virtual bool Check() const;
 
@@ -66,23 +68,27 @@ protected:
 class CSettingConditionCombination : public CBooleanLogicOperation, public ISettingCondition
 {
 public:
-  CSettingConditionCombination(CSettingsManager *settingsManager = NULL)
+  CSettingConditionCombination(CSettingsManager* settingsManager = NULL)
     : ISettingCondition(settingsManager)
-  { }
-  virtual ~CSettingConditionCombination() { }
+  {
+  }
+  virtual ~CSettingConditionCombination() {}
 
   virtual bool Check() const;
 
 private:
-  virtual CBooleanLogicOperation* newOperation() { return new CSettingConditionCombination(m_settingsManager); }
+  virtual CBooleanLogicOperation* newOperation()
+  {
+    return new CSettingConditionCombination(m_settingsManager);
+  }
   virtual CBooleanLogicValue* newValue() { return new CSettingConditionItem(m_settingsManager); }
 };
 
 class CSettingCondition : public CBooleanLogic, public ISettingCondition
 {
 public:
-  CSettingCondition(CSettingsManager *settingsManager = NULL);
-  virtual ~CSettingCondition() { }
+  CSettingCondition(CSettingsManager* settingsManager = NULL);
+  virtual ~CSettingCondition() {}
 
   virtual bool Check() const;
 };
@@ -93,10 +99,14 @@ public:
   CSettingConditionsManager();
   virtual ~CSettingConditionsManager();
 
-  void AddCondition(const std::string &condition);
-  void AddCondition(const std::string &identifier, SettingConditionCheck condition, void *data = NULL);
+  void AddCondition(const std::string& condition);
+  void AddCondition(const std::string& identifier,
+                    SettingConditionCheck condition,
+                    void* data = NULL);
 
-  bool Check(const std::string &condition, const std::string &value = "", const CSetting *setting = NULL) const;
+  bool Check(const std::string& condition,
+             const std::string& value = "",
+             const CSetting* setting = NULL) const;
 
 private:
   CSettingConditionsManager(const CSettingConditionsManager&);

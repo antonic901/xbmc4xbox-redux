@@ -22,7 +22,7 @@
 
 #include "guilib/GUIWindow.h"
 
-#define CONTROL_GAMES_LIST  5000
+#define CONTROL_GAMES_LIST 5000
 
 class CGUIBaseContainer;
 
@@ -32,7 +32,7 @@ public:
   CGUIWindowInsignia(void);
   virtual ~CGUIWindowInsignia(void);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
 
   void InitializeGamesContainer(CGUIBaseContainer* container) { m_pGamesContainer = container; };
   CGUIBaseContainer* GetGamesContainer() { return m_pGamesContainer; };
@@ -42,5 +42,5 @@ protected:
   void ClearProperties();
 
 private:
-  CGUIBaseContainer *m_pGamesContainer;
+  CGUIBaseContainer* m_pGamesContainer;
 };

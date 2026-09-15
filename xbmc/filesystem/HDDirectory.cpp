@@ -14,7 +14,7 @@
 #include <xtl.h>
 
 #ifndef INVALID_FILE_ATTRIBUTES
-#define INVALID_FILE_ATTRIBUTES ((DWORD) -1)
+#define INVALID_FILE_ATTRIBUTES ((DWORD) - 1)
 #endif
 
 using namespace XFILE;
@@ -37,12 +37,14 @@ inline static std::string prepareXboxDirectoryName(const std::string& strPath)
 }
 
 CHDDirectory::CHDDirectory(void)
-{}
+{
+}
 
 CHDDirectory::~CHDDirectory(void)
-{}
+{
+}
 
-bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList &items)
+bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList& items)
 {
   std::string pathWithSlash(url.Get());
   if (!pathWithSlash.empty() && pathWithSlash[pathWithSlash.size() - 1] != '\\')
@@ -59,7 +61,9 @@ bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   HANDLE hSearch = FindFirstFileA(searchMask.c_str(), &findData);
 
   if (hSearch == INVALID_HANDLE_VALUE)
-    return GetLastError() == ERROR_FILE_NOT_FOUND ? Exists(url) : false; // return true if directory exist and empty
+    return GetLastError() == ERROR_FILE_NOT_FOUND
+               ? Exists(url)
+               : false; // return true if directory exist and empty
 
   do
   {
@@ -75,8 +79,8 @@ bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     else
       pItem->SetPath(pathWithSlash + itemName);
 
-    if ((findData.dwFileAttributes & (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM)) != 0
-          || itemName[0] == '.') // mark files starting from dot as hidden
+    if ((findData.dwFileAttributes & (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM)) != 0 ||
+        itemName[0] == '.') // mark files starting from dot as hidden
       pItem->SetProperty("file:hidden", true);
 
     // calculation of size and date costs a little on win32
@@ -91,7 +95,7 @@ bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList &items)
       pItem->m_dateTime = 0;
 
     if (!pItem->m_bIsFolder)
-        pItem->m_dwSize = (__int64(findData.nFileSizeHigh) << 32) + findData.nFileSizeLow;
+      pItem->m_dwSize = (__int64(findData.nFileSizeHigh) << 32) + findData.nFileSizeLow;
 
     items.Add(pItem);
   } while (FindNextFileA(hSearch, &findData));
@@ -154,7 +158,9 @@ bool CHDDirectory::RemoveRecursive(const CURL& url)
   HANDLE hSearch = FindFirstFileA(searchMask.c_str(), &findData);
 
   if (hSearch == INVALID_HANDLE_VALUE)
-    return GetLastError() == ERROR_FILE_NOT_FOUND ? Exists(url) : false; // return true if directory exist and empty
+    return GetLastError() == ERROR_FILE_NOT_FOUND
+               ? Exists(url)
+               : false; // return true if directory exist and empty
 
   bool success = true;
   do
@@ -166,7 +172,7 @@ bool CHDDirectory::RemoveRecursive(const CURL& url)
     std::string path = basePath + itemName;
     if (0 != (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
     {
-      if (!RemoveRecursive(CURL( path )))
+      if (!RemoveRecursive(CURL(path)))
       {
         success = false;
         break;

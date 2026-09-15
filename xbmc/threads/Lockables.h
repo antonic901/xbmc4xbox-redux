@@ -25,7 +25,7 @@
 namespace XbmcThreads
 {
 
-  /**
+/**
    * This template will take any implementation of the "Lockable" concept
    * and allow it to be used as an "Exitable Lockable."
    *
@@ -46,53 +46,63 @@ namespace XbmcThreads
    *
    * All xbmc code expects Lockables to be recursive.
    */
-  template<class L> class CountingLockable : public NonCopyable
+template<class L>
+class CountingLockable : public NonCopyable
+{
+  friend class ConditionVariable;
+
+protected:
+  L mutex;
+  unsigned int count;
+
+public:
+  inline CountingLockable() : count(0) {}
+
+  // boost::thread Lockable concept
+  inline void lock()
   {
-    friend class ConditionVariable;
-  protected:
-    L mutex;
-    unsigned int count;
+    mutex.lock();
+    count++;
+  }
+  inline bool try_lock() { return mutex.try_lock() ? count++, true : false; }
+  inline void unlock()
+  {
+    count--;
+    mutex.unlock();
+  }
 
-  public:
-    inline CountingLockable() : count(0) {}
-
-    // boost::thread Lockable concept
-    inline void lock() { mutex.lock(); count++; }
-    inline bool try_lock() { return mutex.try_lock() ? count++, true : false; }
-    inline void unlock() { count--; mutex.unlock(); }
-
-    /**
+  /**
      * This implements the "exitable" behavior mentioned above.
      */
-    inline unsigned int exit() 
-    { 
-      // it's possibe we don't actually own the lock
-      // so we will try it.
-      unsigned int ret = 0;
-      if (try_lock())
-      {
-        ret = count - 1;  // The -1 is because we don't want 
-                          //  to count the try_lock increment.
-        // We must NOT compare "count" in this loop since 
-        // as soon as the last unlock is called another thread
-        // can modify it.
-        for (unsigned int i = 0; i <= ret; i++) // This will also unlock the try_lock.
-          unlock();
-      }
-
-      return ret; 
+  inline unsigned int exit()
+  {
+    // it's possibe we don't actually own the lock
+    // so we will try it.
+    unsigned int ret = 0;
+    if (try_lock())
+    {
+      ret = count - 1; // The -1 is because we don't want
+      //  to count the try_lock increment.
+      // We must NOT compare "count" in this loop since
+      // as soon as the last unlock is called another thread
+      // can modify it.
+      for (unsigned int i = 0; i <= ret; i++) // This will also unlock the try_lock.
+        unlock();
     }
 
-    /**
+    return ret;
+  }
+
+  /**
      * Restore a previous exit to the provided level.
      */
-    inline void restore(unsigned int restoreCount)
-    {
-      for (unsigned int i = 0; i < restoreCount; i++) 
-        lock();
-    }
+  inline void restore(unsigned int restoreCount)
+  {
+    for (unsigned int i = 0; i < restoreCount; i++)
+      lock();
+  }
 
-    /**
+  /**
      * Some implementations (see pthreads) require access to the underlying 
      *  CCriticalSection, which is also implementation specific. This 
      *  provides access to it through the same method on the guard classes
@@ -101,39 +111,56 @@ namespace XbmcThreads
      * There really should be no need for the users of the threading library
      *  to call this method.
      */
-    inline L& get_underlying() { return mutex; }
-  };
+  inline L& get_underlying() { return mutex; }
+};
 
-
-  /**
+/**
    * This template can be used to define the base implementation for any UniqueLock
    * (such as CSingleLock) that uses a Lockable as its mutex/critical section.
    */
-  template<typename L> class UniqueLock : public NonCopyable
+template<typename L>
+class UniqueLock : public NonCopyable
+{
+protected:
+  L& mutex;
+  bool owns;
+  inline UniqueLock(L& lockable) : mutex(lockable), owns(true) { mutex.lock(); }
+  inline UniqueLock(L& lockable, bool try_to_lock_discrim) : mutex(lockable)
   {
-  protected:
-    L& mutex;
-    bool owns;
-    inline UniqueLock(L& lockable) : mutex(lockable), owns(true) { mutex.lock(); }
-    inline UniqueLock(L& lockable, bool try_to_lock_discrim ) : mutex(lockable) { owns = mutex.try_lock(); }
-    inline ~UniqueLock() { if (owns) mutex.unlock(); }
+    owns = mutex.try_lock();
+  }
+  inline ~UniqueLock()
+  {
+    if (owns)
+      mutex.unlock();
+  }
 
-  public:
+public:
+  inline bool owns_lock() const { return owns; }
 
-    inline bool owns_lock() const { return owns; }
-
-    //This also implements lockable
-    inline void lock() { mutex.lock(); owns=true; }
-    inline bool try_lock() { return (owns = mutex.try_lock()); }
-    inline void unlock() { if (owns) { mutex.unlock(); owns=false; } }
-
-    /**
-     * See the note on the same method on CountingLockable
-     */
-    inline L& get_underlying() { return mutex; }
-  };
+  //This also implements lockable
+  inline void lock()
+  {
+    mutex.lock();
+    owns = true;
+  }
+  inline bool try_lock() { return (owns = mutex.try_lock()); }
+  inline void unlock()
+  {
+    if (owns)
+    {
+      mutex.unlock();
+      owns = false;
+    }
+  }
 
   /**
+     * See the note on the same method on CountingLockable
+     */
+  inline L& get_underlying() { return mutex; }
+};
+
+/**
    * This template can be used to define the base implementation for any SharedLock
    * (such as CSharedLock) that uses a Shared Lockable as its mutex/critical section.
    *
@@ -144,24 +171,37 @@ namespace XbmcThreads
    * bool try_lock_shared();
    * void unlock_shared();
    */
-  template<typename L> class SharedLock : public NonCopyable
+template<typename L>
+class SharedLock : public NonCopyable
+{
+protected:
+  L& mutex;
+  bool owns;
+  inline SharedLock(L& lockable) : mutex(lockable), owns(true) { mutex.lock_shared(); }
+  inline ~SharedLock()
   {
-  protected:
-    L& mutex;
-    bool owns;
-    inline SharedLock(L& lockable) : mutex(lockable), owns(true) { mutex.lock_shared(); }
-    inline ~SharedLock() { if (owns) mutex.unlock_shared(); }
+    if (owns)
+      mutex.unlock_shared();
+  }
 
-    inline bool owns_lock() const { return owns; }
-    inline void lock() { mutex.lock_shared(); owns = true; }
-    inline bool try_lock() { return (owns = mutex.try_lock_shared()); }
-    inline void unlock() { if (owns) mutex.unlock_shared(); owns = false; }
+  inline bool owns_lock() const { return owns; }
+  inline void lock()
+  {
+    mutex.lock_shared();
+    owns = true;
+  }
+  inline bool try_lock() { return (owns = mutex.try_lock_shared()); }
+  inline void unlock()
+  {
+    if (owns)
+      mutex.unlock_shared();
+    owns = false;
+  }
 
-    /**
+  /**
      * See the note on the same method on CountingLockable
      */
-    inline L& get_underlying() { return mutex; }
-  };
+  inline L& get_underlying() { return mutex; }
+};
 
-
-}
+} // namespace XbmcThreads

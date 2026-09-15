@@ -30,8 +30,9 @@ namespace ADDON
 class CScreenSaver : public ADDON::CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>
 {
 public:
-  explicit CScreenSaver(AddonProps props) : CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>(boost::move(props)) {};
-  explicit CScreenSaver(const char *addonID);
+  explicit CScreenSaver(AddonProps props)
+    : CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>(boost::move(props)) {};
+  explicit CScreenSaver(const char* addonID);
 
   virtual ~CScreenSaver() {}
   virtual bool IsInUse() const;
@@ -40,7 +41,7 @@ public:
   bool CreateScreenSaver();
   void Start();
   void Render();
-  void GetInfo(SCR_INFO *info);
+  void GetInfo(SCR_INFO* info);
   void Destroy();
 };
 

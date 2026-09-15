@@ -37,7 +37,7 @@ int rename_utf8(const char* __old, const char* __new)
   // g_charsetConverter.utf8ToW(__old, oldW, false);
   // g_charsetConverter.utf8ToW(__new, newW, false);
   // return ::MoveFileW(oldW.c_str(), newW.c_str()) ? 0 : -1;
-  return rename(__old,__new);
+  return rename(__old, __new);
 }
 
 FILE* fopen64_utf8(const char* __filename, const char* __modes)
@@ -47,4 +47,3 @@ FILE* fopen64_utf8(const char* __filename, const char* __modes)
   g_charsetConverter.utf8ToW(__modes, modesW, false);
   return _wfopen(filenameW.c_str(), modesW.c_str());
 }
-

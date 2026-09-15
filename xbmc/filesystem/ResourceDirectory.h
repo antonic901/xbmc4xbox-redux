@@ -23,15 +23,15 @@
 
 namespace XFILE
 {
-  class CResourceDirectory : public COverrideDirectory
-  {
-  public:
-    CResourceDirectory();
-    virtual ~CResourceDirectory();
+class CResourceDirectory : public COverrideDirectory
+{
+public:
+  CResourceDirectory();
+  virtual ~CResourceDirectory();
 
-    virtual bool GetDirectory(const CURL& url, CFileItemList &items);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
 
-  protected:
-    virtual std::string TranslatePath(const CURL &url);
-  };
-}
+protected:
+  virtual std::string TranslatePath(const CURL& url);
+};
+} // namespace XFILE

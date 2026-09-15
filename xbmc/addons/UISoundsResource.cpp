@@ -23,14 +23,12 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 
-
 namespace ADDON
 {
 
 bool CUISoundsResource::IsAllowed(const std::string& file) const
 {
-  return StringUtils::EqualsNoCase(file, "sounds.xml")
-      || URIUtils::HasExtension(file, ".wav");
+  return StringUtils::EqualsNoCase(file, "sounds.xml") || URIUtils::HasExtension(file, ".wav");
 }
 
 bool CUISoundsResource::IsInUse() const
@@ -44,4 +42,4 @@ void CUISoundsResource::OnPostInstall(bool update, bool modal)
     g_audioManager.Load();
 }
 
-}
+} // namespace ADDON

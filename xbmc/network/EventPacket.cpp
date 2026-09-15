@@ -34,9 +34,9 @@ using namespace EVENTPACKET;
 /************************************************************************/
 /* CEventPacket                                                         */
 /************************************************************************/
-bool CEventPacket::Parse(int datasize, const void *data)
+bool CEventPacket::Parse(int datasize, const void* data)
 {
-  unsigned char* buf = (unsigned char *)data;
+  unsigned char* buf = (unsigned char*)data;
   if (datasize < HEADER_SIZE || datasize > PACKET_SIZE)
     return false;
 
@@ -61,7 +61,7 @@ bool CEventPacket::Parse(int datasize, const void *data)
 
   // get packet sequence id
   buf += 2;
-  m_iSeq  = ntohl(*((uint32_t*)buf));
+  m_iSeq = ntohl(*((uint32_t*)buf));
 
   // get total message length
   buf += 4;
@@ -101,7 +101,7 @@ bool CEventPacket::Parse(int datasize, const void *data)
     memcpy(m_pPayload, buf, (size_t)m_iPayloadSize);
   }
 
-  return  (m_bValid = true);
+  return (m_bValid = true);
 }
 
 #endif // HAS_EVENT_SERVER

@@ -23,13 +23,13 @@
 
 namespace INFO
 {
-  InfoBool::InfoBool(const std::string &expression, int context)
-    : m_value(false),
-      m_context(context),
-      m_listItemDependent(false),
-      m_expression(expression),
-      m_dirty(true)
-  {
-    StringUtils::ToLower(m_expression);
-  }
+InfoBool::InfoBool(const std::string& expression, int context)
+  : m_value(false),
+    m_context(context),
+    m_listItemDependent(false),
+    m_expression(expression),
+    m_dirty(true)
+{
+  StringUtils::ToLower(m_expression);
 }
+} // namespace INFO

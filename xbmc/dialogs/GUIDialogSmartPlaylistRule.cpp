@@ -37,15 +37,15 @@
 
 #include <utility>
 
-#define CONTROL_FIELD           15
-#define CONTROL_OPERATOR        16
-#define CONTROL_VALUE           17
-#define CONTROL_OK              18
-#define CONTROL_CANCEL          19
-#define CONTROL_BROWSE          20
+#define CONTROL_FIELD 15
+#define CONTROL_OPERATOR 16
+#define CONTROL_VALUE 17
+#define CONTROL_OK 18
+#define CONTROL_CANCEL 19
+#define CONTROL_BROWSE 20
 
 CGUIDialogSmartPlaylistRule::CGUIDialogSmartPlaylistRule(void)
-    : CGUIDialog(WINDOW_DIALOG_SMART_PLAYLIST_RULE, "SmartPlaylistRule.xml")
+  : CGUIDialog(WINDOW_DIALOG_SMART_PLAYLIST_RULE, "SmartPlaylistRule.xml")
 {
   m_cancelled = false;
   m_loadType = KEEP_IN_MEMORY;
@@ -63,9 +63,9 @@ bool CGUIDialogSmartPlaylistRule::OnBack(int actionID)
 
 bool CGUIDialogSmartPlaylistRule::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_CLICKED:
+    case GUI_MSG_CLICKED:
     {
       int iControl = message.GetSenderId();
       if (iControl == CONTROL_OK)
@@ -88,9 +88,9 @@ bool CGUIDialogSmartPlaylistRule::OnMessage(CGUIMessage& message)
     }
     break;
 
-  case GUI_MSG_VALIDITY_CHANGED:
-    CONTROL_ENABLE_ON_CONDITION(CONTROL_OK, message.GetParam1());
-    break;
+    case GUI_MSG_VALIDITY_CHANGED:
+      CONTROL_ENABLE_ON_CONDITION(CONTROL_OK, message.GetParam1());
+      break;
   }
   return CGUIDialog::OnMessage(message);
 }
@@ -141,20 +141,15 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   int iLabel = 0;
   if (m_rule.m_field == FieldGenre)
   {
-    if (m_type == "tvshows" ||
-        m_type == "episodes" ||
-        m_type == "movies")
+    if (m_type == "tvshows" || m_type == "episodes" || m_type == "movies")
       videodatabase.GetGenresNav(basePath + "genres/", items, type);
-    else if (m_type == "songs" ||
-             m_type == "albums" ||
-             m_type == "artists" ||
-             m_type == "mixed")
-      database.GetGenresNav("musicdb://genres/",items);
-    if (m_type == "musicvideos" ||
-        m_type == "mixed")
+    else if (m_type == "songs" || m_type == "albums" || m_type == "artists" || m_type == "mixed")
+      database.GetGenresNav("musicdb://genres/", items);
+    if (m_type == "musicvideos" || m_type == "mixed")
     {
       CFileItemList items2;
-      videodatabase.GetGenresNav("videodb://musicvideos/genres/",items2,VIDEODB_CONTENT_MUSICVIDEOS);
+      videodatabase.GetGenresNav("videodb://musicvideos/genres/", items2,
+                                 VIDEODB_CONTENT_MUSICVIDEOS);
       items.Append(items2);
     }
     iLabel = 515;
@@ -176,8 +171,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   {
     if (CSmartPlaylist::IsMusicType(m_type))
       database.GetArtistsNav("musicdb://artists/", items, m_rule.m_field == FieldAlbumArtist, -1);
-    if (m_type == "musicvideos" ||
-        m_type == "mixed")
+    if (m_type == "musicvideos" || m_type == "mixed")
     {
       CFileItemList items2;
       videodatabase.GetMusicVideoArtistsByName("", items2);
@@ -189,8 +183,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   {
     if (CSmartPlaylist::IsMusicType(m_type))
       database.GetAlbumsNav("musicdb://albums/", items);
-    if (m_type == "musicvideos" ||
-        m_type == "mixed")
+    if (m_type == "musicvideos" || m_type == "mixed")
     {
       CFileItemList items2;
       videodatabase.GetMusicVideoAlbumsByName("", items2);
@@ -200,7 +193,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   }
   else if (m_rule.m_field == FieldActor)
   {
-    videodatabase.GetActorsNav(basePath + "actors/",items,type);
+    videodatabase.GetActorsNav(basePath + "actors/", items, type);
     iLabel = 20337;
   }
   else if (m_rule.m_field == FieldYear)
@@ -231,7 +224,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
     iLabel = 20417;
   }
   else if (m_rule.m_field == FieldTvShowTitle ||
-          (m_type == "tvshows" && m_rule.m_field == FieldTitle))
+           (m_type == "tvshows" && m_rule.m_field == FieldTitle))
   {
     videodatabase.GetTvShowsNav(basePath + "titles/", items);
     iLabel = 20343;
@@ -271,11 +264,13 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
     //       think there's any decent way to deal with this, as the infinite loop may be an arbitrary
     //       number of playlists deep, eg playlist1 -> playlist2 -> playlist3 ... -> playlistn -> playlist1
     if (CSmartPlaylist::IsVideoType(m_type))
-      XFILE::CDirectory::GetDirectory("special://videoplaylists/", items, ".xsp", XFILE::DIR_FLAG_NO_FILE_DIRS);
+      XFILE::CDirectory::GetDirectory("special://videoplaylists/", items, ".xsp",
+                                      XFILE::DIR_FLAG_NO_FILE_DIRS);
     if (CSmartPlaylist::IsMusicType(m_type))
     {
       CFileItemList items2;
-      XFILE::CDirectory::GetDirectory("special://musicplaylists/", items2, ".xsp", XFILE::DIR_FLAG_NO_FILE_DIRS);
+      XFILE::CDirectory::GetDirectory("special://musicplaylists/", items2, ".xsp",
+                                      XFILE::DIR_FLAG_NO_FILE_DIRS);
       items.Append(items2);
     }
 
@@ -286,9 +281,9 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
       // don't list unloadable smartplaylists or any referencable smartplaylists
       // which do not match the type of the current smartplaylist
       if (!playlist.Load(item->GetPath()) ||
-         (m_rule.m_field == FieldPlaylist &&
-         (!CSmartPlaylist::CheckTypeCompatibility(m_type, playlist.GetType()) ||
-         (!playlist.GetGroup().empty() || playlist.IsGroupMixed()))))
+          (m_rule.m_field == FieldPlaylist &&
+           (!CSmartPlaylist::CheckTypeCompatibility(m_type, playlist.GetType()) ||
+            (!playlist.GetGroup().empty() || playlist.IsGroupMixed()))))
       {
         items.Remove(i);
         i -= 1;
@@ -308,7 +303,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
     if (CSmartPlaylist::IsVideoType(m_type))
     {
       VECSOURCES sources2 = *CMediaSourceSettings::Get().GetSources("video");
-      sources.insert(sources.end(),sources2.begin(),sources2.end());
+      sources.insert(sources.end(), sources2.begin(), sources2.end());
     }
     g_mediaManager.GetLocalDrives(sources);
 
@@ -330,8 +325,7 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   else if (m_rule.m_field == FieldTag)
   {
     VIDEODB_CONTENT_TYPE type = VIDEODB_CONTENT_MOVIES;
-    if (m_type == "tvshows" ||
-        m_type == "episodes")
+    if (m_type == "tvshows" || m_type == "episodes")
       type = VIDEODB_CONTENT_TVSHOWS;
     else if (m_type == "musicvideos")
       type = VIDEODB_CONTENT_MUSICVIDEOS;
@@ -347,14 +341,19 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   }
 
   // sort the items
-  items.Sort(SortByLabel, SortOrderAscending, CSettings::GetInstance().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
+  items.Sort(SortByLabel, SortOrderAscending,
+             CSettings::GetInstance().GetBool("filelists.ignorethewhensorting")
+                 ? SortAttributeIgnoreArticle
+                 : SortAttributeNone);
 
   CGUIDialogSelect* pDialog = (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
   pDialog->Reset();
   pDialog->SetItems(items);
-  std::string strHeading = StringUtils::Format(g_localizeStrings.Get(13401).c_str(), g_localizeStrings.Get(iLabel).c_str());
+  std::string strHeading = StringUtils::Format(g_localizeStrings.Get(13401).c_str(),
+                                               g_localizeStrings.Get(iLabel).c_str());
   pDialog->SetHeading(boost::move(strHeading));
-  pDialog->SetMultiSelection(m_rule.m_field != FieldPlaylist && m_rule.m_field != FieldVirtualFolder);
+  pDialog->SetMultiSelection(m_rule.m_field != FieldPlaylist &&
+                             m_rule.m_field != FieldVirtualFolder);
 
   if (!m_rule.m_parameter.empty())
     pDialog->SetSelected(m_rule.m_parameter);
@@ -363,7 +362,8 @@ void CGUIDialogSmartPlaylistRule::OnBrowse()
   if (pDialog->IsConfirmed())
   {
     m_rule.m_parameter.clear();
-    for (std::vector<int>::const_iterator it = pDialog->GetSelectedItems().begin(); it != pDialog->GetSelectedItems().end(); ++it)
+    for (std::vector<int>::const_iterator it = pDialog->GetSelectedItems().begin();
+         it != pDialog->GetSelectedItems().end(); ++it)
       m_rule.m_parameter.push_back(items.Get(*it)->GetLabel());
 
     UpdateButtons();
@@ -376,55 +376,56 @@ std::pair<std::string, int> OperatorLabel(CDatabaseQueryRule::SEARCH_OPERATOR op
   return std::make_pair(CSmartPlaylistRule::GetLocalizedOperator(op), op);
 }
 
-std::vector<std::pair<std::string, int> > CGUIDialogSmartPlaylistRule::GetValidOperators(const CSmartPlaylistRule& rule)
+std::vector<std::pair<std::string, int> > CGUIDialogSmartPlaylistRule::GetValidOperators(
+    const CSmartPlaylistRule& rule)
 {
-  std::vector< std::pair<std::string, int> > labels;
+  std::vector<std::pair<std::string, int> > labels;
   switch (rule.GetFieldType(rule.m_field))
   {
-  case CDatabaseQueryRule::TEXT_FIELD:
-    // text fields - add the usual comparisons
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_EQUALS));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_DOES_NOT_EQUAL));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_CONTAINS));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_DOES_NOT_CONTAIN));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_STARTS_WITH));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_ENDS_WITH));
-    break;
+    case CDatabaseQueryRule::TEXT_FIELD:
+      // text fields - add the usual comparisons
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_EQUALS));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_DOES_NOT_EQUAL));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_CONTAINS));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_DOES_NOT_CONTAIN));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_STARTS_WITH));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_ENDS_WITH));
+      break;
 
-  case CDatabaseQueryRule::REAL_FIELD:
-  case CDatabaseQueryRule::NUMERIC_FIELD:
-  case CDatabaseQueryRule::SECONDS_FIELD:
-    // numerical fields - less than greater than
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_EQUALS));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_DOES_NOT_EQUAL));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_GREATER_THAN));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_LESS_THAN));
-    break;
+    case CDatabaseQueryRule::REAL_FIELD:
+    case CDatabaseQueryRule::NUMERIC_FIELD:
+    case CDatabaseQueryRule::SECONDS_FIELD:
+      // numerical fields - less than greater than
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_EQUALS));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_DOES_NOT_EQUAL));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_GREATER_THAN));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_LESS_THAN));
+      break;
 
-  case CDatabaseQueryRule::DATE_FIELD:
-    // date field
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_AFTER));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_BEFORE));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_IN_THE_LAST));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_NOT_IN_THE_LAST));
-    break;
+    case CDatabaseQueryRule::DATE_FIELD:
+      // date field
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_AFTER));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_BEFORE));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_IN_THE_LAST));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_NOT_IN_THE_LAST));
+      break;
 
-  case CDatabaseQueryRule::PLAYLIST_FIELD:
-    CONTROL_ENABLE(CONTROL_BROWSE);
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_EQUALS));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_DOES_NOT_EQUAL));
-    break;
+    case CDatabaseQueryRule::PLAYLIST_FIELD:
+      CONTROL_ENABLE(CONTROL_BROWSE);
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_EQUALS));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_DOES_NOT_EQUAL));
+      break;
 
-  case CDatabaseQueryRule::BOOLEAN_FIELD:
-    CONTROL_DISABLE(CONTROL_VALUE);
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_TRUE));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_FALSE));
-    break;
+    case CDatabaseQueryRule::BOOLEAN_FIELD:
+      CONTROL_DISABLE(CONTROL_VALUE);
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_TRUE));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_FALSE));
+      break;
 
-  case CDatabaseQueryRule::TEXTIN_FIELD:
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_EQUALS));
-    labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_DOES_NOT_EQUAL));
-    break;
+    case CDatabaseQueryRule::TEXTIN_FIELD:
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_EQUALS));
+      labels.push_back(OperatorLabel(CDatabaseQueryRule::OPERATOR_DOES_NOT_EQUAL));
+      break;
   }
   return labels;
 }
@@ -438,7 +439,8 @@ void CGUIDialogSmartPlaylistRule::OnCancel()
 void CGUIDialogSmartPlaylistRule::OnField()
 {
   const FieldList fields = CSmartPlaylistRule::GetFields(m_type);
-  CGUIDialogSelect* dialog = static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+  CGUIDialogSelect* dialog =
+      static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
   dialog->Reset();
   dialog->SetHeading(20427);
   int selected = -1;
@@ -458,9 +460,10 @@ void CGUIDialogSmartPlaylistRule::OnField()
 
   m_rule.m_field = fields[newSelected];
   // check if operator is still valid. if not, reset to first valid one
-  std::vector< std::pair<std::string, int> > validOperators = GetValidOperators(m_rule);
+  std::vector<std::pair<std::string, int> > validOperators = GetValidOperators(m_rule);
   bool isValid = false;
-  for (std::vector< std::pair<std::string, int> >::const_iterator it = validOperators.begin(); it != validOperators.end(); ++it)
+  for (std::vector<std::pair<std::string, int> >::const_iterator it = validOperators.begin();
+       it != validOperators.end(); ++it)
     if (it->first == OperatorLabel(m_rule.m_operator).first)
       isValid = true;
   if (!isValid)
@@ -473,9 +476,10 @@ void CGUIDialogSmartPlaylistRule::OnField()
 void CGUIDialogSmartPlaylistRule::OnOperator()
 {
   const DynamicIntegerSettingOptions labels = GetValidOperators(m_rule);
-  CGUIDialogSelect* dialog = static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+  CGUIDialogSelect* dialog =
+      static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
   dialog->Reset();
-  dialog->SetHeading( 16023 );
+  dialog->SetHeading(16023);
   for (DynamicIntegerSettingOptions::const_iterator it = labels.begin(); it != labels.end(); ++it)
     dialog->Add(it->first);
   dialog->SetSelected(CSmartPlaylistRule::GetLocalizedOperator(m_rule.m_operator));
@@ -508,26 +512,26 @@ void CGUIDialogSmartPlaylistRule::UpdateButtons()
   CDatabaseQueryRule::FIELD_TYPE fieldType = m_rule.GetFieldType(m_rule.m_field);
   switch (fieldType)
   {
-  case CDatabaseQueryRule::TEXT_FIELD:
-  case CDatabaseQueryRule::PLAYLIST_FIELD:
-  case CDatabaseQueryRule::TEXTIN_FIELD:
-  case CDatabaseQueryRule::REAL_FIELD:
-  case CDatabaseQueryRule::NUMERIC_FIELD:
-    type = CGUIEditControl::INPUT_TYPE_TEXT;
-    break;
-  case CDatabaseQueryRule::DATE_FIELD:
-    if (m_rule.m_operator == CDatabaseQueryRule::OPERATOR_IN_THE_LAST ||
-        m_rule.m_operator == CDatabaseQueryRule::OPERATOR_NOT_IN_THE_LAST)
+    case CDatabaseQueryRule::TEXT_FIELD:
+    case CDatabaseQueryRule::PLAYLIST_FIELD:
+    case CDatabaseQueryRule::TEXTIN_FIELD:
+    case CDatabaseQueryRule::REAL_FIELD:
+    case CDatabaseQueryRule::NUMERIC_FIELD:
       type = CGUIEditControl::INPUT_TYPE_TEXT;
-    else
-      type = CGUIEditControl::INPUT_TYPE_DATE;
-    break;
-  case CDatabaseQueryRule::SECONDS_FIELD:
-    type = CGUIEditControl::INPUT_TYPE_SECONDS;
-    break;
-  case CDatabaseQueryRule::BOOLEAN_FIELD:
-    type = CGUIEditControl::INPUT_TYPE_NUMBER;
-    break;
+      break;
+    case CDatabaseQueryRule::DATE_FIELD:
+      if (m_rule.m_operator == CDatabaseQueryRule::OPERATOR_IN_THE_LAST ||
+          m_rule.m_operator == CDatabaseQueryRule::OPERATOR_NOT_IN_THE_LAST)
+        type = CGUIEditControl::INPUT_TYPE_TEXT;
+      else
+        type = CGUIEditControl::INPUT_TYPE_DATE;
+      break;
+    case CDatabaseQueryRule::SECONDS_FIELD:
+      type = CGUIEditControl::INPUT_TYPE_SECONDS;
+      break;
+    case CDatabaseQueryRule::BOOLEAN_FIELD:
+      type = CGUIEditControl::INPUT_TYPE_NUMBER;
+      break;
   }
   SendMessage(GUI_MSG_SET_TYPE, CONTROL_VALUE, type, 21420);
 }
@@ -538,7 +542,7 @@ void CGUIDialogSmartPlaylistRule::OnInitWindow()
 
   UpdateButtons();
 
-  CGUIEditControl *editControl = dynamic_cast<CGUIEditControl*>(GetControl(CONTROL_VALUE));
+  CGUIEditControl* editControl = dynamic_cast<CGUIEditControl*>(GetControl(CONTROL_VALUE));
   if (editControl != NULL)
     editControl->SetInputValidation(CSmartPlaylistRule::Validate, &m_rule);
 }
@@ -553,10 +557,12 @@ void CGUIDialogSmartPlaylistRule::OnDeinitWindow(int nextWindowID)
   SendMessage(GUI_MSG_LABEL_RESET, CONTROL_OPERATOR);
 }
 
-bool CGUIDialogSmartPlaylistRule::EditRule(CSmartPlaylistRule &rule, const std::string& type)
+bool CGUIDialogSmartPlaylistRule::EditRule(CSmartPlaylistRule& rule, const std::string& type)
 {
-  CGUIDialogSmartPlaylistRule *editor = (CGUIDialogSmartPlaylistRule *)g_windowManager.GetWindow(WINDOW_DIALOG_SMART_PLAYLIST_RULE);
-  if (!editor) return false;
+  CGUIDialogSmartPlaylistRule* editor =
+      (CGUIDialogSmartPlaylistRule*)g_windowManager.GetWindow(WINDOW_DIALOG_SMART_PLAYLIST_RULE);
+  if (!editor)
+    return false;
 
   editor->m_rule = rule;
   editor->m_type = type;
@@ -564,4 +570,3 @@ bool CGUIDialogSmartPlaylistRule::EditRule(CSmartPlaylistRule &rule, const std::
   rule = editor->m_rule;
   return !editor->m_cancelled;
 }
-

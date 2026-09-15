@@ -27,12 +27,13 @@
 using namespace XFILE;
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CMusicDbUrl::CMusicDbUrl()
-  : CDbUrl()
-{ }
+CMusicDbUrl::CMusicDbUrl() : CDbUrl()
+{
+}
 
 CMusicDbUrl::~CMusicDbUrl()
-{ }
+{
+}
 
 bool CMusicDbUrl::parse()
 {
@@ -154,7 +155,7 @@ bool CMusicDbUrl::parse()
   return true;
 }
 
-bool CMusicDbUrl::validateOption(const std::string &key, const CVariant &value)
+bool CMusicDbUrl::validateOption(const std::string& key, const CVariant& value)
 {
   if (!CDbUrl::validateOption(key, value))
     return false;

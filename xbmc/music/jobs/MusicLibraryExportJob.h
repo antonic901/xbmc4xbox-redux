@@ -41,12 +41,12 @@ public:
   ~CMusicLibraryExportJob();
 
   // specialization of CJob
-  const char *GetType() const { return "MusicLibraryExportJob"; }
+  const char* GetType() const { return "MusicLibraryExportJob"; }
   bool operator==(const CJob* job) const;
 
 protected:
   // implementation of CMusicLibraryJob
-  bool Work(CMusicDatabase &db);
+  bool Work(CMusicDatabase& db);
 
 private:
   CLibExportSettings m_settings;

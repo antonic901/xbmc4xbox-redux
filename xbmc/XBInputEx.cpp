@@ -21,7 +21,7 @@ extern "C"
 #endif
 
   extern XPP_DEVICE_TYPE XDEVICE_TYPE_IR_REMOTE_TABLE;
-#define     XDEVICE_TYPE_IR_REMOTE           (&XDEVICE_TYPE_IR_REMOTE_TABLE)
+#define XDEVICE_TYPE_IR_REMOTE (&XDEVICE_TYPE_IR_REMOTE_TABLE)
 
 #ifdef __cplusplus
 }
@@ -38,25 +38,22 @@ XINPUT_STATEEX g_InputStatesEx[4];
 // Global instance of custom ir remote devices
 XBIR_REMOTE g_IR_Remote[4];
 
-
-
-
 //-----------------------------------------------------------------------------
 // Name: XBInput_CreateIR_Remotes()
 // Desc: Creates the infra-red remote devices
 //-----------------------------------------------------------------------------
-HRESULT XBInput_CreateIR_Remotes( )
+HRESULT XBInput_CreateIR_Remotes()
 {
 
   // Get a mask of all currently available devices
-  DWORD dwDeviceMask = XGetDevices( XDEVICE_TYPE_IR_REMOTE );
+  DWORD dwDeviceMask = XGetDevices(XDEVICE_TYPE_IR_REMOTE);
 
   // Open the devices
-  for ( DWORD i = 0; i < XGetPortCount(); i++ )
+  for (DWORD i = 0; i < XGetPortCount(); i++)
   {
-    ZeroMemory( &g_InputStatesEx[i], sizeof(XINPUT_STATEEX) );
-    ZeroMemory( &g_IR_Remote[i], sizeof(XBIR_REMOTE) );
-    if ( dwDeviceMask & (1 << i) )
+    ZeroMemory(&g_InputStatesEx[i], sizeof(XINPUT_STATEEX));
+    ZeroMemory(&g_IR_Remote[i], sizeof(XBIR_REMOTE));
+    if (dwDeviceMask & (1 << i))
     {
       XINPUT_POLLING_PARAMETERS pollValues;
       pollValues.fAutoPoll = TRUE;
@@ -67,8 +64,7 @@ HRESULT XBInput_CreateIR_Remotes( )
       pollValues.ReservedMBZ2 = 0;
 
       // Get a handle to the device
-      g_IR_Remote[i].hDevice = XInputOpen( XDEVICE_TYPE_IR_REMOTE, i,
-                                           XDEVICE_NO_SLOT, &pollValues );
+      g_IR_Remote[i].hDevice = XInputOpen(XDEVICE_TYPE_IR_REMOTE, i, XDEVICE_NO_SLOT, &pollValues);
 
       g_prevPacketNumber[i] = -1;
       g_eventsSinceFirstEvent[i] = 0;
@@ -81,19 +77,19 @@ HRESULT XBInput_CreateIR_Remotes( )
   return S_OK;
 }
 
-
 //-----------------------------------------------------------------------------
 // Name: XBInput_GetInput()
 // Desc: Processes input from the IR Remote
 //-----------------------------------------------------------------------------
-VOID XBInput_GetInput( XBIR_REMOTE* pIR_Remote)
+VOID XBInput_GetInput(XBIR_REMOTE* pIR_Remote)
 {
-  if ( NULL == pIR_Remote ) return ;
+  if (NULL == pIR_Remote)
+    return;
   if (pIR_Remote)
   {
     for (int i = 0; i < 4; ++i)
     {
-      ZeroMemory( &pIR_Remote[i], sizeof(XBIR_REMOTE) );
+      ZeroMemory(&pIR_Remote[i], sizeof(XBIR_REMOTE));
     }
   }
   XINPUT_POLLING_PARAMETERS pollValues;
@@ -110,45 +106,47 @@ VOID XBInput_GetInput( XBIR_REMOTE* pIR_Remote)
   // insertions.
   // Looks like the Remote doesn't send a signal when it's removed...
   DWORD dwInsertions, dwRemovals;
-  if ( XGetDeviceChanges( XDEVICE_TYPE_IR_REMOTE, &dwInsertions, &dwRemovals ))
+  if (XGetDeviceChanges(XDEVICE_TYPE_IR_REMOTE, &dwInsertions, &dwRemovals))
   {
     // Loop through all gamepads
-    for ( DWORD i = 0; i < XGetPortCount(); i++ )
+    for (DWORD i = 0; i < XGetPortCount(); i++)
     {
       // Handle removed devices.
-      g_IR_Remote[i].bRemoved = ( dwRemovals & (1 << i) ) ? TRUE : FALSE;
-      if ( g_IR_Remote[i].bRemoved )
+      g_IR_Remote[i].bRemoved = (dwRemovals & (1 << i)) ? TRUE : FALSE;
+      if (g_IR_Remote[i].bRemoved)
       {
         // if the controller was removed after XGetDeviceChanges but before
         // XInputOpen, the device handle will be NULL
-        if ( g_IR_Remote[i].hDevice )
-          XInputClose( g_IR_Remote[i].hDevice );
+        if (g_IR_Remote[i].hDevice)
+          XInputClose(g_IR_Remote[i].hDevice);
         g_IR_Remote[i].hDevice = NULL;
       }
 
       // Handle inserted devices
-      g_IR_Remote[i].bInserted = ( dwInsertions & (1 << i) ) ? TRUE : FALSE;
+      g_IR_Remote[i].bInserted = (dwInsertions & (1 << i)) ? TRUE : FALSE;
 
-      if ( g_IR_Remote[i].bInserted )
+      if (g_IR_Remote[i].bInserted)
       {
         // TCR 1-14 Device Types
-        g_IR_Remote[i].hDevice = XInputOpen( XDEVICE_TYPE_IR_REMOTE, i, XDEVICE_NO_SLOT, &pollValues);
+        g_IR_Remote[i].hDevice =
+            XInputOpen(XDEVICE_TYPE_IR_REMOTE, i, XDEVICE_NO_SLOT, &pollValues);
       }
     }
   }
 
   // Loop through all gamepads
-  for ( DWORD i = 0; i < XGetPortCount(); i++ )
+  for (DWORD i = 0; i < XGetPortCount(); i++)
   {
     // If we have a valid device, poll it's state and track button changes
-    if ( g_IR_Remote[i].hDevice )
+    if (g_IR_Remote[i].hDevice)
     {
       // Read the input state
       XINPUT_STATEEX backup[4];
       memcpy(backup, g_InputStatesEx, sizeof(backup));
       DWORD test = sizeof(backup);
-      ZeroMemory( &g_InputStatesEx[i], sizeof(XINPUT_STATEEX) );
-      if (ERROR_SUCCESS == XInputGetState( g_IR_Remote[i].hDevice, (XINPUT_STATE*) &g_InputStatesEx[i] ))
+      ZeroMemory(&g_InputStatesEx[i], sizeof(XINPUT_STATEEX));
+      if (ERROR_SUCCESS ==
+          XInputGetState(g_IR_Remote[i].hDevice, (XINPUT_STATE*)&g_InputStatesEx[i]))
       {
         // compare from backup to g_InputStatesEx;
         for (int j = 0; j < 4; j++)
@@ -164,7 +162,9 @@ VOID XBInput_GetInput( XBIR_REMOTE* pIR_Remote)
           // Count the number of events since firstEvent was set (when repeat or button release)
           // Seems that firstEvent is often the first button push, but can also be
           // any event with counter not equal to IR_REMOTE_MIN_COUNTER through IR_REMOTE_MAX_COUNTER.  (Not sure why exactly :P)
-          if (g_InputStatesEx[i].IR_Remote.firstEvent > 0 || g_InputStatesEx[i].IR_Remote.counter < IR_REMOTE_MIN_COUNTER || g_InputStatesEx[i].IR_Remote.counter > IR_REMOTE_MAX_COUNTER)
+          if (g_InputStatesEx[i].IR_Remote.firstEvent > 0 ||
+              g_InputStatesEx[i].IR_Remote.counter < IR_REMOTE_MIN_COUNTER ||
+              g_InputStatesEx[i].IR_Remote.counter > IR_REMOTE_MAX_COUNTER)
           {
             g_eventsSinceFirstEvent[i] = 0;
             bIsRepeating = false;
@@ -173,16 +173,14 @@ VOID XBInput_GetInput( XBIR_REMOTE* pIR_Remote)
           {
             g_eventsSinceFirstEvent[i]++;
           }
-          
+
 #ifdef REMOTE_DEBUG
-              char szTmp[256];
-               sprintf(szTmp, "pkt:%i cnt:%i region:%i wbuttons:%i firstEvent:%i sinceFirst:%i...",
-                   g_prevPacketNumber[i],
-                   g_InputStatesEx[i].IR_Remote.counter,
-                   g_InputStatesEx[i].IR_Remote.region,
-                   g_InputStatesEx[i].IR_Remote.wButtons,
-                   g_InputStatesEx[i].IR_Remote.firstEvent,
-                   g_eventsSinceFirstEvent[i], XbmcThreads::SystemClockMillis());
+          char szTmp[256];
+          sprintf(szTmp, "pkt:%i cnt:%i region:%i wbuttons:%i firstEvent:%i sinceFirst:%i...",
+                  g_prevPacketNumber[i], g_InputStatesEx[i].IR_Remote.counter,
+                  g_InputStatesEx[i].IR_Remote.region, g_InputStatesEx[i].IR_Remote.wButtons,
+                  g_InputStatesEx[i].IR_Remote.firstEvent, g_eventsSinceFirstEvent[i],
+                  XbmcThreads::SystemClockMillis());
 #endif
 
           bool bSendMessage = true;
@@ -190,45 +188,41 @@ VOID XBInput_GetInput( XBIR_REMOTE* pIR_Remote)
           if (g_eventsSinceFirstEvent[i] > 0 && !bIsRepeating)
           { // check for repeats (g_advancedSettings.m_remoteRepeat is in milliseconds, so to translate
             // into packets it's about delay/60, as each packet comes approximately every 60ms.
-            if ((int)g_eventsSinceFirstEvent[i] < g_advancedSettings.m_remoteRepeat/60)
+            if ((int)g_eventsSinceFirstEvent[i] < g_advancedSettings.m_remoteRepeat / 60)
               bSendMessage = false;
             else
               bIsRepeating = true;
           }
-          
+
           if (bSendMessage)
           {
             // Copy remote to local structure
-            memcpy( &pIR_Remote[i], &g_InputStatesEx[i].IR_Remote, sizeof(XINPUT_IR_REMOTE) );
+            memcpy(&pIR_Remote[i], &g_InputStatesEx[i].IR_Remote, sizeof(XINPUT_IR_REMOTE));
             pIR_Remote[i].hDevice = (HANDLE)1;
             pIR_Remote[i].bHeldDown = bIsRepeating;
-            
+
 #ifdef REMOTE_DEBUG
-                  strcat(szTmp, "accepted\n");
-             
-                 }
-                 else
-                 {
-                  strcat(szTmp, "ignored\n");
-#endif
-            
+            strcat(szTmp, "accepted\n");
           }
-#ifdef REMOTE_DEBUG 
-                 CLog::Log(LOGERROR, "REMOTE: %s", szTmp);
+          else
+          {
+            strcat(szTmp, "ignored\n");
+#endif
+          }
+#ifdef REMOTE_DEBUG
+          CLog::Log(LOGERROR, "REMOTE: %s", szTmp);
 #endif
         }
       }
       else
       {
         // Needs to reset it... don't know a better way to do it
-        XInputClose( g_IR_Remote[i].hDevice);
-        g_IR_Remote[i].hDevice = XInputOpen( XDEVICE_TYPE_IR_REMOTE, i,
-                                             XDEVICE_NO_SLOT, &pollValues);
+        XInputClose(g_IR_Remote[i].hDevice);
+        g_IR_Remote[i].hDevice =
+            XInputOpen(XDEVICE_TYPE_IR_REMOTE, i, XDEVICE_NO_SLOT, &pollValues);
         g_prevPacketNumber[i] = -1;
         g_eventsSinceFirstEvent[i] = 0;
       }
     }
   }
 }
-
-

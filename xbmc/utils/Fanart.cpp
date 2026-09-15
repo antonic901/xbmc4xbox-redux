@@ -26,8 +26,7 @@
 
 #include <boost/move/move.hpp>
 
-const unsigned int CFanart::max_fanart_colors=3;
-
+const unsigned int CFanart::max_fanart_colors = 3;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// CFanart Functions
@@ -54,7 +53,9 @@ void CFanart::Pack()
   m_xml << fanart;
 }
 
-void CFanart::AddFanart(const std::string& image, const std::string& preview, const std::string& colors)
+void CFanart::AddFanart(const std::string& image,
+                        const std::string& preview,
+                        const std::string& colors)
 {
   SFanartData info;
   info.strPreview = preview;
@@ -76,11 +77,11 @@ bool CFanart::Unpack()
 
   m_fanart.clear();
 
-  TiXmlElement *fanart = doc.FirstChildElement("fanart");
+  TiXmlElement* fanart = doc.FirstChildElement("fanart");
   while (fanart)
   {
     std::string url = XMLUtils::GetAttribute(fanart, "url");
-    TiXmlElement *fanartThumb = fanart->FirstChildElement("thumb");
+    TiXmlElement* fanartThumb = fanart->FirstChildElement("thumb");
     while (fanartThumb)
     {
       if (!fanartThumb->NoChildren())
@@ -129,7 +130,7 @@ const std::string CFanart::GetColor(unsigned int index) const
     return "FFFFFFFF";
 
   // format is AARRGGBB,AARRGGBB etc.
-  return m_fanart[0].strColors.substr(index*9, 8);
+  return m_fanart[0].strColors.substr(index * 9, 8);
 }
 
 bool CFanart::SetPrimaryFanart(unsigned int index)
@@ -137,7 +138,7 @@ bool CFanart::SetPrimaryFanart(unsigned int index)
   if (index >= m_fanart.size())
     return false;
 
-  std::iter_swap(m_fanart.begin()+index, m_fanart.begin());
+  std::iter_swap(m_fanart.begin() + index, m_fanart.begin());
 
   // repack our data
   Pack();
@@ -150,7 +151,7 @@ unsigned int CFanart::GetNumFanarts()
   return m_fanart.size();
 }
 
-bool CFanart::ParseColors(const std::string &colorsIn, std::string &colorsOut)
+bool CFanart::ParseColors(const std::string& colorsIn, std::string& colorsOut)
 {
   // Formats:
   // 0: XBMC ARGB Hexadecimal string comma seperated "FFFFFFFF,DDDDDDDD,AAAAAAAA"
@@ -167,14 +168,16 @@ bool CFanart::ParseColors(const std::string &colorsIn, std::string &colorsOut)
   { // need conversion
     colorsOut.clear();
     std::vector<std::string> strColors = StringUtils::Split(colorsIn, "|");
-    for (int i = 0; i < std::min((int)strColors.size()-1, (int)max_fanart_colors); i++)
+    for (int i = 0; i < std::min((int)strColors.size() - 1, (int)max_fanart_colors); i++)
     { // split up each color
-      std::vector<std::string> strTriplets = StringUtils::Split(strColors[i+1], ",");
+      std::vector<std::string> strTriplets = StringUtils::Split(strColors[i + 1], ",");
       if (strTriplets.size() == 3)
       { // convert
         if (colorsOut.size())
           colorsOut += ",";
-        colorsOut += StringUtils::Format("FF%2lx%2lx%2lx", atol(strTriplets[0].c_str()), atol(strTriplets[1].c_str()), atol(strTriplets[2].c_str()));
+        colorsOut +=
+            StringUtils::Format("FF%2lx%2lx%2lx", atol(strTriplets[0].c_str()),
+                                atol(strTriplets[1].c_str()), atol(strTriplets[2].c_str()));
       }
     }
   }

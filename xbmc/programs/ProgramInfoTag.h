@@ -26,8 +26,11 @@ class CProgramInfoTag : public IArchivable, public ISerializable, public ISortab
 public:
   CProgramInfoTag() { Reset(); };
   void Reset();
-  bool Load(const TiXmlElement *element, bool prioritise = false);
-  bool Save(TiXmlNode *node, const std::string &tag, bool savePathInfo = true, const TiXmlElement *additionalNode = NULL);
+  bool Load(const TiXmlElement* element, bool prioritise = false);
+  bool Save(TiXmlNode* node,
+            const std::string& tag,
+            bool savePathInfo = true,
+            const TiXmlElement* additionalNode = NULL);
   virtual void Archive(CArchive& ar);
   virtual void Serialize(CVariant& value) const;
   virtual void ToSortable(SortItem& sortable, Field field) const;
@@ -37,10 +40,7 @@ public:
   const CDateTime& GetReleaseDate() const;
   bool IsEmpty() const;
 
-  const std::string& GetPath() const
-  {
-    return m_strFileNameAndPath;
-  };
+  const std::string& GetPath() const { return m_strFileNameAndPath; };
 
   void SetBasePath(std::string basePath);
   void SetDeveloper(std::vector<std::string> developer);
@@ -101,6 +101,6 @@ private:
    */
   void ParseNative(const TiXmlElement* element, bool prioritise);
 
-  std::string Trim(std::string &value);
-  std::vector<std::string> Trim(std::vector<std::string> &items);
+  std::string Trim(std::string& value);
+  std::vector<std::string> Trim(std::vector<std::string>& items);
 };

@@ -26,7 +26,6 @@
 #include "ContextMenuItem.h"
 #include "dialogs/GUIDialogContextMenu.h"
 
-
 typedef std::vector<boost::shared_ptr<const IContextMenuItem> > ContextMenuView;
 
 class CContextMenuManager
@@ -52,10 +51,9 @@ private:
   CContextMenuManager(const CContextMenuManager&);
   CContextMenuManager const& operator=(CContextMenuManager const&);
 
-  bool IsVisible(
-    const CContextMenuItem& menuItem,
-    const CContextMenuItem& root,
-    const CFileItem& fileItem) const;
+  bool IsVisible(const CContextMenuItem& menuItem,
+                 const CContextMenuItem& root,
+                 const CFileItem& fileItem) const;
 
   void ReloadAddonItems();
   void OnEvent(const ADDON::AddonEvent& event);
@@ -69,13 +67,14 @@ private:
 
 namespace CONTEXTMENU
 {
-  /*!
+/*!
    * Starts the context menu loop for a file item.
    * */
-  bool ShowFor(const CFileItemPtr& fileItem, const CContextMenuItem& root=CContextMenuManager::MAIN);
+bool ShowFor(const CFileItemPtr& fileItem,
+             const CContextMenuItem& root = CContextMenuManager::MAIN);
 
-  /*!
+/*!
    * Shortcut for continuing the context menu loop from an exisiting menu item.
    */
-  bool LoopFrom(const IContextMenuItem& menu, const CFileItemPtr& fileItem);
-}
+bool LoopFrom(const IContextMenuItem& menu, const CFileItemPtr& fileItem);
+} // namespace CONTEXTMENU

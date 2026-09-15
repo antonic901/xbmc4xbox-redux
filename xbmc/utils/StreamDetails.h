@@ -29,7 +29,8 @@ class CStreamDetails;
 class CStreamDetail : public IArchivable, public ISerializable
 {
 public:
-  enum StreamType {
+  enum StreamType
+  {
     VIDEO,
     AUDIO,
     SUBTITLE
@@ -38,12 +39,12 @@ public:
   CStreamDetail(StreamType type) : m_eType(type), m_pParent(NULL) {};
   virtual void Archive(CArchive& ar);
   virtual void Serialize(CVariant& value) const;
-  virtual bool IsWorseThan(CStreamDetail *that) { return true; };
+  virtual bool IsWorseThan(CStreamDetail* that) { return true; };
 
   const StreamType m_eType;
 
 protected:
-  CStreamDetails *m_pParent;
+  CStreamDetails* m_pParent;
   friend class CStreamDetails;
 };
 
@@ -53,7 +54,7 @@ public:
   CStreamDetailVideo();
   virtual void Archive(CArchive& ar);
   virtual void Serialize(CVariant& value) const;
-  virtual bool IsWorseThan(CStreamDetail *that);
+  virtual bool IsWorseThan(CStreamDetail* that);
 
   int m_iWidth;
   int m_iHeight;
@@ -70,7 +71,7 @@ public:
   CStreamDetailAudio();
   virtual void Archive(CArchive& ar);
   virtual void Serialize(CVariant& value) const;
-  virtual bool IsWorseThan(CStreamDetail *that);
+  virtual bool IsWorseThan(CStreamDetail* that);
 
   int m_iChannels;
   CStdString m_strCodec;
@@ -83,7 +84,7 @@ public:
   CStreamDetailSubtitle();
   virtual void Archive(CArchive& ar);
   virtual void Serialize(CVariant& value) const;
-  virtual bool IsWorseThan(CStreamDetail *that);
+  virtual bool IsWorseThan(CStreamDetail* that);
 
   CStdString m_strLanguage;
 };
@@ -92,15 +93,15 @@ class CStreamDetails : public IArchivable, public ISerializable
 {
 public:
   CStreamDetails() { Reset(); };
-  CStreamDetails(const CStreamDetails &that);
+  CStreamDetails(const CStreamDetails& that);
   ~CStreamDetails() { Reset(); };
-  CStreamDetails& operator=(const CStreamDetails &that);
-  bool operator ==(const CStreamDetails &that) const;
-  bool operator !=(const CStreamDetails &that) const;
+  CStreamDetails& operator=(const CStreamDetails& that);
+  bool operator==(const CStreamDetails& that) const;
+  bool operator!=(const CStreamDetails& that) const;
 
   static CStdString VideoDimsToResolutionDescription(int iWidth, int iHeight);
   static CStdString VideoAspectToAspectDescription(float fAspect);
-  
+
   bool HasItems(void) const { return m_vecItems.size() > 0; };
   int GetStreamCount(CStreamDetail::StreamType type) const;
   int GetVideoStreamCount(void) const;
@@ -123,7 +124,7 @@ public:
 
   CStdString GetSubtitleLanguage(int idx = 0) const;
 
-  void AddStream(CStreamDetail *item);
+  void AddStream(CStreamDetail* item);
   void Reset(void);
   void DetermineBestStreams(void);
 
@@ -131,12 +132,12 @@ public:
   virtual void Serialize(CVariant& value) const;
 
   // Language to use for "best" subtitle stream
-  CStdString m_strLanguage; 
+  CStdString m_strLanguage;
 
 private:
-  CStreamDetail *NewStream(CStreamDetail::StreamType type);
-  std::vector<CStreamDetail *> m_vecItems;
-  CStreamDetailVideo *m_pBestVideo;
-  CStreamDetailAudio *m_pBestAudio;
-  CStreamDetailSubtitle *m_pBestSubtitle;
+  CStreamDetail* NewStream(CStreamDetail::StreamType type);
+  std::vector<CStreamDetail*> m_vecItems;
+  CStreamDetailVideo* m_pBestVideo;
+  CStreamDetailAudio* m_pBestAudio;
+  CStreamDetailSubtitle* m_pBestSubtitle;
 };

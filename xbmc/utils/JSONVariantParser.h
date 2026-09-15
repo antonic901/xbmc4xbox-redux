@@ -27,16 +27,16 @@
 class IParseCallback
 {
 public:
-  virtual ~IParseCallback() { }
+  virtual ~IParseCallback() {}
 
-  virtual void onParsed(CVariant *variant) = 0;
+  virtual void onParsed(CVariant* variant) = 0;
 };
 
 class CSimpleParseCallback : public IParseCallback
 {
 public:
-  virtual void onParsed(CVariant *variant) { m_parsed = *variant; }
-  CVariant &GetOutput() { return m_parsed; }
+  virtual void onParsed(CVariant* variant) { m_parsed = *variant; }
+  CVariant& GetOutput() { return m_parsed; }
 
 private:
   CVariant m_parsed;
@@ -45,24 +45,24 @@ private:
 class CJSONVariantParser
 {
 public:
-  CJSONVariantParser(IParseCallback *callback);
+  CJSONVariantParser(IParseCallback* callback);
   ~CJSONVariantParser();
 
-  void push_buffer(const unsigned char *buffer, unsigned int length);
+  void push_buffer(const unsigned char* buffer, unsigned int length);
 
-  static CVariant Parse(const unsigned char *json, unsigned int length);
+  static CVariant Parse(const unsigned char* json, unsigned int length);
 
   static CVariant Parse(const std::string& json);
 
 private:
-  static CVariant ConvertJsonValueToCVariant(const Json::Value &jsonValue);
+  static CVariant ConvertJsonValueToCVariant(const Json::Value& jsonValue);
 
-  IParseCallback *m_callback;
+  IParseCallback* m_callback;
 
   CVariant m_parsedObject;
-  std::vector<CVariant *> m_parse;
+  std::vector<CVariant*> m_parse;
   std::string m_key;
 
   Json::CharReaderBuilder readerBuilder;
-  Json::CharReader *reader;
+  Json::CharReader* reader;
 };

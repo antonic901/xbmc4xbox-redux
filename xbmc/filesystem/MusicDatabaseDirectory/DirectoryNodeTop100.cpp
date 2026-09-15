@@ -26,14 +26,13 @@
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
 Node Top100Children[] = {
-                          { NODE_TYPE_SONG_TOP100,  "songs",   10504 },
-                          { NODE_TYPE_ALBUM_TOP100, "albums",  10505 },
-                        };
+    {NODE_TYPE_SONG_TOP100, "songs", 10504},
+    {NODE_TYPE_ALBUM_TOP100, "albums", 10505},
+};
 
 CDirectoryNodeTop100::CDirectoryNodeTop100(const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_TOP100, strName, pParent)
 {
-
 }
 
 NODE_TYPE CDirectoryNodeTop100::GetChildType() const

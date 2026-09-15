@@ -23,13 +23,14 @@
 #include "Timer.h"
 #include "SystemClock.h"
 
-CTimer::CTimer(ITimerCallback *callback)
+CTimer::CTimer(ITimerCallback* callback)
   : CThread("Timer"),
     m_callback(callback),
     m_timeout(0),
     m_interval(false),
     m_endTime(0)
-{ }
+{
+}
 
 CTimer::~CTimer()
 {

@@ -34,46 +34,47 @@ typedef std::vector<CMediaSource> VECSOURCES;
 
 typedef enum
 {
-  LOCK_MODE_UNKNOWN            = -1,
-  LOCK_MODE_EVERYONE           =  0,
-  LOCK_MODE_NUMERIC            =  1,
-  LOCK_MODE_GAMEPAD            =  2,
-  LOCK_MODE_QWERTY             =  3,
-  LOCK_MODE_SAMBA              =  4,
-  LOCK_MODE_EEPROM_PARENTAL    =  5
+  LOCK_MODE_UNKNOWN = -1,
+  LOCK_MODE_EVERYONE = 0,
+  LOCK_MODE_NUMERIC = 1,
+  LOCK_MODE_GAMEPAD = 2,
+  LOCK_MODE_QWERTY = 3,
+  LOCK_MODE_SAMBA = 4,
+  LOCK_MODE_EEPROM_PARENTAL = 5
 } LockType;
 
-namespace LOCK_LEVEL {
-  /**
+namespace LOCK_LEVEL
+{
+/**
    Specifies, what Settings levels are locked for the user
    **/
-  enum SETTINGS_LOCK
-  {
-    NONE,     //settings are unlocked => user can access all settings levels
-    ALL,      //all settings are locked => user always has to enter password, when entering the settings screen
-    STANDARD, //settings level standard and up are locked => user can still access the beginner levels
-    ADVANCED, 
-    EXPERT
-  };
-}
+enum SETTINGS_LOCK
+{
+  NONE, //settings are unlocked => user can access all settings levels
+  ALL, //all settings are locked => user always has to enter password, when entering the settings screen
+  STANDARD, //settings level standard and up are locked => user can still access the beginner levels
+  ADVANCED,
+  EXPERT
+};
+} // namespace LOCK_LEVEL
 
 class CGUIPassword : public ISettingCallback
 {
 public:
   CGUIPassword(void);
   virtual ~CGUIPassword(void);
-  bool IsItemUnlocked(CFileItem* pItem, const CStdString &strType);
-  bool IsItemUnlocked(CMediaSource* pItem, const CStdString &strType);
+  bool IsItemUnlocked(CFileItem* pItem, const CStdString& strType);
+  bool IsItemUnlocked(CMediaSource* pItem, const CStdString& strType);
   bool CheckLock(LockType btnType, const CStdString& strPassword, int iHeading);
   bool CheckLock(LockType btnType, const CStdString& strPassword, int iHeading, bool& bCanceled);
-  bool IsProfileLockUnlocked(int iProfile=-1);
+  bool IsProfileLockUnlocked(int iProfile = -1);
   bool IsProfileLockUnlocked(int iProfile, bool& bCanceled, bool prompt = true);
   bool IsMasterLockUnlocked(bool bPromptUser);
   bool IsMasterLockUnlocked(bool bPromptUser, bool& bCanceled);
-  
+
   void UpdateMasterLockRetryCount(bool bResetCount);
   bool GetSMBShareUserPassword();
-  void SetSMBShare(const CStdString &strShare);
+  void SetSMBShare(const CStdString& strShare);
   CStdString GetSMBShare();
   bool CheckStartUpLock();
   /*! \brief Checks if the current profile is allowed to access the given settings level
@@ -84,22 +85,23 @@ public:
    */
   bool CheckSettingLevelLock(const SettingLevel& level, bool enforce = false);
   bool CheckMenuLock(int iWindowID);
-  bool SetMasterLockMode(bool bDetails=true);
+  bool SetMasterLockMode(bool bDetails = true);
   CStdString GetSMBAuthFilename(const CStdString& strAuth);
   bool LockSource(const CStdString& strType, const CStdString& strName, bool bState);
   void LockSources(bool lock);
   void RemoveSourceLocks();
   bool IsDatabasePathUnlocked(std::string& strPath, VECSOURCES& VECSOURCES);
 
-  virtual void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingAction(const CSetting* setting);
 
   bool bMasterUser;
   int iMasterLockRetriesLeft;
+
 protected:
   CStdString m_SMBShare;
+
 private:
   int VerifyPassword(LockType btnType, const CStdString& strPassword, const CStdString& strHeading);
 };
 
 extern CGUIPassword g_passwordManager;
-

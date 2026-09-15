@@ -48,9 +48,8 @@ using namespace PCRE;
 #endif
 
 int CRegExp::m_Utf8Supported = -1;
-int CRegExp::m_UcpSupported  = -1;
-int CRegExp::m_JitSupported  = -1;
-
+int CRegExp::m_UcpSupported = -1;
+int CRegExp::m_JitSupported = -1;
 
 CRegExp::CRegExp(bool caseless /*= false*/, CRegExp::utf8Mode utf8 /*= asciiOnly*/)
 {
@@ -59,11 +58,11 @@ CRegExp::CRegExp(bool caseless /*= false*/, CRegExp::utf8Mode utf8 /*= asciiOnly
 
 void CRegExp::InitValues(bool caseless /*= false*/, CRegExp::utf8Mode utf8 /*= asciiOnly*/)
 {
-  m_utf8Mode    = utf8;
-  m_re          = NULL;
-  m_sd          = NULL;
-  m_iOptions    = PCRE_DOTALL | PCRE_NEWLINE_ANY;
-  if(caseless)
+  m_utf8Mode = utf8;
+  m_re = NULL;
+  m_sd = NULL;
+  m_iOptions = PCRE_DOTALL | PCRE_NEWLINE_ANY;
+  if (caseless)
     m_iOptions |= PCRE_CASELESS;
   if (m_utf8Mode == forceUtf8)
   {
@@ -73,16 +72,19 @@ void CRegExp::InitValues(bool caseless /*= false*/, CRegExp::utf8Mode utf8 /*= a
       m_iOptions |= PCRE_UCP;
   }
 
-  m_offset      = 0;
+  m_offset = 0;
   m_jitCompiled = false;
-  m_bMatched    = false;
+  m_bMatched = false;
   m_iMatchCount = 0;
-  m_jitStack    = NULL;
+  m_jitStack = NULL;
 
   memset(m_iOvector, 0, sizeof(m_iOvector));
 }
 
-CRegExp::CRegExp(bool caseless, CRegExp::utf8Mode utf8, const char *re, studyMode study /*= NoStudy*/)
+CRegExp::CRegExp(bool caseless,
+                 CRegExp::utf8Mode utf8,
+                 const char* re,
+                 studyMode study /*= NoStudy*/)
 {
   if (utf8 == autoUtf8)
     utf8 = requireUtf8(re) ? forceUtf8 : asciiOnly;
@@ -120,9 +122,9 @@ bool CRegExp::requireUtf8(const std::string& regexp)
         if (readCharXCode(regexp, pos) >= 0x100)
           return true; // found Unicode character code
       }
-      else if (nextChr == '\\' || nextChr == '(' || nextChr == ')'
-               || nextChr == '[' || nextChr == ']')
-               pos++; // exclude next character from analyze
+      else if (nextChr == '\\' || nextChr == '(' || nextChr == ')' || nextChr == '[' ||
+               nextChr == ']')
+        pos++; // exclude next character from analyze
 
     } // chr != '\\'
     else if (chr == '(' && regexpC[pos + 1] == '?' && regexpC[pos + 2] == '#') // comment in regexp
@@ -191,7 +193,9 @@ bool CRegExp::isCharClassWithUnicode(const std::string& regexp, size_t& pos)
   {
     if (regexpC[pos] == '[' && regexpC[pos + 1] == ':')
     { // possible POSIX character class, like "[:alpha:]"
-      const size_t nextClosingBracketPos = regexp.find(']', pos + 2); // don't care about "\]", as it produce error if used inside POSIX char class
+      const size_t nextClosingBracketPos = regexp.find(
+          ']',
+          pos + 2); // don't care about "\]", as it produce error if used inside POSIX char class
 
       if (nextClosingBracketPos == std::string::npos)
       { // error in regexp: no closing ']' for character class
@@ -231,7 +235,6 @@ bool CRegExp::isCharClassWithUnicode(const std::string& regexp, size_t& pos)
   return needUnicode;
 }
 
-
 CRegExp::CRegExp(const CRegExp& re)
 {
   m_re = NULL;
@@ -255,7 +258,7 @@ CRegExp& CRegExp::operator=(const CRegExp& re)
       if ((m_re = (pcre*)malloc(size)))
       {
         memcpy(m_re, re.m_re, size);
-        memcpy(m_iOvector, re.m_iOvector, OVECCOUNT*sizeof(int));
+        memcpy(m_iOvector, re.m_iOvector, OVECCOUNT * sizeof(int));
         m_offset = re.m_offset;
         m_iMatchCount = re.m_iMatchCount;
         m_bMatched = re.m_bMatched;
@@ -274,20 +277,21 @@ CRegExp::~CRegExp()
   Cleanup();
 }
 
-bool CRegExp::RegComp(const char *re, studyMode study /*= NoStudy*/)
+bool CRegExp::RegComp(const char* re, studyMode study /*= NoStudy*/)
 {
   if (!re)
     return false;
 
-  m_offset           = 0;
-  m_jitCompiled      = false;
-  m_bMatched         = false;
-  m_iMatchCount      = 0;
-  const char *errMsg = NULL;
-  int errOffset      = 0;
-  int options        = m_iOptions;
+  m_offset = 0;
+  m_jitCompiled = false;
+  m_bMatched = false;
+  m_iMatchCount = 0;
+  const char* errMsg = NULL;
+  int errOffset = 0;
+  int options = m_iOptions;
   if (m_utf8Mode == autoUtf8 && requireUtf8(re))
-    options |= (IsUtf8Supported() ? PCRE_UTF8 : 0) | (AreUnicodePropertiesSupported() ? PCRE_UCP : 0);
+    options |=
+        (IsUtf8Supported() ? PCRE_UTF8 : 0) | (AreUnicodePropertiesSupported() ? PCRE_UCP : 0);
 
   Cleanup();
 
@@ -295,8 +299,8 @@ bool CRegExp::RegComp(const char *re, studyMode study /*= NoStudy*/)
   if (!m_re)
   {
     m_pattern.clear();
-    CLog::Log(LOGERROR, "PCRE: %s. Compilation failed at offset %d in expression '%s'",
-              errMsg, errOffset, re);
+    CLog::Log(LOGERROR, "PCRE: %s. Compilation failed at offset %d in expression '%s'", errMsg,
+              errOffset, re);
     return false;
   }
 
@@ -310,7 +314,8 @@ bool CRegExp::RegComp(const char *re, studyMode study /*= NoStudy*/)
     m_sd = pcre_study(m_re, studyOptions, &errMsg);
     if (errMsg != NULL)
     {
-      CLog::Log(LOGWARNING, "%s: PCRE error \"%s\" while studying expression", __FUNCTION__, errMsg);
+      CLog::Log(LOGWARNING, "%s: PCRE error \"%s\" while studying expression", __FUNCTION__,
+                errMsg);
       if (m_sd != NULL)
       {
         pcre_free_study(m_sd);
@@ -320,22 +325,28 @@ bool CRegExp::RegComp(const char *re, studyMode study /*= NoStudy*/)
     else if (jitCompile)
     {
       int jitPresent = 0;
-      m_jitCompiled = (pcre_fullinfo(m_re, m_sd, PCRE_INFO_JIT, &jitPresent) == 0 && jitPresent == 1);
+      m_jitCompiled =
+          (pcre_fullinfo(m_re, m_sd, PCRE_INFO_JIT, &jitPresent) == 0 && jitPresent == 1);
     }
   }
 
   return true;
 }
 
-int CRegExp::RegFind(const char *str, unsigned int startoffset /*= 0*/, int maxNumberOfCharsToTest /*= -1*/)
+int CRegExp::RegFind(const char* str,
+                     unsigned int startoffset /*= 0*/,
+                     int maxNumberOfCharsToTest /*= -1*/)
 {
   return PrivateRegFind(strlen(str), str, startoffset, maxNumberOfCharsToTest);
 }
 
-int CRegExp::PrivateRegFind(size_t bufferLen, const char *str, unsigned int startoffset /* = 0*/, int maxNumberOfCharsToTest /*= -1*/)
+int CRegExp::PrivateRegFind(size_t bufferLen,
+                            const char* str,
+                            unsigned int startoffset /* = 0*/,
+                            int maxNumberOfCharsToTest /*= -1*/)
 {
-  m_offset      = 0;
-  m_bMatched    = false;
+  m_offset = 0;
+  m_bMatched = false;
   m_iMatchCount = 0;
 
   if (!m_re)
@@ -359,7 +370,7 @@ int CRegExp::PrivateRegFind(size_t bufferLen, const char *str, unsigned int star
 #ifdef PCRE_HAS_JIT_CODE
   if (m_jitCompiled && !m_jitStack)
   {
-    m_jitStack = pcre_jit_stack_alloc(32*1024, 512*1024);
+    m_jitStack = pcre_jit_stack_alloc(32 * 1024, 512 * 1024);
     if (m_jitStack == NULL)
       CLog::Log(LOGWARNING, "%s: can't allocate address space for JIT stack", __FUNCTION__);
 
@@ -371,47 +382,62 @@ int CRegExp::PrivateRegFind(size_t bufferLen, const char *str, unsigned int star
     bufferLen = std::min<size_t>(bufferLen, startoffset + maxNumberOfCharsToTest);
 
   m_subject.assign(str + startoffset, bufferLen - startoffset);
-  int rc = pcre_exec(m_re, NULL, m_subject.c_str(), m_subject.length(), 0, 0, m_iOvector, OVECCOUNT);
+  int rc =
+      pcre_exec(m_re, NULL, m_subject.c_str(), m_subject.length(), 0, 0, m_iOvector, OVECCOUNT);
 
-  if (rc<1)
+  if (rc < 1)
   {
     static const int fragmentLen = 80; // length of excerpt before erroneous char for log
-    switch(rc)
+    switch (rc)
     {
-    case PCRE_ERROR_NOMATCH:
-      return -1;
+      case PCRE_ERROR_NOMATCH:
+        return -1;
 
-    case PCRE_ERROR_MATCHLIMIT:
-      CLog::Log(LOGERROR, "PCRE: Match limit reached");
-      return -1;
+      case PCRE_ERROR_MATCHLIMIT:
+        CLog::Log(LOGERROR, "PCRE: Match limit reached");
+        return -1;
 
 #ifdef PCRE_ERROR_SHORTUTF8
-    case PCRE_ERROR_SHORTUTF8:
+      case PCRE_ERROR_SHORTUTF8:
       {
-        const size_t startPos = (m_subject.length() > fragmentLen) ? CUtf8Utils::RFindValidUtf8Char(m_subject, m_subject.length() - fragmentLen) : 0;
+        const size_t startPos =
+            (m_subject.length() > fragmentLen)
+                ? CUtf8Utils::RFindValidUtf8Char(m_subject, m_subject.length() - fragmentLen)
+                : 0;
         if (startPos != std::string::npos)
-          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character at the end of string. Text before bad character: \"%s\"", m_subject.substr(startPos).c_str());
+          CLog::Log(
+              LOGERROR,
+              "PCRE: Bad UTF-8 character at the end of string. Text before bad character: \"%s\"",
+              m_subject.substr(startPos).c_str());
         else
           CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character at the end of string");
         return -1;
       }
 #endif
-    case PCRE_ERROR_BADUTF8:
+      case PCRE_ERROR_BADUTF8:
       {
-        const size_t startPos = (m_iOvector[0] > fragmentLen) ? CUtf8Utils::RFindValidUtf8Char(m_subject, m_iOvector[0] - fragmentLen) : 0;
+        const size_t startPos =
+            (m_iOvector[0] > fragmentLen)
+                ? CUtf8Utils::RFindValidUtf8Char(m_subject, m_iOvector[0] - fragmentLen)
+                : 0;
         if (m_iOvector[0] >= 0 && startPos != std::string::npos)
-          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character, error code: %d, position: %d. Text before bad char: \"%s\"", m_iOvector[1], m_iOvector[0], m_subject.substr(startPos, m_iOvector[0] - startPos + 1).c_str());
+          CLog::Log(LOGERROR,
+                    "PCRE: Bad UTF-8 character, error code: %d, position: %d. Text before bad "
+                    "char: \"%s\"",
+                    m_iOvector[1], m_iOvector[0],
+                    m_subject.substr(startPos, m_iOvector[0] - startPos + 1).c_str());
         else
-          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character, error code: %d, position: %d", m_iOvector[1], m_iOvector[0]);
+          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character, error code: %d, position: %d",
+                    m_iOvector[1], m_iOvector[0]);
         return -1;
       }
-    case PCRE_ERROR_BADUTF8_OFFSET:
-      CLog::Log(LOGERROR, "PCRE: Offset is pointing to the middle of UTF-8 character");
-      return -1;
+      case PCRE_ERROR_BADUTF8_OFFSET:
+        CLog::Log(LOGERROR, "PCRE: Offset is pointing to the middle of UTF-8 character");
+        return -1;
 
-    default:
-      CLog::Log(LOGERROR, "PCRE: Unknown error: %d", rc);
-      return -1;
+      default:
+        CLog::Log(LOGERROR, "PCRE: Unknown error: %d", rc);
+        return -1;
     }
   }
   m_offset = startoffset;
@@ -439,7 +465,7 @@ std::string CRegExp::GetReplaceString(const std::string& sReplaceExp) const
   std::string result(sReplaceExp, 0, pos);
   result.reserve(sReplaceExp.size()); // very rough estimate
 
-  while(pos != std::string::npos)
+  while (pos != std::string::npos)
   {
     if (expr[pos] == '\\')
     {
@@ -483,7 +509,7 @@ int CRegExp::GetSubStart(int iSub) const
   if (!IsValidSubNumber(iSub))
     return -1;
 
-  return m_iOvector[iSub*2] + m_offset;
+  return m_iOvector[iSub * 2] + m_offset;
 }
 
 int CRegExp::GetSubStart(const std::string& subName) const
@@ -496,7 +522,7 @@ int CRegExp::GetSubLength(int iSub) const
   if (!IsValidSubNumber(iSub))
     return -1;
 
-  return m_iOvector[(iSub*2)+1] - m_iOvector[(iSub*2)];
+  return m_iOvector[(iSub * 2) + 1] - m_iOvector[(iSub * 2)];
 }
 
 int CRegExp::GetSubLength(const std::string& subName) const
@@ -509,8 +535,8 @@ std::string CRegExp::GetMatch(int iSub /* = 0 */) const
   if (!IsValidSubNumber(iSub))
     return "";
 
-  int pos = m_iOvector[(iSub*2)];
-  int len = m_iOvector[(iSub*2)+1] - pos;
+  int pos = m_iOvector[(iSub * 2)];
+  int len = m_iOvector[(iSub * 2) + 1] - pos;
   if (pos < 0 || len <= 0)
     return "";
 
@@ -546,7 +572,7 @@ void CRegExp::DumpOvector(int iLog /* = LOGDEBUG */)
   int size = GetSubCount(); // past the subpatterns is junk
   for (int i = 0; i <= size; i++)
   {
-    std::string t = StringUtils::Format("[%i,%i]", m_iOvector[(i*2)], m_iOvector[(i*2)+1]);
+    std::string t = StringUtils::Format("[%i,%i]", m_iOvector[(i * 2)], m_iOvector[(i * 2) + 1]);
     if (i != size)
       t += ",";
     str += t;
@@ -583,7 +609,6 @@ inline bool CRegExp::IsValidSubNumber(int iSub) const
   return iSub >= 0 && iSub <= m_iMatchCount && iSub <= m_MaxNumOfBackrefrences;
 }
 
-
 bool CRegExp::IsUtf8Supported(void)
 {
   if (m_Utf8Supported == -1)
@@ -615,18 +640,23 @@ bool CRegExp::LogCheckUtf8Support(void)
   if (!CRegExp::IsUtf8Supported())
   {
     utf8FullSupport = false;
-    CLog::Log(LOGWARNING, "UTF-8 is not supported in PCRE lib, support for national symbols is limited!");
+    CLog::Log(LOGWARNING,
+              "UTF-8 is not supported in PCRE lib, support for national symbols is limited!");
   }
 
   if (!CRegExp::AreUnicodePropertiesSupported())
   {
     utf8FullSupport = false;
-    CLog::Log(LOGWARNING, "Unicode properties are not enabled in PCRE lib, support for national symbols may be limited!");
+    CLog::Log(LOGWARNING, "Unicode properties are not enabled in PCRE lib, support for national "
+                          "symbols may be limited!");
   }
 
   if (!utf8FullSupport)
   {
-    CLog::Log(LOGNOTICE, "Consider installing PCRE lib version 8.10 or later with enabled Unicode properties and UTF-8 support. Your PCRE lib version: %s", PCRE::pcre_version());
+    CLog::Log(LOGNOTICE,
+              "Consider installing PCRE lib version 8.10 or later with enabled Unicode properties "
+              "and UTF-8 support. Your PCRE lib version: %s",
+              PCRE::pcre_version());
 #if PCRE_UCP == 0
     CLog::Log(LOGNOTICE, "You will need to rebuild XBMC after PCRE lib update.");
 #endif

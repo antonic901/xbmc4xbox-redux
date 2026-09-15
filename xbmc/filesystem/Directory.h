@@ -40,46 +40,40 @@ public:
   class CHints
   {
   public:
-    CHints() : flags(DIR_FLAG_DEFAULTS)
-    {
-    };
+    CHints() : flags(DIR_FLAG_DEFAULTS) {};
     std::string mask;
     int flags;
   };
 
-  static bool GetDirectory(const CURL& url
-                           , CFileItemList &items
-                           , const std::string &strMask
-                           , int flags);
+  static bool GetDirectory(const CURL& url,
+                           CFileItemList& items,
+                           const std::string& strMask,
+                           int flags);
 
   static bool GetDirectory(const CURL& url,
                            boost::shared_ptr<IDirectory> pDirectory,
-                           CFileItemList &items,
-                           const CHints &hints);
+                           CFileItemList& items,
+                           const CHints& hints);
 
-  static bool GetDirectory(const CURL& url
-                           , CFileItemList &items
-                           , const CHints &hints);
+  static bool GetDirectory(const CURL& url, CFileItemList& items, const CHints& hints);
 
   static bool Create(const CURL& url);
   static bool Exists(const CURL& url, bool bUseCache = true);
   static bool Remove(const CURL& url);
   static bool RemoveRecursive(const CURL& url);
 
-  static bool GetDirectory(const std::string& strPath
-                           , CFileItemList &items
-                           , const std::string &strMask
-                           , int flags);
+  static bool GetDirectory(const std::string& strPath,
+                           CFileItemList& items,
+                           const std::string& strMask,
+                           int flags);
 
   static bool GetDirectory(const std::string& strPath,
                            boost::shared_ptr<IDirectory> pDirectory,
-                           CFileItemList &items,
-                           const std::string &strMask,
+                           CFileItemList& items,
+                           const std::string& strMask,
                            int flags);
 
-  static bool GetDirectory(const std::string& strPath
-                           , CFileItemList &items
-                           , const CHints &hints);
+  static bool GetDirectory(const std::string& strPath, CFileItemList& items, const CHints& hints);
 
   static bool Create(const std::string& strPath);
   static bool Exists(const std::string& strPath, bool bUseCache = true);
@@ -89,6 +83,6 @@ public:
   /*! \brief Filter files that act like directories from the list, replacing them with their directory counterparts
    \param items The item list to filter
    \param mask  The mask to apply when filtering files */
-  static void FilterFileDirectories(CFileItemList &items, const std::string &mask);
+  static void FilterFileDirectories(CFileItemList& items, const std::string& mask);
 };
-}
+} // namespace XFILE

@@ -8,13 +8,16 @@ extern "C"
 {
   // Functions that your visualisation must implement
   void Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const char* szSongName);
-  void AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength);
+  void AudioData(const float* pAudioData,
+                 int iAudioDataLength,
+                 float* pFreqData,
+                 int iFreqDataLength);
   void Render();
-  bool OnAction(long action, const void *param);
+  bool OnAction(long action, const void* param);
   void GetInfo(VIS_INFO* pInfo);
-  unsigned int GetPresets(char ***presets);
+  unsigned int GetPresets(char*** presets);
   unsigned GetPreset();
-  unsigned int GetSubModules(char ***presets);
+  unsigned int GetSubModules(char*** presets);
   bool IsLocked();
 
   // function to export the above structure to XBMC

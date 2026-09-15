@@ -24,8 +24,7 @@
 #include "FileItem.h"
 #include "threads/Event.h"
 
-class CGUIDialogSongInfo :
-      public CGUIDialog
+class CGUIDialogSongInfo : public CGUIDialog
 {
 public:
   CGUIDialogSongInfo(void);
@@ -45,6 +44,7 @@ public:
   void FetchComplete();
 
   static void ShowFor(CFileItem* pItem);
+
 protected:
   virtual void OnInitWindow();
   void Update();

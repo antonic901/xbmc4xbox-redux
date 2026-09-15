@@ -75,10 +75,10 @@ using namespace UPNP;
 CNetworkServices::CNetworkServices()
   :
 #ifdef HAS_WEB_SERVER
-  m_webserver(NULL),
+    m_webserver(NULL),
 #endif // HAS_WEB_SERVER
-  m_sntpclient(NULL),
-  m_filezilla(NULL)
+    m_sntpclient(NULL),
+    m_filezilla(NULL)
 {
 }
 
@@ -101,15 +101,14 @@ CNetworkServices& CNetworkServices::Get()
   return sNetworkServices;
 }
 
-bool CNetworkServices::OnSettingChanging(const CSetting *setting)
+bool CNetworkServices::OnSettingChanging(const CSetting* setting)
 {
   if (setting == NULL)
     return false;
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
 #ifdef HAS_WEB_SERVER
-  if (settingId == "services.webserver" ||
-      settingId == "services.webserverport")
+  if (settingId == "services.webserver" || settingId == "services.webserverport")
   {
     if (IsWebserverRunning() && !StopWebserver())
       return false;
@@ -118,25 +117,25 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
     {
       if (!StartWebserver())
       {
-        CGUIDialogOK::ShowAndGetInput(g_localizeStrings.Get(33101), "", g_localizeStrings.Get(33100), "");
+        CGUIDialogOK::ShowAndGetInput(g_localizeStrings.Get(33101), "",
+                                      g_localizeStrings.Get(33100), "");
         return false;
       }
     }
   }
-  else if (settingId == "services.esport" ||
-           settingId == "services.webserverport")
+  else if (settingId == "services.esport" || settingId == "services.webserverport")
     return ValidatePort(((CSettingInt*)setting)->GetValue());
   else
 #endif // HAS_WEB_SERVER
 
 #ifdef HAS_FTP_SERVER
-  if (settingId == "services.ftpserveruser" || settingId == "services.ftpserverpassword")
+      if (settingId == "services.ftpserveruser" || settingId == "services.ftpserverpassword")
     return SetFTPServerUserPass();
   else
 #endif // HAS_FTP_SERVER
 
 #ifdef HAS_UPNP
-  if (settingId == "services.upnpserver")
+      if (settingId == "services.upnpserver")
   {
     if (((CSettingBool*)setting)->GetValue())
       return StartUPnPServer();
@@ -167,7 +166,8 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
     {
       if (!StartEventServer())
       {
-        CGUIDialogOK::ShowAndGetInput(g_localizeStrings.Get(33102), "", g_localizeStrings.Get(33100), "");
+        CGUIDialogOK::ShowAndGetInput(g_localizeStrings.Get(33102), "",
+                                      g_localizeStrings.Get(33100), "");
         return false;
       }
     }
@@ -184,7 +184,8 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
 
     if (!StartEventServer())
     {
-      CGUIDialogOK::ShowAndGetInput(g_localizeStrings.Get(33102), "", g_localizeStrings.Get(33100), "");
+      CGUIDialogOK::ShowAndGetInput(g_localizeStrings.Get(33102), "", g_localizeStrings.Get(33100),
+                                    "");
       return false;
     }
 #endif // HAS_EVENT_SERVER
@@ -199,7 +200,8 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
 
       if (!StartEventServer())
       {
-        CGUIDialogOK::ShowAndGetInput(g_localizeStrings.Get(33102), "", g_localizeStrings.Get(33100), "");
+        CGUIDialogOK::ShowAndGetInput(g_localizeStrings.Get(33102), "",
+                                      g_localizeStrings.Get(33100), "");
         return false;
       }
     }
@@ -207,8 +209,7 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
   }
 
 #ifdef HAS_EVENT_SERVER
-  else if (settingId == "services.esinitialdelay" ||
-           settingId == "services.escontinuousdelay")
+  else if (settingId == "services.esinitialdelay" || settingId == "services.escontinuousdelay")
   {
     if (CSettings::GetInstance().GetBool("services.esenabled"))
       return RefreshEventServer();
@@ -218,12 +219,12 @@ bool CNetworkServices::OnSettingChanging(const CSetting *setting)
   return true;
 }
 
-void CNetworkServices::OnSettingChanged(const CSetting *setting)
+void CNetworkServices::OnSettingChanged(const CSetting* setting)
 {
   if (setting == NULL)
     return;
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
 #ifdef HAS_TIME_SERVER
   if (settingId == "services.timeserver")
   {
@@ -240,7 +241,7 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
   else
 #endif
 #ifdef HAS_FTP_SERVER
-  if (settingId == "services.ftpserver")
+      if (settingId == "services.ftpserver")
   {
     if (((CSettingBool*)setting)->GetValue())
       StartFtpServer();
@@ -250,38 +251,38 @@ void CNetworkServices::OnSettingChanged(const CSetting *setting)
   else
 #endif
 #ifdef HAS_WEB_SERVER
-  if (settingId == "services.webserverusername" ||
-      settingId == "services.webserverpassword")
+      if (settingId == "services.webserverusername" || settingId == "services.webserverpassword")
   {
     if (settingId == "services.webserverusername")
       m_webserver->SetUserName(((CSettingString*)setting)->GetValue().c_str());
-    else if(settingId == "services.webserverpassword")
+    else if (settingId == "services.webserverpassword")
       m_webserver->SetPassword(((CSettingString*)setting)->GetValue().c_str());
   }
   else
 #endif // HAS_WEB_SERVER
-  if (settingId == "smb.winsserver" ||
-      settingId == "smb.workgroup")
-  {
-    // okey we really don't need to restart, only deinit samba, but that could be damn hard if something is playing
-    // TODO - General way of handling setting changes that require restart
-    if (HELPERS::ShowYesNoDialogText(14038, 14039) == YES)
+    if (settingId == "smb.winsserver" || settingId == "smb.workgroup")
     {
-      CSettings::GetInstance().Save();
-      CApplicationMessenger::Get().PostMsg(TMSG_RESTARTAPP);
+      // okey we really don't need to restart, only deinit samba, but that could be damn hard if something is playing
+      // TODO - General way of handling setting changes that require restart
+      if (HELPERS::ShowYesNoDialogText(14038, 14039) == YES)
+      {
+        CSettings::GetInstance().Save();
+        CApplicationMessenger::Get().PostMsg(TMSG_RESTARTAPP);
+      }
     }
-  }
 }
 
 void CNetworkServices::Start()
 {
   StartTimeServer();
   if (CSettings::GetInstance().GetBool("services.webserver") && !StartWebserver())
-    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33101), g_localizeStrings.Get(33100));
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33101),
+                                          g_localizeStrings.Get(33100));
   StartFtpServer();
   StartUPnP();
   if (CSettings::GetInstance().GetBool("services.esenabled") && !StartEventServer())
-    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33102), g_localizeStrings.Get(33100));
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33102),
+                                          g_localizeStrings.Get(33100));
   StartRss();
 }
 
@@ -307,7 +308,7 @@ bool CNetworkServices::StartTimeServer()
   if (!CSettings::GetInstance().GetBool("services.timeserver"))
     return false;
 
-  if(!IsTimeServerRunning())
+  if (!IsTimeServerRunning())
   {
     CSectionLoader::Load("SNTP");
     CLog::Log(LOGNOTICE, "start timeserver client");
@@ -374,7 +375,7 @@ bool CNetworkServices::StartWebserver()
   CLog::Log(LOGNOTICE, "Webserver: Starting...");
   CSectionLoader::Load("LIBHTTP");
   m_webserver = new CWebServer();
-  if(!m_webserver->Start(webPort, false))
+  if (!m_webserver->Start(webPort, false))
   {
     delete m_webserver;
     m_webserver = NULL;
@@ -383,10 +384,13 @@ bool CNetworkServices::StartWebserver()
 
   if (m_webserver)
   {
-    m_webserver->SetUserName(CSettings::GetInstance().GetString("services.webserverusername").c_str());
-    m_webserver->SetPassword(CSettings::GetInstance().GetString("services.webserverpassword").c_str());
+    m_webserver->SetUserName(
+        CSettings::GetInstance().GetString("services.webserverusername").c_str());
+    m_webserver->SetPassword(
+        CSettings::GetInstance().GetString("services.webserverpassword").c_str());
   }
-  if (m_webserver && m_pXbmcHttp && CSettings::GetInstance().GetInt("services.httpapibroadcastlevel")>=1)
+  if (m_webserver && m_pXbmcHttp &&
+      CSettings::GetInstance().GetInt("services.httpapibroadcastlevel") >= 1)
     CApplicationMessenger::Get().HttpApi("broadcastlevel; StartUp;1");
   return true;
 #endif // HAS_WEB_SERVER
@@ -438,14 +442,14 @@ bool CNetworkServices::StartFtpServer()
 
     // check file size and presence
     XFILE::CFile xml;
-    if (xml.Open(xmlpath+"FileZilla Server.xml") && xml.GetLength() > 0)
+    if (xml.Open(xmlpath + "FileZilla Server.xml") && xml.GetLength() > 0)
     {
       m_filezilla = new CXBFileZilla(CSpecialProtocol::TranslatePath(xmlpath));
       m_filezilla->Start(false);
     }
     else
     {
-      // 'FileZilla Server.xml' does not exist or is corrupt, 
+      // 'FileZilla Server.xml' does not exist or is corrupt,
       // falling back to ftp emergency recovery mode
       CLog::Log(LOGNOTICE, "XBFileZilla: 'FileZilla Server.xml' is missing or is corrupt!");
       CLog::Log(LOGNOTICE, "XBFileZilla: Starting ftp emergency recovery mode");
@@ -477,35 +481,56 @@ bool CNetworkServices::StartFtpEmergencyRecoveryMode()
   pUser->SetBypassUserLimit(false);
   pUser->SetUserLimit(0);
   pUser->SetIPLimit(0);
-  pUser->AddDirectory("/", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS | XBDIR_HOME);
-  pUser->AddDirectory("C:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  pUser->AddDirectory("/", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                               XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS |
+                               XBDIR_HOME);
+  pUser->AddDirectory("C:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                                  XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   pUser->AddDirectory("D:\\", XBFILE_READ | XBDIR_LIST | XBDIR_SUBDIRS);
-  pUser->AddDirectory("E:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
-  pUser->AddDirectory("Q:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  pUser->AddDirectory("E:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                                  XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  pUser->AddDirectory("Q:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                                  XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   //Add existing extended partitions
-  if (CIoSupport::DriveExists('F')){
-    pUser->AddDirectory("F:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  if (CIoSupport::DriveExists('F'))
+  {
+    pUser->AddDirectory("F:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                                    XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   }
-  if (CIoSupport::DriveExists('G')){
-    pUser->AddDirectory("G:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  if (CIoSupport::DriveExists('G'))
+  {
+    pUser->AddDirectory("G:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                                    XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   }
-  if (CIoSupport::DriveExists('R')){
-    pUser->AddDirectory("R:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  if (CIoSupport::DriveExists('R'))
+  {
+    pUser->AddDirectory("R:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                                    XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   }
-  if (CIoSupport::DriveExists('S')){
-    pUser->AddDirectory("S:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  if (CIoSupport::DriveExists('S'))
+  {
+    pUser->AddDirectory("S:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                                    XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   }
-  if (CIoSupport::DriveExists('V')){
-    pUser->AddDirectory("V:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  if (CIoSupport::DriveExists('V'))
+  {
+    pUser->AddDirectory("V:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                                    XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   }
-  if (CIoSupport::DriveExists('W')){
-    pUser->AddDirectory("W:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  if (CIoSupport::DriveExists('W'))
+  {
+    pUser->AddDirectory("W:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                                    XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   }
-  if (CIoSupport::DriveExists('A')){
-    pUser->AddDirectory("A:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  if (CIoSupport::DriveExists('A'))
+  {
+    pUser->AddDirectory("A:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                                    XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   }
-  if (CIoSupport::DriveExists('B')){
-    pUser->AddDirectory("B:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND | XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
+  if (CIoSupport::DriveExists('B'))
+  {
+    pUser->AddDirectory("B:\\", XBFILE_READ | XBFILE_WRITE | XBFILE_DELETE | XBFILE_APPEND |
+                                    XBDIR_DELETE | XBDIR_CREATE | XBDIR_LIST | XBDIR_SUBDIRS);
   }
   pUser->CommitChanges();
   return true;
@@ -540,16 +565,16 @@ bool CNetworkServices::StopFtpServer()
 bool CNetworkServices::SetFTPServerUserPass()
 {
 #ifdef HAS_FTP_SERVER
-  if(!m_filezilla)
+  if (!m_filezilla)
     return false;
 
   // TODO: Read the FileZilla Server XML and Set it here!
   // Get GUI USER and pass and set pass to FTP Server
   CStdString strFtpUserName, strFtpUserPassword;
-  strFtpUserName      = CSettings::GetInstance().GetString("services.ftpserveruser");
-  strFtpUserPassword  = CSettings::GetInstance().GetString("services.ftpserverpassword");
+  strFtpUserName = CSettings::GetInstance().GetString("services.ftpserveruser");
+  strFtpUserPassword = CSettings::GetInstance().GetString("services.ftpserverpassword");
 
-  if(strFtpUserPassword.size() == 0)
+  if (strFtpUserPassword.size() == 0)
   { // PopUp OK and Display: FTP Server Password is empty! Try Again!
     CGUIDialogOK::ShowAndGetInput(728, 0, 12358, 0);
     return false;
@@ -562,17 +587,18 @@ bool CNetworkServices::SetFTPServerUserPass()
   int iUserSize = v_ftpusers.size();
   if (iUserSize > 0)
   {
-    int i = 1 ;
-    while( i <= iUserSize)
+    int i = 1;
+    while (i <= iUserSize)
     {
-      p_ftpUser = v_ftpusers[i-1];
+      p_ftpUser = v_ftpusers[i - 1];
       strTempUserName = p_ftpUser->GetName();
-      if (strTempUserName.Equals(strFtpUserName.c_str()) )
+      if (strTempUserName.Equals(strFtpUserName.c_str()))
       {
         if (p_ftpUser->SetPassword(strFtpUserPassword.c_str()) != XFS_INVALID_PARAMETERS)
         {
           p_ftpUser->CommitChanges();
-          CSettings::GetInstance().SetString("services.ftpserverpassword",strFtpUserPassword.c_str());
+          CSettings::GetInstance().SetString("services.ftpserverpassword",
+                                             strFtpUserPassword.c_str());
           CGUIDialogOK::ShowAndGetInput(728, 0, 1247, 0);
           return true;
         }
@@ -648,8 +674,7 @@ bool CNetworkServices::StopEventServer(bool bWait, bool promptuser)
   {
     if (server->GetNumberOfClients() > 0)
     {
-      if (HELPERS::ShowYesNoDialogText(13140, 13141, "", "", 10000) != 
-        YES)
+      if (HELPERS::ShowYesNoDialogText(13140, 13141, "", "", 10000) != YES)
       {
         CLog::Log(LOGNOTICE, "ES: Not stopping event server");
         return false;
@@ -814,7 +839,7 @@ bool CNetworkServices::StopUPnPServer()
 #endif // HAS_UPNP
   return false;
 }
-  
+
 bool CNetworkServices::StartRss()
 {
   if (IsRssRunning())

@@ -30,54 +30,58 @@ class CFileItem;
 
 namespace XFILE
 {
-  class CDirectoryCache
+class CDirectoryCache
+{
+  class CDir
   {
-    class CDir
-    {
-    public:
-      CDir(DIR_CACHE_TYPE cacheType);
-      virtual ~CDir();
-
-      void SetLastAccess(unsigned int &accessCounter);
-      unsigned int GetLastAccess() const { return m_lastAccess; };
-
-      CFileItemList* m_Items;
-      DIR_CACHE_TYPE m_cacheType;
-    private:
-      unsigned int m_lastAccess;
-    };
   public:
-    CDirectoryCache(void);
-    virtual ~CDirectoryCache(void);
-    bool GetDirectory(const std::string& strPath, CFileItemList &items, bool retrieveAll = false);
-    void SetDirectory(const std::string& strPath, const CFileItemList &items, DIR_CACHE_TYPE cacheType);
-    void ClearDirectory(const std::string& strPath);
-    void ClearFile(const std::string& strFile);
-    void ClearSubPaths(const std::string& strPath);
-    void Clear();
-    void AddFile(const std::string& strFile);
-    bool FileExists(const std::string& strPath, bool& bInCache);
-#ifdef _DEBUG
-    void PrintStats() const;
-#endif
-  protected:
-    void InitCache(std::set<std::string>& dirs);
-    void ClearCache(std::set<std::string>& dirs);
-    void CheckIfFull();
+    CDir(DIR_CACHE_TYPE cacheType);
+    virtual ~CDir();
 
-    std::map<std::string, CDir*> m_cache;
-    typedef std::map<std::string, CDir*>::iterator iCache;
-    typedef std::map<std::string, CDir*>::const_iterator ciCache;
-    void Delete(iCache i);
+    void SetLastAccess(unsigned int& accessCounter);
+    unsigned int GetLastAccess() const { return m_lastAccess; };
 
-    CCriticalSection m_cs;
+    CFileItemList* m_Items;
+    DIR_CACHE_TYPE m_cacheType;
 
-    unsigned int m_accessCounter;
-
-#ifdef _DEBUG
-    unsigned int m_cacheHits;
-    unsigned int m_cacheMisses;
-#endif
+  private:
+    unsigned int m_lastAccess;
   };
-}
+
+public:
+  CDirectoryCache(void);
+  virtual ~CDirectoryCache(void);
+  bool GetDirectory(const std::string& strPath, CFileItemList& items, bool retrieveAll = false);
+  void SetDirectory(const std::string& strPath,
+                    const CFileItemList& items,
+                    DIR_CACHE_TYPE cacheType);
+  void ClearDirectory(const std::string& strPath);
+  void ClearFile(const std::string& strFile);
+  void ClearSubPaths(const std::string& strPath);
+  void Clear();
+  void AddFile(const std::string& strFile);
+  bool FileExists(const std::string& strPath, bool& bInCache);
+#ifdef _DEBUG
+  void PrintStats() const;
+#endif
+protected:
+  void InitCache(std::set<std::string>& dirs);
+  void ClearCache(std::set<std::string>& dirs);
+  void CheckIfFull();
+
+  std::map<std::string, CDir*> m_cache;
+  typedef std::map<std::string, CDir*>::iterator iCache;
+  typedef std::map<std::string, CDir*>::const_iterator ciCache;
+  void Delete(iCache i);
+
+  CCriticalSection m_cs;
+
+  unsigned int m_accessCounter;
+
+#ifdef _DEBUG
+  unsigned int m_cacheHits;
+  unsigned int m_cacheMisses;
+#endif
+};
+} // namespace XFILE
 extern XFILE::CDirectoryCache g_directoryCache;

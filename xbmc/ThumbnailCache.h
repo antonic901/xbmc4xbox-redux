@@ -25,9 +25,9 @@
 
 class CCriticalSection;
 class CVideoInfoTag;
-namespace MUSIC_INFO 
+namespace MUSIC_INFO
 {
-  class CMusicInfoTag;
+class CMusicInfoTag;
 }
 class CAlbum;
 class CArtist;
@@ -37,13 +37,13 @@ class CThumbnailCache
 {
 private:
   CThumbnailCache();
+
 public:
   virtual ~CThumbnailCache();
 
   static CThumbnailCache* GetThumbnailCache();
 
 protected:
-
   static CThumbnailCache* m_pCacheInstance;
 
   static CCriticalSection m_cs;

@@ -24,12 +24,9 @@
 
 //////////////////////////////////////////////////////////////////////
 
-
-
 #if !defined(AFX_FILESMB_H__2C4AB5BC_0742_458D_95EA_E9C77BA5663D__INCLUDED_)
 
 #define AFX_FILESMB_H__2C4AB5BC_0742_458D_95EA_E9C77BA5663D__INCLUDED_
-
 
 #if _MSC_VER > 1000
 
@@ -60,13 +57,14 @@ public:
   void Deinit();
   void Purge();
   void PurgeEx(const CURL& url);
-  
-  CStdString URLEncode(const CStdString &value);
-  CStdString URLEncode(const CURL &url);
+
+  CStdString URLEncode(const CStdString& value);
+  CStdString URLEncode(const CURL& url);
 
   DWORD ConvertUnixToNT(int error);
+
 private:
-  SMBCCTX *m_context;
+  SMBCCTX* m_context;
   CStdString m_strLastHost;
   CStdString m_strLastShare;
 };
@@ -79,7 +77,7 @@ class CSmbFile : public IFile
 {
 public:
   CSmbFile();
-  int OpenFile(const CURL &url, CStdString& strAuth);
+  int OpenFile(const CURL& url, CStdString& strAuth);
   virtual ~CSmbFile();
   virtual void Close();
   virtual int64_t Seek(int64_t iFilePosition, int iWhence = SEEK_SET);
@@ -101,10 +99,10 @@ public:
 protected:
   CURL m_url;
   bool IsValidFile(const CStdString& strFileName);
-  CStdString GetAuthenticatedPath(const CURL &url);
+  CStdString GetAuthenticatedPath(const CURL& url);
   int64_t m_fileSize;
   int m_fd;
 };
-}
+} // namespace XFILE
 
 #endif // !defined(AFX_FILESMB_H__2C4AB5BC_0742_458D_95EA_E9C77BA5663D__INCLUDED_)

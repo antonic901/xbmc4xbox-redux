@@ -40,7 +40,8 @@ bool CServiceManager::Init1()
   m_announcementManager->Start();
 
   m_XBPython.reset(new XBPython());
-  CScriptInvocationManager::GetInstance().RegisterLanguageInvocationHandler(m_XBPython.get(), ".py");
+  CScriptInvocationManager::GetInstance().RegisterLanguageInvocationHandler(m_XBPython.get(),
+                                                                            ".py");
 
   m_playlistPlayer.reset(new PLAYLIST::CPlayListPlayer());
 
@@ -77,7 +78,7 @@ void CServiceManager::Deinit()
   m_announcementManager.reset();
 }
 
-ADDON::CAddonMgr &CServiceManager::GetAddonMgr()
+ADDON::CAddonMgr& CServiceManager::GetAddonMgr()
 {
   return *m_addonMgr.get();
 }
@@ -102,7 +103,7 @@ PLAYLIST::CPlayListPlayer& CServiceManager::GetPlaylistPlayer()
   return *m_playlistPlayer;
 }
 
-void CServiceManager::delete_contextMenuManager::operator()(CContextMenuManager *p) const
+void CServiceManager::delete_contextMenuManager::operator()(CContextMenuManager* p) const
 {
   delete p;
 }

@@ -41,8 +41,8 @@ public:
   void SetOptions(unsigned char* options); // copies 100 entries!!!
 
   inline const std::string& GetName() const { return m_vecText[0]; }
-  inline int GetNumberOfOptions() const { return m_vecText.size()-2; }
-  inline unsigned char* GetOptions() { return m_pTrainerData+m_iOptions; }
+  inline int GetNumberOfOptions() const { return m_vecText.size() - 2; }
+  inline unsigned char* GetOptions() { return m_pTrainerData + m_iOptions; }
   inline const std::string& GetPath() { return m_strPath; }
   inline const int GetTrainerId() { return m_idTrainer; }
 

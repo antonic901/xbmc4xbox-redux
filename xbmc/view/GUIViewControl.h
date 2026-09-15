@@ -35,15 +35,15 @@ public:
 
   void Reset();
   void SetParentWindow(int window);
-  void AddView(const CGUIControl *control);
+  void AddView(const CGUIControl* control);
   void SetViewControlID(int control);
 
   void SetCurrentView(int viewMode);
 
-  void SetItems(CFileItemList &items);
+  void SetItems(CFileItemList& items);
 
   void SetSelectedItem(int item);
-  void SetSelectedItem(const CStdString &itemPath);
+  void SetSelectedItem(const CStdString& itemPath);
 
   int GetSelectedItem() const;
   void SetFocused();
@@ -59,19 +59,19 @@ public:
   void Clear();
 
 protected:
-  int GetSelectedItem(const CGUIControl *control) const;
-  void UpdateContents(const CGUIControl *control, int currentItem);
+  int GetSelectedItem(const CGUIControl* control) const;
+  void UpdateContents(const CGUIControl* control, int currentItem);
   void UpdateView();
-  void UpdateViewAsControl(const CStdString &viewLabel);
+  void UpdateViewAsControl(const CStdString& viewLabel);
   void UpdateViewVisibility();
   int GetView(VIEW_TYPE type, int id) const;
 
-  std::vector<CGUIControl *> m_allViews;
-  std::vector<CGUIControl *> m_visibleViews;
-  typedef std::vector<CGUIControl *>::const_iterator ciViews;
+  std::vector<CGUIControl*> m_allViews;
+  std::vector<CGUIControl*> m_visibleViews;
+  typedef std::vector<CGUIControl*>::const_iterator ciViews;
 
-  CFileItemList*        m_fileItems;
-  int                   m_viewAsControl;
-  int                   m_parentWindow;
-  int                   m_currentView;
+  CFileItemList* m_fileItems;
+  int m_viewAsControl;
+  int m_parentWindow;
+  int m_currentView;
 };

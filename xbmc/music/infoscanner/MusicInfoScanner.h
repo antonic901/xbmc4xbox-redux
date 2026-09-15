@@ -36,12 +36,15 @@ class CMusicInfoScanner : public IRunnable, public CInfoScanner
 public:
   /*! \brief Flags for controlling the scanning process
    */
-  enum SCAN_FLAGS { SCAN_NORMAL     = 0,
-                    SCAN_ONLINE     = 1 << 0,
-                    SCAN_BACKGROUND = 1 << 1,
-                    SCAN_RESCAN     = 1 << 2,
-                    SCAN_ARTISTS    = 1 << 3,
-                    SCAN_ALBUMS     = 1 << 4 };
+  enum SCAN_FLAGS
+  {
+    SCAN_NORMAL = 0,
+    SCAN_ONLINE = 1 << 0,
+    SCAN_BACKGROUND = 1 << 1,
+    SCAN_RESCAN = 1 << 2,
+    SCAN_ARTISTS = 1 << 3,
+    SCAN_ALBUMS = 1 << 4
+  };
 
   CMusicInfoScanner();
   virtual ~CMusicInfoScanner();
@@ -70,7 +73,10 @@ public:
   \param bAllowSelection [in] should we allow the user to manually override the info with a GUI if the album is not found?
   \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
   */
-  INFO_RET UpdateAlbumInfo(CAlbum& album, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog = NULL);
+  INFO_RET UpdateAlbumInfo(CAlbum& album,
+                           const ADDON::ScraperPtr& scraper,
+                           bool bAllowSelection,
+                           CGUIDialogProgress* pDialog = NULL);
 
   /*! \brief Scrape additional artist information and update the music database with it.
   Given an artist, search for it using the given scraper.
@@ -81,7 +87,10 @@ public:
   \param bAllowSelection [in] should we allow the user to manually override the info with a GUI if the album is not found?
   \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
   */
-  INFO_RET UpdateArtistInfo(CArtist& artist, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog = NULL);
+  INFO_RET UpdateArtistInfo(CArtist& artist,
+                            const ADDON::ScraperPtr& scraper,
+                            bool bAllowSelection,
+                            CGUIDialogProgress* pDialog = NULL);
 
 protected:
   virtual void Process();
@@ -102,7 +111,7 @@ protected:
    \param albums [in/out] list of albums to categorise - art field may be altered.
    \param path [in] path containing albums.
    */
-  static void FindArtForAlbums(VECALBUMS &albums, const std::string &path);
+  static void FindArtForAlbums(VECALBUMS& albums, const std::string& path);
 
   /*! \brief Scrape additional album information and update the database.
    Search for the given album using the given scraper.
@@ -113,7 +122,10 @@ protected:
    \param bAllowSelection [in] should we allow the user to manually override the info with a GUI if the album is not found?
    \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
    */
-  INFO_RET UpdateDatabaseAlbumInfo(CAlbum& album, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog = NULL);
+  INFO_RET UpdateDatabaseAlbumInfo(CAlbum& album,
+                                   const ADDON::ScraperPtr& scraper,
+                                   bool bAllowSelection,
+                                   CGUIDialogProgress* pDialog = NULL);
 
   /*! \brief Scrape additional artist information and update the database.
    Search for the given artist using the given scraper.
@@ -124,7 +136,10 @@ protected:
    \param bAllowSelection [in] should we allow the user to manually override the info with a GUI if the album is not found?
    \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
    */
-  INFO_RET UpdateDatabaseArtistInfo(CArtist& artist, const ADDON::ScraperPtr& scraper, bool bAllowSelection, CGUIDialogProgress* pDialog = NULL);
+  INFO_RET UpdateDatabaseArtistInfo(CArtist& artist,
+                                    const ADDON::ScraperPtr& scraper,
+                                    bool bAllowSelection,
+                                    CGUIDialogProgress* pDialog = NULL);
 
   /*! \brief Using the scrapers download metadata for an album
    Given a CAlbum style struct containing some data about an album, query
@@ -137,7 +152,11 @@ protected:
    \param bUseScrapedMBID [in] should scraper use any previously scraped mbid to identify the artist, or use artist name?
    \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
    */
-  INFO_RET DownloadAlbumInfo(const CAlbum& album, const ADDON::ScraperPtr& scraper, MUSIC_GRABBER::CMusicAlbumInfo& albumInfo, bool bUseScrapedMBID, CGUIDialogProgress* pDialog = NULL);
+  INFO_RET DownloadAlbumInfo(const CAlbum& album,
+                             const ADDON::ScraperPtr& scraper,
+                             MUSIC_GRABBER::CMusicAlbumInfo& albumInfo,
+                             bool bUseScrapedMBID,
+                             CGUIDialogProgress* pDialog = NULL);
 
   /*! \brief Using the scrapers download metadata for an artist
    Given a CAlbum style struct containing some data about an artist, query
@@ -150,7 +169,11 @@ protected:
    \param bUseScrapedMBID [in] should scraper use any previously scraped mbid to identify the album, or use album and artist name?
    \param pDialog [in] a progress dialog which this and downstream functions can update with status, if required
    */
-  INFO_RET DownloadArtistInfo(const CArtist& artist, const ADDON::ScraperPtr& scraper, MUSIC_GRABBER::CMusicArtistInfo& artistInfo, bool bUseScrapedMBID, CGUIDialogProgress* pDialog = NULL);
+  INFO_RET DownloadArtistInfo(const CArtist& artist,
+                              const ADDON::ScraperPtr& scraper,
+                              MUSIC_GRABBER::CMusicArtistInfo& artistInfo,
+                              bool bUseScrapedMBID,
+                              CGUIDialogProgress* pDialog = NULL);
 
   /*! \brief Get the types of art for an artist or album that are to be
   automatically fetched from local files during scanning
@@ -165,7 +188,8 @@ protected:
    \param art [in] set of art type and file location (URL or path) pairs
    \return vector of art types that are missing from the set
    */
-  std::vector<std::string> GetMissingArtTypes(const MediaType& mediaType, const std::map<std::string, std::string>& art);
+  std::vector<std::string> GetMissingArtTypes(const MediaType& mediaType,
+                                              const std::map<std::string, std::string>& art);
 
   /*! \brief Set art for an artist
   Checks for the missing types of art in the given folder. If none is found
@@ -177,7 +201,9 @@ protected:
   \param artfolder [in] path of the location to search for local art files
   \return true when art is added
   */
-  bool SetArtistArtwork(CArtist& artist, const std::vector<std::string>& missing, const std::string& artfolder);
+  bool SetArtistArtwork(CArtist& artist,
+                        const std::vector<std::string>& missing,
+                        const std::string& artfolder);
 
   /*! \brief Set art for an album
   Checks for the missing types of art in the given folder. If none is found
@@ -189,7 +215,9 @@ protected:
   \param artfolder [in] path of the location to search for local art files
   \return true when art is added
   */
-  bool SetAlbumArtwork(CAlbum& album, std::vector<std::string>& missing, const std::string& artfolder);
+  bool SetAlbumArtwork(CAlbum& album,
+                       std::vector<std::string>& missing,
+                       const std::string& artfolder);
 
   /*! \brief Set art for an album with local art from disc set subfolders
   When we have a true disc set - subfolders beneath the album folder AND the
@@ -223,8 +251,8 @@ protected:
    \param scannedItems [in] list to populate with the scannedItems
    */
   INFO_RET ScanTags(const CFileItemList& items, CFileItemList& scannedItems);
-  int GetPathHash(const CFileItemList &items, std::string &hash);
-  void GetAlbumArtwork(long id, const CAlbum &artist);
+  int GetPathHash(const CFileItemList& items, std::string& hash);
+  void GetAlbumArtwork(long id, const CAlbum& artist);
 
   virtual void Run();
   int CountFiles(const CFileItemList& items, bool recursive);
@@ -237,7 +265,9 @@ protected:
    \param preferredScraper [in] A ScraperPtr to the preferred album/artist scraper.
    \param musicBrainzURL [out] will be populated with the MB URL for the artist/album.
    */
-  bool ResolveMusicBrainz(const std::string &strMusicBrainzID, const ADDON::ScraperPtr &preferredScraper, CScraperUrl &musicBrainzURL);
+  bool ResolveMusicBrainz(const std::string& strMusicBrainzID,
+                          const ADDON::ScraperPtr& preferredScraper,
+                          CScraperUrl& musicBrainzURL);
 
   void ScannerWait(unsigned int milliseconds);
 
@@ -254,4 +284,4 @@ protected:
   int m_flags;
   CThread m_fileCountReader;
 };
-}
+} // namespace MUSIC_INFO

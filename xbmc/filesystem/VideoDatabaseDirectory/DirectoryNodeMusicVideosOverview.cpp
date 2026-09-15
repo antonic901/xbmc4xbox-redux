@@ -26,21 +26,19 @@
 
 using namespace XFILE::VIDEODATABASEDIRECTORY;
 
-Node MusicVideoChildren[] = {
-                              { NODE_TYPE_GENRE,             "genres",    135 },
-                              { NODE_TYPE_TITLE_MUSICVIDEOS, "titles",    369 },
-                              { NODE_TYPE_YEAR,              "years",     562 },
-                              { NODE_TYPE_ACTOR,             "artists",   133 },
-                              { NODE_TYPE_MUSICVIDEOS_ALBUM, "albums",    132 },
-                              { NODE_TYPE_DIRECTOR,          "directors", 20348 },
-                              { NODE_TYPE_STUDIO,            "studios",   20388 },
-                              { NODE_TYPE_TAGS,              "tags",      20459 }
-                            };
+Node MusicVideoChildren[] = {{NODE_TYPE_GENRE, "genres", 135},
+                             {NODE_TYPE_TITLE_MUSICVIDEOS, "titles", 369},
+                             {NODE_TYPE_YEAR, "years", 562},
+                             {NODE_TYPE_ACTOR, "artists", 133},
+                             {NODE_TYPE_MUSICVIDEOS_ALBUM, "albums", 132},
+                             {NODE_TYPE_DIRECTOR, "directors", 20348},
+                             {NODE_TYPE_STUDIO, "studios", 20388},
+                             {NODE_TYPE_TAGS, "tags", 20459}};
 
-CDirectoryNodeMusicVideosOverview::CDirectoryNodeMusicVideosOverview(const std::string& strName, CDirectoryNode* pParent)
+CDirectoryNodeMusicVideosOverview::CDirectoryNodeMusicVideosOverview(const std::string& strName,
+                                                                     CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_MUSICVIDEOS_OVERVIEW, strName, pParent)
 {
-
 }
 
 NODE_TYPE CDirectoryNodeMusicVideosOverview::GetChildType() const
@@ -83,4 +81,3 @@ bool CDirectoryNodeMusicVideosOverview::GetContent(CFileItemList& items) const
 
   return true;
 }
-

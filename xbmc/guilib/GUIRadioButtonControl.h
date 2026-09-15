@@ -31,24 +31,31 @@
  \ingroup controls
  \brief
  */
-class CGUIRadioButtonControl :
-      public CGUIButtonControl
+class CGUIRadioButtonControl : public CGUIButtonControl
 {
 public:
-  CGUIRadioButtonControl(int parentID, int controlID,
-                         float posX, float posY, float width, float height,
-                         const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus,
+  CGUIRadioButtonControl(int parentID,
+                         int controlID,
+                         float posX,
+                         float posY,
+                         float width,
+                         float height,
+                         const CTextureInfo& textureFocus,
+                         const CTextureInfo& textureNoFocus,
                          const CLabelInfo& labelInfo,
-                         const CTextureInfo& radioOnFocus, const CTextureInfo& radioOnNoFocus,
-                         const CTextureInfo& radioOffFocus, const CTextureInfo& radioOffNoFocus,
-                         const CTextureInfo& radioOnDisabled, const CTextureInfo& radioOffDisabled);
+                         const CTextureInfo& radioOnFocus,
+                         const CTextureInfo& radioOnNoFocus,
+                         const CTextureInfo& radioOffFocus,
+                         const CTextureInfo& radioOffNoFocus,
+                         const CTextureInfo& radioOnDisabled,
+                         const CTextureInfo& radioOffDisabled);
 
   virtual ~CGUIRadioButtonControl(void);
-  virtual CGUIRadioButtonControl *Clone() const { return new CGUIRadioButtonControl(*this); };
+  virtual CGUIRadioButtonControl* Clone() const { return new CGUIRadioButtonControl(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual bool OnAction(const CAction &action) ;
+  virtual bool OnAction(const CAction& action);
   virtual bool OnMessage(CGUIMessage& message);
   virtual void PreAllocResources();
   virtual void AllocResources();
@@ -60,8 +67,9 @@ public:
   virtual void SetHeight(float height);
   virtual std::string GetDescription() const;
   void SetRadioDimensions(float posX, float posY, float width, float height);
-  void SetToggleSelect(const std::string &toggleSelect);
+  void SetToggleSelect(const std::string& toggleSelect);
   bool IsSelected() const { return m_bSelected; };
+
 protected:
   virtual bool UpdateColors();
   CGUITexture m_imgRadioOnFocus;

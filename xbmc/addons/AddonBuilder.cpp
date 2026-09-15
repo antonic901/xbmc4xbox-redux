@@ -38,8 +38,9 @@
 // In order to achive same behavior just like casting from std::unique_ptr to std::shared_ptr
 // we need this custom deleter class which will ensure the unique pointer's ownership is correctly transferred.
 template<typename T>
-void deleter(T* ptr) {
-    boost::movelib::unique_ptr<T> tmp(ptr);
+void deleter(T* ptr)
+{
+  boost::movelib::unique_ptr<T> tmp(ptr);
 }
 
 namespace ADDON
@@ -70,21 +71,19 @@ boost::shared_ptr<IAddon> CAddonBuilder::Build()
     if (StringUtils::StartsWithNoCase(m_extPoint->plugin->identifier, "screensaver.xbmc.builtin."))
       return boost::make_shared<CAddon>(boost::move(m_props));
     // python screensaver
-    if (URIUtils::HasExtension(CServiceBroker::GetAddonMgr().GetExtValue(m_extPoint->configuration, "@library"), ".py"))
+    if (URIUtils::HasExtension(
+            CServiceBroker::GetAddonMgr().GetExtValue(m_extPoint->configuration, "@library"),
+            ".py"))
       return boost::make_shared<CScreenSaver>(boost::move(m_props));
   }
 
   // Ensure binary types have a valid library for the platform
-  if (type == ADDON_VIZ ||
-      type == ADDON_SCREENSAVER ||
-      type == ADDON_PVRDLL ||
-      type == ADDON_ADSPDLL ||
-      type == ADDON_AUDIOENCODER ||
-      type == ADDON_AUDIODECODER ||
-      type == ADDON_INPUTSTREAM ||
-      type == ADDON_PERIPHERALDLL)
+  if (type == ADDON_VIZ || type == ADDON_SCREENSAVER || type == ADDON_PVRDLL ||
+      type == ADDON_ADSPDLL || type == ADDON_AUDIOENCODER || type == ADDON_AUDIODECODER ||
+      type == ADDON_INPUTSTREAM || type == ADDON_PERIPHERALDLL)
   {
-    std::string value = CServiceBroker::GetAddonMgr().GetPlatformLibraryName(m_extPoint->plugin->extensions->configuration);
+    std::string value = CServiceBroker::GetAddonMgr().GetPlatformLibraryName(
+        m_extPoint->plugin->extensions->configuration);
     if (value.empty())
       return AddonPtr();
   }
@@ -93,7 +92,9 @@ boost::shared_ptr<IAddon> CAddonBuilder::Build()
   {
     case ADDON_PLUGIN:
     case ADDON_SCRIPT:
-      return boost::shared_ptr<CPluginSource>(CPluginSource::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CPluginSource>);
+      return boost::shared_ptr<CPluginSource>(
+          CPluginSource::FromExtension(boost::move(m_props), m_extPoint).release(),
+          deleter<CPluginSource>);
     case ADDON_SCRIPT_LIBRARY:
     case ADDON_SCRIPT_LYRICS:
     case ADDON_SCRIPT_MODULE:
@@ -101,9 +102,12 @@ boost::shared_ptr<IAddon> CAddonBuilder::Build()
     case ADDON_SCRIPT_WEATHER:
       return boost::make_shared<CAddon>(boost::move(m_props));
     case ADDON_WEB_INTERFACE:
-      return boost::shared_ptr<CWebinterface>(CWebinterface::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CWebinterface>);
+      return boost::shared_ptr<CWebinterface>(
+          CWebinterface::FromExtension(boost::move(m_props), m_extPoint).release(),
+          deleter<CWebinterface>);
     case ADDON_SERVICE:
-      return boost::shared_ptr<CService>(CService::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CService>);
+      return boost::shared_ptr<CService>(
+          CService::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CService>);
     case ADDON_SCRAPER_ALBUMS:
     case ADDON_SCRAPER_ARTISTS:
     case ADDON_SCRAPER_MOVIES:
@@ -111,7 +115,8 @@ boost::shared_ptr<IAddon> CAddonBuilder::Build()
     case ADDON_SCRAPER_TVSHOWS:
     case ADDON_SCRAPER_LIBRARY:
     case ADDON_SCRAPER_PROGRAMS:
-      return boost::shared_ptr<CScraper>(CScraper::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CScraper>);
+      return boost::shared_ptr<CScraper>(
+          CScraper::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CScraper>);
 #if defined(HAS_VISUALISATION)
     case ADDON_VIZ:
       return boost::make_shared<CVisualisation>(boost::move(m_props));
@@ -119,23 +124,31 @@ boost::shared_ptr<IAddon> CAddonBuilder::Build()
     case ADDON_SCREENSAVER:
       return boost::make_shared<CScreenSaver>(boost::move(m_props));
     case ADDON_SKIN:
-      return boost::shared_ptr<CSkinInfo>(CSkinInfo::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CSkinInfo>);
+      return boost::shared_ptr<CSkinInfo>(
+          CSkinInfo::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CSkinInfo>);
     case ADDON_RESOURCE_IMAGES:
-      return boost::shared_ptr<CImageResource>(CImageResource::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CImageResource>);
+      return boost::shared_ptr<CImageResource>(
+          CImageResource::FromExtension(boost::move(m_props), m_extPoint).release(),
+          deleter<CImageResource>);
     case ADDON_RESOURCE_LANGUAGE:
-      return boost::shared_ptr<CLanguageResource>(CLanguageResource::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CLanguageResource>);
+      return boost::shared_ptr<CLanguageResource>(
+          CLanguageResource::FromExtension(boost::move(m_props), m_extPoint).release(),
+          deleter<CLanguageResource>);
     case ADDON_RESOURCE_UISOUNDS:
       return boost::make_shared<CUISoundsResource>(boost::move(m_props));
     case ADDON_REPOSITORY:
-      return boost::shared_ptr<CRepository>(CRepository::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CRepository>);
+      return boost::shared_ptr<CRepository>(
+          CRepository::FromExtension(boost::move(m_props), m_extPoint).release(),
+          deleter<CRepository>);
     case ADDON_CONTEXT_ITEM:
-      return boost::shared_ptr<CContextMenuAddon>(CContextMenuAddon::FromExtension(boost::move(m_props), m_extPoint).release(), deleter<CContextMenuAddon>);
+      return boost::shared_ptr<CContextMenuAddon>(
+          CContextMenuAddon::FromExtension(boost::move(m_props), m_extPoint).release(),
+          deleter<CContextMenuAddon>);
     default:
       break;
   }
   return AddonPtr();
 }
-
 
 AddonPtr CAddonBuilder::FromProps(AddonProps addonProps)
 {
@@ -188,4 +201,4 @@ AddonPtr CAddonBuilder::FromProps(AddonProps addonProps)
   }
   return AddonPtr();
 }
-}
+} // namespace ADDON

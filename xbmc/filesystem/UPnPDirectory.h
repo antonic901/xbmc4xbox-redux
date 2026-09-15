@@ -20,7 +20,6 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #pragma once
 
 #include "IDirectory.h"
@@ -30,18 +29,18 @@ class CURL;
 
 namespace XFILE
 {
-class CUPnPDirectory :  public IDirectory
+class CUPnPDirectory : public IDirectory
 {
 public:
-    CUPnPDirectory(void) {}
-    virtual ~CUPnPDirectory(void) {}
+  CUPnPDirectory(void) {}
+  virtual ~CUPnPDirectory(void) {}
 
-    // IDirectory methods
-    virtual bool GetDirectory(const CURL& url, CFileItemList &items);
-    virtual bool AllowAll() const { return true; }
+  // IDirectory methods
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool AllowAll() const { return true; }
 
-    // class methods
-    static const char* GetFriendlyName(const CURL& url);
-    static bool        GetResource(const CURL &path, CFileItem& item);
+  // class methods
+  static const char* GetFriendlyName(const CURL& url);
+  static bool GetResource(const CURL& path, CFileItem& item);
 };
-}
+} // namespace XFILE

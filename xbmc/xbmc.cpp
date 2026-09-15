@@ -18,7 +18,6 @@
  *
  */
 
-
 // XBMC
 //
 // libraries:
@@ -47,7 +46,7 @@ void main()
 extern "C"
 {
 
-  void mp_msg( int x, int lev, const char *format, ... )
+  void mp_msg(int x, int lev, const char* format, ...)
   {
     va_list va;
     static char tmp[2048];

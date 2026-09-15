@@ -29,4 +29,3 @@ public:
   virtual ~CLCDFactory(void);
   ILCD* Create();
 };
-

@@ -26,9 +26,9 @@
 
 typedef struct
 {
-  BYTE riff[4];         /* must be "RIFF"    */
-  DWORD len;             /* #bytes + 44 - 8   */
-  BYTE cWavFmt[8];      /* must be "WAVEfmt " */
+  BYTE riff[4]; /* must be "RIFF"    */
+  DWORD len; /* #bytes + 44 - 8   */
+  BYTE cWavFmt[8]; /* must be "WAVEfmt " */
   DWORD dwHdrLen;
   WORD wFormat;
   WORD wNumChannels;
@@ -36,10 +36,9 @@ typedef struct
   DWORD dwBytesPerSec;
   WORD wBlockAlign;
   WORD wBitsPerSample;
-  BYTE cData[4];        /* must be "data"   */
-  DWORD dwDataLen;       /* #bytes           */
-}
-WAVHDR, *PWAVHDR, *LPWAVHDR;
+  BYTE cData[4]; /* must be "data"   */
+  DWORD dwDataLen; /* #bytes           */
+} WAVHDR, *PWAVHDR, *LPWAVHDR;
 
 class CEncoderWav : public CEncoder
 {

@@ -32,12 +32,11 @@ using namespace KODI::MESSAGING;
 namespace ADDON
 {
 
-CAddonInterfaces::CAddonInterfaces(CAddon* addon)
-  : m_callbacks(new AddonCB),
-    m_addon(addon)
+CAddonInterfaces::CAddonInterfaces(CAddon* addon) : m_callbacks(new AddonCB), m_addon(addon)
 {
-  m_callbacks->libBasePath                  = strdup(CSpecialProtocol::TranslatePath("special://xbmcbinaddons").c_str());
-  m_callbacks->addonData                    = this;
+  m_callbacks->libBasePath =
+      strdup(CSpecialProtocol::TranslatePath("special://xbmcbinaddons").c_str());
+  m_callbacks->addonData = this;
 }
 
 CAddonInterfaces::~CAddonInterfaces()

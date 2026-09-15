@@ -11,12 +11,12 @@
 
 namespace XFILE
 {
-  class CGameSavesDirectory : public IDirectory
-  {
-  public:
-    CGameSavesDirectory(void);
-    virtual ~CGameSavesDirectory(void);
-    virtual bool GetDirectory(const CURL& url, CFileItemList &items);
-    virtual bool AllowAll() const { return true; }
-  };
-}
+class CGameSavesDirectory : public IDirectory
+{
+public:
+  CGameSavesDirectory(void);
+  virtual ~CGameSavesDirectory(void);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool AllowAll() const { return true; }
+};
+} // namespace XFILE

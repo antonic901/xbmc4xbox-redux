@@ -45,10 +45,16 @@ CCDDARipJob::CCDDARipJob(const std::string& input,
                          int encoder,
                          bool eject,
                          unsigned int rate,
-                         unsigned int channels, unsigned int bps) :
-  m_rate(rate), m_channels(channels), m_bps(bps), m_tag(tag),
-  m_input(input), m_output(CUtil::MakeLegalPath(output)), m_eject(eject),
-  m_encoder(encoder)
+                         unsigned int channels,
+                         unsigned int bps)
+  : m_rate(rate),
+    m_channels(channels),
+    m_bps(bps),
+    m_tag(tag),
+    m_input(input),
+    m_output(CUtil::MakeLegalPath(output)),
+    m_eject(eject),
+    m_encoder(encoder)
 {
 }
 
@@ -58,8 +64,7 @@ CCDDARipJob::~CCDDARipJob()
 
 bool CCDDARipJob::DoWork()
 {
-  CLog::Log(LOGINFO, "Start ripping track %s to %s", m_input.c_str(),
-                                                     m_output.c_str());
+  CLog::Log(LOGINFO, "Start ripping track %s to %s", m_input.c_str(), m_output.c_str());
 
   // if we are ripping to a samba share, rip it to hd first and then copy it it the share
   CFileItem file(m_output, false);
@@ -75,7 +80,7 @@ bool CCDDARipJob::DoWork()
   // init ripper
   CFile reader;
   CEncoder* encoder;
-  if (!reader.Open(m_input,READ_CACHED) || !(encoder=SetupEncoder(reader)))
+  if (!reader.Open(m_input, READ_CACHED) || !(encoder = SetupEncoder(reader)))
   {
     CLog::Log(LOGERROR, "Error: CCDDARipper::Init failed");
     return false;
@@ -87,19 +92,18 @@ bool CCDDARipJob::DoWork()
   CGUIDialogProgressBarHandle* handle = pDlgProgress->GetHandle(g_localizeStrings.Get(605));
 
   int iTrack = atoi(m_input.substr(13, m_input.size() - 13 - 5).c_str());
-  std::string strLine0 = StringUtils::Format("%02i. %s - %s", iTrack,
-                                            m_tag.GetArtistString().c_str(),
-                                            m_tag.GetTitle().c_str());
+  std::string strLine0 = StringUtils::Format(
+      "%02i. %s - %s", iTrack, m_tag.GetArtistString().c_str(), m_tag.GetTitle().c_str());
   handle->SetText(strLine0);
 
   // start ripping
-  int percent=0;
-  int oldpercent=0;
+  int percent = 0;
+  int oldpercent = 0;
   bool cancelled(false);
   int result;
-  while (!cancelled && (result=RipChunk(reader, encoder, percent)) == 0)
+  while (!cancelled && (result = RipChunk(reader, encoder, percent)) == 0)
   {
-    cancelled = ShouldCancel(percent,100);
+    cancelled = ShouldCancel(percent, 100);
     if (percent > oldpercent)
     {
       oldpercent = percent;
@@ -117,8 +121,8 @@ bool CCDDARipJob::DoWork()
     // copy the ripped track to the share
     if (!CFile::Copy(m_output, file.GetPath()))
     {
-      CLog::Log(LOGERROR, "CDDARipper: Error copying file from %s to %s",
-                m_output.c_str(), file.GetPath().c_str());
+      CLog::Log(LOGERROR, "CDDARipper: Error copying file from %s to %s", m_output.c_str(),
+                file.GetPath().c_str());
       CFile::Delete(m_output);
       return false;
     }
@@ -164,15 +168,15 @@ int CCDDARipJob::RipChunk(CFile& reader, CEncoder* encoder, int& percent)
     return 1;
 
   // encode data
-  int encres=encoder->Encode(result, stream);
+  int encres = encoder->Encode(result, stream);
 
   // Get progress indication
-  percent = static_cast<int>(reader.GetPosition()*100/reader.GetLength());
+  percent = static_cast<int>(reader.GetPosition() * 100 / reader.GetLength());
 
   if (reader.GetPosition() == reader.GetLength())
     return 2;
 
-  return -(1-encres);
+  return -(1 - encres);
 }
 
 CEncoder* CCDDARipJob::SetupEncoder(CFile& reader)
@@ -180,35 +184,34 @@ CEncoder* CCDDARipJob::SetupEncoder(CFile& reader)
   CEncoder* encoder = NULL;
   switch (m_encoder)
   {
-  case CDDARIP_ENCODER_VORBIS:
-    encoder = new CEncoderVorbis();
-    break;
-  case CDDARIP_ENCODER_LAME:
-    encoder = new CEncoderLame();
-    break;
-  case CDDARIP_ENCODER_FLAC:
-    encoder = new CEncoderFlac();
-    break;
-  case CDDARIP_ENCODER_WAV:
-  default:
-    encoder = new CEncoderWav();
-    break;
+    case CDDARIP_ENCODER_VORBIS:
+      encoder = new CEncoderVorbis();
+      break;
+    case CDDARIP_ENCODER_LAME:
+      encoder = new CEncoderLame();
+      break;
+    case CDDARIP_ENCODER_FLAC:
+      encoder = new CEncoderFlac();
+      break;
+    case CDDARIP_ENCODER_WAV:
+    default:
+      encoder = new CEncoderWav();
+      break;
   }
   if (!encoder)
     return NULL;
 
   // we have to set the tags before we init the Encoder
-  std::string strTrack = StringUtils::Format("%li", strtol(m_input.substr(13, m_input.size() - 13 - 5).c_str(),NULL,10));
+  std::string strTrack = StringUtils::Format(
+      "%li", strtol(m_input.substr(13, m_input.size() - 13 - 5).c_str(), NULL, 10));
 
   encoder->SetComment("Ripped with XBMC");
-  encoder->SetArtist(StringUtils::Join(m_tag.GetArtist(),
-                                      g_advancedSettings.m_musicItemSeparator));
+  encoder->SetArtist(StringUtils::Join(m_tag.GetArtist(), g_advancedSettings.m_musicItemSeparator));
   encoder->SetTitle(m_tag.GetTitle());
   encoder->SetAlbum(m_tag.GetAlbum());
-  encoder->SetAlbumArtist(StringUtils::Join(m_tag.GetAlbumArtist(),
-                                      g_advancedSettings.m_musicItemSeparator));
-  encoder->SetGenre(StringUtils::Join(m_tag.GetGenre(),
-                                      g_advancedSettings.m_musicItemSeparator));
+  encoder->SetAlbumArtist(
+      StringUtils::Join(m_tag.GetAlbumArtist(), g_advancedSettings.m_musicItemSeparator));
+  encoder->SetGenre(StringUtils::Join(m_tag.GetGenre(), g_advancedSettings.m_musicItemSeparator));
   encoder->SetTrack(strTrack);
   encoder->SetTrackLength(static_cast<int>(reader.GetLength()));
   encoder->SetYear(m_tag.GetYearString());
@@ -233,7 +236,7 @@ std::string CCDDARipJob::SetupTempFile()
   int fd;
   strncpy(tmp, CSpecialProtocol::TranslatePath("special://temp/riptrackXXXXXX").c_str(), MAX_PATH);
   if ((fd = mkstemp(tmp)) == -1)
-   tmp[0] = '\0';
+    tmp[0] = '\0';
   if (fd != -1)
     close(fd);
 #endif
@@ -242,13 +245,12 @@ std::string CCDDARipJob::SetupTempFile()
 
 bool CCDDARipJob::operator==(const CJob* job) const
 {
-  if (strcmp(job->GetType(),GetType()) == 0)
+  if (strcmp(job->GetType(), GetType()) == 0)
   {
     const CCDDARipJob* rjob = dynamic_cast<const CCDDARipJob*>(job);
     if (rjob)
     {
-      return m_input  == rjob->m_input &&
-             m_output == rjob->m_output;
+      return m_input == rjob->m_input && m_output == rjob->m_output;
     }
   }
   return false;

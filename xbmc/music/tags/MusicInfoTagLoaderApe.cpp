@@ -28,12 +28,16 @@
 using namespace MUSIC_INFO;
 
 CMusicInfoTagLoaderApe::CMusicInfoTagLoaderApe(void)
-{}
+{
+}
 
 CMusicInfoTagLoaderApe::~CMusicInfoTagLoaderApe()
-{}
+{
+}
 
-bool CMusicInfoTagLoaderApe::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderApe::Load(const CStdString& strFileName,
+                                  CMusicInfoTag& tag,
+                                  EmbeddedArt* art)
 {
   try
   {
@@ -52,9 +56,11 @@ bool CMusicInfoTagLoaderApe::Load(const CStdString& strFileName, CMusicInfoTag& 
       tag.SetDiscNumber(myTag.GetDiscNum());
       tag.SetComment(myTag.GetComment());
       tag.SetLyrics(myTag.GetLyrics());
-      tag.SetMusicBrainzAlbumArtistID(StringUtils::Split(myTag.GetMusicBrainzAlbumArtistID(), g_advancedSettings.m_musicItemSeparator));
+      tag.SetMusicBrainzAlbumArtistID(StringUtils::Split(myTag.GetMusicBrainzAlbumArtistID(),
+                                                         g_advancedSettings.m_musicItemSeparator));
       tag.SetMusicBrainzAlbumID(myTag.GetMusicBrainzAlbumID());
-      tag.SetMusicBrainzArtistID(StringUtils::Split(myTag.GetMusicBrainzArtistID(), g_advancedSettings.m_musicItemSeparator));
+      tag.SetMusicBrainzArtistID(StringUtils::Split(myTag.GetMusicBrainzArtistID(),
+                                                    g_advancedSettings.m_musicItemSeparator));
       tag.SetMusicBrainzTrackID(myTag.GetMusicBrainzTrackID());
       SYSTEMTIME dateTime;
       ZeroMemory(&dateTime, sizeof(SYSTEMTIME));

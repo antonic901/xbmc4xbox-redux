@@ -25,23 +25,23 @@
 
 namespace XFILE
 {
-  class CMusicDatabaseDirectory : public IDirectory
-  {
-  public:
-    CMusicDatabaseDirectory(void);
-    virtual ~CMusicDatabaseDirectory(void);
-    virtual bool GetDirectory(const CURL& url, CFileItemList &items);
-    virtual bool AllowAll() const { return true; }
-    virtual bool Exists(const CURL& url);
-    static MUSICDATABASEDIRECTORY::NODE_TYPE GetDirectoryChildType(const std::string& strPath);
-    static MUSICDATABASEDIRECTORY::NODE_TYPE GetDirectoryType(const std::string& strPath);
-    static MUSICDATABASEDIRECTORY::NODE_TYPE GetDirectoryParentType(const std::string& strPath);
-    bool IsArtistDir(const std::string& strDirectory);
-    void ClearDirectoryCache(const std::string& strDirectory);
-    static bool IsAllItem(const std::string& strDirectory);
-    static bool GetLabel(const std::string& strDirectory, std::string& strLabel);
-    bool ContainsSongs(const std::string &path);
-    static bool CanCache(const std::string& strPath);
-    static std::string GetIcon(const std::string& strDirectory);
-  };
-}
+class CMusicDatabaseDirectory : public IDirectory
+{
+public:
+  CMusicDatabaseDirectory(void);
+  virtual ~CMusicDatabaseDirectory(void);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool AllowAll() const { return true; }
+  virtual bool Exists(const CURL& url);
+  static MUSICDATABASEDIRECTORY::NODE_TYPE GetDirectoryChildType(const std::string& strPath);
+  static MUSICDATABASEDIRECTORY::NODE_TYPE GetDirectoryType(const std::string& strPath);
+  static MUSICDATABASEDIRECTORY::NODE_TYPE GetDirectoryParentType(const std::string& strPath);
+  bool IsArtistDir(const std::string& strDirectory);
+  void ClearDirectoryCache(const std::string& strDirectory);
+  static bool IsAllItem(const std::string& strDirectory);
+  static bool GetLabel(const std::string& strDirectory, std::string& strLabel);
+  bool ContainsSongs(const std::string& path);
+  static bool CanCache(const std::string& strPath);
+  static std::string GetIcon(const std::string& strDirectory);
+};
+} // namespace XFILE

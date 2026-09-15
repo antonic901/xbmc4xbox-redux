@@ -26,7 +26,6 @@
 #include "GUIDialogAddonInfo.h"
 #include "GUIDialogAddonSettings.h"
 
-
 namespace CONTEXTMENU
 {
 
@@ -35,16 +34,18 @@ using namespace ADDON;
 bool CAddonSettings::IsVisible(const CFileItem& item) const
 {
   AddonPtr addon;
-  return item.HasAddonInfo()
-         && CServiceBroker::GetAddonMgr().GetAddon(item.GetAddonInfo()->ID(), addon, ADDON_UNKNOWN, false)
-         && addon->HasSettings();
+  return item.HasAddonInfo() &&
+         CServiceBroker::GetAddonMgr().GetAddon(item.GetAddonInfo()->ID(), addon, ADDON_UNKNOWN,
+                                                false) &&
+         addon->HasSettings();
 }
 
 bool CAddonSettings::Execute(const CFileItemPtr& item) const
 {
   AddonPtr addon;
-  return CServiceBroker::GetAddonMgr().GetAddon(item->GetAddonInfo()->ID(), addon, ADDON_UNKNOWN, false)
-         && CGUIDialogAddonSettings::ShowAndGetInput(addon);
+  return CServiceBroker::GetAddonMgr().GetAddon(item->GetAddonInfo()->ID(), addon, ADDON_UNKNOWN,
+                                                false) &&
+         CGUIDialogAddonSettings::ShowAndGetInput(addon);
 }
 
 bool CCheckForUpdates::IsVisible(const CFileItem& item) const
@@ -55,11 +56,13 @@ bool CCheckForUpdates::IsVisible(const CFileItem& item) const
 bool CCheckForUpdates::Execute(const CFileItemPtr& item) const
 {
   AddonPtr addon;
-  if (item->HasAddonInfo() && CServiceBroker::GetAddonMgr().GetAddon(item->GetAddonInfo()->ID(), addon, ADDON_REPOSITORY))
+  if (item->HasAddonInfo() &&
+      CServiceBroker::GetAddonMgr().GetAddon(item->GetAddonInfo()->ID(), addon, ADDON_REPOSITORY))
   {
-    CRepositoryUpdater::GetInstance().CheckForUpdates(boost::static_pointer_cast<CRepository>(addon), true);
+    CRepositoryUpdater::GetInstance().CheckForUpdates(
+        boost::static_pointer_cast<CRepository>(addon), true);
     return true;
   }
   return false;
 }
-}
+} // namespace CONTEXTMENU

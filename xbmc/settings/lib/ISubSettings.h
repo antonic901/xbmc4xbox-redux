@@ -29,7 +29,7 @@ class TiXmlNode;
 class ISubSettings
 {
 public:
-  virtual ~ISubSettings() { }
+  virtual ~ISubSettings() {}
 
   /*!
    \brief Load settings from the given XML node.
@@ -37,16 +37,16 @@ public:
    \param settings XML node containing setting values
    \return True if loading the settings was successful, false otherwise.
    */
-  virtual bool Load(const TiXmlNode *settings) { return true; }
+  virtual bool Load(const TiXmlNode* settings) { return true; }
   /*!
    \brief Save settings to the given XML node.
 
    \param settings XML node in which the settings will be saved
    \return True if saving the settings was successful, false otherwise.
    */
-  virtual bool Save(TiXmlNode *settings) const { return true; }
+  virtual bool Save(TiXmlNode* settings) const { return true; }
   /*!
    \brief Clear any loaded setting values.
    */
-  virtual void Clear() { }
+  virtual void Clear() {}
 };

@@ -25,15 +25,15 @@
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CDirectoryNodeAlbumTop100::CDirectoryNodeAlbumTop100(const std::string& strName, CDirectoryNode* pParent)
+CDirectoryNodeAlbumTop100::CDirectoryNodeAlbumTop100(const std::string& strName,
+                                                     CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_ALBUM_TOP100, strName, pParent)
 {
-
 }
 
 NODE_TYPE CDirectoryNodeAlbumTop100::GetChildType() const
 {
-  if (GetName()=="-1")
+  if (GetName() == "-1")
     return NODE_TYPE_ALBUM_TOP100_SONGS;
 
   return NODE_TYPE_SONG;
@@ -60,9 +60,9 @@ bool CDirectoryNodeAlbumTop100::GetContent(CFileItemList& items) const
     return false;
   }
 
-  for (int i=0; i<(int)albums.size(); ++i)
+  for (int i = 0; i < (int)albums.size(); ++i)
   {
-    CAlbum& album=albums[i];
+    CAlbum& album = albums[i];
     std::string strDir = StringUtils::Format("%s%ld/", BuildPath().c_str(), album.idAlbum);
     CFileItemPtr pItem(new CFileItem(strDir, album));
     items.Add(pItem);

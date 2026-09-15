@@ -18,7 +18,7 @@ typedef boost::shared_ptr<CFileItem> CFileItemPtr;
 class CContextItemAddonInvoker : public CAddonPythonInvoker
 {
 public:
-  explicit CContextItemAddonInvoker(ILanguageInvocationHandler *invocationHandler,
+  explicit CContextItemAddonInvoker(ILanguageInvocationHandler* invocationHandler,
                                     const CFileItemPtr& item);
   virtual ~CContextItemAddonInvoker();
 

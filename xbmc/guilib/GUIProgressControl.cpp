@@ -23,20 +23,24 @@
 #include "GUIListItem.h"
 #include "utils/StringUtils.h"
 
-CGUIProgressControl::CGUIProgressControl(int parentID, int controlID,
-                                         float posX, float posY, float width,
-                                         float height, const CTextureInfo& backGroundTexture,
+CGUIProgressControl::CGUIProgressControl(int parentID,
+                                         int controlID,
+                                         float posX,
+                                         float posY,
+                                         float width,
+                                         float height,
+                                         const CTextureInfo& backGroundTexture,
                                          const CTextureInfo& leftTexture,
                                          const CTextureInfo& midTexture,
                                          const CTextureInfo& rightTexture,
                                          const CTextureInfo& overlayTexture,
                                          bool reveal)
-    : CGUIControl(parentID, controlID, posX, posY, width, height)
-    , m_guiBackground(posX, posY, width, height, backGroundTexture)
-    , m_guiLeft(posX, posY, width, height, leftTexture)
-    , m_guiMid(posX, posY, width, height, midTexture)
-    , m_guiRight(posX, posY, width, height, rightTexture)
-    , m_guiOverlay(posX, posY, width, height, overlayTexture)
+  : CGUIControl(parentID, controlID, posX, posY, width, height),
+    m_guiBackground(posX, posY, width, height, backGroundTexture),
+    m_guiLeft(posX, posY, width, height, leftTexture),
+    m_guiMid(posX, posY, width, height, midTexture),
+    m_guiRight(posX, posY, width, height, rightTexture),
+    m_guiOverlay(posX, posY, width, height, overlayTexture)
 {
   m_fPercent = 0;
   m_iInfoCode = 0;
@@ -56,7 +60,7 @@ void CGUIProgressControl::SetPosition(float posX, float posY)
   m_guiBackground.SetPosition(posX, posY);
 }
 
-void CGUIProgressControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIProgressControl::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   bool changed = false;
 
@@ -84,7 +88,9 @@ void CGUIProgressControl::Render()
     {
       if (m_bReveal && !m_guiMidClipRect.IsEmpty())
       {
-        bool restore = g_graphicsContext.SetClipRegion(m_guiMidClipRect.x1, m_guiMidClipRect.y1, m_guiMidClipRect.Width(), m_guiMidClipRect.Height());
+        bool restore =
+            g_graphicsContext.SetClipRegion(m_guiMidClipRect.x1, m_guiMidClipRect.y1,
+                                            m_guiMidClipRect.Width(), m_guiMidClipRect.Height());
         m_guiMid.Render();
         if (restore)
           g_graphicsContext.RestoreClipRegion();
@@ -98,7 +104,9 @@ void CGUIProgressControl::Render()
 
       if (m_bReveal && !m_guiMidClipRect.IsEmpty())
       {
-        bool restore = g_graphicsContext.SetClipRegion(m_guiMidClipRect.x1, m_guiMidClipRect.y1, m_guiMidClipRect.Width(), m_guiMidClipRect.Height());
+        bool restore =
+            g_graphicsContext.SetClipRegion(m_guiMidClipRect.x1, m_guiMidClipRect.y1,
+                                            m_guiMidClipRect.Width(), m_guiMidClipRect.Height());
         m_guiMid.Render();
         if (restore)
           g_graphicsContext.RestoreClipRegion();
@@ -115,12 +123,10 @@ void CGUIProgressControl::Render()
   CGUIControl::Render();
 }
 
-
 bool CGUIProgressControl::CanFocus() const
 {
   return false;
 }
-
 
 bool CGUIProgressControl::OnMessage(CGUIMessage& message)
 {
@@ -235,7 +241,8 @@ bool CGUIProgressControl::UpdateLayout(void)
   bChanged |= m_guiBackground.SetWidth(m_width);
 
   float fScaleX, fScaleY;
-  fScaleY = m_guiBackground.GetTextureHeight() ? m_height / m_guiBackground.GetTextureHeight() : 1.0f;
+  fScaleY =
+      m_guiBackground.GetTextureHeight() ? m_height / m_guiBackground.GetTextureHeight() : 1.0f;
   fScaleX = m_guiBackground.GetTextureWidth() ? m_width / m_guiBackground.GetTextureWidth() : 1.0f;
 
   float posX = m_guiBackground.GetXPosition();
@@ -244,8 +251,9 @@ bool CGUIProgressControl::UpdateLayout(void)
   if (m_guiLeft.GetFileName().empty() && m_guiRight.GetFileName().empty())
   { // rendering without left and right image - fill the mid image completely
     float width = m_fPercent * m_width * 0.01f;
-    float offset = fabs(fScaleY * 0.5f * (m_guiMid.GetTextureHeight() - m_guiBackground.GetTextureHeight()));
-    if (offset > 0)  //  Center texture to the background if necessary
+    float offset =
+        fabs(fScaleY * 0.5f * (m_guiMid.GetTextureHeight() - m_guiBackground.GetTextureHeight()));
+    if (offset > 0) //  Center texture to the background if necessary
       bChanged |= m_guiMid.SetPosition(posX, posY + offset);
     else
       bChanged |= m_guiMid.SetPosition(posX, posY);
@@ -270,12 +278,14 @@ bool CGUIProgressControl::UpdateLayout(void)
   else
   {
     float fWidth = m_fPercent;
-    float fFullWidth = m_guiBackground.GetTextureWidth() - m_guiLeft.GetTextureWidth() - m_guiRight.GetTextureWidth();
+    float fFullWidth = m_guiBackground.GetTextureWidth() - m_guiLeft.GetTextureWidth() -
+                       m_guiRight.GetTextureWidth();
     fWidth /= 100.0f;
     fWidth *= fFullWidth;
 
-    float offset = fabs(fScaleY * 0.5f * (m_guiLeft.GetTextureHeight() - m_guiBackground.GetTextureHeight()));
-    if (offset > 0)  //  Center texture to the background if necessary
+    float offset =
+        fabs(fScaleY * 0.5f * (m_guiLeft.GetTextureHeight() - m_guiBackground.GetTextureHeight()));
+    if (offset > 0) //  Center texture to the background if necessary
       bChanged |= m_guiLeft.SetPosition(posX, posY + offset);
     else
       bChanged |= m_guiLeft.SetPosition(posX, posY);
@@ -283,8 +293,9 @@ bool CGUIProgressControl::UpdateLayout(void)
     bChanged |= m_guiLeft.SetWidth(fScaleX * m_guiLeft.GetTextureWidth());
 
     posX += fScaleX * m_guiLeft.GetTextureWidth();
-    offset = fabs(fScaleY * 0.5f * (m_guiMid.GetTextureHeight() - m_guiBackground.GetTextureHeight()));
-    if (offset > 0)  //  Center texture to the background if necessary
+    offset =
+        fabs(fScaleY * 0.5f * (m_guiMid.GetTextureHeight() - m_guiBackground.GetTextureHeight()));
+    if (offset > 0) //  Center texture to the background if necessary
       bChanged |= m_guiMid.SetPosition(posX, posY + offset);
     else
       bChanged |= m_guiMid.SetPosition(posX, posY);
@@ -292,7 +303,8 @@ bool CGUIProgressControl::UpdateLayout(void)
     if (m_bReveal)
     {
       bChanged |= m_guiMid.SetWidth(fScaleX * fFullWidth);
-      float x = posX, y = posY + offset, w =  fScaleX * fWidth, h = fScaleY * m_guiMid.GetTextureHeight();
+      float x = posX, y = posY + offset, w = fScaleX * fWidth,
+            h = fScaleY * m_guiMid.GetTextureHeight();
       CRect rect(x, y, x + w, y + h);
       if (rect != m_guiMidClipRect)
       {
@@ -308,26 +320,30 @@ bool CGUIProgressControl::UpdateLayout(void)
 
     posX += fWidth * fScaleX;
 
-    offset = fabs(fScaleY * 0.5f * (m_guiRight.GetTextureHeight() - m_guiBackground.GetTextureHeight()));
-    if (offset > 0)  //  Center texture to the background if necessary
+    offset =
+        fabs(fScaleY * 0.5f * (m_guiRight.GetTextureHeight() - m_guiBackground.GetTextureHeight()));
+    if (offset > 0) //  Center texture to the background if necessary
       bChanged |= m_guiRight.SetPosition(posX, posY + offset);
     else
       bChanged |= m_guiRight.SetPosition(posX, posY);
     bChanged |= m_guiRight.SetHeight(fScaleY * m_guiRight.GetTextureHeight());
     bChanged |= m_guiRight.SetWidth(fScaleX * m_guiRight.GetTextureWidth());
   }
-  float offset = fabs(fScaleY * 0.5f * (m_guiOverlay.GetTextureHeight() - m_guiBackground.GetTextureHeight()));
-  if (offset > 0)  //  Center texture to the background if necessary
-    bChanged |= m_guiOverlay.SetPosition(m_guiBackground.GetXPosition(), m_guiBackground.GetYPosition() + offset);
+  float offset =
+      fabs(fScaleY * 0.5f * (m_guiOverlay.GetTextureHeight() - m_guiBackground.GetTextureHeight()));
+  if (offset > 0) //  Center texture to the background if necessary
+    bChanged |= m_guiOverlay.SetPosition(m_guiBackground.GetXPosition(),
+                                         m_guiBackground.GetYPosition() + offset);
   else
-    bChanged |= m_guiOverlay.SetPosition(m_guiBackground.GetXPosition(), m_guiBackground.GetYPosition());
+    bChanged |=
+        m_guiOverlay.SetPosition(m_guiBackground.GetXPosition(), m_guiBackground.GetYPosition());
   bChanged |= m_guiOverlay.SetHeight(fScaleY * m_guiOverlay.GetTextureHeight());
   bChanged |= m_guiOverlay.SetWidth(fScaleX * m_guiOverlay.GetTextureWidth());
 
   return bChanged;
 }
 
-void CGUIProgressControl::UpdateInfo(const CGUIListItem *item)
+void CGUIProgressControl::UpdateInfo(const CGUIListItem* item)
 {
   if (!IsDisabled())
   {
@@ -337,8 +353,10 @@ void CGUIProgressControl::UpdateInfo(const CGUIListItem *item)
       if (g_infoManager.GetInt(value, m_iInfoCode, m_parentID, item))
         m_fPercent = (float)value;
 
-      if (m_fPercent < 0.0f) m_fPercent = 0.0f;
-      if (m_fPercent > 100.0f) m_fPercent = 100.0f;
+      if (m_fPercent < 0.0f)
+        m_fPercent = 0.0f;
+      if (m_fPercent > 100.0f)
+        m_fPercent = 100.0f;
     }
   }
 }

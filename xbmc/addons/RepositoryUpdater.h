@@ -42,12 +42,12 @@ public:
   /**
    * Check a single repository for updates.
    */
-  void CheckForUpdates(const ADDON::RepositoryPtr& repo, bool showProgress=false);
+  void CheckForUpdates(const ADDON::RepositoryPtr& repo, bool showProgress = false);
 
   /**
    * Check all repositories for updates.
    */
-  bool CheckForUpdates(bool showProgress=false);
+  bool CheckForUpdates(bool showProgress = false);
 
   /**
    * Wait for any pending/in-progress updates to complete.
@@ -66,10 +66,11 @@ public:
    */
   CDateTime LastUpdated() const;
 
-
   virtual void OnSettingChanged(const CSetting* setting);
 
-  struct RepositoryUpdated { };
+  struct RepositoryUpdated
+  {
+  };
 
   CEventStream<RepositoryUpdated>& Events() { return m_events; }
 
@@ -78,7 +79,7 @@ private:
   CRepositoryUpdater(const CRepositoryUpdater&);
   CRepositoryUpdater& operator=(const CRepositoryUpdater&);
 
-  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob* job);
 
   virtual void OnTimeout();
 
@@ -89,4 +90,4 @@ private:
 
   CEventSource<RepositoryUpdated> m_events;
 };
-}
+} // namespace ADDON

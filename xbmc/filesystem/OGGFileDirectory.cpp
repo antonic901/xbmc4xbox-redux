@@ -18,7 +18,6 @@
  *
  */
 
-
 #include "OGGFileDirectory.h"
 #include "music/tags/OggTag.h"
 

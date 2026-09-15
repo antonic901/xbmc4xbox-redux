@@ -20,7 +20,6 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-
 #pragma once
 
 #include "utils/StdString.h"
@@ -44,53 +43,51 @@ class CUPnPServer;
 class CUPnP
 {
 public:
-    CUPnP();
-    ~CUPnP();
+  CUPnP();
+  ~CUPnP();
 
-    // server
-    bool StartServer();
-    void StopServer();
+  // server
+  bool StartServer();
+  void StopServer();
 
-    // client
-    void StartClient();
-    void StopClient();
-    bool IsClientStarted() { return (m_MediaBrowser != NULL); }
+  // client
+  void StartClient();
+  void StopClient();
+  bool IsClientStarted() { return (m_MediaBrowser != NULL); }
 
-    // renderer
-    bool StartRenderer();
-    void StopRenderer();
-    void UpdateState();
+  // renderer
+  bool StartRenderer();
+  void StopRenderer();
+  void UpdateState();
 
-    // class methods
-    static CUPnP* GetInstance();
-    static void   ReleaseInstance(bool bWait);
-    static bool   IsInstantiated() { return upnp != NULL; }
+  // class methods
+  static CUPnP* GetInstance();
+  static void ReleaseInstance(bool bWait);
+  static bool IsInstantiated() { return upnp != NULL; }
 
-    static bool MarkWatched(const CFileItem& item,
-                            const bool watched);
+  static bool MarkWatched(const CFileItem& item, const bool watched);
 
-    static bool SaveFileState(const CFileItem& item,
-                              const CBookmark& bookmark,
-                              const bool updatePlayCount);
+  static bool SaveFileState(const CFileItem& item,
+                            const CBookmark& bookmark,
+                            const bool updatePlayCount);
 
 private:
-    // methods
-    CUPnPRenderer* CreateRenderer(int port = 0);
-    CUPnPServer*   CreateServer(int port = 0);
+  // methods
+  CUPnPRenderer* CreateRenderer(int port = 0);
+  CUPnPServer* CreateServer(int port = 0);
 
 public:
-    PLT_SyncMediaBrowser*       m_MediaBrowser;
+  PLT_SyncMediaBrowser* m_MediaBrowser;
 
 private:
-    CStdString                  m_IP;
-    PLT_UPnP*                   m_UPnP;
-    CDeviceHostReferenceHolder* m_ServerHolder;
-    CRendererReferenceHolder*   m_RendererHolder;
-    CCtrlPointReferenceHolder*  m_CtrlPointHolder;
+  CStdString m_IP;
+  PLT_UPnP* m_UPnP;
+  CDeviceHostReferenceHolder* m_ServerHolder;
+  CRendererReferenceHolder* m_RendererHolder;
+  CCtrlPointReferenceHolder* m_CtrlPointHolder;
 
-
-    static CUPnP* upnp;
-    static bool   broadcast;
+  static CUPnP* upnp;
+  static bool broadcast;
 };
 
 } /* namespace UPNP */

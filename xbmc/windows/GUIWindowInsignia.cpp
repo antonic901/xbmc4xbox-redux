@@ -37,41 +37,43 @@
 #include "programs/launchers/ProgramLauncher.h"
 
 CGUIWindowInsignia::CGUIWindowInsignia(void)
-    : CGUIWindow(WINDOW_INSIGNIA, "Insignia.xml"),
-      m_pGamesContainer(nullptr)
+  : CGUIWindow(WINDOW_INSIGNIA, "Insignia.xml"),
+    m_pGamesContainer(nullptr)
 {
   m_loadType = KEEP_IN_MEMORY;
 }
 
 CGUIWindowInsignia::~CGUIWindowInsignia(void)
-{}
+{
+}
 
 bool CGUIWindowInsignia::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_NOTIFY_ALL:
-    if (message.GetParam1() == GUI_MSG_WINDOW_RESET)
-    {
-      g_insigniaManager.Reset();
-      return true;
-    }
-    else if (message.GetParam1() == GUI_MSG_INSIGNIA_FETCHED)
-    {
-      SetProperties();
-    }
-    break;
-  default:
-    break;
+    case GUI_MSG_NOTIFY_ALL:
+      if (message.GetParam1() == GUI_MSG_WINDOW_RESET)
+      {
+        g_insigniaManager.Reset();
+        return true;
+      }
+      else if (message.GetParam1() == GUI_MSG_INSIGNIA_FETCHED)
+      {
+        SetProperties();
+      }
+      break;
+    default:
+      break;
   }
 
   return CGUIWindow::OnMessage(message);
 }
 
-bool CGUIWindowInsignia::OnAction(const CAction &action)
+bool CGUIWindowInsignia::OnAction(const CAction& action)
 {
-  CGUIControl *focusedControl = GetFocusedControl();
-  if (focusedControl && action.GetButtonCode() == KEY_BUTTON_A && focusedControl->GetID() == CONTROL_GAMES_LIST)
+  CGUIControl* focusedControl = GetFocusedControl();
+  if (focusedControl && action.GetButtonCode() == KEY_BUTTON_A &&
+      focusedControl->GetID() == CONTROL_GAMES_LIST)
   {
     CGUIListItemPtr game = m_pGamesContainer->GetListItem(0);
 
@@ -80,7 +82,8 @@ bool CGUIWindowInsignia::OnAction(const CAction &action)
 
     std::string gamePath = database.GetXBEPathByTitleId(game->GetProperty("code").asString());
     if (gamePath.empty())
-      CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, "Insignia", g_localizeStrings.Get(38903));
+      CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, "Insignia",
+                                            g_localizeStrings.Get(38903));
     else
       LAUNCHERS::CProgramLauncher::LaunchProgram(gamePath);
 

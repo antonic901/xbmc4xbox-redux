@@ -37,13 +37,14 @@
 
 using namespace ADDON;
 
+const CContextMenuItem CContextMenuManager::MAIN =
+    CContextMenuItem::CreateGroup("", "", "kodi.core.main", "");
+const CContextMenuItem CContextMenuManager::MANAGE =
+    CContextMenuItem::CreateGroup("", "", "kodi.core.manage", "");
 
-const CContextMenuItem CContextMenuManager::MAIN = CContextMenuItem::CreateGroup("", "", "kodi.core.main", "");
-const CContextMenuItem CContextMenuManager::MANAGE = CContextMenuItem::CreateGroup("", "", "kodi.core.manage", "");
-
-
-CContextMenuManager::CContextMenuManager(CAddonMgr& addonMgr)
-  : m_addonMgr(addonMgr) {}
+CContextMenuManager::CContextMenuManager(CAddonMgr& addonMgr) : m_addonMgr(addonMgr)
+{
+}
 
 CContextMenuManager::~CContextMenuManager()
 {
@@ -96,12 +97,14 @@ void CContextMenuManager::ReloadAddonItems()
   std::vector<CContextMenuItem> addonItems;
   for (VECADDONS::const_iterator ait = addons.begin(); ait != addons.end(); ++ait)
   {
-    const ADDON::AddonPtr &addon = *ait;
-    std::vector<CContextMenuItem> items = boost::static_pointer_cast<CContextMenuAddon>(addon)->GetItems();
+    const ADDON::AddonPtr& addon = *ait;
+    std::vector<CContextMenuItem> items =
+        boost::static_pointer_cast<CContextMenuAddon>(addon)->GetItems();
     for (std::vector<CContextMenuItem>::iterator iit = items.begin(); iit != items.end(); ++iit)
     {
-      CContextMenuItem &item = *iit;
-      std::vector<CContextMenuItem>::iterator it = std::find(addonItems.begin(), addonItems.end(), item);
+      CContextMenuItem& item = *iit;
+      std::vector<CContextMenuItem>::iterator it =
+          std::find(addonItems.begin(), addonItems.end(), item);
       if (it == addonItems.end())
         addonItems.push_back(item);
     }
@@ -126,8 +129,9 @@ bool CContextMenuManager::Unload(const CContextMenuAddon& addon)
 
   const std::vector<CContextMenuItem> menuItems = addon.GetItems();
 
-  std::vector<CContextMenuItem>::iterator it = std::remove_if(m_addonItems.begin(), m_addonItems.end(),
-    boost::bind(removeItemIf, _1, boost::cref(menuItems)));
+  std::vector<CContextMenuItem>::iterator it =
+      std::remove_if(m_addonItems.begin(), m_addonItems.end(),
+                     boost::bind(removeItemIf, _1, boost::cref(menuItems)));
   m_addonItems.erase(it, m_addonItems.end());
   CLog::Log(LOGDEBUG, "ContextMenuManager: %s unloaded.", addon.ID().c_str());
   return true;
@@ -139,17 +143,20 @@ void CContextMenuManager::OnEvent(const ADDON::AddonEvent& event)
   {
     ReloadAddonItems();
   }
-  else if (const ADDON::AddonEvents::Enabled *enableEvent = dynamic_cast<const AddonEvents::Enabled*>(&event))
+  else if (const ADDON::AddonEvents::Enabled* enableEvent =
+               dynamic_cast<const AddonEvents::Enabled*>(&event))
   {
     AddonPtr addon;
     if (m_addonMgr.GetAddon(enableEvent->id, addon, ADDON_CONTEXT_ITEM))
     {
       CSingleLock lock(m_criticalSection);
-      std::vector<CContextMenuItem> items = boost::static_pointer_cast<CContextMenuAddon>(addon)->GetItems();
+      std::vector<CContextMenuItem> items =
+          boost::static_pointer_cast<CContextMenuAddon>(addon)->GetItems();
       for (std::vector<CContextMenuItem>::iterator iit = items.begin(); iit != items.end(); ++iit)
       {
-        CContextMenuItem &item = *iit;
-        std::vector<CContextMenuItem>::iterator it = std::find(m_addonItems.begin(), m_addonItems.end(), item);
+        CContextMenuItem& item = *iit;
+        std::vector<CContextMenuItem>::iterator it =
+            std::find(m_addonItems.begin(), m_addonItems.end(), item);
         if (it == m_addonItems.end())
           m_addonItems.push_back(item);
       }
@@ -158,13 +165,16 @@ void CContextMenuManager::OnEvent(const ADDON::AddonEvent& event)
   }
 }
 
-bool isItemParentAndVisible(const CContextMenuItem& other, const CContextMenuItem &menuItem, const CFileItem &fileItem)
+bool isItemParentAndVisible(const CContextMenuItem& other,
+                            const CContextMenuItem& menuItem,
+                            const CFileItem& fileItem)
 {
   return menuItem.IsParentOf(other) && other.IsVisible(fileItem);
 }
 
-bool CContextMenuManager::IsVisible(
-  const CContextMenuItem& menuItem, const CContextMenuItem& root, const CFileItem& fileItem) const
+bool CContextMenuManager::IsVisible(const CContextMenuItem& menuItem,
+                                    const CContextMenuItem& root,
+                                    const CFileItem& fileItem) const
 {
   if (menuItem.GetLabel(fileItem).empty() || !root.IsParentOf(menuItem))
     return false;
@@ -172,47 +182,56 @@ bool CContextMenuManager::IsVisible(
   if (menuItem.IsGroup())
   {
     CSingleLock lock(m_criticalSection);
-    return boost::algorithm::any_of(m_addonItems, boost::bind(isItemParentAndVisible, _1, boost::cref(menuItem), boost::cref(fileItem)));
+    return boost::algorithm::any_of(
+        m_addonItems,
+        boost::bind(isItemParentAndVisible, _1, boost::cref(menuItem), boost::cref(fileItem)));
   }
 
   return menuItem.IsVisible(fileItem);
 }
 
-bool isItemVisible(const boost::shared_ptr<IContextMenuItem> &menu, const CFileItem &fileItem)
+bool isItemVisible(const boost::shared_ptr<IContextMenuItem>& menu, const CFileItem& fileItem)
 {
   return menu->IsVisible(fileItem);
 }
 
-ContextMenuView CContextMenuManager::GetItems(const CFileItem& fileItem, const CContextMenuItem& root /*= MAIN*/) const
+ContextMenuView CContextMenuManager::GetItems(const CFileItem& fileItem,
+                                              const CContextMenuItem& root /*= MAIN*/) const
 {
   ContextMenuView result;
   //! @todo implement group support
   if (&root == &MAIN)
   {
     CSingleLock lock(m_criticalSection);
-    boost::algorithm::copy_if(m_items, std::back_inserter(result), boost::bind(isItemVisible, _1, boost::cref(fileItem)));
+    boost::algorithm::copy_if(m_items, std::back_inserter(result),
+                              boost::bind(isItemVisible, _1, boost::cref(fileItem)));
   }
   return result;
 }
 
-bool sortByLabel(const ContextMenuView::value_type& lhs, const ContextMenuView::value_type& rhs, const CFileItem &fileItem)
+bool sortByLabel(const ContextMenuView::value_type& lhs,
+                 const ContextMenuView::value_type& rhs,
+                 const CFileItem& fileItem)
 {
   return lhs->GetLabel(fileItem) < rhs->GetLabel(fileItem);
 }
 
-ContextMenuView CContextMenuManager::GetAddonItems(const CFileItem& fileItem, const CContextMenuItem& root /*= MAIN*/) const
+ContextMenuView CContextMenuManager::GetAddonItems(const CFileItem& fileItem,
+                                                   const CContextMenuItem& root /*= MAIN*/) const
 {
   ContextMenuView result;
   {
     CSingleLock lock(m_criticalSection);
-    for (std::vector<CContextMenuItem>::const_iterator it = m_addonItems.begin(); it != m_addonItems.end(); ++it)
-     if (IsVisible(*it, root, fileItem))
-       result.push_back(boost::shared_ptr<const CContextMenuItem>(new CContextMenuItem(*it)));
+    for (std::vector<CContextMenuItem>::const_iterator it = m_addonItems.begin();
+         it != m_addonItems.end(); ++it)
+      if (IsVisible(*it, root, fileItem))
+        result.push_back(boost::shared_ptr<const CContextMenuItem>(new CContextMenuItem(*it)));
   }
 
   if (&root == &MAIN || &root == &MANAGE)
   {
-    std::sort(result.begin(), result.end(), boost::bind(sortByLabel, _1, _2, boost::cref(fileItem)));
+    std::sort(result.begin(), result.end(),
+              boost::bind(sortByLabel, _1, _2, boost::cref(fileItem)));
   }
   return result;
 }
@@ -238,9 +257,9 @@ bool CONTEXTMENU::ShowFor(const CFileItemPtr& fileItem, const CContextMenuItem& 
   if (selected < 0 || selected >= static_cast<int>(menuItems.size()))
     return false;
 
-  return menuItems[selected]->IsGroup() ?
-         ShowFor(fileItem, static_cast<const CContextMenuItem&>(*menuItems[selected])) :
-         menuItems[selected]->Execute(fileItem);
+  return menuItems[selected]->IsGroup()
+             ? ShowFor(fileItem, static_cast<const CContextMenuItem&>(*menuItems[selected]))
+             : menuItems[selected]->Execute(fileItem);
 }
 
 bool CONTEXTMENU::LoopFrom(const IContextMenuItem& menu, const CFileItemPtr& fileItem)

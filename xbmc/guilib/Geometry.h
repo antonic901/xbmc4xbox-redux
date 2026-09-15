@@ -29,7 +29,8 @@ class CPoint
 public:
   CPoint()
   {
-    x = 0; y = 0;
+    x = 0;
+    y = 0;
   };
 
   CPoint(float a, float b)
@@ -38,7 +39,7 @@ public:
     y = b;
   };
 
-  CPoint operator+(const CPoint &point) const
+  CPoint operator+(const CPoint& point) const
   {
     CPoint ans;
     ans.x = x + point.x;
@@ -46,14 +47,14 @@ public:
     return ans;
   };
 
-  const CPoint &operator+=(const CPoint &point)
+  const CPoint& operator+=(const CPoint& point)
   {
     x += point.x;
     y += point.y;
     return *this;
   };
 
-  CPoint operator-(const CPoint &point) const
+  CPoint operator-(const CPoint& point) const
   {
     CPoint ans;
     ans.x = x - point.x;
@@ -61,7 +62,7 @@ public:
     return ans;
   };
 
-  const CPoint &operator-=(const CPoint &point)
+  const CPoint& operator-=(const CPoint& point)
   {
     x -= point.x;
     y -= point.y;
@@ -74,19 +75,31 @@ public:
 class CRect
 {
 public:
-  CRect() { x1 = y1 = x2 = y2 = 0;};
-  CRect(float left, float top, float right, float bottom) { x1 = left; y1 = top; x2 = right; y2 = bottom; };
+  CRect() { x1 = y1 = x2 = y2 = 0; };
+  CRect(float left, float top, float right, float bottom)
+  {
+    x1 = left;
+    y1 = top;
+    x2 = right;
+    y2 = bottom;
+  };
 
-  void SetRect(float left, float top, float right, float bottom) { x1 = left; y1 = top; x2 = right; y2 = bottom; };
+  void SetRect(float left, float top, float right, float bottom)
+  {
+    x1 = left;
+    y1 = top;
+    x2 = right;
+    y2 = bottom;
+  };
 
-  bool PtInRect(const CPoint &point) const
+  bool PtInRect(const CPoint& point) const
   {
     if (x1 <= point.x && point.x <= x2 && y1 <= point.y && point.y <= y2)
       return true;
     return false;
   };
 
-  const CRect &operator -=(const CPoint &point)
+  const CRect& operator-=(const CPoint& point)
   {
     x1 -= point.x;
     y1 -= point.y;
@@ -95,7 +108,7 @@ public:
     return *this;
   };
 
-  const CRect &operator +=(const CPoint &point)
+  const CRect& operator+=(const CPoint& point)
   {
     x1 += point.x;
     y1 += point.y;
@@ -104,7 +117,7 @@ public:
     return *this;
   };
 
-  const CRect &Intersect(const CRect &rect)
+  const CRect& Intersect(const CRect& rect)
   {
     x1 = clamp_range(x1, rect.x1, rect.x2);
     x2 = clamp_range(x2, rect.x1, rect.x2);
@@ -113,56 +126,48 @@ public:
     return *this;
   };
 
-  const CRect &Union(const CRect &rect)
+  const CRect& Union(const CRect& rect)
   {
     if (IsEmpty())
       *this = rect;
     else if (!rect.IsEmpty())
     {
-      x1 = min(x1,rect.x1);
-      y1 = min(y1,rect.y1);
+      x1 = min(x1, rect.x1);
+      y1 = min(y1, rect.y1);
 
-      x2 = max(x2,rect.x2);
-      y2 = max(y2,rect.y2);
+      x2 = max(x2, rect.x2);
+      y2 = max(y2, rect.y2);
     }
 
     return *this;
   };
 
-  bool IsEmpty() const
-  {
-    return (x2 - x1) * (y2 - y1) == 0;
-  };
+  bool IsEmpty() const { return (x2 - x1) * (y2 - y1) == 0; };
 
-  inline float Width() const
-  {
-    return x2 - x1;
-  };
+  inline float Width() const { return x2 - x1; };
 
-  inline float Height() const
-  {
-    return y2 - y1;
-  };
+  inline float Height() const { return y2 - y1; };
 
-  inline float Area() const
-  {
-    return Width() * Height();
-  };
+  inline float Area() const { return Width() * Height(); };
 
-  bool operator !=(const CRect &rect) const
+  bool operator!=(const CRect& rect) const
   {
-    if (x1 != rect.x1) return true;
-    if (x2 != rect.x2) return true;
-    if (y1 != rect.y1) return true;
-    if (y2 != rect.y2) return true;
+    if (x1 != rect.x1)
+      return true;
+    if (x2 != rect.x2)
+      return true;
+    if (y1 != rect.y1)
+      return true;
+    if (y2 != rect.y2)
+      return true;
     return false;
   };
 
   float x1, y1, x2, y2;
+
 private:
   inline static float clamp_range(float x, float l, float h)
   {
     return (x > h) ? h : ((x < l) ? l : x);
   }
 };
-

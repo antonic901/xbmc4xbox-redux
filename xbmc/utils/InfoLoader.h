@@ -32,11 +32,13 @@ public:
   std::string GetInfo(int info);
   void Refresh();
 
-  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob* job);
+
 protected:
-  virtual CJob *GetJob() const=0;
+  virtual CJob* GetJob() const = 0;
   virtual std::string TranslateInfo(int info) const;
   virtual std::string BusyInfo(int info) const;
+
 private:
   unsigned int m_refreshTime;
   unsigned int m_timeToRefresh;

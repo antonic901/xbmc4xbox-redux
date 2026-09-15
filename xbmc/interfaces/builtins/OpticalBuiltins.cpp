@@ -91,4 +91,3 @@ CBuiltins::CommandMap COpticalBuiltins::GetOperations() const
 
   return commands;
 }
-

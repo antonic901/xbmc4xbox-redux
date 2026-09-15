@@ -37,24 +37,26 @@ public:
    \param item a CFileItem
    \return true if we fill art, false otherwise
    */
-  virtual bool FillLibraryArt(CFileItem &item) { return false; }
+  virtual bool FillLibraryArt(CFileItem& item) { return false; }
 
   /*! \brief Checks whether the given item has an image listed in the texture database
    \param item CFileItem to check
    \param type the type of image to retrieve
    \return the image associated with this item
    */
-  virtual std::string GetCachedImage(const CFileItem &item, const std::string &type);
+  virtual std::string GetCachedImage(const CFileItem& item, const std::string& type);
 
   /*! \brief Associate an image with the given item in the texture database
    \param item CFileItem to associate the image with
    \param type the type of image
    \param image the URL of the image
    */
-  virtual void SetCachedImage(const CFileItem &item, const std::string &type, const std::string &image);
+  virtual void SetCachedImage(const CFileItem& item,
+                              const std::string& type,
+                              const std::string& image);
 
 protected:
-  CTextureDatabase *m_textureDatabase;
+  CTextureDatabase* m_textureDatabase;
 };
 
 class CProgramThumbLoader : public CThumbLoader
@@ -73,7 +75,7 @@ public:
    \return true if we fill the thumb, false otherwise
    \sa GetLocalThumb
    */
-  virtual bool FillThumb(CFileItem &item);
+  virtual bool FillThumb(CFileItem& item);
 
   /*! \brief Get a local thumb for a programs item
    Shortcuts are checked, then we check for a file or folder thumb
@@ -81,5 +83,5 @@ public:
    \return the local thumb (if it exists)
    \sa FillThumb
    */
-  static std::string GetLocalThumb(const CFileItem &item);
+  static std::string GetLocalThumb(const CFileItem& item);
 };

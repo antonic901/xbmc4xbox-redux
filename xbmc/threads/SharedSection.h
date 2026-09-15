@@ -36,22 +36,53 @@ class CSharedSection
   unsigned int sharedCount;
 
 public:
-  inline CSharedSection() : cond(actualCv,XbmcThreads::InversePredicate<unsigned int&>(sharedCount)), sharedCount(0)  {}
+  inline CSharedSection()
+    : cond(actualCv, XbmcThreads::InversePredicate<unsigned int&>(sharedCount)),
+      sharedCount(0)
+  {
+  }
 
-  inline void lock() { CSingleLock l(sec); while (sharedCount) cond.wait(l); sec.lock(); }
-  inline bool try_lock() { return (sec.try_lock() ? ((sharedCount == 0) ? true : (sec.unlock(), false)) : false); }
+  inline void lock()
+  {
+    CSingleLock l(sec);
+    while (sharedCount)
+      cond.wait(l);
+    sec.lock();
+  }
+  inline bool try_lock()
+  {
+    return (sec.try_lock() ? ((sharedCount == 0) ? true : (sec.unlock(), false)) : false);
+  }
   inline void unlock() { sec.unlock(); }
 
-  inline void lock_shared() { CSingleLock l(sec); sharedCount++; }
-  inline bool try_lock_shared() { return (sec.try_lock() ? sharedCount++, sec.unlock(), true : false); }
-  inline void unlock_shared() { CSingleLock l(sec); sharedCount--; if (!sharedCount) { cond.notifyAll(); } }
+  inline void lock_shared()
+  {
+    CSingleLock l(sec);
+    sharedCount++;
+  }
+  inline bool try_lock_shared()
+  {
+    return (sec.try_lock() ? sharedCount++, sec.unlock(), true : false);
+  }
+  inline void unlock_shared()
+  {
+    CSingleLock l(sec);
+    sharedCount--;
+    if (!sharedCount)
+    {
+      cond.notifyAll();
+    }
+  }
 };
 
 class CSharedLock : public XbmcThreads::SharedLock<CSharedSection>
 {
 public:
   inline CSharedLock(CSharedSection& cs) : XbmcThreads::SharedLock<CSharedSection>(cs) {}
-  inline CSharedLock(const CSharedSection& cs) : XbmcThreads::SharedLock<CSharedSection>((CSharedSection&)cs) {}
+  inline CSharedLock(const CSharedSection& cs)
+    : XbmcThreads::SharedLock<CSharedSection>((CSharedSection&)cs)
+  {
+  }
 
   inline bool IsOwner() const { return owns_lock(); }
   inline void Enter() { lock(); }
@@ -62,10 +93,12 @@ class CExclusiveLock : public XbmcThreads::UniqueLock<CSharedSection>
 {
 public:
   inline CExclusiveLock(CSharedSection& cs) : XbmcThreads::UniqueLock<CSharedSection>(cs) {}
-  inline CExclusiveLock(const CSharedSection& cs) : XbmcThreads::UniqueLock<CSharedSection> ((CSharedSection&)cs) {}
+  inline CExclusiveLock(const CSharedSection& cs)
+    : XbmcThreads::UniqueLock<CSharedSection>((CSharedSection&)cs)
+  {
+  }
 
   inline bool IsOwner() const { return owns_lock(); }
   inline void Leave() { unlock(); }
   inline void Enter() { lock(); }
 };
-

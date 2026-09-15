@@ -36,59 +36,43 @@
 #endif
 
 #define NT_STATUS_OBJECT_NAME_NOT_FOUND long(0xC0000000 | 0x0034)
-#define NT_STATUS_VOLUME_DISMOUNTED     long(0xC0000000 | 0x026E)
+#define NT_STATUS_VOLUME_DISMOUNTED long(0xC0000000 | 0x026E)
 
 typedef struct
 {
   char cDriveLetter;
   char* szDevice;
   int iPartition;
-}
-stDriveMapping;
+} stDriveMapping;
 
 #ifdef _XBOX
-stDriveMapping driveMapping[] =
-  {
-    { 'C', "Harddisk0\\Partition2", 2},
-    { 'D', "Cdrom0", -1},
-    { 'E', "Harddisk0\\Partition1", 1},
-    { 'X', "Harddisk0\\Partition3", 3},
-    { 'Y', "Harddisk0\\Partition4", 4},
-    { 'Z', "Harddisk0\\Partition5", 5},
-  };
-char extendPartitionMapping[] = 
-  { 
-      'F','G','R','S','V','W','A','B'
-  };
+stDriveMapping driveMapping[] = {
+    {'C', "Harddisk0\\Partition2", 2}, {'D', "Cdrom0", -1},
+    {'E', "Harddisk0\\Partition1", 1}, {'X', "Harddisk0\\Partition3", 3},
+    {'Y', "Harddisk0\\Partition4", 4}, {'Z', "Harddisk0\\Partition5", 5},
+};
+char extendPartitionMapping[] = {'F', 'G', 'R', 'S', 'V', 'W', 'A', 'B'};
 #else
-stDriveMapping driveMapping[] =
-  {
-    { 'C', "C:", 2},
-    { 'D', "D:", -1},
-    { 'E', "E:", 1},
-    { 'X', "X:", 3},
-    { 'Y', "Y:", 4},
-    { 'Z', "Z:", 5},
-  };
+stDriveMapping driveMapping[] = {
+    {'C', "C:", 2}, {'D', "D:", -1}, {'E', "E:", 1}, {'X', "X:", 3}, {'Y', "Y:", 4}, {'Z', "Z:", 5},
+};
 
 #include "../../Tools/Win32/XBMC_PC.h"
 
 #endif
 
-#define NUM_OF_DRIVES ( sizeof( driveMapping) / sizeof( driveMapping[0] ) )
-
+#define NUM_OF_DRIVES (sizeof(driveMapping) / sizeof(driveMapping[0]))
 
 PVOID CIoSupport::m_rawXferBuffer;
 PARTITION_TABLE CIoSupport::m_partitionTable;
 bool CIoSupport::m_fPartitionTableIsValid;
-
 
 // cDriveLetter e.g. 'D'
 // szDevice e.g. "Cdrom0" or "Harddisk0\Partition6"
 HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
 {
 #ifdef _XBOX
-  char szSourceDevice[MAX_PATH+32];
+  char szSourceDevice[MAX_PATH + 32];
   char szDestinationDrive[16];
   NTSTATUS status;
 
@@ -109,8 +93,7 @@ HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
 
   return status;
 #else
-  if ((strnicmp(szDevice, "Harddisk0", 9) == 0) ||
-      (strnicmp(szDevice, "Cdrom", 5) == 0))
+  if ((strnicmp(szDevice, "Harddisk0", 9) == 0) || (strnicmp(szDevice, "Cdrom", 5) == 0))
     return S_OK;
   return E_FAIL;
 #endif
@@ -127,11 +110,11 @@ HRESULT CIoSupport::UnmapDriveLetter(char cDriveLetter)
   sprintf(szDestinationDrive, "\\??\\%c:", cDriveLetter);
   RtlInitAnsiString(&LinkName, szDestinationDrive);
 
-  status =  IoDeleteSymbolicLink(&LinkName);
+  status = IoDeleteSymbolicLink(&LinkName);
 
   if (NT_SUCCESS(status))
     CLog::Log(LOGNOTICE, "Unmapped drive %c", cDriveLetter);
-  else if(status != NT_STATUS_OBJECT_NAME_NOT_FOUND)
+  else if (status != NT_STATUS_OBJECT_NAME_NOT_FOUND)
     CLog::Log(LOGERROR, "Failed to delete symbolic link!  (status=0x%08x)", status);
 
   return status;
@@ -150,7 +133,7 @@ HRESULT CIoSupport::RemapDriveLetter(char cDriveLetter, const char* szDevice)
 HRESULT CIoSupport::Dismount(const char* szDevice)
 {
 #ifdef _XBOX
-  char szSourceDevice[MAX_PATH+32];
+  char szSourceDevice[MAX_PATH + 32];
   ANSI_STRING DeviceName;
   NTSTATUS status;
 
@@ -162,7 +145,7 @@ HRESULT CIoSupport::Dismount(const char* szDevice)
 
   if (NT_SUCCESS(status))
     CLog::Log(LOGNOTICE, "Dismounted %s", szDevice);
-  else if(status != NT_STATUS_VOLUME_DISMOUNTED)
+  else if (status != NT_STATUS_VOLUME_DISMOUNTED)
     CLog::Log(LOGERROR, "Failed to dismount volume!  (status=0x%08x)", status);
 
   return status;
@@ -176,10 +159,11 @@ void CIoSupport::GetPartition(char cDriveLetter, char* szPartition)
   char upperLetter = toupper(cDriveLetter);
   if (ExtendedPartitionMappingExists(upperLetter))
   {
-    sprintf(szPartition, "Harddisk0\\Partition%u", EXTEND_PARTITION_BEGIN+GetExtendedPartitionPosition(upperLetter));
+    sprintf(szPartition, "Harddisk0\\Partition%u",
+            EXTEND_PARTITION_BEGIN + GetExtendedPartitionPosition(upperLetter));
     return;
   }
-  for (unsigned int i=0; i < NUM_OF_DRIVES; i++)
+  for (unsigned int i = 0; i < NUM_OF_DRIVES; i++)
     if (driveMapping[i].cDriveLetter == upperLetter)
     {
       strcpy(szPartition, driveMapping[i].szDevice);
@@ -203,11 +187,11 @@ void CIoSupport::GetDrive(const char* szPartition, char* cDriveLetter)
 #ifdef _XBOX
   if (part_num >= EXTEND_PARTITION_BEGIN)
   {
-    *cDriveLetter = extendPartitionMapping[part_num-EXTEND_PARTITION_BEGIN];
+    *cDriveLetter = extendPartitionMapping[part_num - EXTEND_PARTITION_BEGIN];
     return;
   }
 #endif
-  for (unsigned int i=0; i < NUM_OF_DRIVES; i++)
+  for (unsigned int i = 0; i < NUM_OF_DRIVES; i++)
     if (strnicmp(driveMapping[i].szDevice, szPartition, strlen(driveMapping[i].szDevice)) == 0)
     {
       *cDriveLetter = driveMapping[i].cDriveLetter;
@@ -219,30 +203,32 @@ void CIoSupport::GetDrive(const char* szPartition, char* cDriveLetter)
 HRESULT CIoSupport::EjectTray()
 {
 #ifdef _WIN32PC
-  BOOL bRet= FALSE;
+  BOOL bRet = FALSE;
   char cDL = cDriveLetter;
-  if( !cDL )
+  if (!cDL)
   {
     char* dvdDevice = CLibcdio::GetInstance()->GetDeviceFileName();
     cDL = dvdDevice[4];
   }
-  
-  CStdString strVolFormat; strVolFormat.Format( _T("\\\\.\\%c:" ), cDL);
-  HANDLE hDrive= CreateFile( strVolFormat, GENERIC_READ, FILE_SHARE_READ, 
-                             NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-  CStdString strRootFormat; strRootFormat.Format( _T("%c:\\"), cDL);
-  if( ( hDrive != INVALID_HANDLE_VALUE || GetLastError() == NO_ERROR) && 
-      ( GetDriveType( strRootFormat ) == DRIVE_CDROM ) )
+
+  CStdString strVolFormat;
+  strVolFormat.Format(_T("\\\\.\\%c:" ), cDL);
+  HANDLE hDrive = CreateFile(strVolFormat, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+                             FILE_ATTRIBUTE_NORMAL, NULL);
+  CStdString strRootFormat;
+  strRootFormat.Format(_T("%c:\\"), cDL);
+  if ((hDrive != INVALID_HANDLE_VALUE || GetLastError() == NO_ERROR) &&
+      (GetDriveType(strRootFormat) == DRIVE_CDROM))
   {
     DWORD dwDummy;
-    bRet= DeviceIoControl( hDrive, ( bEject ? IOCTL_STORAGE_EJECT_MEDIA : IOCTL_STORAGE_LOAD_MEDIA), 
-                                    NULL, 0, NULL, 0, &dwDummy, NULL);
-    CloseHandle( hDrive );
+    bRet = DeviceIoControl(hDrive, (bEject ? IOCTL_STORAGE_EJECT_MEDIA : IOCTL_STORAGE_LOAD_MEDIA),
+                           NULL, 0, NULL, 0, &dwDummy, NULL);
+    CloseHandle(hDrive);
   }
-  return bRet? S_OK : S_FALSE;
+  return bRet ? S_OK : S_FALSE;
 #endif
 #ifdef _XBOX
-  HalWriteSMBusValue(0x20, 0x0C, FALSE, 0);  // eject tray
+  HalWriteSMBusValue(0x20, 0x0C, FALSE, 0); // eject tray
 #endif
   return S_OK;
 }
@@ -250,7 +236,7 @@ HRESULT CIoSupport::EjectTray()
 HRESULT CIoSupport::CloseTray()
 {
 #ifdef _XBOX
-  HalWriteSMBusValue(0x20, 0x0C, FALSE, 1);  // close tray
+  HalWriteSMBusValue(0x20, 0x0C, FALSE, 1); // close tray
 #endif
   return S_OK;
 }
@@ -304,20 +290,16 @@ HANDLE CIoSupport::OpenCDROM()
   OBJECT_ATTRIBUTES attributes;
   RtlInitAnsiString(&filename, "\\Device\\Cdrom0");
   InitializeObjectAttributes(&attributes, &filename, OBJ_CASE_INSENSITIVE, NULL);
-  if (!NT_SUCCESS(NtOpenFile(&hDevice,
-                             GENERIC_READ | SYNCHRONIZE | FILE_READ_ATTRIBUTES,
-                             &attributes,
-                             &status,
-                             FILE_SHARE_READ,
+  if (!NT_SUCCESS(NtOpenFile(&hDevice, GENERIC_READ | SYNCHRONIZE | FILE_READ_ATTRIBUTES,
+                             &attributes, &status, FILE_SHARE_READ,
                              FILE_NON_DIRECTORY_FILE | FILE_SYNCHRONOUS_IO_NONALERT)))
   {
     return NULL;
   }
 #else
 
-  hDevice = CreateFile("\\\\.\\Cdrom0", GENERIC_READ, FILE_SHARE_READ,
-                       NULL, OPEN_EXISTING,
-                       FILE_FLAG_RANDOM_ACCESS, NULL );
+  hDevice = CreateFile("\\\\.\\Cdrom0", GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
+                       FILE_FLAG_RANDOM_ACCESS, NULL);
 
 #endif
   return hDevice;
@@ -356,7 +338,6 @@ INT CIoSupport::ReadSector(HANDLE hDevice, DWORD dwSector, LPSTR lpczBuffer)
   return -1;
 }
 
-
 INT CIoSupport::ReadSectorMode2(HANDLE hDevice, DWORD dwSector, LPSTR lpczBuffer)
 {
 #ifdef HAS_DVD_DRIVE
@@ -370,16 +351,10 @@ INT CIoSupport::ReadSectorMode2(HANDLE hDevice, DWORD dwSector, LPSTR lpczBuffer
 
   for (int i = 0; i < 5; i++)
   {
-    if ( DeviceIoControl( hDevice,
-                          IOCTL_CDROM_RAW_READ,
-                          &rawRead,
-                          sizeof(RAW_READ_INFO),
-                          m_rawXferBuffer,
-                          RAW_SECTOR_SIZE,
-                          &dwBytesReturned,
-                          NULL ) != 0 )
+    if (DeviceIoControl(hDevice, IOCTL_CDROM_RAW_READ, &rawRead, sizeof(RAW_READ_INFO),
+                        m_rawXferBuffer, RAW_SECTOR_SIZE, &dwBytesReturned, NULL) != 0)
     {
-      memcpy(lpczBuffer, (char*)m_rawXferBuffer+MODE2_DATA_START, MODE2_DATA_SIZE);
+      memcpy(lpczBuffer, (char*)m_rawXferBuffer + MODE2_DATA_START, MODE2_DATA_SIZE);
       return MODE2_DATA_SIZE;
     }
     else
@@ -405,14 +380,8 @@ INT CIoSupport::ReadSectorCDDA(HANDLE hDevice, DWORD dwSector, LPSTR lpczBuffer)
 
   for (int i = 0; i < 5; i++)
   {
-    if ( DeviceIoControl( hDevice,
-                          IOCTL_CDROM_RAW_READ,
-                          &rawRead,
-                          sizeof(RAW_READ_INFO),
-                          m_rawXferBuffer,
-                          sizeof(RAW_SECTOR_SIZE),
-                          &dwBytesReturned,
-                          NULL ) != 0 )
+    if (DeviceIoControl(hDevice, IOCTL_CDROM_RAW_READ, &rawRead, sizeof(RAW_READ_INFO),
+                        m_rawXferBuffer, sizeof(RAW_SECTOR_SIZE), &dwBytesReturned, NULL) != 0)
     {
       memcpy(lpczBuffer, m_rawXferBuffer, RAW_SECTOR_SIZE);
       return RAW_SECTOR_SIZE;
@@ -436,7 +405,6 @@ BOOL CIoSupport::IsDebug()
   return FALSE;
 #endif
 }
-
 
 VOID CIoSupport::GetXbePath(char* szDest)
 {
@@ -483,7 +451,8 @@ bool CIoSupport::DriveExists(char cDriveLetter)
     oa.ObjectName = &drive_string;
     oa.RootDirectory = 0;
 
-    status = NtOpenFile(&hTemp, GENERIC_READ | GENERIC_WRITE, &oa, &iosb, FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_SYNCHRONOUS_IO_ALERT);
+    status = NtOpenFile(&hTemp, GENERIC_READ | GENERIC_WRITE, &oa, &iosb,
+                        FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_SYNCHRONOUS_IO_ALERT);
 
     if (NT_SUCCESS(status))
     {
@@ -509,11 +478,11 @@ bool CIoSupport::DriveExists(char cDriveLetter)
     {
       // if the kernel is set to use partitions 6 and 7 by default
       // the g drive can exist
-      if(((XboxKrnlVersion->Qfe & 67) == 67))
+      if (((XboxKrnlVersion->Qfe & 67) == 67))
         return true;
       // not all kernel versions return 67, if the drive is bigger than
       // 137 gb drive (plus a bit of room for error), the G drive can exist
-      else if ( drive_size.QuadPart >= 150000000000 )
+      else if (drive_size.QuadPart >= 150000000000)
         return true;
     }
 
@@ -552,7 +521,8 @@ bool CIoSupport::PartitionExists(int nPartition)
   oa.ObjectName = &part_string;
   oa.RootDirectory = 0;
 
-  status = NtOpenFile(&hTemp, GENERIC_READ | GENERIC_WRITE, &oa, &iosb, FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_SYNCHRONOUS_IO_ALERT);
+  status = NtOpenFile(&hTemp, GENERIC_READ | GENERIC_WRITE, &oa, &iosb,
+                      FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_SYNCHRONOUS_IO_ALERT);
 
   if (NT_SUCCESS(status))
   {
@@ -585,22 +555,21 @@ LARGE_INTEGER CIoSupport::GetDriveSize()
   oa.ObjectName = &hd_string;
   oa.RootDirectory = 0;
 
-  status = NtOpenFile(&hDevice, GENERIC_READ | GENERIC_WRITE, &oa, &iosb, FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_SYNCHRONOUS_IO_ALERT);
+  status = NtOpenFile(&hDevice, GENERIC_READ | GENERIC_WRITE, &oa, &iosb,
+                      FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_SYNCHRONOUS_IO_ALERT);
   if (!NT_SUCCESS(status))
     return drive_size;
 
-  status = NtDeviceIoControlFile(hDevice, NULL, NULL, NULL, &iosb,
-        IOCTL_DISK_GET_DRIVE_GEOMETRY, NULL, 0, &disk_geometry, sizeof(disk_geometry));
+  status = NtDeviceIoControlFile(hDevice, NULL, NULL, NULL, &iosb, IOCTL_DISK_GET_DRIVE_GEOMETRY,
+                                 NULL, 0, &disk_geometry, sizeof(disk_geometry));
 
   CloseHandle(hDevice);
 
   if (!NT_SUCCESS(status))
     return drive_size;
 
-  drive_size.QuadPart = disk_geometry.BytesPerSector *
-                        disk_geometry.SectorsPerTrack *
-                        disk_geometry.TracksPerCylinder *
-                        disk_geometry.Cylinders.QuadPart;
+  drive_size.QuadPart = disk_geometry.BytesPerSector * disk_geometry.SectorsPerTrack *
+                        disk_geometry.TracksPerCylinder * disk_geometry.Cylinders.QuadPart;
 
   return drive_size;
 #endif
@@ -629,42 +598,40 @@ bool CIoSupport::ReadPartitionTable()
 #endif
 }
 
-bool CIoSupport::ExtendedPartitionMappingExists(char mapLetter) 
-{ 
+bool CIoSupport::ExtendedPartitionMappingExists(char mapLetter)
+{
 #ifdef _XBOX
   int i;
-  for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++) 
-  { 
-    if (mapLetter == extendPartitionMapping[i]) 
-      return true; 
+  for (i = 0; i < EXTEND_PARTITIONS_LIMIT; i++)
+  {
+    if (mapLetter == extendPartitionMapping[i])
+      return true;
   }
 #endif
-  return false; 
-} 
- 
-INT CIoSupport::GetExtendedPartitionPosition(char mapLetter) 
-{ 
-#ifdef _XBOX
-  int i;
-  for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++) 
-  { 
-    if (mapLetter == extendPartitionMapping[i]) 
-      return i; 
-  }
-#endif
-  return 0; 
-} 
+  return false;
+}
 
+INT CIoSupport::GetExtendedPartitionPosition(char mapLetter)
+{
+#ifdef _XBOX
+  int i;
+  for (i = 0; i < EXTEND_PARTITIONS_LIMIT; i++)
+  {
+    if (mapLetter == extendPartitionMapping[i])
+      return i;
+  }
+#endif
+  return 0;
+}
 
 char CIoSupport::GetExtendedPartitionDriveLetter(int pos)
-{ 
+{
 #ifdef _XBOX
   return extendPartitionMapping[pos];
 #else
   return 0;
 #endif
 }
-
 
 bool CIoSupport::HasPartitionTable()
 {
@@ -681,14 +648,14 @@ void CIoSupport::MapExtendedPartitions()
   char extenddriveletter;
   // we start at 5 - the first 5 partitions are the mandatory standard Xbox partitions
   // we don't deal with those here.
-  for (int i = EXTEND_PARTITION_BEGIN; i <= (EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT); i++)
+  for (int i = EXTEND_PARTITION_BEGIN; i <= (EXTEND_PARTITION_BEGIN + EXTEND_PARTITIONS_LIMIT); i++)
   {
     if (m_partitionTable.pt_entries[i - 1].pe_flags & PE_PARTFLAGS_IN_USE)
     {
       driveletter = 'A' + i - 1;
-      extenddriveletter = extendPartitionMapping[driveletter-EXTEND_DRIVE_BEGIN];
+      extenddriveletter = extendPartitionMapping[driveletter - EXTEND_DRIVE_BEGIN];
       CLog::Log(LOGINFO, "  map drive %c:", driveletter);
-      CLog::Log(LOGINFO, "  map extended drive %c:", extenddriveletter); 
+      CLog::Log(LOGINFO, "  map extended drive %c:", extenddriveletter);
       szDevice[20] = '1' + i - 1;
       MapDriveLetter(extenddriveletter, szDevice);
     }
@@ -696,7 +663,7 @@ void CIoSupport::MapExtendedPartitions()
 #endif
 }
 
-unsigned int CIoSupport::ReadPartitionTable(PARTITION_TABLE *p_table)
+unsigned int CIoSupport::ReadPartitionTable(PARTITION_TABLE* p_table)
 {
 #ifdef _XBOX
   ANSI_STRING a_file;
@@ -715,7 +682,8 @@ unsigned int CIoSupport::ReadPartitionTable(PARTITION_TABLE *p_table)
   obj_attr.ObjectName = &a_file;
   obj_attr.Attributes = OBJ_CASE_INSENSITIVE;
 
-  stat = NtOpenFile(&handle, (GENERIC_READ | 0x00100000), &obj_attr, &io_stat_block, (FILE_SHARE_READ | FILE_SHARE_WRITE), 0x10);
+  stat = NtOpenFile(&handle, (GENERIC_READ | 0x00100000), &obj_attr, &io_stat_block,
+                    (FILE_SHARE_READ | FILE_SHARE_WRITE), 0x10);
 
   if (stat != STATUS_SUCCESS)
   {
@@ -726,11 +694,9 @@ unsigned int CIoSupport::ReadPartitionTable(PARTITION_TABLE *p_table)
   memset(ioctl_cmd_in_buf, 0, sizeof(ioctl_cmd_in_buf));
   ioctl_cmd_in_buf[0] = IOCTL_SUBCMD_GET_INFO;
 
-
-  stat = NtDeviceIoControlFile(handle, 0, 0, 0, &io_stat_block,
-                               IOCTL_CMD_LBA48_ACCESS,
-                               ioctl_cmd_in_buf, sizeof(ioctl_cmd_in_buf),
-                               ioctl_cmd_out_buf, sizeof(ioctl_cmd_out_buf));
+  stat = NtDeviceIoControlFile(handle, 0, 0, 0, &io_stat_block, IOCTL_CMD_LBA48_ACCESS,
+                               ioctl_cmd_in_buf, sizeof(ioctl_cmd_in_buf), ioctl_cmd_out_buf,
+                               sizeof(ioctl_cmd_out_buf));
 
   NtClose(handle);
   if (stat != STATUS_SUCCESS)
@@ -748,10 +714,10 @@ unsigned int CIoSupport::ReadPartitionTable(PARTITION_TABLE *p_table)
   partition_table_addr = ioctl_cmd_out_buf[LBA48_GET_INFO_LOWCODE_BASE_IDX];
   partition_table_addr += ioctl_cmd_out_buf[LBA48_GET_INFO_PART_TABLE_OFS_IDX];
 
-  memcpy(p_table, (void *)partition_table_addr, sizeof(PARTITION_TABLE));
+  memcpy(p_table, (void*)partition_table_addr, sizeof(PARTITION_TABLE));
 
   return STATUS_SUCCESS;
 #else
-  return (unsigned int) -1;
+  return (unsigned int)-1;
 #endif
 }

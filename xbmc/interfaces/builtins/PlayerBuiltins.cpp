@@ -82,7 +82,8 @@ static int PlayOffset(const std::vector<std::string>& params)
     // unknown playlist
     if (iPlaylist == PLAYLIST_NONE)
     {
-      CLog::Log(LOGERROR,"Playlist.PlayOffset called with unknown playlist: %s", strPlaylist.c_str());
+      CLog::Log(LOGERROR, "Playlist.PlayOffset called with unknown playlist: %s",
+                strPlaylist.c_str());
       return false;
     }
 
@@ -119,7 +120,7 @@ static int PlayerControl(const std::vector<std::string>& params)
   std::string paramlow(params[0]);
   StringUtils::ToLower(paramlow);
 
-  if (paramlow ==  "play")
+  if (paramlow == "play")
   { // play/pause
     // either resume playing, or pause
     if (g_application.m_pPlayer->IsPlaying())
@@ -134,7 +135,7 @@ static int PlayerControl(const std::vector<std::string>& params)
   {
     g_application.StopPlaying();
   }
-  else if (paramlow =="rewind" || paramlow == "forward")
+  else if (paramlow == "rewind" || paramlow == "forward")
   {
     if (g_application.m_pPlayer->IsPlaying() && !g_application.m_pPlayer->IsPaused())
     {
@@ -161,11 +162,11 @@ static int PlayerControl(const std::vector<std::string>& params)
       g_application.m_pPlayer->SetPlaySpeed(playSpeed, false);
     }
   }
-  else if (paramlow =="tempoup" || paramlow == "tempodown")
+  else if (paramlow == "tempoup" || paramlow == "tempodown")
   {
 #ifndef _XBOX
-    if (g_application.m_pPlayer->SupportsTempo() &&
-        g_application.m_pPlayer->IsPlaying() && !g_application.m_pPlayer->IsPaused())
+    if (g_application.m_pPlayer->SupportsTempo() && g_application.m_pPlayer->IsPlaying() &&
+        !g_application.m_pPlayer->IsPaused())
     {
       float playSpeed = g_application.m_pPlayer->GetPlaySpeed();
       if (playSpeed >= 0.75 && playSpeed <= 1.55)
@@ -213,29 +214,31 @@ static int PlayerControl(const std::vector<std::string>& params)
   {
     std::string offset;
     if (params[0].size() == 14)
-      CLog::Log(LOGERROR,"PlayerControl(seekpercentage(n)) called with no argument");
+      CLog::Log(LOGERROR, "PlayerControl(seekpercentage(n)) called with no argument");
     else if (params[0].size() < 17) // arg must be at least "(N)"
-      CLog::Log(LOGERROR,"PlayerControl(seekpercentage(n)) called with invalid argument: \"%s\"", params[0].substr(14).c_str());
+      CLog::Log(LOGERROR, "PlayerControl(seekpercentage(n)) called with invalid argument: \"%s\"",
+                params[0].substr(14).c_str());
     else
     {
       // Don't bother checking the argument: an invalid arg will do seek(0)
       offset = params[0].substr(15);
       StringUtils::TrimRight(offset, ")");
-      float offsetpercent = (float) atof(offset.c_str());
+      float offsetpercent = (float)atof(offset.c_str());
       if (offsetpercent < 0 || offsetpercent > 100)
-        CLog::Log(LOGERROR,"PlayerControl(seekpercentage(n)) argument, %f, must be 0-100", offsetpercent);
+        CLog::Log(LOGERROR, "PlayerControl(seekpercentage(n)) argument, %f, must be 0-100",
+                  offsetpercent);
       else if (g_application.m_pPlayer->IsPlaying())
         g_application.SeekPercentage(offsetpercent);
     }
   }
   else if (paramlow == "showvideomenu")
   {
-    if( g_application.m_pPlayer->IsPlaying() )
+    if (g_application.m_pPlayer->IsPlaying())
       g_application.m_pPlayer->OnAction(CAction(ACTION_SHOW_VIDEOMENU));
   }
   else if (paramlow == "record")
   {
-    if( g_application.m_pPlayer->IsPlaying() && g_application.m_pPlayer->CanRecord())
+    if (g_application.m_pPlayer->IsPlaying() && g_application.m_pPlayer->CanRecord())
       g_application.m_pPlayer->Record(!g_application.m_pPlayer->IsRecording());
   }
   else if (StringUtils::StartsWithNoCase(params[0], "partymode"))
@@ -288,7 +291,8 @@ static int PlayerControl(const std::vector<std::string>& params)
     }
 
     // send message
-    CGUIMessage msg(GUI_MSG_PLAYLISTPLAYER_RANDOM, 0, 0, iPlaylist, g_playlistPlayer.IsShuffled(iPlaylist));
+    CGUIMessage msg(GUI_MSG_PLAYLISTPLAYER_RANDOM, 0, 0, iPlaylist,
+                    g_playlistPlayer.IsShuffled(iPlaylist));
     g_windowManager.SendThreadMessage(msg);
   }
   else if (StringUtils::StartsWithNoCase(params[0], "repeat"))
@@ -341,14 +345,18 @@ static int PlayerControl(const std::vector<std::string>& params)
   else if (StringUtils::StartsWithNoCase(params[0], "resumelivetv"))
   {
     CFileItem& fileItem(g_application.CurrentFileItem());
-    PVR::CPVRChannelPtr channel = fileItem.HasPVRRecordingInfoTag() ? fileItem.GetPVRRecordingInfoTag()->Channel() : PVR::CPVRChannelPtr();
+    PVR::CPVRChannelPtr channel = fileItem.HasPVRRecordingInfoTag()
+                                      ? fileItem.GetPVRRecordingInfoTag()->Channel()
+                                      : PVR::CPVRChannelPtr();
 
     if (channel)
     {
       CFileItem playItem(channel);
-      if (!g_application.PlayMedia(playItem, "", channel->IsRadio() ? PLAYLIST_MUSIC : PLAYLIST_VIDEO))
+      if (!g_application.PlayMedia(playItem, "",
+                                   channel->IsRadio() ? PLAYLIST_MUSIC : PLAYLIST_VIDEO))
       {
-        CLog::Log(LOGERROR, "ResumeLiveTv could not play channel: %s", channel->ChannelName().c_str());
+        CLog::Log(LOGERROR, "ResumeLiveTv could not play channel: %s",
+                  channel->ChannelName().c_str());
         return false;
       }
     }
@@ -390,9 +398,9 @@ static int PlayMedia(const std::vector<std::string>& params)
     item.m_bIsFolder = true;
 
   // restore to previous window if needed
-  if( g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW ||
+  if (g_windowManager.GetActiveWindow() == WINDOW_SLIDESHOW ||
       g_windowManager.GetActiveWindow() == WINDOW_FULLSCREEN_VIDEO ||
-      g_windowManager.GetActiveWindow() == WINDOW_VISUALISATION )
+      g_windowManager.GetActiveWindow() == WINDOW_VISUALISATION)
     g_windowManager.PreviousWindow();
 
   // reset screensaver
@@ -402,7 +410,7 @@ static int PlayMedia(const std::vector<std::string>& params)
   // ask if we need to check guisettings to resume
   bool askToResume = true;
   int playOffset = 0;
-  for (unsigned int i = 1 ; i < params.size() ; i++)
+  for (unsigned int i = 1; i < params.size(); i++)
   {
     if (StringUtils::EqualsNoCase(params[i], "isdir"))
       item.m_bIsFolder = true;
@@ -419,7 +427,8 @@ static int PlayMedia(const std::vector<std::string>& params)
       // force the item to start at the beginning (m_lStartOffset is initialized to 0)
       askToResume = false;
     }
-    else if (StringUtils::StartsWithNoCase(params[i], "playoffset=")) {
+    else if (StringUtils::StartsWithNoCase(params[i], "playoffset="))
+    {
       playOffset = atoi(params[i].substr(11).c_str()) - 1;
       item.SetProperty("playlist_starting_track", playOffset);
     }
@@ -428,15 +437,16 @@ static int PlayMedia(const std::vector<std::string>& params)
   if (!item.m_bIsFolder && item.IsPlugin())
     item.SetProperty("IsPlayable", true);
 
-  if ( askToResume == true )
+  if (askToResume == true)
   {
-    if ( CGUIWindowVideoBase::ShowResumeMenu(item) == false )
+    if (CGUIWindowVideoBase::ShowResumeMenu(item) == false)
       return false;
   }
   if (item.m_bIsFolder)
   {
     CFileItemList items;
-    std::string extensions = g_advancedSettings.m_videoExtensions + "|" + g_advancedSettings.GetMusicExtensions();
+    std::string extensions =
+        g_advancedSettings.m_videoExtensions + "|" + g_advancedSettings.GetMusicExtensions();
     XFILE::CDirectory::GetDirectory(item.GetPath(), items, extensions, XFILE::DIR_FLAG_DEFAULTS);
 
     bool containsMusic = false, containsVideo = false;
@@ -450,13 +460,15 @@ static int PlayMedia(const std::vector<std::string>& params)
         break;
     }
 
-    boost::movelib::unique_ptr<CGUIViewState> state(CGUIViewState::GetViewState(containsVideo ? WINDOW_VIDEO_NAV : WINDOW_MUSIC_NAV, items));
+    boost::movelib::unique_ptr<CGUIViewState> state(
+        CGUIViewState::GetViewState(containsVideo ? WINDOW_VIDEO_NAV : WINDOW_MUSIC_NAV, items));
     if (state.get())
       items.Sort(state->GetSortMethod());
     else
       items.Sort(SortByLabel, SortOrderAscending);
 
-    int playlist = containsVideo? PLAYLIST_VIDEO : PLAYLIST_MUSIC;;
+    int playlist = containsVideo ? PLAYLIST_VIDEO : PLAYLIST_MUSIC;
+    ;
     if (containsMusic && containsVideo) //mixed content found in the folder
     {
       for (int i = items.Size() - 1; i >= 0; i--) //remove music entries
@@ -595,16 +607,19 @@ CBuiltins::CommandMap CPlayerBuiltins::GetOperations() const
 {
   CBuiltins::CommandMap commands;
 
-  CBuiltins::BUILT_IN builtin1 = {"Plays the inserted disc, like CD, DVD or Blu-ray, in the disc drive.", 0, PlayDVD};
+  CBuiltins::BUILT_IN builtin1 = {
+      "Plays the inserted disc, like CD, DVD or Blu-ray, in the disc drive.", 0, PlayDVD};
   commands.insert(std::make_pair("playdisc", builtin1));
 
-  CBuiltins::BUILT_IN builtin2 = {"Plays the inserted disc, like CD, DVD or Blu-ray, in the disc drive.", 0, PlayDVD};
+  CBuiltins::BUILT_IN builtin2 = {
+      "Plays the inserted disc, like CD, DVD or Blu-ray, in the disc drive.", 0, PlayDVD};
   commands.insert(std::make_pair("playdvd", builtin2));
 
   CBuiltins::BUILT_IN builtin3 = {"Clear the current playlist", 0, ClearPlaylist};
   commands.insert(std::make_pair("playlist.clear", builtin3));
 
-  CBuiltins::BUILT_IN builtin4 = {"Start playing from a particular offset in the playlist", 1, PlayOffset};
+  CBuiltins::BUILT_IN builtin4 = {"Start playing from a particular offset in the playlist", 1,
+                                  PlayOffset};
   commands.insert(std::make_pair("playlist.playoffset", builtin4));
 
   CBuiltins::BUILT_IN builtin5 = {"Control the music or video player", 1, PlayerControl};
@@ -616,7 +631,8 @@ CBuiltins::CommandMap CPlayerBuiltins::GetOperations() const
   CBuiltins::BUILT_IN builtin7 = {"Play the selected item with the specified core", 1, PlayWith};
   commands.insert(std::make_pair("playwith", builtin7));
 
-  CBuiltins::BUILT_IN builtin8 = {"Performs a seek in seconds on the current playing media file", 1, Seek};
+  CBuiltins::BUILT_IN builtin8 = {"Performs a seek in seconds on the current playing media file", 1,
+                                  Seek};
   commands.insert(std::make_pair("seek", builtin8));
 
   return commands;

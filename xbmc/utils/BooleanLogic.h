@@ -29,7 +29,8 @@
 
 #include "utils/IXmlDeserializable.h"
 
-typedef enum {
+typedef enum
+{
   BooleanLogicOperationOr = 0,
   BooleanLogicOperationAnd
 } BooleanLogicOperation;
@@ -37,18 +38,20 @@ typedef enum {
 class CBooleanLogicValue : public IXmlDeserializable
 {
 public:
-  CBooleanLogicValue(const std::string &value = "", bool negated = false)
-    : m_value(value), m_negated(negated)
-  { }
-  virtual ~CBooleanLogicValue() { }
+  CBooleanLogicValue(const std::string& value = "", bool negated = false)
+    : m_value(value),
+      m_negated(negated)
+  {
+  }
+  virtual ~CBooleanLogicValue() {}
 
-  virtual bool Deserialize(const TiXmlNode *node);
+  virtual bool Deserialize(const TiXmlNode* node);
 
   virtual const std::string& GetValue() const { return m_value; }
   virtual bool IsNegated() const { return m_negated; }
   virtual const char* GetTag() const { return "value"; }
 
-  virtual void SetValue(const std::string &value) { m_value = value; }
+  virtual void SetValue(const std::string& value) { m_value = value; }
   virtual void SetNegated(bool negated) { m_negated = negated; }
 
 protected:
@@ -66,12 +69,10 @@ typedef std::vector<CBooleanLogicOperationPtr> CBooleanLogicOperations;
 class CBooleanLogicOperation : public IXmlDeserializable
 {
 public:
-  CBooleanLogicOperation(BooleanLogicOperation op = BooleanLogicOperationAnd)
-    : m_operation(op)
-  { }
+  CBooleanLogicOperation(BooleanLogicOperation op = BooleanLogicOperationAnd) : m_operation(op) {}
   virtual ~CBooleanLogicOperation();
 
-  virtual bool Deserialize(const TiXmlNode *node);
+  virtual bool Deserialize(const TiXmlNode* node);
 
   virtual BooleanLogicOperation GetOperation() const { return m_operation; }
   virtual const CBooleanLogicOperations& GetOperations() const { return m_operations; }
@@ -91,10 +92,10 @@ protected:
 class CBooleanLogic : public IXmlDeserializable
 {
 public:
-  CBooleanLogic() { }
-  virtual ~CBooleanLogic() { }
+  CBooleanLogic() {}
+  virtual ~CBooleanLogic() {}
 
-  virtual bool Deserialize(const TiXmlNode *node);
+  virtual bool Deserialize(const TiXmlNode* node);
 
   virtual const CBooleanLogicOperationPtr& Get() const { return m_operation; }
   virtual CBooleanLogicOperationPtr Get() { return m_operation; }

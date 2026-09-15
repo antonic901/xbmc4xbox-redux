@@ -30,7 +30,7 @@ CMusicLibraryCleaningJob::CMusicLibraryCleaningJob(CGUIDialogProgress* progressD
   SetAutoClose(true);
 }
 
-CMusicLibraryCleaningJob::~CMusicLibraryCleaningJob() { };
+CMusicLibraryCleaningJob::~CMusicLibraryCleaningJob() {};
 
 bool CMusicLibraryCleaningJob::operator==(const CJob* job) const
 {
@@ -44,7 +44,7 @@ bool CMusicLibraryCleaningJob::operator==(const CJob* job) const
   return true;
 }
 
-bool CMusicLibraryCleaningJob::Work(CMusicDatabase &db)
+bool CMusicLibraryCleaningJob::Work(CMusicDatabase& db)
 {
   db.Cleanup(GetProgressDialog());
   return true;

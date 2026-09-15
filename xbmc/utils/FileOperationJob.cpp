@@ -45,12 +45,15 @@ CFileOperationJob::CFileOperationJob()
     m_displayProgress(false),
     m_heading(0),
     m_line(0)
-{ }
+{
+}
 
-CFileOperationJob::CFileOperationJob(FileAction action, CFileItemList & items,
-                                    const std::string& strDestFile,
-                                    bool displayProgress /* = false */,
-                                    int heading /* = 0 */, int line /* = 0 */)
+CFileOperationJob::CFileOperationJob(FileAction action,
+                                     CFileItemList& items,
+                                     const std::string& strDestFile,
+                                     bool displayProgress /* = false */,
+                                     int heading /* = 0 */,
+                                     int line /* = 0 */)
   : m_action(action),
     m_items(),
     m_strDestFile(strDestFile),
@@ -64,7 +67,9 @@ CFileOperationJob::CFileOperationJob(FileAction action, CFileItemList & items,
   SetFileOperation(action, items, strDestFile);
 }
 
-void CFileOperationJob::SetFileOperation(FileAction action, CFileItemList &items, const std::string &strDestFile)
+void CFileOperationJob::SetFileOperation(FileAction action,
+                                         CFileItemList& items,
+                                         const std::string& strDestFile)
 {
   m_action = action;
   m_strDestFile = strDestFile;
@@ -82,7 +87,7 @@ bool CFileOperationJob::DoWork()
   if (m_displayProgress && GetProgressDialog() == NULL)
   {
     CGUIDialogExtendedProgressBar* dialog =
-      (CGUIDialogExtendedProgressBar*)g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
+        (CGUIDialogExtendedProgressBar*)g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS);
     SetProgressBar(dialog->GetHandle(GetActionString(m_action)));
   }
 
@@ -101,11 +106,16 @@ bool CFileOperationJob::DoWork()
   return success;
 }
 
-bool CFileOperationJob::DoProcessFile(FileAction action, const std::string& strFileA, const std::string& strFileB, FileOperationList &fileOperations, double &totalTime)
+bool CFileOperationJob::DoProcessFile(FileAction action,
+                                      const std::string& strFileA,
+                                      const std::string& strFileB,
+                                      FileOperationList& fileOperations,
+                                      double& totalTime)
 {
   int64_t time = 1;
 
-  if (action == ActionCopy || action == ActionReplace || (action == ActionMove && !CanBeRenamed(strFileA, strFileB)))
+  if (action == ActionCopy || action == ActionReplace ||
+      (action == ActionMove && !CanBeRenamed(strFileA, strFileB)))
   {
     struct __stat64 data;
     if (CFile::Stat(strFileA, &data) == 0)
@@ -119,11 +129,15 @@ bool CFileOperationJob::DoProcessFile(FileAction action, const std::string& strF
   return true;
 }
 
-bool CFileOperationJob::DoProcessFolder(FileAction action, const std::string& strPath, const std::string& strDestFile, FileOperationList &fileOperations, double &totalTime)
+bool CFileOperationJob::DoProcessFolder(FileAction action,
+                                        const std::string& strPath,
+                                        const std::string& strDestFile,
+                                        FileOperationList& fileOperations,
+                                        double& totalTime)
 {
   // check whether this folder is a filedirectory - if so, we don't process it's contents
   CFileItem item(strPath, false);
-  IFileDirectory *file = CFactoryFileDirectory::Create(item.GetURL(), &item);
+  IFileDirectory* file = CFactoryFileDirectory::Create(item.GetURL(), &item);
   if (file)
   {
     delete file;
@@ -140,7 +154,7 @@ bool CFileOperationJob::DoProcessFolder(FileAction action, const std::string& st
 
   if (!DoProcess(action, items, strDestFile, fileOperations, totalTime))
   {
-    CLog::Log(LOGERROR,"FileManager: error while processing folder: %s", strPath.c_str());
+    CLog::Log(LOGERROR, "FileManager: error while processing folder: %s", strPath.c_str());
     return false;
   }
 
@@ -153,7 +167,11 @@ bool CFileOperationJob::DoProcessFolder(FileAction action, const std::string& st
   return true;
 }
 
-bool CFileOperationJob::DoProcess(FileAction action, CFileItemList & items, const std::string& strDestFile, FileOperationList &fileOperations, double &totalTime)
+bool CFileOperationJob::DoProcess(FileAction action,
+                                  CFileItemList& items,
+                                  const std::string& strDestFile,
+                                  FileOperationList& fileOperations,
+                                  double& totalTime)
 {
   for (int iItem = 0; iItem < items.Size(); ++iItem)
   {
@@ -182,7 +200,9 @@ bool CFileOperationJob::DoProcess(FileAction action, CFileItemList & items, cons
 
       std::string strnewDestFile;
       if (!strDestFile.empty()) // only do this if we have a destination
-        strnewDestFile = URIUtils::ChangeBasePath(pItem->GetPath(), strFileName, strDestFile); // Convert (URL) encoding + slashes (if source / target differ)
+        strnewDestFile = URIUtils::ChangeBasePath(
+            pItem->GetPath(), strFileName,
+            strDestFile); // Convert (URL) encoding + slashes (if source / target differ)
 
       if (pItem->m_bIsFolder)
       {
@@ -197,7 +217,8 @@ bool CFileOperationJob::DoProcess(FileAction action, CFileItemList & items, cons
         if (action == ActionReplace && CDirectory::Exists(strnewDestFile))
           DoProcessFolder(ActionDelete, strnewDestFile, "", fileOperations, totalTime);
 
-        if (!DoProcessFolder(subdirAction, pItem->GetPath(), strnewDestFile, fileOperations, totalTime))
+        if (!DoProcessFolder(subdirAction, pItem->GetPath(), strnewDestFile, fileOperations,
+                             totalTime))
           return false;
 
         if (action == ActionDelete || action == ActionDeleteFolder)
@@ -211,16 +232,20 @@ bool CFileOperationJob::DoProcess(FileAction action, CFileItemList & items, cons
   return true;
 }
 
-CFileOperationJob::CFileOperation::CFileOperation(FileAction action, const std::string &strFileA, const std::string &strFileB, int64_t time)
+CFileOperationJob::CFileOperation::CFileOperation(FileAction action,
+                                                  const std::string& strFileA,
+                                                  const std::string& strFileB,
+                                                  int64_t time)
   : m_action(action),
     m_strFileA(strFileA),
     m_strFileB(strFileB),
     m_time(time)
-{ }
+{
+}
 
 struct DataHolder
 {
-  CFileOperationJob *base;
+  CFileOperationJob* base;
   double current;
   double opWeight;
 };
@@ -255,7 +280,9 @@ std::string CFileOperationJob::GetActionString(FileAction action)
   return result;
 }
 
-bool CFileOperationJob::CFileOperation::ExecuteOperation(CFileOperationJob *base, double &current, double opWeight)
+bool CFileOperationJob::CFileOperation::ExecuteOperation(CFileOperationJob* base,
+                                                         double& current,
+                                                         double opWeight)
 {
   bool bResult = true;
 
@@ -308,7 +335,8 @@ bool CFileOperationJob::CFileOperation::ExecuteOperation(CFileOperationJob *base
   return bResult;
 }
 
-inline bool CFileOperationJob::CanBeRenamed(const std::string &strFileA, const std::string &strFileB)
+inline bool CFileOperationJob::CanBeRenamed(const std::string& strFileA,
+                                            const std::string& strFileB)
 {
 #ifndef TARGET_POSIX
   if (strFileA[1] == ':' && strFileA[0] == strFileB[0])
@@ -322,8 +350,8 @@ inline bool CFileOperationJob::CanBeRenamed(const std::string &strFileA, const s
 
 bool CFileOperationJob::CFileOperation::OnFileCallback(void* pContext, int ipercent, float avgSpeed)
 {
-  DataHolder *data = (DataHolder *)pContext;
-  double current = data->current + ((double)ipercent * data->opWeight * (double)m_time)/ 100.0;
+  DataHolder* data = (DataHolder*)pContext;
+  double current = data->current + ((double)ipercent * data->opWeight * (double)m_time) / 100.0;
 
   if (avgSpeed > 1000000.0f)
     data->base->m_avgSpeed = StringUtils::Format("%.1f MB/s", avgSpeed / 1000000.0f);
@@ -331,9 +359,8 @@ bool CFileOperationJob::CFileOperation::OnFileCallback(void* pContext, int iperc
     data->base->m_avgSpeed = StringUtils::Format("%.1f KB/s", avgSpeed / 1000.0f);
 
   std::string line;
-  line = StringUtils::Format("%s (%s)",
-                              data->base->GetCurrentFile().c_str(),
-                              data->base->GetAverageSpeed().c_str());
+  line = StringUtils::Format("%s (%s)", data->base->GetCurrentFile().c_str(),
+                             data->base->GetAverageSpeed().c_str());
   data->base->SetText(line);
   return !data->base->ShouldCancel((unsigned)current, 100);
 }
@@ -347,8 +374,7 @@ bool CFileOperationJob::operator==(const CJob* job) const
   if (rjob == NULL)
     return false;
 
-  if (GetAction() != rjob->GetAction() ||
-      m_strDestFile != rjob->m_strDestFile ||
+  if (GetAction() != rjob->GetAction() || m_strDestFile != rjob->m_strDestFile ||
       m_items.Size() != rjob->m_items.Size())
     return false;
 

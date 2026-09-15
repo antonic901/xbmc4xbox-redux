@@ -18,12 +18,12 @@
 #include "utils/log.h"
 #include "xbox/custom_launch_params.h"
 
-
 CUpdaterJob::CUpdaterJob(bool notify /* = false */, bool install /* = false */)
   : CJob(),
     m_notify(notify),
     m_install(install)
-{ }
+{
+}
 
 bool CUpdaterJob::DoWork()
 {
@@ -39,7 +39,9 @@ bool CUpdaterJob::DoWork()
 
     CLog::Log(LOGINFO, "Checking for new updates...");
 
-    std::string strURL = StringUtils::Format("https://github.com/antonic901/xbmc4xbox-redux/releases/download/%s/version.txt", strUpdateChannel.c_str());
+    std::string strURL = StringUtils::Format(
+        "https://github.com/antonic901/xbmc4xbox-redux/releases/download/%s/version.txt",
+        strUpdateChannel.c_str());
     XFILE::CCurlFile httpUtil;
     std::string strLastRevision;
     if (!httpUtil.Get(strURL, strLastRevision))
@@ -53,14 +55,16 @@ bool CUpdaterJob::DoWork()
 
     bool updateAvailable = !strLastRevision.empty() && strLastRevision != strRevision;
     if (updateAvailable)
-      KODI::MESSAGING::CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "Skin.SetBool(updateavailable)");
+      KODI::MESSAGING::CApplicationMessenger::Get().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr,
+                                                            "Skin.SetBool(updateavailable)");
 
     m_notify &= updateAvailable;
     m_install &= updateAvailable;
   }
 
   if (m_notify)
-    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, "XBMC", g_localizeStrings.Get(24068));
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, "XBMC",
+                                          g_localizeStrings.Get(24068));
 
   if (m_install)
     DoInstall(strVersion, strRevision, strUpdateChannel);
@@ -76,17 +80,23 @@ bool CUpdaterJob::operator==(const CJob* job) const
   return true;
 }
 
-void CUpdaterJob::DoInstall(const std::string& strCurrentVersion, const std::string& strCurrentRevision, const std::string& strUpdateChannel)
+void CUpdaterJob::DoInstall(const std::string& strCurrentVersion,
+                            const std::string& strCurrentRevision,
+                            const std::string& strUpdateChannel)
 {
   if (CGUIDialogYesNo::ShowAndGetInput(24068, 38790))
   {
     CUSTOM_LAUNCH_DATA data;
     memset(&data, 0, sizeof(CUSTOM_LAUNCH_DATA));
 
-    strcpy(data.reserved, StringUtils::Format("version=%s&revision=%s&channel=%s", strCurrentVersion.c_str(), strCurrentRevision.c_str(), strUpdateChannel.c_str()).c_str());
+    strcpy(data.reserved,
+           StringUtils::Format("version=%s&revision=%s&channel=%s", strCurrentVersion.c_str(),
+                               strCurrentRevision.c_str(), strUpdateChannel.c_str())
+               .c_str());
     data.executionType = 0;
 
-    KODI::MESSAGING::CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, "Skin.ToggleSetting(updateavailable)");
+    KODI::MESSAGING::CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr,
+                                                          "Skin.ToggleSetting(updateavailable)");
     CUtil::RunXBE("Q:\\updater.xbe", NULL, VIDEO_NULL, COUNTRY_NULL, &data);
   }
 }

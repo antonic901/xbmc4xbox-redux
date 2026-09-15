@@ -10,5 +10,9 @@
 
 namespace XBMCAddon
 {
-  Callback::~Callback() { XBMC_TRACE; deallocating(); }
+Callback::~Callback()
+{
+  XBMC_TRACE;
+  deallocating();
 }
+} // namespace XBMCAddon

@@ -1,7 +1,7 @@
 #ifndef _FSTRCMP_H
 #define _FSTRCMP_H
 
-  /* GNU gettext - internationalization aids
+/* GNU gettext - internationalization aids
   Copyright (C) 1995 Free Software Foundation, Inc.
 
   This file was written by Peter Miller <pmiller@agso.gov.au>
@@ -22,6 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
 #define PARAMS(proto) proto
 
-double fstrcmp (const char *__s1, const char *__s2, double __minimum);
+double fstrcmp(const char* __s1, const char* __s2, double __minimum);
 
 #endif

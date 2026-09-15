@@ -29,10 +29,10 @@ public:
   CResourceFile();
   virtual ~CResourceFile();
 
-  static bool TranslatePath(const std::string &path, std::string &translatedPath);
-  static bool TranslatePath(const CURL &url, std::string &translatedPath);
+  static bool TranslatePath(const std::string& path, std::string& translatedPath);
+  static bool TranslatePath(const CURL& url, std::string& translatedPath);
 
 protected:
-  virtual std::string TranslatePath(const CURL &url);
+  virtual std::string TranslatePath(const CURL& url);
 };
-}
+} // namespace XFILE

@@ -41,17 +41,22 @@ public:
   //! \param rate The sample rate of the input
   //! \param channels Number of audio channels in input
   //! \param bps The bits per sample for input
-  CCDDARipJob(const std::string& input, const std::string& output,
-              const MUSIC_INFO::CMusicInfoTag& tag, int encoder,
-              bool eject=false, unsigned int rate=44100,
-              unsigned int channels=2, unsigned int bps=16);
+  CCDDARipJob(const std::string& input,
+              const std::string& output,
+              const MUSIC_INFO::CMusicInfoTag& tag,
+              int encoder,
+              bool eject = false,
+              unsigned int rate = 44100,
+              unsigned int channels = 2,
+              unsigned int bps = 16);
 
   virtual ~CCDDARipJob();
 
   virtual const char* GetType() const { return "cdrip"; };
-  virtual bool operator==(const CJob *job) const;
+  virtual bool operator==(const CJob* job) const;
   virtual bool DoWork();
   std::string GetOutput() const { return m_output; }
+
 protected:
   //! \brief Setup the audio encoder
   CEncoder* SetupEncoder(XFILE::CFile& reader);
@@ -78,4 +83,3 @@ protected:
   bool m_eject; //< Should we eject tray when we are finished?
   int m_encoder; //< The audio encoder
 };
-

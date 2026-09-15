@@ -26,32 +26,37 @@
 #include "programs/ProgramDatabase.h"
 #include "Util.h"
 
-CProgramLibraryCleaningJob::CProgramLibraryCleaningJob(const std::string& directory, bool showProgress /* = true */)
+CProgramLibraryCleaningJob::CProgramLibraryCleaningJob(const std::string& directory,
+                                                       bool showProgress /* = true */)
   : m_directory(directory),
     m_showProgress(showProgress)
-{ }
+{
+}
 
 CProgramLibraryCleaningJob::~CProgramLibraryCleaningJob()
-{ }
+{
+}
 
 bool CProgramLibraryCleaningJob::operator==(const CJob* job) const
 {
   if (strcmp(job->GetType(), GetType()) != 0)
     return false;
 
-  const CProgramLibraryCleaningJob* scanningJob = dynamic_cast<const CProgramLibraryCleaningJob*>(job);
+  const CProgramLibraryCleaningJob* scanningJob =
+      dynamic_cast<const CProgramLibraryCleaningJob*>(job);
   if (scanningJob == NULL)
     return false;
 
   return m_directory == scanningJob->m_directory;
 }
 
-bool CProgramLibraryCleaningJob::Work(CProgramDatabase &db)
+bool CProgramLibraryCleaningJob::Work(CProgramDatabase& db)
 {
   CGUIDialogProgressBarHandle* handle = NULL;
   if (m_showProgress)
   {
-    CGUIDialogExtendedProgressBar* dialog = static_cast<CGUIDialogExtendedProgressBar*>(g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS));
+    CGUIDialogExtendedProgressBar* dialog = static_cast<CGUIDialogExtendedProgressBar*>(
+        g_windowManager.GetWindow(WINDOW_DIALOG_EXT_PROGRESS));
     if (dialog)
       handle = dialog->GetHandle(g_localizeStrings.Get(314));
   }

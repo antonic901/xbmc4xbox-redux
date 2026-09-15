@@ -21,12 +21,8 @@
 #include "../include.h"
 #include "XBoxKeyboard.h"
 
-static DWORD anKeyboardBitmapTable[4*2] =
-  {
-    1 << 0, 1 << 1, 1 << 2, 1 << 3,
-    1 << 16, 1 << 17, 1 << 18, 1 << 19
-  };
-
+static DWORD anKeyboardBitmapTable[4 * 2] = {1 << 0,  1 << 1,  1 << 2,  1 << 3,
+                                             1 << 16, 1 << 17, 1 << 18, 1 << 19};
 
 CLowLevelKeyboard::CLowLevelKeyboard()
 {
@@ -41,32 +37,35 @@ CLowLevelKeyboard::CLowLevelKeyboard()
 }
 
 CLowLevelKeyboard::~CLowLevelKeyboard()
-{}
+{
+}
 
 void CLowLevelKeyboard::Initialize(HWND hWnd)
 
 {
   // Check that we are not already initialized and then initialize if necessary
-  if ( m_bInitialized )
-    return ;
+  if (m_bInitialized)
+    return;
 
   XINPUT_DEBUG_KEYQUEUE_PARAMETERS keyboardSettings;
-  keyboardSettings.dwFlags = XINPUT_DEBUG_KEYQUEUE_FLAG_KEYDOWN | XINPUT_DEBUG_KEYQUEUE_FLAG_KEYREPEAT | XINPUT_DEBUG_KEYQUEUE_FLAG_KEYUP;
+  keyboardSettings.dwFlags = XINPUT_DEBUG_KEYQUEUE_FLAG_KEYDOWN |
+                             XINPUT_DEBUG_KEYQUEUE_FLAG_KEYREPEAT |
+                             XINPUT_DEBUG_KEYQUEUE_FLAG_KEYUP;
   keyboardSettings.dwQueueSize = 25;
   keyboardSettings.dwRepeatDelay = 500;
   keyboardSettings.dwRepeatInterval = 50;
 
-  if ( ERROR_SUCCESS != XInputDebugInitKeyboardQueue( &keyboardSettings ) )
-    return ;
+  if (ERROR_SUCCESS != XInputDebugInitKeyboardQueue(&keyboardSettings))
+    return;
 
   m_bInitialized = true;
 
-  m_dwKeyboardPort = XGetDevices( XDEVICE_TYPE_DEBUG_KEYBOARD );
+  m_dwKeyboardPort = XGetDevices(XDEVICE_TYPE_DEBUG_KEYBOARD);
 
   // Obtain handles to keyboard devices
-  for ( DWORD i = 0; i < XGetPortCount()*2; i++ )
+  for (DWORD i = 0; i < XGetPortCount() * 2; i++)
   {
-    if ( ( m_hKeyboardDevice[i] == NULL ) && ( m_dwKeyboardPort & anKeyboardBitmapTable[i] ) )
+    if ((m_hKeyboardDevice[i] == NULL) && (m_dwKeyboardPort & anKeyboardBitmapTable[i]))
     {
       // Get a handle to the device
       XINPUT_POLLING_PARAMETERS pollValues;
@@ -79,13 +78,13 @@ void CLowLevelKeyboard::Initialize(HWND hWnd)
 
       if (i < XGetPortCount())
       {
-        m_hKeyboardDevice[i] = XInputOpen( XDEVICE_TYPE_DEBUG_KEYBOARD, i,
-                                           XDEVICE_NO_SLOT, &pollValues );
+        m_hKeyboardDevice[i] =
+            XInputOpen(XDEVICE_TYPE_DEBUG_KEYBOARD, i, XDEVICE_NO_SLOT, &pollValues);
       }
       else
       {
-        m_hKeyboardDevice[i] = XInputOpen( XDEVICE_TYPE_DEBUG_KEYBOARD, i - XGetPortCount(),
-                                           XDEVICE_BOTTOM_SLOT, &pollValues );
+        m_hKeyboardDevice[i] = XInputOpen(XDEVICE_TYPE_DEBUG_KEYBOARD, i - XGetPortCount(),
+                                          XDEVICE_BOTTOM_SLOT, &pollValues);
       }
       CLog::Log(LOGINFO, "Keyboard found on port %i", i);
     }
@@ -96,24 +95,24 @@ void CLowLevelKeyboard::Update()
 {
   // Check if keyboard or keyboards were removed or attached.
   DWORD dwInsertions, dwRemovals;
-  XGetDeviceChanges( XDEVICE_TYPE_DEBUG_KEYBOARD, &dwInsertions, &dwRemovals );
+  XGetDeviceChanges(XDEVICE_TYPE_DEBUG_KEYBOARD, &dwInsertions, &dwRemovals);
 
   // zero out our current state
   ZeroMemory(&m_CurrentKeyStroke, sizeof XINPUT_DEBUG_KEYSTROKE);
 
   // Loop through all ports
-  for ( DWORD i = 0; i < XGetPortCount()*2; i++ )
+  for (DWORD i = 0; i < XGetPortCount() * 2; i++)
   {
     // Handle removed devices.
-    if ( dwRemovals & anKeyboardBitmapTable[i] )
+    if (dwRemovals & anKeyboardBitmapTable[i])
     {
-      XInputClose( m_hKeyboardDevice[i] );
+      XInputClose(m_hKeyboardDevice[i]);
       m_hKeyboardDevice[i] = NULL;
       CLog::Log(LOGINFO, "Keyboard removed from port %i", i);
     }
 
     // Handle inserted devices
-    if ( dwInsertions & anKeyboardBitmapTable[i] )
+    if (dwInsertions & anKeyboardBitmapTable[i])
     {
       // Now open the device
       XINPUT_POLLING_PARAMETERS pollValues;
@@ -126,13 +125,13 @@ void CLowLevelKeyboard::Update()
 
       if (i < XGetPortCount())
       {
-        m_hKeyboardDevice[i] = XInputOpen( XDEVICE_TYPE_DEBUG_KEYBOARD, i,
-                                           XDEVICE_NO_SLOT, &pollValues );
+        m_hKeyboardDevice[i] =
+            XInputOpen(XDEVICE_TYPE_DEBUG_KEYBOARD, i, XDEVICE_NO_SLOT, &pollValues);
       }
       else
       {
-        m_hKeyboardDevice[i] = XInputOpen( XDEVICE_TYPE_DEBUG_KEYBOARD, i - XGetPortCount(),
-                                           XDEVICE_BOTTOM_SLOT, &pollValues );
+        m_hKeyboardDevice[i] = XInputOpen(XDEVICE_TYPE_DEBUG_KEYBOARD, i - XGetPortCount(),
+                                          XDEVICE_BOTTOM_SLOT, &pollValues);
       }
       CLog::Log(LOGINFO, "Keyboard inserted in port %i", i);
 
@@ -140,9 +139,9 @@ void CLowLevelKeyboard::Update()
     }
 
     // If we have a valid device, poll it's state and track button changes
-    if ( m_hKeyboardDevice[i] )
+    if (m_hKeyboardDevice[i])
     {
-      if ( ERROR_SUCCESS == XInputDebugGetKeystroke( &m_CurrentKeyStroke ) )
+      if (ERROR_SUCCESS == XInputDebugGetKeystroke(&m_CurrentKeyStroke))
         break;
     }
   }

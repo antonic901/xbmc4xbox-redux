@@ -56,7 +56,8 @@ CDisplaySettings::CDisplaySettings()
 }
 
 CDisplaySettings::~CDisplaySettings()
-{ }
+{
+}
 
 CDisplaySettings& CDisplaySettings::Get()
 {
@@ -64,7 +65,7 @@ CDisplaySettings& CDisplaySettings::Get()
   return sDisplaySettings;
 }
 
-bool CDisplaySettings::Load(const TiXmlNode *settings)
+bool CDisplaySettings::Load(const TiXmlNode* settings)
 {
   CSingleLock lock(m_critical);
   m_calibrations.clear();
@@ -72,14 +73,14 @@ bool CDisplaySettings::Load(const TiXmlNode *settings)
   if (settings == NULL)
     return false;
 
-  const TiXmlElement *pElement = settings->FirstChildElement("resolutions");
+  const TiXmlElement* pElement = settings->FirstChildElement("resolutions");
   if (!pElement)
   {
     CLog::Log(LOGERROR, "CDisplaySettings: settings file doesn't contain <resolutions>");
     return false;
   }
 
-  const TiXmlElement *pResolution = pElement->FirstChildElement("resolution");
+  const TiXmlElement* pResolution = pElement->FirstChildElement("resolution");
   while (pResolution)
   {
     // get the data for this calibration
@@ -89,7 +90,7 @@ bool CDisplaySettings::Load(const TiXmlNode *settings)
     XMLUtils::GetInt(pResolution, "subtitles", cal.iSubtitles);
     XMLUtils::GetFloat(pResolution, "pixelratio", cal.fPixelRatio);
 
-    const TiXmlElement *pOverscan = pResolution->FirstChildElement("overscan");
+    const TiXmlElement* pOverscan = pResolution->FirstChildElement("overscan");
     if (pOverscan)
     {
       XMLUtils::GetInt(pOverscan, "left", cal.Overscan.left);
@@ -104,7 +105,8 @@ bool CDisplaySettings::Load(const TiXmlNode *settings)
 
     // store calibration, avoid adding duplicates
     bool found = false;
-    for (ResolutionInfos::const_iterator  it = m_calibrations.begin(); it != m_calibrations.end(); ++it)
+    for (ResolutionInfos::const_iterator it = m_calibrations.begin(); it != m_calibrations.end();
+         ++it)
     {
       if (it->strMode.Equals(cal.strMode))
       {
@@ -123,23 +125,24 @@ bool CDisplaySettings::Load(const TiXmlNode *settings)
   return true;
 }
 
-bool CDisplaySettings::Save(TiXmlNode *settings) const
+bool CDisplaySettings::Save(TiXmlNode* settings) const
 {
   if (settings == NULL)
     return false;
 
   CSingleLock lock(m_critical);
   TiXmlElement xmlRootElement("resolutions");
-  TiXmlNode *pRoot = settings->InsertEndChild(xmlRootElement);
+  TiXmlNode* pRoot = settings->InsertEndChild(xmlRootElement);
   if (pRoot == NULL)
     return false;
 
   // save calibrations
-  for (ResolutionInfos::const_iterator it = m_calibrations.begin(); it != m_calibrations.end(); ++it)
+  for (ResolutionInfos::const_iterator it = m_calibrations.begin(); it != m_calibrations.end();
+       ++it)
   {
     // Write the resolution tag
     TiXmlElement resElement("resolution");
-    TiXmlNode *pNode = pRoot->InsertEndChild(resElement);
+    TiXmlNode* pNode = pRoot->InsertEndChild(resElement);
     if (pNode == NULL)
       return false;
 
@@ -150,7 +153,7 @@ bool CDisplaySettings::Save(TiXmlNode *settings) const
 
     // create the overscan child
     TiXmlElement overscanElement("overscan");
-    TiXmlNode *pOverscanNode = pNode->InsertEndChild(overscanElement);
+    TiXmlNode* pOverscanNode = pNode->InsertEndChild(overscanElement);
     if (pOverscanNode == NULL)
       return false;
 
@@ -173,12 +176,12 @@ void CDisplaySettings::Clear()
   m_pixelRatio = 1.0f;
 }
 
-bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
+bool CDisplaySettings::OnSettingChanging(const CSetting* setting)
 {
   if (setting == NULL)
     return false;
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
   if (settingId == "videoscreen.resolution")
   {
     // check if this is the revert call for a failed OnSettingChanging
@@ -200,10 +203,10 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
       g_graphicsContext.SetVideoResolution(newRes);
 
       // check if this setting is temporarily blocked from showing the dialog
-      if (m_ignoreSettingChanging.find(make_pair(settingId, false)) == m_ignoreSettingChanging.end())
+      if (m_ignoreSettingChanging.find(make_pair(settingId, false)) ==
+          m_ignoreSettingChanging.end())
       {
-        if (HELPERS::ShowYesNoDialogText(13110, 13111, "", "", 10000) !=
-          YES)
+        if (HELPERS::ShowYesNoDialogText(13110, 13111, "", "", 10000) != YES)
         {
           // we need to ignore the next OnSettingChanging() call for
           // the same setting which is executed to broadcast that
@@ -224,17 +227,17 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
   {
     if (settingId == "videooutput.aspect")
     {
-      switch(((CSettingInt*)setting)->GetValue())
+      switch (((CSettingInt*)setting)->GetValue())
       {
-      case VIDEO_NORMAL:
-        g_videoConfig.SetNormal();
-        break;
-      case VIDEO_LETTERBOX:
-        g_videoConfig.SetLetterbox(true);
-        break;
-      case VIDEO_WIDESCREEN:
-        g_videoConfig.SetWidescreen(true);
-        break;
+        case VIDEO_NORMAL:
+          g_videoConfig.SetNormal();
+          break;
+        case VIDEO_LETTERBOX:
+          g_videoConfig.SetLetterbox(true);
+          break;
+        case VIDEO_WIDESCREEN:
+          g_videoConfig.SetWidescreen(true);
+          break;
       }
     }
     else if (settingId == "videooutput.hd480p")
@@ -251,15 +254,17 @@ bool CDisplaySettings::OnSettingChanging(const CSetting *setting)
   return true;
 }
 
-bool CDisplaySettings::OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode)
+bool CDisplaySettings::OnSettingUpdate(CSetting*& setting,
+                                       const char* oldSettingId,
+                                       const TiXmlNode* oldSettingNode)
 {
   if (setting == NULL)
     return false;
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
   if (settingId == "videoscreen.resolution")
   {
-    CSettingString *screenmodeSetting = (CSettingString*)setting;
+    CSettingString* screenmodeSetting = (CSettingString*)setting;
     std::string screenmode = screenmodeSetting->GetValue();
     // in Eden there was no character ("i" or "p") indicating interlaced/progressive
     // at the end so we just add a "p" and assume progressive
@@ -281,7 +286,7 @@ void CDisplaySettings::SetCurrentResolution(RESOLUTION resolution, bool save /* 
     m_currentResolution = resolution;
 
   // SetChanged() is added in PVR pull request
-  CSettings::GetInstance().Save()/*g_guiSettings.SetChanged()*/;
+  CSettings::GetInstance().Save() /*g_guiSettings.SetChanged()*/;
 }
 
 RESOLUTION CDisplaySettings::GetDisplayResolution() const
@@ -329,7 +334,7 @@ RESOLUTION_INFO& CDisplaySettings::GetResolutionInfo(RESOLUTION resolution)
   return GetResolutionInfo((size_t)resolution);
 }
 
-void CDisplaySettings::AddResolutionInfo(const RESOLUTION_INFO &resolution)
+void CDisplaySettings::AddResolutionInfo(const RESOLUTION_INFO& resolution)
 {
   CSingleLock lock(m_critical);
   m_resolutions.push_back(resolution);
@@ -339,7 +344,8 @@ void CDisplaySettings::ApplyCalibrations()
 {
   CSingleLock lock(m_critical);
   // apply all calibrations to the resolutions
-  for (ResolutionInfos::const_iterator itCal = m_calibrations.begin(); itCal != m_calibrations.end(); ++itCal)
+  for (ResolutionInfos::const_iterator itCal = m_calibrations.begin();
+       itCal != m_calibrations.end(); ++itCal)
   {
     // find resolutions
     for (size_t res = 0; res < m_resolutions.size(); ++res)
@@ -348,34 +354,34 @@ void CDisplaySettings::ApplyCalibrations()
       {
         // overscan
         m_resolutions[res].Overscan.left = itCal->Overscan.left;
-        if (m_resolutions[res].Overscan.left < -m_resolutions[res].iWidth/4)
-          m_resolutions[res].Overscan.left = -m_resolutions[res].iWidth/4;
-        if (m_resolutions[res].Overscan.left > m_resolutions[res].iWidth/4)
-          m_resolutions[res].Overscan.left = m_resolutions[res].iWidth/4;
+        if (m_resolutions[res].Overscan.left < -m_resolutions[res].iWidth / 4)
+          m_resolutions[res].Overscan.left = -m_resolutions[res].iWidth / 4;
+        if (m_resolutions[res].Overscan.left > m_resolutions[res].iWidth / 4)
+          m_resolutions[res].Overscan.left = m_resolutions[res].iWidth / 4;
 
         m_resolutions[res].Overscan.top = itCal->Overscan.top;
-        if (m_resolutions[res].Overscan.top < -m_resolutions[res].iHeight/4)
-          m_resolutions[res].Overscan.top = -m_resolutions[res].iHeight/4;
-        if (m_resolutions[res].Overscan.top > m_resolutions[res].iHeight/4)
-          m_resolutions[res].Overscan.top = m_resolutions[res].iHeight/4;
+        if (m_resolutions[res].Overscan.top < -m_resolutions[res].iHeight / 4)
+          m_resolutions[res].Overscan.top = -m_resolutions[res].iHeight / 4;
+        if (m_resolutions[res].Overscan.top > m_resolutions[res].iHeight / 4)
+          m_resolutions[res].Overscan.top = m_resolutions[res].iHeight / 4;
 
         m_resolutions[res].Overscan.right = itCal->Overscan.right;
         if (m_resolutions[res].Overscan.right < m_resolutions[res].iWidth / 2)
           m_resolutions[res].Overscan.right = m_resolutions[res].iWidth / 2;
-        if (m_resolutions[res].Overscan.right > m_resolutions[res].iWidth * 3/2)
-          m_resolutions[res].Overscan.right = m_resolutions[res].iWidth *3/2;
+        if (m_resolutions[res].Overscan.right > m_resolutions[res].iWidth * 3 / 2)
+          m_resolutions[res].Overscan.right = m_resolutions[res].iWidth * 3 / 2;
 
         m_resolutions[res].Overscan.bottom = itCal->Overscan.bottom;
         if (m_resolutions[res].Overscan.bottom < m_resolutions[res].iHeight / 2)
           m_resolutions[res].Overscan.bottom = m_resolutions[res].iHeight / 2;
-        if (m_resolutions[res].Overscan.bottom > m_resolutions[res].iHeight * 3/2)
-          m_resolutions[res].Overscan.bottom = m_resolutions[res].iHeight * 3/2;
+        if (m_resolutions[res].Overscan.bottom > m_resolutions[res].iHeight * 3 / 2)
+          m_resolutions[res].Overscan.bottom = m_resolutions[res].iHeight * 3 / 2;
 
         m_resolutions[res].iSubtitles = itCal->iSubtitles;
         if (m_resolutions[res].iSubtitles < m_resolutions[res].iHeight / 2)
           m_resolutions[res].iSubtitles = m_resolutions[res].iHeight / 2;
-        if (m_resolutions[res].iSubtitles > m_resolutions[res].iHeight* 5/4)
-          m_resolutions[res].iSubtitles = m_resolutions[res].iHeight* 5/4;
+        if (m_resolutions[res].iSubtitles > m_resolutions[res].iHeight * 5 / 4)
+          m_resolutions[res].iSubtitles = m_resolutions[res].iHeight * 5 / 4;
 
         m_resolutions[res].fPixelRatio = itCal->fPixelRatio;
         if (m_resolutions[res].fPixelRatio < 0.5f)
@@ -395,7 +401,8 @@ void CDisplaySettings::UpdateCalibrations()
   {
     // find calibration
     bool found = false;
-    for (ResolutionInfos::iterator itCal = m_calibrations.begin(); itCal != m_calibrations.end(); ++itCal)
+    for (ResolutionInfos::iterator itCal = m_calibrations.begin(); itCal != m_calibrations.end();
+         ++itCal)
     {
       if (itCal->strMode.Equals(m_resolutions[res].strMode))
       {
@@ -411,13 +418,18 @@ void CDisplaySettings::UpdateCalibrations()
   }
 }
 
-void CDisplaySettings::SettingOptionsResolutionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CDisplaySettings::SettingOptionsResolutionsFiller(
+    const CSetting* setting,
+    std::vector<std::pair<std::string, int> >& list,
+    int& current,
+    void* data)
 {
   list.push_back(make_pair(g_localizeStrings.Get(16316), RES_AUTORES));
 
   std::vector<RESOLUTION> resolutions;
   g_graphicsContext.GetAllowedResolutions(resolutions, false);
-  for (std::vector<RESOLUTION>::const_iterator it = resolutions.begin(); it != resolutions.end(); ++it)
+  for (std::vector<RESOLUTION>::const_iterator it = resolutions.begin(); it != resolutions.end();
+       ++it)
   {
     RESOLUTION resolution = *it;
     RESOLUTION_INFO res2 = CDisplaySettings::Get().GetResolutionInfo(resolution);
@@ -425,10 +437,16 @@ void CDisplaySettings::SettingOptionsResolutionsFiller(const CSetting *setting, 
   }
 }
 
-void CDisplaySettings::SettingOptionsFramerateconversionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CDisplaySettings::SettingOptionsFramerateconversionsFiller(
+    const CSetting* setting,
+    std::vector<std::pair<std::string, int> >& list,
+    int& current,
+    void* data)
 {
   list.push_back(make_pair(g_localizeStrings.Get(13340), FRAME_RATE_LEAVE_AS_IS));
-  list.push_back(make_pair(g_videoConfig.HasPAL() ? g_localizeStrings.Get(38716) : g_localizeStrings.Get(38717), FRAME_RATE_CONVERT));
+  list.push_back(make_pair(g_videoConfig.HasPAL() ? g_localizeStrings.Get(38716)
+                                                  : g_localizeStrings.Get(38717),
+                           FRAME_RATE_CONVERT));
   if (g_videoConfig.HasPAL() && g_videoConfig.HasPAL60())
     list.push_back(make_pair(g_localizeStrings.Get(38718), FRAME_RATE_USE_PAL60));
 }

@@ -23,14 +23,14 @@
 
 namespace MUSIC_INFO
 {
-  class EmbeddedArt;
-  class CMusicInfoTag;
-  class IMusicInfoTagLoader
-  {
-  public:
-    IMusicInfoTagLoader(void){};
-    virtual ~IMusicInfoTagLoader(){};
+class EmbeddedArt;
+class CMusicInfoTag;
+class IMusicInfoTagLoader
+{
+public:
+  IMusicInfoTagLoader(void) {};
+  virtual ~IMusicInfoTagLoader() {};
 
-    virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL) = 0;
-  };
-}
+  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt* art = NULL) = 0;
+};
+} // namespace MUSIC_INFO

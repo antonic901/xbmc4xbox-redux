@@ -33,19 +33,29 @@ class CMediaSource
 public:
   enum SourceType
   {
-    SOURCE_TYPE_UNKNOWN      = 0,
-    SOURCE_TYPE_LOCAL        = 1,
-    SOURCE_TYPE_DVD          = 2,
-    SOURCE_TYPE_VIRTUAL_DVD  = 3,
-    SOURCE_TYPE_REMOTE       = 4,
-    SOURCE_TYPE_VPATH        = 5
+    SOURCE_TYPE_UNKNOWN = 0,
+    SOURCE_TYPE_LOCAL = 1,
+    SOURCE_TYPE_DVD = 2,
+    SOURCE_TYPE_VIRTUAL_DVD = 3,
+    SOURCE_TYPE_REMOTE = 4,
+    SOURCE_TYPE_VPATH = 5
   };
-  CMediaSource() { m_iDriveType=SOURCE_TYPE_UNKNOWN; m_iLockMode=LOCK_MODE_EVERYONE; m_iBadPwdCount=0; m_iHasLock=0; m_ignore=false; m_allowSharing=true; };
+  CMediaSource()
+  {
+    m_iDriveType = SOURCE_TYPE_UNKNOWN;
+    m_iLockMode = LOCK_MODE_EVERYONE;
+    m_iBadPwdCount = 0;
+    m_iHasLock = 0;
+    m_ignore = false;
+    m_allowSharing = true;
+  };
   virtual ~CMediaSource() {};
 
-  bool operator==(const CMediaSource &right) const;
+  bool operator==(const CMediaSource& right) const;
 
-  void FromNameAndPaths(const CStdString &category, const CStdString &name, const std::vector<std::string> &paths);
+  void FromNameAndPaths(const CStdString& category,
+                        const CStdString& name,
+                        const std::vector<std::string>& paths);
   bool IsWritable() const;
   CStdString strName; ///< Name of the share, can be choosen freely.
   CStdString strStatus; ///< Status of the share (eg has disk etc.)
@@ -88,7 +98,7 @@ public:
   Value is unknown or unspecified.
   */
   LockType m_iLockMode;
-  CStdString m_strLockCode;  ///< Input code for Lock UI to verify, can be chosen freely.
+  CStdString m_strLockCode; ///< Input code for Lock UI to verify, can be chosen freely.
   int m_iHasLock;
   int m_iBadPwdCount; ///< Number of wrong passwords user has entered since share was last unlocked
 

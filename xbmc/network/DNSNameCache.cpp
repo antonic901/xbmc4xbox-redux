@@ -27,26 +27,29 @@ CDNSNameCache g_DNSCache;
 CCriticalSection CDNSNameCache::m_critical;
 
 CDNSNameCache::CDNSNameCache(void)
-{}
+{
+}
 
 CDNSNameCache::~CDNSNameCache(void)
-{}
+{
+}
 
 bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres)
 {
   // first see if this is already an ip address
-  unsigned long ulHostIp = inet_addr( strHostName.c_str() );
+  unsigned long ulHostIp = inet_addr(strHostName.c_str());
 
-  if ( ulHostIp != 0xFFFFFFFF )
+  if (ulHostIp != 0xFFFFFFFF)
   {
     // yes it is, just return it
-    strIpAdres.Format("%d.%d.%d.%d", (ulHostIp & 0xFF), (ulHostIp & 0xFF00) >> 8, (ulHostIp & 0xFF0000) >> 16, (ulHostIp & 0xFF000000) >> 24 );
+    strIpAdres.Format("%d.%d.%d.%d", (ulHostIp & 0xFF), (ulHostIp & 0xFF00) >> 8,
+                      (ulHostIp & 0xFF0000) >> 16, (ulHostIp & 0xFF000000) >> 24);
     return true;
   }
 
   // nop this is a hostname
   // check if we already cached the hostname <-> ip address
-  if(g_DNSCache.GetCached(strHostName, strIpAdres))
+  if (g_DNSCache.GetCached(strHostName, strIpAdres))
   {
     // it was already cached
     return true;
@@ -56,10 +59,10 @@ bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres
   // do a DNS lookup
 #ifndef _XBOX
   {
-    WSADATA wsaData;    /* Used to open Windows connection */
-    SOCKET sd;          /* Socket descriptor */
+    WSADATA wsaData; /* Used to open Windows connection */
+    SOCKET sd; /* Socket descriptor */
     struct sockaddr_in socket_address;
-    struct hostent *host;
+    struct hostent* host;
     int count = 0;
 
     /* Open a windows connection */
@@ -101,9 +104,9 @@ bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres
     CLog::Log(LOGDEBUG, "host name = %s\n", host->h_name);
 
     /* Loop through and print out any aliases */
-    while(1)
+    while (1)
     {
-      if(host->h_aliases[count] == NULL)
+      if (host->h_aliases[count] == NULL)
       {
         break;
       }
@@ -114,7 +117,10 @@ bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres
     /* Print out all IP addresses of name */
     if (host->h_addr_list[0])
     {
-      strIpAdres.Format("%d.%d.%d.%d", (unsigned char)host->h_addr_list[0][0], (unsigned char)host->h_addr_list[0][1], (unsigned char)host->h_addr_list[0][2], (unsigned char)host->h_addr_list[0][3]);
+      strIpAdres.Format("%d.%d.%d.%d", (unsigned char)host->h_addr_list[0][0],
+                        (unsigned char)host->h_addr_list[0][1],
+                        (unsigned char)host->h_addr_list[0][2],
+                        (unsigned char)host->h_addr_list[0][3]);
       g_DNSCache.Add(strHostName, strIpAdres);
     }
 
@@ -126,7 +132,7 @@ bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres
 #else
   CStdString suffix = CSettings::GetInstance().GetString("network.dnssuffix");
   CStdString fqdn;
-  if( suffix.length() > 0 && strHostName.Find(".") < 0)
+  if (suffix.length() > 0 && strHostName.Find(".") < 0)
     fqdn = strHostName + "." + suffix;
   else
     fqdn = strHostName;
@@ -134,15 +140,16 @@ bool CDNSNameCache::Lookup(const CStdString& strHostName, CStdString& strIpAdres
   WSAEVENT hEvent = WSACreateEvent();
   XNDNS* pDns = NULL;
   INT err = XNetDnsLookup(fqdn.c_str(), hEvent, &pDns);
-  WaitForSingleObject( (HANDLE)hEvent, INFINITE);
-  if ( pDns && pDns->iStatus == 0 )
+  WaitForSingleObject((HANDLE)hEvent, INFINITE);
+  if (pDns && pDns->iStatus == 0)
   {
     //DNS lookup succeeded
 
     unsigned long ulHostIp;
     memcpy(&ulHostIp, &(pDns->aina[0].s_addr), 4);
 
-    strIpAdres.Format("%d.%d.%d.%d", (ulHostIp & 0xFF), (ulHostIp & 0xFF00) >> 8, (ulHostIp & 0xFF0000) >> 16, (ulHostIp & 0xFF000000) >> 24 );
+    strIpAdres.Format("%d.%d.%d.%d", (ulHostIp & 0xFF), (ulHostIp & 0xFF00) >> 8,
+                      (ulHostIp & 0xFF0000) >> 16, (ulHostIp & 0xFF000000) >> 24);
 
     g_DNSCache.Add(fqdn, strIpAdres);
 
@@ -170,7 +177,7 @@ bool CDNSNameCache::GetCached(const CStdString& strHostName, CStdString& strIpAd
   for (int i = 0; i < (int)g_DNSCache.m_vecDNSNames.size(); ++i)
   {
     CDNSName& DNSname = g_DNSCache.m_vecDNSNames[i];
-    if ( DNSname.m_strHostName == strHostName )
+    if (DNSname.m_strHostName == strHostName)
     {
       strIpAdres = DNSname.m_strIpAdres;
       return true;
@@ -181,12 +188,12 @@ bool CDNSNameCache::GetCached(const CStdString& strHostName, CStdString& strIpAd
   return false;
 }
 
-void CDNSNameCache::Add(const CStdString &strHostName, const CStdString &strIpAddress)
+void CDNSNameCache::Add(const CStdString& strHostName, const CStdString& strIpAddress)
 {
   CDNSName dnsName;
 
   dnsName.m_strHostName = strHostName;
-  dnsName.m_strIpAdres  = strIpAddress;
+  dnsName.m_strIpAdres = strIpAddress;
 
   CSingleLock lock(m_critical);
   g_DNSCache.m_vecDNSNames.push_back(dnsName);

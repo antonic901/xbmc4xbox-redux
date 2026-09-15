@@ -30,15 +30,20 @@ CEncoderVorbis::CEncoderVorbis()
 bool CEncoderVorbis::Init(const char* strFile, int iInChannels, int iInRate, int iInBits)
 {
   // we only accept 2 / 44100 / 16 atm
-  if (iInChannels != 2 || iInRate != 44100 || iInBits != 16) return false;
+  if (iInChannels != 2 || iInRate != 44100 || iInBits != 16)
+    return false;
 
   // set input stream information and open the file
-  if (!CEncoder::Init(strFile, iInChannels, iInRate, iInBits)) return false;
+  if (!CEncoder::Init(strFile, iInChannels, iInRate, iInBits))
+    return false;
 
   float fQuality = 0.5f;
-  if (CSettings::GetInstance().GetInt("audiocds.quality") == CDDARIP_QUALITY_MEDIUM) fQuality = 0.4f;
-  if (CSettings::GetInstance().GetInt("audiocds.quality") == CDDARIP_QUALITY_STANDARD) fQuality = 0.5f;
-  if (CSettings::GetInstance().GetInt("audiocds.quality") == CDDARIP_QUALITY_EXTREME) fQuality = 0.7f;
+  if (CSettings::GetInstance().GetInt("audiocds.quality") == CDDARIP_QUALITY_MEDIUM)
+    fQuality = 0.4f;
+  if (CSettings::GetInstance().GetInt("audiocds.quality") == CDDARIP_QUALITY_STANDARD)
+    fQuality = 0.5f;
+  if (CSettings::GetInstance().GetInt("audiocds.quality") == CDDARIP_QUALITY_EXTREME)
+    fQuality = 0.7f;
 
   if (!m_VorbisEncDll.Load() || !m_OggDll.Load() || !m_VorbisDll.Load())
   {
@@ -52,22 +57,29 @@ bool CEncoderVorbis::Init(const char* strFile, int iInChannels, int iInRate, int
   {
     // not realy cbr, but abr in this case
     int iBitRate = CSettings::GetInstance().GetInt("audiocds.bitrate") * 1000;
-    m_VorbisEncDll.vorbis_encode_init(&m_sVorbisInfo, m_iInChannels, m_iInSampleRate, -1, iBitRate, -1);
+    m_VorbisEncDll.vorbis_encode_init(&m_sVorbisInfo, m_iInChannels, m_iInSampleRate, -1, iBitRate,
+                                      -1);
   }
   else
   {
-    if (m_VorbisEncDll.vorbis_encode_init_vbr(&m_sVorbisInfo, m_iInChannels, m_iInSampleRate, fQuality)) return false;
+    if (m_VorbisEncDll.vorbis_encode_init_vbr(&m_sVorbisInfo, m_iInChannels, m_iInSampleRate,
+                                              fQuality))
+      return false;
   }
 
   /* add a comment */
   m_VorbisDll.vorbis_comment_init(&m_sVorbisComment);
-  m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"comment", (char*)m_strComment.c_str());
-  m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"artist", (char*)m_strArtist.c_str());
+  m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"comment",
+                                     (char*)m_strComment.c_str());
+  m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"artist",
+                                     (char*)m_strArtist.c_str());
   m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"title", (char*)m_strTitle.c_str());
   m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"album", (char*)m_strAlbum.c_str());
-  m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"albumartist", (char*)m_strAlbumArtist.c_str());
+  m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"albumartist",
+                                     (char*)m_strAlbumArtist.c_str());
   m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"genre", (char*)m_strGenre.c_str());
-  m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"tracknumber", (char*)m_strTrack.c_str());
+  m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"tracknumber",
+                                     (char*)m_strTrack.c_str());
   m_VorbisDll.vorbis_comment_add_tag(&m_sVorbisComment, (char*)"date", (char*)m_strYear.c_str());
 
   /* set up the analysis state and auxiliary encoding storage */
@@ -86,8 +98,8 @@ bool CEncoderVorbis::Init(const char* strFile, int iInChannels, int iInRate, int
     ogg_packet header_comm;
     ogg_packet header_code;
 
-    m_VorbisDll.vorbis_analysis_headerout(&m_sVorbisDspState, &m_sVorbisComment,
-                              &header, &header_comm, &header_code);
+    m_VorbisDll.vorbis_analysis_headerout(&m_sVorbisDspState, &m_sVorbisComment, &header,
+                                          &header_comm, &header_code);
 
     m_OggDll.ogg_stream_packetin(&m_sOggStreamState, &header);
     m_OggDll.ogg_stream_packetin(&m_sOggStreamState, &header_comm);
@@ -99,7 +111,8 @@ bool CEncoderVorbis::Init(const char* strFile, int iInChannels, int iInRate, int
     while (1)
     {
       int result = m_OggDll.ogg_stream_flush(&m_sOggStreamState, &m_sOggPage);
-      if (result == 0)break;
+      if (result == 0)
+        break;
       FileWrite(m_sOggPage.header, m_sOggPage.header_len);
       FileWrite(m_sOggPage.body, m_sOggPage.body_len);
     }
@@ -127,13 +140,13 @@ int CEncoderVorbis::Encode(int nNumBytesRead, BYTE* pbtStream)
     }
 
     /* expose the buffer to submit data */
-    float **buffer = m_VorbisDll.vorbis_analysis_buffer(&m_sVorbisDspState, 1024);
+    float** buffer = m_VorbisDll.vorbis_analysis_buffer(&m_sVorbisDspState, 1024);
 
     /* uninterleave samples */
     memcpy(m_pBuffer, pbtStream, block);
     pbtStream += 4096;
     LONG iSamples = block / (2 * 2);
-    signed char* buf = (signed char*) m_pBuffer;
+    signed char* buf = (signed char*)m_pBuffer;
     for (int i = 0; i < iSamples; i++)
     {
       int j = i << 2; // j = i * 4
@@ -162,13 +175,15 @@ int CEncoderVorbis::Encode(int nNumBytesRead, BYTE* pbtStream)
         while (!eos)
         {
           int result = m_OggDll.ogg_stream_pageout(&m_sOggStreamState, &m_sOggPage);
-          if (result == 0)break;
+          if (result == 0)
+            break;
           WriteStream(m_sOggPage.header, m_sOggPage.header_len);
           WriteStream(m_sOggPage.body, m_sOggPage.body_len);
 
           /* this could be set above, but for illustrative purposes, I do
           it here (to show that vorbis does know where the stream ends) */
-          if (m_OggDll.ogg_page_eos(&m_sOggPage)) eos = 1;
+          if (m_OggDll.ogg_page_eos(&m_sOggPage))
+            eos = 1;
         }
       }
     }
@@ -197,13 +212,15 @@ bool CEncoderVorbis::Close()
       while (!eos)
       {
         int result = m_OggDll.ogg_stream_pageout(&m_sOggStreamState, &m_sOggPage);
-        if (result == 0)break;
+        if (result == 0)
+          break;
         WriteStream(m_sOggPage.header, m_sOggPage.header_len);
         WriteStream(m_sOggPage.body, m_sOggPage.body_len);
 
         /* this could be set above, but for illustrative purposes, I do
         it here (to show that vorbis does know where the stream ends) */
-        if (m_OggDll.ogg_page_eos(&m_sOggPage)) eos = 1;
+        if (m_OggDll.ogg_page_eos(&m_sOggPage))
+          eos = 1;
       }
     }
   }
@@ -220,7 +237,7 @@ bool CEncoderVorbis::Close()
   FlushStream();
   FileClose();
 
-  delete []m_pBuffer;
+  delete[] m_pBuffer;
   m_pBuffer = NULL;
 
   m_VorbisEncDll.Unload();

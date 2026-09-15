@@ -35,38 +35,42 @@ CFat32FileSystem::CFat32FileSystem(unsigned char unit) : IFileSystem(unit)
   m_opened = CLOSED;
 }
 
-bool CFat32FileSystem::Open(const CStdString &file)
+bool CFat32FileSystem::Open(const CStdString& file)
 {
-  CFat32Device *device = (CFat32Device *)g_memoryUnitManager.GetDevice(m_unit);
-  if (!device) return false;
+  CFat32Device* device = (CFat32Device*)g_memoryUnitManager.GetDevice(m_unit);
+  if (!device)
+    return false;
   // convert long path to short path
   CStdString shortPath;
-  if(!GetShortFilePath(file, shortPath))
+  if (!GetShortFilePath(file, shortPath))
     return false;
 
   BYTE sector[FAT_PAGE_SIZE];
-	if (DFS_OK != DFS_OpenFile(device->GetVolume(), (uint8_t*)shortPath.c_str(), DFS_READ, sector, &m_file))
+  if (DFS_OK !=
+      DFS_OpenFile(device->GetVolume(), (uint8_t*)shortPath.c_str(), DFS_READ, sector, &m_file))
   {
-    CLog::Log(LOGDEBUG, __FUNCTION__" Error opening file %s", file.c_str());
-		return false;
-	}
+    CLog::Log(LOGDEBUG, __FUNCTION__ " Error opening file %s", file.c_str());
+    return false;
+  }
   m_opened = OPEN_FOR_READ;
   return true;
 }
 
-bool CFat32FileSystem::OpenForWrite(const CStdString &file, bool overWrite)
+bool CFat32FileSystem::OpenForWrite(const CStdString& file, bool overWrite)
 {
-  CFat32Device *device = (CFat32Device *)g_memoryUnitManager.GetDevice(m_unit);
-  if (!device) return false;
+  CFat32Device* device = (CFat32Device*)g_memoryUnitManager.GetDevice(m_unit);
+  if (!device)
+    return false;
 
   if (overWrite)
     Delete(file);
   BYTE sector[FAT_PAGE_SIZE];
-	if (DFS_OK != DFS_OpenFile(device->GetVolume(), (uint8_t*)file.c_str(), DFS_READ | DFS_WRITE, sector, &m_file))
+  if (DFS_OK != DFS_OpenFile(device->GetVolume(), (uint8_t*)file.c_str(), DFS_READ | DFS_WRITE,
+                             sector, &m_file))
   {
-    CLog::Log(LOGDEBUG, __FUNCTION__" Error opening file %s", file.c_str());
-		return false;
-	}
+    CLog::Log(LOGDEBUG, __FUNCTION__ " Error opening file %s", file.c_str());
+    return false;
+  }
   m_opened = OPEN_FOR_WRITE;
   return true;
 }
@@ -76,32 +80,35 @@ void CFat32FileSystem::Close()
 #ifdef FAT32_ALLOW_WRITING
   if (m_opened == OPEN_FOR_WRITE)
   { // flush our caches
-    CFat32Device *device = (CFat32Device *)g_memoryUnitManager.GetDevice(m_unit);
-    if (!device) return;
+    CFat32Device* device = (CFat32Device*)g_memoryUnitManager.GetDevice(m_unit);
+    if (!device)
+      return;
     device->FlushWriteCache();
   }
 #endif
   m_opened = CLOSED;
 }
 
-unsigned int CFat32FileSystem::Read(void *buffer, __int64 size)
+unsigned int CFat32FileSystem::Read(void* buffer, __int64 size)
 {
-  if (m_opened == CLOSED) return 0;
+  if (m_opened == CLOSED)
+    return 0;
   BYTE sector[FAT_PAGE_SIZE];
   unsigned int amountRead = 0;
-	if (DFS_OK != DFS_ReadFile(&m_file, sector, (unsigned char *)buffer, &amountRead, (unsigned int)size))
+  if (DFS_OK !=
+      DFS_ReadFile(&m_file, sector, (unsigned char*)buffer, &amountRead, (unsigned int)size))
   {
-    CLog::Log(LOGDEBUG, __FUNCTION__" Error reading file");
-		return 0;
-	}
+    CLog::Log(LOGDEBUG, __FUNCTION__ " Error reading file");
+    return 0;
+  }
   return amountRead;
 }
 
-bool CFat32FileSystem::GetShortFilePath(const CStdString &path, CStdString &shortPath)
-{  
+bool CFat32FileSystem::GetShortFilePath(const CStdString& path, CStdString& shortPath)
+{
   shortPath.Empty();
   if (path.IsEmpty())
-    return true;  // nothing to do
+    return true; // nothing to do
   // split the path up
   CStdStringArray folders;
   StringUtils::SplitString(path, "/", folders);
@@ -109,7 +116,7 @@ bool CFat32FileSystem::GetShortFilePath(const CStdString &path, CStdString &shor
   bool isfolder = true;
   for (unsigned int i = 0; i < folders.size(); ++i)
   {
-    if(!isfolder)
+    if (!isfolder)
       return false;
 
     if (folders[i].IsEmpty())
@@ -139,22 +146,25 @@ bool CFat32FileSystem::GetShortFilePath(const CStdString &path, CStdString &shor
   return true;
 }
 
-unsigned int CFat32FileSystem::Write(const void *buffer, __int64 size)
+unsigned int CFat32FileSystem::Write(const void* buffer, __int64 size)
 {
-  if (m_opened != OPEN_FOR_WRITE) return 0;
+  if (m_opened != OPEN_FOR_WRITE)
+    return 0;
   BYTE sector[FAT_PAGE_SIZE];
   unsigned int amountWritten = 0;
-	if (DFS_OK != DFS_WriteFile(&m_file, sector, (unsigned char *)buffer, &amountWritten, (unsigned int)size))
+  if (DFS_OK !=
+      DFS_WriteFile(&m_file, sector, (unsigned char*)buffer, &amountWritten, (unsigned int)size))
   {
-    CLog::Log(LOGDEBUG, __FUNCTION__" Error writing file");
-		return 0;
-	}
+    CLog::Log(LOGDEBUG, __FUNCTION__ " Error writing file");
+    return 0;
+  }
   return amountWritten;
 }
 
 __int64 CFat32FileSystem::Seek(__int64 position)
 {
-  if (m_opened == CLOSED) return -1;
+  if (m_opened == CLOSED)
+    return -1;
   BYTE sector[FAT_PAGE_SIZE];
   DFS_Seek(&m_file, (unsigned int)position, sector);
   return m_file.pointer;
@@ -170,11 +180,11 @@ __int64 CFat32FileSystem::GetPosition()
   return m_file.pointer;
 }
 
-bool CFat32FileSystem::Delete(const CStdString &file)
+bool CFat32FileSystem::Delete(const CStdString& file)
 {
   return false;
 
-/*  CFat32Device *device = (CFat32Device *)g_memoryUnitManager.GetDevice(m_unit);
+  /*  CFat32Device *device = (CFat32Device *)g_memoryUnitManager.GetDevice(m_unit);
   if (!device) return false;
 
   BYTE sector[FAT_PAGE_SIZE];
@@ -186,26 +196,27 @@ bool CFat32FileSystem::Delete(const CStdString &file)
   return true;*/
 }
 
-bool CFat32FileSystem::Rename(const CStdString &oldFile, const CStdString &newFile)
+bool CFat32FileSystem::Rename(const CStdString& oldFile, const CStdString& newFile)
 {
   return false;
 }
 
-bool CFat32FileSystem::MakeDir(const CStdString &path)
+bool CFat32FileSystem::MakeDir(const CStdString& path)
 {
   return false;
 }
 
-bool CFat32FileSystem::RemoveDir(const CStdString &path)
+bool CFat32FileSystem::RemoveDir(const CStdString& path)
 {
   return Delete(path);
 }
 
-bool CFat32FileSystem::GetDirectory(const CStdString &directory, CFileItemList &items)
+bool CFat32FileSystem::GetDirectory(const CStdString& directory, CFileItemList& items)
 {
   // first grab the shortened version of this directory
   CStdString shortDirectory;
-  if (GetShortFilePath(directory, shortDirectory) && GetDirectoryWithShortPaths(shortDirectory, items))
+  if (GetShortFilePath(directory, shortDirectory) &&
+      GetDirectoryWithShortPaths(shortDirectory, items))
   { // success - update our paths
     for (int i = 0; i < items.Size(); ++i)
     {
@@ -222,42 +233,45 @@ bool CFat32FileSystem::GetDirectory(const CStdString &directory, CFileItemList &
   return false;
 }
 
-bool CFat32FileSystem::GetDirectoryWithShortPaths(const CStdString &directory, CFileItemList &items)
+bool CFat32FileSystem::GetDirectoryWithShortPaths(const CStdString& directory, CFileItemList& items)
 {
-  CFat32Device *device = (CFat32Device *)g_memoryUnitManager.GetDevice(m_unit);
-  if (!device) return false;
+  CFat32Device* device = (CFat32Device*)g_memoryUnitManager.GetDevice(m_unit);
+  if (!device)
+    return false;
 
   DIRINFO di;
   BYTE buffer[FAT_PAGE_SIZE];
   di.scratch = (uint8_t*)buffer;
-	if (DFS_OpenDir(device->GetVolume(), (uint8_t*)directory.c_str(), &di)) {
-    CLog::Log(LOGDEBUG, __FUNCTION__" Error opening directory %s", directory.c_str());
-		return false;
-	}
+  if (DFS_OpenDir(device->GetVolume(), (uint8_t*)directory.c_str(), &di))
+  {
+    CLog::Log(LOGDEBUG, __FUNCTION__ " Error opening directory %s", directory.c_str());
+    return false;
+  }
   // vfat naming
   CStdStringW vfatName;
   unsigned short vfatSequence = 0;
   unsigned char vfatChecksum = 0;
   DIRENT de;
-	while (!DFS_GetNext(device->GetVolume(), &di, &de))
+  while (!DFS_GetNext(device->GetVolume(), &di, &de))
   {
-		if (de.name[0])
+    if (de.name[0])
     {
 
       if ((de.attr & ATTR_LONG_NAME) == ATTR_LONG_NAME)
       { // long filename
-        VFAT_DIR_ENTRY *vfat = (VFAT_DIR_ENTRY*)&de;
+        VFAT_DIR_ENTRY* vfat = (VFAT_DIR_ENTRY*)&de;
         // check it's a vfat entry
         if (vfat->attr_0f != 0x0f || vfat->cluster_0000 != 0x0000 || vfat->type_00 != 0x00)
         { // invalid entry
           continue;
         }
-        // not sure why but very long filename's have 0x40 set on both their 5 and 6th part. 
+        // not sure why but very long filename's have 0x40 set on both their 5 and 6th part.
         // let's only check if sequence mismatches
         if ((vfat->sequence & 0x40) == 0x40)
         { // last entry
-          if((vfat->sequence & 0x1f) == vfatSequence && vfat->checksum == vfatChecksum)
-            CLog::Log(LOGWARNING, __FUNCTION__" Last entry signaled, but sequence and checksum still match, ignoring");
+          if ((vfat->sequence & 0x1f) == vfatSequence && vfat->checksum == vfatChecksum)
+            CLog::Log(LOGWARNING, __FUNCTION__ " Last entry signaled, but sequence and checksum "
+                                               "still match, ignoring");
           else
           {
             vfatName.Empty();
@@ -265,7 +279,8 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const CStdString &directory, C
             vfatChecksum = vfat->checksum;
           }
         }
-        if (vfat->checksum == vfatChecksum && (vfat->sequence & 0x1f) == vfatSequence && vfatSequence)
+        if (vfat->checksum == vfatChecksum && (vfat->sequence & 0x1f) == vfatSequence &&
+            vfatSequence)
         {
           WCHAR unicode[14];
           memcpy(unicode, vfat->unicode1, 10);
@@ -310,7 +325,7 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const CStdString &directory, C
       item->m_bIsFolder = (de.attr & ATTR_DIRECTORY) == ATTR_DIRECTORY;
       // file size
       if ((de.attr & ATTR_DIRECTORY) == 0)
-        item->m_dwSize = *((unsigned long *)(&de.filesize_0));
+        item->m_dwSize = *((unsigned long*)(&de.filesize_0));
       // Currently using the last write time
       int day = (de.wrtdate_l & 0x1f);
       int month = ((de.wrtdate_l & 0xe0) >> 5) | ((de.wrtdate_h & 1) << 3);
@@ -322,7 +337,7 @@ bool CFat32FileSystem::GetDirectoryWithShortPaths(const CStdString &directory, C
 
       items.Add(item);
     }
-	}
+  }
   return true;
 }
-}
+} // namespace XFILE

@@ -27,9 +27,9 @@
 
 #include "threads/CriticalSection.h"
 
-#define SCREENSAVER_FADE   1
-#define SCREENSAVER_BLACK  2
-#define SCREENSAVER_XBS    3
+#define SCREENSAVER_FADE 1
+#define SCREENSAVER_BLACK 2
+#define SCREENSAVER_XBS 3
 
 class CGUIWindowScreensaver : public CGUIWindow
 {
@@ -38,7 +38,7 @@ public:
   virtual ~CGUIWindowScreensaver(void);
 
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual void Render();
 
 private:

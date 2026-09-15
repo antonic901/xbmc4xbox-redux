@@ -31,48 +31,63 @@ class CVariant;
 
 namespace ANNOUNCEMENT
 {
-  class CAnnouncementManager : public CThread
+class CAnnouncementManager : public CThread
+{
+public:
+  CAnnouncementManager();
+  virtual ~CAnnouncementManager();
+
+  static CAnnouncementManager& GetInstance();
+
+  void Start();
+  void Deinitialize();
+
+  void AddAnnouncer(IAnnouncer* listener);
+  void RemoveAnnouncer(IAnnouncer* listener);
+
+  void Announce(AnnouncementFlag flag, const char* sender, const char* message);
+  void Announce(AnnouncementFlag flag,
+                const char* sender,
+                const char* message,
+                const CVariant& data);
+  void Announce(AnnouncementFlag flag,
+                const char* sender,
+                const char* message,
+                const boost::shared_ptr<const CFileItem>& item);
+  void Announce(AnnouncementFlag flag,
+                const char* sender,
+                const char* message,
+                const boost::shared_ptr<const CFileItem>& item,
+                const CVariant& data);
+
+protected:
+  void Process();
+  void DoAnnounce(AnnouncementFlag flag,
+                  const char* sender,
+                  const char* message,
+                  CFileItemPtr item,
+                  const CVariant& data);
+  void DoAnnounce(AnnouncementFlag flag,
+                  const char* sender,
+                  const char* message,
+                  const CVariant& data);
+
+  struct CAnnounceData
   {
-  public:
-    CAnnouncementManager();
-    virtual ~CAnnouncementManager();
-
-    static CAnnouncementManager& GetInstance();
-
-    void Start();
-    void Deinitialize();
-
-    void AddAnnouncer(IAnnouncer *listener);
-    void RemoveAnnouncer(IAnnouncer *listener);
-
-    void Announce(AnnouncementFlag flag, const char *sender, const char *message);
-    void Announce(AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
-    void Announce(AnnouncementFlag flag, const char *sender, const char *message,
-        const boost::shared_ptr<const CFileItem>& item);
-    void Announce(AnnouncementFlag flag, const char *sender, const char *message,
-        const boost::shared_ptr<const CFileItem>& item, const CVariant &data);
-
-  protected:
-    void Process();
-    void DoAnnounce(AnnouncementFlag flag, const char *sender, const char *message, CFileItemPtr item, const CVariant &data);
-    void DoAnnounce(AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
-
-    struct CAnnounceData
-    {
-      AnnouncementFlag flag;
-      std::string sender;
-      std::string message;
-      CFileItemPtr item;
-      CVariant data;
-    };
-    std::list<CAnnounceData> m_announcementQueue;
-    CEvent m_queueEvent;
-
-  private:
-    CAnnouncementManager(const CAnnouncementManager&);
-    CAnnouncementManager const& operator=(CAnnouncementManager const&);
-
-    CCriticalSection m_critSection;
-    std::vector<IAnnouncer *> m_announcers;
+    AnnouncementFlag flag;
+    std::string sender;
+    std::string message;
+    CFileItemPtr item;
+    CVariant data;
   };
-}
+  std::list<CAnnounceData> m_announcementQueue;
+  CEvent m_queueEvent;
+
+private:
+  CAnnouncementManager(const CAnnouncementManager&);
+  CAnnouncementManager const& operator=(CAnnouncementManager const&);
+
+  CCriticalSection m_critSection;
+  std::vector<IAnnouncer*> m_announcers;
+};
+} // namespace ANNOUNCEMENT

@@ -31,48 +31,48 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-#define TRAY_OPEN     16
-#define TRAY_CLOSED_NO_MEDIA  64
+#define TRAY_OPEN 16
+#define TRAY_CLOSED_NO_MEDIA 64
 #define TRAY_CLOSED_MEDIA_PRESENT 96
 
-#define DRIVE_OPEN      0 // Open...
-#define DRIVE_NOT_READY     1 // Opening.. Closing...
-#define DRIVE_READY      2
-#define DRIVE_CLOSED_NO_MEDIA   3 // CLOSED...but no media in drive
-#define DRIVE_CLOSED_MEDIA_PRESENT  4 // Will be send once when the drive just have closed
-#define DRIVE_NONE  5 // system doesn't have an optical drive
+#define DRIVE_OPEN 0 // Open...
+#define DRIVE_NOT_READY 1 // Opening.. Closing...
+#define DRIVE_READY 2
+#define DRIVE_CLOSED_NO_MEDIA 3 // CLOSED...but no media in drive
+#define DRIVE_CLOSED_MEDIA_PRESENT 4 // Will be send once when the drive just have closed
+#define DRIVE_NONE 5 // system doesn't have an optical drive
 
-#define MODE1_DATA_SIZE    2048 // Mode1 sector has 2048 bytes of data
+#define MODE1_DATA_SIZE 2048 // Mode1 sector has 2048 bytes of data
 
-#define MODE2_DATA_START   24   // Mode2 raw sector has 24 bytes before the data payload
-#define MODE2_DATA_SIZE    2324 // And has 2324 usable bytes
-#define RAW_SECTOR_SIZE    2352 // Raw sector size
+#define MODE2_DATA_START 24 // Mode2 raw sector has 24 bytes before the data payload
+#define MODE2_DATA_SIZE 2324 // And has 2324 usable bytes
+#define RAW_SECTOR_SIZE 2352 // Raw sector size
 
 // Xbox extended partition numbers, 6-7.  Note that up to 15 can normally be used, but we reserve 8->15 for memcards.
-#define EXTEND_PARTITION_BEGIN  6
-#define EXTEND_PARTITION_END    7
-#define EXTEND_DRIVE_BEGIN     'F'
-#define EXTEND_DRIVE_END       'G'
-#define EXTEND_PARTITIONS_LIMIT  8
+#define EXTEND_PARTITION_BEGIN 6
+#define EXTEND_PARTITION_END 7
+#define EXTEND_DRIVE_BEGIN 'F'
+#define EXTEND_DRIVE_END 'G'
+#define EXTEND_PARTITIONS_LIMIT 8
 
 // This flag (part of PARTITION_ENTRY.pe_flags) tells you whether/not a
 // partition is being used (whether/not drive G is active, for example)
-#define PE_PARTFLAGS_IN_USE          0x80000000
+#define PE_PARTFLAGS_IN_USE 0x80000000
 
-#define IOCTL_CMD_LBA48_ACCESS        0xcafebabe
-#define IOCTL_SUBCMD_GET_INFO         0
+#define IOCTL_CMD_LBA48_ACCESS 0xcafebabe
+#define IOCTL_SUBCMD_GET_INFO 0
 
-#define LBA48_GET_INFO_MAGIC1_IDX       0
-#define LBA48_GET_INFO_MAGIC1_VAL       0xcafebabe
-#define LBA48_GET_INFO_MAGIC2_IDX       1
-#define LBA48_GET_INFO_MAGIC2_VAL       0xbabeface
+#define LBA48_GET_INFO_MAGIC1_IDX 0
+#define LBA48_GET_INFO_MAGIC1_VAL 0xcafebabe
+#define LBA48_GET_INFO_MAGIC2_IDX 1
+#define LBA48_GET_INFO_MAGIC2_VAL 0xbabeface
 #define LBA48_GET_INFO_PATCHCODE_VERSION_IDX 2
-#define LBA48_GET_INFO_LOWCODE_BASE_IDX      3
-#define LBA48_GET_INFO_HIGHCODE_BASE_IDX     4
-#define LBA48_GET_INFO_PATCHSEG_SIZE_IDX     5
-#define LBA48_GET_INFO_PART_TABLE_OFS_IDX    6
+#define LBA48_GET_INFO_LOWCODE_BASE_IDX 3
+#define LBA48_GET_INFO_HIGHCODE_BASE_IDX 4
+#define LBA48_GET_INFO_PATCHSEG_SIZE_IDX 5
+#define LBA48_GET_INFO_PART_TABLE_OFS_IDX 6
 
-#define MAX_PARTITIONS                       14
+#define MAX_PARTITIONS 14
 
 typedef struct _PARTITION_ENTRY
 {
@@ -95,7 +95,7 @@ class CIoSupport
 public:
   static VOID GetXbePath(char* szDest);
 
-  static HRESULT MapDriveLetter  (char cDriveLetter, const char* szDevice);
+  static HRESULT MapDriveLetter(char cDriveLetter, const char* szDevice);
   static HRESULT UnmapDriveLetter(char cDriveLetter);
   static HRESULT RemapDriveLetter(char cDriveLetter, const char* szDevice);
 
@@ -109,14 +109,14 @@ public:
 
   static bool ReadPartitionTable();
   static bool HasPartitionTable();
-  static bool ExtendedPartitionMappingExists(char mapLetter); 
-  static INT GetExtendedPartitionPosition(char mapLetter); 
-  static char GetExtendedPartitionDriveLetter(int pos); 
+  static bool ExtendedPartitionMappingExists(char mapLetter);
+  static INT GetExtendedPartitionPosition(char mapLetter);
+  static char GetExtendedPartitionDriveLetter(int pos);
   static void MapExtendedPartitions();
 
   static LARGE_INTEGER GetDriveSize();
 
-  static DWORD   GetTrayState();
+  static DWORD GetTrayState();
   static HRESULT EjectTray();
   static HRESULT CloseTray();
   static HRESULT ToggleTray();
@@ -129,11 +129,12 @@ public:
   static INT ReadSectorMode2(HANDLE hDevice, DWORD dwSector, LPSTR lpczBuffer);
   static INT ReadSectorCDDA(HANDLE hDevice, DWORD dwSector, LPSTR lpczBuffer);
   static VOID CloseCDROM(HANDLE hDevice);
-  
+
   static BOOL IsDebug();
   static HRESULT Shutdown();
+
 private:
-  static unsigned int ReadPartitionTable(PARTITION_TABLE *p_table);
+  static unsigned int ReadPartitionTable(PARTITION_TABLE* p_table);
   static PVOID m_rawXferBuffer;
   static PARTITION_TABLE m_partitionTable;
   static bool m_fPartitionTableIsValid;

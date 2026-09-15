@@ -25,12 +25,12 @@
 class CVideoFileItemListModifier : public IFileItemListModifier
 {
 public:
-  CVideoFileItemListModifier() { }
-  virtual ~CVideoFileItemListModifier() { }
+  CVideoFileItemListModifier() {}
+  virtual ~CVideoFileItemListModifier() {}
 
-  bool CanModify(const CFileItemList &items) const;
-  bool Modify(CFileItemList &items) const;
+  bool CanModify(const CFileItemList& items) const;
+  bool Modify(CFileItemList& items) const;
 
 private:
-  static void AddQueuingFolder(CFileItemList & items);
+  static void AddQueuingFolder(CFileItemList& items);
 };

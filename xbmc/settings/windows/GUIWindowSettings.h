@@ -22,8 +22,7 @@
 
 #include "guilib/GUIWindow.h"
 
-class CGUIWindowSettings :
-      public CGUIWindow
+class CGUIWindowSettings : public CGUIWindow
 {
 public:
   CGUIWindowSettings(void);

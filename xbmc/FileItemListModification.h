@@ -30,8 +30,8 @@ public:
 
   static CFileItemListModification& Get();
 
-  virtual bool CanModify(const CFileItemList &items) const;
-  virtual bool Modify(CFileItemList &items) const;
+  virtual bool CanModify(const CFileItemList& items) const;
+  virtual bool Modify(CFileItemList& items) const;
 
 private:
   CFileItemListModification();

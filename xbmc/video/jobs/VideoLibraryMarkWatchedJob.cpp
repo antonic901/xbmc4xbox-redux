@@ -31,27 +31,30 @@
 #include "utils/URIUtils.h"
 #include "video/VideoDatabase.h"
 
-CVideoLibraryMarkWatchedJob::CVideoLibraryMarkWatchedJob(const CFileItemPtr &item, bool mark)
+CVideoLibraryMarkWatchedJob::CVideoLibraryMarkWatchedJob(const CFileItemPtr& item, bool mark)
   : m_item(item),
     m_mark(mark)
-{ }
+{
+}
 
 CVideoLibraryMarkWatchedJob::~CVideoLibraryMarkWatchedJob()
-{ }
+{
+}
 
 bool CVideoLibraryMarkWatchedJob::operator==(const CJob* job) const
 {
   if (strcmp(job->GetType(), GetType()) != 0)
     return false;
 
-  const CVideoLibraryMarkWatchedJob* markJob = dynamic_cast<const CVideoLibraryMarkWatchedJob*>(job);
+  const CVideoLibraryMarkWatchedJob* markJob =
+      dynamic_cast<const CVideoLibraryMarkWatchedJob*>(job);
   if (markJob == NULL)
     return false;
 
   return m_item->IsSamePath(markJob->m_item.get()) && markJob->m_mark == m_mark;
 }
 
-bool CVideoLibraryMarkWatchedJob::Work(CVideoDatabase &db)
+bool CVideoLibraryMarkWatchedJob::Work(CVideoDatabase& db)
 {
   if (!CProfilesManager::Get().GetCurrentProfile().canWriteDatabases())
     return false;
@@ -82,7 +85,8 @@ bool CVideoLibraryMarkWatchedJob::Work(CVideoDatabase &db)
 
   db.BeginTransaction();
 
-  for (std::vector<CFileItemPtr>::const_iterator iter = markItems.begin(); iter != markItems.end(); ++iter)
+  for (std::vector<CFileItemPtr>::const_iterator iter = markItems.begin(); iter != markItems.end();
+       ++iter)
   {
     CFileItemPtr item = *iter;
     if (m_mark)

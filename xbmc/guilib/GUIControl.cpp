@@ -26,9 +26,7 @@
 #include "GUITexture.h"
 #include "guilib/Key.h"
 
-CGUIControl::CGUIControl() :
-  m_hitColor(0xffffffff),
-  m_diffuseColor(0xffffffff)
+CGUIControl::CGUIControl() : m_hitColor(0xffffffff), m_diffuseColor(0xffffffff)
 {
   m_hasProcessed = false;
   m_bHasFocus = false;
@@ -44,7 +42,7 @@ CGUIControl::CGUIControl() :
   m_height = 0;
   ControlType = GUICONTROL_UNKNOWN;
   m_bInvalidated = true;
-  m_bAllocated=false;
+  m_bAllocated = false;
   m_parentControl = NULL;
   m_hasCamera = false;
   m_pushedUpdates = false;
@@ -53,10 +51,11 @@ CGUIControl::CGUIControl() :
   m_stereo = 0.0f;
 }
 
-CGUIControl::CGUIControl(int parentID, int controlID, float posX, float posY, float width, float height)
-: m_hitRect(posX, posY, posX + width, posY + height),
-  m_hitColor(0xffffffff),
-  m_diffuseColor(0xffffffff)
+CGUIControl::CGUIControl(
+    int parentID, int controlID, float posX, float posY, float width, float height)
+  : m_hitRect(posX, posY, posX + width, posY + height),
+    m_hitColor(0xffffffff),
+    m_diffuseColor(0xffffffff)
 {
   m_posX = posX;
   m_posY = posY;
@@ -71,7 +70,7 @@ CGUIControl::CGUIControl(int parentID, int controlID, float posX, float posY, fl
   m_enabled = true;
   ControlType = GUICONTROL_UNKNOWN;
   m_bInvalidated = true;
-  m_bAllocated=false;
+  m_bAllocated = false;
   m_hasProcessed = false;
   m_parentControl = NULL;
   m_hasCamera = false;
@@ -81,17 +80,15 @@ CGUIControl::CGUIControl(int parentID, int controlID, float posX, float posY, fl
   m_stereo = 0.0f;
 }
 
-
 CGUIControl::~CGUIControl(void)
 {
-
 }
 
 void CGUIControl::AllocResources()
 {
   m_hasProcessed = false;
   m_bInvalidated = true;
-  m_bAllocated=true;
+  m_bAllocated = true;
 }
 
 void CGUIControl::FreeResources(bool immediately)
@@ -103,25 +100,24 @@ void CGUIControl::FreeResources(bool immediately)
     // because some windows aren't loaded on demand
     for (unsigned int i = 0; i < m_animations.size(); i++)
     {
-      CAnimation &anim = m_animations[i];
+      CAnimation& anim = m_animations[i];
       if (anim.GetType() != ANIM_TYPE_CONDITIONAL)
         anim.ResetAnimation();
     }
-    m_bAllocated=false;
+    m_bAllocated = false;
   }
   m_hasProcessed = false;
 }
 
 void CGUIControl::DynamicResourceAlloc(bool bOnOff)
 {
-
 }
 
 // the main processing routine.
 // 1. animate and set animation transform
 // 2. if visible, process
 // 3. reset the animation transform
-void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   CRect dirtyRegion = m_renderRegion;
 
@@ -159,7 +155,7 @@ void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
   }
 }
 
-void CGUIControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIControl::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   // update our render region
   m_renderRegion = g_graphicsContext.generateAABB(CalcRenderRegion());
@@ -176,10 +172,10 @@ void CGUIControl::DoRender()
   {
     bool hasStereo = m_stereo != 0.0
 #ifdef _XBOX
-                  && false;
+                     && false;
 #else
-                  && g_graphicsContext.GetStereoMode() != RENDER_STEREO_MODE_MONO
-                  && g_graphicsContext.GetStereoMode() != RENDER_STEREO_MODE_OFF;
+                     && g_graphicsContext.GetStereoMode() != RENDER_STEREO_MODE_MONO &&
+                     g_graphicsContext.GetStereoMode() != RENDER_STEREO_MODE_OFF;
 #endif
 
     g_graphicsContext.SetTransform(m_cachedTransform);
@@ -189,7 +185,6 @@ void CGUIControl::DoRender()
     if (hasStereo)
       g_graphicsContext.SetStereoFactor(m_stereo);
 #endif
-
 
     if (m_hitColor != 0xffffffff)
     {
@@ -209,41 +204,41 @@ void CGUIControl::DoRender()
   }
 }
 
-bool CGUIControl::OnAction(const CAction &action)
+bool CGUIControl::OnAction(const CAction& action)
 {
   if (HasFocus())
   {
     switch (action.GetID())
     {
-    case ACTION_MOVE_DOWN:
-      OnDown();
-      return true;
+      case ACTION_MOVE_DOWN:
+        OnDown();
+        return true;
 
-    case ACTION_MOVE_UP:
-      OnUp();
-      return true;
+      case ACTION_MOVE_UP:
+        OnUp();
+        return true;
 
-    case ACTION_MOVE_LEFT:
-      OnLeft();
-      return true;
+      case ACTION_MOVE_LEFT:
+        OnLeft();
+        return true;
 
-    case ACTION_MOVE_RIGHT:
-      OnRight();
-      return true;
+      case ACTION_MOVE_RIGHT:
+        OnRight();
+        return true;
 
-    case ACTION_SHOW_INFO:
-      return OnInfo();
+      case ACTION_SHOW_INFO:
+        return OnInfo();
 
-    case ACTION_NAV_BACK:
-      return OnBack();
+      case ACTION_NAV_BACK:
+        return OnBack();
 
-    case ACTION_NEXT_CONTROL:
-      OnNextControl();
-      return true;
+      case ACTION_NEXT_CONTROL:
+        OnNextControl();
+        return true;
 
-    case ACTION_PREV_CONTROL:
-      OnPrevControl();
-      return true;
+      case ACTION_PREV_CONTROL:
+        OnPrevControl();
+        return true;
     }
   }
   return false;
@@ -303,9 +298,9 @@ void CGUIControl::OnPrevControl()
   Navigate(ACTION_PREV_CONTROL);
 }
 
-bool CGUIControl::SendWindowMessage(CGUIMessage &message) const
+bool CGUIControl::SendWindowMessage(CGUIMessage& message) const
 {
-  CGUIWindow *pWindow = g_windowManager.GetWindow(GetParentID());
+  CGUIWindow* pWindow = g_windowManager.GetWindow(GetParentID());
   if (pWindow)
     return pWindow->OnMessage(message);
   return g_windowManager.SendMessage(message);
@@ -315,7 +310,6 @@ int CGUIControl::GetID(void) const
 {
   return m_controlID;
 }
-
 
 int CGUIControl::GetParentID(void) const
 {
@@ -338,30 +332,31 @@ void CGUIControl::SetFocus(bool focus)
 
 bool CGUIControl::OnMessage(CGUIMessage& message)
 {
-  if ( message.GetControlId() == GetID() )
+  if (message.GetControlId() == GetID())
   {
-    switch (message.GetMessage() )
+    switch (message.GetMessage())
     {
-    case GUI_MSG_SETFOCUS:
-      // if control is disabled then move 2 the next control
-      if ( !CanFocus() )
-      {
-        CLog::Log(LOGERROR, "Control %u in window %u has been asked to focus, "
-                            "but it can't",
-                  GetID(), GetParentID());
-        return false;
-      }
-      SetFocus(true);
-      {
-        // inform our parent window that this has happened
-        CGUIMessage message(GUI_MSG_FOCUSED, GetParentID(), GetID());
-        if (m_parentControl)
-          m_parentControl->OnMessage(message);
-      }
-      return true;
-      break;
+      case GUI_MSG_SETFOCUS:
+        // if control is disabled then move 2 the next control
+        if (!CanFocus())
+        {
+          CLog::Log(LOGERROR,
+                    "Control %u in window %u has been asked to focus, "
+                    "but it can't",
+                    GetID(), GetParentID());
+          return false;
+        }
+        SetFocus(true);
+        {
+          // inform our parent window that this has happened
+          CGUIMessage message(GUI_MSG_FOCUSED, GetParentID(), GetID());
+          if (m_parentControl)
+            m_parentControl->OnMessage(message);
+        }
+        return true;
+        break;
 
-    case GUI_MSG_LOSTFOCUS:
+      case GUI_MSG_LOSTFOCUS:
       {
         SetFocus(false);
         // and tell our parent so it can unfocus
@@ -371,28 +366,28 @@ bool CGUIControl::OnMessage(CGUIMessage& message)
       }
       break;
 
-    case GUI_MSG_VISIBLE:
-      SetVisible(true, true);
-      return true;
-      break;
+      case GUI_MSG_VISIBLE:
+        SetVisible(true, true);
+        return true;
+        break;
 
-    case GUI_MSG_HIDDEN:
-      SetVisible(false);
-      return true;
+      case GUI_MSG_HIDDEN:
+        SetVisible(false);
+        return true;
 
-      // Note that the skin <enable> tag will override these messages
-    case GUI_MSG_ENABLED:
-      SetEnabled(true);
-      return true;
+        // Note that the skin <enable> tag will override these messages
+      case GUI_MSG_ENABLED:
+        SetEnabled(true);
+        return true;
 
-    case GUI_MSG_DISABLED:
-      SetEnabled(false);
-      return true;
+      case GUI_MSG_DISABLED:
+        SetEnabled(false);
+        return true;
 
-    case GUI_MSG_WINDOW_RESIZE:
-      // invalidate controls to get them to recalculate sizing information
-      SetInvalid();
-      return true;
+      case GUI_MSG_WINDOW_RESIZE:
+        // invalidate controls to get them to recalculate sizing information
+        SetInvalid();
+        return true;
     }
   }
   return false;
@@ -400,14 +395,17 @@ bool CGUIControl::OnMessage(CGUIMessage& message)
 
 bool CGUIControl::CanFocus() const
 {
-  if (!IsVisible() && !m_allowHiddenFocus) return false;
-  if (IsDisabled()) return false;
+  if (!IsVisible() && !m_allowHiddenFocus)
+    return false;
+  if (IsDisabled())
+    return false;
   return true;
 }
 
 bool CGUIControl::IsVisible() const
 {
-  if (m_forceHidden) return false;
+  if (m_forceHidden)
+    return false;
   return m_visible == VISIBLE;
 }
 
@@ -425,7 +423,7 @@ void CGUIControl::SetEnabled(bool bEnable)
   }
 }
 
-void CGUIControl::SetEnableCondition(const std::string &expression)
+void CGUIControl::SetEnableCondition(const std::string& expression)
 {
   if (expression == "true")
     m_enabled = true;
@@ -449,7 +447,7 @@ void CGUIControl::SetPosition(float posX, float posY)
   }
 }
 
-bool CGUIControl::SetColorDiffuse(const CGUIInfoColor &color)
+bool CGUIControl::SetColorDiffuse(const CGUIInfoColor& color)
 {
   bool changed = m_diffuseColor != color;
   m_diffuseColor = color;
@@ -489,12 +487,12 @@ CRect CGUIControl::CalcRenderRegion() const
   return CRect(tl.x, tl.y, br.x, br.y);
 }
 
-void CGUIControl::SetActions(const ActionMap &actions)
+void CGUIControl::SetActions(const ActionMap& actions)
 {
   m_actions = actions;
 }
 
-void CGUIControl::SetAction(int actionID, const CGUIAction &action, bool replace /*= true*/)
+void CGUIControl::SetAction(int actionID, const CGUIAction& action, bool replace /*= true*/)
 {
   ActionMap::iterator i = m_actions.find(actionID);
   if (i == m_actions.end() || !i->second.HasAnyActions() || replace)
@@ -526,8 +524,8 @@ void CGUIControl::SetHeight(float height)
 void CGUIControl::SetVisible(bool bVisible, bool setVisState)
 {
   if (bVisible && setVisState)
-  {  //! @todo currently we only update m_visible from GUI_MSG_VISIBLE (SET_CONTROL_VISIBLE)
-     //!       otherwise we just set m_forceHidden
+  { //! @todo currently we only update m_visible from GUI_MSG_VISIBLE (SET_CONTROL_VISIBLE)
+    //!       otherwise we just set m_forceHidden
     GUIVISIBLE visible;
     if (m_visibleCondition)
       visible = m_visibleCondition->Get() ? VISIBLE : HIDDEN;
@@ -550,19 +548,20 @@ void CGUIControl::SetVisible(bool bVisible, bool setVisState)
   { // reset any visible animations that are in process
     if (IsAnimating(ANIM_TYPE_VISIBLE))
     {
-//        CLog::Log(LOGDEBUG, "Resetting visible animation on control %i (we are %s)", m_controlID, m_visible ? "visible" : "hidden");
-      CAnimation *visibleAnim = GetAnimation(ANIM_TYPE_VISIBLE);
-      if (visibleAnim) visibleAnim->ResetAnimation();
+      //        CLog::Log(LOGDEBUG, "Resetting visible animation on control %i (we are %s)", m_controlID, m_visible ? "visible" : "hidden");
+      CAnimation* visibleAnim = GetAnimation(ANIM_TYPE_VISIBLE);
+      if (visibleAnim)
+        visibleAnim->ResetAnimation();
     }
   }
 }
 
-bool CGUIControl::HitTest(const CPoint &point) const
+bool CGUIControl::HitTest(const CPoint& point) const
 {
   return m_hitRect.PtInRect(point);
 }
 
-void CGUIControl::UpdateVisibility(const CGUIListItem *item)
+void CGUIControl::UpdateVisibility(const CGUIListItem* item)
 {
   if (m_visibleCondition)
   {
@@ -570,19 +569,19 @@ void CGUIControl::UpdateVisibility(const CGUIListItem *item)
     m_visibleFromSkinCondition = m_visibleCondition->Get(item);
     if (!bWasVisible && m_visibleFromSkinCondition)
     { // automatic change of visibility - queue the in effect
-  //    CLog::Log(LOGDEBUG, "Visibility changed to visible for control id %i", m_controlID);
+      //    CLog::Log(LOGDEBUG, "Visibility changed to visible for control id %i", m_controlID);
       QueueAnimation(ANIM_TYPE_VISIBLE);
     }
     else if (bWasVisible && !m_visibleFromSkinCondition)
     { // automatic change of visibility - do the out effect
-  //    CLog::Log(LOGDEBUG, "Visibility changed to hidden for control id %i", m_controlID);
+      //    CLog::Log(LOGDEBUG, "Visibility changed to hidden for control id %i", m_controlID);
       QueueAnimation(ANIM_TYPE_HIDDEN);
     }
   }
   // check for conditional animations
   for (unsigned int i = 0; i < m_animations.size(); i++)
   {
-    CAnimation &anim = m_animations[i];
+    CAnimation& anim = m_animations[i];
     if (anim.GetType() == ANIM_TYPE_CONDITIONAL)
       anim.UpdateCondition(item);
   }
@@ -614,14 +613,14 @@ void CGUIControl::SetInitialVisibility()
   {
     m_visibleFromSkinCondition = m_visibleCondition->Get();
     m_visible = m_visibleFromSkinCondition ? VISIBLE : HIDDEN;
-  //  CLog::Log(LOGDEBUG, "Set initial visibility for control %i: %s", m_controlID, m_visible == VISIBLE ? "visible" : "hidden");
+    //  CLog::Log(LOGDEBUG, "Set initial visibility for control %i: %s", m_controlID, m_visible == VISIBLE ? "visible" : "hidden");
   }
   else if (m_visible == DELAYED)
     m_visible = VISIBLE;
   // and handle animation conditions as well
   for (unsigned int i = 0; i < m_animations.size(); i++)
   {
-    CAnimation &anim = m_animations[i];
+    CAnimation& anim = m_animations[i];
     if (anim.GetType() == ANIM_TYPE_CONDITIONAL)
       anim.SetInitialCondition();
   }
@@ -635,18 +634,19 @@ void CGUIControl::SetInitialVisibility()
   MarkDirtyRegion();
 }
 
-void CGUIControl::SetVisibleCondition(const std::string &expression, const std::string &allowHiddenFocus)
+void CGUIControl::SetVisibleCondition(const std::string& expression,
+                                      const std::string& allowHiddenFocus)
 {
   if (expression == "true")
     m_visible = VISIBLE;
   else if (expression == "false")
     m_visible = HIDDEN;
-  else  // register with the infomanager for updates
+  else // register with the infomanager for updates
     m_visibleCondition = g_infoManager.Register(expression, GetParentID());
   m_allowHiddenFocus.Parse(allowHiddenFocus, GetParentID());
 }
 
-void CGUIControl::SetAnimations(const std::vector<CAnimation> &animations)
+void CGUIControl::SetAnimations(const std::vector<CAnimation>& animations)
 {
   m_animations = animations;
   MarkDirtyRegion();
@@ -703,33 +703,38 @@ void CGUIControl::QueueAnimation(ANIMATION_TYPE animType)
   MarkDirtyRegion();
   if (!CheckAnimation(animType))
     return;
-  CAnimation *reverseAnim = GetAnimation((ANIMATION_TYPE)-animType, false);
-  CAnimation *forwardAnim = GetAnimation(animType);
+  CAnimation* reverseAnim = GetAnimation((ANIMATION_TYPE)-animType, false);
+  CAnimation* forwardAnim = GetAnimation(animType);
   // we first check whether the reverse animation is in progress (and reverse it)
   // then we check for the normal animation, and queue it
-  if (reverseAnim && reverseAnim->IsReversible() && (reverseAnim->GetState() == ANIM_STATE_IN_PROCESS || reverseAnim->GetState() == ANIM_STATE_DELAYED))
+  if (reverseAnim && reverseAnim->IsReversible() &&
+      (reverseAnim->GetState() == ANIM_STATE_IN_PROCESS ||
+       reverseAnim->GetState() == ANIM_STATE_DELAYED))
   {
     reverseAnim->QueueAnimation(ANIM_PROCESS_REVERSE);
-    if (forwardAnim) forwardAnim->ResetAnimation();
+    if (forwardAnim)
+      forwardAnim->ResetAnimation();
   }
   else if (forwardAnim)
   {
     forwardAnim->QueueAnimation(ANIM_PROCESS_NORMAL);
-    if (reverseAnim) reverseAnim->ResetAnimation();
+    if (reverseAnim)
+      reverseAnim->ResetAnimation();
   }
   else
   { // hidden and visible animations delay the change of state.  If there is no animations
     // to perform, then we should just change the state straightaway
-    if (reverseAnim) reverseAnim->ResetAnimation();
+    if (reverseAnim)
+      reverseAnim->ResetAnimation();
     UpdateStates(animType, ANIM_PROCESS_NORMAL, ANIM_STATE_APPLIED);
   }
 }
 
-CAnimation *CGUIControl::GetAnimation(ANIMATION_TYPE type, bool checkConditions /* = true */)
+CAnimation* CGUIControl::GetAnimation(ANIMATION_TYPE type, bool checkConditions /* = true */)
 {
   for (unsigned int i = 0; i < m_animations.size(); i++)
   {
-    CAnimation &anim = m_animations[i];
+    CAnimation& anim = m_animations[i];
     if (anim.GetType() == type)
     {
       if (!checkConditions || anim.CheckCondition())
@@ -744,7 +749,9 @@ bool CGUIControl::HasAnimation(ANIMATION_TYPE type)
   return (NULL != GetAnimation(type, true));
 }
 
-void CGUIControl::UpdateStates(ANIMATION_TYPE type, ANIMATION_PROCESS currentProcess, ANIMATION_STATE currentState)
+void CGUIControl::UpdateStates(ANIMATION_TYPE type,
+                               ANIMATION_PROCESS currentProcess,
+                               ANIMATION_STATE currentState)
 {
   // Make sure control is hidden or visible at the appropriate times
   // while processing a visible or hidden animation it needs to be visible,
@@ -766,14 +773,14 @@ void CGUIControl::UpdateStates(ANIMATION_TYPE type, ANIMATION_PROCESS currentPro
   }
   else if (type == ANIM_TYPE_HIDDEN)
   {
-    if (currentProcess == ANIM_PROCESS_NORMAL)  // a hide animation
+    if (currentProcess == ANIM_PROCESS_NORMAL) // a hide animation
     {
       if (currentState == ANIM_STATE_APPLIED)
         m_visible = HIDDEN; // finished
       else
         m_visible = VISIBLE; // have to be visible until we are finished
     }
-    else if (currentProcess == ANIM_PROCESS_REVERSE)  // a visible animation
+    else if (currentProcess == ANIM_PROCESS_REVERSE) // a visible animation
     { // no delay involved here - just make sure it's visible
       m_visible = m_visibleFromSkinCondition ? VISIBLE : HIDDEN;
     }
@@ -815,7 +822,7 @@ bool CGUIControl::Animate(unsigned int currentTime)
   CPoint center(GetXPosition() + GetWidth() * 0.5f, GetYPosition() + GetHeight() * 0.5f);
   for (unsigned int i = 0; i < m_animations.size(); i++)
   {
-    CAnimation &anim = m_animations[i];
+    CAnimation& anim = m_animations[i];
     anim.Animate(currentTime, HasProcessed() || visible == DELAYED);
     // Update the control states (such as visibility)
     UpdateStates(anim.GetType(), anim.GetProcess(), anim.GetState());
@@ -823,7 +830,7 @@ bool CGUIControl::Animate(unsigned int currentTime)
     changed |= (anim.GetProcess() != ANIM_PROCESS_NONE);
     anim.RenderAnimation(m_transform, center);
 
-/*    // debug stuff
+    /*    // debug stuff
     if (anim.currentProcess != ANIM_PROCESS_NONE)
     {
       if (anim.effect == EFFECT_TYPE_ZOOM)
@@ -846,7 +853,7 @@ bool CGUIControl::IsAnimating(ANIMATION_TYPE animType)
 {
   for (unsigned int i = 0; i < m_animations.size(); i++)
   {
-    CAnimation &anim = m_animations[i];
+    CAnimation& anim = m_animations[i];
     if (anim.GetType() == animType)
     {
       if (anim.GetQueuedProcess() == ANIM_PROCESS_NORMAL)
@@ -873,12 +880,12 @@ CGUIAction CGUIControl::GetAction(int actionID) const
   return CGUIAction();
 }
 
-bool CGUIControl::CanFocusFromPoint(const CPoint &point) const
+bool CGUIControl::CanFocusFromPoint(const CPoint& point) const
 {
   return CanFocus() && HitTest(point);
 }
 
-void CGUIControl::UnfocusFromPoint(const CPoint &point)
+void CGUIControl::UnfocusFromPoint(const CPoint& point)
 {
   if (HasFocus())
   {
@@ -908,18 +915,18 @@ bool CGUIControl::HasVisibleID(int id) const
   return GetID() == id && IsVisible();
 }
 
-void CGUIControl::SaveStates(std::vector<CControlState> &states)
+void CGUIControl::SaveStates(std::vector<CControlState>& states)
 {
   // empty for now - do nothing with the majority of controls
 }
 
-void CGUIControl::SetHitRect(const CRect &rect, const color_t &color)
+void CGUIControl::SetHitRect(const CRect& rect, const color_t& color)
 {
   m_hitRect = rect;
   m_hitColor = color;
 }
 
-void CGUIControl::SetCamera(const CPoint &camera)
+void CGUIControl::SetCamera(const CPoint& camera)
 {
   m_camera = camera;
   m_hasCamera = true;
@@ -935,7 +942,7 @@ CPoint CGUIControl::GetRenderPosition() const
   return point;
 }
 
-void CGUIControl::SetStereoFactor(const float &factor)
+void CGUIControl::SetStereoFactor(const float& factor)
 {
   m_stereo = factor;
 }

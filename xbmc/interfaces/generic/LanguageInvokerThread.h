@@ -19,18 +19,23 @@ class CScriptInvocationManager;
 class CLanguageInvokerThread : public ILanguageInvoker, protected CThread
 {
 public:
-  CLanguageInvokerThread(LanguageInvokerPtr invoker, CScriptInvocationManager *invocationManager, bool reuseable);
+  CLanguageInvokerThread(LanguageInvokerPtr invoker,
+                         CScriptInvocationManager* invocationManager,
+                         bool reuseable);
   ~CLanguageInvokerThread();
 
   virtual InvokerState GetState() const;
 
-  const std::string &GetScript() const { return m_script; };
+  const std::string& GetScript() const { return m_script; };
   LanguageInvokerPtr GetInvoker() const { return m_invoker; };
-  bool Reuseable(const std::string &script) const { return !m_bStop && m_reusable && GetState() == InvokerStateScriptDone && m_script == script; };
+  bool Reuseable(const std::string& script) const
+  {
+    return !m_bStop && m_reusable && GetState() == InvokerStateScriptDone && m_script == script;
+  };
   virtual void Release();
 
 protected:
-  virtual bool execute(const std::string &script, const std::vector<std::string> &arguments);
+  virtual bool execute(const std::string& script, const std::vector<std::string>& arguments);
   virtual bool stop(bool wait);
 
   virtual void OnStartup();
@@ -40,7 +45,7 @@ protected:
 
 private:
   LanguageInvokerPtr m_invoker;
-  CScriptInvocationManager *m_invocationManager;
+  CScriptInvocationManager* m_invocationManager;
   std::string m_script;
   std::vector<std::string> m_args;
 
@@ -49,4 +54,3 @@ private:
   bool m_restart;
   bool m_reusable;
 };
-

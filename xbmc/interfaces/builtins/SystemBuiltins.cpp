@@ -31,7 +31,7 @@ using namespace KODI::MESSAGING;
  *
  *  Set the template parameter Wait to true to wait for execution exit.
  */
-  template<int Wait>
+template<int Wait>
 static int Exec(const std::vector<std::string>& params)
 {
   CApplicationMessenger::Get().PostMsg(TMSG_MINIMIZE);
@@ -151,7 +151,6 @@ static int Suspend(const std::vector<std::string>& params)
 
   return 0;
 }
-
 
 // Note: For new Texts with comma add a "\" before!!! Is used for table text.
 //
@@ -281,7 +280,8 @@ CBuiltins::CommandMap CSystemBuiltins::GetOperations() const
   CBuiltins::BUILT_IN builtin12 = {"Execute shell commands", 1, Exec<0>};
   commands.insert(std::make_pair("system.exec", builtin12));
 
-  CBuiltins::BUILT_IN builtin13 = {"Execute shell commands and freezes Kodi until shell is closed", 1, Exec<1>};
+  CBuiltins::BUILT_IN builtin13 = {"Execute shell commands and freezes Kodi until shell is closed",
+                                   1, Exec<1>};
   commands.insert(std::make_pair("system.execwait", builtin13));
 
   return commands;

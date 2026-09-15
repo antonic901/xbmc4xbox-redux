@@ -45,12 +45,13 @@ int IFile::Stat(struct __stat64* buffer)
   errno = ENOENT;
   return -1;
 }
-bool IFile::ReadString(char *szLine, int iLineLength)
+bool IFile::ReadString(char* szLine, int iLineLength)
 {
-  if(Seek(0, SEEK_CUR) < 0) return false;
+  if (Seek(0, SEEK_CUR) < 0)
+    return false;
 
   int64_t iFilePos = GetPosition();
-  int iBytesRead = Read( (unsigned char*)szLine, iLineLength - 1);
+  int iBytesRead = Read((unsigned char*)szLine, iLineLength - 1);
   if (iBytesRead <= 0)
     return false;
 
@@ -92,12 +93,12 @@ bool IFile::ReadString(char *szLine, int iLineLength)
   return true;
 }
 
-CRedirectException::CRedirectException() :
-  m_pNewFileImp(NULL), m_pNewUrl(NULL)
+CRedirectException::CRedirectException() : m_pNewFileImp(NULL), m_pNewUrl(NULL)
 {
 }
 
-CRedirectException::CRedirectException(IFile *pNewFileImp, CURL *pNewUrl) :
-  m_pNewFileImp(pNewFileImp), m_pNewUrl(pNewUrl)
+CRedirectException::CRedirectException(IFile* pNewFileImp, CURL* pNewUrl)
+  : m_pNewFileImp(pNewFileImp),
+    m_pNewUrl(pNewUrl)
 {
 }

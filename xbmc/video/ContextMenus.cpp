@@ -24,12 +24,14 @@
 #include "video/dialogs/GUIDialogVideoInfo.h"
 #include "video/windows/GUIWindowVideoBase.h"
 
-
 namespace CONTEXTMENU
 {
 
 CVideoInfo::CVideoInfo(MediaType mediaType)
-    : CStaticContextMenuAction(19033), m_mediaType(mediaType) {}
+  : CStaticContextMenuAction(19033),
+    m_mediaType(mediaType)
+{
+}
 
 bool CVideoInfo::IsVisible(const CFileItem& item) const
 {
@@ -160,4 +162,4 @@ bool CPlay::Execute(const CFileItemPtr& item) const
   return true;
 };
 
-}
+} // namespace CONTEXTMENU

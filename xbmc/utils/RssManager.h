@@ -47,7 +47,7 @@ public:
   virtual void OnSettingsLoaded();
   virtual void OnSettingsUnloaded();
 
-  virtual void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingAction(const CSetting* setting);
 
   void Start();
   void Stop();
@@ -56,7 +56,7 @@ public:
   void Clear();
   bool IsActive() const { return m_bActive; }
 
-  bool GetReader(int controlID, int windowID, IRssObserver* observer, CRssReader *&reader);
+  bool GetReader(int controlID, int windowID, IRssObserver* observer, CRssReader*& reader);
   const RssUrls& GetUrls() const { return m_mapRssUrls; }
 
 protected:
@@ -70,7 +70,7 @@ private:
   {
     int controlID;
     int windowID;
-    CRssReader *reader;
+    CRssReader* reader;
   };
 
   std::vector<READERCONTROL> m_readers;

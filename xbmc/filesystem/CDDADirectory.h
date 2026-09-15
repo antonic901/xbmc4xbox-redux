@@ -25,12 +25,11 @@
 namespace XFILE
 {
 
-class CCDDADirectory :
-      public IDirectory
+class CCDDADirectory : public IDirectory
 {
 public:
   CCDDADirectory(void);
   virtual ~CCDDADirectory(void);
-  virtual bool GetDirectory(const CURL& url, CFileItemList &items);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
 };
-}
+} // namespace XFILE

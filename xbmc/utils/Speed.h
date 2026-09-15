@@ -58,43 +58,43 @@ public:
   static CSpeed CreateFromYardPerSecond(double value);
   static CSpeed CreateFromFurlongPerFortnight(double value);
 
-  bool operator >(const CSpeed& right) const;
-  bool operator >=(const CSpeed& right) const;
-  bool operator <(const CSpeed& right) const;
-  bool operator <=(const CSpeed& right) const;
-  bool operator ==(const CSpeed& right) const;
-  bool operator !=(const CSpeed& right) const;
+  bool operator>(const CSpeed& right) const;
+  bool operator>=(const CSpeed& right) const;
+  bool operator<(const CSpeed& right) const;
+  bool operator<=(const CSpeed& right) const;
+  bool operator==(const CSpeed& right) const;
+  bool operator!=(const CSpeed& right) const;
 
-  const CSpeed& operator =(const CSpeed& right);
-  const CSpeed& operator +=(const CSpeed& right);
-  const CSpeed& operator -=(const CSpeed& right);
-  const CSpeed& operator *=(const CSpeed& right);
-  const CSpeed& operator /=(const CSpeed& right);
-  CSpeed operator +(const CSpeed& right) const;
-  CSpeed operator -(const CSpeed& right) const;
-  CSpeed operator *(const CSpeed& right) const;
-  CSpeed operator /(const CSpeed& right) const;
+  const CSpeed& operator=(const CSpeed& right);
+  const CSpeed& operator+=(const CSpeed& right);
+  const CSpeed& operator-=(const CSpeed& right);
+  const CSpeed& operator*=(const CSpeed& right);
+  const CSpeed& operator/=(const CSpeed& right);
+  CSpeed operator+(const CSpeed& right) const;
+  CSpeed operator-(const CSpeed& right) const;
+  CSpeed operator*(const CSpeed& right) const;
+  CSpeed operator/(const CSpeed& right) const;
 
-  bool operator >(double right) const;
-  bool operator >=(double right) const;
-  bool operator <(double right) const;
-  bool operator <=(double right) const;
-  bool operator ==(double right) const;
-  bool operator !=(double right) const;
+  bool operator>(double right) const;
+  bool operator>=(double right) const;
+  bool operator<(double right) const;
+  bool operator<=(double right) const;
+  bool operator==(double right) const;
+  bool operator!=(double right) const;
 
-  const CSpeed& operator +=(double right);
-  const CSpeed& operator -=(double right);
-  const CSpeed& operator *=(double right);
-  const CSpeed& operator /=(double right);
-  CSpeed operator +(double right) const;
-  CSpeed operator -(double right) const;
-  CSpeed operator *(double right) const;
-  CSpeed operator /(double right) const;
+  const CSpeed& operator+=(double right);
+  const CSpeed& operator-=(double right);
+  const CSpeed& operator*=(double right);
+  const CSpeed& operator/=(double right);
+  CSpeed operator+(double right) const;
+  CSpeed operator-(double right) const;
+  CSpeed operator*(double right) const;
+  CSpeed operator/(double right) const;
 
-  CSpeed& operator ++();
-  CSpeed& operator --();
-  CSpeed operator ++(int);
-  CSpeed operator --(int);
+  CSpeed& operator++();
+  CSpeed& operator--();
+  CSpeed operator++(int);
+  CSpeed operator--(int);
 
   virtual void Archive(CArchive& ar);
 
@@ -124,4 +124,3 @@ protected:
   double m_value; // we store in m/s
   bool m_valid;
 };
-

@@ -29,7 +29,8 @@
 namespace ADDON
 {
 
-boost::movelib::unique_ptr<CPluginSource> CPluginSource::FromExtension(AddonProps props, const cp_extension_t* ext)
+boost::movelib::unique_ptr<CPluginSource> CPluginSource::FromExtension(AddonProps props,
+                                                                       const cp_extension_t* ext)
 {
   std::string provides = CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "provides");
   if (!provides.empty())
@@ -52,7 +53,7 @@ CPluginSource::CPluginSource(AddonProps props, const std::string& provides)
   SetProvides(provides);
 }
 
-void CPluginSource::SetProvides(const std::string &content)
+void CPluginSource::SetProvides(const std::string& content)
 {
   if (!content.empty())
   {
@@ -68,7 +69,7 @@ void CPluginSource::SetProvides(const std::string &content)
     m_providedContent.insert(EXECUTABLE);
 }
 
-CPluginSource::Content CPluginSource::Translate(const std::string &content)
+CPluginSource::Content CPluginSource::Translate(const std::string& content)
 {
   if (content == "audio")
     return CPluginSource::AUDIO;
@@ -98,11 +99,9 @@ TYPE CPluginSource::FullType() const
 
 bool CPluginSource::IsType(TYPE type) const
 {
-  return ((type == ADDON_VIDEO && Provides(VIDEO))
-       || (type == ADDON_AUDIO && Provides(AUDIO))
-       || (type == ADDON_IMAGE && Provides(IMAGE))
-       || (type == ADDON_EXECUTABLE && Provides(EXECUTABLE)));
+  return ((type == ADDON_VIDEO && Provides(VIDEO)) || (type == ADDON_AUDIO && Provides(AUDIO)) ||
+          (type == ADDON_IMAGE && Provides(IMAGE)) ||
+          (type == ADDON_EXECUTABLE && Provides(EXECUTABLE)));
 }
 
 } /*namespace ADDON*/
-

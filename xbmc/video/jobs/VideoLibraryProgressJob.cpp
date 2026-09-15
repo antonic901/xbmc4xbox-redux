@@ -22,10 +22,12 @@
 
 CVideoLibraryProgressJob::CVideoLibraryProgressJob(CGUIDialogProgressBarHandle* progressBar)
   : CProgressJob(progressBar)
-{ }
+{
+}
 
 CVideoLibraryProgressJob::~CVideoLibraryProgressJob()
-{ }
+{
+}
 
 bool CVideoLibraryProgressJob::DoWork()
 {

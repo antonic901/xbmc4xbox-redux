@@ -66,18 +66,20 @@ public:
   virtual VECSOURCES& GetSources();
 
 protected:
-  CGUIViewState(const CFileItemList& items);  // no direct object creation, use GetViewState()
+  CGUIViewState(const CFileItemList& items); // no direct object creation, use GetViewState()
 
   virtual void SaveViewState() = 0;
-  virtual void SaveViewToDb(const std::string &path, int windowID, CViewState *viewState = NULL);
-  void LoadViewState(const std::string &path, int windowID);
+  virtual void SaveViewToDb(const std::string& path, int windowID, CViewState* viewState = NULL);
+  void LoadViewState(const std::string& path, int windowID);
 
   /*! \brief Add the addons source for the given content type, if the user has suitable addons
    \param content the type of addon content desired
    \param label the name of the addons source
    \param thumb the skin image to use as the icon
    */
-  void AddAddonsSource(const std::string &content, const std::string &label, const std::string& thumb);
+  void AddAddonsSource(const std::string& content,
+                       const std::string& label,
+                       const std::string& thumb);
   void AddLiveTVSources();
 
   /*! \brief Add the sort order defined in a smartplaylist
@@ -85,11 +87,21 @@ protected:
    \param items the list of items for the view state.
    \param label_mask the label masks for formatting items.
    */
-  void AddPlaylistOrder(const CFileItemList &items, LABEL_MASKS label_masks);
+  void AddPlaylistOrder(const CFileItemList& items, LABEL_MASKS label_masks);
 
-  void AddSortMethod(SortBy sortBy, int buttonLabel, const LABEL_MASKS &labelMasks, SortAttribute sortAttributes = SortAttributeNone, SortOrder sortOrder = SortOrderNone);
-  void AddSortMethod(SortBy sortBy, SortAttribute sortAttributes, int buttonLabel, const LABEL_MASKS &labelMasks, SortOrder sortOrder = SortOrderNone);
-  void AddSortMethod(SortDescription sortDescription, int buttonLabel, const LABEL_MASKS &labelMasks);
+  void AddSortMethod(SortBy sortBy,
+                     int buttonLabel,
+                     const LABEL_MASKS& labelMasks,
+                     SortAttribute sortAttributes = SortAttributeNone,
+                     SortOrder sortOrder = SortOrderNone);
+  void AddSortMethod(SortBy sortBy,
+                     SortAttribute sortAttributes,
+                     int buttonLabel,
+                     const LABEL_MASKS& labelMasks,
+                     SortOrder sortOrder = SortOrderNone);
+  void AddSortMethod(SortDescription sortDescription,
+                     int buttonLabel,
+                     const LABEL_MASKS& labelMasks);
   void SetSortMethod(SortBy sortBy, SortOrder sortOrder = SortOrderNone);
   void SetSortMethod(SortDescription sortDescription);
   void SetSortOrder(SortOrder sortOrder);
@@ -112,7 +124,7 @@ public:
   CGUIViewStateGeneral(const CFileItemList& items);
 
 protected:
-  virtual void SaveViewState() { }
+  virtual void SaveViewState() {}
 };
 
 class CGUIViewStateFromItems : public CGUIViewState

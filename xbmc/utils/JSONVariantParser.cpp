@@ -21,7 +21,7 @@
 
 #include "JSONVariantParser.h"
 
-CJSONVariantParser::CJSONVariantParser(IParseCallback *callback)
+CJSONVariantParser::CJSONVariantParser(IParseCallback* callback)
 {
   m_callback = callback;
   reader = readerBuilder.newCharReader();
@@ -32,12 +32,14 @@ CJSONVariantParser::~CJSONVariantParser()
   delete reader;
 }
 
-void CJSONVariantParser::push_buffer(const unsigned char *buffer, unsigned int length)
+void CJSONVariantParser::push_buffer(const unsigned char* buffer, unsigned int length)
 {
   Json::Value root;
   std::string errs;
-  bool parsedSuccessfully = reader->parse(reinterpret_cast<const char *>(buffer), reinterpret_cast<const char *>(buffer) + length, &root, &errs);
-  
+  bool parsedSuccessfully =
+      reader->parse(reinterpret_cast<const char*>(buffer),
+                    reinterpret_cast<const char*>(buffer) + length, &root, &errs);
+
   if (parsedSuccessfully && m_callback)
   {
     CVariant variant = ConvertJsonValueToCVariant(root);
@@ -50,7 +52,7 @@ CVariant CJSONVariantParser::Parse(const std::string& json)
   return Parse(reinterpret_cast<const unsigned char*>(json.c_str()), json.length());
 }
 
-CVariant CJSONVariantParser::Parse(const unsigned char *json, unsigned int length)
+CVariant CJSONVariantParser::Parse(const unsigned char* json, unsigned int length)
 {
   CSimpleParseCallback callback;
   CJSONVariantParser parser(&callback);
@@ -60,7 +62,7 @@ CVariant CJSONVariantParser::Parse(const unsigned char *json, unsigned int lengt
   return callback.GetOutput();
 }
 
-CVariant CJSONVariantParser::ConvertJsonValueToCVariant(const Json::Value &jsonValue)
+CVariant CJSONVariantParser::ConvertJsonValueToCVariant(const Json::Value& jsonValue)
 {
   if (jsonValue.isNull())
     return CVariant::VariantTypeNull;
@@ -78,20 +80,20 @@ CVariant CJSONVariantParser::ConvertJsonValueToCVariant(const Json::Value &jsonV
     Json::Value::Members names = jsonValue.getMemberNames();
     for (Json::Value::Members::const_iterator it = names.begin(); it != names.end(); ++it)
     {
-      const std::string &key = *it;
+      const std::string& key = *it;
       variant[key.c_str()] = ConvertJsonValueToCVariant(jsonValue[key]);
     }
     return variant;
   }
   else if (jsonValue.isArray())
   {
-      CVariant variant = CVariant::VariantTypeArray;
-      for (Json::Value::iterator it = jsonValue.begin(); it != jsonValue.end(); ++it)
-      {
-        const Json::Value &element = *it;
-        variant.push_back(ConvertJsonValueToCVariant(element));
-      }
-      return variant;
+    CVariant variant = CVariant::VariantTypeArray;
+    for (Json::Value::iterator it = jsonValue.begin(); it != jsonValue.end(); ++it)
+    {
+      const Json::Value& element = *it;
+      variant.push_back(ConvertJsonValueToCVariant(element));
+    }
+    return variant;
   }
   return CVariant();
 }

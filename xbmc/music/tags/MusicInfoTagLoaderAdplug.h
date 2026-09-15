@@ -25,15 +25,16 @@
 
 namespace MUSIC_INFO
 {
-	class CMusicInfoTagLoaderAdplug: public IMusicInfoTagLoader
-	{
-	public:
-		CMusicInfoTagLoaderAdplug(void);
-		virtual ~CMusicInfoTagLoaderAdplug();
+class CMusicInfoTagLoaderAdplug : public IMusicInfoTagLoader
+{
+public:
+  CMusicInfoTagLoaderAdplug(void);
+  virtual ~CMusicInfoTagLoaderAdplug();
 
-		virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
-  private:
-    int m_adl;
-    DllAdplug m_dll;
-	};
-}
+  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt* art = NULL);
+
+private:
+  int m_adl;
+  DllAdplug m_dll;
+};
+} // namespace MUSIC_INFO

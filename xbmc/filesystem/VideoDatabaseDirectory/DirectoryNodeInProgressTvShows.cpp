@@ -23,10 +23,10 @@
 
 using namespace XFILE::VIDEODATABASEDIRECTORY;
 
-CDirectoryNodeInProgressTvShows::CDirectoryNodeInProgressTvShows(const std::string& strName, CDirectoryNode* pParent)
+CDirectoryNodeInProgressTvShows::CDirectoryNodeInProgressTvShows(const std::string& strName,
+                                                                 CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_INPROGRESS_TVSHOWS, strName, pParent)
 {
-
 }
 
 NODE_TYPE CDirectoryNodeInProgressTvShows::GetChildType() const
@@ -48,7 +48,7 @@ bool CDirectoryNodeInProgressTvShows::GetContent(CFileItemList& items) const
   if (!videodatabase.Open())
     return false;
 
-  bool bSuccess=videodatabase.GetInProgressTvShowsNav(BuildPath(), items);
+  bool bSuccess = videodatabase.GetInProgressTvShowsNav(BuildPath(), items);
 
   videodatabase.Close();
 

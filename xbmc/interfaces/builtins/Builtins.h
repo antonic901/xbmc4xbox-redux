@@ -31,18 +31,18 @@ public:
   struct BUILT_IN
   {
     std::string description; //!< Description of command (help string)
-    size_t parameters;       //!< Number of required parameters (can be 0)
+    size_t parameters; //!< Number of required parameters (can be 0)
     int (*Execute)(const std::vector<std::string>& params); //!< Function to handle command
   };
 
   //! \brief A map of commands
-  typedef std::map<std::string,CBuiltins::BUILT_IN> CommandMap;
+  typedef std::map<std::string, CBuiltins::BUILT_IN> CommandMap;
 
   static CBuiltins& GetInstance();
 
   bool HasCommand(const std::string& execString);
   bool IsSystemPowerdownCommand(const std::string& execString);
-  void GetHelp(std::string &help);
+  void GetHelp(std::string& help);
   int Execute(const std::string& execString);
 
 protected:
@@ -54,9 +54,8 @@ protected:
 private:
   CommandMap m_command; //!< Map of registered commands
 
-
   //! \brief Convenience template used to register commands from providers
-    template<class T>
+  template<class T>
   void RegisterCommands()
   {
     T t;
@@ -64,4 +63,3 @@ private:
     m_command.insert(map.begin(), map.end());
   }
 };
-

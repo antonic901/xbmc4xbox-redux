@@ -23,19 +23,29 @@
 #include "LocalizeStrings.h"
 #include "guilib/Key.h"
 
-CGUIRadioButtonControl::CGUIRadioButtonControl(int parentID, int controlID, float posX, float posY, float width, float height,
-    const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus,
-    const CLabelInfo& labelInfo,
-    const CTextureInfo& radioOnFocus, const CTextureInfo& radioOnNoFocus,
-    const CTextureInfo& radioOffFocus, const CTextureInfo& radioOffNoFocus,
-    const CTextureInfo& radioOnDisabled, const CTextureInfo& radioOffDisabled)
-    : CGUIButtonControl(parentID, controlID, posX, posY, width, height, textureFocus, textureNoFocus, labelInfo)
-    , m_imgRadioOnFocus(posX, posY, 16, 16, radioOnFocus)
-    , m_imgRadioOnNoFocus(posX, posY, 16, 16, radioOnNoFocus)
-    , m_imgRadioOffFocus(posX, posY, 16, 16, radioOffFocus)
-    , m_imgRadioOffNoFocus(posX, posY, 16, 16, radioOffNoFocus)
-    , m_imgRadioOnDisabled(posX, posY, 16, 16, radioOnDisabled)
-    , m_imgRadioOffDisabled(posX, posY, 16, 16, radioOffDisabled)
+CGUIRadioButtonControl::CGUIRadioButtonControl(int parentID,
+                                               int controlID,
+                                               float posX,
+                                               float posY,
+                                               float width,
+                                               float height,
+                                               const CTextureInfo& textureFocus,
+                                               const CTextureInfo& textureNoFocus,
+                                               const CLabelInfo& labelInfo,
+                                               const CTextureInfo& radioOnFocus,
+                                               const CTextureInfo& radioOnNoFocus,
+                                               const CTextureInfo& radioOffFocus,
+                                               const CTextureInfo& radioOffNoFocus,
+                                               const CTextureInfo& radioOnDisabled,
+                                               const CTextureInfo& radioOffDisabled)
+  : CGUIButtonControl(
+        parentID, controlID, posX, posY, width, height, textureFocus, textureNoFocus, labelInfo),
+    m_imgRadioOnFocus(posX, posY, 16, 16, radioOnFocus),
+    m_imgRadioOnNoFocus(posX, posY, 16, 16, radioOnNoFocus),
+    m_imgRadioOffFocus(posX, posY, 16, 16, radioOffFocus),
+    m_imgRadioOffNoFocus(posX, posY, 16, 16, radioOffNoFocus),
+    m_imgRadioOnDisabled(posX, posY, 16, 16, radioOnDisabled),
+    m_imgRadioOffDisabled(posX, posY, 16, 16, radioOffDisabled)
 {
   m_radioPosX = 0;
   m_radioPosY = 0;
@@ -50,33 +60,34 @@ CGUIRadioButtonControl::CGUIRadioButtonControl(int parentID, int controlID, floa
 }
 
 CGUIRadioButtonControl::~CGUIRadioButtonControl(void)
-{}
+{
+}
 
 void CGUIRadioButtonControl::Render()
 {
   CGUIButtonControl::Render();
 
-  if ( IsSelected() && !IsDisabled() )
+  if (IsSelected() && !IsDisabled())
   {
     if (HasFocus())
       m_imgRadioOnFocus.Render();
     else
       m_imgRadioOnNoFocus.Render();
   }
-  else if ( !IsSelected() && !IsDisabled() )
+  else if (!IsSelected() && !IsDisabled())
   {
     if (HasFocus())
       m_imgRadioOffFocus.Render();
     else
       m_imgRadioOffNoFocus.Render();
   }
-  else if ( IsSelected() && IsDisabled() )
+  else if (IsSelected() && IsDisabled())
     m_imgRadioOnDisabled.Render();
   else
     m_imgRadioOffDisabled.Render();
 }
 
-void CGUIRadioButtonControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIRadioButtonControl::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   if (m_toggleSelect)
   {
@@ -103,7 +114,7 @@ void CGUIRadioButtonControl::Process(unsigned int currentTime, CDirtyRegionList 
   CGUIButtonControl::Process(currentTime, dirtyregions);
 }
 
-bool CGUIRadioButtonControl::OnAction(const CAction &action)
+bool CGUIRadioButtonControl::OnAction(const CAction& action)
 {
   if (action.GetID() == ACTION_SELECT_ITEM)
   {
@@ -177,8 +188,10 @@ void CGUIRadioButtonControl::SetInvalid()
 void CGUIRadioButtonControl::SetPosition(float posX, float posY)
 {
   CGUIButtonControl::SetPosition(posX, posY);
-  float radioPosX = m_radioPosX ? m_posX + m_radioPosX : (m_posX + m_width - 8) - m_imgRadioOnFocus.GetWidth();
-  float radioPosY = m_radioPosY ? m_posY + m_radioPosY : m_posY + (m_height - m_imgRadioOnFocus.GetHeight()) / 2;
+  float radioPosX =
+      m_radioPosX ? m_posX + m_radioPosX : (m_posX + m_width - 8) - m_imgRadioOnFocus.GetWidth();
+  float radioPosY =
+      m_radioPosY ? m_posY + m_radioPosY : m_posY + (m_height - m_imgRadioOnFocus.GetHeight()) / 2;
   m_imgRadioOnFocus.SetPosition(radioPosX, radioPosY);
   m_imgRadioOnNoFocus.SetPosition(radioPosX, radioPosY);
   m_imgRadioOffFocus.SetPosition(radioPosX, radioPosY);
@@ -252,7 +265,7 @@ bool CGUIRadioButtonControl::UpdateColors()
   return changed;
 }
 
-void CGUIRadioButtonControl::SetToggleSelect(const std::string &toggleSelect)
+void CGUIRadioButtonControl::SetToggleSelect(const std::string& toggleSelect)
 {
   m_toggleSelect = g_infoManager.Register(toggleSelect, GetParentID());
 }

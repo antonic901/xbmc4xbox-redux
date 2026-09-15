@@ -25,11 +25,12 @@
 #include <utility>
 #include <vector>
 
-class CFileItem; typedef boost::shared_ptr<CFileItem> CFileItemPtr;
+class CFileItem;
+typedef boost::shared_ptr<CFileItem> CFileItemPtr;
 class CFileItemList;
 namespace PLAYLIST
 {
-  class CPlayList;
+class CPlayList;
 }
 
 typedef enum
@@ -45,13 +46,14 @@ public:
   CPartyModeManager(void);
   virtual ~CPartyModeManager(void);
 
-  bool Enable(PartyModeContext context=PARTYMODECONTEXT_MUSIC, const std::string& strXspPath = "");
+  bool Enable(PartyModeContext context = PARTYMODECONTEXT_MUSIC,
+              const std::string& strXspPath = "");
   void Disable();
   void Play(int iPos);
   void OnSongChange(bool bUpdatePlayed = false);
   void AddUserSongs(PLAYLIST::CPlayList& tempList, bool bPlay = false);
   void AddUserSongs(CFileItemList& tempList, bool bPlay = false);
-  bool IsEnabled(PartyModeContext context=PARTYMODECONTEXT_UNKNOWN) const;
+  bool IsEnabled(PartyModeContext context = PARTYMODECONTEXT_UNKNOWN) const;
   int GetSongsPlayed();
   int GetMatchingSongs();
   int GetMatchingSongsPicked();
@@ -63,17 +65,19 @@ public:
 private:
   void Process();
   bool AddRandomSongs(int iSongs = 0);
-  bool AddInitialSongs(std::vector< std::pair<int,int> > &songIDs);
-  void Add(CFileItemPtr &pItem);
+  bool AddInitialSongs(std::vector<std::pair<int, int> >& songIDs);
+  void Add(CFileItemPtr& pItem);
   bool ReapSongs();
   bool MovePlaying();
   void SendUpdateMessage();
   void OnError(int iError, const std::string& strLogMessage);
   void ClearState();
   void UpdateStats();
-  std::pair<std::string,std::string> GetWhereClauseWithHistory() const;
+  std::pair<std::string, std::string> GetWhereClauseWithHistory() const;
   void AddToHistory(int type, int songID);
-  void GetRandomSelection(std::vector< std::pair<int,int> > &in, unsigned int number, std::vector< std::pair<int, int> > &out);
+  void GetRandomSelection(std::vector<std::pair<int, int> >& in,
+                          unsigned int number,
+                          std::vector<std::pair<int, int> >& out);
   void Announce();
 
   // state
@@ -94,7 +98,7 @@ private:
 
   // history
   unsigned int m_songsInHistory;
-  std::vector< std::pair<int,int> > m_history;
+  std::vector<std::pair<int, int> > m_history;
 };
 
 extern CPartyModeManager g_partyModeManager;

@@ -25,17 +25,16 @@
 
 namespace KODI
 {
-  namespace MESSAGING
-  {
-    namespace HELPERS
-    {
-      struct DialogYesNoMessage;
-    }
-  }
+namespace MESSAGING
+{
+namespace HELPERS
+{
+struct DialogYesNoMessage;
 }
+} // namespace MESSAGING
+} // namespace KODI
 
-class CGUIDialogYesNo :
-      public CGUIDialogBoxBase
+class CGUIDialogYesNo : public CGUIDialogBoxBase
 {
 public:
   CGUIDialogYesNo(int overrideId = -1);
@@ -56,7 +55,8 @@ public:
    \param bCanceled Holds true if the dialog was canceled otherwise false
    \return true if user selects Yes, otherwise false if user selects No.
    */
-  static bool ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2, bool &bCanceled);
+  static bool ShowAndGetInput(
+      CVariant heading, CVariant line0, CVariant line1, CVariant line2, bool& bCanceled);
 
   /*! \brief Show a yes-no dialog, then wait for user to dismiss it.
    \param heading Localized label id or string for the heading of the dialog
@@ -67,7 +67,12 @@ public:
    \param iYesLabel Localized label id or string for the yes button
    \return true if user selects Yes, otherwise false if user selects No.
    */
-  static bool ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2, CVariant noLabel = "", CVariant yesLabel = "");
+  static bool ShowAndGetInput(CVariant heading,
+                              CVariant line0,
+                              CVariant line1,
+                              CVariant line2,
+                              CVariant noLabel = "",
+                              CVariant yesLabel = "");
 
   /*! \brief Show a yes-no dialog, then wait for user to dismiss it.
    \param heading Localized label id or string for the heading of the dialog
@@ -80,7 +85,14 @@ public:
    \param autoCloseTime Time in ms before the dialog becomes automatically closed
    \return true if user selects Yes, otherwise false if user selects No.
    */
-  static bool ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2, bool &bCanceled, CVariant noLabel, CVariant yesLabel, unsigned int autoCloseTime);
+  static bool ShowAndGetInput(CVariant heading,
+                              CVariant line0,
+                              CVariant line1,
+                              CVariant line2,
+                              bool& bCanceled,
+                              CVariant noLabel,
+                              CVariant yesLabel,
+                              unsigned int autoCloseTime);
 
   /*! \brief Show a yes-no dialog, then wait for user to dismiss it.
    \param heading Localized label id or string for the heading of the dialog
@@ -98,7 +110,12 @@ public:
    \param autoCloseTime Time in ms before the dialog becomes automatically closed
    \return true if user selects Yes, otherwise false if user selects No.
    */
-  static bool ShowAndGetInput(CVariant heading, CVariant text, bool &bCanceled, CVariant noLabel, CVariant yesLabel, unsigned int autoCloseTime);
+  static bool ShowAndGetInput(CVariant heading,
+                              CVariant text,
+                              bool& bCanceled,
+                              CVariant noLabel,
+                              CVariant yesLabel,
+                              unsigned int autoCloseTime);
 
   /*! \brief Show a yes-no dialog with 3rd custom button, then wait for user to dismiss it.
   \param heading Localized label id or string for the heading of the dialog
@@ -109,7 +126,12 @@ public:
   \param autoCloseTime Time in ms before the dialog becomes automatically closed
   \return -1 for cancelled, 0 for No, 1 for Yes and 2 for custom button
   */
-  static int ShowAndGetInput(CVariant heading, CVariant text, CVariant noLabel, CVariant yesLabel, CVariant customLabel, unsigned int autoCloseTime);
+  static int ShowAndGetInput(CVariant heading,
+                             CVariant text,
+                             CVariant noLabel,
+                             CVariant yesLabel,
+                             CVariant customLabel,
+                             unsigned int autoCloseTime);
 
   /*!
     \brief Open a Yes/No dialog and wait for input

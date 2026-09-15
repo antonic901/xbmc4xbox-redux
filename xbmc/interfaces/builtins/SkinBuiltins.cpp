@@ -48,8 +48,7 @@ using namespace ADDON;
 static int ReloadSkin(const std::vector<std::string>& params)
 {
   //  Reload the skin
-  g_application.ReloadSkin(!params.empty() &&
-                           StringUtils::EqualsNoCase(params[0], "confirm"));
+  g_application.ReloadSkin(!params.empty() && StringUtils::EqualsNoCase(params[0], "confirm"));
 
   return 0;
 }
@@ -86,7 +85,7 @@ static int SetAddon(const std::vector<std::string>& params)
 {
   int string = CSkinSettings::Get().TranslateString(params[0]);
   std::vector<ADDON::TYPE> types;
-  for (unsigned int i = 1 ; i < params.size() ; i++)
+  for (unsigned int i = 1; i < params.size(); i++)
   {
     ADDON::TYPE type = TranslateType(params[i]);
     if (type != ADDON_UNKNOWN)
@@ -114,7 +113,7 @@ static int SelectBool(const std::vector<std::string>& params)
   pDlgSelect->Reset();
   pDlgSelect->SetHeading(g_localizeStrings.Get(atoi(params[0].c_str())));
 
-  for (unsigned int i = 1 ; i < params.size() ; i++)
+  for (unsigned int i = 1; i < params.size(); i++)
   {
     if (params[i].find('|') != std::string::npos)
     {
@@ -127,11 +126,11 @@ static int SelectBool(const std::vector<std::string>& params)
 
   pDlgSelect->Open();
 
-  if(pDlgSelect->IsConfirmed())
+  if (pDlgSelect->IsConfirmed())
   {
     unsigned int iItem = pDlgSelect->GetSelectedItem();
 
-    for (unsigned int i = 0 ; i < settings.size() ; i++)
+    for (unsigned int i = 0; i < settings.size(); i++)
     {
       std::string item = settings[i].second;
       int setting = CSkinSettings::Get().TranslateBool(item);
@@ -199,7 +198,8 @@ static int SetPath(const std::vector<std::string>& params)
     value = params[1];
     URIUtils::AddSlashAtEnd(value);
     bool bIsSource;
-    if (CUtil::GetMatchingSource(value,localShares,bIsSource) < 0) // path is outside shares - add it as a separate one
+    if (CUtil::GetMatchingSource(value, localShares, bIsSource) <
+        0) // path is outside shares - add it as a separate one
     {
       CMediaSource share;
       share.strName = g_localizeStrings.Get(13278);
@@ -241,7 +241,7 @@ static int SetFile(const std::vector<std::string>& params)
     CURL url;
     url.SetProtocol("addons");
     url.SetHostName("enabled");
-    url.SetFileName(strMask+"/");
+    url.SetFileName(strMask + "/");
     localShares.clear();
     std::string content = (params.size() > 2) ? params[2] : "";
     StringUtils::ToLower(content);
@@ -250,7 +250,8 @@ static int SetFile(const std::vector<std::string>& params)
     if (type == ADDON_SCRIPT)
       strMask = ".py";
     std::string replace;
-    if (CGUIDialogFileBrowser::ShowAndGetFile(url.Get(), strMask, TranslateType(type, true), replace, true, true, true))
+    if (CGUIDialogFileBrowser::ShowAndGetFile(url.Get(), strMask, TranslateType(type, true),
+                                              replace, true, true, true))
     {
       if (StringUtils::StartsWithNoCase(replace, "addons://"))
         CSkinSettings::Get().SetString(string, URIUtils::GetFileName(replace));
@@ -265,7 +266,8 @@ static int SetFile(const std::vector<std::string>& params)
       value = params[2];
       URIUtils::AddSlashAtEnd(value);
       bool bIsSource;
-      if (CUtil::GetMatchingSource(value,localShares,bIsSource) < 0) // path is outside shares - add it as a separate one
+      if (CUtil::GetMatchingSource(value, localShares, bIsSource) <
+          0) // path is outside shares - add it as a separate one
       {
         CMediaSource share;
         share.strName = g_localizeStrings.Get(13278);
@@ -273,7 +275,8 @@ static int SetFile(const std::vector<std::string>& params)
         localShares.push_back(share);
       }
     }
-    if (CGUIDialogFileBrowser::ShowAndGetFile(localShares, strMask, g_localizeStrings.Get(1033), value))
+    if (CGUIDialogFileBrowser::ShowAndGetFile(localShares, strMask, g_localizeStrings.Get(1033),
+                                              value))
       CSkinSettings::Get().SetString(string, value);
   }
 
@@ -296,7 +299,8 @@ static int SetImage(const std::vector<std::string>& params)
     value = params[1];
     URIUtils::AddSlashAtEnd(value);
     bool bIsSource;
-    if (CUtil::GetMatchingSource(value,localShares,bIsSource) < 0) // path is outside shares - add it as a separate one
+    if (CUtil::GetMatchingSource(value, localShares, bIsSource) <
+        0) // path is outside shares - add it as a separate one
     {
       CMediaSource share;
       share.strName = g_localizeStrings.Get(13278);
@@ -349,15 +353,16 @@ static int SetTheme(const std::vector<std::string>& params)
   int iTheme = -1;
 
   // find current theme
-  if (!StringUtils::EqualsNoCase(CSettings::GetInstance().GetString("lookandfeel.skintheme"), "SKINDEFAULT"))
+  if (!StringUtils::EqualsNoCase(CSettings::GetInstance().GetString("lookandfeel.skintheme"),
+                                 "SKINDEFAULT"))
   {
-    for (size_t i=0;i<vecTheme.size();++i)
+    for (size_t i = 0; i < vecTheme.size(); ++i)
     {
       std::string strTmpTheme(CSettings::GetInstance().GetString("lookandfeel.skintheme"));
       URIUtils::RemoveExtension(strTmpTheme);
       if (StringUtils::EqualsNoCase(vecTheme[i], strTmpTheme))
       {
-        iTheme=i;
+        iTheme = i;
         break;
       }
     }
@@ -368,10 +373,10 @@ static int SetTheme(const std::vector<std::string>& params)
     iTheme++;
   else if (iParam == -1)
     iTheme--;
-  if (iTheme > (int)vecTheme.size()-1)
+  if (iTheme > (int)vecTheme.size() - 1)
     iTheme = -1;
   if (iTheme < -1)
-    iTheme = vecTheme.size()-1;
+    iTheme = vecTheme.size() - 1;
 
   std::string strSkinTheme = "SKINDEFAULT";
   if (iTheme != -1 && iTheme < (int)vecTheme.size())

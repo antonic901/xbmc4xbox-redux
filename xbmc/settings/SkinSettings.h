@@ -33,21 +33,21 @@ class CSkinSettings : public ISubSettings
 public:
   static CSkinSettings& Get();
 
-  virtual bool Load(const TiXmlNode *settings);
-  virtual bool Save(TiXmlNode *settings) const;
+  virtual bool Load(const TiXmlNode* settings);
+  virtual bool Save(TiXmlNode* settings) const;
   virtual void Clear();
 
   void MigrateSettings(const ADDON::SkinPtr& skin);
 
-  int TranslateString(const std::string &setting);
+  int TranslateString(const std::string& setting);
   const std::string& GetString(int setting) const;
-  void SetString(int setting, const std::string &label);
+  void SetString(int setting, const std::string& label);
 
-  int TranslateBool(const std::string &setting);
+  int TranslateBool(const std::string& setting);
   bool GetBool(int setting) const;
   void SetBool(int setting, bool set);
 
-  void Reset(const std::string &setting);
+  void Reset(const std::string& setting);
   void Reset();
 
 protected:

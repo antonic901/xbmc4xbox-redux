@@ -31,34 +31,32 @@
 #include "utils/log.h"
 #include "view/ViewStateSettings.h"
 
-#define SETTINGS_SYSTEM                 WINDOW_SETTINGS_SYSTEM - WINDOW_SETTINGS_START
-#define SETTINGS_SERVICE                WINDOW_SETTINGS_SERVICE - WINDOW_SETTINGS_START
-#define SETTINGS_PVR                    WINDOW_SETTINGS_MYPVR - WINDOW_SETTINGS_START
-#define SETTINGS_PLAYER                 WINDOW_SETTINGS_PLAYER - WINDOW_SETTINGS_START
-#define SETTINGS_MEDIA                  WINDOW_SETTINGS_MEDIA - WINDOW_SETTINGS_START
-#define SETTINGS_INTERFACE              WINDOW_SETTINGS_INTERFACE - WINDOW_SETTINGS_START
+#define SETTINGS_SYSTEM WINDOW_SETTINGS_SYSTEM - WINDOW_SETTINGS_START
+#define SETTINGS_SERVICE WINDOW_SETTINGS_SERVICE - WINDOW_SETTINGS_START
+#define SETTINGS_PVR WINDOW_SETTINGS_MYPVR - WINDOW_SETTINGS_START
+#define SETTINGS_PLAYER WINDOW_SETTINGS_PLAYER - WINDOW_SETTINGS_START
+#define SETTINGS_MEDIA WINDOW_SETTINGS_MEDIA - WINDOW_SETTINGS_START
+#define SETTINGS_INTERFACE WINDOW_SETTINGS_INTERFACE - WINDOW_SETTINGS_START
 
-#define CONTRL_BTN_LEVELS               20
+#define CONTRL_BTN_LEVELS 20
 
-typedef struct {
+typedef struct
+{
   int id;
   std::string name;
 } SettingGroup;
 
-static const SettingGroup s_settingGroupMap[] = { { SETTINGS_SYSTEM,      "system" },
-                                                  { SETTINGS_SERVICE,     "services" },
-                                                  { SETTINGS_PVR,         "pvr" },
-                                                  { SETTINGS_PLAYER,      "player" },
-                                                  { SETTINGS_MEDIA,       "media" },
-                                                  { SETTINGS_INTERFACE,   "interface" } };
+static const SettingGroup s_settingGroupMap[] = {
+    {SETTINGS_SYSTEM, "system"}, {SETTINGS_SERVICE, "services"}, {SETTINGS_PVR, "pvr"},
+    {SETTINGS_PLAYER, "player"}, {SETTINGS_MEDIA, "media"},      {SETTINGS_INTERFACE, "interface"}};
 
 #define SettingGroupSize sizeof(s_settingGroupMap) / sizeof(SettingGroup)
 
 CGUIWindowSettingsCategory::CGUIWindowSettingsCategory()
-    : CGUIDialogSettingsManagerBase(WINDOW_SETTINGS_SYSTEM, "SettingsCategory.xml"),
-      m_settings(CSettings::GetInstance()),
-      m_iSection(0),
-      m_returningFromSkinLoad(false)
+  : CGUIDialogSettingsManagerBase(WINDOW_SETTINGS_SYSTEM, "SettingsCategory.xml"),
+    m_settings(CSettings::GetInstance()),
+    m_iSection(0),
+    m_returningFromSkinLoad(false)
 {
   m_settingsManager = m_settings.GetSettingsManager();
 
@@ -73,9 +71,10 @@ CGUIWindowSettingsCategory::CGUIWindowSettingsCategory()
 }
 
 CGUIWindowSettingsCategory::~CGUIWindowSettingsCategory()
-{ }
+{
+}
 
-bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
+bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
   {
@@ -109,9 +108,11 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
     {
       if (message.GetParam1() == GUI_MSG_WINDOW_RESIZE)
       {
-        if (IsActive() && CDisplaySettings::Get().GetCurrentResolution() != g_graphicsContext.GetVideoResolution())
+        if (IsActive() && CDisplaySettings::Get().GetCurrentResolution() !=
+                              g_graphicsContext.GetVideoResolution())
         {
-          CDisplaySettings::Get().SetCurrentResolution(g_graphicsContext.GetVideoResolution(), true);
+          CDisplaySettings::Get().SetCurrentResolution(g_graphicsContext.GetVideoResolution(),
+                                                       true);
           CreateSettings();
         }
       }
@@ -122,14 +123,15 @@ bool CGUIWindowSettingsCategory::OnMessage(CGUIMessage &message)
   return CGUIDialogSettingsManagerBase::OnMessage(message);
 }
 
-bool CGUIWindowSettingsCategory::OnAction(const CAction &action)
+bool CGUIWindowSettingsCategory::OnAction(const CAction& action)
 {
   switch (action.GetID())
   {
     case ACTION_SETTINGS_LEVEL_CHANGE:
     {
       //Test if we can access the new level
-      if (!g_passwordManager.CheckSettingLevelLock(CViewStateSettings::Get().GetNextSettingLevel(), true))
+      if (!g_passwordManager.CheckSettingLevelLock(CViewStateSettings::Get().GetNextSettingLevel(),
+                                                   true))
         return false;
 
       CViewStateSettings::Get().CycleSettingLevel();
@@ -140,7 +142,8 @@ bool CGUIWindowSettingsCategory::OnAction(const CAction &action)
       if (m_iCategory >= 0 && m_iCategory < (int)m_categories.size())
         oldCategory = m_categories[m_iCategory]->GetId();
 
-      SET_CONTROL_LABEL(CONTRL_BTN_LEVELS, 10036 + (int)CViewStateSettings::Get().GetSettingLevel());
+      SET_CONTROL_LABEL(CONTRL_BTN_LEVELS,
+                        10036 + (int)CViewStateSettings::Get().GetSettingLevel());
       // only re-create the categories, the settings will be created later
       SetupControls(false);
 
@@ -214,7 +217,8 @@ void CGUIWindowSettingsCategory::FocusElement(const std::string& elementId)
     SettingGroupList vecGroups = m_categories[i]->GetGroups();
     for (SettingGroupList::const_iterator it = vecGroups.begin(); it != vecGroups.end(); ++it)
     {
-      for (SettingList::const_iterator it2 = (*it)->GetSettings().begin(); it2 != (*it)->GetSettings().end(); ++it2)
+      for (SettingList::const_iterator it2 = (*it)->GetSettings().begin();
+           it2 != (*it)->GetSettings().end(); ++it2)
       {
         if ((*it2)->GetId() == elementId)
         {
@@ -224,11 +228,15 @@ void CGUIWindowSettingsCategory::FocusElement(const std::string& elementId)
           if (control)
             SET_CONTROL_FOCUS(control->GetID(), 0);
           else
-            CLog::Log(LOGERROR, "CGUIWindowSettingsCategory: failed to get control for setting '%s'.", elementId.c_str());
+            CLog::Log(LOGERROR,
+                      "CGUIWindowSettingsCategory: failed to get control for setting '%s'.",
+                      elementId.c_str());
           return;
         }
       }
     }
   }
-  CLog::Log(LOGERROR, "CGUIWindowSettingsCategory: failed to set focus. unknown category/setting id '%s'.", elementId.c_str());
+  CLog::Log(LOGERROR,
+            "CGUIWindowSettingsCategory: failed to set focus. unknown category/setting id '%s'.",
+            elementId.c_str());
 }

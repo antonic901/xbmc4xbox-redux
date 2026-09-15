@@ -3,7 +3,6 @@
 \brief
 */
 
-
 // ****************************************************************************
 //
 // WINIMAGE.H : Generic classes for raster images (MSWindows specialization)
@@ -32,16 +31,16 @@
 //
 // ****************************************************************************
 
-
-
-
 #pragma pack(1)
 
-struct COLOR {unsigned char b,g,r,x;};	// Windows GDI expects 4bytes per color
-#define ALIGN sizeof(int)         ///< Windows GDI expects all int-aligned
+struct COLOR
+{
+  unsigned char b, g, r, x;
+}; // Windows GDI expects 4bytes per color
+#define ALIGN sizeof(int) ///< Windows GDI expects all int-aligned
 
-#define LZW_MAXBITS   12
-#define LZW_SIZETABLE (1<<LZW_MAXBITS)
+#define LZW_MAXBITS 12
+#define LZW_SIZETABLE (1 << LZW_MAXBITS)
 
 /*!
  \ingroup textures
@@ -53,8 +52,7 @@ typedef struct tagGUIRGBQUAD
   BYTE rgbGreen;
   BYTE rgbRed;
   BYTE rgbReserved;
-}
-GUIRGBQUAD;
+} GUIRGBQUAD;
 
 /*!
  \ingroup textures
@@ -73,8 +71,7 @@ typedef struct tagGUIBITMAPINFOHEADER
   LONG biYPelsPerMeter;
   DWORD biClrUsed;
   DWORD biClrImportant;
-}
-GUIBITMAPINFOHEADER;
+} GUIBITMAPINFOHEADER;
 
 /*!
  \ingroup textures
@@ -83,15 +80,14 @@ GUIBITMAPINFOHEADER;
 #ifdef HAS_XBOX_D3D
 typedef struct tagGUIBITMAPINFO
 {
-    GUIBITMAPINFOHEADER    bmiHeader;
-    GUIRGBQUAD						 bmiColors[1];
+  GUIBITMAPINFOHEADER bmiHeader;
+  GUIRGBQUAD bmiColors[1];
 } GUIBITMAPINFO;
 #else
-  typedef tagBITMAPINFO GUIBITMAPINFO;
+typedef tagBITMAPINFO GUIBITMAPINFO;
 #endif
 
 #pragma pack()
-
 
 // ****************************************************************************
 // * CAnimatedGif                                                                  *
@@ -108,36 +104,35 @@ public:
   virtual ~CAnimatedGif();
 
   // standard members:
-  int Width, Height;   ///< Dimensions in pixels
-  int BPP;        // Bits Per Pixel
-  char* Raster;       ///< Bits of Raster Data (Byte Aligned)
-  COLOR* Palette;      ///< Color Map
-  int BytesPerRow;    ///< Width (in bytes) including alignment!
-  int Transparent;    ///< Index of Transparent color (-1 for none)
+  int Width, Height; ///< Dimensions in pixels
+  int BPP; // Bits Per Pixel
+  char* Raster; ///< Bits of Raster Data (Byte Aligned)
+  COLOR* Palette; ///< Color Map
+  int BytesPerRow; ///< Width (in bytes) including alignment!
+  int Transparent; ///< Index of Transparent color (-1 for none)
 
   // Extra members for animations:
   int nLoops;
-  int xPos, yPos;     ///< Relative Position
-  int Delay;       ///< Delay after image in 1/1000 seconds.
-  int Transparency;    ///< Animation Transparency.
+  int xPos, yPos; ///< Relative Position
+  int Delay; ///< Delay after image in 1/1000 seconds.
+  int Transparency; ///< Animation Transparency.
   // Windows GDI specific:
-  GUIBITMAPINFO* pbmi;        ///< BITMAPINFO structure
+  GUIBITMAPINFO* pbmi; ///< BITMAPINFO structure
 
   // constructor and destructor:
 
   // operator= (object copy)
-  CAnimatedGif& operator= (CAnimatedGif& rhs);
+  CAnimatedGif& operator=(CAnimatedGif& rhs);
 
   /// \brief Image initializer (allocates space for raster and palette):
-  void Init (int iWidth, int iHeight, int iBPP, int iLoops = 0);
+  void Init(int iWidth, int iHeight, int iBPP, int iLoops = 0);
 
-  inline char& Pixel (int x, int y) { return Raster[y*BytesPerRow + x];}
+  inline char& Pixel(int x, int y) { return Raster[y * BytesPerRow + x]; }
 
 #ifndef _XBOX
   // Windows GDI Specific function to paint the image on a DC:
-  int GDIPaint (HDC hdc, int xDest, int yDest);
+  int GDIPaint(HDC hdc, int xDest, int yDest);
 #endif
-
 };
 
 // ****************************************************************************
@@ -151,25 +146,25 @@ public:
 class CAnimatedGifSet
 {
 public:
-
   // constructor and destructor:
   CAnimatedGifSet();
   virtual ~CAnimatedGifSet();
 
   int FrameWidth, FrameHeight; ///< Dimensions of ImageSet in pixels.
-  int nLoops;          // Number of Loops (0 = infinite)
+  int nLoops; // Number of Loops (0 = infinite)
 
-  std::vector<CAnimatedGif*> m_vecimg;        ///< Images' Vector.
+  std::vector<CAnimatedGif*> m_vecimg; ///< Images' Vector.
 
-  void AddImage (CAnimatedGif*);   ///< Append new image to vector (push_back)
+  void AddImage(CAnimatedGif*); ///< Append new image to vector (push_back)
 
   int GetImageCount() const;
   // File Formats:
-  int LoadGIF (const char* szFile);
+  int LoadGIF(const char* szFile);
 
   void Release();
+
 protected:
-  unsigned char getbyte(FILE *fd);
+  unsigned char getbyte(FILE* fd);
 };
 
 #pragma pack()

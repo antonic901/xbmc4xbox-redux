@@ -28,16 +28,15 @@
 #include <vector>
 #include <boost/function.hpp>
 
-
 template<typename Event>
 class CEventStream
 {
 public:
-
   template<typename A>
   void Subscribe(A* owner, void (A::*fn)(const Event&))
   {
-    boost::shared_ptr<detail::CSubscription<Event, A> > subscription = boost::make_shared<detail::CSubscription<Event, A> >(owner, fn);
+    boost::shared_ptr<detail::CSubscription<Event, A> > subscription =
+        boost::make_shared<detail::CSubscription<Event, A> >(owner, fn);
     CSingleLock lock(m_criticalSection);
     m_subscriptions.push_back(boost::move(subscription));
   }
@@ -48,7 +47,8 @@ public:
     std::vector<boost::shared_ptr<detail::ISubscription<Event> > > toCancel;
     {
       CSingleLock lock(m_criticalSection);
-      std::vector<boost::shared_ptr<detail::ISubscription<Event> > >::iterator it = m_subscriptions.begin();
+      std::vector<boost::shared_ptr<detail::ISubscription<Event> > >::iterator it =
+          m_subscriptions.begin();
       while (it != m_subscriptions.end())
       {
         if ((*it)->IsOwnedBy(obj))
@@ -62,7 +62,9 @@ public:
         }
       }
     }
-    for (std::vector<boost::shared_ptr<detail::ISubscription<Event> > >::const_iterator it = toCancel.begin(); it != toCancel.end(); ++it)
+    for (std::vector<boost::shared_ptr<detail::ISubscription<Event> > >::const_iterator it =
+             toCancel.begin();
+         it != toCancel.end(); ++it)
       (*it)->Cancel();
   }
 
@@ -70,7 +72,6 @@ protected:
   std::vector<boost::shared_ptr<detail::ISubscription<Event> > > m_subscriptions;
   CCriticalSection m_criticalSection;
 };
-
 
 template<typename Event>
 class CEventSource : public CEventStream<Event>
@@ -80,16 +81,21 @@ public:
   void Publish(A event)
   {
     CSingleLock lock(this->m_criticalSection);
-    std::vector<boost::shared_ptr<detail::ISubscription<Event> > >& subscriptions = this->m_subscriptions;
-    boost::function<void()> task = boost::bind(&CEventSource::HandleEvent, this, subscriptions, event);
+    std::vector<boost::shared_ptr<detail::ISubscription<Event> > >& subscriptions =
+        this->m_subscriptions;
+    boost::function<void()> task =
+        boost::bind(&CEventSource::HandleEvent, this, subscriptions, event);
     lock.Leave();
     CJobManager::GetInstance().Submit(boost::move(task));
   }
 
 private:
-  void HandleEvent(std::vector<boost::shared_ptr<detail::ISubscription<Event> > >& subscriptions, Event event)
+  void HandleEvent(std::vector<boost::shared_ptr<detail::ISubscription<Event> > >& subscriptions,
+                   Event event)
   {
-    for (std::vector<boost::shared_ptr<detail::ISubscription<Event> > >::const_iterator it = subscriptions.begin(); it != subscriptions.end(); ++it)
+    for (std::vector<boost::shared_ptr<detail::ISubscription<Event> > >::const_iterator it =
+             subscriptions.begin();
+         it != subscriptions.end(); ++it)
       (*it)->HandleEvent(event);
   }
 };

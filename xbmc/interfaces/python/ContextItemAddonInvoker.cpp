@@ -16,11 +16,10 @@
 #include <Python.h>
 #include <osdefs.h>
 
-
-CContextItemAddonInvoker::CContextItemAddonInvoker(
-    ILanguageInvocationHandler *invocationHandler,
-    const CFileItemPtr& item)
-  : CAddonPythonInvoker(invocationHandler), m_item(CFileItemPtr(new CFileItem(*item.get())))
+CContextItemAddonInvoker::CContextItemAddonInvoker(ILanguageInvocationHandler* invocationHandler,
+                                                   const CFileItemPtr& item)
+  : CAddonPythonInvoker(invocationHandler),
+    m_item(CFileItemPtr(new CFileItem(*item.get())))
 {
 }
 
@@ -38,7 +37,8 @@ void CContextItemAddonInvoker::onPythonModuleInitialization(void* moduleDict)
     //! @bug libpython < 3.0 isn't const correct
     if (pyItem == Py_None || PySys_SetObject(const_cast<char*>("listitem"), pyItem) == -1)
     {
-      CLog::Log(LOGERROR, "CPythonInvoker(%d, %s): Failed to set sys parameter", GetId(), m_sourceFile.c_str());
+      CLog::Log(LOGERROR, "CPythonInvoker(%d, %s): Failed to set sys parameter", GetId(),
+                m_sourceFile.c_str());
       //FIXME: we should really abort execution
     }
   }

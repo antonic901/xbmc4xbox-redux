@@ -23,10 +23,7 @@ CXBApplicationEx* g_pXBApp = NULL;
 static LPDIRECT3DDEVICE8 g_pd3dDevice = NULL;
 
 // Deadzone for the gamepad inputs
-const SHORT XINPUT_DEADZONE = (SHORT)( 0.24f * FLOAT(0x7FFF) );
-
-
-
+const SHORT XINPUT_DEADZONE = (SHORT)(0.24f * FLOAT(0x7FFF));
 
 //-----------------------------------------------------------------------------
 // Name: CXBApplication()
@@ -49,7 +46,7 @@ CXBApplicationEx::CXBApplicationEx()
   // Set up the presentation parameters for a double-buffered, 640x480,
   // 32-bit display using depth-stencil. Override these parameters in
   // your derived class as your app requires.
-  ZeroMemory( &m_d3dpp, sizeof(m_d3dpp) );
+  ZeroMemory(&m_d3dpp, sizeof(m_d3dpp));
   m_d3dpp.BackBufferWidth = 720;
   m_d3dpp.BackBufferHeight = 576;
   m_d3dpp.BackBufferFormat = D3DFMT_LIN_A8R8G8B8;
@@ -69,9 +66,6 @@ CXBApplicationEx::CXBApplicationEx()
 #endif
 }
 
-
-
-
 //-----------------------------------------------------------------------------
 // Name: Create()
 // Desc: Create the app
@@ -81,17 +75,14 @@ HRESULT CXBApplicationEx::Create(HWND hWnd)
   HRESULT hr;
 
   // Initialize the app's device-dependent objects
-  if ( FAILED( hr = Initialize() ) )
+  if (FAILED(hr = Initialize()))
   {
-    CLog::Log(LOGERROR, "XBAppEx: Call to Initialize() failed!" );
+    CLog::Log(LOGERROR, "XBAppEx: Call to Initialize() failed!");
     return hr;
   }
 
   return S_OK;
 }
-
-
-
 
 //-----------------------------------------------------------------------------
 // Name: Destroy()
@@ -103,12 +94,9 @@ VOID CXBApplicationEx::Destroy()
   Cleanup();
 
   // Release display objects
-  SAFE_RELEASE( m_pd3dDevice );
-  SAFE_RELEASE( m_pD3D );
+  SAFE_RELEASE(m_pd3dDevice);
+  SAFE_RELEASE(m_pD3D);
 }
-
-
-
 
 //-----------------------------------------------------------------------------
 // Name: Run()
@@ -116,7 +104,7 @@ VOID CXBApplicationEx::Destroy()
 //-----------------------------------------------------------------------------
 INT CXBApplicationEx::Run()
 {
-  CLog::Log(LOGNOTICE, "Running the application..." );
+  CLog::Log(LOGNOTICE, "Running the application...");
 
   // Run the game loop, animating and rendering frames
   while (!m_bStop)
@@ -132,7 +120,6 @@ INT CXBApplicationEx::Run()
       Process();
 
 #ifndef _DEBUG
-
     }
     catch (...)
     {
@@ -147,7 +134,6 @@ INT CXBApplicationEx::Run()
       FrameMove(true);
 
 #ifndef _DEBUG
-
     }
     catch (...)
     {
@@ -163,41 +149,41 @@ INT CXBApplicationEx::Run()
       Render();
 
 #ifndef _DEBUG
-
     }
     catch (...)
     {
       CLog::Log(LOGERROR, "exception in CApplication::Render()");
     }
 #endif
-
   }
   Destroy();
 
-  CLog::Log(LOGNOTICE, "application stopped..." );
+  CLog::Log(LOGNOTICE, "application stopped...");
   return 0;
 }
 
-
-
-
-inline float DeadZone(float &f)
+inline float DeadZone(float& f)
 {
   if (f > g_advancedSettings.m_controllerDeadzone)
-    return (f - g_advancedSettings.m_controllerDeadzone)/(1.0f - g_advancedSettings.m_controllerDeadzone);
+    return (f - g_advancedSettings.m_controllerDeadzone) /
+           (1.0f - g_advancedSettings.m_controllerDeadzone);
   else if (f < -g_advancedSettings.m_controllerDeadzone)
-    return (f + g_advancedSettings.m_controllerDeadzone)/(1.0f - g_advancedSettings.m_controllerDeadzone);
+    return (f + g_advancedSettings.m_controllerDeadzone) /
+           (1.0f - g_advancedSettings.m_controllerDeadzone);
   else
     return 0.0f;
 }
 
 #ifdef HAS_GAMEPAD
-inline float MaxTrigger(XBGAMEPAD &gamepad)
+inline float MaxTrigger(XBGAMEPAD& gamepad)
 {
   float max = fabs(gamepad.fX1);
-  if (fabs(gamepad.fX2) > max) max = fabs(gamepad.fX2);
-  if (fabs(gamepad.fY1) > max) max = fabs(gamepad.fY1);
-  if (fabs(gamepad.fY2) > max) max = fabs(gamepad.fY2);
+  if (fabs(gamepad.fX2) > max)
+    max = fabs(gamepad.fX2);
+  if (fabs(gamepad.fY1) > max)
+    max = fabs(gamepad.fY1);
+  if (fabs(gamepad.fY2) > max)
+    max = fabs(gamepad.fY2);
   return max;
 }
 #endif
@@ -209,12 +195,12 @@ void CXBApplicationEx::ReadInput()
 
   // Read the input from the IR remote
 #ifdef HAS_IR_REMOTE
-  XBInput_GetInput( m_IR_Remote );
-  ZeroMemory( &m_DefaultIR_Remote, sizeof(m_DefaultIR_Remote) );
+  XBInput_GetInput(m_IR_Remote);
+  ZeroMemory(&m_DefaultIR_Remote, sizeof(m_DefaultIR_Remote));
 
-  for ( DWORD i = 0; i < 4; i++ )
+  for (DWORD i = 0; i < 4; i++)
   {
-    if ( m_IR_Remote[i].hDevice)
+    if (m_IR_Remote[i].hDevice)
     {
       m_DefaultIR_Remote.wButtons = m_IR_Remote[i].wButtons;
     }
@@ -226,17 +212,17 @@ void CXBApplicationEx::ReadInput()
 
 #ifdef HAS_GAMEPAD
   // Read the input for all connected gampads
-  XBInput_GetInput( m_Gamepad );
+  XBInput_GetInput(m_Gamepad);
 
   // Lump inputs of all connected gamepads into one common structure.
   // This is done so apps that need only one gamepad can function with
   // any gamepad.
-  ZeroMemory( &m_DefaultGamepad, sizeof(m_DefaultGamepad) );
+  ZeroMemory(&m_DefaultGamepad, sizeof(m_DefaultGamepad));
 
   float maxTrigger = 0.0f;
-  for ( DWORD i = 0; i < 4; i++ )
+  for (DWORD i = 0; i < 4; i++)
   {
-    if ( m_Gamepad[i].hDevice )
+    if (m_Gamepad[i].hDevice)
     {
       if (maxTrigger < MaxTrigger(m_Gamepad[i]))
       {
@@ -250,7 +236,7 @@ void CXBApplicationEx::ReadInput()
       m_DefaultGamepad.wPressedButtons |= m_Gamepad[i].wPressedButtons;
       m_DefaultGamepad.wLastButtons |= m_Gamepad[i].wLastButtons;
 
-      for ( DWORD b = 0; b < 8; b++ )
+      for (DWORD b = 0; b < 8; b++)
       {
         m_DefaultGamepad.bAnalogButtons[b] |= m_Gamepad[i].bAnalogButtons[b];
         m_DefaultGamepad.bPressedAnalogButtons[b] |= m_Gamepad[i].bPressedAnalogButtons[b];
@@ -268,4 +254,5 @@ void CXBApplicationEx::ReadInput()
 }
 
 void CXBApplicationEx::Process()
-{}
+{
+}

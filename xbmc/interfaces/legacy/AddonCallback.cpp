@@ -9,20 +9,19 @@
 
 namespace XBMCAddon
 {
-  // need a place to put the vtab
-  AddonCallback::~AddonCallback()
-  {
-  }
-
-  void AddonCallback::invokeCallback(Callback* callback)
-  {
-    if (callback)
-    {
-      if (hasHandler())
-        handler->invokeCallback(callback);
-      else
-        callback->executeCallback();
-    }
-  }
+// need a place to put the vtab
+AddonCallback::~AddonCallback()
+{
 }
 
+void AddonCallback::invokeCallback(Callback* callback)
+{
+  if (callback)
+  {
+    if (hasHandler())
+      handler->invokeCallback(callback);
+    else
+      callback->executeCallback();
+  }
+}
+} // namespace XBMCAddon

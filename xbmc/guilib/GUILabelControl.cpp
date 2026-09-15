@@ -22,9 +22,22 @@
 #include "utils/CharsetConverter.h"
 #include "utils/StringUtils.h"
 
-CGUILabelControl::CGUILabelControl(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, bool wrapMultiLine, bool bHasPath)
-    : CGUIControl(parentID, controlID, posX, posY, width, height)
-    , m_label(posX, posY, width, height, labelInfo, wrapMultiLine ? CGUILabel::OVER_FLOW_WRAP : CGUILabel::OVER_FLOW_TRUNCATE)
+CGUILabelControl::CGUILabelControl(int parentID,
+                                   int controlID,
+                                   float posX,
+                                   float posY,
+                                   float width,
+                                   float height,
+                                   const CLabelInfo& labelInfo,
+                                   bool wrapMultiLine,
+                                   bool bHasPath)
+  : CGUIControl(parentID, controlID, posX, posY, width, height),
+    m_label(posX,
+            posY,
+            width,
+            height,
+            labelInfo,
+            wrapMultiLine ? CGUILabel::OVER_FLOW_WRAP : CGUILabel::OVER_FLOW_TRUNCATE)
 {
   m_bHasPath = bHasPath;
   m_iCursorPos = 0;
@@ -50,8 +63,10 @@ void CGUILabelControl::SetCursorPos(int iPos)
   std::string labelUTF8 = m_infoLabel.GetLabel(m_parentID);
   std::wstring label;
   g_charsetConverter.utf8ToW(labelUTF8, label);
-  if (iPos > (int)label.length()) iPos = label.length();
-  if (iPos < 0) iPos = 0;
+  if (iPos > (int)label.length())
+    iPos = label.length();
+  if (iPos < 0)
+    iPos = 0;
 
   if (m_iCursorPos != iPos)
     MarkDirtyRegion();
@@ -59,7 +74,7 @@ void CGUILabelControl::SetCursorPos(int iPos)
   m_iCursorPos = iPos;
 }
 
-void CGUILabelControl::SetInfo(const CGUIInfoLabel &infoLabel)
+void CGUILabelControl::SetInfo(const CGUIInfoLabel& infoLabel)
 {
   m_infoLabel = infoLabel;
 }
@@ -72,7 +87,7 @@ bool CGUILabelControl::UpdateColors()
   return changed;
 }
 
-void CGUILabelControl::UpdateInfo(const CGUIListItem *item)
+void CGUILabelControl::UpdateInfo(const CGUIListItem* item)
 {
   std::string label(m_infoLabel.GetLabel(m_parentID));
 
@@ -81,7 +96,8 @@ void CGUILabelControl::UpdateInfo(const CGUIListItem *item)
   {
     std::wstring utf16;
     g_charsetConverter.utf8ToW(label, utf16);
-    vecText text; text.reserve(utf16.size()+1);
+    vecText text;
+    text.reserve(utf16.size() + 1);
     vecColors colors;
     colors.push_back(m_label.GetLabelInfo().textColor);
     colors.push_back(m_label.GetLabelInfo().disabledColor);
@@ -121,7 +137,7 @@ void CGUILabelControl::UpdateInfo(const CGUIListItem *item)
     MarkDirtyRegion();
 }
 
-void CGUILabelControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUILabelControl::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   bool changed = false;
 
@@ -151,7 +167,7 @@ bool CGUILabelControl::CanFocus() const
   return false;
 }
 
-void CGUILabelControl::SetLabel(const std::string &strLabel)
+void CGUILabelControl::SetLabel(const std::string& strLabel)
 {
   // NOTE: this optimization handles fixed labels only (i.e. not info labels).
   // One way it might be extended to all labels would be for GUIInfoLabel ( or here )
@@ -183,7 +199,7 @@ void CGUILabelControl::SetAlignment(uint32_t align)
   }
 }
 
-#define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+#define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 
 float CGUILabelControl::GetWidth() const
 {
@@ -201,7 +217,7 @@ void CGUILabelControl::SetWidth(float width)
 
 bool CGUILabelControl::OnMessage(CGUIMessage& message)
 {
-  if ( message.GetControlId() == GetID() )
+  if (message.GetControlId() == GetID())
   {
     if (message.GetMessage() == GUI_MSG_LABEL_SET)
     {
@@ -213,7 +229,7 @@ bool CGUILabelControl::OnMessage(CGUIMessage& message)
   return CGUIControl::OnMessage(message);
 }
 
-std::string CGUILabelControl::ShortenPath(const std::string &path)
+std::string CGUILabelControl::ShortenPath(const std::string& path)
 {
   if (m_width == 0 || path.empty())
     return path;
@@ -221,27 +237,26 @@ std::string CGUILabelControl::ShortenPath(const std::string &path)
   char cDelim = '\0';
   size_t nPos;
 
-  nPos = path.find_last_of( '\\' );
-  if ( nPos != std::string::npos )
+  nPos = path.find_last_of('\\');
+  if (nPos != std::string::npos)
     cDelim = '\\';
   else
   {
-    nPos = path.find_last_of( '/' );
-    if ( nPos != std::string::npos )
+    nPos = path.find_last_of('/');
+    if (nPos != std::string::npos)
       cDelim = '/';
   }
-  if ( cDelim == '\0' )
+  if (cDelim == '\0')
     return path;
 
   std::string workPath(path);
   // remove trailing slashes
   if (workPath.size() > 3)
-    if (!StringUtils::EndsWith(workPath, "://") &&
-        !StringUtils::EndsWith(workPath, ":\\"))
+    if (!StringUtils::EndsWith(workPath, "://") && !StringUtils::EndsWith(workPath, ":\\"))
       if (nPos == workPath.size() - 1)
       {
         workPath.erase(workPath.size() - 1);
-        nPos = workPath.find_last_of( cDelim );
+        nPos = workPath.find_last_of(cDelim);
       }
 
   if (m_label.SetText(workPath))
@@ -249,17 +264,17 @@ std::string CGUILabelControl::ShortenPath(const std::string &path)
 
   float textWidth = m_label.GetTextWidth();
 
-  while ( textWidth > m_width )
+  while (textWidth > m_width)
   {
-    size_t nGreaterDelim = workPath.find_last_of( cDelim, nPos );
+    size_t nGreaterDelim = workPath.find_last_of(cDelim, nPos);
     if (nGreaterDelim == std::string::npos)
       break;
 
-    nPos = workPath.find_last_of( cDelim, nGreaterDelim - 1 );
-    if ( nPos == std::string::npos )
+    nPos = workPath.find_last_of(cDelim, nGreaterDelim - 1);
+    if (nPos == std::string::npos)
       break;
 
-    workPath.replace( nPos + 1, nGreaterDelim - nPos - 1, "..." );
+    workPath.replace(nPos + 1, nGreaterDelim - nPos - 1, "...");
 
     if (m_label.SetText(workPath))
       MarkDirtyRegion();

@@ -17,7 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
- 
+
 #ifdef __ppc__
 #pragma GCC optimization_level 0
 #endif
@@ -44,10 +44,12 @@ void lf_stack_push(lf_stack* pStack, lf_node* pNode)
     pNode->next.ptr = top.ptr; // Link in the new node
     newTop.ptr = pNode;
 #if defined(__ppc__) || defined(__powerpc__) || defined(__arm__)
-  } while(cas((long*)&pStack->top, atomic_ptr_to_long(top), atomic_ptr_to_long(newTop)) != atomic_ptr_to_long(top));
+  } while (cas((long*)&pStack->top, atomic_ptr_to_long(top), atomic_ptr_to_long(newTop)) !=
+           atomic_ptr_to_long(top));
 #else
     newTop.version = top.version + 1;
-  } while(cas2((long long*)&pStack->top, atomic_ptr_to_long_long(top), atomic_ptr_to_long_long(newTop)) != atomic_ptr_to_long_long(top));
+  } while (cas2((long long*)&pStack->top, atomic_ptr_to_long_long(top),
+                atomic_ptr_to_long_long(newTop)) != atomic_ptr_to_long_long(top));
 #endif
   AtomicIncrement(&pStack->count);
 }
@@ -62,10 +64,12 @@ lf_node* lf_stack_pop(lf_stack* pStack)
       return NULL;
     newTop.ptr = ((lf_node*)top.ptr)->next.ptr; // Unlink the current top node
 #if defined(__ppc__) || defined(__powerpc__) || defined(__arm__)
-  } while(cas((long*)&pStack->top, atomic_ptr_to_long(top), atomic_ptr_to_long(newTop)) != atomic_ptr_to_long(top));
+  } while (cas((long*)&pStack->top, atomic_ptr_to_long(top), atomic_ptr_to_long(newTop)) !=
+           atomic_ptr_to_long(top));
 #else
     newTop.version = top.version + 1;
-  } while(cas2((long long*)&pStack->top, atomic_ptr_to_long_long(top), atomic_ptr_to_long_long(newTop)) != atomic_ptr_to_long_long(top));
+  } while (cas2((long long*)&pStack->top, atomic_ptr_to_long_long(top),
+                atomic_ptr_to_long_long(newTop)) != atomic_ptr_to_long_long(top));
 #endif
   AtomicDecrement(&pStack->count);
   return (lf_node*)top.ptr;
@@ -103,26 +107,30 @@ void lf_heap_grow(lf_heap* pHeap, size_t size /*= 0*/)
 {
 
   long blockSize = pHeap->block_size; // This has already been checked for sanity
-  if (!size || size < MIN_ALLOC - sizeof(lf_heap_chunk)) // Allocate at least one page from the OS (TODO: Try valloc)
+  if (!size ||
+      size < MIN_ALLOC -
+                 sizeof(lf_heap_chunk)) // Allocate at least one page from the OS (TODO: Try valloc)
     size = MIN_ALLOC - sizeof(lf_heap_chunk);
   unsigned int blockCount = size / blockSize;
   if (size % blockSize) // maxe sure we have complete blocks
     size = blockSize * ++blockCount;
 
   // Allocate the first chunk from the general heap and link it into the chunk list
-  long mallocSize = size +  sizeof(lf_heap_chunk);
-  lf_heap_chunk* pChunk = (lf_heap_chunk*) malloc(mallocSize);
+  long mallocSize = size + sizeof(lf_heap_chunk);
+  lf_heap_chunk* pChunk = (lf_heap_chunk*)malloc(mallocSize);
   if (!pChunk)
     return;
   pChunk->size = mallocSize;
-  SPINLOCK_ACQUIRE(pHeap->alloc_lock); // Lock the chunk list. Contention here is VERY unlikely, so use the simplest possible sync mechanism.
+  SPINLOCK_ACQUIRE(
+      pHeap
+          ->alloc_lock); // Lock the chunk list. Contention here is VERY unlikely, so use the simplest possible sync mechanism.
   pChunk->next = pHeap->top_chunk;
   pHeap->top_chunk = pChunk; // Link it into the list
   SPINLOCK_RELEASE(pHeap->alloc_lock); // The list is now consistent
 
   // Add all blocks to the free-list
   unsigned char* pBlock = (unsigned char*)pChunk + sizeof(lf_heap_chunk);
-  for ( unsigned int block = 0; block < blockCount; block++)
+  for (unsigned int block = 0; block < blockCount; block++)
   {
     lf_stack_push(&pHeap->free_list, (lf_node*)pBlock);
     pBlock += blockSize;
@@ -133,7 +141,7 @@ void lf_heap_deinit(lf_heap* pHeap)
 {
   // Free all allocated chunks
   lf_heap_chunk* pNext;
-  for(lf_heap_chunk* pChunk = pHeap->top_chunk; pChunk;  pChunk = pNext)
+  for (lf_heap_chunk* pChunk = pHeap->top_chunk; pChunk; pChunk = pNext)
   {
     pNext = pChunk->next;
     free(pChunk);
@@ -142,12 +150,14 @@ void lf_heap_deinit(lf_heap* pHeap)
 
 void* lf_heap_alloc(lf_heap* pHeap)
 {
-  void * p = lf_stack_pop(&pHeap->free_list);
+  void* p = lf_stack_pop(&pHeap->free_list);
   if (!p)
   {
     lf_heap_grow(pHeap, 0);
     // TODO: should we just call in recursively?
-    return lf_stack_pop(&pHeap->free_list); // If growing didn't help, something is wrong (or someone else took them all REALLY fast)
+    return lf_stack_pop(
+        &pHeap
+             ->free_list); // If growing didn't help, something is wrong (or someone else took them all REALLY fast)
   }
   return p;
 }
@@ -198,10 +208,13 @@ void lf_queue_enqueue(lf_queue* pQueue, void* value)
       {
         node.ptr = pNode;
 #if defined(__ppc__) || defined(__powerpc__) || defined(__arm__)
-        if (cas((long*)&((lf_queue_node*)tail.ptr)->next, atomic_ptr_to_long(next), atomic_ptr_to_long(node)) == atomic_ptr_to_long(next)) // Try to link node at end
+        if (cas((long*)&((lf_queue_node*)tail.ptr)->next, atomic_ptr_to_long(next),
+                atomic_ptr_to_long(node)) == atomic_ptr_to_long(next)) // Try to link node at end
 #else
         node.version = next.version + 1;
-        if (cas2((long long*)&((lf_queue_node*)tail.ptr)->next, atomic_ptr_to_long_long(next), atomic_ptr_to_long_long(node)) == atomic_ptr_to_long_long(next)) // Try to link node at end
+        if (cas2((long long*)&((lf_queue_node*)tail.ptr)->next, atomic_ptr_to_long_long(next),
+                 atomic_ptr_to_long_long(node)) ==
+            atomic_ptr_to_long_long(next)) // Try to link node at end
 #endif
           break; // enqueue is done.
       }
@@ -209,20 +222,24 @@ void lf_queue_enqueue(lf_queue* pQueue, void* value)
       {
         node.ptr = next.ptr;
 #if defined(__ppc__) || defined(__powerpc__) || defined(__arm__)
-        cas((long*)&pQueue->tail, atomic_ptr_to_long(tail), atomic_ptr_to_long(node)); // We don't care if we  are successful or not
+        cas((long*)&pQueue->tail, atomic_ptr_to_long(tail),
+            atomic_ptr_to_long(node)); // We don't care if we  are successful or not
 #else
         node.version = tail.version + 1;
-        cas2((long long*)&pQueue->tail, atomic_ptr_to_long_long(tail), atomic_ptr_to_long_long(node)); // We don't care if we  are successful or not
+        cas2((long long*)&pQueue->tail, atomic_ptr_to_long_long(tail),
+             atomic_ptr_to_long_long(node)); // We don't care if we  are successful or not
 #endif
       }
     }
   } while (true); // Keep trying until the enqueue is done
   node.ptr = pNode;
 #if defined(__ppc__) || defined(__powerpc__) || defined(__arm__)
-  cas((long*)&pQueue->tail, atomic_ptr_to_long(tail), atomic_ptr_to_long(node)); // Try to swing the tail to the new node
+  cas((long*)&pQueue->tail, atomic_ptr_to_long(tail),
+      atomic_ptr_to_long(node)); // Try to swing the tail to the new node
 #else
   node.version = tail.version + 1;
-  cas2((long long*)&pQueue->tail, atomic_ptr_to_long_long(tail), atomic_ptr_to_long_long(node)); // Try to swing the tail to the new node
+  cas2((long long*)&pQueue->tail, atomic_ptr_to_long_long(tail),
+       atomic_ptr_to_long_long(node)); // Try to swing the tail to the new node
 #endif
   AtomicIncrement(&pQueue->len);
 }
@@ -249,10 +266,12 @@ void* lf_queue_dequeue(lf_queue* pQueue)
           return NULL;
         node.ptr = next.ptr;
 #if defined(__ppc__) || defined(__powerpc__) || defined(__arm__)
-        cas((long*)&pQueue->tail, atomic_ptr_to_long(tail), atomic_ptr_to_long(node)); // Tail is lagging. Try to advance it.
+        cas((long*)&pQueue->tail, atomic_ptr_to_long(tail),
+            atomic_ptr_to_long(node)); // Tail is lagging. Try to advance it.
 #else
         node.version = tail.version + 1;
-        cas2((long long*)&pQueue->tail, atomic_ptr_to_long_long(tail), atomic_ptr_to_long_long(node)); // Tail is lagging. Try to advance it.
+        cas2((long long*)&pQueue->tail, atomic_ptr_to_long_long(tail),
+             atomic_ptr_to_long_long(node)); // Tail is lagging. Try to advance it.
 #endif
       }
       else // Tail is consistent. No need to deal with it.
@@ -260,10 +279,12 @@ void* lf_queue_dequeue(lf_queue* pQueue)
         pVal = ((lf_queue_node*)next.ptr)->value;
         node.ptr = next.ptr;
 #if defined(__ppc__) || defined(__powerpc__) || defined(__arm__)
-        if (cas((long*)&pQueue->head, atomic_ptr_to_long(head), atomic_ptr_to_long(node)) == atomic_ptr_to_long(head))
+        if (cas((long*)&pQueue->head, atomic_ptr_to_long(head), atomic_ptr_to_long(node)) ==
+            atomic_ptr_to_long(head))
 #else
         node.version = head.version + 1;
-        if (cas2((long long*)&pQueue->head, atomic_ptr_to_long_long(head), atomic_ptr_to_long_long(node)) == atomic_ptr_to_long_long(head))
+        if (cas2((long long*)&pQueue->head, atomic_ptr_to_long_long(head),
+                 atomic_ptr_to_long_long(node)) == atomic_ptr_to_long_long(head))
 #endif
           break; // Dequeue is done
       }

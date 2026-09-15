@@ -25,31 +25,36 @@
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 
-#define XML_ELM_DEFAULT     "default"
+#define XML_ELM_DEFAULT "default"
 #define XML_ELM_CONSTRAINTS "constraints"
 
-CSettingPath::CSettingPath(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
+CSettingPath::CSettingPath(const std::string& id, CSettingsManager* settingsManager /* = NULL */)
   : CSettingString(id, settingsManager),
     m_writable(true)
-{ }
+{
+}
 
-CSettingPath::CSettingPath(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager /* = NULL */)
+CSettingPath::CSettingPath(const std::string& id,
+                           int label,
+                           const std::string& value,
+                           CSettingsManager* settingsManager /* = NULL */)
   : CSettingString(id, label, value, settingsManager),
     m_writable(true)
-{ }
+{
+}
 
-CSettingPath::CSettingPath(const std::string &id, const CSettingPath &setting)
+CSettingPath::CSettingPath(const std::string& id, const CSettingPath& setting)
   : CSettingString(id, setting)
 {
   copy(setting);
 }
 
-CSetting* CSettingPath::Clone(const std::string &id) const
+CSetting* CSettingPath::Clone(const std::string& id) const
 {
   return new CSettingPath(id, *this);
 }
 
-bool CSettingPath::Deserialize(const TiXmlNode *node, bool update /* = false */)
+bool CSettingPath::Deserialize(const TiXmlNode* node, bool update /* = false */)
 {
   CExclusiveLock lock(m_critical);
 
@@ -57,24 +62,25 @@ bool CSettingPath::Deserialize(const TiXmlNode *node, bool update /* = false */)
     return false;
 
   if (m_control != nullptr &&
-     (m_control->GetType() != "button" || (m_control->GetFormat() != "path" && m_control->GetFormat() != "file")))
+      (m_control->GetType() != "button" ||
+       (m_control->GetFormat() != "path" && m_control->GetFormat() != "file")))
   {
     CLog::Log(LOGERROR, "CSettingPath: invalid <control> of \"%s\"", m_id.c_str());
     return false;
   }
 
-  const TiXmlNode *constraints = node->FirstChild(XML_ELM_CONSTRAINTS);
+  const TiXmlNode* constraints = node->FirstChild(XML_ELM_CONSTRAINTS);
   if (constraints != NULL)
   {
     // get writable
     XMLUtils::GetBoolean(constraints, "writable", m_writable);
 
     // get sources
-    const TiXmlNode *sources = constraints->FirstChild("sources");
+    const TiXmlNode* sources = constraints->FirstChild("sources");
     if (sources != NULL)
     {
       m_sources.clear();
-      const TiXmlNode *source = sources->FirstChild("source");
+      const TiXmlNode* source = sources->FirstChild("source");
       while (source != NULL)
       {
         std::string strSource = source->FirstChild()->ValueStr();
@@ -89,7 +95,7 @@ bool CSettingPath::Deserialize(const TiXmlNode *node, bool update /* = false */)
   return true;
 }
 
-bool CSettingPath::SetValue(const std::string &value)
+bool CSettingPath::SetValue(const std::string& value)
 {
   // for backwards compatibility to Frodo
   if (StringUtils::EqualsNoCase(value, "select folder") ||
@@ -99,7 +105,7 @@ bool CSettingPath::SetValue(const std::string &value)
   return CSettingString::SetValue(value);
 }
 
-void CSettingPath::copy(const CSettingPath &setting)
+void CSettingPath::copy(const CSettingPath& setting)
 {
   CSettingString::Copy(setting);
 

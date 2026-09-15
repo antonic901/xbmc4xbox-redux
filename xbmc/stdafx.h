@@ -35,7 +35,7 @@
 #include <FStream>
 #include <stdlib.h>
 #include <crtdbg.h>
-#define new new( _NORMAL_BLOCK, __FILE__, __LINE__)
+#define new new (_NORMAL_BLOCK, __FILE__, __LINE__)
 #endif
 #endif
 
@@ -43,12 +43,27 @@
 #ifdef QueryPerformanceFrequency
 #undef QueryPerformanceFrequency
 #endif
-WINBASEAPI BOOL WINAPI QueryPerformanceFrequencyXbox(LARGE_INTEGER *lpFrequency);
+WINBASEAPI BOOL WINAPI QueryPerformanceFrequencyXbox(LARGE_INTEGER* lpFrequency);
 #define QueryPerformanceFrequency(a) QueryPerformanceFrequencyXbox(a)
 #else
 #undef GetFreeSpace
 #endif
 
-#define SAFE_DELETE(p)       { delete (p);     (p)=NULL; }
-#define SAFE_DELETE_ARRAY(p) { delete[] (p);   (p)=NULL; }
-#define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }
+#define SAFE_DELETE(p) \
+  { \
+    delete (p); \
+    (p) = NULL; \
+  }
+#define SAFE_DELETE_ARRAY(p) \
+  { \
+    delete[] (p); \
+    (p) = NULL; \
+  }
+#define SAFE_RELEASE(p) \
+  { \
+    if (p) \
+    { \
+      (p)->Release(); \
+      (p) = NULL; \
+    } \
+  }

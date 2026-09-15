@@ -29,17 +29,20 @@
 using namespace XFILE;
 
 CMemUnitDirectory::CMemUnitDirectory(void)
-{}
+{
+}
 
 CMemUnitDirectory::~CMemUnitDirectory(void)
-{}
+{
+}
 
-bool CMemUnitDirectory::GetDirectory(const CURL& url, CFileItemList &items)
+bool CMemUnitDirectory::GetDirectory(const CURL& url, CFileItemList& items)
 {
   CStdString strPath = url.Get();
-  IFileSystem *fileSystem = GetFileSystem(strPath);
-  if (!fileSystem) return false;
-  
+  IFileSystem* fileSystem = GetFileSystem(strPath);
+  if (!fileSystem)
+    return false;
+
   g_directoryCache.ClearDirectory(strPath);
   CFileItemList cacheItems;
   if (!fileSystem->GetDirectory(strPath.Mid(7), cacheItems))
@@ -62,16 +65,18 @@ bool CMemUnitDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 bool CMemUnitDirectory::Create(const CURL& url)
 {
   std::string strPath = url.Get();
-  IFileSystem *fileSystem = GetFileSystem(strPath);
-  if (!fileSystem) return false;
+  IFileSystem* fileSystem = GetFileSystem(strPath);
+  if (!fileSystem)
+    return false;
   return fileSystem->MakeDir(strPath.c_str() + 7);
 }
 
 bool CMemUnitDirectory::Remove(const CURL& url)
 {
   std::string strPath = url.Get();
-  IFileSystem *fileSystem = GetFileSystem(strPath);
-  if (!fileSystem) return false;
+  IFileSystem* fileSystem = GetFileSystem(strPath);
+  if (!fileSystem)
+    return false;
   return fileSystem->RemoveDir(strPath.c_str() + 7);
 }
 
@@ -83,7 +88,7 @@ bool CMemUnitDirectory::Exists(const CURL& url)
   return false;
 }
 
-IFileSystem *CMemUnitDirectory::GetFileSystem(const CStdString &path)
+IFileSystem* CMemUnitDirectory::GetFileSystem(const CStdString& path)
 {
   // format is mem#://folder/file
   if (!path.Left(3).Equals("mem") || path.size() < 7)

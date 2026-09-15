@@ -31,17 +31,17 @@
 
 #include <setjmp.h>
 
-#define EXIF_TAG_ORIENTATION    0x0112
+#define EXIF_TAG_ORIENTATION 0x0112
 
 struct my_error_mgr
 {
-  struct jpeg_error_mgr pub;    // "public" fields
-  jmp_buf setjmp_buffer;        // for return to caller
+  struct jpeg_error_mgr pub; // "public" fields
+  jmp_buf setjmp_buffer; // for return to caller
 };
 
 CJpegIO::CJpegIO()
 {
-  m_width  = 0;
+  m_width = 0;
   m_height = 0;
   m_originalwidth = 0;
   m_originalheight = 0;
@@ -63,7 +63,7 @@ void CJpegIO::Close()
   m_inputBuffSize = 0;
 }
 
-bool CJpegIO::Open(const CStdString &texturePath, unsigned int minx, unsigned int miny, bool read)
+bool CJpegIO::Open(const CStdString& texturePath, unsigned int minx, unsigned int miny, bool read)
 {
   Close();
 
@@ -80,13 +80,16 @@ bool CJpegIO::Open(const CStdString &texturePath, unsigned int minx, unsigned in
   return Read(m_inputBuff, m_inputBuffSize, minx, miny);
 }
 
-bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int minx, unsigned int miny)
+bool CJpegIO::Read(unsigned char* buffer,
+                   unsigned int bufSize,
+                   unsigned int minx,
+                   unsigned int miny)
 {
   struct my_error_mgr jerr;
   m_cinfo.err = jpeg_std_error(&jerr.pub);
   jerr.pub.error_exit = jpeg_error_exit;
 
-  if (buffer == NULL || !bufSize )
+  if (buffer == NULL || !bufSize)
     return false;
 
   jpeg_create_decompress(&m_cinfo);
@@ -103,10 +106,11 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
     tb_jpeg_read_header(&m_cinfo, true);
 
     if (m_cinfo.marker_list)
-      m_orientation = GetExifOrientation(m_cinfo.marker_list->data, m_cinfo.marker_list->data_length);
+      m_orientation =
+          GetExifOrientation(m_cinfo.marker_list->data, m_cinfo.marker_list->data_length);
 
     // fail on images with orientation (fall back to cximage)
-    if (CSettings::GetInstance().GetBool("pictures.useexifrotation") && m_orientation > 1 )
+    if (CSettings::GetInstance().GetBool("pictures.useexifrotation") && m_orientation > 1)
     {
       CLog::Log(LOGDEBUG, "JpegIO::Read - Exif orientation > 1 so falling back to CXImage");
       return false;
@@ -127,13 +131,13 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
       miny = g_advancedSettings.m_imageRes;
       if (g_advancedSettings.m_fanartRes > g_advancedSettings.m_imageRes)
       { // a separate fanart resolution is specified - check if the image is exactly equal to this res
-        if (m_cinfo.image_width == (unsigned int)g_advancedSettings.m_fanartRes * 16/9 &&
+        if (m_cinfo.image_width == (unsigned int)g_advancedSettings.m_fanartRes * 16 / 9 &&
             m_cinfo.image_height == (unsigned int)g_advancedSettings.m_fanartRes)
         { // special case for fanart res
           miny = g_advancedSettings.m_fanartRes;
         }
       }
-      minx = miny * 16/9;
+      minx = miny * 16 / 9;
     }
 
     /* override minx/miny values based on image aspect and area of requested minx/miny 
@@ -141,10 +145,11 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
     unsigned int rminx = minx;
     unsigned int rminy = miny;
     unsigned int area = minx * miny;
-    float aspect = ((float) m_originalwidth) / ((float) m_originalheight);
+    float aspect = ((float)m_originalwidth) / ((float)m_originalheight);
     minx = (unsigned int)sqrt(area * aspect);
     miny = (unsigned int)sqrt(area / aspect);
-    CLog::Log(LOGDEBUG, "JpegIO::Read - Requested minx x miny %u x %u - using minx x miny %u x %u", rminx, rminy, minx, miny);
+    CLog::Log(LOGDEBUG, "JpegIO::Read - Requested minx x miny %u x %u - using minx x miny %u x %u",
+              rminx, rminy, minx, miny);
 
     m_cinfo.scale_denom = 8;
     m_cinfo.out_color_space = JCS_RGB;
@@ -162,17 +167,18 @@ bool CJpegIO::Read(unsigned char* buffer, unsigned int bufSize, unsigned int min
         break;
     }
     tb_jpeg_calc_output_dimensions(&m_cinfo);
-    m_width  = m_cinfo.output_width;
+    m_width = m_cinfo.output_width;
     m_height = m_cinfo.output_height;
-    CLog::Log(LOGDEBUG, "JpegIO::Read - Using scale_num of %i, %u x %u", m_cinfo.scale_num, m_width, m_height);
+    CLog::Log(LOGDEBUG, "JpegIO::Read - Using scale_num of %i, %u x %u", m_cinfo.scale_num, m_width,
+              m_height);
 
     return true;
   }
 }
 
-bool CJpegIO::Decode(const unsigned char *pixels, unsigned int pitch, unsigned int format)
+bool CJpegIO::Decode(const unsigned char* pixels, unsigned int pitch, unsigned int format)
 {
-  unsigned char *dst = (unsigned char*)pixels;
+  unsigned char* dst = (unsigned char*)pixels;
 
   struct my_error_mgr jerr;
   m_cinfo.err = tb_jpeg_std_error(&jerr.pub);
@@ -201,8 +207,8 @@ bool CJpegIO::Decode(const unsigned char *pixels, unsigned int pitch, unsigned i
       while (m_cinfo.output_scanline < m_height)
       {
         tb_jpeg_read_scanlines(&m_cinfo, &row, 1);
-        unsigned char *src2 = row;
-        unsigned char *dst2 = dst;
+        unsigned char* src2 = row;
+        unsigned char* dst2 = dst;
         for (unsigned int x = 0; x < m_width; x++, src2 += 3)
         {
           *dst2++ = src2[2];
@@ -226,7 +232,10 @@ bool CJpegIO::Decode(const unsigned char *pixels, unsigned int pitch, unsigned i
   return true;
 }
 
-bool CJpegIO::CreateThumbnail(const CStdString& sourceFile, const CStdString& destFile, int minx, int miny)
+bool CJpegIO::CreateThumbnail(const CStdString& sourceFile,
+                              const CStdString& destFile,
+                              int minx,
+                              int miny)
 {
   //Copy sourceFile to buffer, pass to CreateThumbnailFromMemory for decode+re-encode
   if (!Open(sourceFile, minx, miny, false))
@@ -235,32 +244,41 @@ bool CJpegIO::CreateThumbnail(const CStdString& sourceFile, const CStdString& de
   return CreateThumbnailFromMemory(m_inputBuff, m_inputBuffSize, destFile, minx, miny);
 }
 
-bool CJpegIO::CreateThumbnailFromMemory(unsigned char* buffer, unsigned int bufSize, const CStdString& destFile, unsigned int minx, unsigned int miny)
+bool CJpegIO::CreateThumbnailFromMemory(unsigned char* buffer,
+                                        unsigned int bufSize,
+                                        const CStdString& destFile,
+                                        unsigned int minx,
+                                        unsigned int miny)
 {
   //Decode a jpeg residing in buffer, pass to CreateThumbnailFromSurface for re-encode
   unsigned int pitch = 0;
-  unsigned char *sourceBuf = NULL;
+  unsigned char* sourceBuf = NULL;
 
   if (!Read(buffer, bufSize, minx, miny))
     return false;
   pitch = Width() * 3;
-  sourceBuf = new unsigned char [Height() * pitch];
+  sourceBuf = new unsigned char[Height() * pitch];
 
-  if (!Decode(sourceBuf,pitch,XB_FMT_RGB8))
+  if (!Decode(sourceBuf, pitch, XB_FMT_RGB8))
   {
-    delete [] sourceBuf;
+    delete[] sourceBuf;
     return false;
   }
-  if (!CreateThumbnailFromSurface(sourceBuf, Width(), Height() , XB_FMT_RGB8, pitch, destFile))
+  if (!CreateThumbnailFromSurface(sourceBuf, Width(), Height(), XB_FMT_RGB8, pitch, destFile))
   {
-    delete [] sourceBuf;
+    delete[] sourceBuf;
     return false;
   }
-  delete [] sourceBuf;
+  delete[] sourceBuf;
   return true;
 }
 
-bool CJpegIO::CreateThumbnailFromSurface(unsigned char* buffer, unsigned int width, unsigned int height, unsigned int format, unsigned int pitch, const CStdString& destFile)
+bool CJpegIO::CreateThumbnailFromSurface(unsigned char* buffer,
+                                         unsigned int width,
+                                         unsigned int height,
+                                         unsigned int format,
+                                         unsigned int pitch,
+                                         const CStdString& destFile)
 {
   //Encode raw data from buffer, save to destFile
   struct jpeg_compress_struct cinfo;
@@ -269,7 +287,7 @@ bool CJpegIO::CreateThumbnailFromSurface(unsigned char* buffer, unsigned int wid
   long unsigned int outBufSize = width * height;
   unsigned char* result;
   unsigned char* src = buffer;
-  unsigned char* rgbbuf, *src2, *dst2;
+  unsigned char *rgbbuf, *src2, *dst2;
 
   if (buffer == NULL)
   {
@@ -277,21 +295,22 @@ bool CJpegIO::CreateThumbnailFromSurface(unsigned char* buffer, unsigned int wid
     return false;
   }
 
-  result = (unsigned char*) malloc(outBufSize); //Initial buffer. Grows as-needed.
+  result = (unsigned char*)malloc(outBufSize); //Initial buffer. Grows as-needed.
   if (result == NULL)
   {
-    CLog::Log(LOGERROR, "JpegIO::CreateThumbnailFromSurface error allocating memory for image buffer");
+    CLog::Log(LOGERROR,
+              "JpegIO::CreateThumbnailFromSurface error allocating memory for image buffer");
     return false;
   }
 
-  if(format == XB_FMT_RGB8)
+  if (format == XB_FMT_RGB8)
   {
     rgbbuf = buffer;
   }
-  else if(format == XB_FMT_A8R8G8B8)
+  else if (format == XB_FMT_A8R8G8B8)
   {
     // create a copy for bgra -> rgb.
-    rgbbuf = new unsigned char [(width * height * 3)];
+    rgbbuf = new unsigned char[(width * height * 3)];
     unsigned char* dst = rgbbuf;
     for (unsigned int y = 0; y < height; y++)
     {
@@ -321,9 +340,9 @@ bool CJpegIO::CreateThumbnailFromSurface(unsigned char* buffer, unsigned int wid
   if (setjmp(jerr.setjmp_buffer))
   {
     tb_jpeg_destroy_compress(&cinfo);
-    delete [] result;
-    if(format != XB_FMT_RGB8)
-      delete [] rgbbuf;
+    delete[] result;
+    if (format != XB_FMT_RGB8)
+      delete[] rgbbuf;
     return false;
   }
   else
@@ -347,11 +366,12 @@ bool CJpegIO::CreateThumbnailFromSurface(unsigned char* buffer, unsigned int wid
     tb_jpeg_finish_compress(&cinfo);
     tb_jpeg_destroy_compress(&cinfo);
   }
-  if(format != XB_FMT_RGB8)
-    delete [] rgbbuf;
+  if (format != XB_FMT_RGB8)
+    delete[] rgbbuf;
 
   XFILE::CFile file;
-  const bool ret = file.OpenForWrite(destFile, true) && file.Write(result, outBufSize) == outBufSize;
+  const bool ret =
+      file.OpenForWrite(destFile, true) && file.Write(result, outBufSize) == outBufSize;
   free(result);
 
   return ret;
@@ -361,10 +381,11 @@ bool CJpegIO::CreateThumbnailFromSurface(unsigned char* buffer, unsigned int wid
 void CJpegIO::jpeg_error_exit(j_common_ptr cinfo)
 {
   CStdString msg;
-  msg.Format("Error %i: %s",cinfo->err->msg_code, cinfo->err->jpeg_message_table[cinfo->err->msg_code]);
+  msg.Format("Error %i: %s", cinfo->err->msg_code,
+             cinfo->err->jpeg_message_table[cinfo->err->msg_code]);
   CLog::Log(LOGWARNING, "JpegIO: %s", msg.c_str());
 
-  my_error_mgr *myerr = (my_error_mgr*)cinfo->err;
+  my_error_mgr* myerr = (my_error_mgr*)cinfo->err;
   longjmp(myerr->setjmp_buffer, 1);
 }
 
@@ -436,11 +457,11 @@ unsigned int CJpegIO::GetExifOrientation(unsigned char* exif_data, unsigned int 
   {
     numberOfTags = exif_data[offset];
     numberOfTags <<= 8;
-    numberOfTags += exif_data[offset+1];
+    numberOfTags += exif_data[offset + 1];
   }
   else
   {
-    numberOfTags = exif_data[offset+1];
+    numberOfTags = exif_data[offset + 1];
     numberOfTags <<= 8;
     numberOfTags += exif_data[offset];
   }
@@ -450,7 +471,7 @@ unsigned int CJpegIO::GetExifOrientation(unsigned char* exif_data, unsigned int 
   offset += 2;
 
   // Search for Orientation Tag in IFD0 - hey almost there! :D
-  while(1)//hopefully this jpeg has correct exif data...
+  while (1) //hopefully this jpeg has correct exif data...
   {
     if (offset > exif_data_size - 12)
       return 0; // check end of data segment
@@ -460,11 +481,11 @@ unsigned int CJpegIO::GetExifOrientation(unsigned char* exif_data, unsigned int 
     {
       tagNumber = exif_data[offset];
       tagNumber <<= 8;
-      tagNumber += exif_data[offset+1];
+      tagNumber += exif_data[offset + 1];
     }
     else
     {
-      tagNumber = exif_data[offset+1];
+      tagNumber = exif_data[offset + 1];
       tagNumber <<= 8;
       tagNumber += exif_data[offset];
     }
@@ -472,23 +493,23 @@ unsigned int CJpegIO::GetExifOrientation(unsigned char* exif_data, unsigned int 
     if (tagNumber == EXIF_TAG_ORIENTATION)
       break; //found orientation tag
 
-    if ( --numberOfTags == 0)
-      return 0;//no orientation found
-    offset += 12;//jump to next tag
+    if (--numberOfTags == 0)
+      return 0; //no orientation found
+    offset += 12; //jump to next tag
   }
 
   // Get the Orientation value
   if (isMotorola)
   {
-    if (exif_data[offset+8] != 0)
+    if (exif_data[offset + 8] != 0)
       return 0;
-    orientation = exif_data[offset+9];
+    orientation = exif_data[offset + 9];
   }
   else
   {
-    if (exif_data[offset+9] != 0)
+    if (exif_data[offset + 9] != 0)
       return 0;
-    orientation = exif_data[offset+8];
+    orientation = exif_data[offset + 8];
   }
   if (orientation > 8)
   {
@@ -496,5 +517,5 @@ unsigned int CJpegIO::GetExifOrientation(unsigned char* exif_data, unsigned int 
     return 0;
   }
 
-  return orientation;//done
+  return orientation; //done
 }

@@ -29,25 +29,28 @@ namespace ADDON
 class CLanguageResource : public CResource
 {
 public:
-  static boost::movelib::unique_ptr<CLanguageResource> FromExtension(AddonProps props, const cp_extension_t* ext);
+  static boost::movelib::unique_ptr<CLanguageResource> FromExtension(AddonProps props,
+                                                                     const cp_extension_t* ext);
 
-  explicit CLanguageResource(AddonProps props) : CResource(boost::move(props)), m_forceUnicodeFont(false) {};
+  explicit CLanguageResource(AddonProps props)
+    : CResource(boost::move(props)),
+      m_forceUnicodeFont(false) {};
 
   CLanguageResource(AddonProps props,
-      const CLocale& locale,
-      const std::string& charsetGui,
-      bool forceUnicodeFont,
-      const std::string& charsetSubtitle,
-      const std::string& dvdLanguageMenu,
-      const std::string& dvdLanguageAudio,
-      const std::string& dvdLanguageSubtitle,
-      const std::set<std::string>& sortTokens);
+                    const CLocale& locale,
+                    const std::string& charsetGui,
+                    bool forceUnicodeFont,
+                    const std::string& charsetSubtitle,
+                    const std::string& dvdLanguageMenu,
+                    const std::string& dvdLanguageAudio,
+                    const std::string& dvdLanguageSubtitle,
+                    const std::set<std::string>& sortTokens);
 
   virtual bool IsInUse() const;
 
   virtual void OnPostInstall(bool update, bool modal);
 
-  virtual bool IsAllowed(const std::string &file) const;
+  virtual bool IsAllowed(const std::string& file) const;
 
   const CLocale& GetLocale() const { return m_locale; }
 
@@ -63,8 +66,10 @@ public:
 
   static std::string GetAddonId(const std::string& locale);
 
-  static bool FindLegacyLanguage(const std::string &locale, std::string &legacyLanguage);
-  static bool FindLanguageAddonByName(const std::string &legacyLanguage, std::string &addonId, const VECADDONS &languageAddons = VECADDONS());
+  static bool FindLegacyLanguage(const std::string& locale, std::string& legacyLanguage);
+  static bool FindLanguageAddonByName(const std::string& legacyLanguage,
+                                      std::string& addonId,
+                                      const VECADDONS& languageAddons = VECADDONS());
 
 private:
   CLocale m_locale;
@@ -80,4 +85,4 @@ private:
   std::set<std::string> m_sortTokens;
 };
 
-}
+} // namespace ADDON

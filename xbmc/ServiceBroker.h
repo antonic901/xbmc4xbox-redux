@@ -20,19 +20,20 @@
 
 #pragma once
 
-namespace ADDON {
+namespace ADDON
+{
 class CAddonMgr;
 class CBinaryAddonCache;
-}
+} // namespace ADDON
 
 namespace ANNOUNCEMENT
 {
-  class CAnnouncementManager;
+class CAnnouncementManager;
 }
 
 namespace PLAYLIST
 {
-  class CPlayListPlayer;
+class CPlayListPlayer;
 }
 
 class CContextMenuManager;
@@ -41,9 +42,9 @@ class XBPython;
 class CServiceBroker
 {
 public:
-  static ADDON::CAddonMgr &GetAddonMgr();
-  static ANNOUNCEMENT::CAnnouncementManager &GetAnnouncementManager();
-  static XBPython &GetXBPython();
+  static ADDON::CAddonMgr& GetAddonMgr();
+  static ANNOUNCEMENT::CAnnouncementManager& GetAnnouncementManager();
+  static XBPython& GetXBPython();
   static CContextMenuManager& GetContextMenuManager();
   static PLAYLIST::CPlayListPlayer& GetPlaylistPlayer();
 };

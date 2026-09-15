@@ -47,7 +47,8 @@ bool CMemUnitFile::Open(const CURL& url)
   Close();
 
   m_fileSystem = GetFileSystem(url);
-  if (!m_fileSystem) return false;
+  if (!m_fileSystem)
+    return false;
 
   return m_fileSystem->Open(GetPath(url));
 }
@@ -57,13 +58,14 @@ bool CMemUnitFile::OpenForWrite(const CURL& url, bool bOverWrite)
   Close();
 
   m_fileSystem = GetFileSystem(url);
-  if (!m_fileSystem) return false;
+  if (!m_fileSystem)
+    return false;
 
   return m_fileSystem->OpenForWrite(GetPath(url), bOverWrite);
 }
 
 //*********************************************************************************************
-ssize_t CMemUnitFile::Read(void *lpBuf, size_t uiBufSize)
+ssize_t CMemUnitFile::Read(void* lpBuf, size_t uiBufSize)
 {
   if (!m_fileSystem)
     return -1;
@@ -76,7 +78,8 @@ ssize_t CMemUnitFile::Read(void *lpBuf, size_t uiBufSize)
 
 ssize_t CMemUnitFile::Write(const void* lpBuf, size_t uiBufSize)
 {
-  if (!m_fileSystem) return 0;
+  if (!m_fileSystem)
+    return 0;
   return m_fileSystem->Write(lpBuf, uiBufSize);
 }
 
@@ -94,7 +97,8 @@ void CMemUnitFile::Close()
 //*********************************************************************************************
 int64_t CMemUnitFile::Seek(int64_t iFilePosition, int iWhence)
 {
-  if (!m_fileSystem) return -1;
+  if (!m_fileSystem)
+    return -1;
   int64_t position = iFilePosition;
   if (iWhence == SEEK_CUR)
     position += m_fileSystem->GetPosition();
@@ -103,22 +107,26 @@ int64_t CMemUnitFile::Seek(int64_t iFilePosition, int iWhence)
   else if (iWhence != SEEK_SET)
     return -1;
 
-  if (position < 0) position = 0;
-  if (position > m_fileSystem->GetLength()) position = m_fileSystem->GetLength();
+  if (position < 0)
+    position = 0;
+  if (position > m_fileSystem->GetLength())
+    position = m_fileSystem->GetLength();
   return m_fileSystem->Seek(position);
 }
 
 //*********************************************************************************************
 int64_t CMemUnitFile::GetLength()
 {
-  if (!m_fileSystem) return -1;
+  if (!m_fileSystem)
+    return -1;
   return m_fileSystem->GetLength();
 }
 
 //*********************************************************************************************
 int64_t CMemUnitFile::GetPosition()
 {
-  if (!m_fileSystem) return -1;
+  if (!m_fileSystem)
+    return -1;
   return m_fileSystem->GetPosition();
 }
 
@@ -144,7 +152,7 @@ int CMemUnitFile::Stat(const CURL& url, struct __stat64* buffer)
 
 bool CMemUnitFile::Delete(const CURL& url)
 {
-  IFileSystem *fileSystem = GetFileSystem(url);
+  IFileSystem* fileSystem = GetFileSystem(url);
   if (fileSystem)
     return fileSystem->Delete(GetPath(url));
   return false;
@@ -152,13 +160,13 @@ bool CMemUnitFile::Delete(const CURL& url)
 
 bool CMemUnitFile::Rename(const CURL& url, const CURL& urlnew)
 {
-  IFileSystem *fileSystem = GetFileSystem(url);
+  IFileSystem* fileSystem = GetFileSystem(url);
   if (fileSystem)
     return fileSystem->Rename(GetPath(url), GetPath(urlnew));
   return false;
 }
 
-IFileSystem *CMemUnitFile::GetFileSystem(const CURL& url)
+IFileSystem* CMemUnitFile::GetFileSystem(const CURL& url)
 {
   unsigned char unit = url.GetProtocol()[3] - '0';
   return g_memoryUnitManager.GetFileSystem(unit);

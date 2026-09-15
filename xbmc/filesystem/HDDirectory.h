@@ -13,18 +13,18 @@
 namespace XFILE
 {
 
-  class CHDDirectory : public IDirectory
-  {
-  public:
-    CHDDirectory(void);
-    virtual ~CHDDirectory(void);
-    virtual bool GetDirectory(const CURL& url, CFileItemList &items);
-    virtual bool Create(const CURL& url);
-    virtual bool Exists(const CURL& url);
-    virtual bool Remove(const CURL& url);
-    virtual bool RemoveRecursive(const CURL& url);
+class CHDDirectory : public IDirectory
+{
+public:
+  CHDDirectory(void);
+  virtual ~CHDDirectory(void);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool Create(const CURL& url);
+  virtual bool Exists(const CURL& url);
+  virtual bool Remove(const CURL& url);
+  virtual bool RemoveRecursive(const CURL& url);
 
-  private:
-    bool Create(std::string path) const;
-  };
-}
+private:
+  bool Create(std::string path) const;
+};
+} // namespace XFILE

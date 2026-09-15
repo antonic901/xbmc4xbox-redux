@@ -34,64 +34,68 @@ using namespace ADDON;
 #define LABEL_ROW2 11
 #define LABEL_ROW3 12
 
-CGUIVisualisationControl::CGUIVisualisationControl(int parentID, int controlID, float posX, float posY, float width, float height)
-    : CGUIRenderingControl(parentID, controlID, posX, posY, width, height), m_bAttemptedLoad(false)
+CGUIVisualisationControl::CGUIVisualisationControl(
+    int parentID, int controlID, float posX, float posY, float width, float height)
+  : CGUIRenderingControl(parentID, controlID, posX, posY, width, height),
+    m_bAttemptedLoad(false)
 {
   ControlType = GUICONTROL_VISUALISATION;
 }
 
-CGUIVisualisationControl::CGUIVisualisationControl(const CGUIVisualisationControl &from)
-  : CGUIRenderingControl(from), m_bAttemptedLoad(false), m_addon()
+CGUIVisualisationControl::CGUIVisualisationControl(const CGUIVisualisationControl& from)
+  : CGUIRenderingControl(from),
+    m_bAttemptedLoad(false),
+    m_addon()
 {
   ControlType = GUICONTROL_VISUALISATION;
 }
 
-bool CGUIVisualisationControl::OnMessage(CGUIMessage &message)
+bool CGUIVisualisationControl::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
   {
-  case GUI_MSG_GET_VISUALISATION:
-    message.SetPointer(m_addon.get());
-    return m_addon != NULL;
-  case GUI_MSG_VISUALISATION_RELOAD:
-    FreeResources(true);
-    return true;
-  case GUI_MSG_PLAYBACK_STARTED:
-    if (m_addon)
-    {
-      m_addon->UpdateTrack();
+    case GUI_MSG_GET_VISUALISATION:
+      message.SetPointer(m_addon.get());
+      return m_addon != NULL;
+    case GUI_MSG_VISUALISATION_RELOAD:
+      FreeResources(true);
       return true;
-    }
-    break;
+    case GUI_MSG_PLAYBACK_STARTED:
+      if (m_addon)
+      {
+        m_addon->UpdateTrack();
+        return true;
+      }
+      break;
   }
   return CGUIRenderingControl::OnMessage(message);
 }
 
-bool CGUIVisualisationControl::OnAction(const CAction &action)
+bool CGUIVisualisationControl::OnAction(const CAction& action)
 {
   if (!m_addon)
     return false;
 
   switch (action.GetID())
   {
-  case ACTION_VIS_PRESET_NEXT:
-    return m_addon->OnAction(VIS_ACTION_NEXT_PRESET);
-  case ACTION_VIS_PRESET_PREV:
-    return m_addon->OnAction(VIS_ACTION_PREV_PRESET);
-  case ACTION_VIS_PRESET_RANDOM:
-    return m_addon->OnAction(VIS_ACTION_RANDOM_PRESET);
-  case ACTION_VIS_RATE_PRESET_PLUS:
-    return m_addon->OnAction(VIS_ACTION_RATE_PRESET_PLUS);
-  case ACTION_VIS_RATE_PRESET_MINUS:
-    return m_addon->OnAction(VIS_ACTION_RATE_PRESET_MINUS);
-  case ACTION_VIS_PRESET_LOCK:
-    return m_addon->OnAction(VIS_ACTION_LOCK_PRESET);
-  default:
-    return CGUIRenderingControl::OnAction(action);
+    case ACTION_VIS_PRESET_NEXT:
+      return m_addon->OnAction(VIS_ACTION_NEXT_PRESET);
+    case ACTION_VIS_PRESET_PREV:
+      return m_addon->OnAction(VIS_ACTION_PREV_PRESET);
+    case ACTION_VIS_PRESET_RANDOM:
+      return m_addon->OnAction(VIS_ACTION_RANDOM_PRESET);
+    case ACTION_VIS_RATE_PRESET_PLUS:
+      return m_addon->OnAction(VIS_ACTION_RATE_PRESET_PLUS);
+    case ACTION_VIS_RATE_PRESET_MINUS:
+      return m_addon->OnAction(VIS_ACTION_RATE_PRESET_MINUS);
+    case ACTION_VIS_PRESET_LOCK:
+      return m_addon->OnAction(VIS_ACTION_LOCK_PRESET);
+    default:
+      return CGUIRenderingControl::OnAction(action);
   }
 }
 
-void CGUIVisualisationControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIVisualisationControl::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   if (g_application.m_pPlayer->IsPlayingAudio())
   {
@@ -129,4 +133,3 @@ void CGUIVisualisationControl::FreeResources(bool immediately)
   m_addon.reset();
   CLog::Log(LOGDEBUG, "FreeVisualisation() done");
 }
-

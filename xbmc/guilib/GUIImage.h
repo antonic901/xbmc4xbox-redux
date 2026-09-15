@@ -44,7 +44,7 @@ public:
   class CFadingTexture
   {
   public:
-    CFadingTexture(const CGUITexture &texture, unsigned int fadeTime)
+    CFadingTexture(const CGUITexture& texture, unsigned int fadeTime)
     {
       // create a copy of our texture, and allocate resources
       m_texture = new CGUITexture(texture);
@@ -58,24 +58,30 @@ public:
       delete m_texture;
     };
 
-    CGUITexture *m_texture;  ///< texture to fade out
+    CGUITexture* m_texture; ///< texture to fade out
     unsigned int m_fadeTime; ///< time to fade out (ms)
-    bool         m_fading;   ///< whether we're fading out
+    bool m_fading; ///< whether we're fading out
 
   private:
     CFadingTexture(const CFadingTexture&);
     CFadingTexture& operator=(const CFadingTexture&);
   };
 
-  CGUIImage(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& texture);
-  CGUIImage(const CGUIImage &left);
+  CGUIImage(int parentID,
+            int controlID,
+            float posX,
+            float posY,
+            float width,
+            float height,
+            const CTextureInfo& texture);
+  CGUIImage(const CGUIImage& left);
   virtual ~CGUIImage(void);
-  virtual CGUIImage *Clone() const { return new CGUIImage(*this); };
+  virtual CGUIImage* Clone() const { return new CGUIImage(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual void UpdateVisibility(const CGUIListItem *item = NULL);
-  virtual bool OnAction(const CAction &action) ;
+  virtual void UpdateVisibility(const CGUIListItem* item = NULL);
+  virtual bool OnAction(const CAction& action);
   virtual bool OnMessage(CGUIMessage& message);
 #ifdef HAS_XBOX_D3D
   virtual void PreAllocResources();
@@ -86,11 +92,13 @@ public:
   virtual bool IsDynamicallyAllocated() { return m_bDynamicResourceAlloc; };
   virtual void SetInvalid();
   virtual bool CanFocus() const;
-  virtual void UpdateInfo(const CGUIListItem *item = NULL);
+  virtual void UpdateInfo(const CGUIListItem* item = NULL);
 
-  virtual void SetInfo(const CGUIInfoLabel &info);
-  virtual void SetFileName(const std::string& strFileName, bool setConstant = false, const bool useCache = true);
-  virtual void SetAspectRatio(const CAspectRatio &aspect);
+  virtual void SetInfo(const CGUIInfoLabel& info);
+  virtual void SetFileName(const std::string& strFileName,
+                           bool setConstant = false,
+                           const bool useCache = true);
+  virtual void SetAspectRatio(const CAspectRatio& aspect);
   virtual void SetWidth(float width);
   virtual void SetHeight(float height);
   virtual void SetPosition(float posX, float posY);
@@ -111,7 +119,7 @@ protected:
   virtual void FreeTextures(bool immediately = false);
   void FreeResourcesButNotAnims();
   unsigned char GetFadeLevel(unsigned int time) const;
-  bool ProcessFading(CFadingTexture *texture, unsigned int frameTime, unsigned int currentTime);
+  bool ProcessFading(CFadingTexture* texture, unsigned int frameTime, unsigned int currentTime);
 
   bool m_bDynamicResourceAlloc;
 
@@ -120,7 +128,7 @@ protected:
   CGUIInfoLabel m_info;
 
   CGUITexture m_texture;
-  std::vector<CFadingTexture *> m_fadingTextures;
+  std::vector<CFadingTexture*> m_fadingTextures;
   std::string m_currentTexture;
   std::string m_currentFallback;
 

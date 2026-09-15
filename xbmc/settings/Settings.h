@@ -84,7 +84,7 @@ public:
    \param file Path to an XML file containing setting values
    \return True if the setting values were successfully loaded, false otherwise
    */
-  bool Load(const std::string &file);
+  bool Load(const std::string& file);
   /*!
    \brief Loads setting values from the given XML element.
 
@@ -92,7 +92,7 @@ public:
    \param hide Whether to hide the loaded settings or not
    \return True if the setting values were successfully loaded, false otherwise
    */
-  bool Load(const TiXmlElement *root, bool hide = false);
+  bool Load(const TiXmlElement* root, bool hide = false);
   /*!
    \brief Tells the settings system that all setting values
    have been loaded.
@@ -113,7 +113,7 @@ public:
    \param file Path to an XML file
    \return True if the setting values were successfully saved, false otherwise
    */
-  bool Save(const std::string &file);
+  bool Save(const std::string& file);
   /*!
    \brief Unloads the previously loaded setting values.
 
@@ -135,13 +135,13 @@ public:
    \param callback ISettingCallback implementation
    \param settingList List of setting identifiers for which the given callback shall be triggered
    */
-  void RegisterCallback(ISettingCallback *callback, const std::set<std::string> &settingList);
+  void RegisterCallback(ISettingCallback* callback, const std::set<std::string>& settingList);
   /*!
    \brief Unregisters the given ISettingCallback implementation.
 
    \param callback ISettingCallback implementation
    */
-  void UnregisterCallback(ISettingCallback *callback);
+  void UnregisterCallback(ISettingCallback* callback);
 
   /*!
    \brief Gets the setting with the given identifier.
@@ -149,7 +149,7 @@ public:
    \param id Setting identifier
    \return Setting object with the given identifier or NULL if the identifier is unknown
    */
-  CSetting* GetSetting(const std::string &id) const;
+  CSetting* GetSetting(const std::string& id) const;
   /*!
    \brief Gets the full list of setting sections.
 
@@ -162,7 +162,7 @@ public:
    \param section Setting section identifier
    \return Setting section with the given identifier or NULL if the identifier is unknown
    */
-  CSettingSection* GetSection(const std::string &section) const;
+  CSettingSection* GetSection(const std::string& section) const;
 
   /*!
    \brief Gets the boolean value of the setting with the given identifier.
@@ -170,35 +170,35 @@ public:
    \param id Setting identifier
    \return Boolean value of the setting with the given identifier
    */
-  bool GetBool(const std::string &id) const;
+  bool GetBool(const std::string& id) const;
   /*!
    \brief Gets the integer value of the setting with the given identifier.
 
    \param id Setting identifier
    \return Integer value of the setting with the given identifier
    */
-  int GetInt(const std::string &id) const;
+  int GetInt(const std::string& id) const;
   /*!
    \brief Gets the real number value of the setting with the given identifier.
 
    \param id Setting identifier
    \return Real number value of the setting with the given identifier
    */
-  double GetNumber(const std::string &id) const;
+  double GetNumber(const std::string& id) const;
   /*!
    \brief Gets the string value of the setting with the given identifier.
 
    \param id Setting identifier
    \return String value of the setting with the given identifier
    */
-  std::string GetString(const std::string &id) const;
+  std::string GetString(const std::string& id) const;
   /*!
    \brief Gets the values of the list setting with the given identifier.
 
    \param id Setting identifier
    \return List of values of the setting with the given identifier
    */
-  std::vector<CVariant> GetList(const std::string &id) const;
+  std::vector<CVariant> GetList(const std::string& id) const;
 
   /*!
    \brief Sets the boolean value of the setting with the given identifier.
@@ -207,14 +207,14 @@ public:
    \param value Boolean value to set
    \return True if setting the value was successful, false otherwise
    */
-  bool SetBool(const std::string &id, bool value);
+  bool SetBool(const std::string& id, bool value);
   /*!
    \brief Toggles the boolean value of the setting with the given identifier.
 
    \param id Setting identifier
    \return True if toggling the boolean value was successful, false otherwise
    */
-  bool ToggleBool(const std::string &id);
+  bool ToggleBool(const std::string& id);
   /*!
    \brief Sets the integer value of the setting with the given identifier.
 
@@ -222,7 +222,7 @@ public:
    \param value Integer value to set
    \return True if setting the value was successful, false otherwise
    */
-  bool SetInt(const std::string &id, int value);
+  bool SetInt(const std::string& id, int value);
   /*!
    \brief Sets the real number value of the setting with the given identifier.
 
@@ -230,7 +230,7 @@ public:
    \param value Real number value to set
    \return True if setting the value was successful, false otherwise
    */
-  bool SetNumber(const std::string &id, double value);
+  bool SetNumber(const std::string& id, double value);
   /*!
    \brief Sets the string value of the setting with the given identifier.
 
@@ -238,7 +238,7 @@ public:
    \param value String value to set
    \return True if setting the value was successful, false otherwise
    */
-  bool SetString(const std::string &id, const std::string &value);
+  bool SetString(const std::string& id, const std::string& value);
   /*!
    \brief Sets the values of the list setting with the given identifier.
 
@@ -246,7 +246,7 @@ public:
    \param value Values to set
    \return True if setting the values was successful, false otherwise
    */
-  bool SetList(const std::string &id, const std::vector<CVariant> &value);
+  bool SetList(const std::string& id, const std::vector<CVariant>& value);
 
   /*!
    \brief Loads the setting being represented by the given XML node with the
@@ -256,13 +256,13 @@ public:
    \param settingId Setting identifier
    \return True if the setting was successfully loaded from the given XML node, false otherwise
    */
-  bool LoadSetting(const TiXmlNode *node, const std::string &settingId);
+  bool LoadSetting(const TiXmlNode* node, const std::string& settingId);
 
 #ifdef _XBOX
   bool LoadAvpackXML();
   bool SaveAvpackXML() const;
   bool SaveNewAvpackXML() const;
-  bool SaveAvpackSettings(TiXmlNode *io_pRoot) const;
+  bool SaveAvpackSettings(TiXmlNode* io_pRoot) const;
 
   std::string GetFFmpegDllFolder() const;
   std::string GetPlayerName(const int& player) const;
@@ -274,7 +274,7 @@ private:
   CSettings(const CSettings&);
   CSettings const& operator=(CSettings const&);
 
-  bool Initialize(const std::string &file);
+  bool Initialize(const std::string& file);
   bool InitializeDefinitions();
   void InitializeSettingTypes();
   void InitializeControls();
@@ -288,6 +288,6 @@ private:
   bool Reset();
 
   bool m_initialized;
-  CSettingsManager *m_settingsManager;
+  CSettingsManager* m_settingsManager;
   CCriticalSection m_critical;
 };

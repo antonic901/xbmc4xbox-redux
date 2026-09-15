@@ -21,7 +21,7 @@
  *
  */
 
-#include "threads/Thread.h" 
+#include "threads/Thread.h"
 ///////////////////////////////// Classes //////////////////////////////
 
 class CIdleThread : public CThread
@@ -34,6 +34,5 @@ public:
   virtual void OnExit();
   virtual void Process();
 };
-
 
 #endif //__IDLE_H__

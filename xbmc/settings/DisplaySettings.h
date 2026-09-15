@@ -31,18 +31,19 @@
 
 class TiXmlNode;
 
-class CDisplaySettings : public ISettingCallback, public ISubSettings,
-                         public Observable
+class CDisplaySettings : public ISettingCallback, public ISubSettings, public Observable
 {
 public:
   static CDisplaySettings& Get();
 
-  virtual bool Load(const TiXmlNode *settings);
-  virtual bool Save(TiXmlNode *settings) const;
+  virtual bool Load(const TiXmlNode* settings);
+  virtual bool Save(TiXmlNode* settings) const;
   virtual void Clear();
 
-  virtual bool OnSettingChanging(const CSetting *setting);
-  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
+  virtual bool OnSettingChanging(const CSetting* setting);
+  virtual bool OnSettingUpdate(CSetting*& setting,
+                               const char* oldSettingId,
+                               const TiXmlNode* oldSettingNode);
 
   /*!
    \brief Returns the currently active resolution
@@ -67,9 +68,12 @@ public:
   RESOLUTION_INFO& GetResolutionInfo(size_t index);
   RESOLUTION_INFO& GetResolutionInfo(RESOLUTION resolution);
   size_t ResolutionInfoSize() const { return m_resolutions.size(); }
-  void AddResolutionInfo(const RESOLUTION_INFO &resolution);
+  void AddResolutionInfo(const RESOLUTION_INFO& resolution);
 
-  const RESOLUTION_INFO& GetCurrentResolutionInfo() const { return GetResolutionInfo(m_currentResolution); }
+  const RESOLUTION_INFO& GetCurrentResolutionInfo() const
+  {
+    return GetResolutionInfo(m_currentResolution);
+  }
   RESOLUTION_INFO& GetCurrentResolutionInfo() { return GetResolutionInfo(m_currentResolution); }
 
   void ApplyCalibrations();
@@ -80,8 +84,15 @@ public:
   float GetPixelRatio() const { return m_pixelRatio; }
   void SetPixelRatio(float pixelRatio) { m_pixelRatio = pixelRatio; }
 
-  static void SettingOptionsResolutionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
-  static void SettingOptionsFramerateconversionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+  static void SettingOptionsResolutionsFiller(const CSetting* setting,
+                                              std::vector<std::pair<std::string, int> >& list,
+                                              int& current,
+                                              void* data);
+  static void SettingOptionsFramerateconversionsFiller(
+      const CSetting* setting,
+      std::vector<std::pair<std::string, int> >& list,
+      int& current,
+      void* data);
 
 protected:
   CDisplaySettings();
@@ -97,8 +108,8 @@ private:
   ResolutionInfos m_resolutions;
   ResolutionInfos m_calibrations;
 
-  float m_zoomAmount;         // current zoom amount
-  float m_pixelRatio;         // current pixel ratio
+  float m_zoomAmount; // current zoom amount
+  float m_pixelRatio; // current pixel ratio
 
   /*!
    \brief A set of pairs consisting of a setting identifier
@@ -107,6 +118,6 @@ private:
    OnSettingChanging() logic must be skipped once. If it
    is "false" only showing the GUI dialog must be skipped.
    */
-  std::set< std::pair<std::string, bool> > m_ignoreSettingChanging;
+  std::set<std::pair<std::string, bool> > m_ignoreSettingChanging;
   CCriticalSection m_critical;
 };

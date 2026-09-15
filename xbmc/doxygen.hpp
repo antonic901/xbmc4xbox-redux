@@ -62,7 +62,6 @@
 	XBMC Forum - http://xbmc.org/forum/index.php \n
   */
 
-
 ///////////////////////////////////////
 //
 // xbmc project
@@ -80,7 +79,6 @@
 	
 	Elements used in my music
 */
-
 
 //////////////////////////////////////
 //

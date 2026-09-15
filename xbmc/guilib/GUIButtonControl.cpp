@@ -22,12 +22,26 @@
 #include "GUIFontManager.h"
 #include "guilib/Key.h"
 
-CGUIButtonControl::CGUIButtonControl(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus, const CLabelInfo& labelInfo, bool wrapMultiline)
-    : CGUIControl(parentID, controlID, posX, posY, width, height)
-    , m_imgFocus(posX, posY, width, height, textureFocus)
-    , m_imgNoFocus(posX, posY, width, height, textureNoFocus)
-    , m_label(posX, posY, width, height, labelInfo, wrapMultiline ? CGUILabel::OVER_FLOW_WRAP : CGUILabel::OVER_FLOW_TRUNCATE)
-    , m_label2(posX, posY, width, height, labelInfo)
+CGUIButtonControl::CGUIButtonControl(int parentID,
+                                     int controlID,
+                                     float posX,
+                                     float posY,
+                                     float width,
+                                     float height,
+                                     const CTextureInfo& textureFocus,
+                                     const CTextureInfo& textureNoFocus,
+                                     const CLabelInfo& labelInfo,
+                                     bool wrapMultiline)
+  : CGUIControl(parentID, controlID, posX, posY, width, height),
+    m_imgFocus(posX, posY, width, height, textureFocus),
+    m_imgNoFocus(posX, posY, width, height, textureNoFocus),
+    m_label(posX,
+            posY,
+            width,
+            height,
+            labelInfo,
+            wrapMultiline ? CGUILabel::OVER_FLOW_WRAP : CGUILabel::OVER_FLOW_TRUNCATE),
+    m_label2(posX, posY, width, height, labelInfo)
 {
   m_bSelected = false;
   m_alpha = 255;
@@ -41,7 +55,7 @@ CGUIButtonControl::~CGUIButtonControl(void)
 {
 }
 
-void CGUIButtonControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIButtonControl::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   ProcessText(currentTime);
   if (m_bInvalidated)
@@ -110,7 +124,7 @@ CGUILabel::COLOR CGUIButtonControl::GetTextColor() const
   return CGUILabel::COLOR_TEXT;
 }
 
-#define CLAMP(x, low, high)  (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
+#define CLAMP(x, low, high) (((x) > (high)) ? (high) : (((x) < (low)) ? (low) : (x)))
 float CGUIButtonControl::GetWidth() const
 {
   if (m_minWidth && m_minWidth != m_width)
@@ -161,13 +175,14 @@ void CGUIButtonControl::ProcessText(unsigned int currentTime)
   // render the second label if it exists
   if (!m_info2.GetLabel(m_parentID).empty())
   {
-    changed |= m_label2.SetAlign(XBFONT_RIGHT | (m_label.GetLabelInfo().align & XBFONT_CENTER_Y) | XBFONT_TRUNCATED);
+    changed |= m_label2.SetAlign(XBFONT_RIGHT | (m_label.GetLabelInfo().align & XBFONT_CENTER_Y) |
+                                 XBFONT_TRUNCATED);
     changed |= m_label2.SetScrolling(HasFocus());
 
     // If overlapping was corrected - compare render rects to determine
     // if they changed since last frame.
     if (CGUILabel::CheckAndCorrectOverlap(m_label, m_label2))
-      changed |= (m_label.GetRenderRect()  != labelRenderRect ||
+      changed |= (m_label.GetRenderRect() != labelRenderRect ||
                   m_label2.GetRenderRect() != label2RenderRect);
 
     changed |= m_label2.SetColor(GetTextColor());
@@ -179,7 +194,7 @@ void CGUIButtonControl::ProcessText(unsigned int currentTime)
     MarkDirtyRegion();
 }
 
-bool CGUIButtonControl::OnAction(const CAction &action)
+bool CGUIButtonControl::OnAction(const CAction& action)
 {
   if (action.GetID() == ACTION_SELECT_ITEM)
   {
@@ -269,7 +284,7 @@ void CGUIButtonControl::SetInvalid()
   m_imgNoFocus.SetInvalid();
 }
 
-void CGUIButtonControl::SetLabel(const std::string &label)
+void CGUIButtonControl::SetLabel(const std::string& label)
 { // NOTE: No fallback for buttons at this point
   if (m_info.GetLabel(GetParentID(), false) != label)
   {
@@ -278,7 +293,7 @@ void CGUIButtonControl::SetLabel(const std::string &label)
   }
 }
 
-void CGUIButtonControl::SetLabel2(const std::string &label2)
+void CGUIButtonControl::SetLabel2(const std::string& label2)
 { // NOTE: No fallback for buttons at this point
   if (m_info2.GetLabel(GetParentID(), false) != label2)
   {
@@ -332,7 +347,11 @@ std::string CGUIButtonControl::GetLabel2() const
   return strLabel;
 }
 
-void CGUIButtonControl::PythonSetLabel(const std::string &strFont, const std::string &strText, color_t textColor, color_t shadowColor, color_t focusedColor)
+void CGUIButtonControl::PythonSetLabel(const std::string& strFont,
+                                       const std::string& strText,
+                                       color_t textColor,
+                                       color_t shadowColor,
+                                       color_t focusedColor)
 {
   m_label.GetLabelInfo().font = g_fontManager.GetFont(strFont);
   m_label.GetLabelInfo().textColor = textColor;

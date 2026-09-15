@@ -30,11 +30,11 @@ namespace ADDON
 class CResource : public CAddon
 {
 public:
-  virtual ~CResource() { }
+  virtual ~CResource() {}
 
-  virtual bool IsAllowed(const std::string &file) const = 0;
+  virtual bool IsAllowed(const std::string& file) const = 0;
 
-  virtual std::string GetFullPath(const std::string &filePath) const
+  virtual std::string GetFullPath(const std::string& filePath) const
   {
     return URIUtils::AddFileToFolder(GetResourcePath(), filePath);
   }
@@ -42,10 +42,7 @@ public:
 protected:
   explicit CResource(AddonProps props) : CAddon(boost::move(props)) {}
 
-  std::string GetResourcePath() const
-  {
-    return URIUtils::AddFileToFolder(Path(), "resources");
-  }
+  std::string GetResourcePath() const { return URIUtils::AddFileToFolder(Path(), "resources"); }
 };
 
-}
+} // namespace ADDON

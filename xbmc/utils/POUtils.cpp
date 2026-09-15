@@ -32,15 +32,18 @@ CPODocument::CPODocument()
   m_Entry.msgStrPlural.resize(1);
 }
 
-CPODocument::~CPODocument() {}
+CPODocument::~CPODocument()
+{
+}
 
-bool CPODocument::LoadFile(const std::string &pofilename)
+bool CPODocument::LoadFile(const std::string& pofilename)
 {
   XFILE::CFile file;
   XFILE::auto_buffer buf;
   if (file.LoadFile(pofilename, buf) < 18) // at least a size of a minimalistic header
   {
-    CLog::Log(LOGERROR, "%s: can't load file \"%s\" or file is too small", __FUNCTION__,  pofilename.c_str());
+    CLog::Log(LOGERROR, "%s: can't load file \"%s\" or file is too small", __FUNCTION__,
+              pofilename.c_str());
     return false;
   }
 
@@ -72,22 +75,22 @@ bool CPODocument::GetNextEntry()
     // if we don't find LFLF, we reached the end of the buffer and the last entry to check
     // we indicate this with setting m_nextEntryPos to the end of the buffer
     if ((m_nextEntryPos = m_strBuffer.find("\n\n", m_CursorPos)) == std::string::npos)
-      m_nextEntryPos = m_POfilelength-1;
+      m_nextEntryPos = m_POfilelength - 1;
 
     // now we read the actual entry into a temp string for further processing
-    m_Entry.Content.assign(m_strBuffer, m_CursorPos, m_nextEntryPos - m_CursorPos +1);
-    m_CursorPos = m_nextEntryPos+1; // jump cursor to the second LF character
+    m_Entry.Content.assign(m_strBuffer, m_CursorPos, m_nextEntryPos - m_CursorPos + 1);
+    m_CursorPos = m_nextEntryPos + 1; // jump cursor to the second LF character
 
-    if (FindLineStart ("\nmsgid ", m_Entry.msgID.Pos))
+    if (FindLineStart("\nmsgid ", m_Entry.msgID.Pos))
     {
-      if (FindLineStart ("\nmsgctxt \"#", m_Entry.xIDPos) && ParseNumID())
+      if (FindLineStart("\nmsgctxt \"#", m_Entry.xIDPos) && ParseNumID())
       {
         m_Entry.Type = ID_FOUND; // we found an entry with a valid numeric id
         return true;
       }
 
       size_t plurPos;
-      if (FindLineStart ("\nmsgid_plural ", plurPos))
+      if (FindLineStart("\nmsgid_plural ", plurPos))
       {
         m_Entry.Type = MSGID_PLURAL_FOUND; // we found a pluralized entry
         return true;
@@ -96,8 +99,7 @@ bool CPODocument::GetNextEntry()
       m_Entry.Type = MSGID_FOUND; // we found a normal entry, with no numeric id
       return true;
     }
-  }
-  while (m_nextEntryPos != m_POfilelength-1);
+  } while (m_nextEntryPos != m_POfilelength - 1);
   // we reached the end of buffer AND we have not found a valid entry
 
   return false;
@@ -117,7 +119,7 @@ void CPODocument::ParseEntry(bool bisSourceLang)
   if (m_Entry.Type != ID_FOUND)
   {
     GetString(m_Entry.msgID);
-    if (FindLineStart ("\nmsgctxt ", m_Entry.msgCtxt.Pos))
+    if (FindLineStart("\nmsgctxt ", m_Entry.msgCtxt.Pos))
       GetString(m_Entry.msgCtxt);
     else
       m_Entry.msgCtxt.Str.clear();
@@ -125,7 +127,7 @@ void CPODocument::ParseEntry(bool bisSourceLang)
 
   if (m_Entry.Type != MSGID_PLURAL_FOUND)
   {
-    if (FindLineStart ("\nmsgstr ", m_Entry.msgStr.Pos))
+    if (FindLineStart("\nmsgstr ", m_Entry.msgStr.Pos))
     {
       GetString(m_Entry.msgStr);
       GetString(m_Entry.msgID);
@@ -144,10 +146,10 @@ void CPODocument::ParseEntry(bool bisSourceLang)
   std::string strPattern = "\nmsgstr[0] ";
   CStrEntry strEntry;
 
-  for (int n=0; n<7 ; n++)
+  for (int n = 0; n < 7; n++)
   {
-    strPattern[8] = static_cast<char>(n+'0');
-    if (FindLineStart (strPattern, strEntry.Pos))
+    strPattern[8] = static_cast<char>(n + '0');
+    if (FindLineStart(strPattern, strEntry.Pos))
     {
       GetString(strEntry);
       if (strEntry.Str.empty())
@@ -160,8 +162,10 @@ void CPODocument::ParseEntry(bool bisSourceLang)
 
   if (m_Entry.msgStrPlural.size() == 0)
   {
-    CLog::Log(LOGERROR, "POParser: msgstr[] plural lines have zero valid strings. "
-                        "Failed entry: %s", m_Entry.Content.c_str());
+    CLog::Log(LOGERROR,
+              "POParser: msgstr[] plural lines have zero valid strings. "
+              "Failed entry: %s",
+              m_Entry.Content.c_str());
     m_Entry.msgStrPlural.resize(1); // Put 1 element with an empty string into the vector
   }
 
@@ -170,16 +174,18 @@ void CPODocument::ParseEntry(bool bisSourceLang)
 
 const std::string& CPODocument::GetPlurMsgstr(size_t plural) const
 {
-  if (m_Entry.msgStrPlural.size() < plural+1)
+  if (m_Entry.msgStrPlural.size() < plural + 1)
   {
-    CLog::Log(LOGERROR, "POParser: msgstr[%i] plural field requested, but not found in PO file. "
-                        "Failed entry: %s", static_cast<int>(plural), m_Entry.Content.c_str());
-    plural = m_Entry.msgStrPlural.size()-1;
+    CLog::Log(LOGERROR,
+              "POParser: msgstr[%i] plural field requested, but not found in PO file. "
+              "Failed entry: %s",
+              static_cast<int>(plural), m_Entry.Content.c_str());
+    plural = m_Entry.msgStrPlural.size() - 1;
   }
   return m_Entry.msgStrPlural[plural].Str;
 }
 
-std::string CPODocument::UnescapeString(const std::string &strInput)
+std::string CPODocument::UnescapeString(const std::string& strInput)
 {
   std::string strOutput;
   if (strInput.empty())
@@ -203,20 +209,44 @@ std::string CPODocument::UnescapeString(const std::string &strInput)
       }
       switch (*it++)
       {
-        case 'a':  oescchar = '\a'; break;
-        case 'b':  oescchar = '\b'; break;
-        case 'v':  oescchar = '\v'; break;
-        case 'n':  oescchar = '\n'; break;
-        case 't':  oescchar = '\t'; break;
-        case 'r':  oescchar = '\r'; break;
-        case '"':  oescchar = '"' ; break;
-        case '0':  oescchar = '\0'; break;
-        case 'f':  oescchar = '\f'; break;
-        case '?':  oescchar = '\?'; break;
-        case '\'': oescchar = '\''; break;
-        case '\\': oescchar = '\\'; break;
+        case 'a':
+          oescchar = '\a';
+          break;
+        case 'b':
+          oescchar = '\b';
+          break;
+        case 'v':
+          oescchar = '\v';
+          break;
+        case 'n':
+          oescchar = '\n';
+          break;
+        case 't':
+          oescchar = '\t';
+          break;
+        case 'r':
+          oescchar = '\r';
+          break;
+        case '"':
+          oescchar = '"';
+          break;
+        case '0':
+          oescchar = '\0';
+          break;
+        case 'f':
+          oescchar = '\f';
+          break;
+        case '?':
+          oescchar = '\?';
+          break;
+        case '\'':
+          oescchar = '\'';
+          break;
+        case '\\':
+          oescchar = '\\';
+          break;
 
-        default: 
+        default:
         {
           CLog::Log(LOGERROR,
                     "POParser: warning, unhandled escape character. Problematic entry: %s",
@@ -230,7 +260,7 @@ std::string CPODocument::UnescapeString(const std::string &strInput)
   return strOutput;
 }
 
-bool CPODocument::FindLineStart(const std::string &strToFind, size_t &FoundPos)
+bool CPODocument::FindLineStart(const std::string& strToFind, size_t& FoundPos)
 {
 
   FoundPos = m_Entry.Content.find(strToFind);
@@ -253,12 +283,11 @@ bool CPODocument::ParseNumID()
 
   CLog::Log(LOGERROR, "POParser: found numeric id descriptor, but no valid id can be read, "
                       "entry was handled as normal msgid entry");
-  CLog::Log(LOGERROR, "POParser: The problematic entry: %s",
-            m_Entry.Content.c_str());
+  CLog::Log(LOGERROR, "POParser: The problematic entry: %s", m_Entry.Content.c_str());
   return false;
 }
 
-void CPODocument::GetString(CStrEntry &strEntry)
+void CPODocument::GetString(CStrEntry& strEntry)
 {
   size_t nextLFPos;
   size_t startPos = strEntry.Pos;
@@ -271,29 +300,33 @@ void CPODocument::GetString(CStrEntry &strEntry)
       nextLFPos = m_Entry.Content.size();
 
     // check syntax, if it really is a valid quoted string line
-    if (nextLFPos-startPos < 2 ||  m_Entry.Content[startPos] != '\"' ||
-        m_Entry.Content[nextLFPos-1] != '\"')
+    if (nextLFPos - startPos < 2 || m_Entry.Content[startPos] != '\"' ||
+        m_Entry.Content[nextLFPos - 1] != '\"')
       break;
 
-    strEntry.Str.append(m_Entry.Content, startPos+1, nextLFPos-2-startPos);
-    startPos = nextLFPos+1;
+    strEntry.Str.append(m_Entry.Content, startPos + 1, nextLFPos - 2 - startPos);
+    startPos = nextLFPos + 1;
   }
 
   strEntry.Str = UnescapeString(strEntry.Str);
 }
 
-void CPODocument::ConvertLineEnds(const std::string &filename)
+void CPODocument::ConvertLineEnds(const std::string& filename)
 {
   size_t foundPos = m_strBuffer.find_first_of("\r");
   if (foundPos == std::string::npos)
     return; // We have only Linux style line endings in the file, nothing to do
 
-  if (foundPos+1 >= m_strBuffer.size() || m_strBuffer[foundPos+1] != '\n')
-    CLog::Log(LOGDEBUG, "POParser: PO file has Mac Style Line Endings. "
-              "Converted in memory to Linux LF for file: %s", filename.c_str());
+  if (foundPos + 1 >= m_strBuffer.size() || m_strBuffer[foundPos + 1] != '\n')
+    CLog::Log(LOGDEBUG,
+              "POParser: PO file has Mac Style Line Endings. "
+              "Converted in memory to Linux LF for file: %s",
+              filename.c_str());
   else
-    CLog::Log(LOGDEBUG, "POParser: PO file has Win Style Line Endings. "
-              "Converted in memory to Linux LF for file: %s", filename.c_str());
+    CLog::Log(LOGDEBUG,
+              "POParser: PO file has Win Style Line Endings. "
+              "Converted in memory to Linux LF for file: %s",
+              filename.c_str());
 
   std::string strTemp;
   strTemp.reserve(m_strBuffer.size());
@@ -301,7 +334,7 @@ void CPODocument::ConvertLineEnds(const std::string &filename)
   {
     if (*it == '\r')
     {
-      if (it+1 == m_strBuffer.end() || *(it+1) != '\n')
+      if (it + 1 == m_strBuffer.end() || *(it + 1) != '\n')
         strTemp.push_back('\n'); // convert Mac style line ending and continue
       continue; // we have Win style line ending so we exclude this CR now
     }

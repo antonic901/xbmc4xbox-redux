@@ -22,8 +22,7 @@
 
 #include "GUIWindow.h"
 
-class CGUIWindowStartup :
-      public CGUIWindow
+class CGUIWindowStartup : public CGUIWindow
 {
 public:
   CGUIWindowStartup(void);

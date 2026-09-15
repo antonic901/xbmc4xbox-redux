@@ -54,4 +54,4 @@ public:
   bool IsVisible(const CFileItem& item) const;
   bool Execute(const boost::shared_ptr<CFileItem>& _item) const;
 };
-}
+} // namespace CONTEXTMENU

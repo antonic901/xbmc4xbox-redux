@@ -25,14 +25,14 @@
 #include "utils/Variant.h"
 #include "utils/StringUtils.h"
 
-CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileItem()
+CGUIStaticItem::CGUIStaticItem(const TiXmlElement* item, int parentID) : CFileItem()
 {
   m_visState = false;
 
   assert(item);
 
   // check whether we're using the more verbose method...
-  const TiXmlNode *click = item->FirstChild("onclick");
+  const TiXmlNode* click = item->FirstChild("onclick");
   if (click && click->FirstChild())
   {
     CGUIInfoLabel label, label2, thumb, icon;
@@ -40,7 +40,7 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
     CGUIControlFactory::GetInfoLabel(item, "label2", label2, parentID);
     CGUIControlFactory::GetInfoLabel(item, "thumb", thumb, parentID);
     CGUIControlFactory::GetInfoLabel(item, "icon", icon, parentID);
-    const char *id = item->Attribute("id");
+    const char* id = item->Attribute("id");
     std::string condition;
     CGUIControlFactory::GetConditionalVisibility(item, condition);
     SetVisibleCondition(condition, parentID);
@@ -49,13 +49,17 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
     SetLabel2(label2.GetLabel(parentID));
     SetArt("thumb", thumb.GetLabel(parentID, true));
     SetIconImage(icon.GetLabel(parentID, true));
-    if (!label.IsConstant())  m_info.push_back(std::make_pair(label, "label"));
-    if (!label2.IsConstant()) m_info.push_back(std::make_pair(label2, "label2"));
-    if (!thumb.IsConstant())  m_info.push_back(std::make_pair(thumb, "thumb"));
-    if (!icon.IsConstant())   m_info.push_back(std::make_pair(icon, "icon"));
+    if (!label.IsConstant())
+      m_info.push_back(std::make_pair(label, "label"));
+    if (!label2.IsConstant())
+      m_info.push_back(std::make_pair(label2, "label2"));
+    if (!thumb.IsConstant())
+      m_info.push_back(std::make_pair(thumb, "thumb"));
+    if (!icon.IsConstant())
+      m_info.push_back(std::make_pair(icon, "icon"));
     m_iprogramCount = id ? atoi(id) : 0;
     // add any properties
-    const TiXmlElement *property = item->FirstChildElement("property");
+    const TiXmlElement* property = item->FirstChildElement("property");
     while (property)
     {
       std::string name = XMLUtils::GetAttribute(property, "name");
@@ -72,11 +76,15 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
   else
   {
     std::string label, label2, thumb, icon;
-    label  = XMLUtils::GetAttribute(item, "label");  label  = CGUIControlFactory::FilterLabel(label);
-    label2 = XMLUtils::GetAttribute(item, "label2"); label2 = CGUIControlFactory::FilterLabel(label2);
-    thumb  = XMLUtils::GetAttribute(item, "thumb");  thumb  = CGUIControlFactory::FilterLabel(thumb);
-    icon   = XMLUtils::GetAttribute(item, "icon");   icon   = CGUIControlFactory::FilterLabel(icon);
-    const char *id = item->Attribute("id");
+    label = XMLUtils::GetAttribute(item, "label");
+    label = CGUIControlFactory::FilterLabel(label);
+    label2 = XMLUtils::GetAttribute(item, "label2");
+    label2 = CGUIControlFactory::FilterLabel(label2);
+    thumb = XMLUtils::GetAttribute(item, "thumb");
+    thumb = CGUIControlFactory::FilterLabel(thumb);
+    icon = XMLUtils::GetAttribute(item, "icon");
+    icon = CGUIControlFactory::FilterLabel(icon);
+    const char* id = item->Attribute("id");
     SetLabel(CGUIInfoLabel::GetLabel(label, parentID));
     SetPath(item->FirstChild()->Value());
     SetLabel2(CGUIInfoLabel::GetLabel(label2, parentID));
@@ -86,8 +94,7 @@ CGUIStaticItem::CGUIStaticItem(const TiXmlElement *item, int parentID) : CFileIt
   }
 }
 
-CGUIStaticItem::CGUIStaticItem(const CFileItem &item)
-: CFileItem(item)
+CGUIStaticItem::CGUIStaticItem(const CFileItem& item) : CFileItem(item)
 {
   m_visState = false;
 }
@@ -96,8 +103,8 @@ void CGUIStaticItem::UpdateProperties(int contextWindow)
 {
   for (InfoVector::const_iterator i = m_info.begin(); i != m_info.end(); ++i)
   {
-    const CGUIInfoLabel &info = i->first;
-    const std::string &name = i->second;
+    const CGUIInfoLabel& info = i->first;
+    const std::string& name = i->second;
     bool preferTexture = strnicmp("label", name.c_str(), 5) != 0;
     std::string value(info.GetLabel(contextWindow, preferTexture));
     if (StringUtils::EqualsNoCase(name, "label"))
@@ -133,7 +140,7 @@ bool CGUIStaticItem::IsVisible() const
   return true;
 }
 
-void CGUIStaticItem::SetVisibleCondition(const std::string &condition, int context)
+void CGUIStaticItem::SetVisibleCondition(const std::string& condition, int context)
 {
   m_visCondition = g_infoManager.Register(condition, context);
   m_visState = false;

@@ -40,9 +40,9 @@
 
 namespace XBMCAddon
 {
-  class LanguageHook;
+class LanguageHook;
 
-  /**
+/**
    * This class is the superclass for all reference counted classes in the api.
    * It provides a means for the bindings to handle all api objects generically.
    *
@@ -52,23 +52,23 @@ namespace XBMCAddon
    * If a scripting language bindings require specific handling there is a
    *  hook to add in these language specifics that can be set here.
    */
-  class AddonClass : public CCriticalSection
-  {
-  private:
-    long refs;
-    bool m_isDeallocating;
+class AddonClass : public CCriticalSection
+{
+private:
+  long refs;
+  bool m_isDeallocating;
 
-    // no copying
-    inline AddonClass(const AddonClass&);
+  // no copying
+  inline AddonClass(const AddonClass&);
 
 #ifdef XBMC_ADDON_DEBUG_MEMORY
-    bool isDeleted;
+  bool isDeleted;
 #endif
 
-  protected:
-    LanguageHook* languageHook;
+protected:
+  LanguageHook* languageHook;
 
-    /**
+  /**
      * This method is meant to be called from the destructor of the
      *  lowest level class.
      *
@@ -77,89 +77,111 @@ namespace XBMCAddon
      *
      * Any overloading classes need to remember to pass the call up the chain.
      */
-    virtual void deallocating()
-    {
-      CSingleLock lock(*this);
-      m_isDeallocating = true;
-    }
+  virtual void deallocating()
+  {
+    CSingleLock lock(*this);
+    m_isDeallocating = true;
+  }
 
-    /**
+  /**
      * This is meant to be called during static initialization and so isn't
      * synchronized.
      */
-    static short getNextClassIndex();
+  static short getNextClassIndex();
 
-  public:
-    AddonClass();
-    virtual ~AddonClass();
+public:
+  AddonClass();
+  virtual ~AddonClass();
 
-    inline const char* GetClassname() const { return typeid(*this).name(); }
-    inline LanguageHook* GetLanguageHook() { return languageHook; }
+  inline const char* GetClassname() const { return typeid(*this).name(); }
+  inline LanguageHook* GetLanguageHook() { return languageHook; }
 
-    /**
+  /**
      * This method should be called while holding a Synchronize
      *  on the object. It will prevent the deallocation during
      *  the time it's held.
      */
-    bool isDeallocating() { XBMC_TRACE; return m_isDeallocating; }
+  bool isDeallocating()
+  {
+    XBMC_TRACE;
+    return m_isDeallocating;
+  }
 
-    static short getNumAddonClasses();
-
-#ifdef XBMC_ADDON_DEBUG_MEMORY
-    virtual
-#else
-    inline
-#endif
-    void Release() const
-#ifndef XBMC_ADDON_DEBUG_MEMORY
-    {
-      long ct = AtomicDecrement((long*)&refs);
-#ifdef LOG_LIFECYCLE_EVENTS
-      CLog::Log(LOGDEBUG,"NEWADDON REFCNT decrementing to %ld on %s 0x%lx", ct,GetClassname(), (long)(((void*)this)));
-#endif
-      if(ct == 0)
-        delete this;
-    }
-#else
-    ;
-#endif
-
+  static short getNumAddonClasses();
 
 #ifdef XBMC_ADDON_DEBUG_MEMORY
-    virtual
+  virtual
 #else
-    inline
+  inline
 #endif
-    void Acquire() const
+      void Release() const
 #ifndef XBMC_ADDON_DEBUG_MEMORY
-    {
+  {
+    long ct = AtomicDecrement((long*)&refs);
 #ifdef LOG_LIFECYCLE_EVENTS
-      CLog::Log(LOGDEBUG,"NEWADDON REFCNT incrementing to %ld on %s 0x%lx",
-                AtomicIncrement((long*)&refs), GetClassname(), (long)(((void*)this)));
-#else
-      AtomicIncrement((long*)&refs);
+    CLog::Log(LOGDEBUG, "NEWADDON REFCNT decrementing to %ld on %s 0x%lx", ct, GetClassname(),
+              (long)(((void*)this)));
 #endif
-    }
+    if (ct == 0)
+      delete this;
+  }
 #else
-    ;
+      ;
+#endif
+
+#ifdef XBMC_ADDON_DEBUG_MEMORY
+  virtual
+#else
+  inline
+#endif
+      void Acquire() const
+#ifndef XBMC_ADDON_DEBUG_MEMORY
+  {
+#ifdef LOG_LIFECYCLE_EVENTS
+    CLog::Log(LOGDEBUG, "NEWADDON REFCNT incrementing to %ld on %s 0x%lx",
+              AtomicIncrement((long*)&refs), GetClassname(), (long)(((void*)this)));
+#else
+    AtomicIncrement((long*)&refs);
+#endif
+  }
+#else
+      ;
 #endif
 
 #define refcheck
-    /**
+  /**
      * This class is a smart pointer for a Referenced class.
      */
-    template <class T> class Ref
+  template<class T>
+  class Ref
+  {
+    T* ac;
+
+  public:
+    inline Ref() : ac(NULL) {}
+    inline Ref(const T* _ac) : ac(const_cast<T*>(_ac))
     {
-      T * ac;
-    public:
-      inline Ref() : ac(NULL) {}
-      inline Ref(const T* _ac) : ac(const_cast<T*>(_ac)) { if (ac) ac->Acquire(); refcheck; }
+      if (ac)
+        ac->Acquire();
+      refcheck;
+    }
 
-      // copy semantics
-      inline Ref(Ref<T> const & oref) : ac(const_cast<T*>(oref.get())) { if (ac) ac->Acquire(); refcheck; }
-      template<class O> inline Ref(Ref<O> const & oref) : ac(static_cast<T*>(oref.get())) { if (ac) ac->Acquire(); refcheck; }
+    // copy semantics
+    inline Ref(Ref<T> const& oref) : ac(const_cast<T*>(oref.get()))
+    {
+      if (ac)
+        ac->Acquire();
+      refcheck;
+    }
+    template<class O>
+    inline Ref(Ref<O> const& oref) : ac(static_cast<T*>(oref.get()))
+    {
+      if (ac)
+        ac->Acquire();
+      refcheck;
+    }
 
-      /**
+    /**
        * operator= should work with either another smart pointer or a pointer since it will
        * be able to convert a pointer to a smart pointer using one of the above constructors.
        *
@@ -176,31 +198,102 @@ namespace XBMCAddon
        * Note: Operator= is ambiguous if you define both an operator=(Ref<T>&) and an operator=(T*). I'm
        * opting for the route the boost took here figuring it has more history behind it.
        */
-      inline Ref<T>& operator=(Ref<T> const & oref)
-      { T* tmp = ac; ac = const_cast<T*>(oref.get()); if (ac) ac->Acquire(); if (tmp) tmp->Release(); refcheck; return *this; }
+    inline Ref<T>& operator=(Ref<T> const& oref)
+    {
+      T* tmp = ac;
+      ac = const_cast<T*>(oref.get());
+      if (ac)
+        ac->Acquire();
+      if (tmp)
+        tmp->Release();
+      refcheck;
+      return *this;
+    }
 
-      inline T* operator->() const { refcheck; return ac; }
+    inline T* operator->() const
+    {
+      refcheck;
+      return ac;
+    }
 
-      /**
+    /**
        * This operator doubles as the value in a boolean expression.
        */
-      inline operator T*() const { refcheck; return ac; }
-      inline T* get() const { refcheck; return ac; }
-      inline T& getRef() const { refcheck; return *ac; }
+    inline operator T*() const
+    {
+      refcheck;
+      return ac;
+    }
+    inline T* get() const
+    {
+      refcheck;
+      return ac;
+    }
+    inline T& getRef() const
+    {
+      refcheck;
+      return *ac;
+    }
 
-      inline ~Ref() { refcheck; if (ac) ac->Release(); }
-      inline bool isNull() const { refcheck; return ac == NULL; }
-      inline bool isNotNull() const { refcheck; return ac != NULL; }
-      inline bool isSet() const { refcheck; return ac != NULL; }
-      inline bool operator!() const { refcheck; return ac == NULL; }
-      inline bool operator==(const AddonClass::Ref<T>& oref) const { refcheck; return ac == oref.ac; }
-      inline bool operator<(const AddonClass::Ref<T>& oref) const { refcheck; return ac < oref.ac; } // std::set semantics
+    inline ~Ref()
+    {
+      refcheck;
+      if (ac)
+        ac->Release();
+    }
+    inline bool isNull() const
+    {
+      refcheck;
+      return ac == NULL;
+    }
+    inline bool isNotNull() const
+    {
+      refcheck;
+      return ac != NULL;
+    }
+    inline bool isSet() const
+    {
+      refcheck;
+      return ac != NULL;
+    }
+    inline bool operator!() const
+    {
+      refcheck;
+      return ac == NULL;
+    }
+    inline bool operator==(const AddonClass::Ref<T>& oref) const
+    {
+      refcheck;
+      return ac == oref.ac;
+    }
+    inline bool operator<(const AddonClass::Ref<T>& oref) const
+    {
+      refcheck;
+      return ac < oref.ac;
+    } // std::set semantics
 
-      // This is there only for boost compatibility
-      template<class O> inline void reset(Ref<O> const & oref) { refcheck; (*this) = static_cast<T*>(oref.get()); refcheck; }
-      template<class O> inline void reset(O * oref) { refcheck; (*this) = static_cast<T*>(oref); refcheck; }
-      inline void reset() { refcheck; if (ac) ac->Release(); ac = NULL; }
-    };
-
+    // This is there only for boost compatibility
+    template<class O>
+    inline void reset(Ref<O> const& oref)
+    {
+      refcheck;
+      (*this) = static_cast<T*>(oref.get());
+      refcheck;
+    }
+    template<class O>
+    inline void reset(O* oref)
+    {
+      refcheck;
+      (*this) = static_cast<T*>(oref);
+      refcheck;
+    }
+    inline void reset()
+    {
+      refcheck;
+      if (ac)
+        ac->Release();
+      ac = NULL;
+    }
   };
-}
+};
+} // namespace XBMCAddon

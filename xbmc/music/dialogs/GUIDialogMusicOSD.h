@@ -22,13 +22,12 @@
 
 #include "guilib/GUIDialog.h"
 
-class CGUIDialogMusicOSD :
-      public CGUIDialog
+class CGUIDialogMusicOSD : public CGUIDialog
 {
 public:
   CGUIDialogMusicOSD(void);
   virtual ~CGUIDialogMusicOSD(void);
-  virtual bool OnMessage(CGUIMessage &message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction& action);
   virtual void FrameMove();
 };

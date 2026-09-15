@@ -30,9 +30,9 @@
 #include <vector>
 
 #include "GraphicContext.h" // needed by any rendering operation (all controls)
-#include "GUIMessage.h"     // needed by practically all controls
-#include "VisibleEffect.h"  // needed for the CAnimation members
-#include "GUIInfoTypes.h"   // needed for CGUIInfoColor to handle infolabel'ed colors
+#include "GUIMessage.h" // needed by practically all controls
+#include "VisibleEffect.h" // needed for the CAnimation members
+#include "GUIInfoTypes.h" // needed for CGUIInfoColor to handle infolabel'ed colors
 #include "DirtyRegion.h"
 #include "GUIAction.h"
 
@@ -40,7 +40,11 @@ class CGUIListItem; // forward
 class CAction;
 class CMouseEvent;
 
-enum ORIENTATION { HORIZONTAL = 0, VERTICAL };
+enum ORIENTATION
+{
+  HORIZONTAL = 0,
+  VERTICAL
+};
 
 class CControlState
 {
@@ -58,7 +62,10 @@ public:
  \brief Results of OnMouseEvent()
  Any value not equal to EVENT_RESULT_UNHANDLED indicates that the event was handled.
  */
-enum EVENT_RESULT { EVENT_RESULT_UNHANDLED                      = 0x00 };
+enum EVENT_RESULT
+{
+  EVENT_RESULT_UNHANDLED = 0x00
+};
 
 /*!
  \ingroup controls
@@ -70,10 +77,10 @@ public:
   CGUIControl();
   CGUIControl(int parentID, int controlID, float posX, float posY, float width, float height);
   virtual ~CGUIControl(void);
-  virtual CGUIControl *Clone() const=0;
+  virtual CGUIControl* Clone() const = 0;
 
-  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void DoRender();
   virtual void Render() {};
   // Called after the actual rendering is completed to trigger additional
@@ -90,7 +97,7 @@ public:
   // levels.  This base class implementation handles basic movement, and should
   // be called from the derived classes when the action has not been handled.
   // Return true to indicate that the action has been dealt with.
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
 
   // Common actions to make the code easier to read (no ugly switch statements in derived controls)
   virtual void OnUp();
@@ -108,14 +115,14 @@ public:
    \param point the location in transformed skin coordinates from the upper left corner of the parent control.
    \sa CanFocusFromPoint
    */
-  virtual void UnfocusFromPoint(const CPoint &point);
+  virtual void UnfocusFromPoint(const CPoint& point);
 
   /*! \brief Used to test whether the point is inside a control.
    \param point location to test
    \return true if the point is inside the bounds of this control.
    \sa SetHitRect
    */
-  virtual bool HitTest(const CPoint &point) const;
+  virtual bool HitTest(const CPoint& point) const;
 
   virtual bool OnMessage(CGUIMessage& message);
   virtual int GetID(void) const;
@@ -136,10 +143,10 @@ public:
   bool IsVisibleFromSkin() const { return m_visibleFromSkinCondition; };
   virtual bool IsDisabled() const;
   virtual void SetPosition(float posX, float posY);
-  virtual void SetHitRect(const CRect &rect, const color_t &color);
-  virtual void SetCamera(const CPoint &camera);
-  virtual void SetStereoFactor(const float &factor);
-  bool SetColorDiffuse(const CGUIInfoColor &color);
+  virtual void SetHitRect(const CRect& rect, const color_t& color);
+  virtual void SetCamera(const CPoint& camera);
+  virtual void SetStereoFactor(const float& factor);
+  bool SetColorDiffuse(const CGUIInfoColor& color);
   CPoint GetRenderPosition() const;
   virtual float GetXPosition() const;
   virtual float GetYPosition() const;
@@ -150,7 +157,7 @@ public:
 
   /*! \brief return the render region in screen coordinates of this control
    */
-  const CRect &GetRenderRegion() const { return m_renderRegion; };
+  const CRect& GetRenderRegion() const { return m_renderRegion; };
   /*! \brief calculate the render region in parentcontrol coordinates of this control
    Called during process to update m_renderRegion
    */
@@ -161,7 +168,7 @@ public:
    \sa SetNavigationAction
    */
   typedef std::map<int, CGUIAction> ActionMap;
-  void SetActions(const ActionMap &actions);
+  void SetActions(const ActionMap& actions);
 
   /*! \brief Set actions to perform on navigation
    Navigations are set if replace is true or if there is no previously set action
@@ -170,7 +177,7 @@ public:
    \param replace Actions are set only if replace is true or there is no previously set action.  Defaults to true
    \sa SetNavigationActions
    */
-  void SetAction(int actionID, const CGUIAction &action, bool replace = true);
+  void SetAction(int actionID, const CGUIAction& action, bool replace = true);
 
   /*! \brief Get an action the control can be perform.
    \param actionID The actionID to retrieve.
@@ -184,10 +191,10 @@ public:
   virtual void SetWidth(float width);
   virtual void SetHeight(float height);
   virtual void SetVisible(bool bVisible, bool setVisState = false);
-  void SetVisibleCondition(const std::string &expression, const std::string &allowHiddenFocus = "");
+  void SetVisibleCondition(const std::string& expression, const std::string& allowHiddenFocus = "");
   bool HasVisibleCondition() const { return m_visibleCondition != NULL; };
-  void SetEnableCondition(const std::string &expression);
-  virtual void UpdateVisibility(const CGUIListItem *item = NULL);
+  void SetEnableCondition(const std::string& expression);
+  virtual void UpdateVisibility(const CGUIListItem* item = NULL);
   virtual void SetInitialVisibility();
   virtual void SetEnabled(bool bEnable);
   virtual void SetInvalid() { m_bInvalidated = true; };
@@ -195,29 +202,30 @@ public:
   virtual std::string GetDescription() const { return ""; };
   virtual std::string GetDescriptionByIndex(int index) const { return ""; };
 
-  void SetAnimations(const std::vector<CAnimation> &animations);
-  const std::vector<CAnimation> &GetAnimations() const { return m_animations; };
+  void SetAnimations(const std::vector<CAnimation>& animations);
+  const std::vector<CAnimation>& GetAnimations() const { return m_animations; };
 
   virtual void QueueAnimation(ANIMATION_TYPE anim);
   virtual bool IsAnimating(ANIMATION_TYPE anim);
   virtual bool HasAnimation(ANIMATION_TYPE anim);
-  CAnimation *GetAnimation(ANIMATION_TYPE type, bool checkConditions = true);
+  CAnimation* GetAnimation(ANIMATION_TYPE type, bool checkConditions = true);
   virtual void ResetAnimation(ANIMATION_TYPE type);
   virtual void ResetAnimations();
 
   // push information updates
-  virtual void UpdateInfo(const CGUIListItem *item = NULL) {};
+  virtual void UpdateInfo(const CGUIListItem* item = NULL) {};
   virtual void SetPushUpdates(bool pushUpdates) { m_pushedUpdates = pushUpdates; };
 
   virtual bool IsGroup() const { return false; };
   virtual bool IsContainer() const { return false; };
   virtual bool GetCondition(int condition, int data) const { return false; };
 
-  void SetParentControl(CGUIControl *control) { m_parentControl = control; };
-  CGUIControl *GetParentControl(void) const { return m_parentControl; };
-  virtual void SaveStates(std::vector<CControlState> &states);
+  void SetParentControl(CGUIControl* control) { m_parentControl = control; };
+  CGUIControl* GetParentControl(void) const { return m_parentControl; };
+  virtual void SaveStates(std::vector<CControlState>& states);
 
-  enum GUICONTROLTYPES {
+  enum GUICONTROLTYPES
+  {
     GUICONTROL_UNKNOWN,
     GUICONTROL_BUTTON,
     GUICONTROL_FADELABEL,
@@ -254,9 +262,19 @@ public:
   };
   GUICONTROLTYPES GetControlType() const { return ControlType; }
 
-  enum GUIVISIBLE { HIDDEN = 0, DELAYED, VISIBLE };
+  enum GUIVISIBLE
+  {
+    HIDDEN = 0,
+    DELAYED,
+    VISIBLE
+  };
 
-  enum GUISCROLLVALUE { FOCUS = 0, NEVER, ALWAYS };
+  enum GUISCROLLVALUE
+  {
+    FOCUS = 0,
+    NEVER,
+    ALWAYS
+  };
 
 #ifdef _DEBUG
   virtual void DumpTextureUse() {};
@@ -273,13 +291,15 @@ protected:
    \return true if the control can be focused from this location
    \sa UnfocusFromPoint, HitRect
    */
-  virtual bool CanFocusFromPoint(const CPoint &point) const;
+  virtual bool CanFocusFromPoint(const CPoint& point) const;
 
   virtual bool UpdateColors();
   virtual bool Animate(unsigned int currentTime);
   virtual bool CheckAnimation(ANIMATION_TYPE animType);
-  void UpdateStates(ANIMATION_TYPE type, ANIMATION_PROCESS currentProcess, ANIMATION_STATE currentState);
-  bool SendWindowMessage(CGUIMessage &message) const;
+  void UpdateStates(ANIMATION_TYPE type,
+                    ANIMATION_PROCESS currentProcess,
+                    ANIMATION_STATE currentState);
+  bool SendWindowMessage(CGUIMessage& message) const;
 
   // navigation and actions
   ActionMap m_actions;
@@ -299,13 +319,13 @@ protected:
   bool m_pulseOnSelect;
   GUICONTROLTYPES ControlType;
 
-  CGUIControl *m_parentControl;   // our parent control if we're part of a group
+  CGUIControl* m_parentControl; // our parent control if we're part of a group
 
   // visibility condition/state
   INFO::InfoPtr m_visibleCondition;
   GUIVISIBLE m_visible;
   bool m_visibleFromSkinCondition;
-  bool m_forceHidden;       // set from the code when a hidden operation is given - overrides m_visible
+  bool m_forceHidden; // set from the code when a hidden operation is given - overrides m_visible
   CGUIInfoBool m_allowHiddenFocus;
   bool m_hasProcessed;
   // enable/disable state
@@ -322,8 +342,8 @@ protected:
   TransformMatrix m_transform;
   TransformMatrix m_cachedTransform; // Contains the absolute transform the control
 
-  bool  m_controlIsDirty;
-  CRect m_renderRegion;         // In screen coordinates
+  bool m_controlIsDirty;
+  CRect m_renderRegion; // In screen coordinates
 };
 
 #endif

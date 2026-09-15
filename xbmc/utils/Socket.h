@@ -12,12 +12,13 @@
 
 namespace SOCKETS
 {
-  
+
 #ifdef _XBOX
-static char* inet_ntoa (struct in_addr in)
+static char* inet_ntoa(struct in_addr in)
 {
   static char _inetaddress[32];
-  sprintf(_inetaddress, "%d.%d.%d.%d", in.S_un.S_un_b.s_b1, in.S_un.S_un_b.s_b2, in.S_un.S_un_b.s_b3, in.S_un.S_un_b.s_b4);
+  sprintf(_inetaddress, "%d.%d.%d.%d", in.S_un.S_un_b.s_b1, in.S_un.S_un_b.s_b2,
+          in.S_un.S_un_b.s_b3, in.S_un.S_un_b.s_b4);
   return _inetaddress;
 }
 #endif
@@ -32,177 +33,160 @@ typedef int SOCKET;
 #else
 typedef int socklen_t;
 #endif
-  
-  // types of sockets
-  enum SocketType
+
+// types of sockets
+enum SocketType
+{
+  ST_TCP,
+  ST_UDP,
+  ST_UNIX
+};
+
+/**********************************************************************/
+/* IP address abstraction class                                       */
+/**********************************************************************/
+class CAddress
+{
+public:
+  sockaddr_in saddr;
+  socklen_t size;
+
+public:
+  CAddress()
   {
-    ST_TCP,
-    ST_UDP,
-    ST_UNIX
-  };
+    memset(&saddr, 0, sizeof(saddr));
+    saddr.sin_family = AF_INET;
+    saddr.sin_addr.s_addr = htonl(INADDR_ANY);
+    size = sizeof(saddr);
+  }
 
-  /**********************************************************************/
-  /* IP address abstraction class                                       */
-  /**********************************************************************/
-  class CAddress
+  CAddress(const char* address) { SetAddress(address); }
+
+  void SetAddress(const char* address)
   {
-  public:
-    sockaddr_in saddr;
-    socklen_t   size;
+    memset(&saddr, 0, sizeof(saddr));
+    saddr.sin_family = AF_INET;
+    saddr.sin_addr.s_addr = inet_addr(address);
+    size = sizeof(saddr);
+  }
 
-  public:
-    CAddress()
-    { 
-      memset(&saddr, 0, sizeof(saddr)); 
-      saddr.sin_family = AF_INET;
-      saddr.sin_addr.s_addr = htonl(INADDR_ANY);
-      size = sizeof(saddr);
-    }
+  // returns statically alloced buffer, do not free
+  char* Address() { return inet_ntoa(saddr.sin_addr); }
 
-    CAddress(const char *address)
-    {
-      SetAddress(address);
-    }
-    
-    void SetAddress(const char *address)
-    {
-      memset(&saddr, 0, sizeof(saddr));
-      saddr.sin_family = AF_INET;
-      saddr.sin_addr.s_addr = inet_addr(address);
-      size = sizeof(saddr);
-    }
+  unsigned long ULong() { return (unsigned long)saddr.sin_addr.s_addr; }
+};
 
-    // returns statically alloced buffer, do not free
-    char *Address()
-    {
-      return inet_ntoa(saddr.sin_addr);
-    }
-    
-    unsigned long ULong()
-    {
-      return (unsigned long)saddr.sin_addr.s_addr;
-    }
-  };
-
-  /**********************************************************************/
-  /* Base class for all sockets                                         */
-  /**********************************************************************/
-  class CBaseSocket
+/**********************************************************************/
+/* Base class for all sockets                                         */
+/**********************************************************************/
+class CBaseSocket
+{
+public:
+  CBaseSocket()
   {
-  public:
-    CBaseSocket()
-      {
-        m_Type = ST_TCP;
-        m_bReady = false;
-        m_bBound = false;
-        m_iPort = 0;
-      }
-    virtual ~CBaseSocket() { Close(); }
+    m_Type = ST_TCP;
+    m_bReady = false;
+    m_bBound = false;
+    m_iPort = 0;
+  }
+  virtual ~CBaseSocket() { Close(); }
 
-    // socket functions
-    virtual bool Bind(CAddress& addr, int port, int range=0) = 0;
-    virtual bool Connect() = 0;
-    virtual void Close() {};
+  // socket functions
+  virtual bool Bind(CAddress& addr, int port, int range = 0) = 0;
+  virtual bool Connect() = 0;
+  virtual void Close() {};
 
-    // state functions
-    bool        Ready()  { return m_bReady; }
-    bool        Bound()  { return m_bBound; }
-    SocketType  Type()   { return m_Type; }
-    int         Port()   { return m_iPort; }
-    virtual SOCKET Socket() = 0;
+  // state functions
+  bool Ready() { return m_bReady; }
+  bool Bound() { return m_bBound; }
+  SocketType Type() { return m_Type; }
+  int Port() { return m_iPort; }
+  virtual SOCKET Socket() = 0;
 
-  protected:
-    virtual void SetBound(bool set=true) { m_bBound = set; }
-    virtual void SetReady(bool set=true) { m_bReady = set; }
+protected:
+  virtual void SetBound(bool set = true) { m_bBound = set; }
+  virtual void SetReady(bool set = true) { m_bReady = set; }
 
-  protected:
-    SocketType m_Type;
-    bool       m_bReady;
-    bool       m_bBound;
-    int        m_iPort;
-  };
+protected:
+  SocketType m_Type;
+  bool m_bReady;
+  bool m_bBound;
+  int m_iPort;
+};
 
-  /**********************************************************************/
-  /* Base class for UDP socket implementations                          */
-  /**********************************************************************/
-  class CUDPSocket : public CBaseSocket
+/**********************************************************************/
+/* Base class for UDP socket implementations                          */
+/**********************************************************************/
+class CUDPSocket : public CBaseSocket
+{
+public:
+  CUDPSocket() { m_Type = ST_UDP; }
+  // I/O functions
+  virtual int SendTo(const CAddress& addr, const int bufferlength, const void* buffer) = 0;
+
+  // read datagrams, return no. of bytes read or -1 or error
+  virtual int Read(CAddress& addr, const int buffersize, void* buffer) = 0;
+  virtual bool Broadcast(const CAddress& addr, const int datasize, const void* data) = 0;
+};
+
+// Implementation specific classes
+
+/**********************************************************************/
+/* POSIX based UDP socket implementation                              */
+/**********************************************************************/
+class CPosixUDPSocket : public CUDPSocket
+{
+public:
+  CPosixUDPSocket() { m_iSock = INVALID_SOCKET; }
+
+  bool Bind(CAddress& addr, int port, int range = 0);
+  bool Connect() { return false; }
+  bool Listen(int timeout);
+  int SendTo(const CAddress& addr, const int datasize, const void* data);
+  int Read(CAddress& addr, const int buffersize, void* buffer);
+  bool Broadcast(const CAddress& addr, const int datasize, const void* data)
   {
-  public:
-    CUDPSocket()
-      {
-        m_Type = ST_UDP;
-      }
-    // I/O functions
-    virtual int SendTo(const CAddress& addr, const int bufferlength, 
-                       const void* buffer) = 0;
+    // TODO
+    return false;
+  }
+  SOCKET Socket() { return m_iSock; }
+  void Close();
 
-    // read datagrams, return no. of bytes read or -1 or error
-    virtual int  Read(CAddress& addr, const int buffersize, void *buffer) = 0;
-    virtual bool Broadcast(const CAddress& addr, const int datasize, 
-                           const void* data) = 0;
-  };
-  
-  // Implementation specific classes
+protected:
+  SOCKET m_iSock;
+  CAddress m_addr;
+};
 
-  /**********************************************************************/
-  /* POSIX based UDP socket implementation                              */
-  /**********************************************************************/
-  class CPosixUDPSocket : public CUDPSocket
-  {
-  public:
-    CPosixUDPSocket()
-      {
-        m_iSock = INVALID_SOCKET;
-      }
+/**********************************************************************/
+/* Create and return platform dependent sockets                       */
+/**********************************************************************/
+class CSocketFactory
+{
+public:
+  static CUDPSocket* CreateUDPSocket();
+};
 
-    bool Bind(CAddress& addr, int port, int range=0);
-    bool Connect() { return false; }
-    bool Listen(int timeout);
-    int  SendTo(const CAddress& addr, const int datasize, const void* data);
-    int  Read(CAddress& addr, const int buffersize, void *buffer);
-    bool Broadcast(const CAddress& addr, const int datasize, const void* data)
-    {
-      // TODO
-      return false;
-    }
-    SOCKET  Socket() { return m_iSock; }
-    void Close();
+/**********************************************************************/
+/* Listens on multiple sockets for reads                              */
+/**********************************************************************/
+class CSocketListener
+{
+public:
+  CSocketListener();
+  void AddSocket(CBaseSocket*);
+  bool Listen(int timeoutMs); // in ms, -1=>never timeout, 0=>poll
+  void Clear();
+  CBaseSocket* GetFirstReadySocket();
+  CBaseSocket* GetNextReadySocket();
 
-  protected:
-    SOCKET   m_iSock;
-    CAddress m_addr;
-  };
+protected:
+  std::vector<CBaseSocket*> m_sockets;
+  int m_iReadyCount;
+  int m_iMaxSockets;
+  int m_iCurrentSocket;
+  fd_set m_fdset;
+};
 
-  /**********************************************************************/
-  /* Create and return platform dependent sockets                       */
-  /**********************************************************************/
-  class CSocketFactory
-  {
-  public:
-    static CUDPSocket* CreateUDPSocket();   
-  };
-
-  /**********************************************************************/
-  /* Listens on multiple sockets for reads                              */
-  /**********************************************************************/
-  class CSocketListener
-  {
-  public:
-    CSocketListener();
-    void         AddSocket(CBaseSocket *);
-    bool         Listen(int timeoutMs); // in ms, -1=>never timeout, 0=>poll
-    void         Clear();
-    CBaseSocket* GetFirstReadySocket();
-    CBaseSocket* GetNextReadySocket();
-
-  protected:
-    std::vector<CBaseSocket*> m_sockets;
-    int                       m_iReadyCount;
-    int                       m_iMaxSockets;
-    int                       m_iCurrentSocket;
-    fd_set                    m_fdset;
-  };
-
-}
+} // namespace SOCKETS
 
 #endif //  __XBMC_SOCKET_H__

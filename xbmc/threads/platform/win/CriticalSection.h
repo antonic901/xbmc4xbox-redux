@@ -31,46 +31,31 @@
 namespace XbmcThreads
 {
 
-  // forward declare in preparation for the friend declaration
-  class ConditionVariable;
+// forward declare in preparation for the friend declaration
+class ConditionVariable;
 
-  namespace windows
-  {
-    class RecursiveMutex
-    {
-      CRITICAL_SECTION mutex;
+namespace windows
+{
+class RecursiveMutex
+{
+  CRITICAL_SECTION mutex;
 
-      // needs acces to 'mutex'
-      friend class XbmcThreads::ConditionVariable;
-    public:
-      inline RecursiveMutex()
-      {
-        InitializeCriticalSection(&mutex);
-      }
-      
-      inline ~RecursiveMutex()
-      {
-        DeleteCriticalSection(&mutex);
-      }
+  // needs acces to 'mutex'
+  friend class XbmcThreads::ConditionVariable;
 
-      inline void lock()
-      {
-        EnterCriticalSection(&mutex);
-      }
+public:
+  inline RecursiveMutex() { InitializeCriticalSection(&mutex); }
 
-      inline void unlock()
-      {
-        LeaveCriticalSection(&mutex);
-      }
-        
-      inline bool try_lock()
-      {
-        return TryEnterCriticalSection(&mutex) ? true : false;
-      }
-    };
-  }
-}
+  inline ~RecursiveMutex() { DeleteCriticalSection(&mutex); }
 
+  inline void lock() { EnterCriticalSection(&mutex); }
+
+  inline void unlock() { LeaveCriticalSection(&mutex); }
+
+  inline bool try_lock() { return TryEnterCriticalSection(&mutex) ? true : false; }
+};
+} // namespace windows
+} // namespace XbmcThreads
 
 /**
  * A CCriticalSection is a CountingLockable whose implementation is a 
@@ -79,5 +64,6 @@ namespace XbmcThreads
  * This is not a typedef because of a number of "class CCriticalSection;" 
  *  forward declarations in the code that break when it's done that way.
  */
-class CCriticalSection : public XbmcThreads::CountingLockable<XbmcThreads::windows::RecursiveMutex> {};
-
+class CCriticalSection : public XbmcThreads::CountingLockable<XbmcThreads::windows::RecursiveMutex>
+{
+};

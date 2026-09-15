@@ -23,12 +23,12 @@
 
 namespace MUSIC_INFO
 {
-  class CMusicInfoTagLoaderCDDA: public IMusicInfoTagLoader
-  {
-  public:
-    CMusicInfoTagLoaderCDDA(void);
-    virtual ~CMusicInfoTagLoaderCDDA();
+class CMusicInfoTagLoaderCDDA : public IMusicInfoTagLoader
+{
+public:
+  CMusicInfoTagLoaderCDDA(void);
+  virtual ~CMusicInfoTagLoaderCDDA();
 
-    virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
-  };
-}
+  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt* art = NULL);
+};
+} // namespace MUSIC_INFO

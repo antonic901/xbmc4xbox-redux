@@ -32,11 +32,14 @@ class CGUIListItemLayout
 {
 public:
   CGUIListItemLayout();
-  CGUIListItemLayout(const CGUIListItemLayout &from);
+  CGUIListItemLayout(const CGUIListItemLayout& from);
   virtual ~CGUIListItemLayout();
-  void LoadLayout(TiXmlElement *layout, int context, bool focused);
-  void Process(CGUIListItem *item, int parentID, unsigned int currentTime, CDirtyRegionList &dirtyregions);
-  void Render(CGUIListItem *item, int parentID);
+  void LoadLayout(TiXmlElement* layout, int context, bool focused);
+  void Process(CGUIListItem* item,
+               int parentID,
+               unsigned int currentTime,
+               CDirtyRegionList& dirtyregions);
+  void Render(CGUIListItem* item, int parentID);
   float Size(ORIENTATION orientation) const;
   unsigned int GetFocusedItem() const;
   void SetFocusedItem(unsigned int focus);
@@ -45,13 +48,24 @@ public:
   void SetInvalid() { m_invalidated = true; };
   void FreeResources(bool immediately = false);
 
-//#ifdef GUILIB_PYTHON_COMPATIBILITY
-  void CreateListControlLayouts(float width, float height, bool focused, const CLabelInfo &labelInfo, const CLabelInfo &labelInfo2, const CTextureInfo &texture, const CTextureInfo &textureFocus, float texHeight, float iconWidth, float iconHeight, const std::string &nofocusCondition, const std::string &focusCondition);
-//#endif
+  //#ifdef GUILIB_PYTHON_COMPATIBILITY
+  void CreateListControlLayouts(float width,
+                                float height,
+                                bool focused,
+                                const CLabelInfo& labelInfo,
+                                const CLabelInfo& labelInfo2,
+                                const CTextureInfo& texture,
+                                const CTextureInfo& textureFocus,
+                                float texHeight,
+                                float iconWidth,
+                                float iconHeight,
+                                const std::string& nofocusCondition,
+                                const std::string& focusCondition);
+  //#endif
 
   void SetWidth(float width);
   void SetHeight(float height);
-  void SelectItemFromPoint(const CPoint &point);
+  void SelectItemFromPoint(const CPoint& point);
   bool MoveLeft();
   bool MoveRight();
 
@@ -59,9 +73,10 @@ public:
   virtual void DumpTextureUse();
 #endif
   bool CheckCondition();
+
 protected:
-  void LoadControl(TiXmlElement *child, CGUIControlGroup *group);
-  void Update(CFileItem *item);
+  void LoadControl(TiXmlElement* child, CGUIControlGroup* group);
+  void Update(CFileItem* item);
 
   CGUIListGroup m_group;
 
@@ -73,4 +88,3 @@ protected:
   INFO::InfoPtr m_condition;
   CGUIInfoBool m_isPlaying;
 };
-

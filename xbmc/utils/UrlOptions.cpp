@@ -26,18 +26,19 @@
 
 using namespace std;
 
-CUrlOptions::CUrlOptions()
-  : m_strLead("")
-{ }
+CUrlOptions::CUrlOptions() : m_strLead("")
+{
+}
 
-CUrlOptions::CUrlOptions(const std::string &options, const char *strLead /* = "" */)
+CUrlOptions::CUrlOptions(const std::string& options, const char* strLead /* = "" */)
   : m_strLead(strLead)
 {
   AddOptions(options);
 }
 
 CUrlOptions::~CUrlOptions()
-{ }
+{
+}
 
 std::string CUrlOptions::GetOptionsString(bool withLeadingSeperator /* = false */) const
 {
@@ -63,7 +64,7 @@ std::string CUrlOptions::GetOptionsString(bool withLeadingSeperator /* = false *
   return options;
 }
 
-void CUrlOptions::AddOption(const std::string &key, const char *value)
+void CUrlOptions::AddOption(const std::string& key, const char* value)
 {
   if (key.empty() || value == NULL)
     return;
@@ -71,7 +72,7 @@ void CUrlOptions::AddOption(const std::string &key, const char *value)
   return AddOption(key, string(value));
 }
 
-void CUrlOptions::AddOption(const std::string &key, const std::string &value)
+void CUrlOptions::AddOption(const std::string& key, const std::string& value)
 {
   if (key.empty())
     return;
@@ -79,7 +80,7 @@ void CUrlOptions::AddOption(const std::string &key, const std::string &value)
   m_options[key] = value;
 }
 
-void CUrlOptions::AddOption(const std::string &key, int value)
+void CUrlOptions::AddOption(const std::string& key, int value)
 {
   if (key.empty())
     return;
@@ -87,7 +88,7 @@ void CUrlOptions::AddOption(const std::string &key, int value)
   m_options[key] = value;
 }
 
-void CUrlOptions::AddOption(const std::string &key, float value)
+void CUrlOptions::AddOption(const std::string& key, float value)
 {
   if (key.empty())
     return;
@@ -95,7 +96,7 @@ void CUrlOptions::AddOption(const std::string &key, float value)
   m_options[key] = value;
 }
 
-void CUrlOptions::AddOption(const std::string &key, double value)
+void CUrlOptions::AddOption(const std::string& key, double value)
 {
   if (key.empty())
     return;
@@ -103,7 +104,7 @@ void CUrlOptions::AddOption(const std::string &key, double value)
   m_options[key] = value;
 }
 
-void CUrlOptions::AddOption(const std::string &key, bool value)
+void CUrlOptions::AddOption(const std::string& key, bool value)
 {
   if (key.empty())
     return;
@@ -111,7 +112,7 @@ void CUrlOptions::AddOption(const std::string &key, bool value)
   m_options[key] = value;
 }
 
-void CUrlOptions::AddOptions(const std::string &options)
+void CUrlOptions::AddOptions(const std::string& options)
 {
   if (options.empty())
     return;
@@ -121,18 +122,21 @@ void CUrlOptions::AddOptions(const std::string &options)
   // if matching the preset leading str, remove from options.
   if (!m_strLead.empty() && strOptions.compare(0, m_strLead.length(), m_strLead) == 0)
     strOptions.erase(0, m_strLead.length());
-  else if (strOptions.at(0) == '?' || strOptions.at(0) == '#' || strOptions.at(0) == ';' || strOptions.at(0) == '|')
+  else if (strOptions.at(0) == '?' || strOptions.at(0) == '#' || strOptions.at(0) == ';' ||
+           strOptions.at(0) == '|')
   {
     // remove leading ?, #, ; or | if present
     if (!m_strLead.empty())
-      CLog::Log(LOGWARNING, "%s: original leading str %s overrided by %c", __FUNCTION__, m_strLead.c_str(), strOptions.at(0));
+      CLog::Log(LOGWARNING, "%s: original leading str %s overrided by %c", __FUNCTION__,
+                m_strLead.c_str(), strOptions.at(0));
     m_strLead = strOptions.at(0);
     strOptions.erase(0, 1);
   }
 
   // split the options by & and process them one by one
   vector<string> optionList = StringUtils::Split(strOptions, "&");
-  for (vector<string>::const_iterator option = optionList.begin(); option != optionList.end(); option++)
+  for (vector<string>::const_iterator option = optionList.begin(); option != optionList.end();
+       option++)
   {
     if (option->empty())
       continue;
@@ -150,12 +154,12 @@ void CUrlOptions::AddOptions(const std::string &options)
   }
 }
 
-void CUrlOptions::AddOptions(const CUrlOptions &options)
+void CUrlOptions::AddOptions(const CUrlOptions& options)
 {
   m_options.insert(options.m_options.begin(), options.m_options.end());
 }
 
-void CUrlOptions::RemoveOption(const std::string &key)
+void CUrlOptions::RemoveOption(const std::string& key)
 {
   if (key.empty())
     return;
@@ -165,7 +169,7 @@ void CUrlOptions::RemoveOption(const std::string &key)
     m_options.erase(option);
 }
 
-bool CUrlOptions::HasOption(const std::string &key) const
+bool CUrlOptions::HasOption(const std::string& key) const
 {
   if (key.empty())
     return false;
@@ -173,7 +177,7 @@ bool CUrlOptions::HasOption(const std::string &key) const
   return m_options.find(key) != m_options.end();
 }
 
-bool CUrlOptions::GetOption(const std::string &key, CVariant &value) const
+bool CUrlOptions::GetOption(const std::string& key, CVariant& value) const
 {
   if (key.empty())
     return false;

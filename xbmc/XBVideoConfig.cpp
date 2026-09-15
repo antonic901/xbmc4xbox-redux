@@ -42,7 +42,8 @@ XBVideoConfig::XBVideoConfig()
 }
 
 XBVideoConfig::~XBVideoConfig()
-{}
+{
+}
 
 void XBVideoConfig::OnSettingsLoaded()
 {
@@ -60,8 +61,10 @@ void XBVideoConfig::OnSettingsLoaded()
 bool XBVideoConfig::HasPAL() const
 {
 #ifdef HAS_XBOX_D3D
-  if (bHasPAL) return true;
-  if (bHasNTSC) return false; // has NTSC (or PAL60) but not PAL
+  if (bHasPAL)
+    return true;
+  if (bHasNTSC)
+    return false; // has NTSC (or PAL60) but not PAL
   return (XGetVideoStandard() == XC_VIDEO_STANDARD_PAL_I) != 0;
 #else
   return true;
@@ -147,28 +150,29 @@ void XBVideoConfig::GetModes(LPDIRECT3D8 pD3D)
   DWORD numModes = pD3D->GetAdapterModeCount(D3DADAPTER_DEFAULT);
   D3DDISPLAYMODE mode;
   CLog::Log(LOGINFO, "Available videomodes:");
-  for ( DWORD i = 0; i < numModes; i++ )
+  for (DWORD i = 0; i < numModes; i++)
   {
-    pD3D->EnumAdapterModes( 0, i, &mode );
+    pD3D->EnumAdapterModes(0, i, &mode);
 
     // Skip modes we don't care about
-    if ( mode.Format != D3DFMT_LIN_A8R8G8B8 )
+    if (mode.Format != D3DFMT_LIN_A8R8G8B8)
       continue;
 #ifdef HAS_XBOX_D3D
-    if ( mode.Flags & D3DPRESENTFLAG_FIELD )
+    if (mode.Flags & D3DPRESENTFLAG_FIELD)
       continue;
-    if ( mode.Flags & D3DPRESENTFLAG_10X11PIXELASPECTRATIO )
+    if (mode.Flags & D3DPRESENTFLAG_10X11PIXELASPECTRATIO)
       continue;
-    if ( mode.Flags & D3DPRESENTFLAG_EMULATE_REFRESH_RATE )
+    if (mode.Flags & D3DPRESENTFLAG_EMULATE_REFRESH_RATE)
       continue;
 #endif
     // ignore 640 wide modes
-    if ( mode.Width < 720)
+    if (mode.Width < 720)
       continue;
 
     // If we get here, we found an acceptable mode
 #ifdef HAS_XBOX_D3D
-    CLog::Log(LOGINFO, "Found mode: %ix%i at %iHz, %s", mode.Width, mode.Height, mode.RefreshRate, mode.Flags & D3DPRESENTFLAG_WIDESCREEN ? "Widescreen" : "");
+    CLog::Log(LOGINFO, "Found mode: %ix%i at %iHz, %s", mode.Width, mode.Height, mode.RefreshRate,
+              mode.Flags & D3DPRESENTFLAG_WIDESCREEN ? "Widescreen" : "");
 #else
     CLog::Log(LOGINFO, "Found mode: %ix%i at %iHz", mode.Width, mode.Height, mode.RefreshRate);
 #endif
@@ -181,14 +185,17 @@ void XBVideoConfig::GetModes(LPDIRECT3D8 pD3D)
 
 RESOLUTION XBVideoConfig::GetSafeMode() const
 {
-  if (HasPAL()) return RES_PAL_4x3;
+  if (HasPAL())
+    return RES_PAL_4x3;
   return RES_NTSC_4x3;
 }
 
 RESOLUTION XBVideoConfig::GetBestMode() const
 {
   RESOLUTION bestRes = RES_INVALID;
-  RESOLUTION resolutions[] = {RES_HDTV_1080i, RES_HDTV_720p, RES_HDTV_480p_16x9, RES_HDTV_480p_4x3, RES_NTSC_16x9, RES_NTSC_4x3, RES_PAL_16x9, RES_PAL_4x3, RES_PAL60_16x9, RES_PAL60_4x3, RES_INVALID};
+  RESOLUTION resolutions[] = {RES_HDTV_1080i, RES_HDTV_720p, RES_HDTV_480p_16x9, RES_HDTV_480p_4x3,
+                              RES_NTSC_16x9,  RES_NTSC_4x3,  RES_PAL_16x9,       RES_PAL_4x3,
+                              RES_PAL60_16x9, RES_PAL60_4x3, RES_INVALID};
   UCHAR i = 0;
   while (resolutions[i] != RES_INVALID)
   {
@@ -208,46 +215,56 @@ bool XBVideoConfig::IsValidResolution(RESOLUTION res) const
   if (HasPAL())
   {
     bool bCanDoPAL60 = HasPAL60();
-    if (res == RES_PAL_4x3) return true;
-    if (res == RES_PAL_16x9 && bCanDoWidescreen) return true;
-    if (res == RES_PAL60_4x3 && bCanDoPAL60) return true;
-    if (res == RES_PAL60_16x9 && bCanDoPAL60 && bCanDoWidescreen) return true;
+    if (res == RES_PAL_4x3)
+      return true;
+    if (res == RES_PAL_16x9 && bCanDoWidescreen)
+      return true;
+    if (res == RES_PAL60_4x3 && bCanDoPAL60)
+      return true;
+    if (res == RES_PAL60_16x9 && bCanDoPAL60 && bCanDoWidescreen)
+      return true;
   }
   if (HasNTSC())
   {
-    if (res == RES_NTSC_4x3) return true;
-    if (res == RES_NTSC_16x9 && bCanDoWidescreen) return true;
-    if (res == RES_HDTV_480p_4x3 && Has480p()) return true;
-    if (res == RES_HDTV_480p_16x9 && Has480p() && bCanDoWidescreen) return true;
-    if (res == RES_HDTV_720p && Has720p()) return true;
-    if (res == RES_HDTV_1080i && Has1080i()) return true;
+    if (res == RES_NTSC_4x3)
+      return true;
+    if (res == RES_NTSC_16x9 && bCanDoWidescreen)
+      return true;
+    if (res == RES_HDTV_480p_4x3 && Has480p())
+      return true;
+    if (res == RES_HDTV_480p_16x9 && Has480p() && bCanDoWidescreen)
+      return true;
+    if (res == RES_HDTV_720p && Has720p())
+      return true;
+    if (res == RES_HDTV_1080i && Has1080i())
+      return true;
   }
   return false;
 }
 
 //pre: XBVideoConfig::GetModes has been called before this function
-RESOLUTION XBVideoConfig::GetInitialMode(LPDIRECT3D8 pD3D, D3DPRESENT_PARAMETERS *p3dParams)
+RESOLUTION XBVideoConfig::GetInitialMode(LPDIRECT3D8 pD3D, D3DPRESENT_PARAMETERS* p3dParams)
 {
   bool bHasPal = HasPAL();
   DWORD numModes = pD3D->GetAdapterModeCount(D3DADAPTER_DEFAULT);
   D3DDISPLAYMODE mode;
-  for ( DWORD i = 0; i < numModes; i++ )
+  for (DWORD i = 0; i < numModes; i++)
   {
-    pD3D->EnumAdapterModes( 0, i, &mode );
+    pD3D->EnumAdapterModes(0, i, &mode);
 
 #ifdef HAS_XBOX_D3D
     // Skip modes we don't care about
-    if ( mode.Format != D3DFMT_LIN_A8R8G8B8 )
+    if (mode.Format != D3DFMT_LIN_A8R8G8B8)
       continue;
-    if ( mode.Flags & D3DPRESENTFLAG_FIELD )
+    if (mode.Flags & D3DPRESENTFLAG_FIELD)
       continue;
-    if ( mode.Flags & D3DPRESENTFLAG_10X11PIXELASPECTRATIO )
+    if (mode.Flags & D3DPRESENTFLAG_10X11PIXELASPECTRATIO)
       continue;
-    if ( mode.Flags & D3DPRESENTFLAG_EMULATE_REFRESH_RATE )
+    if (mode.Flags & D3DPRESENTFLAG_EMULATE_REFRESH_RATE)
       continue;
 #endif
     // ignore 640 wide modes
-    if ( mode.Width < 720)
+    if (mode.Width < 720)
       continue;
 
     p3dParams->BackBufferWidth = mode.Width;
@@ -299,17 +316,17 @@ CStdString XBVideoConfig::GetAVPack() const
 #ifdef HAS_XBOX_HARDWARE
   switch (XGetAVPack())
   {
-    case XC_AV_PACK_STANDARD :
+    case XC_AV_PACK_STANDARD:
       return "Standard";
-    case XC_AV_PACK_SVIDEO :
+    case XC_AV_PACK_SVIDEO:
       return "S-Video";
-    case XC_AV_PACK_SCART :
+    case XC_AV_PACK_SCART:
       return "Scart";
-    case XC_AV_PACK_HDTV :
+    case XC_AV_PACK_HDTV:
       return "HDTV";
-    case XC_AV_PACK_VGA :
+    case XC_AV_PACK_VGA:
       return "VGA";
-    case XC_AV_PACK_RFU :
+    case XC_AV_PACK_RFU:
       return "RF";
   }
 #endif
@@ -321,12 +338,18 @@ void XBVideoConfig::PrintInfo() const
 #ifdef HAS_XBOX_D3D
   CLog::Log(LOGINFO, "AV Pack: %s", GetAVPack().c_str());
   CStdString strAVFlags;
-  if (HasWidescreen()) strAVFlags += "Widescreen,";
-  if (HasPAL60()) strAVFlags += "Pal60,";
-  if (Has480p()) strAVFlags += "480p,";
-  if (Has720p()) strAVFlags += "720p,";
-  if (Has1080i()) strAVFlags += "1080i,";
-  if (strAVFlags.size() > 1) strAVFlags = strAVFlags.Left(strAVFlags.size() - 1);
+  if (HasWidescreen())
+    strAVFlags += "Widescreen,";
+  if (HasPAL60())
+    strAVFlags += "Pal60,";
+  if (Has480p())
+    strAVFlags += "480p,";
+  if (Has720p())
+    strAVFlags += "720p,";
+  if (Has1080i())
+    strAVFlags += "1080i,";
+  if (strAVFlags.size() > 1)
+    strAVFlags = strAVFlags.Left(strAVFlags.size() - 1);
   CLog::Log(LOGINFO, "AV Flags: %s", strAVFlags.c_str());
 #endif
 }
@@ -410,7 +433,8 @@ void XBVideoConfig::SetWidescreen(bool bEnable)
 
 void XBVideoConfig::Save()
 {
-  if (!NeedsSave()) return;
+  if (!NeedsSave())
+    return;
 #ifdef HAS_XBOX_D3D
   // update the EEPROM settings
   DWORD type = REG_DWORD;

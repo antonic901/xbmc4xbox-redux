@@ -25,26 +25,34 @@
 // time to reset accelerated cursors (digital movement)
 #define MOVE_TIME_OUT 500L
 
-CGUIMoverControl::CGUIMoverControl(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus)
-    : CGUIControl(parentID, controlID, posX, posY, width, height)
-    , m_imgFocus(posX, posY, width, height, textureFocus)
-    , m_imgNoFocus(posX, posY, width, height, textureNoFocus)
+CGUIMoverControl::CGUIMoverControl(int parentID,
+                                   int controlID,
+                                   float posX,
+                                   float posY,
+                                   float width,
+                                   float height,
+                                   const CTextureInfo& textureFocus,
+                                   const CTextureInfo& textureNoFocus)
+  : CGUIControl(parentID, controlID, posX, posY, width, height),
+    m_imgFocus(posX, posY, width, height, textureFocus),
+    m_imgNoFocus(posX, posY, width, height, textureNoFocus)
 {
   m_frameCounter = 0;
   m_lastMoveTime = 0;
   m_fSpeed = 1.0;
   m_fAnalogSpeed = 2.0f; //! @todo implement correct analog speed
   m_fAcceleration = 0.2f; //! @todo implement correct computation of acceleration
-  m_fMaxSpeed = 10.0;  //! @todo implement correct computation of maxspeed
+  m_fMaxSpeed = 10.0; //! @todo implement correct computation of maxspeed
   ControlType = GUICONTROL_MOVER;
   SetLimits(0, 0, 720, 576); // defaults
-  SetLocation(0, 0, false);  // defaults
+  SetLocation(0, 0, false); // defaults
 }
 
 CGUIMoverControl::~CGUIMoverControl(void)
-{}
+{
+}
 
-void CGUIMoverControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIMoverControl::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   if (m_bInvalidated)
   {
@@ -64,7 +72,7 @@ void CGUIMoverControl::Process(unsigned int currentTime, CDirtyRegionList &dirty
       alphaChannel = 63 - (alphaCounter % 64);
 
     alphaChannel += 192;
-    if (SetAlpha( (unsigned char)alphaChannel ))
+    if (SetAlpha((unsigned char)alphaChannel))
       MarkDirtyRegion();
     m_imgFocus.SetVisible(true);
     m_imgNoFocus.SetVisible(false);
@@ -91,7 +99,7 @@ void CGUIMoverControl::Render()
   CGUIControl::Render();
 }
 
-bool CGUIMoverControl::OnAction(const CAction &action)
+bool CGUIMoverControl::OnAction(const CAction& action)
 {
   if (action.GetID() == ACTION_SELECT_ITEM)
   {
@@ -107,7 +115,7 @@ bool CGUIMoverControl::OnAction(const CAction &action)
     //  else if (m_dwAllowedDirections == ALLOWED_DIRECTIONS_LEFTRIGHT)
     //   Move((int)(m_fAnalogSpeed*action.GetAmount()), 0);
     //  else // ALLOWED_DIRECTIONS_ALL
-    Move((int)(m_fAnalogSpeed*action.GetAmount()), (int)( -m_fAnalogSpeed*action.GetAmount(1)));
+    Move((int)(m_fAnalogSpeed * action.GetAmount()), (int)(-m_fAnalogSpeed * action.GetAmount(1)));
     return true;
   }
   // base class
@@ -118,7 +126,7 @@ void CGUIMoverControl::OnUp()
 {
   // if (m_dwAllowedDirections == ALLOWED_DIRECTIONS_LEFTRIGHT) return;
   UpdateSpeed(DIRECTION_UP);
-  Move(0, (int) - m_fSpeed);
+  Move(0, (int)-m_fSpeed);
 }
 
 void CGUIMoverControl::OnDown()
@@ -132,7 +140,7 @@ void CGUIMoverControl::OnLeft()
 {
   // if (m_dwAllowedDirections == ALLOWED_DIRECTIONS_UPDOWN) return;
   UpdateSpeed(DIRECTION_LEFT);
-  Move((int) - m_fSpeed, 0);
+  Move((int)-m_fSpeed, 0);
 }
 
 void CGUIMoverControl::OnRight()
@@ -153,7 +161,8 @@ void CGUIMoverControl::UpdateSpeed(int nDirection)
   if (nDirection == m_nDirection)
   { // accelerate
     m_fSpeed += m_fAcceleration;
-    if (m_fSpeed > m_fMaxSpeed) m_fSpeed = m_fMaxSpeed;
+    if (m_fSpeed > m_fMaxSpeed)
+      m_fSpeed = m_fMaxSpeed;
   }
   else
   { // reset direction and speed
@@ -207,17 +216,22 @@ void CGUIMoverControl::Move(int iX, int iY)
   int iLocX = m_iLocationX + iX;
   int iLocY = m_iLocationY + iY;
   // check if we are within the bounds
-  if (iLocX < m_iX1) iLocX = m_iX1;
-  if (iLocY < m_iY1) iLocY = m_iY1;
-  if (iLocX > m_iX2) iLocX = m_iX2;
-  if (iLocY > m_iY2) iLocY = m_iY2;
+  if (iLocX < m_iX1)
+    iLocX = m_iX1;
+  if (iLocY < m_iY1)
+    iLocY = m_iY1;
+  if (iLocX > m_iX2)
+    iLocX = m_iX2;
+  if (iLocY > m_iY2)
+    iLocY = m_iY2;
   // ok, now set the location of the mover
   SetLocation(iLocX, iLocY);
 }
 
 void CGUIMoverControl::SetLocation(int iLocX, int iLocY, bool bSetPosition)
 {
-  if (bSetPosition) SetPosition(GetXPosition() + iLocX - m_iLocationX, GetYPosition() + iLocY - m_iLocationY);
+  if (bSetPosition)
+    SetPosition(GetXPosition() + iLocX - m_iLocationX, GetYPosition() + iLocY - m_iLocationY);
   m_iLocationX = iLocX;
   m_iLocationY = iLocY;
 }
@@ -231,8 +245,7 @@ void CGUIMoverControl::SetPosition(float posX, float posY)
 
 bool CGUIMoverControl::SetAlpha(unsigned char alpha)
 {
-  return m_imgFocus.SetAlpha(alpha) | 
-         m_imgNoFocus.SetAlpha(alpha);
+  return m_imgFocus.SetAlpha(alpha) | m_imgNoFocus.SetAlpha(alpha);
 }
 
 bool CGUIMoverControl::UpdateColors()

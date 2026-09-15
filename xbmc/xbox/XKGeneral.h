@@ -49,21 +49,21 @@ Reason: Prepared for Public Release
 
 #ifndef __GNUC__
 #pragma once
-#if defined (_WINDOWS)
- #pragma message ("Compiling for WINDOWS: " __FILE__)
+#if defined(_WINDOWS)
+#pragma message("Compiling for WINDOWS: " __FILE__)
 // #include <afxwin.h>         // MFC core and standard components
-#elif defined (_XBOX)
- #pragma message ("Compiling for XBOX: " __FILE__)
- #include <xtl.h>
+#elif defined(_XBOX)
+#pragma message("Compiling for XBOX: " __FILE__)
+#include <xtl.h>
 #else
- #error ERR: Have to Define _WINDOWS or _XBOX !!
+#error ERR: Have to Define _WINDOWS or _XBOX !!
 #endif
 #endif
 
 #include "system.h"
 
 #ifndef FILENAME_MAX
- #define FILENAME_MAX 260
+#define FILENAME_MAX 260
 #endif
 
 class XKGeneral
@@ -80,10 +80,14 @@ public:
   static void BytesToHexStr(LPBYTE SrcBytes, DWORD byteCount, LPSTR DstString, UCHAR Seperator);
   static void MixedStrToDecStr(LPSTR StringData, LPDWORD StrLen, CHAR Base, BOOL RemoveInvalid);
   static void HexStrToBytes(LPBYTE StringData, LPDWORD pBufferLen, BOOL RemoveInvalid);
-  static DWORD HexStrToDWORD(LPBYTE StringData, LPDWORD pBufferLen, BOOL RemoveInvalid, BOOL FlipByteOrder);
+  static DWORD HexStrToDWORD(LPBYTE StringData,
+                             LPDWORD pBufferLen,
+                             BOOL RemoveInvalid,
+                             BOOL FlipByteOrder);
 
   //Read items and values from a .INI file..
-  static BOOL ReadINIFileItem(LPCSTR INIFileName, LPCSTR INISection, LPCSTR INIItem, LPSTR ItemValue, LPDWORD ValueLen);
+  static BOOL ReadINIFileItem(
+      LPCSTR INIFileName, LPCSTR INISection, LPCSTR INIItem, LPSTR ItemValue, LPDWORD ValueLen);
 
   //Strip Quotes from a string..
   static void StripEnclosedChars(LPSTR sString, LPDWORD strLen, CHAR EncloseChar);

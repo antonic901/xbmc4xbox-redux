@@ -49,23 +49,23 @@ using namespace KODI::MESSAGING;
  */
 static int Extract(const std::vector<std::string>& params)
 {
-    // Detects if file is zip or rar then extracts
-    std::string strDestDirect;
-    if (params.size() < 2)
-      strDestDirect = URIUtils::GetDirectory(params[0]);
-    else
-      strDestDirect = params[1];
+  // Detects if file is zip or rar then extracts
+  std::string strDestDirect;
+  if (params.size() < 2)
+    strDestDirect = URIUtils::GetDirectory(params[0]);
+  else
+    strDestDirect = params[1];
 
-    URIUtils::AddSlashAtEnd(strDestDirect);
+  URIUtils::AddSlashAtEnd(strDestDirect);
 
-    if (URIUtils::IsZIP(params[0]))
-      g_ZipManager.ExtractArchive(params[0],strDestDirect);
+  if (URIUtils::IsZIP(params[0]))
+    g_ZipManager.ExtractArchive(params[0], strDestDirect);
 #ifdef HAS_FILESYSTEM_RAR
-    else if (URIUtils::IsRAR(params[0]))
-      g_RarManager.ExtractArchive(params[0],strDestDirect);
+  else if (URIUtils::IsRAR(params[0]))
+    g_RarManager.ExtractArchive(params[0], strDestDirect);
 #endif
-    else
-      CLog::Log(LOGERROR, "Extract, No archive given");
+  else
+    CLog::Log(LOGERROR, "Extract, No archive given");
 
   return 0;
 }
@@ -90,9 +90,10 @@ static int NotifyAll(const std::vector<std::string>& params)
 {
   CVariant data;
   if (params.size() > 2)
-    data = CJSONVariantParser::Parse((const unsigned char *)params[2].c_str(), params[2].size());
+    data = CJSONVariantParser::Parse((const unsigned char*)params[2].c_str(), params[2].size());
 
-  ANNOUNCEMENT::CAnnouncementManager::GetInstance().Announce(ANNOUNCEMENT::Other, params[0].c_str(), params[1].c_str(), data);
+  ANNOUNCEMENT::CAnnouncementManager::GetInstance().Announce(ANNOUNCEMENT::Other, params[0].c_str(),
+                                                             params[1].c_str(), data);
 
   return 0;
 }
@@ -108,11 +109,12 @@ static int SetVolume(const std::vector<std::string>& params)
   int volume = atoi(params[0].c_str());
 
   g_application.SetVolume(volume);
-  if(oldVolume != volume)
+  if (oldVolume != volume)
   {
-    if(params.size() > 1 && StringUtils::EqualsNoCase(params[1], "showVolumeBar"))
+    if (params.size() > 1 && StringUtils::EqualsNoCase(params[1], "showVolumeBar"))
     {
-      CApplicationMessenger::Get().PostMsg(TMSG_VOLUME_SHOW, oldVolume < volume ? ACTION_VOLUME_UP : ACTION_VOLUME_DOWN);
+      CApplicationMessenger::Get().PostMsg(
+          TMSG_VOLUME_SHOW, oldVolume < volume ? ACTION_VOLUME_UP : ACTION_VOLUME_DOWN);
     }
   }
 
@@ -238,7 +240,9 @@ CBuiltins::CommandMap CApplicationBuiltins::GetOperations() const
   commands.insert(std::make_pair("toggledpms", builtin6));
 #endif
 
-  CBuiltins::BUILT_IN builtin7 = {"Sends the wake-up packet to the broadcast address for the specified MAC address", 1, WakeOnLAN};
+  CBuiltins::BUILT_IN builtin7 = {
+      "Sends the wake-up packet to the broadcast address for the specified MAC address", 1,
+      WakeOnLAN};
   commands.insert(std::make_pair("wakeonlan", builtin7));
 
   return commands;

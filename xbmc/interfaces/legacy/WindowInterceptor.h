@@ -15,27 +15,27 @@
 
 namespace XBMCAddon
 {
-  namespace xbmcgui
-  {
+namespace xbmcgui
+{
 
 #ifndef SWIG
-    class Window;
-    class ref;
+class Window;
+class ref;
 
-    /**
+/**
      * These two classes are closely associated with the Interceptor template below.
      *  For more detailed explanation, see that class.
      */
-    class InterceptorBase
-    {
-    protected:
-      AddonClass::Ref<Window> window;
-      // This instance is in Window.cpp
-      static XbmcThreads::ThreadLocal<ref> upcallTls;
+class InterceptorBase
+{
+protected:
+  AddonClass::Ref<Window> window;
+  // This instance is in Window.cpp
+  static XbmcThreads::ThreadLocal<ref> upcallTls;
 
-      InterceptorBase() : window(NULL) { upcallTls.set(NULL); }
+  InterceptorBase() : window(NULL) { upcallTls.set(NULL); }
 
-      /**
+  /**
        * Calling up ONCE resets the upcall to to false. The reason is that when
        *   a call is recursive we cannot assume the ref has cleared the flag.
        *   so ...
@@ -48,22 +48,33 @@ namespace XBMCAddon
        *  the call will wrongly proceed back to the xbmc core side rather than
        *  to the Addon API side.
        */
-      static bool up() { bool ret = ((upcallTls.get()) != NULL); upcallTls.set(NULL); return ret; }
-    public:
+  static bool up()
+  {
+    bool ret = ((upcallTls.get()) != NULL);
+    upcallTls.set(NULL);
+    return ret;
+  }
 
-      virtual ~InterceptorBase() { if (window.isNotNull()) { window->interceptorClear(); } }
+public:
+  virtual ~InterceptorBase()
+  {
+    if (window.isNotNull())
+    {
+      window->interceptorClear();
+    }
+  }
 
-      virtual CGUIWindow* get() = 0;
+  virtual CGUIWindow* get() = 0;
 
-      virtual void SetRenderOrder(int renderOrder) { }
+  virtual void SetRenderOrder(int renderOrder) {}
 
-      virtual void setActive(bool active) { }
-      virtual bool isActive() { return false; }
+  virtual void setActive(bool active) {}
+  virtual bool isActive() { return false; }
 
-      friend class ref;
-    };
+  friend class ref;
+};
 
-    /**
+/**
      * Guard class. But instead of managing memory or thread resources,
      * any call made using the operator-> results in an 'upcall.' That is,
      * it expects the call about to be made to have come from the XBMCAddon
@@ -73,17 +84,18 @@ namespace XBMCAddon
      * This class is meant to hold references to instances of Interceptor<P>.
      *   see that template definition below.
      */
-    class ref
-    {
-      InterceptorBase* w;
-    public:
-      inline explicit ref(InterceptorBase* b) : w(b) { w->upcallTls.set(this); }
-      inline ~ref() { w->upcallTls.set(NULL); }
-      inline CGUIWindow* operator->() { return w->get(); }
-      inline CGUIWindow* get() { return w->get(); }
-    };
+class ref
+{
+  InterceptorBase* w;
 
-    /**
+public:
+  inline explicit ref(InterceptorBase* b) : w(b) { w->upcallTls.set(this); }
+  inline ~ref() { w->upcallTls.set(NULL); }
+  inline CGUIWindow* operator->() { return w->get(); }
+  inline CGUIWindow* get() { return w->get(); }
+};
+
+/**
      * The intention of this class is to intercept calls from
      *  multiple points in the CGUIWindow class hierarchy and pass
      *  those calls over to the XBMCAddon API Window hierarchy. It
@@ -99,95 +111,144 @@ namespace XBMCAddon
      *  overloaded -> operator.
      */
 
-#define checkedb(methcall) ( window.isNotNull() ? window-> methcall : false )
-#define checkedv(methcall) { if (window.isNotNull()) window-> methcall ; }
+#define checkedb(methcall) (window.isNotNull() ? window->methcall : false)
+#define checkedv(methcall) \
+  { \
+    if (window.isNotNull()) \
+      window->methcall; \
+  }
 
-    template <class P /* extends CGUIWindow*/> class Interceptor :
-      public P, public InterceptorBase
-    {
-      std::string classname;
-    protected:
-      virtual CGUIWindow* get() { return this; }
+template<class P /* extends CGUIWindow*/>
+class Interceptor : public P, public InterceptorBase
+{
+  std::string classname;
 
-    public:
-      Interceptor(const char* specializedName,
-                  Window* _window, int windowid) : P(windowid, ""),
-        classname("Interceptor<" + std::string(specializedName) + ">")
-      {
+protected:
+  virtual CGUIWindow* get() { return this; }
+
+public:
+  Interceptor(const char* specializedName, Window* _window, int windowid)
+    : P(windowid, ""),
+      classname("Interceptor<" + std::string(specializedName) + ">")
+  {
 #ifdef ENABLE_XBMC_TRACE_API
-        XBMCAddonUtils::TraceGuard tg;
-        CLog::Log(LOGDEBUG, "%sNEWADDON constructing %s 0x%lx", tg.getSpaces(),classname.c_str(), (long)(((void*)this)));
+    XBMCAddonUtils::TraceGuard tg;
+    CLog::Log(LOGDEBUG, "%sNEWADDON constructing %s 0x%lx", tg.getSpaces(), classname.c_str(),
+              (long)(((void*)this)));
 #endif
-        window.reset(_window);
-        P::SetLoadType(CGUIWindow::LOAD_ON_GUI_INIT);
-      }
+    window.reset(_window);
+    P::SetLoadType(CGUIWindow::LOAD_ON_GUI_INIT);
+  }
 
-      Interceptor(const char* specializedName,
-                  Window* _window, int windowid,
-                  const char* xmlfile) : P(windowid, xmlfile),
-        classname("Interceptor<" + std::string(specializedName) + ">")
-      {
+  Interceptor(const char* specializedName, Window* _window, int windowid, const char* xmlfile)
+    : P(windowid, xmlfile),
+      classname("Interceptor<" + std::string(specializedName) + ">")
+  {
 #ifdef ENABLE_XBMC_TRACE_API
-        XBMCAddonUtils::TraceGuard tg;
-        CLog::Log(LOGDEBUG, "%sNEWADDON constructing %s 0x%lx", tg.getSpaces(),classname.c_str(), (long)(((void*)this)));
+    XBMCAddonUtils::TraceGuard tg;
+    CLog::Log(LOGDEBUG, "%sNEWADDON constructing %s 0x%lx", tg.getSpaces(), classname.c_str(),
+              (long)(((void*)this)));
 #endif
-        window.reset(_window);
-        P::SetLoadType(CGUIWindow::LOAD_ON_GUI_INIT);
-      }
+    window.reset(_window);
+    P::SetLoadType(CGUIWindow::LOAD_ON_GUI_INIT);
+  }
 
 #ifdef ENABLE_XBMC_TRACE_API
-      virtual ~Interceptor()
-      {
-        XBMCAddonUtils::TraceGuard tg;
-        CLog::Log(LOGDEBUG, "%sNEWADDON LIFECYCLE destroying %s 0x%lx", tg.getSpaces(),classname.c_str(), (long)(((void*)this)));
-      }
+  virtual ~Interceptor()
+  {
+    XBMCAddonUtils::TraceGuard tg;
+    CLog::Log(LOGDEBUG, "%sNEWADDON LIFECYCLE destroying %s 0x%lx", tg.getSpaces(),
+              classname.c_str(), (long)(((void*)this)));
+  }
 #else
-      virtual ~Interceptor() {};
+  virtual ~Interceptor() {};
 #endif
 
-      virtual bool OnMessage(CGUIMessage& message)
-      { XBMC_TRACE; return up() ? P::OnMessage(message) : checkedb(OnMessage(message)); }
-      virtual bool OnAction(const CAction &action)
-      { XBMC_TRACE; return up() ? P::OnAction(action) : checkedb(OnAction(action)); }
+  virtual bool OnMessage(CGUIMessage& message)
+  {
+    XBMC_TRACE;
+    return up() ? P::OnMessage(message) : checkedb(OnMessage(message));
+  }
+  virtual bool OnAction(const CAction& action)
+  {
+    XBMC_TRACE;
+    return up() ? P::OnAction(action) : checkedb(OnAction(action));
+  }
 
-      // NOTE!!: This ALWAYS skips up to the CGUIWindow instance.
-      virtual bool OnBack(int actionId)
-      { XBMC_TRACE; return up() ? CGUIWindow::OnBack(actionId) : checkedb(OnBack(actionId)); }
+  // NOTE!!: This ALWAYS skips up to the CGUIWindow instance.
+  virtual bool OnBack(int actionId)
+  {
+    XBMC_TRACE;
+    return up() ? CGUIWindow::OnBack(actionId) : checkedb(OnBack(actionId));
+  }
 
-      virtual void OnDeinitWindow(int nextWindowID)
-      { XBMC_TRACE; if(up()) P::OnDeinitWindow(nextWindowID); else checkedv(OnDeinitWindow(nextWindowID)); }
+  virtual void OnDeinitWindow(int nextWindowID)
+  {
+    XBMC_TRACE;
+    if (up())
+      P::OnDeinitWindow(nextWindowID);
+    else
+      checkedv(OnDeinitWindow(nextWindowID));
+  }
 
-      virtual bool IsModalDialog() const { XBMC_TRACE; return checkedb(IsModalDialog()); };
+  virtual bool IsModalDialog() const
+  {
+    XBMC_TRACE;
+    return checkedb(IsModalDialog());
+  };
 
-      virtual bool IsDialogRunning() const { XBMC_TRACE; return checkedb(IsDialogRunning()); };
-      virtual bool IsDialog() const { XBMC_TRACE; return checkedb(IsDialog()); };
-      virtual bool IsMediaWindow() const { XBMC_TRACE; return checkedb(IsMediaWindow()); };
+  virtual bool IsDialogRunning() const
+  {
+    XBMC_TRACE;
+    return checkedb(IsDialogRunning());
+  };
+  virtual bool IsDialog() const
+  {
+    XBMC_TRACE;
+    return checkedb(IsDialog());
+  };
+  virtual bool IsMediaWindow() const
+  {
+    XBMC_TRACE;
+    return checkedb(IsMediaWindow());
+  };
 
-      virtual void SetRenderOrder(int renderOrder) { XBMC_TRACE; P::m_renderOrder = renderOrder; }
+  virtual void SetRenderOrder(int renderOrder)
+  {
+    XBMC_TRACE;
+    P::m_renderOrder = renderOrder;
+  }
 
-      virtual void setActive(bool active) { XBMC_TRACE; P::m_active = active; }
-      virtual bool isActive() { XBMC_TRACE; return P::m_active; }
-    };
+  virtual void setActive(bool active)
+  {
+    XBMC_TRACE;
+    P::m_active = active;
+  }
+  virtual bool isActive()
+  {
+    XBMC_TRACE;
+    return P::m_active;
+  }
+};
 
-    template <class P /* extends CGUIWindow*/> class InterceptorDialog :
-      public Interceptor<P>
-    {
-    public:
-      InterceptorDialog(const char* specializedName,
-                        Window* _window, int windowid) :
-        Interceptor<P>(specializedName, _window, windowid)
-      { }
+template<class P /* extends CGUIWindow*/>
+class InterceptorDialog : public Interceptor<P>
+{
+public:
+  InterceptorDialog(const char* specializedName, Window* _window, int windowid)
+    : Interceptor<P>(specializedName, _window, windowid)
+  {
+  }
 
-      InterceptorDialog(const char* specializedName,
-                  Window* _window, int windowid,
-                  const char* xmlfile) :
-        Interceptor<P>(specializedName, _window, windowid,xmlfile)
-      { }
-    };
+  InterceptorDialog(const char* specializedName, Window* _window, int windowid, const char* xmlfile)
+    : Interceptor<P>(specializedName, _window, windowid, xmlfile)
+  {
+  }
+};
 
 #undef checkedb
 #undef checkedv
 
 #endif
-  }
-}
+} // namespace xbmcgui
+} // namespace XBMCAddon

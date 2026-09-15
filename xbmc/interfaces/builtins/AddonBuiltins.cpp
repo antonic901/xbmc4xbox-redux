@@ -119,13 +119,17 @@ static int RunAddon(const std::vector<std::string>& params)
 
       std::string cmd;
       if (plugin->Provides(CPluginSource::VIDEO))
-        cmd = StringUtils::Format("ActivateWindow(Videos,plugin://%s%s,return)", addonid.c_str(), urlParameters.c_str());
+        cmd = StringUtils::Format("ActivateWindow(Videos,plugin://%s%s,return)", addonid.c_str(),
+                                  urlParameters.c_str());
       else if (plugin->Provides(CPluginSource::AUDIO))
-        cmd = StringUtils::Format("ActivateWindow(Music,plugin://%s%s,return)", addonid.c_str(), urlParameters.c_str());
+        cmd = StringUtils::Format("ActivateWindow(Music,plugin://%s%s,return)", addonid.c_str(),
+                                  urlParameters.c_str());
       else if (plugin->Provides(CPluginSource::EXECUTABLE))
-        cmd = StringUtils::Format("ActivateWindow(Programs,plugin://%s%s,return)", addonid.c_str(), urlParameters.c_str());
+        cmd = StringUtils::Format("ActivateWindow(Programs,plugin://%s%s,return)", addonid.c_str(),
+                                  urlParameters.c_str());
       else if (plugin->Provides(CPluginSource::IMAGE))
-        cmd = StringUtils::Format("ActivateWindow(Pictures,plugin://%s%s,return)", addonid.c_str(), urlParameters.c_str());
+        cmd = StringUtils::Format("ActivateWindow(Pictures,plugin://%s%s,return)", addonid.c_str(),
+                                  urlParameters.c_str());
       else
         // Pass the script name (addonid) and all the parameters
         // (params[1] ... params[x]) separated by a comma to RunPlugin
@@ -133,16 +137,20 @@ static int RunAddon(const std::vector<std::string>& params)
       CBuiltins::GetInstance().Execute(cmd);
     }
     else if (CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_SCRIPT) ||
-        CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_SCRIPT_WEATHER) ||
-        CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_SCRIPT_LYRICS) ||
-        CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_SCRIPT_LIBRARY))
+             CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_SCRIPT_WEATHER) ||
+             CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_SCRIPT_LYRICS) ||
+             CServiceBroker::GetAddonMgr().GetAddon(addonid, addon, ADDON_SCRIPT_LIBRARY))
     {
       // Pass the script name (addonid) and all the parameters
       // (params[1] ... params[x]) separated by a comma to RunScript
-      CBuiltins::GetInstance().Execute(StringUtils::Format("RunScript(%s)", StringUtils::Join(params, ",").c_str()));
+      CBuiltins::GetInstance().Execute(
+          StringUtils::Format("RunScript(%s)", StringUtils::Join(params, ",").c_str()));
     }
     else
-      CLog::Log(LOGERROR, "RunAddon: unknown add-on id '%s', or unexpected add-on type (not a script or plugin).", addonid.c_str());
+      CLog::Log(
+          LOGERROR,
+          "RunAddon: unknown add-on id '%s', or unexpected add-on type (not a script or plugin).",
+          addonid.c_str());
   }
   else
   {
@@ -196,7 +204,9 @@ static int RunScript(const std::vector<std::string>& params)
         //Run a random extension point (old behaviour).
         CServiceBroker::GetAddonMgr().GetAddon(params[0], addon);
         scriptpath = addon->LibPath();
-        CLog::Log(LOGWARNING, "RunScript called for a non-script addon '%s'. This behaviour is deprecated.", params[0].c_str());
+        CLog::Log(LOGWARNING,
+                  "RunScript called for a non-script addon '%s'. This behaviour is deprecated.",
+                  params[0].c_str());
       }
     }
     else
@@ -244,8 +254,7 @@ static int SetDefaultAddon(const std::vector<std::string>& params)
   if (type == ADDON_VIZ)
     allowNone = true;
 
-  if (type != ADDON_UNKNOWN &&
-      CGUIWindowAddonBrowser::SelectAddonID(type,addonID,allowNone))
+  if (type != ADDON_UNKNOWN && CGUIWindowAddonBrowser::SelectAddonID(type, addonID, allowNone))
   {
     CAddonSystemSettings::GetInstance().SetActive(type, addonID);
     if (type == ADDON_VIZ)
@@ -412,13 +421,17 @@ CBuiltins::CommandMap CAddonBuiltins::GetOperations() const
 {
   CBuiltins::CommandMap commands;
 
-  CBuiltins::BUILT_IN builtin1 = {"Open a settings dialog for the default addon of the given type", 1, OpenDefaultSettings};
+  CBuiltins::BUILT_IN builtin1 = {"Open a settings dialog for the default addon of the given type",
+                                  1, OpenDefaultSettings};
   commands.insert(std::make_pair("addon.default.opensettings", builtin1));
 
-  CBuiltins::BUILT_IN builtin2 = {"Open a select dialog to allow choosing the default addon of the given type", 1, SetDefaultAddon};
+  CBuiltins::BUILT_IN builtin2 = {
+      "Open a select dialog to allow choosing the default addon of the given type", 1,
+      SetDefaultAddon};
   commands.insert(std::make_pair("addon.default.set", builtin2));
 
-  CBuiltins::BUILT_IN builtin3 = {"Open a settings dialog for the addon of the given id", 1, AddonSettings};
+  CBuiltins::BUILT_IN builtin3 = {"Open a settings dialog for the addon of the given id", 1,
+                                  AddonSettings};
   commands.insert(std::make_pair("addon.opensettings", builtin3));
 
   CBuiltins::BUILT_IN builtin4 = {"Install the specified plugin/script", 1, InstallAddon};

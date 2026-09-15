@@ -31,7 +31,7 @@
 #include <utility>
 
 CGUIDialogGamepad::CGUIDialogGamepad(void)
-    : CGUIDialogBoxBase(WINDOW_DIALOG_GAMEPAD, "DialogConfirm.xml")
+  : CGUIDialogBoxBase(WINDOW_DIALOG_GAMEPAD, "DialogConfirm.xml")
 {
   m_bCanceled = false;
   m_iRetries = 0;
@@ -41,7 +41,8 @@ CGUIDialogGamepad::CGUIDialogGamepad(void)
 }
 
 CGUIDialogGamepad::~CGUIDialogGamepad(void)
-{}
+{
+}
 
 void CGUIDialogGamepad::OnInitWindow()
 {
@@ -53,43 +54,75 @@ void CGUIDialogGamepad::OnInitWindow()
   CGUIDialogBoxBase::OnInitWindow();
 }
 
-bool CGUIDialogGamepad::OnAction(const CAction &action)
+bool CGUIDialogGamepad::OnAction(const CAction& action)
 {
   if ((action.GetButtonCode() >= KEY_BUTTON_A &&
        action.GetButtonCode() <= KEY_BUTTON_RIGHT_TRIGGER) ||
       (action.GetButtonCode() >= KEY_BUTTON_DPAD_UP &&
        action.GetButtonCode() <= KEY_BUTTON_DPAD_RIGHT) ||
-      (action.GetID() >= ACTION_MOVE_LEFT &&
-       action.GetID() <= ACTION_MOVE_DOWN) ||
-      action.GetID() == ACTION_PLAYER_PLAY
-     )
+      (action.GetID() >= ACTION_MOVE_LEFT && action.GetID() <= ACTION_MOVE_DOWN) ||
+      action.GetID() == ACTION_PLAYER_PLAY)
   {
     switch (action.GetButtonCode())
     {
-    case KEY_BUTTON_A : m_strUserInput += "A"; break;
-    case KEY_BUTTON_B : m_strUserInput += "B"; break;
-    case KEY_BUTTON_X : m_strUserInput += "X"; break;
-    case KEY_BUTTON_Y : m_strUserInput += "Y"; break;
-    case KEY_BUTTON_BLACK : m_strUserInput += "K"; break;
-    case KEY_BUTTON_WHITE : m_strUserInput += "W"; break;
-    case KEY_BUTTON_LEFT_TRIGGER : m_strUserInput += "("; break;
-    case KEY_BUTTON_RIGHT_TRIGGER : m_strUserInput += ")"; break;
-    case KEY_BUTTON_DPAD_UP : m_strUserInput += "U"; break;
-    case KEY_BUTTON_DPAD_DOWN : m_strUserInput += "D"; break;
-    case KEY_BUTTON_DPAD_LEFT : m_strUserInput += "L"; break;
-    case KEY_BUTTON_DPAD_RIGHT : m_strUserInput += "R"; break;
-    default:
-      switch (action.GetID())
-      {
-        case ACTION_MOVE_LEFT:   m_strUserInput += "L"; break;
-        case ACTION_MOVE_RIGHT:  m_strUserInput += "R"; break;
-        case ACTION_MOVE_UP:     m_strUserInput += "U"; break;
-        case ACTION_MOVE_DOWN:   m_strUserInput += "D"; break;
-        case ACTION_PLAYER_PLAY: m_strUserInput += "P"; break;
-        default:
-          return true;
-      }
-      break;
+      case KEY_BUTTON_A:
+        m_strUserInput += "A";
+        break;
+      case KEY_BUTTON_B:
+        m_strUserInput += "B";
+        break;
+      case KEY_BUTTON_X:
+        m_strUserInput += "X";
+        break;
+      case KEY_BUTTON_Y:
+        m_strUserInput += "Y";
+        break;
+      case KEY_BUTTON_BLACK:
+        m_strUserInput += "K";
+        break;
+      case KEY_BUTTON_WHITE:
+        m_strUserInput += "W";
+        break;
+      case KEY_BUTTON_LEFT_TRIGGER:
+        m_strUserInput += "(";
+        break;
+      case KEY_BUTTON_RIGHT_TRIGGER:
+        m_strUserInput += ")";
+        break;
+      case KEY_BUTTON_DPAD_UP:
+        m_strUserInput += "U";
+        break;
+      case KEY_BUTTON_DPAD_DOWN:
+        m_strUserInput += "D";
+        break;
+      case KEY_BUTTON_DPAD_LEFT:
+        m_strUserInput += "L";
+        break;
+      case KEY_BUTTON_DPAD_RIGHT:
+        m_strUserInput += "R";
+        break;
+      default:
+        switch (action.GetID())
+        {
+          case ACTION_MOVE_LEFT:
+            m_strUserInput += "L";
+            break;
+          case ACTION_MOVE_RIGHT:
+            m_strUserInput += "R";
+            break;
+          case ACTION_MOVE_UP:
+            m_strUserInput += "U";
+            break;
+          case ACTION_MOVE_DOWN:
+            m_strUserInput += "D";
+            break;
+          case ACTION_PLAYER_PLAY:
+            m_strUserInput += "P";
+            break;
+          default:
+            return true;
+        }
+        break;
     }
 
     std::string strHiddenInput(m_strUserInput);
@@ -100,7 +133,8 @@ bool CGUIDialogGamepad::OnAction(const CAction &action)
     SetLine(2, strHiddenInput);
     return true;
   }
-  else if (action.GetButtonCode() == KEY_BUTTON_BACK || action.GetID() == ACTION_PREVIOUS_MENU || action.GetID() == ACTION_NAV_BACK)
+  else if (action.GetButtonCode() == KEY_BUTTON_BACK || action.GetID() == ACTION_PREVIOUS_MENU ||
+           action.GetID() == ACTION_NAV_BACK)
   {
     m_bConfirmed = false;
     m_bCanceled = true;
@@ -152,9 +186,9 @@ bool CGUIDialogGamepad::OnAction(const CAction &action)
 
 bool CGUIDialogGamepad::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_INIT:
     {
       m_bConfirmed = false;
       m_bCanceled = false;
@@ -164,7 +198,7 @@ bool CGUIDialogGamepad::OnMessage(CGUIMessage& message)
     }
     break;
 
-  case GUI_MSG_CLICKED:
+    case GUI_MSG_CLICKED:
     {
       m_bConfirmed = false;
       m_bCanceled = false;
@@ -179,7 +213,9 @@ bool CGUIDialogGamepad::OnMessage(CGUIMessage& message)
 // \param dlgHeading String shown on dialog title. Converts to localized string if contains a positive integer.
 // \param bHideUserInput Masks user input as asterisks if set as true.  Currently not yet implemented.
 // \return true if successful display and user input. false if unsuccessful display, no user input, or canceled editing.
-bool CGUIDialogGamepad::ShowAndGetInput(std::string& aTextString, const std::string &dlgHeading, bool bHideUserInput)
+bool CGUIDialogGamepad::ShowAndGetInput(std::string& aTextString,
+                                        const std::string& dlgHeading,
+                                        bool bHideUserInput)
 {
   // Prompt user for input
   std::string strUserInput;
@@ -192,7 +228,6 @@ bool CGUIDialogGamepad::ShowAndGetInput(std::string& aTextString, const std::str
   if (strUserInput.empty())
     // user canceled out
     return false;
-
 
   // We should have a string to return
   aTextString = strUserInput;
@@ -235,18 +270,22 @@ bool CGUIDialogGamepad::ShowAndVerifyNewPassword(std::string& strNewPassword)
 // \param dlgHeading String shown on dialog title. Converts to localized string if contains a positive integer.
 // \param iRetries If greater than 0, shows "Incorrect password, %d retries left" on dialog line 2, else line 2 is blank.
 // \return 0 if successful display and user input. 1 if unsuccessful input. -1 if no user input or canceled editing.
-int CGUIDialogGamepad::ShowAndVerifyPassword(std::string& strPassword, const std::string& dlgHeading, int iRetries)
+int CGUIDialogGamepad::ShowAndVerifyPassword(std::string& strPassword,
+                                             const std::string& dlgHeading,
+                                             int iRetries)
 {
   std::string strLine2;
   if (0 < iRetries)
   {
     // Show a string telling user they have iRetries retries left
-    strLine2 = StringUtils::Format("%s %i %s", g_localizeStrings.Get(12342).c_str(), iRetries, g_localizeStrings.Get(12343).c_str());
+    strLine2 = StringUtils::Format("%s %i %s", g_localizeStrings.Get(12342).c_str(), iRetries,
+                                   g_localizeStrings.Get(12343).c_str());
   }
 
   // make a copy of strPassword to prevent from overwriting it later
   std::string strPassTemp = strPassword;
-  if (ShowAndVerifyInput(strPassTemp, dlgHeading, g_localizeStrings.Get(12330), g_localizeStrings.Get(12331), strLine2, true, true))
+  if (ShowAndVerifyInput(strPassTemp, dlgHeading, g_localizeStrings.Get(12330),
+                         g_localizeStrings.Get(12331), strLine2, true, true))
   {
     // user entered correct password
     return 0;
@@ -269,12 +308,16 @@ int CGUIDialogGamepad::ShowAndVerifyPassword(std::string& strPassword, const std
 // \param bGetUserInput If set as true and return=true, strToVerify is overwritten with user input string.
 // \param bHideInputChars Masks user input as asterisks if set as true.  Currently not yet implemented.
 // \return true if successful display and user input. false if unsuccessful display, no user input, or canceled editing.
-bool CGUIDialogGamepad::ShowAndVerifyInput(std::string& strToVerify, const std::string& dlgHeading,
-    const std::string& dlgLine0, const std::string& dlgLine1,
-    const std::string& dlgLine2, bool bGetUserInput, bool bHideInputChars)
+bool CGUIDialogGamepad::ShowAndVerifyInput(std::string& strToVerify,
+                                           const std::string& dlgHeading,
+                                           const std::string& dlgLine0,
+                                           const std::string& dlgLine1,
+                                           const std::string& dlgLine2,
+                                           bool bGetUserInput,
+                                           bool bHideInputChars)
 {
   // Prompt user for password input
-  CGUIDialogGamepad *pDialog = (CGUIDialogGamepad *)g_windowManager.GetWindow(WINDOW_DIALOG_GAMEPAD);
+  CGUIDialogGamepad* pDialog = (CGUIDialogGamepad*)g_windowManager.GetWindow(WINDOW_DIALOG_GAMEPAD);
   pDialog->m_strPassword = strToVerify;
   pDialog->m_bUserInputCleanup = !bGetUserInput;
   pDialog->m_bHideInputChars = bHideInputChars;
@@ -325,4 +368,3 @@ bool CGUIDialogGamepad::IsCanceled() const
 {
   return m_bCanceled;
 }
-

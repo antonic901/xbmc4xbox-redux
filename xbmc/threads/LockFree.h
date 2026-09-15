@@ -24,7 +24,10 @@
 #include <cstring>
 #include "Atomics.h"
 
-#define SPINLOCK_ACQUIRE(l) while(cas(&l, 0, 1)) {}
+#define SPINLOCK_ACQUIRE(l) \
+  while (cas(&l, 0, 1)) \
+  { \
+  }
 #define SPINLOCK_RELEASE(l) l = 0
 
 // A unique-valued pointer. Version is incremented with each write.
@@ -32,23 +35,25 @@ union atomic_ptr
 {
 #if !defined(__ppc__) && !defined(__powerpc__) && !defined(__arm__)
   long long d;
-  struct {
+  struct
+  {
     void* ptr;
     long version;
   };
 #else
   long d;
-  struct {
+  struct
+  {
     void* ptr;
   };
 #endif
 };
 
 #if defined(__ppc__) || defined(__powerpc__) || defined(__arm__)
-  #define atomic_ptr_to_long(p) (long) *((long*)&p)
+#define atomic_ptr_to_long(p) (long)*((long*)&p)
 #else
-  // This is ugly but correct as long as sizeof(void*) == sizeof(long)...
-  #define atomic_ptr_to_long_long(p) (long long) *((long long*)&p)
+// This is ugly but correct as long as sizeof(void*) == sizeof(long)...
+#define atomic_ptr_to_long_long(p) (long long)*((long long*)&p)
 #endif
 
 struct lf_node
@@ -60,13 +65,11 @@ struct lf_node
 // Fast Stack
 ///////////////////////////////////////////////////////////////////////////
 
-
 struct lf_stack
 {
   atomic_ptr top;
   long count;
 };
-
 
 void lf_stack_init(lf_stack* pStack);
 void lf_stack_push(lf_stack* pStack, lf_node* pNode);
@@ -88,7 +91,6 @@ struct lf_heap
   lf_heap_chunk* top_chunk;
   long block_size;
 };
-
 
 void lf_heap_init(lf_heap* pHeap, size_t blockSize, size_t initialSize = 0);
 void lf_heap_grow(lf_heap* pHeap, size_t size = 0);
@@ -114,7 +116,7 @@ struct lf_queue
 };
 
 #define lf_queue_new_node(q) (lf_queue_node*)lf_heap_alloc(&q->node_heap)
-#define lf_queue_free_node(q,n) lf_heap_free(&q->node_heap, n)
+#define lf_queue_free_node(q, n) lf_heap_free(&q->node_heap, n)
 
 void lf_queue_init(lf_queue* pQueue);
 void lf_queue_deinit(lf_queue* pQueue);

@@ -23,12 +23,12 @@
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
 
-std::vector<CVariant> CSettingUtils::GetList(const CSettingList *settingList)
+std::vector<CVariant> CSettingUtils::GetList(const CSettingList* settingList)
 {
   return ListToValues(settingList, settingList->GetValue());
 }
 
-bool CSettingUtils::SetList(CSettingList *settingList, const std::vector<CVariant> &value)
+bool CSettingUtils::SetList(CSettingList* settingList, const std::vector<CVariant>& value)
 {
   SettingPtrList newValues;
   if (!ValuesToList(settingList, value, newValues))
@@ -37,7 +37,8 @@ bool CSettingUtils::SetList(CSettingList *settingList, const std::vector<CVarian
   return settingList->SetValue(newValues);
 }
 
-std::vector<CVariant> CSettingUtils::ListToValues(const CSettingList *setting, const std::vector< boost::shared_ptr<CSetting> > &values)
+std::vector<CVariant> CSettingUtils::ListToValues(
+    const CSettingList* setting, const std::vector<boost::shared_ptr<CSetting> >& values)
 {
   std::vector<CVariant> realValues;
 
@@ -72,17 +73,20 @@ std::vector<CVariant> CSettingUtils::ListToValues(const CSettingList *setting, c
   return realValues;
 }
 
-bool CSettingUtils::ValuesToList(const CSettingList *setting, const std::vector<CVariant> &values,
-                                 std::vector< boost::shared_ptr<CSetting> > &newValues)
+bool CSettingUtils::ValuesToList(const CSettingList* setting,
+                                 const std::vector<CVariant>& values,
+                                 std::vector<boost::shared_ptr<CSetting> >& newValues)
 {
   if (setting == NULL)
     return false;
 
   int index = 0;
   bool ret = true;
-  for (std::vector<CVariant>::const_iterator itValue = values.begin(); itValue != values.end(); ++itValue)
+  for (std::vector<CVariant>::const_iterator itValue = values.begin(); itValue != values.end();
+       ++itValue)
   {
-    CSetting *settingValue = setting->GetDefinition()->Clone(StringUtils::Format("%s.%d", setting->GetId().c_str(), index++));
+    CSetting* settingValue = setting->GetDefinition()->Clone(
+        StringUtils::Format("%s.%d", setting->GetId().c_str(), index++));
     if (settingValue == NULL)
       return false;
 

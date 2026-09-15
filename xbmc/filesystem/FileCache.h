@@ -28,58 +28,58 @@
 namespace XFILE
 {
 
-  class CFileCache : public IFile, public CThread
-  {
-  public:
-    CFileCache(const unsigned int flags);
-    CFileCache(CCacheStrategy *pCache, bool bDeleteCache = true);
-    virtual ~CFileCache();
+class CFileCache : public IFile, public CThread
+{
+public:
+  CFileCache(const unsigned int flags);
+  CFileCache(CCacheStrategy* pCache, bool bDeleteCache = true);
+  virtual ~CFileCache();
 
-    void SetCacheStrategy(CCacheStrategy *pCache, bool bDeleteCache = true);
+  void SetCacheStrategy(CCacheStrategy* pCache, bool bDeleteCache = true);
 
-    // CThread methods
-    virtual void Process();
-    virtual void OnExit();
-    virtual void StopThread(bool bWait = true);
+  // CThread methods
+  virtual void Process();
+  virtual void OnExit();
+  virtual void StopThread(bool bWait = true);
 
-    // IFIle methods
-    virtual bool          Open(const CURL& url);
-    virtual void          Close();
-    virtual bool          Exists(const CURL& url);
-    virtual int           Stat(const CURL& url, struct __stat64* buffer);
+  // IFIle methods
+  virtual bool Open(const CURL& url);
+  virtual void Close();
+  virtual bool Exists(const CURL& url);
+  virtual int Stat(const CURL& url, struct __stat64* buffer);
 
-    virtual ssize_t       Read(void* lpBuf, size_t uiBufSize);
+  virtual ssize_t Read(void* lpBuf, size_t uiBufSize);
 
-    virtual int64_t       Seek(int64_t iFilePosition, int iWhence);
-    virtual int64_t       GetPosition();
-    virtual int64_t       GetLength();
+  virtual int64_t Seek(int64_t iFilePosition, int iWhence);
+  virtual int64_t GetPosition();
+  virtual int64_t GetLength();
 
-    virtual int           IoControl(EIoControl request, void* param);
+  virtual int IoControl(EIoControl request, void* param);
 
-    IFile *GetFileImp();
+  IFile* GetFileImp();
 
-    virtual std::string GetContent();
-    virtual std::string GetContentCharset(void);
+  virtual std::string GetContent();
+  virtual std::string GetContentCharset(void);
 
-  private:
-    CCacheStrategy *m_pCache;
-    bool      m_bDeleteCache;
-    int        m_seekPossible;
-    CFile      m_source;
-    std::string    m_sourcePath;
-    CEvent      m_seekEvent;
-    CEvent      m_seekEnded;
-    int64_t      m_nSeekResult;
-    int64_t      m_seekPos;
-    int64_t      m_readPos;
-    int64_t      m_writePos;
-    unsigned     m_chunkSize;
-    unsigned     m_writeRate;
-    unsigned     m_writeRateActual;
-    int64_t      m_forwardCacheSize;
-    int64_t m_fileSize; // int operations should be atomic on x86? Is it true?
-    unsigned int m_flags;
-    CCriticalSection m_sync;
-  };
+private:
+  CCacheStrategy* m_pCache;
+  bool m_bDeleteCache;
+  int m_seekPossible;
+  CFile m_source;
+  std::string m_sourcePath;
+  CEvent m_seekEvent;
+  CEvent m_seekEnded;
+  int64_t m_nSeekResult;
+  int64_t m_seekPos;
+  int64_t m_readPos;
+  int64_t m_writePos;
+  unsigned m_chunkSize;
+  unsigned m_writeRate;
+  unsigned m_writeRateActual;
+  int64_t m_forwardCacheSize;
+  int64_t m_fileSize; // int operations should be atomic on x86? Is it true?
+  unsigned int m_flags;
+  CCriticalSection m_sync;
+};
 
-}
+} // namespace XFILE

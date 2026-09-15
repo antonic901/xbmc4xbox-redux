@@ -35,8 +35,9 @@ public:
   COggTag(void);
   virtual ~COggTag(void);
   virtual bool Read(const CStdString& strFile);
-          int  GetStreamCount(const CStdString& strFile);
+  int GetStreamCount(const CStdString& strFile);
+
 protected:
   DllVorbisfile m_dll;
 };
-}
+} // namespace MUSIC_INFO

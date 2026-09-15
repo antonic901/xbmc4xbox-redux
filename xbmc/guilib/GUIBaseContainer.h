@@ -42,10 +42,18 @@ class IListProvider;
 class CGUIBaseContainer : public IGUIContainer
 {
 public:
-  CGUIBaseContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, const CScroller& scroller, int preloadItems);
+  CGUIBaseContainer(int parentID,
+                    int controlID,
+                    float posX,
+                    float posY,
+                    float width,
+                    float height,
+                    ORIENTATION orientation,
+                    const CScroller& scroller,
+                    int preloadItems);
   virtual ~CGUIBaseContainer(void);
 
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual void OnDown();
   virtual void OnUp();
   virtual void OnLeft();
@@ -55,7 +63,7 @@ public:
   virtual void SetFocus(bool bOnOff);
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
-  virtual void UpdateVisibility(const CGUIListItem *item = NULL);
+  virtual void UpdateVisibility(const CGUIListItem* item = NULL);
 
   virtual unsigned int GetRows() const;
 
@@ -65,14 +73,14 @@ public:
   void SetPageControl(int id);
 
   virtual std::string GetDescription() const;
-  virtual void SaveStates(std::vector<CControlState> &states);
+  virtual void SaveStates(std::vector<CControlState>& states);
   virtual int GetSelectedItem() const;
 
-  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
 
-  void LoadLayout(TiXmlElement *layout);
-  void LoadListProvider(TiXmlElement *content, int defaultItem, bool defaultAlways);
+  void LoadLayout(TiXmlElement* layout);
+  void LoadListProvider(TiXmlElement* content, int defaultItem, bool defaultAlways);
 
   virtual CGUIListItemPtr GetListItem(int offset, unsigned int flag = 0) const;
 
@@ -82,20 +90,20 @@ public:
   /*! \brief Set the list provider for this container (for python).
    \param provider the list provider to use for this container.
    */
-  void SetListProvider(IListProvider *provider);
+  void SetListProvider(IListProvider* provider);
 
   /*! \brief Set the offset of the first item in the container from the container's position
    Useful for lists/panels where the focused item may be larger than the non-focused items and thus
    normally cut off from the clipping window defined by the container's position + size.
    \param offset CPoint holding the offset in skin coordinates.
    */
-  void SetRenderOffset(const CPoint &offset);
+  void SetRenderOffset(const CPoint& offset);
 
   void SetClickActions(const CGUIAction& clickActions) { m_clickActions = clickActions; };
   void SetFocusActions(const CGUIAction& focusActions) { m_focusActions = focusActions; };
   void SetUnFocusActions(const CGUIAction& unfocusActions) { m_unfocusActions = unfocusActions; };
 
-  void SetAutoScrolling(const TiXmlNode *node);
+  void SetAutoScrolling(const TiXmlNode* node);
   void ResetAutoScrolling();
   void UpdateAutoScrolling(unsigned int currentTime);
 
@@ -105,27 +113,35 @@ public:
 protected:
   bool OnClick(int actionID);
 
-  virtual void ProcessItem(float posX, float posY, CGUIListItemPtr& item, bool focused, unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void ProcessItem(float posX,
+                           float posY,
+                           CGUIListItemPtr& item,
+                           bool focused,
+                           unsigned int currentTime,
+                           CDirtyRegionList& dirtyregions);
 
   virtual void Render();
-  virtual void RenderItem(float posX, float posY, CGUIListItem *item, bool focused);
+  virtual void RenderItem(float posX, float posY, CGUIListItem* item, bool focused);
   virtual void Scroll(int amount);
   virtual bool MoveDown(bool wrapAround);
   virtual bool MoveUp(bool wrapAround);
-  virtual bool GetOffsetRange(int &minOffset, int &maxOffset) const;
+  virtual bool GetOffsetRange(int& minOffset, int& maxOffset) const;
   virtual void ValidateOffset();
-  virtual int  CorrectOffset(int offset, int cursor) const;
+  virtual int CorrectOffset(int offset, int cursor) const;
   virtual void UpdateLayout(bool refreshAllItems = false);
   virtual void SetPageControlRange();
   virtual void UpdatePageControl(int offset);
   virtual void CalculateLayout();
   virtual void SelectItem(int item) {};
-  virtual bool SelectItemFromPoint(const CPoint &point) { return false; };
-  virtual int GetCursorFromPoint(const CPoint &point, CPoint *itemPoint = NULL) const { return -1; };
+  virtual bool SelectItemFromPoint(const CPoint& point) { return false; };
+  virtual int GetCursorFromPoint(const CPoint& point, CPoint* itemPoint = NULL) const
+  {
+    return -1;
+  };
   virtual void Reset();
   virtual unsigned int GetNumItems() const { return m_items.size(); };
   virtual int GetCurrentPage() const;
-  bool InsideLayout(const CGUIListItemLayout *layout, const CPoint &point) const;
+  bool InsideLayout(const CGUIListItemLayout* layout, const CPoint& point) const;
   virtual void OnFocus();
   virtual void OnUnFocus();
   void UpdateListProvider(bool forceRefresh = false);
@@ -135,7 +151,7 @@ protected:
   void MoveToRow(int row);
   void FreeMemory(int keepStart, int keepEnd);
   void GetCurrentLayouts();
-  CGUIListItemLayout *GetFocusedLayout() const;
+  CGUIListItemLayout* GetFocusedLayout() const;
 
   CPoint m_renderOffset; ///< \brief render offset of the first item in the list \sa SetRenderOffset
 
@@ -145,8 +161,8 @@ protected:
   ORIENTATION m_orientation;
   int m_itemsPerPage;
 
-  std::vector< CGUIListItemPtr > m_items;
-  typedef std::vector<CGUIListItemPtr> ::iterator iItems;
+  std::vector<CGUIListItemPtr> m_items;
+  typedef std::vector<CGUIListItemPtr>::iterator iItems;
   CGUIListItemPtr m_lastItem;
 
   int m_pageControl;
@@ -154,8 +170,8 @@ protected:
   std::vector<CGUIListItemLayout> m_layouts;
   std::vector<CGUIListItemLayout> m_focusedLayouts;
 
-  CGUIListItemLayout *m_layout;
-  CGUIListItemLayout *m_focusedLayout;
+  CGUIListItemLayout* m_layout;
+  CGUIListItemLayout* m_focusedLayout;
 
   void ScrollToOffset(int offset);
   void SetContainerMoving(int direction);
@@ -163,15 +179,15 @@ protected:
 
   CScroller m_scroller;
 
-  IListProvider *m_listProvider;
+  IListProvider* m_listProvider;
 
-  bool m_wasReset;  // true if we've received a Reset message until we've rendered once.  Allows
-                    // us to make sure we don't tell the infomanager that we've been moving when
-                    // the "movement" was simply due to the list being repopulated (thus cursor position
-                    // changing around)
+  bool m_wasReset; // true if we've received a Reset message until we've rendered once.  Allows
+  // us to make sure we don't tell the infomanager that we've been moving when
+  // the "movement" was simply due to the list being repopulated (thus cursor position
+  // changing around)
 
   void UpdateScrollByLetter();
-  void GetCacheOffsets(int &cacheBefore, int &cacheAfter) const;
+  void GetCacheOffsets(int& cacheBefore, int& cacheAfter) const;
   int GetCacheCount() const { return m_cacheItems; };
   bool ScrollingDown() const { return m_scroller.IsScrollingDown(); };
   bool ScrollingUp() const { return m_scroller.IsScrollingUp(); };
@@ -179,7 +195,7 @@ protected:
   void OnPrevLetter();
   void OnJumpLetter(char letter, bool skip = false);
   void OnJumpSMS(int letter);
-  std::vector< std::pair<int, std::string> > m_letterOffsets;
+  std::vector<std::pair<int, std::string> > m_letterOffsets;
 
   /*! \brief Set the cursor position
    Should be used by all base classes rather than directly setting it, as
@@ -206,9 +222,9 @@ protected:
 
   // autoscrolling
   INFO::InfoPtr m_autoScrollCondition;
-  int           m_autoScrollMoveTime;   // time between to moves
-  unsigned int  m_autoScrollDelayTime;  // current offset into the delay
-  bool          m_autoScrollIsReversed; // scroll backwards
+  int m_autoScrollMoveTime; // time between to moves
+  unsigned int m_autoScrollDelayTime; // current offset into the delay
+  bool m_autoScrollIsReversed; // scroll backwards
 
   unsigned int m_lastRenderTime;
 
@@ -233,5 +249,3 @@ private:
 
   static const int letter_match_timeout = 1000;
 };
-
-

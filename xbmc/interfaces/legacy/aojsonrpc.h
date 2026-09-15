@@ -17,15 +17,18 @@ class CVariant;
 class CAddOnTransport : public JSONRPC::ITransportLayer
 {
 public:
-  bool PrepareDownload(const char *path, CVariant &details, std::string &protocol) override { return false; }
-  bool Download(const char *path, CVariant& result) override { return false; }
+  bool PrepareDownload(const char* path, CVariant& details, std::string& protocol) override
+  {
+    return false;
+  }
+  bool Download(const char* path, CVariant& result) override { return false; }
   int GetCapabilities() override { return JSONRPC::Response; }
 
   class CAddOnClient : public JSONRPC::IClient
   {
   public:
-    int  GetPermissionFlags() override { return JSONRPC::OPERATION_PERMISSION_ALL; }
-    int  GetAnnouncementFlags() override { return 0; }
+    int GetPermissionFlags() override { return JSONRPC::OPERATION_PERMISSION_ALL; }
+    int GetAnnouncementFlags() override { return 0; }
     bool SetAnnouncementFlags(int flags) override { return true; }
   };
 };

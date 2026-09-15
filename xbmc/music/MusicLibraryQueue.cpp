@@ -39,7 +39,8 @@ CMusicLibraryQueue::CMusicLibraryQueue()
     m_modal(false),
     m_exporting(false),
     m_cleaning(false)
-{ }
+{
+}
 
 CMusicLibraryQueue::~CMusicLibraryQueue()
 {
@@ -53,7 +54,8 @@ CMusicLibraryQueue& CMusicLibraryQueue::GetInstance()
   return s_instance;
 }
 
-void CMusicLibraryQueue::ExportLibrary(const CLibExportSettings& settings, bool showDialog /* = false */)
+void CMusicLibraryQueue::ExportLibrary(const CLibExportSettings& settings,
+                                       bool showDialog /* = false */)
 {
   CGUIDialogProgress* progress = NULL;
   if (showDialog)
@@ -61,8 +63,8 @@ void CMusicLibraryQueue::ExportLibrary(const CLibExportSettings& settings, bool 
     progress = static_cast<CGUIDialogProgress*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS));
     if (progress)
     {
-      progress->SetHeading( 20196 ); //"Export music library"
-      progress->SetText( 650 );   //"Exporting"
+      progress->SetHeading(20196); //"Export music library"
+      progress->SetText(650); //"Exporting"
       progress->SetPercentage(0);
       progress->Open();
       progress->ShowProgressBar(true);
@@ -90,12 +92,14 @@ void CMusicLibraryQueue::ExportLibrary(const CLibExportSettings& settings, bool 
   }
 }
 
-void CMusicLibraryQueue::ScanLibrary(const std::string& strDirectory, int flags /* = 0 */, bool showProgress /* = true */)
+void CMusicLibraryQueue::ScanLibrary(const std::string& strDirectory,
+                                     int flags /* = 0 */,
+                                     bool showProgress /* = true */)
 {
   AddJob(new CMusicLibraryScanningJob(strDirectory, flags, showProgress));
 }
 
-void CMusicLibraryQueue::StartAlbumScan(const std::string & strDirectory, bool refresh)
+void CMusicLibraryQueue::StartAlbumScan(const std::string& strDirectory, bool refresh)
 {
   int flags = MUSIC_INFO::CMusicInfoScanner::SCAN_ALBUMS;
   if (refresh)
@@ -141,7 +145,8 @@ void CMusicLibraryQueue::StopLibraryScanning()
   MusicLibraryJobs tmpScanningJobs(scanningJobs->second.begin(), scanningJobs->second.end());
 
   // cancel all scanning jobs
-  for (MusicLibraryJobs::const_iterator it = tmpScanningJobs.begin(); it != tmpScanningJobs.end(); ++it)
+  for (MusicLibraryJobs::const_iterator it = tmpScanningJobs.begin(); it != tmpScanningJobs.end();
+       ++it)
     CancelJob(*it);
   Refresh();
 }
@@ -154,7 +159,7 @@ void CMusicLibraryQueue::CleanLibrary(bool showDialog /* = false */)
     progress = static_cast<CGUIDialogProgress*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS));
     if (progress)
     {
-      progress->SetHeading( 700 );
+      progress->SetHeading(700);
       progress->SetPercentage(0);
       progress->Open();
       progress->ShowProgressBar(true);
@@ -180,7 +185,7 @@ void CMusicLibraryQueue::CleanLibraryModal()
   progress = static_cast<CGUIDialogProgress*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS));
   if (progress)
   {
-    progress->SetHeading( 700 );
+    progress->SetHeading(700);
     progress->SetPercentage(0);
     progress->Open();
     progress->ShowProgressBar(true);
@@ -195,7 +200,7 @@ void CMusicLibraryQueue::CleanLibraryModal()
   Refresh();
 }
 
-void CMusicLibraryQueue::AddJob(CMusicLibraryJob *job)
+void CMusicLibraryQueue::AddJob(CMusicLibraryJob* job)
 {
   if (job == NULL)
     return;
@@ -217,7 +222,7 @@ void CMusicLibraryQueue::AddJob(CMusicLibraryJob *job)
     jobsIt->second.insert(job);
 }
 
-void CMusicLibraryQueue::CancelJob(CMusicLibraryJob *job)
+void CMusicLibraryQueue::CancelJob(CMusicLibraryJob* job)
 {
   if (job == NULL)
     return;
@@ -263,7 +268,7 @@ void CMusicLibraryQueue::Refresh()
   g_windowManager.SendThreadMessage(msg);
 }
 
-void CMusicLibraryQueue::OnJobComplete(unsigned int jobID, bool success, CJob *job)
+void CMusicLibraryQueue::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 {
   if (success)
   {

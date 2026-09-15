@@ -38,7 +38,7 @@
 class IRunnable
 {
 public:
-  virtual void Run()=0;
+  virtual void Run() = 0;
   virtual void Cancel() {};
   virtual ~IRunnable() {}
 };
@@ -50,7 +50,10 @@ public:
 // minimum as mandated by XTL
 #define THREAD_MINSTACKSIZE 0x10000
 
-namespace XbmcThreads { class ThreadSettings; }
+namespace XbmcThreads
+{
+class ThreadSettings;
+}
 
 class CThread
 {
@@ -80,7 +83,7 @@ public:
   int GetPriority(void);
   bool SetPriority(const int iPriority);
   bool WaitForThreadExit(unsigned int milliseconds);
-  float GetRelativeUsage();  // returns the relative cpu usage of this thread since last call
+  float GetRelativeUsage(); // returns the relative cpu usage of this thread since last call
   int64_t GetAbsoluteUsage();
   // -----------------------------------------------------------------------------------
 
@@ -90,31 +93,36 @@ public:
   static inline void SetLogger(XbmcCommons::ILogger* logger_) { CThread::logger = logger_; }
   static inline XbmcCommons::ILogger* GetLogger() { return CThread::logger; }
 
-  virtual void OnException(){} // signal termination handler
+  virtual void OnException() {} // signal termination handler
 protected:
-  virtual void OnStartup(){};
-  virtual void OnExit(){};
+  virtual void OnStartup() {};
+  virtual void OnExit() {};
   virtual void Process();
 
   volatile bool m_bStop;
 
-  enum WaitResponse { WAIT_INTERRUPTED = -1, WAIT_SIGNALED = 0, WAIT_TIMEDOUT = 1 };
+  enum WaitResponse
+  {
+    WAIT_INTERRUPTED = -1,
+    WAIT_SIGNALED = 0,
+    WAIT_TIMEDOUT = 1
+  };
 
   /**
    * This call will wait on a CEvent in an interruptible way such that if
    *  stop is called on the thread the wait will return with a response
    *  indicating what happened.
    */
-  inline WaitResponse AbortableWait(CEvent& event, int timeoutMillis = -1 /* indicates wait forever*/)
+  inline WaitResponse AbortableWait(CEvent& event,
+                                    int timeoutMillis = -1 /* indicates wait forever*/)
   {
     XbmcThreads::CEventGroup group(&event, &m_StopEvent, NULL);
     CEvent* result = timeoutMillis < 0 ? group.wait() : group.wait(timeoutMillis);
-    return  result == &event ? WAIT_SIGNALED :
-      (result == NULL ? WAIT_TIMEDOUT : WAIT_INTERRUPTED);
+    return result == &event ? WAIT_SIGNALED : (result == NULL ? WAIT_TIMEDOUT : WAIT_INTERRUPTED);
   }
 
 private:
-  static THREADFUNC staticThread(void *data);
+  static THREADFUNC staticThread(void* data);
   void Action();
 
   // -----------------------------------------------------------------------------------

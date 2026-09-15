@@ -37,8 +37,8 @@ public:
 
 protected:
   // implementations of ISettingCallback
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingChanged(const CSetting* setting);
+  virtual void OnSettingAction(const CSetting* setting);
 
   // specialization of CGUIDialogSettingsBase
   virtual bool AllowResettingSettings() const { return false; }
@@ -48,14 +48,28 @@ protected:
   // specialization of CGUIDialogSettingsManualBase
   virtual void InitializeSettings();
 
-  void AddAudioStreams(CSettingGroup *group, const std::string &settingId);
-  void AddSubtitleStreams(CSettingGroup *group, const std::string &settingId);
+  void AddAudioStreams(CSettingGroup* group, const std::string& settingId);
+  void AddSubtitleStreams(CSettingGroup* group, const std::string& settingId);
 
-  static void AudioStreamsOptionFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
-  static void SubtitleStreamsOptionFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
-  
-  static std::string SettingFormatterDelay(const CSettingControlSlider *control, const CVariant &value, const CVariant &minimum, const CVariant &step, const CVariant &maximum);
-  static std::string SettingFormatterPercentAsDecibel(const CSettingControlSlider *control, const CVariant &value, const CVariant &minimum, const CVariant &step, const CVariant &maximum);
+  static void AudioStreamsOptionFiller(const CSetting* setting,
+                                       std::vector<std::pair<std::string, int> >& list,
+                                       int& current,
+                                       void* data);
+  static void SubtitleStreamsOptionFiller(const CSetting* setting,
+                                          std::vector<std::pair<std::string, int> >& list,
+                                          int& current,
+                                          void* data);
+
+  static std::string SettingFormatterDelay(const CSettingControlSlider* control,
+                                           const CVariant& value,
+                                           const CVariant& minimum,
+                                           const CVariant& step,
+                                           const CVariant& maximum);
+  static std::string SettingFormatterPercentAsDecibel(const CSettingControlSlider* control,
+                                                      const CVariant& value,
+                                                      const CVariant& minimum,
+                                                      const CVariant& step,
+                                                      const CVariant& maximum);
 
   float m_volume;
   int m_audioStream;

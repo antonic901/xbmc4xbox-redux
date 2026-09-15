@@ -37,31 +37,38 @@
 #include "video/VideoInfoDownloader.h"
 #include "video/VideoInfoScanner.h"
 
-CVideoLibraryRefreshingJob::CVideoLibraryRefreshingJob(CFileItemPtr item, bool forceRefresh, bool refreshAll, bool ignoreNfo /* = false */, const std::string& searchTitle /* = "" */)
+CVideoLibraryRefreshingJob::CVideoLibraryRefreshingJob(CFileItemPtr item,
+                                                       bool forceRefresh,
+                                                       bool refreshAll,
+                                                       bool ignoreNfo /* = false */,
+                                                       const std::string& searchTitle /* = "" */)
   : CVideoLibraryProgressJob(nullptr),
     m_item(item),
     m_forceRefresh(forceRefresh),
     m_refreshAll(refreshAll),
     m_ignoreNfo(ignoreNfo),
     m_searchTitle(searchTitle)
-{ }
+{
+}
 
 CVideoLibraryRefreshingJob::~CVideoLibraryRefreshingJob()
-{ }
+{
+}
 
 bool CVideoLibraryRefreshingJob::operator==(const CJob* job) const
 {
   if (strcmp(job->GetType(), GetType()) != 0)
     return false;
 
-  const CVideoLibraryRefreshingJob* refreshingJob = dynamic_cast<const CVideoLibraryRefreshingJob*>(job);
+  const CVideoLibraryRefreshingJob* refreshingJob =
+      dynamic_cast<const CVideoLibraryRefreshingJob*>(job);
   if (refreshingJob == nullptr)
     return false;
 
   return m_item->GetPath() == refreshingJob->m_item->GetPath();
 }
 
-bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
+bool CVideoLibraryRefreshingJob::Work(CVideoDatabase& db)
 {
   if (m_item == NULL)
     return false;
@@ -93,17 +100,16 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
     if (!ignoreNfo)
     {
       // check if there's an NFO for the item
-      CNfoFile::NFOResult nfoResult = scanner.CheckForNFOFile(m_item.get(), scanSettings.parent_name_root, scraper, scraperUrl);
+      CNfoFile::NFOResult nfoResult =
+          scanner.CheckForNFOFile(m_item.get(), scanSettings.parent_name_root, scraper, scraperUrl);
       // if there's no NFO remember it in case we have to refresh again
       if (nfoResult == CNfoFile::ERROR_NFO)
         ignoreNfo = true;
       else if (nfoResult != CNfoFile::NO_NFO)
         hasDetails = true;
 
-
       // if we are performing a forced refresh ask the user to choose between using a valid NFO and a valid scraper
-      if (needsRefresh && IsModal() && !scraper->IsNoop()
-          && nfoResult != CNfoFile::ERROR_NFO)
+      if (needsRefresh && IsModal() && !scraper->IsNoop() && nfoResult != CNfoFile::ERROR_NFO)
       {
         int heading = 20159;
         if (scraper->Content() == CONTENT_MOVIES)
@@ -157,10 +163,12 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
           else
           {
             // ask the user what to do
-            CGUIDialogSelect* selectDialog = static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+            CGUIDialogSelect* selectDialog =
+                static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
             selectDialog->Reset();
             selectDialog->SetHeading(scraper->Content() == CONTENT_TVSHOWS ? 20356 : 196);
-            for (MOVIELIST::const_iterator it = itemResultList.begin(); it != itemResultList.end(); ++it)
+            for (MOVIELIST::const_iterator it = itemResultList.begin(); it != itemResultList.end();
+                 ++it)
               selectDialog->Add((*it).strTitle);
             selectDialog->EnableButton(true, 413); // "Manual"
             selectDialog->Open();
@@ -173,7 +181,10 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
             else if (selectDialog->IsButtonPressed())
             {
               // ask the user to input a title to use
-              if (!CGUIKeyboardFactory::ShowAndGetInput(itemTitle, g_localizeStrings.Get(scraper->Content() == CONTENT_TVSHOWS ? 20357 : 16009), false))
+              if (!CGUIKeyboardFactory::ShowAndGetInput(
+                      itemTitle,
+                      g_localizeStrings.Get(scraper->Content() == CONTENT_TVSHOWS ? 20357 : 16009),
+                      false))
                 return false;
 
               // go through the whole process again
@@ -185,7 +196,8 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
               return false;
           }
 
-          CLog::Log(LOGDEBUG, "CVideoLibraryRefreshingJob: user selected item '%s' with URL '%s'", scraperUrl.strTitle.c_str(), scraperUrl.m_url.at(0).m_url.c_str());
+          CLog::Log(LOGDEBUG, "CVideoLibraryRefreshingJob: user selected item '%s' with URL '%s'",
+                    scraperUrl.strTitle.c_str(), scraperUrl.m_url.at(0).m_url.c_str());
         }
       }
       else if (result < 0 || !VIDEO::CVideoInfoScanner::DownloadFailed(GetProgressDialog()))
@@ -202,7 +214,10 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
       if (IsModal())
       {
         // ask the user to input a title to use
-        if (!CGUIKeyboardFactory::ShowAndGetInput(itemTitle, g_localizeStrings.Get(scraper->Content() == CONTENT_TVSHOWS ? 20357 : 16009), false))
+        if (!CGUIKeyboardFactory::ShowAndGetInput(
+                itemTitle,
+                g_localizeStrings.Get(scraper->Content() == CONTENT_TVSHOWS ? 20357 : 16009),
+                false))
           return false;
 
         // go through the whole process again
@@ -219,7 +234,8 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
     CTextureDatabase textureDb;
     if (textureDb.Open())
     {
-      for (CGUIListItem::ArtMap::const_iterator it = m_item->GetArt().begin(); it != m_item->GetArt().end(); ++it)
+      for (CGUIListItem::ArtMap::const_iterator it = m_item->GetArt().begin();
+           it != m_item->GetArt().end(); ++it)
         textureDb.InvalidateCachedTexture((*it).second);
 
       textureDb.Close();
@@ -233,10 +249,12 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
     {
       // for a tvshow we need to handle all paths of it
       std::vector<std::string> tvshowPaths;
-      if (CMediaTypes::IsMediaType(m_item->GetVideoInfoTag()->m_type, MediaTypeTvShow) && m_refreshAll &&
+      if (CMediaTypes::IsMediaType(m_item->GetVideoInfoTag()->m_type, MediaTypeTvShow) &&
+          m_refreshAll &&
           db.GetPathsLinkedToTvShow(m_item->GetVideoInfoTag()->m_iDbId, tvshowPaths))
       {
-        for (std::vector<std::string>::const_iterator it = tvshowPaths.begin(); it != tvshowPaths.end(); ++it)
+        for (std::vector<std::string>::const_iterator it = tvshowPaths.begin();
+             it != tvshowPaths.end(); ++it)
         {
           const std::string tvshowPath = *it;
           CFileItemPtr tvshowItem(new CFileItem(*m_item->GetVideoInfoTag()));
@@ -255,7 +273,8 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
       items.Add(CFileItemPtr(new CFileItem(*m_item)));
 
     // set the proper path of the list of items to lookup
-    items.SetPath(m_item->m_bIsFolder ? URIUtils::GetParentPath(path) : URIUtils::GetDirectory(path));
+    items.SetPath(m_item->m_bIsFolder ? URIUtils::GetParentPath(path)
+                                      : URIUtils::GetDirectory(path));
 
     int headingLabel = 198;
     if (scraper->Content() == CONTENT_TVSHOWS)
@@ -293,10 +312,9 @@ bool CVideoLibraryRefreshingJob::Work(CVideoDatabase &db)
     }
 
     // finally download the information for the item
-    if (!scanner.RetrieveVideoInfo(items, scanSettings.parent_name,
-                                   scraper->Content(), !ignoreNfo,
-                                   scraperUrl.m_url.empty() ? NULL : &scraperUrl,
-                                   m_refreshAll, GetProgressDialog()))
+    if (!scanner.RetrieveVideoInfo(items, scanSettings.parent_name, scraper->Content(), !ignoreNfo,
+                                   scraperUrl.m_url.empty() ? NULL : &scraperUrl, m_refreshAll,
+                                   GetProgressDialog()))
     {
       // something went wrong
       MarkFinished();

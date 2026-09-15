@@ -53,7 +53,8 @@ static int SendClick(const std::vector<std::string>& params)
   }
   else
   { // single param - assume you meant the focused window
-    CGUIMessage message(GUI_MSG_CLICKED, atoi(params[0].c_str()), g_windowManager.GetFocusedWindow());
+    CGUIMessage message(GUI_MSG_CLICKED, atoi(params[0].c_str()),
+                        g_windowManager.GetFocusedWindow());
     g_windowManager.SendMessage(message);
   }
 
@@ -69,7 +70,8 @@ static int SendClick(const std::vector<std::string>& params)
 static int SendMessage(const std::vector<std::string>& params)
 {
   int controlID = atoi(params[0].c_str());
-  int windowID = (params.size() == 3) ? CButtonTranslator::TranslateWindow(params[2]) : g_windowManager.GetActiveWindow();
+  int windowID = (params.size() == 3) ? CButtonTranslator::TranslateWindow(params[2])
+                                      : g_windowManager.GetActiveWindow();
   if (params[1] == "moveup")
     g_windowManager.SendMessage(GUI_MSG_MOVE_OFFSET, windowID, controlID, 1);
   else if (params[1] == "movedown")
@@ -92,7 +94,7 @@ static int SendMessage(const std::vector<std::string>& params)
 static int SetFocus(const std::vector<std::string>& params)
 {
   int controlID = atol(params[0].c_str());
-  int subItem = (params.size() > 1) ? atol(params[1].c_str())+1 : 0;
+  int subItem = (params.size() > 1) ? atol(params[1].c_str()) + 1 : 0;
   CGUIMessage msg(GUI_MSG_SETFOCUS, g_windowManager.GetFocusedWindow(), controlID, subItem);
   g_windowManager.SendMessage(msg);
 
@@ -105,7 +107,7 @@ static int SetFocus(const std::vector<std::string>& params)
  *
  *  Set Message template parameter to GUI_MSG_PAGE_DOWN/GUI_MSG_PAGE_UP.
  */
-  template<int Message>
+template<int Message>
 static int ShiftPage(const std::vector<std::string>& params)
 {
   int id = atoi(params[0].c_str());
@@ -181,22 +183,27 @@ CBuiltins::CommandMap CGUIControlBuiltins::GetOperations() const
 {
   CBuiltins::CommandMap commands;
 
-  CBuiltins::BUILT_IN builtin1 = {"Send a given message to a control within a given window", 2, SendMessage};
+  CBuiltins::BUILT_IN builtin1 = {"Send a given message to a control within a given window", 2,
+                                  SendMessage};
   commands.insert(std::make_pair("control.message", builtin1));
 
-  CBuiltins::BUILT_IN builtin2 = {"Tells the specified control to 'move' to another entry specified by offset", 2, ControlMove};
+  CBuiltins::BUILT_IN builtin2 = {
+      "Tells the specified control to 'move' to another entry specified by offset", 2, ControlMove};
   commands.insert(std::make_pair("control.move", builtin2));
 
   CBuiltins::BUILT_IN builtin3 = {"Change current focus to a different control id", 1, SetFocus};
   commands.insert(std::make_pair("control.setfocus", builtin3));
 
-  CBuiltins::BUILT_IN builtin4 = {"Send a page down event to the pagecontrol with given id", 1, ShiftPage<GUI_MSG_PAGE_DOWN>};
+  CBuiltins::BUILT_IN builtin4 = {"Send a page down event to the pagecontrol with given id", 1,
+                                  ShiftPage<GUI_MSG_PAGE_DOWN>};
   commands.insert(std::make_pair("pagedown", builtin4));
 
-  CBuiltins::BUILT_IN builtin5 = {"Send a page up event to the pagecontrol with given id", 1, ShiftPage<GUI_MSG_PAGE_UP>};
+  CBuiltins::BUILT_IN builtin5 = {"Send a page up event to the pagecontrol with given id", 1,
+                                  ShiftPage<GUI_MSG_PAGE_UP>};
   commands.insert(std::make_pair("pageup", builtin5));
 
-  CBuiltins::BUILT_IN builtin6 = {"Send a click message from the given control to the given window", 1, SendClick};
+  CBuiltins::BUILT_IN builtin6 = {"Send a click message from the given control to the given window",
+                                  1, SendClick};
   commands.insert(std::make_pair("sendclick", builtin6));
 
   CBuiltins::BUILT_IN builtin7 = {"Change current focus to a different control id", 1, SetFocus};
@@ -204,4 +211,3 @@ CBuiltins::CommandMap CGUIControlBuiltins::GetOperations() const
 
   return commands;
 }
-

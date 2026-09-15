@@ -28,9 +28,9 @@ class URIUtils
 public:
   URIUtils(void);
   virtual ~URIUtils(void);
-  static bool IsInPath(const CStdString &uri, const CStdString &baseURI);
+  static bool IsInPath(const CStdString& uri, const CStdString& baseURI);
 
-  static CStdString GetDirectory(const CStdString &strFilePath);
+  static CStdString GetDirectory(const CStdString& strFilePath);
 
   static const CStdString GetFileName(const CURL& url);
   static const CStdString GetFileName(const CStdString& strFileNameAndPath);
@@ -61,12 +61,13 @@ public:
   static bool HasExtension(const CURL& url, const CStdString& strExtensions);
 
   static void RemoveExtension(std::string& strFileName);
-  static CStdString ReplaceExtension(const CStdString& strFile,
-                                     const CStdString& strNewExtension);
-  static void Split(const CStdString& strFileNameAndPath, 
-                    CStdString& strPath, CStdString& strFileName);
-  static void Split(const std::string& strFileNameAndPath, 
-                    std::string& strPath, std::string& strFileName);
+  static CStdString ReplaceExtension(const CStdString& strFile, const CStdString& strNewExtension);
+  static void Split(const CStdString& strFileNameAndPath,
+                    CStdString& strPath,
+                    CStdString& strFileName);
+  static void Split(const std::string& strFileNameAndPath,
+                    std::string& strPath,
+                    std::string& strFileName);
   static CStdStringArray SplitPath(const CStdString& strPath);
 
   static void GetCommonPath(std::string& strPath, const std::string& strPath2);
@@ -86,7 +87,9 @@ public:
     \param toPath the base path of the resulting URL
     \return the full path.
    */
-  static std::string ChangeBasePath(const std::string &fromPath, const std::string &fromFile, const std::string &toPath);
+  static std::string ChangeBasePath(const std::string& fromPath,
+                                    const std::string& fromFile,
+                                    const std::string& toPath);
 
   static CURL SubstitutePath(const CURL& url, bool reverse = false);
   static CStdString SubstitutePath(const CStdString& strPath, bool reverse = false);
@@ -119,7 +122,7 @@ public:
    \return true if the path starts with the given string, false otherwise.
    \sa IsProtocol, PathEquals
    */
-  static bool PathStarts(const std::string& path, const char *start);
+  static bool PathStarts(const std::string& path, const char* start);
 
   /*! \brief Check whether a path equals another path.
    Comparison is case-sensitive.
@@ -129,13 +132,16 @@ public:
    \return true if the paths are equal, false otherwise.
    \sa IsProtocol, PathStarts
    */
-  static bool PathEquals(const std::string& path1, const std::string &path2, bool ignoreTrailingSlash = false, bool ignoreURLOptions = false);
+  static bool PathEquals(const std::string& path1,
+                         const std::string& path2,
+                         bool ignoreTrailingSlash = false,
+                         bool ignoreURLOptions = false);
 
   static bool IsAddonsPath(const CStdString& strFile);
   static bool IsSourcesPath(const CStdString& strFile);
   static bool IsCDDA(const CStdString& strFile);
   static bool IsDAV(const CStdString& strFile);
-  static bool IsDOSPath(const CStdString &path);
+  static bool IsDOSPath(const CStdString& path);
   static bool IsDVD(const CStdString& strFile);
   static bool IsFTP(const CStdString& strFile);
   static bool IsHTTP(const std::string& strFile);
@@ -151,8 +157,8 @@ public:
   static bool IsPVRRecording(const CStdString& strFile);
   static bool IsMultiPath(const CStdString& strPath);
   static bool IsMusicDb(const CStdString& strFile);
-  static bool IsNfs(const CStdString& strFile);  
-  static bool IsAfp(const CStdString& strFile);    
+  static bool IsNfs(const CStdString& strFile);
+  static bool IsAfp(const CStdString& strFile);
   static bool IsOnDVD(const CStdString& strFile);
   static bool IsOnLAN(const CStdString& strFile);
   static bool IsHostOnLAN(const CStdString& hostName, bool offLineCheck = false);
@@ -181,7 +187,9 @@ public:
   static bool HasSlashAtEnd(const std::string& strFile, bool checkURL = false);
   static void RemoveSlashAtEnd(std::string& strFolder);
   static bool CompareWithoutSlashAtEnd(const CStdString& strPath1, const CStdString& strPath2);
-  static std::string FixSlashesAndDups(const std::string& path, const char slashCharacter = '/', const size_t startFrom = 0);
+  static std::string FixSlashesAndDups(const std::string& path,
+                                       const char slashCharacter = '/',
+                                       const size_t startFrom = 0);
   /**
    * Convert path to form without duplicated slashes and without relative directories
    * Strip duplicated slashes
@@ -204,15 +212,20 @@ public:
                                 const CStdString& strType,
                                 const CStdString& strArchivePath,
                                 const CStdString& strFilePathInArchive,
-                                const CStdString& strPwd="");
+                                const CStdString& strPwd = "");
 
   static std::string AddFileToFolder(const std::string& strFolder, const std::string& strFile);
-  static std::string AddFileToFolder(const std::string& strFolder, const std::string& strFile, std::string a1)
+  static std::string AddFileToFolder(const std::string& strFolder,
+                                     const std::string& strFile,
+                                     std::string a1)
   {
     std::string newPath = AddFileToFolder(strFolder, strFile);
     return AddFileToFolder(newPath, a1);
   }
-  static std::string AddFileToFolder(const std::string& strFolder, const std::string& strFile, std::string a1, std::string a2)
+  static std::string AddFileToFolder(const std::string& strFolder,
+                                     const std::string& strFile,
+                                     std::string a1,
+                                     std::string a2)
   {
     std::string newPath = AddFileToFolder(strFolder, strFile, a1);
     return AddFileToFolder(newPath, a2);
@@ -234,7 +247,7 @@ public:
    \param path Path to be cleaned up
    \return Actual path without any "." or ".."
    */
-  static std::string GetRealPath(const std::string &path);
+  static std::string GetRealPath(const std::string& path);
 
   /*!
    \brief Updates the URL encoded hostname of the given path
@@ -246,9 +259,8 @@ public:
    \param strFilename Path to update
    \return True if the path has been updated/changed otherwise false
    */
-  static bool UpdateUrlEncoding(std::string &strFilename);
+  static bool UpdateUrlEncoding(std::string& strFilename);
 
 private:
-  static std::string resolvePath(const std::string &path);
+  static std::string resolvePath(const std::string& path);
 };
-

@@ -23,8 +23,7 @@
 #include "GUIWindowManager.h"
 #include "GUIUserMessages.h"
 
-CGUIDialogVideoOSD::CGUIDialogVideoOSD(void)
-    : CGUIDialog(WINDOW_DIALOG_VIDEO_OSD, "VideoOSD.xml")
+CGUIDialogVideoOSD::CGUIDialogVideoOSD(void) : CGUIDialog(WINDOW_DIALOG_VIDEO_OSD, "VideoOSD.xml")
 {
   m_loadType = KEEP_IN_MEMORY;
 }
@@ -38,16 +37,16 @@ void CGUIDialogVideoOSD::FrameMove()
   if (m_autoClosing)
   {
     // check for movement of mouse or a submenu open
-    if (g_windowManager.IsWindowActive(WINDOW_DIALOG_AUDIO_OSD_SETTINGS)
-                           || g_windowManager.IsWindowActive(WINDOW_DIALOG_VIDEO_OSD_SETTINGS)
-                           || g_windowManager.IsWindowActive(WINDOW_DIALOG_VIDEO_BOOKMARKS))
+    if (g_windowManager.IsWindowActive(WINDOW_DIALOG_AUDIO_OSD_SETTINGS) ||
+        g_windowManager.IsWindowActive(WINDOW_DIALOG_VIDEO_OSD_SETTINGS) ||
+        g_windowManager.IsWindowActive(WINDOW_DIALOG_VIDEO_BOOKMARKS))
       // extend show time by original value
       SetAutoClose(m_showDuration);
   }
   CGUIDialog::FrameMove();
 }
 
-bool CGUIDialogVideoOSD::OnAction(const CAction &action)
+bool CGUIDialogVideoOSD::OnAction(const CAction& action)
 {
   if (action.GetID() == ACTION_NEXT_ITEM || action.GetID() == ACTION_PREV_ITEM)
   {
@@ -61,9 +60,9 @@ bool CGUIDialogVideoOSD::OnAction(const CAction &action)
 
 bool CGUIDialogVideoOSD::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_VIDEO_MENU_STARTED:
+    case GUI_MSG_VIDEO_MENU_STARTED:
     {
       // We have gone to the DVD menu, so close the OSD.
       Close();
@@ -72,4 +71,3 @@ bool CGUIDialogVideoOSD::OnMessage(CGUIMessage& message)
   }
   return CGUIDialog::OnMessage(message);
 }
-

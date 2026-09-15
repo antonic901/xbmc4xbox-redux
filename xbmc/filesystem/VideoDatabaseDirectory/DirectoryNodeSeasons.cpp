@@ -29,7 +29,6 @@ using namespace XFILE::VIDEODATABASEDIRECTORY;
 CDirectoryNodeSeasons::CDirectoryNodeSeasons(const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_SEASONS, strName, pParent)
 {
-
 }
 
 NODE_TYPE CDirectoryNodeSeasons::GetChildType() const
@@ -41,20 +40,21 @@ std::string CDirectoryNodeSeasons::GetLocalizedName() const
 {
   switch (GetID())
   {
-  case 0:
-    return g_localizeStrings.Get(20381); // Specials
-  case -1:
-    return g_localizeStrings.Get(20366); // All Seasons
-  case -2:
-  {
-    CDirectoryNode *pParent = GetParent();
-    if (pParent)
-      return pParent->GetLocalizedName();
-    return "";
-  }
-  default:
-    std::string season = StringUtils::Format(g_localizeStrings.Get(20358).c_str(), GetID()); // Season <season>
-    return season;
+    case 0:
+      return g_localizeStrings.Get(20381); // Specials
+    case -1:
+      return g_localizeStrings.Get(20366); // All Seasons
+    case -2:
+    {
+      CDirectoryNode* pParent = GetParent();
+      if (pParent)
+        return pParent->GetLocalizedName();
+      return "";
+    }
+    default:
+      std::string season =
+          StringUtils::Format(g_localizeStrings.Get(20358).c_str(), GetID()); // Season <season>
+      return season;
   }
 }
 
@@ -67,7 +67,9 @@ bool CDirectoryNodeSeasons::GetContent(CFileItemList& items) const
   CQueryParams params;
   CollectQueryParams(params);
 
-  bool bSuccess=videodatabase.GetSeasonsNav(BuildPath(), items, params.GetActorId(), params.GetDirectorId(), params.GetGenreId(), params.GetYear(), params.GetTvShowId());
+  bool bSuccess =
+      videodatabase.GetSeasonsNav(BuildPath(), items, params.GetActorId(), params.GetDirectorId(),
+                                  params.GetGenreId(), params.GetYear(), params.GetTvShowId());
 
   videodatabase.Close();
 

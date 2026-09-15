@@ -25,7 +25,7 @@
 
 namespace ADDON
 {
-  class CVisualisation;
+class CVisualisation;
 }
 class CFileItemList;
 
@@ -33,7 +33,7 @@ class CGUIDialogVisualisationPresetList : public CGUIDialogSelect
 {
 public:
   CGUIDialogVisualisationPresetList();
-  virtual bool OnMessage(CGUIMessage &message);
+  virtual bool OnMessage(CGUIMessage& message);
 
 protected:
   virtual void OnInitWindow();
@@ -41,6 +41,6 @@ protected:
   virtual void OnSelect(int idx);
 
 private:
-  void SetVisualisation(ADDON::CVisualisation *addon);
+  void SetVisualisation(ADDON::CVisualisation* addon);
   ADDON::CVisualisation* m_viz;
 };

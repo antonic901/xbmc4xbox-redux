@@ -27,10 +27,9 @@
 
 #define CONTROL_HEADING 1
 #define CONTROL_LINES_START 2
-#define CONTROL_TEXTBOX     9
+#define CONTROL_TEXTBOX 9
 
-CGUIDialogBoxBase::CGUIDialogBoxBase(int id, const std::string &xmlFile)
-    : CGUIDialog(id, xmlFile)
+CGUIDialogBoxBase::CGUIDialogBoxBase(int id, const std::string& xmlFile) : CGUIDialog(id, xmlFile)
 {
   m_bConfirmed = false;
   m_loadType = KEEP_IN_MEMORY;
@@ -43,9 +42,9 @@ CGUIDialogBoxBase::~CGUIDialogBoxBase(void)
 
 bool CGUIDialogBoxBase::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_INIT:
     {
       CGUIDialog::OnMessage(message);
       m_bConfirmed = false;
@@ -78,7 +77,7 @@ void CGUIDialogBoxBase::SetLine(unsigned int iLine, CVariant line)
   CSingleLock lock(m_section);
   std::vector<std::string> lines = StringUtils::Split(m_text, '\n');
   if (iLine >= lines.size())
-    lines.resize(iLine+1);
+    lines.resize(iLine + 1);
   lines[iLine] = label;
   std::string text = StringUtils::Join(lines, "\n");
   SetText(text);
@@ -96,7 +95,8 @@ void CGUIDialogBoxBase::SetText(CVariant text)
   }
 }
 
-void CGUIDialogBoxBase::SetChoice(int iButton, const CVariant &choice) // iButton == 0 for no, 1 for yes
+void CGUIDialogBoxBase::SetChoice(int iButton,
+                                  const CVariant& choice) // iButton == 0 for no, 1 for yes
 {
   if (iButton < 0 || iButton >= DIALOG_MAX_CHOICES)
     return;
@@ -110,7 +110,7 @@ void CGUIDialogBoxBase::SetChoice(int iButton, const CVariant &choice) // iButto
   }
 }
 
-void CGUIDialogBoxBase::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIDialogBoxBase::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   if (m_bInvalidated)
   { // take a copy of our labels to save holding the lock for too long
@@ -133,10 +133,10 @@ void CGUIDialogBoxBase::Process(unsigned int currentTime, CDirtyRegionList &dirt
     {
       std::vector<std::string> lines = StringUtils::Split(text, "\n", DIALOG_MAX_LINES);
       lines.resize(DIALOG_MAX_LINES);
-      for (size_t i = 0 ; i < lines.size(); ++i)
+      for (size_t i = 0; i < lines.size(); ++i)
         SET_CONTROL_LABEL(CONTROL_LINES_START + i, lines[i]);
     }
-    for (size_t i = 0 ; i < choices.size() ; ++i)
+    for (size_t i = 0; i < choices.size(); ++i)
       SET_CONTROL_LABEL(CONTROL_CHOICES_START + i, choices[i]);
   }
   CGUIDialog::Process(currentTime, dirtyregions);
@@ -148,14 +148,14 @@ void CGUIDialogBoxBase::OnInitWindow()
   m_lastControlID = m_defaultControl;
 
   m_hasTextbox = false;
-  const CGUIControl *control = GetControl(CONTROL_TEXTBOX);
+  const CGUIControl* control = GetControl(CONTROL_TEXTBOX);
   if (control && control->GetControlType() == CGUIControl::GUICONTROL_TEXTBOX)
     m_hasTextbox = true;
 
   // set initial labels
   {
     CSingleLock lock(m_section);
-    for (int i = 0 ; i < DIALOG_MAX_CHOICES ; ++i)
+    for (int i = 0; i < DIALOG_MAX_CHOICES; ++i)
     {
       if (m_strChoices[i].empty())
         m_strChoices[i] = GetDefaultLabel(CONTROL_CHOICES_START + i);
@@ -171,14 +171,14 @@ void CGUIDialogBoxBase::OnDeinitWindow(int nextWindowID)
     CSingleLock lock(m_section);
     m_strHeading.clear();
     m_text.clear();
-    for (int i = 0 ; i < DIALOG_MAX_CHOICES ; ++i)
+    for (int i = 0; i < DIALOG_MAX_CHOICES; ++i)
       m_strChoices[i].clear();
   }
 
   CGUIDialog::OnDeinitWindow(nextWindowID);
 }
 
-std::string CGUIDialogBoxBase::GetLocalized(const CVariant &var) const
+std::string CGUIDialogBoxBase::GetLocalized(const CVariant& var) const
 {
   if (var.isString())
     return var.asString();

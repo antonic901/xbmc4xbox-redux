@@ -22,8 +22,7 @@
 #include "guilib/Key.h"
 #include "guilib/GUIWindowManager.h"
 
-CGUIWindowStartup::CGUIWindowStartup(void)
-    : CGUIWindow(WINDOW_STARTUP_ANIM, "Startup.xml")
+CGUIWindowStartup::CGUIWindowStartup(void) : CGUIWindow(WINDOW_STARTUP_ANIM, "Startup.xml")
 {
 }
 

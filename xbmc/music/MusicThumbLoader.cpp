@@ -57,8 +57,8 @@ void CMusicThumbLoader::OnLoaderFinish()
 
 bool CMusicThumbLoader::LoadItem(CFileItem* pItem)
 {
-  bool result  = LoadItemCached(pItem);
-       result |= LoadItemLookup(pItem);
+  bool result = LoadItemCached(pItem);
+  result |= LoadItemLookup(pItem);
 
   return result;
 }
@@ -108,7 +108,8 @@ bool CMusicThumbLoader::LoadItemLookup(CFileItem* pItem)
   if (pItem->m_bIsShareOrDrive)
     return false;
 
-  if (pItem->HasMusicInfoTag() && pItem->GetMusicInfoTag()->GetType() == MediaTypeArtist) // No fallback for artist
+  if (pItem->HasMusicInfoTag() &&
+      pItem->GetMusicInfoTag()->GetType() == MediaTypeArtist) // No fallback for artist
     return false;
 
   if (pItem->HasVideoInfoTag())
@@ -141,7 +142,7 @@ bool CMusicThumbLoader::LoadItemLookup(CFileItem* pItem)
   return true;
 }
 
-bool CMusicThumbLoader::FillThumb(CFileItem &item, bool folderThumbs /* = true */)
+bool CMusicThumbLoader::FillThumb(CFileItem& item, bool folderThumbs /* = true */)
 {
   if (item.HasArt("thumb"))
     return true;
@@ -157,16 +158,17 @@ bool CMusicThumbLoader::FillThumb(CFileItem &item, bool folderThumbs /* = true *
   return !thumb.empty();
 }
 
-bool CMusicThumbLoader::FillLibraryArt(CFileItem &item)
+bool CMusicThumbLoader::FillLibraryArt(CFileItem& item)
 {
-  CMusicInfoTag &tag = *item.GetMusicInfoTag();
+  CMusicInfoTag& tag = *item.GetMusicInfoTag();
   if (tag.GetDatabaseId() > -1 && !tag.GetType().empty())
   {
     m_musicDatabase->Open();
     std::vector<ArtForThumbLoader> art;
     bool artfound;
     if (tag.GetType() == MediaTypeSong)
-      artfound = m_musicDatabase->GetArtForItem(tag.GetDatabaseId(), tag.GetAlbumId(), -1, false, art);
+      artfound =
+          m_musicDatabase->GetArtForItem(tag.GetDatabaseId(), tag.GetAlbumId(), -1, false, art);
     else if (tag.GetType() == MediaTypeAlbum)
       artfound = m_musicDatabase->GetArtForItem(-1, tag.GetDatabaseId(), -1, false, art);
     else //Artist
@@ -222,7 +224,8 @@ bool CMusicThumbLoader::FillLibraryArt(CFileItem &item)
         // For songs prefer primary song artist over primary albumartist fanart as fallback fanart
         if (artitem.prefix == "artist" && artitem.artType == "fanart")
           fanartfallback = artname;
-        if (artitem.prefix == "albumartist" && artitem.artType == "fanart" && fanartfallback.empty())
+        if (artitem.prefix == "albumartist" && artitem.artType == "fanart" &&
+            fanartfallback.empty())
           fanartfallback = artname;
       }
       if (!fanartfallback.empty())
@@ -234,10 +237,11 @@ bool CMusicThumbLoader::FillLibraryArt(CFileItem &item)
   return !item.GetArt().empty();
 }
 
-bool CMusicThumbLoader::GetEmbeddedThumb(const std::string &path, EmbeddedArt &art)
+bool CMusicThumbLoader::GetEmbeddedThumb(const std::string& path, EmbeddedArt& art)
 {
   CFileItem item(path, false);
-  boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(item));
+  boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader(
+      CMusicInfoTagLoaderFactory::CreateLoader(item));
   CMusicInfoTag tag;
   if (NULL != pLoader.get())
     pLoader->Load(path, tag, &art);

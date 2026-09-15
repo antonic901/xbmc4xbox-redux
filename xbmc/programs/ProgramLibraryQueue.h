@@ -50,11 +50,11 @@ public:
 
    \param[in] job Program library job to be queued.
    */
-  void AddJob(CProgramLibraryJob *job);
+  void AddJob(CProgramLibraryJob* job);
 
 protected:
   // implementation of IJobCallback
-  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob* job);
 
   /*!
    \brief Notifies all to refresh the current listings.

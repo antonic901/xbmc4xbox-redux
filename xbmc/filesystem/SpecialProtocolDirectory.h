@@ -23,14 +23,14 @@
 
 namespace XFILE
 {
-  class CSpecialProtocolDirectory : public COverrideDirectory
-  {
-  public:
-    CSpecialProtocolDirectory(void);
-    virtual ~CSpecialProtocolDirectory(void);
-    virtual bool GetDirectory(const CURL& url, CFileItemList &items);
+class CSpecialProtocolDirectory : public COverrideDirectory
+{
+public:
+  CSpecialProtocolDirectory(void);
+  virtual ~CSpecialProtocolDirectory(void);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
 
-  protected:
-    virtual std::string TranslatePath(const CURL &url);
-  };
-}
+protected:
+  virtual std::string TranslatePath(const CURL& url);
+};
+} // namespace XFILE

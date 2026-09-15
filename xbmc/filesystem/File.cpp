@@ -42,7 +42,7 @@ using namespace XFILE;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 #ifndef __GNUC__
-#pragma warning (disable:4244)
+#pragma warning(disable : 4244)
 #endif
 
 //*********************************************************************************************
@@ -68,14 +68,20 @@ CFile::~CFile()
 
 //*********************************************************************************************
 
-bool CFile::Copy(const std::string& strFileName, const std::string& strDest, XFILE::IFileCallback* pCallback, void* pContext)
+bool CFile::Copy(const std::string& strFileName,
+                 const std::string& strDest,
+                 XFILE::IFileCallback* pCallback,
+                 void* pContext)
 {
   const CURL pathToUrl(strFileName);
   const CURL pathToUrlDest(strDest);
   return Copy(pathToUrl, pathToUrlDest, pCallback, pContext);
 }
 
-bool CFile::Copy(const CURL& url2, const CURL& dest, XFILE::IFileCallback* pCallback, void* pContext)
+bool CFile::Copy(const CURL& url2,
+                 const CURL& dest,
+                 XFILE::IFileCallback* pCallback,
+                 void* pContext)
 {
   CFile file;
 
@@ -95,7 +101,7 @@ bool CFile::Copy(const CURL& url2, const CURL& dest, XFILE::IFileCallback* pCall
     {
       std::vector<std::string> tokens;
       std::string strDirectory = URIUtils::GetDirectory(pathToUrl);
-      URIUtils::RemoveSlashAtEnd(strDirectory);  // for the test below
+      URIUtils::RemoveSlashAtEnd(strDirectory); // for the test below
       if (!(strDirectory.size() == 2 && strDirectory[1] == ':'))
       {
         CURL url(strDirectory);
@@ -121,7 +127,8 @@ bool CFile::Copy(const CURL& url2, const CURL& dest, XFILE::IFileCallback* pCall
           else if (strDirectory[0] == pathsep[0])
             strCurrPath += pathsep;
 
-          for (std::vector<std::string>::iterator iter = tokens.begin(); iter != tokens.end(); ++iter)
+          for (std::vector<std::string>::iterator iter = tokens.begin(); iter != tokens.end();
+               ++iter)
           {
             strCurrPath += *iter + pathsep;
             CDirectory::Create(strCurrPath);
@@ -131,7 +138,7 @@ bool CFile::Copy(const CURL& url2, const CURL& dest, XFILE::IFileCallback* pCall
     }
     if (CFile::Exists(dest))
       CFile::Delete(dest);
-    if (!newFile.OpenForWrite(dest, true))  // overwrite always
+    if (!newFile.OpenForWrite(dest, true)) // overwrite always
     {
       file.Close();
       return false;
@@ -153,27 +160,30 @@ bool CFile::Copy(const CURL& url2, const CURL& dest, XFILE::IFileCallback* pCall
       g_application.ResetScreenSaver();
 
       iRead = file.Read(buffer.get(), iBufferSize);
-      if (iRead == 0) break;
+      if (iRead == 0)
+        break;
       else if (iRead < 0)
       {
-        CLog::Log(LOGERROR, "%s - Failed read from file %s", __FUNCTION__, url.GetRedacted().c_str());
+        CLog::Log(LOGERROR, "%s - Failed read from file %s", __FUNCTION__,
+                  url.GetRedacted().c_str());
         llFileSize = (uint64_t)-1;
         break;
       }
 
       /* write data and make sure we managed to write it all */
       iWrite = 0;
-      while(iWrite < iRead)
+      while (iWrite < iRead)
       {
         ssize_t iWrite2 = newFile.Write(buffer.get() + iWrite, iRead - iWrite);
-        if(iWrite2 <=0)
+        if (iWrite2 <= 0)
           break;
-        iWrite+=iWrite2;
+        iWrite += iWrite2;
       }
 
       if (iWrite != iRead)
       {
-        CLog::Log(LOGERROR, "%s - Failed write to file %s", __FUNCTION__, dest.GetRedacted().c_str());
+        CLog::Log(LOGERROR, "%s - Failed write to file %s", __FUNCTION__,
+                  dest.GetRedacted().c_str());
         llFileSize = (uint64_t)-1;
         break;
       }
@@ -189,10 +199,10 @@ bool CFile::Copy(const CURL& url2, const CURL& dest, XFILE::IFileCallback* pCall
 
         float averageSpeed = llPos / end;
         int ipercent = 0;
-        if(llFileSize)
+        if (llFileSize)
           ipercent = 100 * llPos / llFileSize;
 
-        if(!pCallback->OnFileCallback(pContext, ipercent, averageSpeed))
+        if (!pCallback->OnFileCallback(pContext, ipercent, averageSpeed))
         {
           CLog::Log(LOGERROR, "%s - User aborted copy", __FUNCTION__);
           llFileSize = (uint64_t)-1;
@@ -218,34 +228,35 @@ bool CFile::Copy(const CURL& url2, const CURL& dest, XFILE::IFileCallback* pCall
 
 //*********************************************************************************************
 
-bool CFile::CURLCreate(const std::string &url)
+bool CFile::CURLCreate(const std::string& url)
 {
   m_curl.Parse(url);
   return true;
 }
 
-bool CFile::CURLAddOption(XFILE::CURLOPTIONTYPE type, const char* name, const char * value)
+bool CFile::CURLAddOption(XFILE::CURLOPTIONTYPE type, const char* name, const char* value)
 {
-  switch (type){
-  case XFILE::CURL_OPTION_CREDENTIALS:
+  switch (type)
   {
-    m_curl.SetUserName(name);
-    m_curl.SetPassword(value);
-    break;
-  }
-  case XFILE::CURL_OPTION_PROTOCOL:
-  case XFILE::CURL_OPTION_HEADER:
-  {
-    m_curl.SetProtocolOption(name, value);
-    break;
-  }
-  case XFILE::CURL_OPTION_OPTION:
-  {
-    m_curl.SetOption(name, value);
-    break;
-  }
-  default:
-    return false;
+    case XFILE::CURL_OPTION_CREDENTIALS:
+    {
+      m_curl.SetUserName(name);
+      m_curl.SetPassword(value);
+      break;
+    }
+    case XFILE::CURL_OPTION_PROTOCOL:
+    case XFILE::CURL_OPTION_HEADER:
+    {
+      m_curl.SetProtocolOption(name, value);
+      break;
+    }
+    case XFILE::CURL_OPTION_OPTION:
+    {
+      m_curl.SetOption(name, value);
+      break;
+    }
+    default:
+      return false;
   }
   return true;
 }
@@ -283,10 +294,10 @@ bool CFile::Open(const CURL& file, const unsigned int flags)
 
     CURL url(URIUtils::SubstitutePath(file)), url2(url);
 
-    if (url2.IsProtocol("apk") || url2.IsProtocol("zip") )
+    if (url2.IsProtocol("apk") || url2.IsProtocol("zip"))
       url2.SetOptions("");
 
-    if (!g_directoryCache.FileExists(url2.Get(), bPathInCache) )
+    if (!g_directoryCache.FileExists(url2.Get(), bPathInCache))
     {
       if (bPathInCache)
         return false;
@@ -295,7 +306,7 @@ bool CFile::Open(const CURL& file, const unsigned int flags)
     if (!(m_flags & READ_NO_CACHE))
     {
       const std::string pathToUrl(url.Get());
-      if (URIUtils::IsInternetStream(url, true) && !CUtil::IsPicture(pathToUrl) )
+      if (URIUtils::IsInternetStream(url, true) && !CUtil::IsPicture(pathToUrl))
         m_flags |= READ_CACHED;
 
       if (m_flags & READ_CACHED)
@@ -326,11 +337,12 @@ bool CFile::Open(const CURL& file, const unsigned int flags)
         return false;
       }
     }
-    catch (CRedirectException *pRedirectEx)
+    catch (CRedirectException* pRedirectEx)
     {
       // the file implementation decided this item should use a different implementation.
       // the exception will contain the new implementation.
-      CLog::Log(LOGDEBUG,"File::Open - redirecting implementation for %s", file.GetRedacted().c_str());
+      CLog::Log(LOGDEBUG, "File::Open - redirecting implementation for %s",
+                file.GetRedacted().c_str());
       SAFE_DELETE(m_pFile);
       if (pRedirectEx && pRedirectEx->m_pNewFileImp)
       {
@@ -341,7 +353,8 @@ bool CFile::Open(const CURL& file, const unsigned int flags)
         if (pNewUrl.get())
         {
           CURL newAuthUrl(*pNewUrl);
-          if (CPasswordManager::GetInstance().IsURLSupported(newAuthUrl) && newAuthUrl.GetUserName().empty())
+          if (CPasswordManager::GetInstance().IsURLSupported(newAuthUrl) &&
+              newAuthUrl.GetUserName().empty())
             CPasswordManager::GetInstance().AuthenticateURL(newAuthUrl);
 
           if (!m_pFile->Open(newAuthUrl))
@@ -362,7 +375,8 @@ bool CFile::Open(const CURL& file, const unsigned int flags)
     }
     catch (...)
     {
-      CLog::Log(LOGERROR, "File::Open - unknown exception when opening %s", file.GetRedacted().c_str());
+      CLog::Log(LOGERROR, "File::Open - unknown exception when opening %s",
+                file.GetRedacted().c_str());
       SAFE_DELETE(m_pFile);
       return false;
     }
@@ -382,7 +396,7 @@ bool CFile::Open(const CURL& file, const unsigned int flags)
     return true;
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
@@ -416,9 +430,10 @@ bool CFile::OpenForWrite(const CURL& file, bool bOverWrite)
     return false;
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
-    CLog::Log(LOGERROR, "%s - Unhandled exception opening %s", __FUNCTION__, file.GetRedacted().c_str());
+    CLog::Log(LOGERROR, "%s - Unhandled exception opening %s", __FUNCTION__,
+              file.GetRedacted().c_str());
   }
   CLog::Log(LOGERROR, "%s - Error opening %s", __FUNCTION__, file.GetRedacted().c_str());
   return false;
@@ -455,11 +470,12 @@ bool CFile::Exists(const CURL& file, bool bUseCache /* = true */)
     return pFile->Exists(authUrl);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (CRedirectException *pRedirectEx)
+  catch (CRedirectException* pRedirectEx)
   {
     // the file implementation decided this item should use a different implementation.
     // the exception will contain the new implementation and optional a redirected URL.
-    CLog::Log(LOGDEBUG,"File::Exists - redirecting implementation for %s", file.GetRedacted().c_str());
+    CLog::Log(LOGDEBUG, "File::Exists - redirecting implementation for %s",
+              file.GetRedacted().c_str());
     if (pRedirectEx && pRedirectEx->m_pNewFileImp)
     {
       boost::movelib::unique_ptr<IFile> pImp(pRedirectEx->m_pNewFileImp);
@@ -479,7 +495,8 @@ bool CFile::Exists(const CURL& file, bool bUseCache /* = true */)
               return false;
           }
           CURL newAuthUrl = *pNewUrl;
-          if (CPasswordManager::GetInstance().IsURLSupported(newAuthUrl) && newAuthUrl.GetUserName().empty())
+          if (CPasswordManager::GetInstance().IsURLSupported(newAuthUrl) &&
+              newAuthUrl.GetUserName().empty())
             CPasswordManager::GetInstance().AuthenticateURL(newAuthUrl);
 
           return pImp->Exists(newAuthUrl);
@@ -491,7 +508,7 @@ bool CFile::Exists(const CURL& file, bool bUseCache /* = true */)
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
@@ -499,7 +516,7 @@ bool CFile::Exists(const CURL& file, bool bUseCache /* = true */)
   return false;
 }
 
-int CFile::Stat(struct __stat64 *buffer)
+int CFile::Stat(struct __stat64* buffer)
 {
   if (!buffer)
     return -1;
@@ -545,11 +562,12 @@ int CFile::Stat(const CURL& file, struct __stat64* buffer)
     return pFile->Stat(authUrl, buffer);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (CRedirectException *pRedirectEx)
+  catch (CRedirectException* pRedirectEx)
   {
     // the file implementation decided this item should use a different implementation.
     // the exception will contain the new implementation and optional a redirected URL.
-    CLog::Log(LOGDEBUG,"File::Stat - redirecting implementation for %s", file.GetRedacted().c_str());
+    CLog::Log(LOGDEBUG, "File::Stat - redirecting implementation for %s",
+              file.GetRedacted().c_str());
     if (pRedirectEx && pRedirectEx->m_pNewFileImp)
     {
       boost::movelib::unique_ptr<IFile> pImp(pRedirectEx->m_pNewFileImp);
@@ -561,7 +579,8 @@ int CFile::Stat(const CURL& file, struct __stat64* buffer)
         if (pImp.get())
         {
           CURL newAuthUrl = *pNewUrl;
-          if (CPasswordManager::GetInstance().IsURLSupported(newAuthUrl) && newAuthUrl.GetUserName().empty())
+          if (CPasswordManager::GetInstance().IsURLSupported(newAuthUrl) &&
+              newAuthUrl.GetUserName().empty())
             CPasswordManager::GetInstance().AuthenticateURL(newAuthUrl);
 
           if (!pImp->Stat(newAuthUrl, buffer))
@@ -579,7 +598,7 @@ int CFile::Stat(const CURL& file, struct __stat64* buffer)
       }
     }
   }
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
@@ -587,7 +606,7 @@ int CFile::Stat(const CURL& file, struct __stat64* buffer)
   return -1;
 }
 
-ssize_t CFile::Read(void *lpBuf, size_t uiBufSize)
+ssize_t CFile::Read(void* lpBuf, size_t uiBufSize)
 {
   if (!m_pFile)
     return -1;
@@ -606,21 +625,21 @@ ssize_t CFile::Read(void *lpBuf, size_t uiBufSize)
     return m_pFile->Read(&dummy, 0);
   }
 
-  if(m_pBuffer)
+  if (m_pBuffer)
   {
-    if(m_flags & READ_TRUNCATED)
+    if (m_flags & READ_TRUNCATED)
     {
-      const ssize_t nBytes = m_pBuffer->sgetn(
-        (char *)lpBuf, std::min<std::streamsize>((std::streamsize)uiBufSize,
-                                                  m_pBuffer->in_avail()));
-      if (m_bitStreamStats && nBytes>0)
+      const ssize_t nBytes =
+          m_pBuffer->sgetn((char*)lpBuf, std::min<std::streamsize>((std::streamsize)uiBufSize,
+                                                                   m_pBuffer->in_avail()));
+      if (m_bitStreamStats && nBytes > 0)
         m_bitStreamStats->AddSampleBytes(nBytes);
       return nBytes;
     }
     else
     {
       const ssize_t nBytes = m_pBuffer->sgetn((char*)lpBuf, uiBufSize);
-      if (m_bitStreamStats && nBytes>0)
+      if (m_bitStreamStats && nBytes > 0)
         m_bitStreamStats->AddSampleBytes(nBytes);
       return nBytes;
     }
@@ -628,19 +647,19 @@ ssize_t CFile::Read(void *lpBuf, size_t uiBufSize)
 
   try
   {
-    if(m_flags & READ_TRUNCATED)
+    if (m_flags & READ_TRUNCATED)
     {
       const ssize_t nBytes = m_pFile->Read(lpBuf, uiBufSize);
-      if (m_bitStreamStats && nBytes>0)
+      if (m_bitStreamStats && nBytes > 0)
         m_bitStreamStats->AddSampleBytes(nBytes);
       return nBytes;
     }
     else
     {
       ssize_t done = 0;
-      while((uiBufSize-done) > 0)
+      while ((uiBufSize - done) > 0)
       {
-        const ssize_t curr = m_pFile->Read((char*)lpBuf+done, uiBufSize-done);
+        const ssize_t curr = m_pFile->Read((char*)lpBuf + done, uiBufSize - done);
         if (curr <= 0)
         {
           if (curr < 0 && done == 0)
@@ -648,7 +667,7 @@ ssize_t CFile::Read(void *lpBuf, size_t uiBufSize)
 
           break;
         }
-        done+=curr;
+        done += curr;
       }
       if (m_bitStreamStats && done > 0)
         m_bitStreamStats->AddSampleBytes(done);
@@ -656,7 +675,7 @@ ssize_t CFile::Read(void *lpBuf, size_t uiBufSize)
     }
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
     return -1;
@@ -676,7 +695,7 @@ void CFile::Close()
     SAFE_DELETE(m_pFile);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
@@ -691,7 +710,7 @@ void CFile::Flush()
       m_pFile->Flush();
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
@@ -706,11 +725,11 @@ int64_t CFile::Seek(int64_t iFilePosition, int iWhence)
 
   if (m_pBuffer)
   {
-    if(iWhence == SEEK_CUR)
+    if (iWhence == SEEK_CUR)
       return m_pBuffer->pubseekoff(iFilePosition, std::ios_base::cur);
-    else if(iWhence == SEEK_END)
+    else if (iWhence == SEEK_END)
       return m_pBuffer->pubseekoff(iFilePosition, std::ios_base::end);
-    else if(iWhence == SEEK_SET)
+    else if (iWhence == SEEK_SET)
       return m_pBuffer->pubseekoff(iFilePosition, std::ios_base::beg);
   }
 
@@ -719,7 +738,7 @@ int64_t CFile::Seek(int64_t iFilePosition, int iWhence)
     return m_pFile->Seek(iFilePosition, iWhence);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
@@ -737,7 +756,7 @@ int CFile::Truncate(int64_t iSize)
     return m_pFile->Truncate(iSize);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
@@ -754,7 +773,7 @@ int64_t CFile::GetLength()
     return 0;
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
@@ -775,16 +794,15 @@ int64_t CFile::GetPosition() const
     return m_pFile->GetPosition();
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
   return -1;
 }
 
-
 //*********************************************************************************************
-bool CFile::ReadString(char *szLine, int iLineLength)
+bool CFile::ReadString(char* szLine, int iLineLength)
 {
   if (!m_pFile || !szLine)
     return false;
@@ -794,26 +812,26 @@ bool CFile::ReadString(char *szLine, int iLineLength)
     typedef CFileStreamBuffer::traits_type traits;
     CFileStreamBuffer::int_type aByte = m_pBuffer->sgetc();
 
-    if(aByte == traits::eof())
+    if (aByte == traits::eof())
       return false;
 
-    while(iLineLength>0)
+    while (iLineLength > 0)
     {
       aByte = m_pBuffer->sbumpc();
 
-      if(aByte == traits::eof())
+      if (aByte == traits::eof())
         break;
 
-      if(aByte == traits::to_int_type('\n'))
+      if (aByte == traits::to_int_type('\n'))
       {
-        if(m_pBuffer->sgetc() == traits::to_int_type('\r'))
+        if (m_pBuffer->sgetc() == traits::to_int_type('\r'))
           m_pBuffer->sbumpc();
         break;
       }
 
-      if(aByte == traits::to_int_type('\r'))
+      if (aByte == traits::to_int_type('\r'))
       {
-        if(m_pBuffer->sgetc() == traits::to_int_type('\n'))
+        if (m_pBuffer->sgetc() == traits::to_int_type('\n'))
           m_pBuffer->sbumpc();
         break;
       }
@@ -824,7 +842,7 @@ bool CFile::ReadString(char *szLine, int iLineLength)
     }
 
     // if we have no space for terminating character we failed
-    if(iLineLength==0)
+    if (iLineLength == 0)
       return false;
 
     *szLine = 0;
@@ -837,7 +855,7 @@ bool CFile::ReadString(char *szLine, int iLineLength)
     return m_pFile->ReadString(szLine, iLineLength);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
@@ -865,7 +883,7 @@ ssize_t CFile::Write(const void* lpBuf, size_t uiBufSize)
     return m_pFile->Write(lpBuf, uiBufSize);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
@@ -891,14 +909,14 @@ bool CFile::Delete(const CURL& file)
     if (!pFile.get())
       return false;
 
-    if(pFile->Delete(authUrl))
+    if (pFile->Delete(authUrl))
     {
       g_directoryCache.ClearFile(url.Get());
       return true;
     }
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }
@@ -925,14 +943,15 @@ bool CFile::Rename(const CURL& file, const CURL& newFile)
     if (CPasswordManager::GetInstance().IsURLSupported(authUrl) && authUrl.GetUserName().empty())
       CPasswordManager::GetInstance().AuthenticateURL(authUrl);
     CURL authUrlNew = urlnew;
-    if (CPasswordManager::GetInstance().IsURLSupported(authUrlNew) && authUrlNew.GetUserName().empty())
+    if (CPasswordManager::GetInstance().IsURLSupported(authUrlNew) &&
+        authUrlNew.GetUserName().empty())
       CPasswordManager::GetInstance().AuthenticateURL(authUrlNew);
 
     boost::movelib::unique_ptr<IFile> pFile(CFileFactory::CreateLoader(url));
     if (!pFile.get())
       return false;
 
-    if(pFile->Rename(authUrl, authUrlNew))
+    if (pFile->Rename(authUrl, authUrlNew))
     {
       g_directoryCache.ClearFile(url.Get());
       g_directoryCache.AddFile(urlnew.Get());
@@ -940,7 +959,7 @@ bool CFile::Rename(const CURL& file, const CURL& newFile)
     }
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception ", __FUNCTION__);
   }
@@ -969,7 +988,7 @@ bool CFile::SetHidden(const CURL& file, bool hidden)
 
     return pFile->SetHidden(authUrl, hidden);
   }
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s(%s) - Unhandled exception", __FUNCTION__, file.GetRedacted().c_str());
   }
@@ -983,9 +1002,9 @@ int CFile::IoControl(EIoControl request, void* param)
     return -1;
   result = m_pFile->IoControl(request, param);
 
-  if(result == -1 && request == IOCTRL_SEEK_POSSIBLE)
+  if (result == -1 && request == IOCTRL_SEEK_POSSIBLE)
   {
-    if(m_pFile->GetLength() >= 0 && m_pFile->Seek(0, SEEK_CUR) >= 0)
+    if (m_pFile->GetLength() >= 0 && m_pFile->Seek(0, SEEK_CUR) >= 0)
       return 1;
     else
       return 0;
@@ -1015,7 +1034,7 @@ std::string CFile::GetContentCharset(void)
   return m_pFile->GetContentCharset();
 }
 
-ssize_t CFile::LoadFile(const std::string &filename, auto_buffer& outputBuffer)
+ssize_t CFile::LoadFile(const std::string& filename, auto_buffer& outputBuffer)
 {
   const CURL pathToUrl(filename);
   return LoadFile(pathToUrl, outputBuffer);
@@ -1054,7 +1073,8 @@ ssize_t CFile::LoadFile(const CURL& file, auto_buffer& outputBuffer)
   if (filesize > (int64_t)max_file_size)
     return 0; /* file is too large for this function */
 
-  size_t chunksize = (filesize > 0) ? (size_t)(filesize + 1) : (size_t) GetChunkSize(GetChunkSize(), min_chunk_size);
+  size_t chunksize = (filesize > 0) ? (size_t)(filesize + 1)
+                                    : (size_t)GetChunkSize(GetChunkSize(), min_chunk_size);
   size_t total_read = 0;
   while (true)
   {
@@ -1102,49 +1122,49 @@ CFileStreamBuffer::~CFileStreamBuffer()
 }
 
 CFileStreamBuffer::CFileStreamBuffer(int backsize)
-  : std::streambuf()
-  , m_file(NULL)
-  , m_buffer(NULL)
-  , m_backsize(backsize)
-  , m_frontsize(0)
+  : std::streambuf(),
+    m_file(NULL),
+    m_buffer(NULL),
+    m_backsize(backsize),
+    m_frontsize(0)
 {
 }
 
-void CFileStreamBuffer::Attach(IFile *file)
+void CFileStreamBuffer::Attach(IFile* file)
 {
   m_file = file;
 
-  m_frontsize = CFile::GetChunkSize(m_file->GetChunkSize(), 64*1024);
+  m_frontsize = CFile::GetChunkSize(m_file->GetChunkSize(), 64 * 1024);
 
-  m_buffer = new char[m_frontsize+m_backsize];
-  setg(0,0,0);
-  setp(0,0);
+  m_buffer = new char[m_frontsize + m_backsize];
+  setg(0, 0, 0);
+  setp(0, 0);
 }
 
 void CFileStreamBuffer::Detach()
 {
-  setg(0,0,0);
-  setp(0,0);
+  setg(0, 0, 0);
+  setp(0, 0);
   delete[] m_buffer;
   m_buffer = NULL;
 }
 
 CFileStreamBuffer::int_type CFileStreamBuffer::underflow()
 {
-  if(gptr() < egptr())
+  if (gptr() < egptr())
     return traits_type::to_int_type(*gptr());
 
-  if(!m_file)
+  if (!m_file)
     return traits_type::eof();
 
   size_t backsize = 0;
-  if(m_backsize)
+  if (m_backsize)
   {
-    backsize = (size_t)std::min<ptrdiff_t>((ptrdiff_t)m_backsize, egptr()-eback());
-    memmove(m_buffer, egptr()-backsize, backsize);
+    backsize = (size_t)std::min<ptrdiff_t>((ptrdiff_t)m_backsize, egptr() - eback());
+    memmove(m_buffer, egptr() - backsize, backsize);
   }
 
-  ssize_t size = m_file->Read(m_buffer+backsize, m_frontsize);
+  ssize_t size = m_file->Read(m_buffer + backsize, m_frontsize);
 
   if (size == 0)
     return traits_type::eof();
@@ -1154,34 +1174,33 @@ CFileStreamBuffer::int_type CFileStreamBuffer::underflow()
     return traits_type::eof();
   }
 
-  setg(m_buffer, m_buffer+backsize, m_buffer+backsize+size);
+  setg(m_buffer, m_buffer + backsize, m_buffer + backsize + size);
   return traits_type::to_int_type(*gptr());
 }
 
-CFileStreamBuffer::pos_type CFileStreamBuffer::seekoff(
-  off_type offset,
-  std::ios_base::seekdir way,
-  std::ios_base::openmode mode)
+CFileStreamBuffer::pos_type CFileStreamBuffer::seekoff(off_type offset,
+                                                       std::ios_base::seekdir way,
+                                                       std::ios_base::openmode mode)
 {
   // calculate relative offset
-  off_type aheadbytes  = (egptr() - gptr());
-  off_type pos  = m_file->GetPosition() - aheadbytes;
+  off_type aheadbytes = (egptr() - gptr());
+  off_type pos = m_file->GetPosition() - aheadbytes;
   off_type offset2;
-  if(way == std::ios_base::cur)
+  if (way == std::ios_base::cur)
     offset2 = offset;
-  else if(way == std::ios_base::beg)
+  else if (way == std::ios_base::beg)
     offset2 = offset - pos;
-  else if(way == std::ios_base::end)
+  else if (way == std::ios_base::end)
     offset2 = offset + m_file->GetLength() - pos;
   else
     return std::streampos(-1);
 
   // a non seek shouldn't modify our buffer
-  if(offset2 == 0)
+  if (offset2 == 0)
     return pos;
 
   // try to seek within buffer
-  if(gptr()+offset2 >= eback() && gptr()+offset2 < egptr())
+  if (gptr() + offset2 >= eback() && gptr() + offset2 < egptr())
   {
     gbump(offset2);
     return pos + offset2;
@@ -1189,26 +1208,24 @@ CFileStreamBuffer::pos_type CFileStreamBuffer::seekoff(
 
   // reset our buffer pointer, will
   // start buffering on next read
-  setg(0,0,0);
-  setp(0,0);
+  setg(0, 0, 0);
+  setp(0, 0);
 
   int64_t position = -1;
-  if(way == std::ios_base::cur)
+  if (way == std::ios_base::cur)
     position = m_file->Seek(offset - aheadbytes, SEEK_CUR);
-  else if(way == std::ios_base::end)
+  else if (way == std::ios_base::end)
     position = m_file->Seek(offset, SEEK_END);
   else
     position = m_file->Seek(offset, SEEK_SET);
 
-  if(position<0)
+  if (position < 0)
     return std::streampos(-1);
 
   return position;
 }
 
-CFileStreamBuffer::pos_type CFileStreamBuffer::seekpos(
-  pos_type pos,
-  std::ios_base::openmode mode)
+CFileStreamBuffer::pos_type CFileStreamBuffer::seekpos(pos_type pos, std::ios_base::openmode mode)
 {
   return seekoff(pos, std::ios_base::beg, mode);
 }
@@ -1219,8 +1236,8 @@ std::streamsize CFileStreamBuffer::showmanyc()
   return egptr() - gptr();
 }
 
-CFileStream::CFileStream(int backsize /*= 0*/) :
-    std::istream(&m_buffer),
+CFileStream::CFileStream(int backsize /*= 0*/)
+  : std::istream(&m_buffer),
     m_buffer(backsize),
     m_file(NULL)
 {
@@ -1230,7 +1247,6 @@ CFileStream::~CFileStream()
 {
   Close();
 }
-
 
 bool CFileStream::Open(const CURL& filename)
 {
@@ -1243,7 +1259,7 @@ bool CFileStream::Open(const CURL& filename)
   if (CPasswordManager::GetInstance().IsURLSupported(authUrl) && authUrl.GetUserName().empty())
     CPasswordManager::GetInstance().AuthenticateURL(authUrl);
 
-  if(m_file && m_file->Open(authUrl))
+  if (m_file && m_file->Open(authUrl))
   {
     m_buffer.Attach(m_file);
     return true;
@@ -1260,7 +1276,7 @@ int64_t CFileStream::GetLength()
 
 void CFileStream::Close()
 {
-  if(!m_file)
+  if (!m_file)
     return;
 
   m_buffer.Detach();

@@ -38,23 +38,23 @@ typedef uint64_t iso733_t;
 #pragma pack(1)
 struct iso9660_VolumeDescriptor
 {
-  unsigned char byOne;            //0
-  char szSignature[6];        //1-6
-  unsigned char byZero;            //7
-  char szSystemIdentifier[32];    //8-39
-  char szVolumeIdentifier[32];    //40-71
-  unsigned char byZero2[8];          //72-79
-  DWORD dwTotalSectorsLE;       //80-83
-  DWORD dwTotalSectorsBE;       //84-87
-  unsigned char byZero3[32];         //88-119
-  WORD wVolumeSetSizeLE;       //120-121
-  WORD wVolumeSetSizeBE;       //122-123
-  WORD wVolumeSequenceNumberLE;   //124-125
-  WORD wVolumeSequenceNumberBE;   //126-127
-  WORD wSectorSizeLE;        //128-129
-  WORD wSectorSizeBE;        //130-131
-  DWORD dwPathTableLengthLE;     //132-135
-  DWORD dwPathTableLengthBE;     //136-139
+  unsigned char byOne; //0
+  char szSignature[6]; //1-6
+  unsigned char byZero; //7
+  char szSystemIdentifier[32]; //8-39
+  char szVolumeIdentifier[32]; //40-71
+  unsigned char byZero2[8]; //72-79
+  DWORD dwTotalSectorsLE; //80-83
+  DWORD dwTotalSectorsBE; //84-87
+  unsigned char byZero3[32]; //88-119
+  WORD wVolumeSetSizeLE; //120-121
+  WORD wVolumeSetSizeBE; //122-123
+  WORD wVolumeSequenceNumberLE; //124-125
+  WORD wVolumeSequenceNumberBE; //126-127
+  WORD wSectorSizeLE; //128-129
+  WORD wSectorSizeBE; //130-131
+  DWORD dwPathTableLengthLE; //132-135
+  DWORD dwPathTableLengthBE; //136-139
   DWORD wFirstPathTableStartSectorLE; //140-143
   DWORD wSecondPathTableStartSectorLE; //144-147
   DWORD wFirstPathTableStartSectorBE; //148-151
@@ -75,15 +75,15 @@ struct iso9660_VolumeDescriptor
   unsigned char byZero4;
   unsigned char byZero5[512];
   unsigned char byZero6[653];
-} ;
+};
 
-
-struct	iso9660_Datetime {
-  BYTE year;   /* Number of years since 1900 */
-  BYTE month;  /* Has value in range 1..12. Note starts
+struct iso9660_Datetime
+{
+  BYTE year; /* Number of years since 1900 */
+  BYTE month; /* Has value in range 1..12. Note starts
                               at 1, not 0 like a tm struct. */
-  BYTE day;    /* Day of the month from 1 to 31 */
-  BYTE hour;   /* Hour of the day from 0 to 23 */
+  BYTE day; /* Day of the month from 1 to 31 */
+  BYTE hour; /* Hour of the day from 0 to 23 */
   BYTE minute; /* Minute of the hour from 0 to 59 */
   BYTE second; /* Second of the minute from 0 to 59 */
   char gmtoff; /* GMT values -48 .. + 52 in 15 minute intervals */
@@ -92,65 +92,63 @@ struct	iso9660_Datetime {
 struct iso9660_Directory
 {
 
-#define Flag_NotExist  0x01     /* 1-file not exists */
- #define Flag_Directory 0x02     /* 0-normal file, 1-directory */
- #define Flag_Associated 0x03     /* 0-not associated file */
- #define Flag_Protection 0x04     /* 0-normal acces */
- #define Flag_Multi   0x07     /* 0-final Directory Record for the file */
+#define Flag_NotExist 0x01 /* 1-file not exists */
+#define Flag_Directory 0x02 /* 0-normal file, 1-directory */
+#define Flag_Associated 0x03 /* 0-not associated file */
+#define Flag_Protection 0x04 /* 0-normal acces */
+#define Flag_Multi 0x07 /* 0-final Directory Record for the file */
 
-  BYTE ucRecordLength;      //0      the number of bytes in the record (which must be even)
+  BYTE ucRecordLength; //0      the number of bytes in the record (which must be even)
   BYTE ucExtendAttributeSectors; //1      [number of sectors in extended attribute record]
-  DWORD dwFileLocationLE;     //2..5   number of the first sector of file data or directory
-  DWORD dwFileLocationBE;     //6..9
-  DWORD dwFileLengthLE;      //10..13 number of bytes of file data or length of directory
-  DWORD dwFileLengthBE;           //14..17
-  iso9660_Datetime DateTime;      //18..24 date
-  BYTE byFlags;         //25     flags
-  BYTE UnitSize;         //26     file unit size for an interleaved file
-  BYTE InterleaveGapSize;    //27     interleave gap size for an interleaved file
-  WORD VolSequenceLE;      //28..29 volume sequence number
-  WORD VolSequenceBE;            //30..31
-  BYTE Len_Fi;          //32     N, the identifier length
-  BYTE FileName[512];      //33     identifier
-
+  DWORD dwFileLocationLE; //2..5   number of the first sector of file data or directory
+  DWORD dwFileLocationBE; //6..9
+  DWORD dwFileLengthLE; //10..13 number of bytes of file data or length of directory
+  DWORD dwFileLengthBE; //14..17
+  iso9660_Datetime DateTime; //18..24 date
+  BYTE byFlags; //25     flags
+  BYTE UnitSize; //26     file unit size for an interleaved file
+  BYTE InterleaveGapSize; //27     interleave gap size for an interleaved file
+  WORD VolSequenceLE; //28..29 volume sequence number
+  WORD VolSequenceBE; //30..31
+  BYTE Len_Fi; //32     N, the identifier length
+  BYTE FileName[512]; //33     identifier
 };
 #pragma pack()
 
 struct iso9660info
 {
-  char iso9660;   // found iso9660 format ?
-  char joliet;    // found joliet format ?
-  DWORD mp3;    // found mp3s  ?
-  DWORD HeaderPos;   // joliet header position if found, regular if not
-  DWORD DirSize;   // size of current dir, will be dividable by 2048
-  DWORD CurrDirPos;   // position of current selected dir
-  char *Curr_dir_cache; // current dir in raw format
-  char *Curr_dir;   // name of current directory
+  char iso9660; // found iso9660 format ?
+  char joliet; // found joliet format ?
+  DWORD mp3; // found mp3s  ?
+  DWORD HeaderPos; // joliet header position if found, regular if not
+  DWORD DirSize; // size of current dir, will be dividable by 2048
+  DWORD CurrDirPos; // position of current selected dir
+  char* Curr_dir_cache; // current dir in raw format
+  char* Curr_dir; // name of current directory
   DWORD Curr_dir_sectorsize; // dirs are sometimes bigger than a sector - then we need this info.
   HANDLE ISO_HANDLE;
 
   DWORD iso9660searchpointer; // for search use
 
-  DWORD curr_filesize;  // for use when openfile'd a file.
-  DWORD curr_filepos;  // for use when openfile'd a file.
+  DWORD curr_filesize; // for use when openfile'd a file.
+  DWORD curr_filepos; // for use when openfile'd a file.
 
-  struct iso9660_VolumeDescriptor iso;  // best fitted header
+  struct iso9660_VolumeDescriptor iso; // best fitted header
   struct iso9660_Directory isodir;
   struct iso9660_Directory isofileinfo;
-
 };
 
 struct iso_dirtree
 {
-  char *path;
-  char *name;  // name of the directory/file
-  char type;  // bit 0 = no entry, bit 1 = file, bit 2 = dir
+  char* path;
+  char* name; // name of the directory/file
+  char type; // bit 0 = no entry, bit 1 = file, bit 2 = dir
   DWORD Location; // number of the first sector of file data or directory
-  DWORD Length;      // number of bytes of file data or length of directory
+  DWORD Length; // number of bytes of file data or length of directory
   FILETIME filetime; // date time of the directory/file
 
-  struct iso_dirtree *dirpointer; // if type is a dir, this will point to the list in that dir
-  struct iso_dirtree *next;  // pointer to next file/dir in this directory
+  struct iso_dirtree* dirpointer; // if type is a dir, this will point to the list in that dir
+  struct iso_dirtree* next; // pointer to next file/dir in this directory
 };
 
 struct iso_directories
@@ -173,23 +171,26 @@ public:
     DWORD m_dwCircBuffSectorStart;
 
     DWORD m_dwStartBlock;
-    DWORD m_dwCurrentBlock;    // Current being read Block
+    DWORD m_dwCurrentBlock; // Current being read Block
     int64_t m_dwFilePos;
     BYTE* m_pBuffer;
     int64_t m_dwFileSize;
   };
-  iso9660( );
-  virtual ~iso9660( );
+  iso9660();
+  virtual ~iso9660();
 
-  HANDLE FindFirstFile( char *szLocalFolder, WIN32_FIND_DATA *wfdFile );
-  int FindNextFile( HANDLE szLocalFolder, WIN32_FIND_DATA *wfdFile );
-  bool FindClose( HANDLE szLocalFolder );
-  DWORD SetFilePointer(HANDLE hFile, LONG lDistanceToMove, PLONG lpDistanceToMoveHigh, DWORD dwMoveMethod );
+  HANDLE FindFirstFile(char* szLocalFolder, WIN32_FIND_DATA* wfdFile);
+  int FindNextFile(HANDLE szLocalFolder, WIN32_FIND_DATA* wfdFile);
+  bool FindClose(HANDLE szLocalFolder);
+  DWORD SetFilePointer(HANDLE hFile,
+                       LONG lDistanceToMove,
+                       PLONG lpDistanceToMoveHigh,
+                       DWORD dwMoveMethod);
   int64_t GetFileSize(HANDLE hFile);
   int64_t GetFilePosition(HANDLE hFile);
   int64_t Seek(HANDLE hFile, int64_t lOffset, int whence);
-  HANDLE OpenFile( const char* filename );
-  long ReadFile(HANDLE fd, uint8_t *pBuffer, long lSize);
+  HANDLE OpenFile(const char* filename);
+  long ReadFile(HANDLE fd, uint8_t* pBuffer, long lSize);
   void CloseFile(HANDLE hFile);
   void Reset();
   void Scan();
@@ -197,9 +198,9 @@ public:
 
 protected:
   void IsoDateTimeToFileTime(iso9660_Datetime* isoDateTime, FILETIME* filetime);
-  struct iso_dirtree* ReadRecursiveDirFromSector( DWORD sector, const char * );
-  struct iso_dirtree* FindFolder( char *Folder );
-  std::string GetThinText(WCHAR* strTxt, int iLen );
+  struct iso_dirtree* ReadRecursiveDirFromSector(DWORD sector, const char*);
+  struct iso_dirtree* FindFolder(char* Folder);
+  std::string GetThinText(WCHAR* strTxt, int iLen);
   bool ReadSectorFromCache(iso9660::isofile* pContext, DWORD sector, uint8_t** ppBuffer);
   void ReleaseSectorFromCache(iso9660::isofile* pContext, DWORD sector);
   const std::string ParseName(struct iso9660_Directory& isodir);
@@ -220,7 +221,7 @@ protected:
 
   HANDLE m_hCDROM;
   isofile* m_isoFiles[MAX_ISO_FILES];
-#define CIRC_BUFFER_SIZE 10 
+#define CIRC_BUFFER_SIZE 10
   /*
    bool            m_bUseMode2;
    DWORD    m_dwCircBuffBegin;
@@ -233,7 +234,6 @@ protected:
    BYTE*       m_pBuffer;
    int64_t   m_dwFileSize;
   */
-
 };
 extern class iso9660 m_isoReader;
 #endif

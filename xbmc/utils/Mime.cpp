@@ -515,7 +515,7 @@ std::map<std::string, std::string> fillMimeTypes()
 
 std::map<std::string, std::string> CMime::m_mimetypes = fillMimeTypes();
 
-std::string CMime::GetMimeType(const std::string &extension)
+std::string CMime::GetMimeType(const std::string& extension)
 {
   if (extension.empty())
     return "";
@@ -533,7 +533,7 @@ std::string CMime::GetMimeType(const std::string &extension)
   return "";
 }
 
-std::string CMime::GetMimeType(const CFileItem &item)
+std::string CMime::GetMimeType(const CFileItem& item)
 {
   std::string path = item.GetPath();
   if (item.HasVideoInfoTag() && !item.GetVideoInfoTag()->GetPath().empty())
@@ -544,12 +544,12 @@ std::string CMime::GetMimeType(const CFileItem &item)
   return GetMimeType(URIUtils::GetExtension(path));
 }
 
-std::string CMime::GetMimeType(const CURL &url, bool lookup)
+std::string CMime::GetMimeType(const CURL& url, bool lookup)
 {
 
   std::string strMimeType;
 
-  if( url.IsProtocol("shout") || url.IsProtocol("http") || url.IsProtocol("https"))
+  if (url.IsProtocol("shout") || url.IsProtocol("http") || url.IsProtocol("https"))
   {
     // If lookup is false, bail out early to leave mime type empty
     if (!lookup)
@@ -567,7 +567,7 @@ std::string CMime::GetMimeType(const CURL &url, bool lookup)
     // make sure there are no options set in mime-type
     // mime-type can look like "video/x-ms-asf ; charset=utf8"
     size_t i = strmime.find(';');
-    if(i != std::string::npos)
+    if (i != std::string::npos)
       strmime.erase(i, strmime.length() - i);
     StringUtils::Trim(strmime);
     strMimeType = strmime;
@@ -646,9 +646,11 @@ CMime::EFileType CMime::GetFileTypeFromContent(const std::string& fileContent)
   // check image types
   if (b[0] == 'B' && b[1] == 'M')
     return FileTypeBmp;
-  if (len >= 6 && b[0] == 'G' && b[1] == 'I' && b[2] == 'F' && b[3] == '8' && (b[4] == '7' || b[4] == '9') && b[5] == 'a')
+  if (len >= 6 && b[0] == 'G' && b[1] == 'I' && b[2] == 'F' && b[3] == '8' &&
+      (b[4] == '7' || b[4] == '9') && b[5] == 'a')
     return FileTypeGif;
-  if (len >= 8 && b[0] == 0x89 && b[1] == 'P' && b[2] == 'N' && b[3] == 'G' && b[4] == 0x0D && b[5] == 0x0A && b[6] == 0x1A && b[7] == 0x0A)
+  if (len >= 8 && b[0] == 0x89 && b[1] == 'P' && b[2] == 'N' && b[3] == 'G' && b[4] == 0x0D &&
+      b[5] == 0x0A && b[6] == 0x1A && b[7] == 0x0A)
     return FileTypePng;
   if (len >= 3 && b[0] == 0xFF && b[1] == 0xD8 && b[2] == 0xFF)
     return FileTypeJpeg;
@@ -658,7 +660,8 @@ CMime::EFileType CMime::GetFileTypeFromContent(const std::string& fileContent)
     return FileTypeGZip;
   if (len >= 4 && b[0] == 'P' && b[1] == 'K' && b[2] == 0x03 && b[3] == 0x04)
     return FileTypeZip;
-  if (len >= 7 && b[0] == 'R' && b[1] == 'a' && b[2] == 'r' && b[3] == ' ' && b[4] == 0x1A && b[5] == 0x07 && b[6] == 0x00)
+  if (len >= 7 && b[0] == 'R' && b[1] == 'a' && b[2] == 'r' && b[3] == ' ' && b[4] == 0x1A &&
+      b[5] == 0x07 && b[6] == 0x00)
     return FileTypeRar;
 
   //! @todo add detection for other types if required

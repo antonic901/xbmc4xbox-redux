@@ -21,7 +21,6 @@
 
 #include "ContextMenuItem.h"
 
-
 namespace CONTEXTMENU
 {
 
@@ -30,6 +29,7 @@ struct CMusicInfo : CStaticContextMenuAction
   explicit CMusicInfo(MediaType mediaType);
   bool IsVisible(const CFileItem& item) const;
   bool Execute(const CFileItemPtr& item) const;
+
 private:
   const MediaType m_mediaType;
 };
@@ -49,4 +49,4 @@ struct CSongInfo : CMusicInfo
   CSongInfo() : CMusicInfo(MediaTypeSong) {}
 };
 
-}
+} // namespace CONTEXTMENU

@@ -30,17 +30,17 @@
 
 enum EINTERLACEMETHOD
 {
-  VS_INTERLACEMETHOD_NONE=0,
-  VS_INTERLACEMETHOD_AUTO=1,
-  VS_INTERLACEMETHOD_RENDER_BLEND=2,
+  VS_INTERLACEMETHOD_NONE = 0,
+  VS_INTERLACEMETHOD_AUTO = 1,
+  VS_INTERLACEMETHOD_RENDER_BLEND = 2,
 
-  VS_INTERLACEMETHOD_RENDER_WEAVE_INVERTED=3,
-  VS_INTERLACEMETHOD_RENDER_WEAVE=4,
-  
-  VS_INTERLACEMETHOD_RENDER_BOB_INVERTED=5,
-  VS_INTERLACEMETHOD_RENDER_BOB=6,
+  VS_INTERLACEMETHOD_RENDER_WEAVE_INVERTED = 3,
+  VS_INTERLACEMETHOD_RENDER_WEAVE = 4,
 
-  VS_INTERLACEMETHOD_DEINTERLACE=7
+  VS_INTERLACEMETHOD_RENDER_BOB_INVERTED = 5,
+  VS_INTERLACEMETHOD_RENDER_BOB = 6,
+
+  VS_INTERLACEMETHOD_DEINTERLACE = 7
 };
 
 enum ESCALINGMETHOD
@@ -57,8 +57,9 @@ enum ESKIPLOOPFILTER
   VS_SKIPLOOP_ALL
 };
 
-typedef enum {
-  ViewModeNormal      = 0,
+typedef enum
+{
+  ViewModeNormal = 0,
   ViewModeZoom,
   ViewModeStretch4x3,
   ViewModeStretch14x9,
@@ -73,19 +74,19 @@ public:
   CVideoSettings();
   ~CVideoSettings() {};
 
-  bool operator!=(const CVideoSettings &right) const;
+  bool operator!=(const CVideoSettings& right) const;
 
   bool m_NoCache;
   bool m_NonInterleaved;
   bool m_bForceIndex;
   EINTERLACEMETHOD m_InterlaceMethod;
-  ESCALINGMETHOD   m_ScalingMethod;
+  ESCALINGMETHOD m_ScalingMethod;
   float m_FilmGrain;
-  int m_ViewMode;   // current view mode
+  int m_ViewMode; // current view mode
   float m_CustomZoomAmount; // custom setting zoom amount
   float m_CustomPixelRatio; // custom setting pixel ratio
   float m_CustomVerticalShift; // custom setting vertical shift
-  bool  m_CustomNonLinStretch;
+  bool m_CustomNonLinStretch;
   int m_AudioStream;
   float m_VolumeAmplification;
   bool m_OutputToAllSpeakers;

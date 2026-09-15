@@ -24,14 +24,15 @@
 #include "ServiceBroker.h"
 #include <boost/shared_ptr.hpp>
 
-#define PLAYLIST_NONE    -1
-#define PLAYLIST_MUSIC   0
-#define PLAYLIST_VIDEO   1
+#define PLAYLIST_NONE -1
+#define PLAYLIST_MUSIC 0
+#define PLAYLIST_VIDEO 1
 #define PLAYLIST_PICTURE 2
 
 #define g_playlistPlayer CServiceBroker::GetPlaylistPlayer()
 
-class CFileItem; typedef boost::shared_ptr<CFileItem> CFileItemPtr;
+class CFileItem;
+typedef boost::shared_ptr<CFileItem> CFileItemPtr;
 class CFileItemList;
 
 namespace PLAYLIST
@@ -40,18 +41,22 @@ namespace PLAYLIST
  \ingroup windows 
  \brief Manages playlist playing.
  */
-enum REPEAT_STATE { REPEAT_NONE = 0, REPEAT_ONE, REPEAT_ALL };
+enum REPEAT_STATE
+{
+  REPEAT_NONE = 0,
+  REPEAT_ONE,
+  REPEAT_ALL
+};
 
 class CPlayList;
 
-class CPlayListPlayer : public IMsgTargetCallback,
-                        public KODI::MESSAGING::IMessageTarget
+class CPlayListPlayer : public IMsgTargetCallback, public KODI::MESSAGING::IMessageTarget
 {
 
 public:
   CPlayListPlayer(void);
   virtual ~CPlayListPlayer(void);
-  virtual bool OnMessage(CGUIMessage &message);
+  virtual bool OnMessage(CGUIMessage& message);
 
   virtual int GetMessageMask();
   virtual void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
@@ -129,7 +134,7 @@ public:
   void ClearPlaylist(int iPlaylist);
   void Clear();
 
-    /*! \brief Set shuffle state of a playlist.
+  /*! \brief Set shuffle state of a playlist.
    If the shuffle state changes, the playlist is shuffled or unshuffled.
    Has no effect if Party Mode is enabled.
    \param playlist the playlist to (un)shuffle, PLAYLIST_MUSIC or PLAYLIST_VIDEO.
@@ -151,7 +156,7 @@ public:
    \return true if something has been played, false otherwise.
    */
   bool HasPlayedFirstFile() const;
-  
+
   /*! \brief Set repeat state of a playlist.
    If called while in Party Mode, repeat is disabled.
    \param playlist the playlist to set repeat state for, PLAYLIST_MUSIC or PLAYLIST_VIDEO.
@@ -164,13 +169,14 @@ public:
 
   // add items via the playlist player
   void Add(int iPlaylist, CPlayList& playlist);
-  void Add(int iPlaylist, const CFileItemPtr &pItem);
+  void Add(int iPlaylist, const CFileItemPtr& pItem);
   void Add(int iPlaylist, CFileItemList& items);
   void Insert(int iPlaylist, CPlayList& playlist, int iIndex);
-  void Insert(int iPlaylist, const CFileItemPtr &pItem, int iIndex);
+  void Insert(int iPlaylist, const CFileItemPtr& pItem, int iIndex);
   void Insert(int iPlaylist, CFileItemList& items, int iIndex);
   void Remove(int iPlaylist, int iPosition);
   void Swap(int iPlaylist, int indexItem1, int indexItem2);
+
 protected:
   /*! \brief Returns true if the given is set to repeat all
    \param playlist Playlist to be query
@@ -198,4 +204,4 @@ protected:
   REPEAT_STATE m_repeatState[2];
 };
 
-}
+} // namespace PLAYLIST

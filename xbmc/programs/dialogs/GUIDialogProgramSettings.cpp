@@ -26,19 +26,18 @@
 #include "utils/log.h"
 #include "xbox/xbeheader.h"
 
-
-#define SETTING_EXECUTABLE            "programexecutable"
-#define SETTING_EMULATOR              "defaultemulator"
-#define SETTING_FORCEREGION           "programforceregion"
-#define SETTING_TRAINER_LIST          "trainerlist"
-#define SETTING_TRAINER_HACKS         "trainerchoosehacks"
+#define SETTING_EXECUTABLE "programexecutable"
+#define SETTING_EMULATOR "defaultemulator"
+#define SETTING_FORCEREGION "programforceregion"
+#define SETTING_TRAINER_LIST "trainerlist"
+#define SETTING_TRAINER_HACKS "trainerchoosehacks"
 
 using namespace std;
 
 CGUIDialogProgramSettings::CGUIDialogProgramSettings(void)
-    : CGUIDialogSettingsManualBase(WINDOW_DIALOG_PROGRAM_SETTINGS, "DialogSettings.xml"),
-      m_trainer(nullptr),
-      m_iTitleId(0)
+  : CGUIDialogSettingsManualBase(WINDOW_DIALOG_PROGRAM_SETTINGS, "DialogSettings.xml"),
+    m_trainer(nullptr),
+    m_iTitleId(0)
 {
   m_trainers.clear();
   m_trainerOptions.clear();
@@ -77,7 +76,8 @@ bool CGUIDialogProgramSettings::OnMessage(CGUIMessage& message)
   return CGUIDialogSettingsManualBase::OnMessage(message);
 }
 
-void CGUIDialogProgramSettings::LoadSettings(const std::string& strExecutable, SProgramSettings& programSettings)
+void CGUIDialogProgramSettings::LoadSettings(const std::string& strExecutable,
+                                             SProgramSettings& programSettings)
 {
   CProgramDatabase database;
   if (database.Open())
@@ -88,11 +88,10 @@ void CGUIDialogProgramSettings::LoadSettings(const std::string& strExecutable, S
     if (database.GetProgramSettings(strExecutable, strSettings) && !strSettings.empty())
     {
       CXBMCTinyXML xmlSettings;
-      if (xmlSettings.Parse(strSettings) &&
-          xmlSettings.RootElement() &&
+      if (xmlSettings.Parse(strSettings) && xmlSettings.RootElement() &&
           xmlSettings.RootElement()->ValueStr() == "settings")
       {
-        TiXmlElement *element = xmlSettings.RootElement();
+        TiXmlElement* element = xmlSettings.RootElement();
         XMLUtils::GetString(element, SETTING_EXECUTABLE, programSettings.strExecutable);
         if (isXBE)
           XMLUtils::GetInt(element, SETTING_FORCEREGION, programSettings.iForceRegion);
@@ -108,7 +107,8 @@ void CGUIDialogProgramSettings::LoadSettings(const std::string& strExecutable, S
     programSettings.strExecutable = URIUtils::GetFileName(strExecutable);
 }
 
-int CGUIDialogProgramSettings::GetXBERegion(const std::string& strExecutable, bool forceAllRegions /* = false */)
+int CGUIDialogProgramSettings::GetXBERegion(const std::string& strExecutable,
+                                            bool forceAllRegions /* = false */)
 {
   CXBE xbe;
   int iRegion = xbe.ExtractGameRegion(strExecutable);
@@ -154,10 +154,11 @@ void CGUIDialogProgramSettings::LoadProgramSettings()
       for (int i = 0; i < items.Size(); i++)
       {
         CFileItemPtr item = items[i];
-        CTrainer *trainer = new CTrainer(item->GetProperty("idtrainer").asInteger32());
+        CTrainer* trainer = new CTrainer(item->GetProperty("idtrainer").asInteger32());
         if (trainer->Load(item->GetPath()))
         {
-          database.GetTrainerOptions(trainer->GetTrainerId(), m_iTitleId, trainer->GetOptions(), trainer->GetNumberOfOptions());
+          database.GetTrainerOptions(trainer->GetTrainerId(), m_iTitleId, trainer->GetOptions(),
+                                     trainer->GetNumberOfOptions());
           m_trainers.push_back(trainer);
           if (item->GetProperty("isactive").asBoolean())
           {
@@ -178,7 +179,8 @@ void CGUIDialogProgramSettings::LoadProgramSettings()
   }
 }
 
-void CGUIDialogProgramSettings::SaveSettings(const std::string& strExecutable, const SProgramSettings& settings)
+void CGUIDialogProgramSettings::SaveSettings(const std::string& strExecutable,
+                                             const SProgramSettings& settings)
 {
   CProgramDatabase database;
   if (database.Open())
@@ -188,7 +190,7 @@ void CGUIDialogProgramSettings::SaveSettings(const std::string& strExecutable, c
     // save general settings
     TiXmlDocument xmlSettings;
     TiXmlElement xmlRootElement("settings");
-    TiXmlNode *pRoot = xmlSettings.InsertEndChild(xmlRootElement);
+    TiXmlNode* pRoot = xmlSettings.InsertEndChild(xmlRootElement);
     if (pRoot)
     {
       XMLUtils::SetString(pRoot, SETTING_EXECUTABLE, settings.strExecutable);
@@ -221,12 +223,16 @@ void CGUIDialogProgramSettings::SaveProgramSettings()
   }
 }
 
-void CGUIDialogProgramSettings::IntegerOptionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CGUIDialogProgramSettings::IntegerOptionsFiller(
+    const CSetting* setting,
+    std::vector<std::pair<std::string, int> >& list,
+    int& current,
+    void* data)
 {
   if (setting == NULL || data == NULL)
     return;
 
-  CGUIDialogProgramSettings *programSettings = static_cast<CGUIDialogProgramSettings*>(data);
+  CGUIDialogProgramSettings* programSettings = static_cast<CGUIDialogProgramSettings*>(data);
 
   if (setting->GetId() == SETTING_FORCEREGION)
   {
@@ -240,22 +246,29 @@ void CGUIDialogProgramSettings::IntegerOptionsFiller(const CSetting *setting, st
   else if (setting->GetId() == SETTING_TRAINER_LIST)
   {
     list.push_back(make_pair(g_localizeStrings.Get(231), 0));
-    for (std::vector<CTrainer*>::const_iterator it = programSettings->m_trainers.begin(); it != programSettings->m_trainers.end(); ++it)
+    for (std::vector<CTrainer*>::const_iterator it = programSettings->m_trainers.begin();
+         it != programSettings->m_trainers.end(); ++it)
       list.push_back(make_pair((*it)->GetName(), (*it)->GetTrainerId()));
   }
 }
 
-void CGUIDialogProgramSettings::StringOptionsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data)
+void CGUIDialogProgramSettings::StringOptionsFiller(
+    const CSetting* setting,
+    std::vector<std::pair<std::string, std::string> >& list,
+    std::string& current,
+    void* data)
 {
   if (setting == NULL || data == NULL)
     return;
 
-  CGUIDialogProgramSettings *programSettings = static_cast<CGUIDialogProgramSettings*>(data);
+  CGUIDialogProgramSettings* programSettings = static_cast<CGUIDialogProgramSettings*>(data);
 
   if (setting->GetId() == SETTING_EXECUTABLE)
   {
     CFileItemList items;
-    XFILE::CDirectory::GetDirectory(URIUtils::GetParentPath(programSettings->m_strExecutable), items, URIUtils::GetExtension(programSettings->m_strExecutable), XFILE::DIR_FLAG_DEFAULTS);
+    XFILE::CDirectory::GetDirectory(URIUtils::GetParentPath(programSettings->m_strExecutable),
+                                    items, URIUtils::GetExtension(programSettings->m_strExecutable),
+                                    XFILE::DIR_FLAG_DEFAULTS);
     for (int i = 0; i < items.Size(); ++i)
     {
       if (!items[i]->m_bIsFolder)
@@ -272,19 +285,20 @@ void CGUIDialogProgramSettings::StringOptionsFiller(const CSetting *setting, std
     if (LAUNCHERS::CROMLauncher::FindEmulators(programSettings->m_strExecutable, emulators))
     {
       for (int i = 0; i < emulators.Size(); ++i)
-        list.push_back(std::pair<std::string, std::string>(emulators[i]->GetLabel(), emulators[i]->GetPath()));
+        list.push_back(
+            std::pair<std::string, std::string>(emulators[i]->GetLabel(), emulators[i]->GetPath()));
     }
   }
 }
 
-void CGUIDialogProgramSettings::OnSettingChanged(const CSetting *setting)
+void CGUIDialogProgramSettings::OnSettingChanged(const CSetting* setting)
 {
   if (setting == NULL)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingChanged(setting);
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
   if (settingId == SETTING_EXECUTABLE)
   {
     m_settings.strExecutable = ((CSettingString*)setting)->GetValue();
@@ -307,7 +321,7 @@ void CGUIDialogProgramSettings::OnSettingChanged(const CSetting *setting)
 
     for (std::vector<CTrainer*>::iterator it = m_trainers.begin(); it != m_trainers.end(); ++it)
     {
-      CTrainer *trainer = *it;
+      CTrainer* trainer = *it;
       if (trainer->GetTrainerId() == idTrainer)
       {
         m_trainer = trainer;
@@ -328,23 +342,25 @@ void CGUIDialogProgramSettings::SetupView()
   SET_CONTROL_LABEL(CONTROL_SETTINGS_CUSTOM_BUTTON, 190);
 }
 
-void CGUIDialogProgramSettings::OnSettingAction(const CSetting *setting)
+void CGUIDialogProgramSettings::OnSettingAction(const CSetting* setting)
 {
   if (setting == NULL)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingChanged(setting);
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
   if (settingId == SETTING_TRAINER_HACKS)
   {
-    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect *>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+    CGUIDialogSelect* dialog =
+        static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
     if (dialog)
     {
       dialog->Reset();
       dialog->SetMultiSelection(true);
       dialog->SetHeading(38711);
-      for (std::vector<std::string>::const_iterator it = m_trainerOptions.begin(); it != m_trainerOptions.end(); ++it)
+      for (std::vector<std::string>::const_iterator it = m_trainerOptions.begin();
+           it != m_trainerOptions.end(); ++it)
         dialog->Add((*it));
       dialog->SetSelected(m_selectedTrainerOptions);
       dialog->Open();
@@ -352,8 +368,8 @@ void CGUIDialogProgramSettings::OnSettingAction(const CSetting *setting)
       if (!dialog->IsConfirmed())
         return
 
-      // reset to initial state
-      m_selectedTrainerOptions.clear();
+            // reset to initial state
+            m_selectedTrainerOptions.clear();
       unsigned char* data = m_trainer->GetOptions();
       for (int i = 0; i < m_trainer->GetNumberOfOptions(); i++)
         data[i] = 0;
@@ -385,14 +401,14 @@ void CGUIDialogProgramSettings::InitializeSettings()
 {
   CGUIDialogSettingsManualBase::InitializeSettings();
 
-  CSettingCategory *category = AddCategory("xbelauncher", -1);
+  CSettingCategory* category = AddCategory("xbelauncher", -1);
   if (category == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogProgramSettings: unable to setup xbelauncher");
     return;
   }
 
-  CSettingGroup *group = AddGroup(category);
+  CSettingGroup* group = AddGroup(category);
   if (group == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogProgramSettings: unable to setup xbelauncher");
@@ -405,15 +421,19 @@ void CGUIDialogProgramSettings::InitializeSettings()
 
   LoadProgramSettings();
 
-  AddSpinner(group, SETTING_EXECUTABLE, 655, 0, m_settings.strExecutable, StringOptionsFiller, true);
+  AddSpinner(group, SETTING_EXECUTABLE, 655, 0, m_settings.strExecutable, StringOptionsFiller,
+             true);
   if (isXBE)
   { // Xbox (XBE) executable
-    AddList(group, SETTING_FORCEREGION, 20026, 0, m_settings.iForceRegion, IntegerOptionsFiller, 20026);
-    AddList(group, SETTING_TRAINER_LIST, 38710, 0, m_trainer ? m_trainer->GetTrainerId() : 0, IntegerOptionsFiller, 38710);
-    CSettingAction *btnHacks = AddButton(group, SETTING_TRAINER_HACKS, 38711, 0);
+    AddList(group, SETTING_FORCEREGION, 20026, 0, m_settings.iForceRegion, IntegerOptionsFiller,
+            20026);
+    AddList(group, SETTING_TRAINER_LIST, 38710, 0, m_trainer ? m_trainer->GetTrainerId() : 0,
+            IntegerOptionsFiller, 38710);
+    CSettingAction* btnHacks = AddButton(group, SETTING_TRAINER_HACKS, 38711, 0);
 
     CSettingDependency dependencyHacks(SettingDependencyTypeEnable, m_settingsManager);
-    dependencyHacks.And()->Add(CSettingDependencyConditionPtr(new CSettingDependencyCondition(SETTING_TRAINER_LIST, "0", SettingDependencyOperatorEquals, true, m_settingsManager)));
+    dependencyHacks.And()->Add(CSettingDependencyConditionPtr(new CSettingDependencyCondition(
+        SETTING_TRAINER_LIST, "0", SettingDependencyOperatorEquals, true, m_settingsManager)));
 
     SettingDependencies deps;
     deps.push_back(dependencyHacks);
@@ -428,7 +448,8 @@ void CGUIDialogProgramSettings::InitializeSettings()
 
 void CGUIDialogProgramSettings::ShowForTitle(const CFileItemPtr pItem)
 {
-  CGUIDialogProgramSettings *dialog = static_cast<CGUIDialogProgramSettings *>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SETTINGS));
+  CGUIDialogProgramSettings* dialog = static_cast<CGUIDialogProgramSettings*>(
+      g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_SETTINGS));
   if (dialog == nullptr)
     return;
 
@@ -437,4 +458,3 @@ void CGUIDialogProgramSettings::ShowForTitle(const CFileItemPtr pItem)
   dialog->SetExecutable(pItem->GetPath());
   dialog->Open();
 }
-

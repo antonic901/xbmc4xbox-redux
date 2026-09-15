@@ -32,13 +32,13 @@ CFatXFileSystem::CFatXFileSystem(unsigned char unit) : IFileSystem(unit)
 {
 }
 
-bool CFatXFileSystem::Open(const CStdString &file)
+bool CFatXFileSystem::Open(const CStdString& file)
 {
   CURL url(GetLocal(file));
   return m_file.Open(url);
 }
 
-bool CFatXFileSystem::OpenForWrite(const CStdString &file, bool overWrite)
+bool CFatXFileSystem::OpenForWrite(const CStdString& file, bool overWrite)
 {
   CURL url(GetLocal(file));
   return m_file.OpenForWrite(url, overWrite);
@@ -49,12 +49,12 @@ void CFatXFileSystem::Close()
   m_file.Close();
 }
 
-unsigned int CFatXFileSystem::Read(void *buffer, __int64 length)
+unsigned int CFatXFileSystem::Read(void* buffer, __int64 length)
 {
   return m_file.Read(buffer, length);
 }
 
-unsigned int CFatXFileSystem::Write(const void *buffer, __int64 length)
+unsigned int CFatXFileSystem::Write(const void* buffer, __int64 length)
 {
   return m_file.Write(buffer, length);
 }
@@ -74,14 +74,14 @@ __int64 CFatXFileSystem::GetPosition()
   return m_file.GetPosition();
 }
 
-bool CFatXFileSystem::Delete(const CStdString &file)
+bool CFatXFileSystem::Delete(const CStdString& file)
 {
   CURL url(GetLocal(file));
   CHDFile hdFile;
   return hdFile.Delete(url);
 }
 
-bool CFatXFileSystem::Rename(const CStdString &oldFile, const CStdString &newFile)
+bool CFatXFileSystem::Rename(const CStdString& oldFile, const CStdString& newFile)
 {
   CURL urlOld(GetLocal(oldFile));
   CURL urlNew(GetLocal(newFile));
@@ -89,21 +89,21 @@ bool CFatXFileSystem::Rename(const CStdString &oldFile, const CStdString &newFil
   return hdFile.Rename(urlOld, urlNew);
 }
 
-bool CFatXFileSystem::MakeDir(const CStdString &path)
+bool CFatXFileSystem::MakeDir(const CStdString& path)
 {
   CHDDirectory hdDir;
   const CURL pathToUrl(GetLocal(path));
   return hdDir.Create(pathToUrl);
 }
 
-bool CFatXFileSystem::RemoveDir(const CStdString &path)
+bool CFatXFileSystem::RemoveDir(const CStdString& path)
 {
   CHDDirectory hdDir;
   const CURL pathToUrl(GetLocal(path));
   return hdDir.Remove(pathToUrl);
 }
 
-bool CFatXFileSystem::GetDirectory(const CStdString &directory, CFileItemList &items)
+bool CFatXFileSystem::GetDirectory(const CStdString& directory, CFileItemList& items)
 {
   CHDDirectory hd;
   const CURL pathToUrl(GetLocal(directory));
@@ -112,8 +112,9 @@ bool CFatXFileSystem::GetDirectory(const CStdString &directory, CFileItemList &i
     for (int i = 0; i < items.Size(); i++)
     {
       CFileItemPtr item = items[i];
-      CStdString path = StringUtils::Format("mem%d://%s", m_unit, item->GetPath().substr(3).c_str());
-      path.Replace("\\","/");
+      CStdString path =
+          StringUtils::Format("mem%d://%s", m_unit, item->GetPath().substr(3).c_str());
+      path.Replace("\\", "/");
       item->SetPath(path);
     }
     return true;
@@ -121,10 +122,10 @@ bool CFatXFileSystem::GetDirectory(const CStdString &directory, CFileItemList &i
   return false;
 }
 
-CStdString CFatXFileSystem::GetLocal(const CStdString &file)
+CStdString CFatXFileSystem::GetLocal(const CStdString& file)
 {
   CStdString path;
-  CFatXDevice *device = (CFatXDevice *)g_memoryUnitManager.GetDevice(m_unit);
+  CFatXDevice* device = (CFatXDevice*)g_memoryUnitManager.GetDevice(m_unit);
   if (device)
   {
     path.Format("%c:\\%s", device->GetDrive(), file);

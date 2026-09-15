@@ -24,25 +24,25 @@
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 
-CSettingUpdate::CSettingUpdate()
-  : m_type(SettingUpdateTypeNone)
-{ }
+CSettingUpdate::CSettingUpdate() : m_type(SettingUpdateTypeNone)
+{
+}
 
 bool CSettingUpdate::operator<(const CSettingUpdate& rhs) const
 {
   return m_type < rhs.m_type && m_value < rhs.m_value;
 }
 
-bool CSettingUpdate::Deserialize(const TiXmlNode *node)
+bool CSettingUpdate::Deserialize(const TiXmlNode* node)
 {
   if (node == NULL)
     return false;
 
-  const TiXmlElement *elem = node->ToElement();
+  const TiXmlElement* elem = node->ToElement();
   if (elem == NULL)
     return false;
 
-  const char *strType = elem->Attribute(SETTING_XML_ATTR_TYPE);
+  const char* strType = elem->Attribute(SETTING_XML_ATTR_TYPE);
   if (strType == NULL || strlen(strType) <= 0 || !setType(strType))
   {
     CLog::Log(LOGWARNING, "CSettingUpdate: missing or unknown update type definition");
@@ -53,7 +53,8 @@ bool CSettingUpdate::Deserialize(const TiXmlNode *node)
   {
     if (node->FirstChild() == NULL || node->FirstChild()->Type() != TiXmlNode::TINYXML_TEXT)
     {
-      CLog::Log(LOGWARNING, "CSettingUpdate: missing or invalid setting id for rename update definition");
+      CLog::Log(LOGWARNING,
+                "CSettingUpdate: missing or invalid setting id for rename update definition");
       return false;
     }
 
@@ -63,7 +64,7 @@ bool CSettingUpdate::Deserialize(const TiXmlNode *node)
   return true;
 }
 
-bool CSettingUpdate::setType(const std::string &type)
+bool CSettingUpdate::setType(const std::string& type)
 {
   if (StringUtils::EqualsNoCase(type, "change"))
     m_type = SettingUpdateTypeChange;

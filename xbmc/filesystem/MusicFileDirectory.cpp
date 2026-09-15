@@ -36,9 +36,9 @@ CMusicFileDirectory::~CMusicFileDirectory(void)
 {
 }
 
-bool CMusicFileDirectory::GetDirectory(const CURL& url, CFileItemList &items)
+bool CMusicFileDirectory::GetDirectory(const CURL& url, CFileItemList& items)
 {
-  std::string strPath=url.Get();
+  std::string strPath = url.Get();
 
   std::string strFileName;
   strFileName = URIUtils::GetFileName(strPath);
@@ -48,17 +48,19 @@ bool CMusicFileDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
   URIUtils::AddSlashAtEnd(strPath);
 
-  for (int i=0; i<iStreams; ++i)
+  for (int i = 0; i < iStreams; ++i)
   {
-    std::string strLabel = StringUtils::Format("%s - %s %2.2i", strFileName.c_str(), g_localizeStrings.Get(554).c_str(), i+1);
+    std::string strLabel = StringUtils::Format("%s - %s %2.2i", strFileName.c_str(),
+                                               g_localizeStrings.Get(554).c_str(), i + 1);
     CFileItemPtr pItem(new CFileItem(strLabel));
-    strLabel = StringUtils::Format("%s%s-%i.%s", strPath.c_str(), strFileName.c_str(), i+1, m_strExt.c_str());
+    strLabel = StringUtils::Format("%s%s-%i.%s", strPath.c_str(), strFileName.c_str(), i + 1,
+                                   m_strExt.c_str());
     pItem->SetPath(strLabel);
 
     if (m_tag.Loaded())
       *pItem->GetMusicInfoTag() = m_tag;
 
-    pItem->GetMusicInfoTag()->SetTrackNumber(i+1);
+    pItem->GetMusicInfoTag()->SetTrackNumber(i + 1);
     items.Add(pItem);
   }
 
@@ -70,7 +72,7 @@ bool CMusicFileDirectory::Exists(const CURL& url)
   return true;
 }
 
-bool CMusicFileDirectory::ContainsFiles(const CURL &url)
+bool CMusicFileDirectory::ContainsFiles(const CURL& url)
 {
   const std::string pathToUrl(url.Get());
   if (GetTrackCount(pathToUrl) > 1)

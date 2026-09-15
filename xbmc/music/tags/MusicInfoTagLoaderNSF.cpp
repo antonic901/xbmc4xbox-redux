@@ -42,7 +42,7 @@ int CMusicInfoTagLoaderNSF::GetStreamCount(const CStdString& strFileName)
   m_nsf = m_dll.LoadNSF(strFileName.c_str());
   if (!m_nsf)
   {
-    CLog::Log(LOGERROR,"MusicInfoTagLoaderNSF: failed to open NSF %s",strFileName.c_str());
+    CLog::Log(LOGERROR, "MusicInfoTagLoaderNSF: failed to open NSF %s", strFileName.c_str());
     return 0;
   }
   int result = m_dll.GetNumberOfSongs(m_nsf);
@@ -51,7 +51,9 @@ int CMusicInfoTagLoaderNSF::GetStreamCount(const CStdString& strFileName)
   return result;
 }
 
-bool CMusicInfoTagLoaderNSF::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderNSF::Load(const CStdString& strFileName,
+                                  CMusicInfoTag& tag,
+                                  EmbeddedArt* art)
 {
   tag.SetLoaded(false);
 
@@ -61,7 +63,7 @@ bool CMusicInfoTagLoaderNSF::Load(const CStdString& strFileName, CMusicInfoTag& 
   m_nsf = m_dll.LoadNSF(strFileName.c_str());
   if (!m_nsf)
   {
-    CLog::Log(LOGERROR,"MusicInfoTagLoaderNSF: failed to open NSF %s",strFileName.c_str());
+    CLog::Log(LOGERROR, "MusicInfoTagLoaderNSF: failed to open NSF %s", strFileName.c_str());
     return false;
   }
 
@@ -69,14 +71,14 @@ bool CMusicInfoTagLoaderNSF::Load(const CStdString& strFileName, CMusicInfoTag& 
 
   tag.SetLoaded(false);
   char* szTitle = (char*)m_dll.GetTitle(m_nsf); // no alloc
-  if( strcmp(szTitle,"<?>") )
+  if (strcmp(szTitle, "<?>"))
   {
     tag.SetTitle(szTitle);
     tag.SetLoaded(true);
   }
 
   char* szArtist = (char*)m_dll.GetArtist(m_nsf); // no alloc
-  if( strcmp(szArtist,"<?>") && tag.Loaded() )
+  if (strcmp(szArtist, "<?>") && tag.Loaded())
     tag.SetArtist(szArtist);
 
   m_dll.FreeNSF(m_nsf);

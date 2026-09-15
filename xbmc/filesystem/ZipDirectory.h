@@ -23,13 +23,13 @@
 
 namespace XFILE
 {
-  class CZipDirectory : public IFileDirectory
-  {
-  public:
-    CZipDirectory();
-    ~CZipDirectory();
-    virtual bool GetDirectory(const CURL& url, CFileItemList& items);
-    virtual bool ContainsFiles(const CURL& url);
-    virtual DIR_CACHE_TYPE GetCacheType(const CURL& url) const { return DIR_CACHE_ALWAYS; };
-  };
-}
+class CZipDirectory : public IFileDirectory
+{
+public:
+  CZipDirectory();
+  ~CZipDirectory();
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool ContainsFiles(const CURL& url);
+  virtual DIR_CACHE_TYPE GetCacheType(const CURL& url) const { return DIR_CACHE_ALWAYS; };
+};
+} // namespace XFILE

@@ -34,10 +34,14 @@ public:
   CRssReader();
   virtual ~CRssReader();
 
-  void Create(IRssObserver* aObserver, const std::vector<std::string>& aUrl, const std::vector<int>& times, int spacesBetweenFeeds, bool rtl);
+  void Create(IRssObserver* aObserver,
+              const std::vector<std::string>& aUrl,
+              const std::vector<int>& times,
+              int spacesBetweenFeeds,
+              bool rtl);
   bool Parse(LPSTR szBuffer, int iFeed);
-  void getFeed(vecText &text);
-  void AddTag(const CStdString &addTag);
+  void getFeed(vecText& text);
+  void AddTag(const CStdString& addTag);
   void AddToQueue(int iAdd);
   void UpdateObserver();
   void SetObserver(IRssObserver* observer);
@@ -56,10 +60,10 @@ private:
   int GetQueueSize();
 
   IRssObserver* m_pObserver;
-  
+
   std::vector<CStdStringW> m_strFeed;
   std::vector<CStdStringW> m_strColors;
-  std::vector<SYSTEMTIME *> m_vecTimeStamps;
+  std::vector<SYSTEMTIME*> m_vecTimeStamps;
   std::vector<int> m_vecUpdateTimes;
   int m_spacesBetweenFeeds;
   CXBMCTinyXML m_xml;

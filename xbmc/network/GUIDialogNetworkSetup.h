@@ -25,17 +25,20 @@
 class CGUIDialogNetworkSetup : public CGUIDialogSettingsManualBase
 {
 public:
-  enum NET_PROTOCOL { NET_PROTOCOL_SMB = 0,
-                      NET_PROTOCOL_XBMSP,
-                      NET_PROTOCOL_FTP,
-                      NET_PROTOCOL_HTTP,
-                      NET_PROTOCOL_HTTPS,
-                      NET_PROTOCOL_DAV,
-                      NET_PROTOCOL_DAVS,
-                      NET_PROTOCOL_UPNP,
-                      NET_PROTOCOL_RSS,
-                      NET_PROTOCOL_SFTP,
-                      NET_PROTOCOL_NFS};
+  enum NET_PROTOCOL
+  {
+    NET_PROTOCOL_SMB = 0,
+    NET_PROTOCOL_XBMSP,
+    NET_PROTOCOL_FTP,
+    NET_PROTOCOL_HTTP,
+    NET_PROTOCOL_HTTPS,
+    NET_PROTOCOL_DAV,
+    NET_PROTOCOL_DAVS,
+    NET_PROTOCOL_UPNP,
+    NET_PROTOCOL_RSS,
+    NET_PROTOCOL_SFTP,
+    NET_PROTOCOL_NFS
+  };
   CGUIDialogNetworkSetup(void);
   virtual ~CGUIDialogNetworkSetup(void);
   virtual bool OnMessage(CGUIMessage& message);
@@ -43,20 +46,20 @@ public:
   virtual void OnInitWindow();
   virtual void OnDeinitWindow(int nextWindowID);
 
-  static bool ShowAndGetNetworkAddress(std::string &path);
+  static bool ShowAndGetNetworkAddress(std::string& path);
 
   std::string ConstructPath() const;
-  void SetPath(const std::string &path);
+  void SetPath(const std::string& path);
   bool IsConfirmed() const { return m_confirmed; };
 
 protected:
   // implementations of ISettingCallback
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingChanged(const CSetting* setting);
+  virtual void OnSettingAction(const CSetting* setting);
 
   // specialization of CGUIDialogSettingsBase
   bool AllowResettingSettings() const { return false; }
-  virtual void Save() { }
+  virtual void Save() {}
   virtual void SetupView();
 
   // specialization of CGUIDialogSettingsManualBase

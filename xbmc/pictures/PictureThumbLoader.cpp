@@ -35,7 +35,9 @@
 
 using namespace XFILE;
 
-CPictureThumbLoader::CPictureThumbLoader() : CThumbLoader(), CJobQueue(true, 1, CJob::PRIORITY_LOW_PAUSABLE)
+CPictureThumbLoader::CPictureThumbLoader()
+  : CThumbLoader(),
+    CJobQueue(true, 1, CJob::PRIORITY_LOW_PAUSABLE)
 {
   m_regenerateThumbs = false;
 }
@@ -53,16 +55,15 @@ void CPictureThumbLoader::OnLoaderFinish()
 
 bool CPictureThumbLoader::LoadItem(CFileItem* pItem)
 {
-  bool result  = LoadItemCached(pItem);
-       result |= LoadItemLookup(pItem);
+  bool result = LoadItemCached(pItem);
+  result |= LoadItemLookup(pItem);
 
   return result;
 }
 
 bool CPictureThumbLoader::LoadItemCached(CFileItem* pItem)
 {
-  if (pItem->m_bIsShareOrDrive
-  ||  pItem->IsParentFolder())
+  if (pItem->m_bIsShareOrDrive || pItem->IsParentFolder())
     return false;
 
   if (pItem->HasArt("thumb") && m_regenerateThumbs)
@@ -77,11 +78,14 @@ bool CPictureThumbLoader::LoadItemCached(CFileItem* pItem)
   }
 
   std::string thumb;
-  if (pItem->IsPicture() && !pItem->IsZIP() && !pItem->IsRAR() && !pItem->IsCBZ() && !pItem->IsCBR() && !pItem->IsPlayList())
+  if (pItem->IsPicture() && !pItem->IsZIP() && !pItem->IsRAR() && !pItem->IsCBZ() &&
+      !pItem->IsCBR() && !pItem->IsPlayList())
   { // load the thumb from the image file
-    thumb = pItem->HasArt("thumb") ? pItem->GetArt("thumb") : CTextureUtils::GetWrappedThumbURL(pItem->GetPath());
+    thumb = pItem->HasArt("thumb") ? pItem->GetArt("thumb")
+                                   : CTextureUtils::GetWrappedThumbURL(pItem->GetPath());
   }
-  else if (pItem->IsVideo() && !pItem->IsZIP() && !pItem->IsRAR() && !pItem->IsCBZ() && !pItem->IsCBR() && !pItem->IsPlayList())
+  else if (pItem->IsVideo() && !pItem->IsZIP() && !pItem->IsRAR() && !pItem->IsCBZ() &&
+           !pItem->IsCBR() && !pItem->IsPlayList())
   { // video
     CVideoThumbLoader loader;
     if (!loader.FillThumb(*pItem))
@@ -91,7 +95,8 @@ bool CPictureThumbLoader::LoadItemCached(CFileItem* pItem)
       {
         thumb = thumbURL;
       }
-      else if (CSettings::GetInstance().GetBool("myvideos.extractthumb") && CSettings::GetInstance().GetBool("myvideos.extractflags"))
+      else if (CSettings::GetInstance().GetBool("myvideos.extractthumb") &&
+               CSettings::GetInstance().GetBool("myvideos.extractflags"))
       {
         CFileItem item(*pItem);
         CThumbExtractor* extract = new CThumbExtractor(item, pItem->GetPath(), true, thumbURL);
@@ -131,7 +136,7 @@ void CPictureThumbLoader::OnJobComplete(unsigned int jobID, bool success, CJob* 
   CJobQueue::OnJobComplete(jobID, success, job);
 }
 
-void CPictureThumbLoader::ProcessFoldersAndArchives(CFileItem *pItem)
+void CPictureThumbLoader::ProcessFoldersAndArchives(CFileItem* pItem)
 {
   if (pItem->HasArt("thumb"))
     return;
@@ -140,7 +145,7 @@ void CPictureThumbLoader::ProcessFoldersAndArchives(CFileItem *pItem)
   db.Open();
   if (pItem->IsCBR() || pItem->IsCBZ())
   {
-    std::string strTBN(URIUtils::ReplaceExtension(pItem->GetPath(),".tbn"));
+    std::string strTBN(URIUtils::ReplaceExtension(pItem->GetPath(), ".tbn"));
     if (CFile::Exists(strTBN))
     {
       db.SetTextureForPath(pItem->GetPath(), "thumb", strTBN);
@@ -149,20 +154,20 @@ void CPictureThumbLoader::ProcessFoldersAndArchives(CFileItem *pItem)
       return;
     }
   }
-  if ((pItem->m_bIsFolder || pItem->IsCBR() || pItem->IsCBZ()) && !pItem->m_bIsShareOrDrive
-      && !pItem->IsParentFolder() && !pItem->IsPath("add"))
+  if ((pItem->m_bIsFolder || pItem->IsCBR() || pItem->IsCBZ()) && !pItem->m_bIsShareOrDrive &&
+      !pItem->IsParentFolder() && !pItem->IsPath("add"))
   {
     // first check for a folder.jpg
     std::string thumb = "folder.jpg";
     CURL pathToUrl = pItem->GetURL();
     if (pItem->IsCBR())
     {
-      pathToUrl = URIUtils::CreateArchivePath("rar",pItem->GetURL(),"");
+      pathToUrl = URIUtils::CreateArchivePath("rar", pItem->GetURL(), "");
       thumb = "cover.jpg";
     }
     if (pItem->IsCBZ())
     {
-      pathToUrl = URIUtils::CreateArchivePath("zip",pItem->GetURL(),"");
+      pathToUrl = URIUtils::CreateArchivePath("zip", pItem->GetURL(), "");
       thumb = "cover.jpg";
     }
     if (pItem->IsMultiPath())
@@ -182,14 +187,16 @@ void CPictureThumbLoader::ProcessFoldersAndArchives(CFileItem *pItem)
 
       CFileItemList items;
 
-      CDirectory::GetDirectory(pathToUrl, items, g_advancedSettings.m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS);
+      CDirectory::GetDirectory(pathToUrl, items, g_advancedSettings.m_pictureExtensions,
+                               DIR_FLAG_NO_FILE_DIRS);
 
       // create the folder thumb by choosing 4 random thumbs within the folder and putting
       // them into one thumb.
       // count the number of images
-      for (int i=0; i < items.Size();)
+      for (int i = 0; i < items.Size();)
       {
-        if (!items[i]->IsPicture() || items[i]->IsZIP() || items[i]->IsRAR() || items[i]->IsPlayList())
+        if (!items[i]->IsPicture() || items[i]->IsZIP() || items[i]->IsRAR() ||
+            items[i]->IsPlayList())
         {
           items.Remove(i);
         }
@@ -201,8 +208,9 @@ void CPictureThumbLoader::ProcessFoldersAndArchives(CFileItem *pItem)
       {
         if (pItem->IsCBZ() || pItem->IsCBR())
         {
-          CDirectory::GetDirectory(pathToUrl, items, g_advancedSettings.m_pictureExtensions, DIR_FLAG_NO_FILE_DIRS);
-          for (int i=0;i<items.Size();++i)
+          CDirectory::GetDirectory(pathToUrl, items, g_advancedSettings.m_pictureExtensions,
+                                   DIR_FLAG_NO_FILE_DIRS);
+          for (int i = 0; i < items.Size(); ++i)
           {
             CFileItemPtr item = items[i];
             if (item->m_bIsFolder)

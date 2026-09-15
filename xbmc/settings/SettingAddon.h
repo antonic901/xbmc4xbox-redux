@@ -25,20 +25,23 @@
 class CSettingAddon : public CSettingString
 {
 public:
-  CSettingAddon(const std::string &id, CSettingsManager *settingsManager = NULL);
-  CSettingAddon(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager = NULL);
-  CSettingAddon(const std::string &id, const CSettingAddon &setting);
-  virtual ~CSettingAddon() { }
+  CSettingAddon(const std::string& id, CSettingsManager* settingsManager = NULL);
+  CSettingAddon(const std::string& id,
+                int label,
+                const std::string& value,
+                CSettingsManager* settingsManager = NULL);
+  CSettingAddon(const std::string& id, const CSettingAddon& setting);
+  virtual ~CSettingAddon() {}
 
-  virtual CSetting* Clone(const std::string &id) const;
+  virtual CSetting* Clone(const std::string& id) const;
 
-  virtual bool Deserialize(const TiXmlNode *node, bool update = false);
+  virtual bool Deserialize(const TiXmlNode* node, bool update = false);
 
   ADDON::TYPE GetAddonType() const { return m_addonType; }
   void SetAddonType(ADDON::TYPE addonType) { m_addonType = addonType; }
 
 private:
-  void copyaddontype(const CSettingAddon &setting);
+  void copyaddontype(const CSettingAddon& setting);
 
   ADDON::TYPE m_addonType;
 };

@@ -48,22 +48,23 @@ Reason: Prepared for Public Release
 */
 #include "XKCRC.h"
 
-
 XKCRC::XKCRC(void)
-{}
+{
+}
 
 XKCRC::~XKCRC(void)
-{}
-
+{
+}
 
 void XKCRC::QuickCRC(UCHAR* CRCVAL, UCHAR* inData, DWORD dataLen)
 {
 
   LPBYTE CRC_Data = new BYTE[dataLen + 4];
   ZeroMemory(CRC_Data, dataLen + 4);
-  memcpy(CRC_Data + 0x01 , inData, dataLen - 1); //We Circle shift the whole bunch 1 byte to the right
-  memcpy(CRC_Data, inData + dataLen - 1, 0x01); //We Circle shift the whole bunch 1 byte to the right
-
+  memcpy(CRC_Data + 0x01, inData,
+         dataLen - 1); //We Circle shift the whole bunch 1 byte to the right
+  memcpy(CRC_Data, inData + dataLen - 1,
+         0x01); //We Circle shift the whole bunch 1 byte to the right
 
   BYTE CRCVALUE[4];
   ZeroMemory(CRCVALUE, 4);
@@ -80,10 +81,9 @@ void XKCRC::QuickCRC(UCHAR* CRCVAL, UCHAR* inData, DWORD dataLen)
     }
 
     CRCPosVal &= 0xFF00;
-    CRCVALUE[CRCPos] = (BYTE) (CRCPosVal >> 8);
+    CRCVALUE[CRCPos] = (BYTE)(CRCPosVal >> 8);
   }
 
   memcpy(CRCVAL, CRCVALUE, 4);
   delete[] CRC_Data;
-
 }

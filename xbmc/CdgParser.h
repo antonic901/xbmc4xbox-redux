@@ -54,11 +54,12 @@ public:
   bool SetNextSubCode();
   errCode GetFileState();
   CStdString GetFileName();
+
 protected:
   XFILE::CFile m_File;
   CStdString m_strFileName;
-  BYTE *m_pBuffer;
-  SubCode *m_pSubCode;
+  BYTE* m_pBuffer;
+  SubCode* m_pSubCode;
   errCode m_CdgFileState;
   UINT m_uiFileLength;
   UINT m_uiLoadedBytes;
@@ -72,7 +73,6 @@ protected:
   virtual void Process();
 };
 
-
 //////////////////////
 //////CdgReader///////
 //////////////////////
@@ -82,7 +82,7 @@ protected:
 // CDG data on cd :
 //4 packets/sector*75 sectors/second=300 packets/second = 300 Hz
 #define PARSING_FREQ 300.0f
-#define DEBUG_AVDELAY_MOD 0.3f  //Adjustment for AV delay  in debug mode
+#define DEBUG_AVDELAY_MOD 0.3f //Adjustment for AV delay  in debug mode
 
 class CCdgReader : public CThread
 {
@@ -117,9 +117,9 @@ protected:
 //////////////////////
 //////CdgRenderer/////
 //////////////////////
-#define TEX_COLOR DWORD  //Texture color format is A8R8G8B8
+#define TEX_COLOR DWORD //Texture color format is A8R8G8B8
 
-#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW | D3DFVF_TEX1) 
+#define D3DFVF_CUSTOMVERTEX (D3DFVF_XYZRHW | D3DFVF_TEX1)
 //Message strings:
 #define KARAOKE 13327
 #define NOT_FOUND 13328
@@ -130,8 +130,7 @@ typedef struct
 {
   FLOAT x, y, z, rhw;
   FLOAT u, v;
-}
-CUSTOMVERTEX;
+} CUSTOMVERTEX;
 
 class CCdgRenderer
 {
@@ -161,7 +160,6 @@ protected:
   TEX_COLOR ConvertColor(CDG_COLOR);
 };
 
-
 //////////////////////
 //////CdgParser///////
 //////////////////////
@@ -187,7 +185,11 @@ public:
   // ... Karaoke patch (114097)
   inline bool IsRunning() { return m_bIsRunning; }
 
-  void static SettingOptionsVoiceMasksFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
+  void static SettingOptionsVoiceMasksFiller(
+      const CSetting* setting,
+      std::vector<std::pair<std::string, std::string> >& list,
+      std::string& current,
+      void* data);
   void static FillInVoiceMaskValues(unsigned int port, CStdString strCurMask);
 
 protected:

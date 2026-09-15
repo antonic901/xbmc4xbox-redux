@@ -26,12 +26,12 @@
 class CSmartPlaylistFileItemListModifier : public IFileItemListModifier
 {
 public:
-  CSmartPlaylistFileItemListModifier() { }
-  virtual ~CSmartPlaylistFileItemListModifier() { }
+  CSmartPlaylistFileItemListModifier() {}
+  virtual ~CSmartPlaylistFileItemListModifier() {}
 
-  virtual bool CanModify(const CFileItemList &items) const;
-  virtual bool Modify(CFileItemList &items) const;
+  virtual bool CanModify(const CFileItemList& items) const;
+  virtual bool Modify(CFileItemList& items) const;
 
 private:
-  static std::string GetUrlOption(const std::string &path, const std::string &option);
+  static std::string GetUrlOption(const std::string& path, const std::string& option);
 };

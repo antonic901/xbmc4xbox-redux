@@ -22,36 +22,36 @@
 #include "music/tags/APEv2Tag.h"
 #include "filesystem/File.h"
 #include <climits>
- 
+
 using namespace XFILE;
 
 struct _ape_file_io
 {
-  size_t (*read_func)  (void *ptr, size_t size, size_t nmemb, void *datasource);
-  int    (*seek_func)  (void *datasource, long int offset, int whence);
-  long   (*tell_func)  (void *datasource);
-  void *data;
+  size_t (*read_func)(void* ptr, size_t size, size_t nmemb, void* datasource);
+  int (*seek_func)(void* datasource, long int offset, int whence);
+  long (*tell_func)(void* datasource);
+  void* data;
 };
 
 using namespace MUSIC_INFO;
 
-size_t CAPEv2Tag::fread_callback(void *ptr, size_t size, size_t nmemb, void *fp)
+size_t CAPEv2Tag::fread_callback(void* ptr, size_t size, size_t nmemb, void* fp)
 {
-  CFile *file = (CFile *)fp;
+  CFile* file = (CFile*)fp;
   return file->Read(ptr, size * nmemb) / size;
 }
 
-int CAPEv2Tag::fseek_callback(void *fp, long int offset, int whence)
+int CAPEv2Tag::fseek_callback(void* fp, long int offset, int whence)
 {
-  CFile *file = (CFile *)fp;
+  CFile* file = (CFile*)fp;
   return (file->Seek(offset, whence) >= 0) ? 0 : -1;
 }
 
-long CAPEv2Tag::ftell_callback(void *fp)
+long CAPEv2Tag::ftell_callback(void* fp)
 {
-  CFile *file = (CFile *)fp;
+  CFile* file = (CFile*)fp;
   int64_t pos = file->GetPosition();
-  if(pos > LONG_MAX)
+  if (pos > LONG_MAX)
     return -1;
   else
     return (long)pos;
@@ -66,7 +66,6 @@ CAPEv2Tag::CAPEv2Tag()
 
 CAPEv2Tag::~CAPEv2Tag()
 {
-
 }
 
 bool CAPEv2Tag::ReadTag(const char* filename)
@@ -75,7 +74,7 @@ bool CAPEv2Tag::ReadTag(const char* filename)
     return false;
 
   // Read in our tag using our dll
-  apetag *tag = m_dll.apetag_init();
+  apetag* tag = m_dll.apetag_init();
 
   CFile file;
   if (!file.Open(filename))
@@ -92,7 +91,7 @@ bool CAPEv2Tag::ReadTag(const char* filename)
   file_api.tell_func = ftell_callback;
   file_api.data = &file;
 
-  m_dll.apetag_read_fp(tag, &file_api, (char *)filename, 0);
+  m_dll.apetag_read_fp(tag, &file_api, (char*)filename, 0);
   if (!tag)
     return false;
 
@@ -115,8 +114,9 @@ bool CAPEv2Tag::ReadTag(const char* filename)
   if (apefrm_getstr(tag, (char*)"Media"))
   {
     // cd number is usually "CD 1/3"
-    char *num = apefrm_getstr(tag, (char*)"Media");
-    while (!isdigit(*num) && *num != '\0') num++;
+    char* num = apefrm_getstr(tag, (char*)"Media");
+    while (!isdigit(*num) && *num != '\0')
+      num++;
     if (isdigit(*num))
       m_nDiscNum = atoi(num);
   }
@@ -126,9 +126,9 @@ bool CAPEv2Tag::ReadTag(const char* filename)
     m_strLyrics = apefrm_getstr(tag, (char*)"Lyrics");
   if (apefrm_getstr(tag, (char*)"Rating"))
   { // rating number is usually a single digit, 1-5.  0 is unknown.
-      char temp = apefrm_getstr(tag, (char*)"Rating")[0];
-      if (temp >= '0' && temp < '6')
-        m_rating = temp;
+    char temp = apefrm_getstr(tag, (char*)"Rating")[0];
+    if (temp >= '0' && temp < '6')
+      m_rating = temp;
   }
   if (apefrm_getstr(tag, (char*)"Compilation"))
   {
@@ -144,14 +144,16 @@ bool CAPEv2Tag::ReadTag(const char* filename)
   return true;
 }
 
-void CAPEv2Tag::GetReplayGainFromTag(apetag *tag)
+void CAPEv2Tag::GetReplayGainFromTag(apetag* tag)
 {
-  if (!tag) return;
+  if (!tag)
+    return;
 
   //  foobar2000 saves gain info as lowercase key items
   if (apefrm_getstr(tag, (char*)"replaygain_track_gain"))
   {
-    m_replayGain.iTrackGain = (int)(atof(apefrm_getstr(tag, (char*)"replaygain_track_gain"))*100 + 0.5);
+    m_replayGain.iTrackGain =
+        (int)(atof(apefrm_getstr(tag, (char*)"replaygain_track_gain")) * 100 + 0.5);
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_TRACK_INFO;
   }
   if (apefrm_getstr(tag, (char*)"replaygain_track_peak"))
@@ -161,7 +163,8 @@ void CAPEv2Tag::GetReplayGainFromTag(apetag *tag)
   }
   if (apefrm_getstr(tag, (char*)"replaygain_album_gain"))
   {
-    m_replayGain.iAlbumGain = (int)(atof(apefrm_getstr(tag, (char*)"replaygain_album_gain"))*100 + 0.5);
+    m_replayGain.iAlbumGain =
+        (int)(atof(apefrm_getstr(tag, (char*)"replaygain_album_gain")) * 100 + 0.5);
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_ALBUM_INFO;
   }
   if (apefrm_getstr(tag, (char*)"replaygain_album_peak"))
@@ -173,7 +176,8 @@ void CAPEv2Tag::GetReplayGainFromTag(apetag *tag)
   // MP3GAIN saves gain info as uppercase key items
   if (apefrm_getstr(tag, (char*)"REPLAYGAIN_TRACK_GAIN"))
   {
-    m_replayGain.iTrackGain = (int)(atof(apefrm_getstr(tag, (char*)"REPLAYGAIN_TRACK_GAIN"))*100 + 0.5);
+    m_replayGain.iTrackGain =
+        (int)(atof(apefrm_getstr(tag, (char*)"REPLAYGAIN_TRACK_GAIN")) * 100 + 0.5);
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_TRACK_INFO;
   }
   if (apefrm_getstr(tag, (char*)"REPLAYGAIN_TRACK_PEAK"))
@@ -183,7 +187,8 @@ void CAPEv2Tag::GetReplayGainFromTag(apetag *tag)
   }
   if (apefrm_getstr(tag, (char*)"REPLAYGAIN_ALBUM_GAIN"))
   {
-    m_replayGain.iAlbumGain = (int)(atof(apefrm_getstr(tag, (char*)"REPLAYGAIN_ALBUM_GAIN"))*100 + 0.5);
+    m_replayGain.iAlbumGain =
+        (int)(atof(apefrm_getstr(tag, (char*)"REPLAYGAIN_ALBUM_GAIN")) * 100 + 0.5);
     m_replayGain.iHasGainInfo |= REPLAY_GAIN_HAS_ALBUM_INFO;
   }
   if (apefrm_getstr(tag, (char*)"REPLAYGAIN_ALBUM_PEAK"))

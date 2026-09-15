@@ -41,6 +41,7 @@ public:
   virtual void Process();
 
   virtual std::vector<std::wstring> GetResponse(int response);
+
 private:
   std::wstring UnicodeToWString(const std::string& unicode);
   void HandleResponse(const std::string& strCode, const std::string& response);
@@ -49,12 +50,12 @@ private:
   std::string m_code;
   int m_messageCounter;
   int m_api_begin; // baidu api begin num
-  int m_api_end;   // baidu api end num
+  int m_api_end; // baidu api end num
   bool m_api_nomore;
   bool m_initialized;
 
   std::deque<std::string> m_work;
   std::map<int, std::vector<std::wstring> > m_responses;
-  CEvent            m_Event;
-  CCriticalSection  m_CS;
+  CEvent m_Event;
+  CCriticalSection m_CS;
 };

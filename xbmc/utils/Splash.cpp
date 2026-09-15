@@ -49,8 +49,9 @@ void CSplash::Show(const std::string& message /* = "" */)
     if (!XFILE::CFile::Exists(splashImage))
       splashImage = "special://xbmc/media/Splash.png";
 
-    m_image = boost::movelib::unique_ptr<CGUIImage>(new CGUIImage(0, 0, 0, 0, g_graphicsContext.GetWidth(),
-        g_graphicsContext.GetHeight(), CTextureInfo(splashImage)));
+    m_image = boost::movelib::unique_ptr<CGUIImage>(
+        new CGUIImage(0, 0, 0, 0, g_graphicsContext.GetWidth(), g_graphicsContext.GetHeight(),
+                      CTextureInfo(splashImage)));
     m_image->SetAspectRatio(CAspectRatio::AR_SCALE);
   }
 
@@ -79,9 +80,11 @@ void CSplash::Show(const std::string& message /* = "" */)
   {
     if (!m_messageLayout)
     {
-      CGUIFont *messageFont = g_fontManager.LoadTTF("__splash__", "arial.ttf", 0xFFFFFFFF, 0, 20, FONT_STYLE_NORMAL, false, 1.0f, 1.0f, &res);
+      CGUIFont* messageFont = g_fontManager.LoadTTF("__splash__", "arial.ttf", 0xFFFFFFFF, 0, 20,
+                                                    FONT_STYLE_NORMAL, false, 1.0f, 1.0f, &res);
       if (messageFont)
-        m_messageLayout = boost::movelib::unique_ptr<CGUITextLayout>(new CGUITextLayout(messageFont, true, 0));
+        m_messageLayout =
+            boost::movelib::unique_ptr<CGUITextLayout>(new CGUITextLayout(messageFont, true, 0));
     }
 
     if (m_messageLayout)
@@ -93,14 +96,14 @@ void CSplash::Show(const std::string& message /* = "" */)
       int width = g_graphicsContext.GetWidth();
       int height = g_graphicsContext.GetHeight();
       float y = height - textHeight - 100;
-      m_messageLayout->RenderOutline(width/2, y, 0, 0xFF000000, XBFONT_CENTER_X, width);
+      m_messageLayout->RenderOutline(width / 2, y, 0, 0xFF000000, XBFONT_CENTER_X, width);
     }
   }
 
   //show it on screen
 #ifdef HAS_XBOX_D3D
   g_graphicsContext.Get3DDevice()->BlockUntilVerticalBlank();
-  g_graphicsContext.Get3DDevice()->Present( NULL, NULL, NULL, NULL );
+  g_graphicsContext.Get3DDevice()->Present(NULL, NULL, NULL, NULL);
 #else
   g_Windowing.EndRender();
   g_graphicsContext.Flip(true, false);

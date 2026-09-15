@@ -38,10 +38,7 @@ using namespace XFILE;
 using namespace MUSIC_INFO;
 
 // HACK until we make this threadable - specify 1 thread only for now
-CMusicInfoLoader::CMusicInfoLoader()
-  : CBackgroundInfoLoader()
-  , m_databaseHits(0)
-  , m_tagReads(0)
+CMusicInfoLoader::CMusicInfoLoader() : CBackgroundInfoLoader(), m_databaseHits(0), m_tagReads(0)
 {
   m_mapFileItems = new CFileItemList;
 
@@ -82,7 +79,8 @@ void CMusicInfoLoader::OnLoaderStart()
 
 bool CMusicInfoLoader::LoadAdditionalTagInfo(CFileItem* pItem)
 {
-  if (!pItem || pItem->m_bIsFolder || pItem->IsPlayList() || pItem->IsNFO() || pItem->IsInternetStream())
+  if (!pItem || pItem->m_bIsFolder || pItem->IsPlayList() || pItem->IsNFO() ||
+      pItem->IsInternetStream())
     return false;
 
   if (pItem->GetProperty("hasfullmusictag") == "true")
@@ -92,8 +90,7 @@ bool CMusicInfoLoader::LoadAdditionalTagInfo(CFileItem* pItem)
   // For songs in library set the (primary) song artist and album properties
   // Use song Id (not path) as called for items from either library or file view,
   // but could also be listitem with tag loaded by a script
-  if (pItem->HasMusicInfoTag() &&
-      pItem->GetMusicInfoTag()->GetType() == MediaTypeSong &&
+  if (pItem->HasMusicInfoTag() && pItem->GetMusicInfoTag()->GetType() == MediaTypeSong &&
       pItem->GetMusicInfoTag()->GetDatabaseId() > 0)
   {
     CMusicDatabase database;
@@ -133,7 +130,8 @@ bool CMusicInfoLoader::LoadAdditionalTagInfo(CFileItem* pItem)
   // we load up the actual tag for this file in order to
   // fetch the lyrics and add it to the current music info tag
   CFileItem tempItem(path, false);
-  boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(tempItem));
+  boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader(
+      CMusicInfoTagLoaderFactory::CreateLoader(tempItem));
   if (NULL != pLoader.get())
   {
     CMusicInfoTag tag;
@@ -147,8 +145,8 @@ bool CMusicInfoLoader::LoadAdditionalTagInfo(CFileItem* pItem)
 
 bool CMusicInfoLoader::LoadItem(CFileItem* pItem)
 {
-  bool result  = LoadItemCached(pItem);
-       result |= LoadItemLookup(pItem);
+  bool result = LoadItemCached(pItem);
+  result |= LoadItemLookup(pItem);
 
   return result;
 }
@@ -176,7 +174,8 @@ bool CMusicInfoLoader::LoadItemLookup(CFileItem* pItem)
   {
     // first check the cached item
     CFileItemPtr mapItem = (*m_mapFileItems)[pItem->GetPath()];
-    if (mapItem && mapItem->m_dateTime==pItem->m_dateTime && mapItem->HasMusicInfoTag() && mapItem->GetMusicInfoTag()->Loaded())
+    if (mapItem && mapItem->m_dateTime == pItem->m_dateTime && mapItem->HasMusicInfoTag() &&
+        mapItem->GetMusicInfoTag()->Loaded())
     { // Query map if we previously cached the file on HD
       *pItem->GetMusicInfoTag() = *mapItem->GetMusicInfoTag();
       if (mapItem->HasArt("thumb"))
@@ -186,7 +185,7 @@ bool CMusicInfoLoader::LoadItemLookup(CFileItem* pItem)
     {
       std::string strPath = URIUtils::GetDirectory(pItem->GetPath());
       URIUtils::AddSlashAtEnd(strPath);
-      if (strPath!=m_strPrevPath)
+      if (strPath != m_strPrevPath)
       {
         // The item is from another directory as the last one,
         // query the database for the new directory...
@@ -196,7 +195,7 @@ bool CMusicInfoLoader::LoadItemLookup(CFileItem* pItem)
 
       MAPSONGS::iterator it = m_songsMap.find(pItem->GetPath());
       if (it != m_songsMap.end())
-      {  // Have we loaded this item from database before
+      { // Have we loaded this item from database before
         pItem->GetMusicInfoTag()->SetSong(it->second);
         pItem->GetMusicInfoTag()->SetCueSheet(m_musicDatabase.LoadCuesheet(it->second.strFileName));
         if (!it->second.strThumb.empty())
@@ -205,7 +204,7 @@ bool CMusicInfoLoader::LoadItemLookup(CFileItem* pItem)
       else if (pItem->IsMusicDb())
       { // a music db item that doesn't have tag loaded - grab details from the database
         XFILE::MUSICDATABASEDIRECTORY::CQueryParams param;
-        XFILE::MUSICDATABASEDIRECTORY::CDirectoryNode::GetDatabaseInfo(pItem->GetPath(),param);
+        XFILE::MUSICDATABASEDIRECTORY::CDirectoryNode::GetDatabaseInfo(pItem->GetPath(), param);
         CSong song;
         if (m_musicDatabase.GetSong(param.GetSongId(), song))
         {
@@ -218,7 +217,8 @@ bool CMusicInfoLoader::LoadItemLookup(CFileItem* pItem)
       { // Nothing found, load tag from file,
         // always try to load cddb info
         // get correct tag parser
-        boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader (CMusicInfoTagLoaderFactory::CreateLoader(*pItem));
+        boost::movelib::unique_ptr<IMusicInfoTagLoader> pLoader(
+            CMusicInfoTagLoaderFactory::CreateLoader(*pItem));
         if (NULL != pLoader.get())
           // get tag
           pLoader->Load(pItem->GetPath(), *pItem->GetMusicInfoTag());
@@ -283,7 +283,7 @@ void CMusicInfoLoader::SaveCache(const std::string& strFileName, CFileItemList& 
   int iSize = items.Size();
 
   if (iSize <= 0)
-    return ;
+    return;
 
   CFile file;
 
@@ -299,5 +299,4 @@ void CMusicInfoLoader::SaveCache(const std::string& strFileName, CFileItemList& 
     ar.Close();
     file.Close();
   }
-
 }

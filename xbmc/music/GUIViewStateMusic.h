@@ -26,6 +26,7 @@ class CGUIViewStateWindowMusic : public CGUIViewState
 {
 public:
   CGUIViewStateWindowMusic(const CFileItemList& items) : CGUIViewState(items) {}
+
 protected:
   virtual VECSOURCES& GetSources();
   virtual int GetPlaylist();

@@ -29,17 +29,21 @@ class CTag
 public:
   CTag(void) { m_art = NULL; }
   virtual ~CTag(void) {}
-  virtual bool Read(const CStdString& strFile) { m_musicInfoTag.SetURL(strFile); return false; }
+  virtual bool Read(const CStdString& strFile)
+  {
+    m_musicInfoTag.SetURL(strFile);
+    return false;
+  }
   virtual bool Write(const CStdString& strFile) { return false; }
 
-  const CReplayGain &GetReplayGain() const { return m_replayGain; }
-  void GetMusicInfoTag(CMusicInfoTag& tag) const { tag=m_musicInfoTag; }
-  void SetMusicInfoTag(CMusicInfoTag& tag) { m_musicInfoTag=tag; }
-  void SetArt(EmbeddedArt *art) { m_art = art; }
+  const CReplayGain& GetReplayGain() const { return m_replayGain; }
+  void GetMusicInfoTag(CMusicInfoTag& tag) const { tag = m_musicInfoTag; }
+  void SetMusicInfoTag(CMusicInfoTag& tag) { m_musicInfoTag = tag; }
+  void SetArt(EmbeddedArt* art) { m_art = art; }
 
 protected:
   CMusicInfoTag m_musicInfoTag;
-  EmbeddedArt*  m_art;
+  EmbeddedArt* m_art;
   CReplayGain m_replayGain;
 };
-}
+} // namespace MUSIC_INFO

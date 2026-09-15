@@ -33,7 +33,7 @@ CMusicInfoTagLoaderASAP::~CMusicInfoTagLoaderASAP()
 {
 }
 
-bool CMusicInfoTagLoaderASAP::Load(const CStdString &strFile, CMusicInfoTag &tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderASAP::Load(const CStdString& strFile, CMusicInfoTag& tag, EmbeddedArt* art)
 {
   tag.SetLoaded(false);
 
@@ -66,7 +66,7 @@ bool CMusicInfoTagLoaderASAP::Load(const CStdString &strFile, CMusicInfoTag &tag
     tag.SetDuration(songInfo.duration / 1000);
   if (songInfo.year > 0)
   {
-    SYSTEMTIME dateTime = { songInfo.year, songInfo.month, 0, songInfo.day, 0, 0, 0, 0 };
+    SYSTEMTIME dateTime = {songInfo.year, songInfo.month, 0, songInfo.day, 0, 0, 0, 0};
     tag.SetReleaseDate(dateTime);
   }
   tag.SetLoaded(true);

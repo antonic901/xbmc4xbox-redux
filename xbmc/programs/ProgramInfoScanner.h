@@ -13,25 +13,27 @@
 
 namespace PROGRAM
 {
-  class CProgramInfoScanner : public CInfoScanner
-  {
-  public:
-    CProgramInfoScanner();
-    virtual ~CProgramInfoScanner();
+class CProgramInfoScanner : public CInfoScanner
+{
+public:
+  CProgramInfoScanner();
+  virtual ~CProgramInfoScanner();
 
-    void Start(const std::string& strDirectory);
-    void Stop();
+  void Start(const std::string& strDirectory);
+  void Stop();
 
-  protected:
-    virtual void Process();
-    virtual bool DoScan(const std::string& strDirectory);
+protected:
+  virtual void Process();
+  virtual bool DoScan(const std::string& strDirectory);
 
-    bool m_bStop;
-    std::string m_strDirectory;
-    CProgramDatabase m_database;
+  bool m_bStop;
+  std::string m_strDirectory;
+  CProgramDatabase m_database;
 
-  private:
-    bool DoScraping(const std::string& strDirectory, const ADDON::ScraperPtr& scraper, int idPath = - 1);
-    void ScrapeProgram(const std::string& strPath, const ADDON::ScraperPtr& scraper, int idPath);
-  };
-}
+private:
+  bool DoScraping(const std::string& strDirectory,
+                  const ADDON::ScraperPtr& scraper,
+                  int idPath = -1);
+  void ScrapeProgram(const std::string& strPath, const ADDON::ScraperPtr& scraper, int idPath);
+};
+} // namespace PROGRAM

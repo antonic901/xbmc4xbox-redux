@@ -35,17 +35,24 @@
  \ingroup controls
  \brief
  */
-class CGUILabelControl :
-      public CGUIControl
+class CGUILabelControl : public CGUIControl
 {
 public:
-  CGUILabelControl(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, bool wrapMultiLine, bool bHasPath);
+  CGUILabelControl(int parentID,
+                   int controlID,
+                   float posX,
+                   float posY,
+                   float width,
+                   float height,
+                   const CLabelInfo& labelInfo,
+                   bool wrapMultiLine,
+                   bool bHasPath);
   virtual ~CGUILabelControl(void);
-  virtual CGUILabelControl *Clone() const { return new CGUILabelControl(*this); };
+  virtual CGUILabelControl* Clone() const { return new CGUILabelControl(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual void UpdateInfo(const CGUIListItem *item = NULL);
+  virtual void UpdateInfo(const CGUIListItem* item = NULL);
   virtual bool CanFocus() const;
   virtual bool OnMessage(CGUIMessage& message);
   virtual std::string GetDescription() const;
@@ -54,11 +61,11 @@ public:
   virtual CRect CalcRenderRegion() const;
 
   const CLabelInfo& GetLabelInfo() const { return m_label.GetLabelInfo(); };
-  void SetLabel(const std::string &strLabel);
+  void SetLabel(const std::string& strLabel);
   void ShowCursor(bool bShow = true);
   void SetCursorPos(int iPos);
-  int GetCursorPos() const { return m_iCursorPos;};
-  void SetInfo(const CGUIInfoLabel&labelInfo);
+  int GetCursorPos() const { return m_iCursorPos; };
+  void SetInfo(const CGUIInfoLabel& labelInfo);
   void SetWidthControl(float minWidth, bool bScroll);
   void SetAlignment(uint32_t align);
   void SetHighlight(unsigned int start, unsigned int end);
@@ -66,7 +73,7 @@ public:
 
 protected:
   bool UpdateColors();
-  std::string ShortenPath(const std::string &path);
+  std::string ShortenPath(const std::string& path);
 
   /*! \brief Return the maximum width of this label control.
    \return Return the width of the control if available, else the width of the current text.

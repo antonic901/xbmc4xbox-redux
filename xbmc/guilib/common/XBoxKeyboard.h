@@ -33,20 +33,20 @@ public:
   void Initialize(HWND hWnd);
 
   void Update();
-  bool GetShift() { return m_bShift;};
-  bool GetCtrl() { return m_bCtrl;};
-  bool GetAlt() { return m_bAlt;};
-  bool GetRAlt() { return m_bRAlt;};
-  char GetAscii() { return m_cAscii;};
-  WCHAR GetUnicode() { return GetAscii();}; // FIXME HELPME is there any unicode feature available?
-  BYTE GetKey() { return m_VKey;};
+  bool GetShift() { return m_bShift; };
+  bool GetCtrl() { return m_bCtrl; };
+  bool GetAlt() { return m_bAlt; };
+  bool GetRAlt() { return m_bRAlt; };
+  char GetAscii() { return m_cAscii; };
+  WCHAR GetUnicode() { return GetAscii(); }; // FIXME HELPME is there any unicode feature available?
+  BYTE GetKey() { return m_VKey; };
   bool KeyHeld() const { return false; };
 
 private:
   // variables for mouse state
-  XINPUT_STATE m_KeyboardState[4*2];     // one for each port
-  HANDLE m_hKeyboardDevice[4*2];    // handle to each device
-  DWORD m_dwKeyboardPort;      // mask of ports that currently hold a keyboard
+  XINPUT_STATE m_KeyboardState[4 * 2]; // one for each port
+  HANDLE m_hKeyboardDevice[4 * 2]; // handle to each device
+  DWORD m_dwKeyboardPort; // mask of ports that currently hold a keyboard
   XINPUT_DEBUG_KEYSTROKE m_CurrentKeyStroke;
 
   bool m_bShift;
@@ -61,4 +61,3 @@ private:
 };
 
 #endif
-

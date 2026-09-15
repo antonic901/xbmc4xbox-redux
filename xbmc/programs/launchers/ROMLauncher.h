@@ -18,33 +18,33 @@ struct SProgramSettings;
 
 namespace LAUNCHERS
 {
-  typedef struct
-  {
-    const char* name;
-    const char* shortname;
-    const char* extension;
-  } SystemMapping;
+typedef struct
+{
+  const char* name;
+  const char* shortname;
+  const char* extension;
+} SystemMapping;
 
-  class CROMLauncher : public IProgramLauncher
-  {
-  public:
-    CROMLauncher(std::string strExecutable);
-    virtual ~CROMLauncher(void);
+class CROMLauncher : public IProgramLauncher
+{
+public:
+  CROMLauncher(std::string strExecutable);
+  virtual ~CROMLauncher(void);
 
-    static bool FindEmulators(const std::string strRomFile, CFileItemList& emulators);
+  static bool FindEmulators(const std::string strRomFile, CFileItemList& emulators);
 
-  protected:
-    virtual bool LoadSettings();
+protected:
+  virtual bool LoadSettings();
 
-  private:
-    virtual bool Launch();
-    virtual bool IsSupported();
+private:
+  virtual bool Launch();
+  virtual bool IsSupported();
 
-    CFileItemPtr GetDefaultEmulator();
+  CFileItemPtr GetDefaultEmulator();
 
-    std::string m_strExecutable;
+  std::string m_strExecutable;
 
-    CProgramDatabase* m_database;
-    SProgramSettings* m_settings;
-  };
-}
+  CProgramDatabase* m_database;
+  SProgramSettings* m_settings;
+};
+} // namespace LAUNCHERS

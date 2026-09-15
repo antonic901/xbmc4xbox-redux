@@ -23,18 +23,17 @@
 
 namespace XFILE
 {
-  namespace VIDEODATABASEDIRECTORY
-  {
-    class CDirectoryNodeInProgressTvShows : public CDirectoryNode
-    {
-    public:
-      CDirectoryNodeInProgressTvShows(const std::string& strEntryName, CDirectoryNode* pParent);
-    protected:
-      virtual NODE_TYPE GetChildType() const;
-      virtual bool GetContent(CFileItemList& items) const;
-      virtual std::string GetLocalizedName() const;
-    };
-  }
-}
+namespace VIDEODATABASEDIRECTORY
+{
+class CDirectoryNodeInProgressTvShows : public CDirectoryNode
+{
+public:
+  CDirectoryNodeInProgressTvShows(const std::string& strEntryName, CDirectoryNode* pParent);
 
-
+protected:
+  virtual NODE_TYPE GetChildType() const;
+  virtual bool GetContent(CFileItemList& items) const;
+  virtual std::string GetLocalizedName() const;
+};
+} // namespace VIDEODATABASEDIRECTORY
+} // namespace XFILE

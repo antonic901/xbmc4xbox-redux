@@ -25,10 +25,9 @@
 #define M_PI 3.14159265358979323846f
 #endif
 
-RFFT::RFFT(int size, bool windowed) :
-  m_size(size), m_windowed(windowed)
+RFFT::RFFT(int size, bool windowed) : m_size(size), m_windowed(windowed)
 {
-  m_cfg = kiss_fftr_alloc(m_size,0,nullptr,nullptr);
+  m_cfg = kiss_fftr_alloc(m_size, 0, nullptr, nullptr);
 }
 
 RFFT::~RFFT()
@@ -46,10 +45,10 @@ void RFFT::calc(const float* input, float* output)
   std::vector<kiss_fft_scalar> linput(m_size), rinput(m_size);
   std::vector<kiss_fft_cpx> loutput(m_size), routput(m_size);
 
-  for (size_t i=0;i<m_size;++i)
+  for (size_t i = 0; i < m_size; ++i)
   {
-    linput[i] = input[2*i];
-    rinput[i] = input[2*i+1];
+    linput[i] = input[2 * i];
+    rinput[i] = input[2 * i + 1];
   }
 
   if (m_windowed)
@@ -65,10 +64,10 @@ void RFFT::calc(const float* input, float* output)
   FilterFunctor filter(m_size, m_windowed);
 
   // interleave while taking magnitudes and normalizing
-  for (size_t i=0;i<m_size/2;++i)
+  for (size_t i = 0; i < m_size / 2; ++i)
   {
-    output[2*i] = filter(loutput[i]);
-    output[2*i+1] = filter(routput[i]);
+    output[2 * i] = filter(loutput[i]);
+    output[2 * i + 1] = filter(routput[i]);
   }
 }
 
@@ -76,6 +75,6 @@ void RFFT::calc(const float* input, float* output)
 
 void RFFT::hann(std::vector<kiss_fft_scalar>& data)
 {
-  for (size_t i=0;i<data.size();++i)
-    data[i] *= 0.5*(1.0-cos(2*M_PI*i/(data.size()-1)));
+  for (size_t i = 0; i < data.size(); ++i)
+    data[i] *= 0.5 * (1.0 - cos(2 * M_PI * i / (data.size() - 1)));
 }

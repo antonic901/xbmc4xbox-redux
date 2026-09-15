@@ -21,9 +21,9 @@
 #include "MusicLibraryJob.h"
 #include "music/MusicDatabase.h"
 
-CMusicLibraryJob::CMusicLibraryJob() { };
+CMusicLibraryJob::CMusicLibraryJob() {};
 
-CMusicLibraryJob::~CMusicLibraryJob() { };
+CMusicLibraryJob::~CMusicLibraryJob() {};
 
 bool CMusicLibraryJob::DoWork()
 {

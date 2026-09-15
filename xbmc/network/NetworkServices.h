@@ -37,8 +37,8 @@ class CNetworkServices : public ISettingCallback
 public:
   static CNetworkServices& Get();
 
-  virtual bool OnSettingChanging(const CSetting *setting);
-  virtual void OnSettingChanged(const CSetting *setting);
+  virtual bool OnSettingChanging(const CSetting* setting);
+  virtual void OnSettingChanged(const CSetting* setting);
 
   void Start();
   void Stop(bool bWait);
@@ -91,7 +91,7 @@ private:
   bool ValidatePort(int port);
 
 #ifdef HAS_TIME_SERVER
- CSNTPClient* m_sntpclient;
+  CSNTPClient* m_sntpclient;
 #endif
 #ifdef HAS_WEB_SERVER
   CWebServer* m_webserver;

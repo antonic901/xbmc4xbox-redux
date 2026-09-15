@@ -32,7 +32,7 @@ static int Show(const std::vector<std::string>& params)
 {
   CGUIMessage msg(GUI_MSG_SHOW_PICTURE, 0, 0);
   msg.SetStringParam(params[0]);
-  CGUIWindow *pWindow = g_windowManager.GetWindow(WINDOW_SLIDESHOW);
+  CGUIWindow* pWindow = g_windowManager.GetWindow(WINDOW_SLIDESHOW);
   if (pWindow)
     pWindow->OnMessage(msg);
 
@@ -50,7 +50,7 @@ static int Show(const std::vector<std::string>& params)
  *
  *  Set the template parameter Recursive to true to run a recursive slideshow.
  */
-  template<bool Recursive>
+template<bool Recursive>
 static int Slideshow(const std::vector<std::string>& params)
 {
   std::string beginSlidePath;
@@ -64,7 +64,7 @@ static int Slideshow(const std::vector<std::string>& params)
   // and then quoted, or not. See CUtil::SplitParams()
   else
   {
-    for (unsigned int i = 1 ; i < params.size() ; i++)
+    for (unsigned int i = 1; i < params.size(); i++)
     {
       if (StringUtils::EqualsNoCase(params[i], "recursive"))
         flags |= 1;
@@ -84,7 +84,7 @@ static int Slideshow(const std::vector<std::string>& params)
   strParams.push_back(params[0]);
   strParams.push_back(beginSlidePath);
   msg.SetStringParams(strParams);
-  CGUIWindow *pWindow = g_windowManager.GetWindow(WINDOW_SLIDESHOW);
+  CGUIWindow* pWindow = g_windowManager.GetWindow(WINDOW_SLIDESHOW);
   if (pWindow)
     pWindow->OnMessage(msg);
 
@@ -139,15 +139,16 @@ CBuiltins::CommandMap CPictureBuiltins::GetOperations() const
 {
   CBuiltins::CommandMap commands;
 
-  CBuiltins::BUILT_IN builtin1 = {"Run a slideshow from the specified directory, including all subdirs", 1, Slideshow<true>};
+  CBuiltins::BUILT_IN builtin1 = {
+      "Run a slideshow from the specified directory, including all subdirs", 1, Slideshow<true>};
   commands.insert(std::make_pair("recursiveslideshow", builtin1));
 
   CBuiltins::BUILT_IN builtin2 = {"Display a picture by file path", 1, Show};
   commands.insert(std::make_pair("showpicture", builtin2));
 
-  CBuiltins::BUILT_IN builtin3 = {"Run a slideshow from the specified directory", 1, Slideshow<false>};
+  CBuiltins::BUILT_IN builtin3 = {"Run a slideshow from the specified directory", 1,
+                                  Slideshow<false>};
   commands.insert(std::make_pair("slideshow", builtin3));
 
   return commands;
 }
-

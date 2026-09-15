@@ -27,18 +27,21 @@
 namespace ADDON
 {
 
-boost::movelib::unique_ptr<CService> CService::FromExtension(AddonProps props, const cp_extension_t* ext)
+boost::movelib::unique_ptr<CService> CService::FromExtension(AddonProps props,
+                                                             const cp_extension_t* ext)
 {
   START_OPTION startOption(LOGIN);
   std::string start = CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "@start");
   if (start == "startup")
     startOption = STARTUP;
-  return boost::movelib::unique_ptr<CService>(new CService(boost::move(props), TYPE(UNKNOWN), startOption));
+  return boost::movelib::unique_ptr<CService>(
+      new CService(boost::move(props), TYPE(UNKNOWN), startOption));
 }
 
-
 CService::CService(AddonProps props, TYPE type, START_OPTION startOption)
-  : CAddon(boost::move(props)), m_type(type), m_startOption(startOption)
+  : CAddon(boost::move(props)),
+    m_type(type),
+    m_startOption(startOption)
 {
   BuildServiceType();
 }
@@ -49,15 +52,16 @@ bool CService::Start()
   switch (m_type)
   {
 #ifdef HAS_PYTHON
-  case PYTHON:
-    ret = (CScriptInvocationManager::GetInstance().ExecuteAsync(LibPath(), this->shared_from_this()) != -1);
-    break;
+    case PYTHON:
+      ret = (CScriptInvocationManager::GetInstance().ExecuteAsync(LibPath(),
+                                                                  this->shared_from_this()) != -1);
+      break;
 #endif
 
-  case UNKNOWN:
-  default:
-    ret = false;
-    break;
+    case UNKNOWN:
+    default:
+      ret = false;
+      break;
   }
 
   return ret;
@@ -70,15 +74,15 @@ bool CService::Stop()
   switch (m_type)
   {
 #ifdef HAS_PYTHON
-  case PYTHON:
-    ret = CScriptInvocationManager::GetInstance().Stop(LibPath());
-    break;
+    case PYTHON:
+      ret = CScriptInvocationManager::GetInstance().Stop(LibPath());
+      break;
 #endif
 
-  case UNKNOWN:
-  default:
-    ret = false;
-    break;
+    case UNKNOWN:
+    default:
+      ret = false;
+      break;
   }
 
   return ret;
@@ -96,14 +100,15 @@ void CService::BuildServiceType()
 #ifdef HAS_PYTHON
   std::string pythonExt = ADDON_PYTHON_EXT;
   pythonExt.erase(0, 2);
-  if ( ext == pythonExt )
+  if (ext == pythonExt)
     m_type = PYTHON;
   else
 #endif
   {
     m_type = UNKNOWN;
-    CLog::Log(LOGERROR, "ADDON: extension '%s' is not currently supported for service addon", ext.c_str());
+    CLog::Log(LOGERROR, "ADDON: extension '%s' is not currently supported for service addon",
+              ext.c_str());
   }
 }
 
-}
+} // namespace ADDON

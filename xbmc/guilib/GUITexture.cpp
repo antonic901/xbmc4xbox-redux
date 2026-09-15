@@ -31,14 +31,13 @@ CTextureInfo::CTextureInfo()
   useLarge = false;
 }
 
-CTextureInfo::CTextureInfo(const std::string &file):
-  filename(file)
+CTextureInfo::CTextureInfo(const std::string& file) : filename(file)
 {
   orientation = 0;
   useLarge = false;
 }
 
-CTextureInfo& CTextureInfo::operator=(const CTextureInfo &right)
+CTextureInfo& CTextureInfo::operator=(const CTextureInfo& right)
 {
   border = right.border;
   orientation = right.orientation;
@@ -49,8 +48,10 @@ CTextureInfo& CTextureInfo::operator=(const CTextureInfo &right)
   return *this;
 }
 
-CGUITextureBase::CGUITextureBase(float posX, float posY, float width, float height, const CTextureInfo& texture) :
-  m_height(height), m_info(texture)
+CGUITextureBase::CGUITextureBase(
+    float posX, float posY, float width, float height, const CTextureInfo& texture)
+  : m_height(height),
+    m_info(texture)
 {
   m_posX = posX;
   m_posY = posY;
@@ -82,11 +83,11 @@ CGUITextureBase::CGUITextureBase(float posX, float posY, float width, float heig
   m_use_cache = true;
 }
 
-CGUITextureBase::CGUITextureBase(const CGUITextureBase &right) :
-  m_height(right.m_height),
-  m_alpha(right.m_alpha),
-  m_info(right.m_info),
-  m_aspect(right.m_aspect)
+CGUITextureBase::CGUITextureBase(const CGUITextureBase& right)
+  : m_height(right.m_height),
+    m_alpha(right.m_alpha),
+    m_info(right.m_info),
+    m_aspect(right.m_aspect)
 {
   m_posX = right.m_posX;
   m_posY = right.m_posY;
@@ -166,13 +167,13 @@ void CGUITextureBase::Render()
       return;
   }
 
-  // set our draw color
-  #define MIX_ALPHA(a,c) (((a * (c >> 24)) / 255) << 24) | (c & 0x00ffffff)
+// set our draw color
+#define MIX_ALPHA(a, c) (((a * (c >> 24)) / 255) << 24) | (c & 0x00ffffff)
 
   // diffuse color
   color_t color = (m_info.diffuseColor) ? (color_t)m_info.diffuseColor : m_diffuseColor;
   if (m_alpha != 0xFF)
-	  color = MIX_ALPHA(m_alpha, color);
+    color = MIX_ALPHA(m_alpha, color);
 
   color = g_graphicsContext.MergeAlpha(color);
 
@@ -206,25 +207,34 @@ void CGUITextureBase::Render()
   if (m_info.border.x1)
   {
     if (m_info.border.y1)
-      Render(m_vertex.x1, m_vertex.y1, m_vertex.x1 + m_info.border.x1, m_vertex.y1 + m_info.border.y1, 0, 0, u1, v1, u3, v3);
-    Render(m_vertex.x1, m_vertex.y1 + m_info.border.y1, m_vertex.x1 + m_info.border.x1, m_vertex.y2 - m_info.border.y2, 0, v1, u1, v2, u3, v3);
+      Render(m_vertex.x1, m_vertex.y1, m_vertex.x1 + m_info.border.x1,
+             m_vertex.y1 + m_info.border.y1, 0, 0, u1, v1, u3, v3);
+    Render(m_vertex.x1, m_vertex.y1 + m_info.border.y1, m_vertex.x1 + m_info.border.x1,
+           m_vertex.y2 - m_info.border.y2, 0, v1, u1, v2, u3, v3);
     if (m_info.border.y2)
-      Render(m_vertex.x1, m_vertex.y2 - m_info.border.y2, m_vertex.x1 + m_info.border.x1, m_vertex.y2, 0, v2, u1, v3, u3, v3);
+      Render(m_vertex.x1, m_vertex.y2 - m_info.border.y2, m_vertex.x1 + m_info.border.x1,
+             m_vertex.y2, 0, v2, u1, v3, u3, v3);
   }
   // middle segment (u1,0,u2,v3)
   if (m_info.border.y1)
-    Render(m_vertex.x1 + m_info.border.x1, m_vertex.y1, m_vertex.x2 - m_info.border.x2, m_vertex.y1 + m_info.border.y1, u1, 0, u2, v1, u3, v3);
-  Render(m_vertex.x1 + m_info.border.x1, m_vertex.y1 + m_info.border.y1, m_vertex.x2 - m_info.border.x2, m_vertex.y2 - m_info.border.y2, u1, v1, u2, v2, u3, v3);
+    Render(m_vertex.x1 + m_info.border.x1, m_vertex.y1, m_vertex.x2 - m_info.border.x2,
+           m_vertex.y1 + m_info.border.y1, u1, 0, u2, v1, u3, v3);
+  Render(m_vertex.x1 + m_info.border.x1, m_vertex.y1 + m_info.border.y1,
+         m_vertex.x2 - m_info.border.x2, m_vertex.y2 - m_info.border.y2, u1, v1, u2, v2, u3, v3);
   if (m_info.border.y2)
-    Render(m_vertex.x1 + m_info.border.x1, m_vertex.y2 - m_info.border.y2, m_vertex.x2 - m_info.border.x2, m_vertex.y2, u1, v2, u2, v3, u3, v3);
+    Render(m_vertex.x1 + m_info.border.x1, m_vertex.y2 - m_info.border.y2,
+           m_vertex.x2 - m_info.border.x2, m_vertex.y2, u1, v2, u2, v3, u3, v3);
   // right segment
   if (m_info.border.x2)
   { // have a left border
     if (m_info.border.y1)
-      Render(m_vertex.x2 - m_info.border.x2, m_vertex.y1, m_vertex.x2, m_vertex.y1 + m_info.border.y1, u2, 0, u3, v1, u3, v3);
-    Render(m_vertex.x2 - m_info.border.x2, m_vertex.y1 + m_info.border.y1, m_vertex.x2, m_vertex.y2 - m_info.border.y2, u2, v1, u3, v2, u3, v3);
+      Render(m_vertex.x2 - m_info.border.x2, m_vertex.y1, m_vertex.x2,
+             m_vertex.y1 + m_info.border.y1, u2, 0, u3, v1, u3, v3);
+    Render(m_vertex.x2 - m_info.border.x2, m_vertex.y1 + m_info.border.y1, m_vertex.x2,
+           m_vertex.y2 - m_info.border.y2, u2, v1, u3, v2, u3, v3);
     if (m_info.border.y2)
-      Render(m_vertex.x2 - m_info.border.x2, m_vertex.y2 - m_info.border.y2, m_vertex.x2, m_vertex.y2, u2, v2, u3, v3, u3, v3);
+      Render(m_vertex.x2 - m_info.border.x2, m_vertex.y2 - m_info.border.y2, m_vertex.x2,
+             m_vertex.y2, u2, v2, u3, v3, u3, v3);
   }
 
   // close off our renderer
@@ -234,7 +244,16 @@ void CGUITextureBase::Render()
     g_graphicsContext.RestoreClipRegion();
 }
 
-void CGUITextureBase::Render(float left, float top, float right, float bottom, float u1, float v1, float u2, float v2, float u3, float v3)
+void CGUITextureBase::Render(float left,
+                             float top,
+                             float right,
+                             float bottom,
+                             float u1,
+                             float v1,
+                             float u2,
+                             float v2,
+                             float u3,
+                             float v3)
 {
   CRect diffuse(u1, v1, u2, v2);
   CRect texture(u1, v1, u2, v2);
@@ -251,8 +270,10 @@ void CGUITextureBase::Render(float left, float top, float right, float bottom, f
   {
     // flip the texture as necessary.  Diffuse just gets flipped according to m_info.orientation.
     // Main texture gets flipped according to GetOrientation().
-    diffuse.x1 *= m_diffuseScaleU / u3; diffuse.x2 *= m_diffuseScaleU / u3;
-    diffuse.y1 *= m_diffuseScaleV / v3; diffuse.y2 *= m_diffuseScaleV / v3;
+    diffuse.x1 *= m_diffuseScaleU / u3;
+    diffuse.x2 *= m_diffuseScaleU / u3;
+    diffuse.y1 *= m_diffuseScaleV / v3;
+    diffuse.y2 *= m_diffuseScaleV / v3;
     diffuse += m_diffuseOffset;
     OrientateTexture(diffuse, m_diffuseU, m_diffuseV, m_info.orientation);
   }
@@ -274,8 +295,14 @@ void CGUITextureBase::Render(float left, float top, float right, float bottom, f
   y[3] = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalYCoord(vertex.x1, vertex.y2));
   z[3] = ROUND_TO_PIXEL(g_graphicsContext.ScaleFinalZCoord(vertex.x1, vertex.y2));
 
-  if (y[2] == y[0]) y[2] += 1.0f; if (x[2] == x[0]) x[2] += 1.0f;
-  if (y[3] == y[1]) y[3] += 1.0f; if (x[3] == x[1]) x[3] += 1.0f;
+  if (y[2] == y[0])
+    y[2] += 1.0f;
+  if (x[2] == x[0])
+    x[2] += 1.0f;
+  if (y[3] == y[1])
+    y[3] += 1.0f;
+  if (x[3] == x[1])
+    x[3] += 1.0f;
 
   Draw(x, y, z, texture, diffuse, orientation);
 }
@@ -441,7 +468,7 @@ bool CGUITextureBase::CalculateSize()
     {
       m_diffuseScaleU = m_diffuseU;
       m_diffuseScaleV = m_diffuseV;
-      m_diffuseOffset = CPoint(0,0);
+      m_diffuseOffset = CPoint(0, 0);
     }
     else // stretch'ing diffuse
     { // scale diffuse up or down to match output rect size, rather than image size
@@ -451,7 +478,8 @@ bool CGUITextureBase::CalculateSize()
       // -> u = (m_posX - m_fX) * m_fU * m_diffuseScaleU / m_fNW
       m_diffuseScaleU = m_diffuseU * m_vertex.Width() / m_width;
       m_diffuseScaleV = m_diffuseV * m_vertex.Height() / m_height;
-      m_diffuseOffset = CPoint((m_vertex.x1 - m_posX) / m_vertex.Width() * m_diffuseScaleU, (m_vertex.y1 - m_posY) / m_vertex.Height() * m_diffuseScaleV);
+      m_diffuseOffset = CPoint((m_vertex.x1 - m_posX) / m_vertex.Width() * m_diffuseScaleU,
+                               (m_vertex.y1 - m_posY) / m_vertex.Height() * m_diffuseScaleV);
     }
   }
 
@@ -462,7 +490,8 @@ bool CGUITextureBase::CalculateSize()
 void CGUITextureBase::FreeResources(bool immediately /* = false */)
 {
   if (m_isAllocated == LARGE || m_isAllocated == LARGE_FAILED)
-    g_largeTextureManager.ReleaseImage(m_info.filename, immediately || (m_isAllocated == LARGE_FAILED));
+    g_largeTextureManager.ReleaseImage(m_info.filename,
+                                       immediately || (m_isAllocated == LARGE_FAILED));
   else if (m_isAllocated == NORMAL && m_texture.size())
     g_TextureManager.ReleaseTexture(m_info.filename, immediately);
 
@@ -565,40 +594,40 @@ bool CGUITextureBase::ReadyToRender() const
   return m_texture.size() > 0;
 }
 
-void CGUITextureBase::OrientateTexture(CRect &rect, float width, float height, int orientation)
+void CGUITextureBase::OrientateTexture(CRect& rect, float width, float height, int orientation)
 {
   switch (orientation & 3)
   {
-  case 0:
-    // default
-    break;
-  case 1:
-    // flip in X direction
-    rect.x1 = width - rect.x1;
-    rect.x2 = width - rect.x2;
-    break;
-  case 2:
-    // rotate 180 degrees
-    rect.x1 = width - rect.x1;
-    rect.x2 = width - rect.x2;
-    rect.y1 = height - rect.y1;
-    rect.y2 = height - rect.y2;
-    break;
-  case 3:
-    // flip in Y direction
-    rect.y1 = height - rect.y1;
-    rect.y2 = height - rect.y2;
-    break;
+    case 0:
+      // default
+      break;
+    case 1:
+      // flip in X direction
+      rect.x1 = width - rect.x1;
+      rect.x2 = width - rect.x2;
+      break;
+    case 2:
+      // rotate 180 degrees
+      rect.x1 = width - rect.x1;
+      rect.x2 = width - rect.x2;
+      rect.y1 = height - rect.y1;
+      rect.y2 = height - rect.y2;
+      break;
+    case 3:
+      // flip in Y direction
+      rect.y1 = height - rect.y1;
+      rect.y2 = height - rect.y2;
+      break;
   }
   if (orientation & 4)
   {
     // we need to swap x and y coordinates but only within the width,height block
     float temp = rect.x1;
-    rect.x1 = rect.y1 * width/height;
-    rect.y1 = temp * height/width;
+    rect.x1 = rect.y1 * width / height;
+    rect.y1 = temp * height / width;
     temp = rect.x2;
-    rect.x2 = rect.y2 * width/height;
-    rect.y2 = temp * height/width;
+    rect.x2 = rect.y2 * width / height;
+    rect.y2 = temp * height / width;
   }
 }
 
@@ -650,7 +679,7 @@ bool CGUITextureBase::SetPosition(float posX, float posY)
     return false;
 }
 
-bool CGUITextureBase::SetAspectRatio(const CAspectRatio &aspect)
+bool CGUITextureBase::SetAspectRatio(const CAspectRatio& aspect)
 {
   if (m_aspect != aspect)
   {
@@ -664,7 +693,8 @@ bool CGUITextureBase::SetAspectRatio(const CAspectRatio &aspect)
 
 bool CGUITextureBase::SetFileName(const std::string& filename)
 {
-  if (m_info.filename == filename) return false;
+  if (m_info.filename == filename)
+    return false;
   // Don't completely free resources here - we may be just changing
   // filenames mid-animation
   FreeResources();
@@ -689,13 +719,8 @@ void CGUITextureBase::SetUseCache(const bool useCache)
 int CGUITextureBase::GetOrientation() const
 {
   // multiply our orientations
-  static char orient_table[] = { 0, 1, 2, 3, 4, 5, 6, 7,
-                                 1, 0, 3, 2, 5, 4, 7, 6,
-                                 2, 3, 0, 1, 6, 7, 4, 5,
-                                 3, 2, 1, 0, 7, 6, 5, 4,
-                                 4, 7, 6, 5, 0, 3, 2, 1,
-                                 5, 6, 7, 4, 1, 2, 3, 0,
-                                 6, 5, 4, 7, 2, 1, 0, 3,
-                                 7, 4, 5, 6, 3, 0, 1, 2 };
+  static char orient_table[] = {0, 1, 2, 3, 4, 5, 6, 7, 1, 0, 3, 2, 5, 4, 7, 6, 2, 3, 0, 1, 6, 7,
+                                4, 5, 3, 2, 1, 0, 7, 6, 5, 4, 4, 7, 6, 5, 0, 3, 2, 1, 5, 6, 7, 4,
+                                1, 2, 3, 0, 6, 5, 4, 7, 2, 1, 0, 3, 7, 4, 5, 6, 3, 0, 1, 2};
   return (int)orient_table[8 * m_info.orientation + m_texture.m_orientation];
 }

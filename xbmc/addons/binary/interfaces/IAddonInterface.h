@@ -29,28 +29,32 @@
 #endif
 #define A_DLLEXPORT extern "C" __declspec(dllexport)
 #else
-#define A_DLLEXPORT extern "C" __attribute__ ((visibility ("default")))
+#define A_DLLEXPORT extern "C" __attribute__((visibility("default")))
 #endif
 
 namespace ADDON
 {
-  class CAddon;
+class CAddon;
 
-  class IAddonInterface
+class IAddonInterface
+{
+public:
+  IAddonInterface(CAddon* addon, int apiLevel, const std::string& version)
+    : m_addon(addon),
+      m_apiLevel(apiLevel),
+      m_version(version)
   {
-  public:
-    IAddonInterface(CAddon *addon, int apiLevel, const std::string& version) :
-      m_addon(addon), m_apiLevel(apiLevel), m_version(version)  {}
+  }
 
-    CAddon*            GetAddon()       { return m_addon;    }
-    const CAddon*      GetAddon() const { return m_addon;    }
-    const int          APILevel() const { return m_apiLevel; }
-    const std::string& Version()  const { return m_version;  }
+  CAddon* GetAddon() { return m_addon; }
+  const CAddon* GetAddon() const { return m_addon; }
+  const int APILevel() const { return m_apiLevel; }
+  const std::string& Version() const { return m_version; }
 
-  protected:
-    CAddon*           m_addon;     /*!< the addon */
-    const int         m_apiLevel;
-    const std::string m_version;
-  };
+protected:
+  CAddon* m_addon; /*!< the addon */
+  const int m_apiLevel;
+  const std::string m_version;
+};
 
 } /* namespace ADDON */

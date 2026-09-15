@@ -33,7 +33,7 @@ public:
   CGUIDialogAddonInfo(void);
   virtual ~CGUIDialogAddonInfo(void);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
 
   virtual CFileItemPtr GetCurrentListItem(int offset = 0) { return m_item; }
   virtual bool HasListItems() const { return true; }
@@ -47,7 +47,7 @@ private:
    \param item to display
    \return true if we can display information, false otherwise
    */
-  bool SetItem(const CFileItemPtr &item);
+  bool SetItem(const CFileItemPtr& item);
   void UpdateControls();
 
   void OnUpdate();
@@ -81,4 +81,3 @@ private:
   ADDON::AddonPtr m_localAddon;
   bool m_addonEnabled;
 };
-

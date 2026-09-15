@@ -32,7 +32,7 @@ using namespace AUTOPTR;
 using namespace XFILE;
 using namespace MUSIC_INFO;
 
-CStdString fixString(CStdString &ansiString)
+CStdString fixString(CStdString& ansiString)
 // ucs2CharsetToStringCharset is always called even when not required resulting in some strings
 // twice the length they should be. This function is a quick fix to the problem. The correct
 // solution would be to call ucs2CharsetToStringCharset only when necessary.
@@ -45,11 +45,10 @@ CStdString fixString(CStdString &ansiString)
         *(ansiString.Mid(halfLen + 1, 1).c_str()) == 0)
       out = ansiString.Left(halfLen);
   if (out == "")
-    return ansiString ;
+    return ansiString;
   else
-    return out ;
+    return out;
 }
-
 
 // WMA metadata attribut types
 // http://msdn.microsoft.com/library/en-us/wmform/htm/attributelist.asp
@@ -72,34 +71,38 @@ typedef struct _WMPicture
   CStdStringW pwszDescription;
   DWORD dwDataLen;
   BYTE* pbData;
-}
-WM_PICTURE;
+} WM_PICTURE;
 
 CMusicInfoTagLoaderWMA::CMusicInfoTagLoaderWMA(void)
-{}
+{
+}
 
 CMusicInfoTagLoaderWMA::~CMusicInfoTagLoaderWMA()
-{}
+{
+}
 
 // Based on MediaInfo
 // by J�r�me Martinez, Zen@MediaArea.net
 // http://sourceforge.net/projects/mediainfo/
-bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName,
+                                  CMusicInfoTag& tag,
+                                  EmbeddedArt* art)
 {
   try
   {
     tag.SetLoaded(false);
     CFile file;
-    if (!file.Open(strFileName)) return false;
+    if (!file.Open(strFileName))
+      return false;
 
     tag.SetURL(strFileName);
 
     // Note that we're reading in a bit more than the buffer size, because the 'peek'ing
     // below is dealing with integers and reads off the end. Rather than change
     // all the checks below, I've simply allocated a bigger buffer.
-    const unsigned int bufferSize = 256*1024;
-    auto_aptr<unsigned char> pData(new unsigned char[bufferSize+32]);
-    file.Read(pData.get(), bufferSize+32);
+    const unsigned int bufferSize = 256 * 1024;
+    auto_aptr<unsigned char> pData(new unsigned char[bufferSize + 32]);
+    file.Read(pData.get(), bufferSize + 32);
     file.Close();
 
     unsigned int iOffset;
@@ -108,7 +111,9 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
     //Play time
     iOffset = 0;
     pDataI = (unsigned int*)pData.get();
-    while (!(pDataI[0] == 0x75B22630 && pDataI[1] == 0x11CF668E && pDataI[2] == 0xAA00D9A6 && pDataI[3] == 0x6CCE6200) && iOffset <= bufferSize - 4)
+    while (!(pDataI[0] == 0x75B22630 && pDataI[1] == 0x11CF668E && pDataI[2] == 0xAA00D9A6 &&
+             pDataI[3] == 0x6CCE6200) &&
+           iOffset <= bufferSize - 4)
     {
       iOffset++;
       pDataI = (unsigned int*)(pData.get() + iOffset);
@@ -119,7 +124,9 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
     //Play time
     iOffset = 0;
     pDataI = (unsigned int*)pData.get();
-    while (!(pDataI[0] == 0x8CABDCA1 && pDataI[1] == 0x11CFA947 && pDataI[2] == 0xC000E48E && pDataI[3] == 0x6553200C) && iOffset <= bufferSize - 4)
+    while (!(pDataI[0] == 0x8CABDCA1 && pDataI[1] == 0x11CFA947 && pDataI[2] == 0xC000E48E &&
+             pDataI[3] == 0x6553200C) &&
+           iOffset <= bufferSize - 4)
     {
       iOffset++;
       pDataI = (unsigned int*)(pData.get() + iOffset);
@@ -136,7 +143,9 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
     //Description  Title
     iOffset = 0;
     pDataI = (unsigned int*)pData.get();
-    while (!(pDataI[0] == 0x75B22633 && pDataI[1] == 0x11CF668E && pDataI[2] == 0xAA00D9A6 && pDataI[3] == 0x6CCE6200) && iOffset <= bufferSize - 4)
+    while (!(pDataI[0] == 0x75B22633 && pDataI[1] == 0x11CF668E && pDataI[2] == 0xAA00D9A6 &&
+             pDataI[3] == 0x6CCE6200) &&
+           iOffset <= bufferSize - 4)
     {
       iOffset++;
       pDataI = (unsigned int*)(pData.get() + iOffset);
@@ -155,7 +164,7 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
       if (nTitleSize)
       {
         // TODO: UTF-8 Do we need to "fixString" these strings at all?
-        g_charsetConverter.wToUTF8((LPWSTR)(pData.get()+iOffset), utf8String);
+        g_charsetConverter.wToUTF8((LPWSTR)(pData.get() + iOffset), utf8String);
         tag.SetTitle(utf8String);
       }
 
@@ -217,11 +226,12 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
     //Video[0](ZT("Codec"))=wxString((char*)C1,wxConvUTF8).c_str();
     //}
 
-
     //Read extended metadata
     iOffset = 0;
     pDataI = (unsigned int*)pData.get();
-    while (!(pDataI[0] == 0xD2D0A440 && pDataI[1] == 0x11D2E307 && pDataI[2] == 0xA000F097 && pDataI[3] == 0x50A85EC9) && iOffset <= bufferSize - 4)
+    while (!(pDataI[0] == 0xD2D0A440 && pDataI[1] == 0x11D2E307 && pDataI[2] == 0xA000F097 &&
+             pDataI[3] == 0x50A85EC9) &&
+           iOffset <= bufferSize - 4)
     {
       iOffset++;
       pDataI = (unsigned int*)(pData.get() + iOffset);
@@ -254,7 +264,8 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
         // Sanity check for buffer size
         if (iValueSize + iOffset > bufferSize)
         {
-          CLog::Log(LOGWARNING, "%s(%s) failed due to tag being larger than %ul", __FUNCTION__, strFileName.c_str(), bufferSize);
+          CLog::Log(LOGWARNING, "%s(%s) failed due to tag being larger than %ul", __FUNCTION__,
+                    strFileName.c_str(), bufferSize);
           break;
         }
 
@@ -280,7 +291,8 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
         }
         else if (iFrameType == WMT_TYPE_DWORD && iValueSize > 0)
         {
-          DWORD dwValue = pData[iOffset] + pData[iOffset + 1] * 0x100 + pData[iOffset + 2] * 0x10000 + pData[iOffset + 3] * 0x1000000;
+          DWORD dwValue = pData[iOffset] + pData[iOffset + 1] * 0x100 +
+                          pData[iOffset + 2] * 0x10000 + pData[iOffset + 3] * 0x1000000;
           SetTagValueDWORD(strFrameName, dwValue, tag);
         }
         else if (iFrameType == WMT_TYPE_QWORD && iValueSize > 0)
@@ -300,7 +312,9 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
     //Read extended metadata 2
     iOffset = 0;
     pDataI = (unsigned int*)pData.get();
-    while (!(pDataI[0] == 0x44231C94 && pDataI[1] == 0x49D19498 && pDataI[2] == 0x131D41A1 && pDataI[3] == 0x5470454E) && iOffset <= bufferSize - 4)
+    while (!(pDataI[0] == 0x44231C94 && pDataI[1] == 0x49D19498 && pDataI[2] == 0x131D41A1 &&
+             pDataI[3] == 0x5470454E) &&
+           iOffset <= bufferSize - 4)
     {
       iOffset++;
       pDataI = (unsigned int*)(pData.get() + iOffset);
@@ -323,7 +337,8 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
         iOffset += 2;
 
         // Size of frame value
-        unsigned int iValueSize = pData[iOffset] + (pData[iOffset + 1] * 0x100) + (pData[iOffset + 2] * 0x10000);
+        unsigned int iValueSize =
+            pData[iOffset] + (pData[iOffset + 1] * 0x100) + (pData[iOffset + 2] * 0x10000);
         iOffset += 4;
 
         // Get frame name
@@ -333,7 +348,8 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
         // Sanity check for buffer size
         if (iValueSize + iOffset > bufferSize)
         {
-          CLog::Log(LOGWARNING, "%s(%s) failed due to tag being larger than %ul", __FUNCTION__, strFileName.c_str(), bufferSize);
+          CLog::Log(LOGWARNING, "%s(%s) failed due to tag being larger than %ul", __FUNCTION__,
+                    strFileName.c_str(), bufferSize);
           break;
         }
 
@@ -359,7 +375,8 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
         }
         else if (iFrameType == WMT_TYPE_DWORD && iValueSize > 0)
         {
-          DWORD dwValue = pData[iOffset] + pData[iOffset + 1] * 0x100 + pData[iOffset + 2] * 0x10000 + pData[iOffset + 3] * 0x1000000;
+          DWORD dwValue = pData[iOffset] + pData[iOffset + 1] * 0x100 +
+                          pData[iOffset + 2] * 0x10000 + pData[iOffset + 3] * 0x1000000;
           SetTagValueDWORD(strFrameName, dwValue, tag);
         }
         else if (iFrameType == WMT_TYPE_QWORD && iValueSize > 0)
@@ -388,7 +405,9 @@ bool CMusicInfoTagLoaderWMA::Load(const CStdString& strFileName, CMusicInfoTag& 
   return false;
 }
 
-void CMusicInfoTagLoaderWMA::SetTagValueString(const CStdString& strFrameName, const CStdString& strValue, CMusicInfoTag& tag)
+void CMusicInfoTagLoaderWMA::SetTagValueString(const CStdString& strFrameName,
+                                               const CStdString& strValue,
+                                               CMusicInfoTag& tag)
 {
   if (strFrameName == "WM/AlbumTitle")
   {
@@ -396,7 +415,8 @@ void CMusicInfoTagLoaderWMA::SetTagValueString(const CStdString& strFrameName, c
   }
   else if (strFrameName == "WM/AlbumArtist")
   {
-    if (tag.GetAlbumArtist().empty()) tag.SetAlbumArtist(strValue);
+    if (tag.GetAlbumArtist().empty())
+      tag.SetAlbumArtist(strValue);
   }
   else if (strFrameName == "Author")
   {
@@ -406,7 +426,8 @@ void CMusicInfoTagLoaderWMA::SetTagValueString(const CStdString& strFrameName, c
   }
   else if (strFrameName == "WM/TrackNumber")
   {
-    if (tag.GetTrackNumber() <= 0) tag.SetTrackNumber(atoi(strValue.c_str()));
+    if (tag.GetTrackNumber() <= 0)
+      tag.SetTrackNumber(atoi(strValue.c_str()));
   }
   else if (strFrameName == "WM/PartOfSet")
   {
@@ -427,7 +448,8 @@ void CMusicInfoTagLoaderWMA::SetTagValueString(const CStdString& strFrameName, c
       tag.SetGenre(strValue);
     else
     {
-      std::vector<std::string> genres = StringUtils::Split(strValue, g_advancedSettings.m_musicItemSeparator);
+      std::vector<std::string> genres =
+          StringUtils::Split(strValue, g_advancedSettings.m_musicItemSeparator);
       for (unsigned int index = 0; index < genres.size(); index++)
         tag.AppendGenre(genres.at(index));
     }
@@ -463,7 +485,9 @@ void CMusicInfoTagLoaderWMA::SetTagValueString(const CStdString& strFrameName, c
   //}
 }
 
-void CMusicInfoTagLoaderWMA::SetTagValueDWORD(const CStdString& strFrameName, DWORD dwValue, CMusicInfoTag& tag)
+void CMusicInfoTagLoaderWMA::SetTagValueDWORD(const CStdString& strFrameName,
+                                              DWORD dwValue,
+                                              CMusicInfoTag& tag)
 {
   if (strFrameName == "WM/TrackNumber")
   {
@@ -472,7 +496,10 @@ void CMusicInfoTagLoaderWMA::SetTagValueDWORD(const CStdString& strFrameName, DW
   }
 }
 
-void CMusicInfoTagLoaderWMA::SetTagValueBinary(const CStdString& strFrameName, const LPBYTE pValue, CMusicInfoTag& tag, EmbeddedArt *art)
+void CMusicInfoTagLoaderWMA::SetTagValueBinary(const CStdString& strFrameName,
+                                               const LPBYTE pValue,
+                                               CMusicInfoTag& tag,
+                                               EmbeddedArt* art)
 {
   if (strFrameName == "WM/Picture")
   {
@@ -483,22 +510,23 @@ void CMusicInfoTagLoaderWMA::SetTagValueBinary(const CStdString& strFrameName, c
     picture.bPictureType = (BYTE)pValue[iPicOffset];
     iPicOffset += 1;
 
-    picture.dwDataLen = (DWORD)pValue[iPicOffset] + (pValue[iPicOffset + 1] * 0x100) + (pValue[iPicOffset + 2] * 0x10000);
+    picture.dwDataLen = (DWORD)pValue[iPicOffset] + (pValue[iPicOffset + 1] * 0x100) +
+                        (pValue[iPicOffset + 2] * 0x10000);
     iPicOffset += 4;
 
     CStdStringW wString;
-    CStdString16 utf16String = (uint16_t*)(pValue+iPicOffset);
+    CStdString16 utf16String = (uint16_t*)(pValue + iPicOffset);
     g_charsetConverter.utf16LEtoW(utf16String, wString);
     g_charsetConverter.wToUTF8(wString, picture.pwszMIMEType);
     iPicOffset += (wString.length() * 2);
     iPicOffset += 2;
 
-    utf16String = (uint16_t*)(pValue+iPicOffset);
+    utf16String = (uint16_t*)(pValue + iPicOffset);
     g_charsetConverter.utf16LEtoW(utf16String, picture.pwszDescription);
     iPicOffset += (picture.pwszDescription.length() * 2);
     iPicOffset += 2;
 
-    picture.pbData = (BYTE *)(pValue + iPicOffset);
+    picture.pbData = (BYTE*)(pValue + iPicOffset);
 
     // many wma's don't have the bPictureType specified.  For now, just take
     // Cover Front (3) or Other (0) as the cover.
@@ -514,7 +542,9 @@ void CMusicInfoTagLoaderWMA::SetTagValueBinary(const CStdString& strFrameName, c
   }
 }
 
-void CMusicInfoTagLoaderWMA::SetTagValueBool(const CStdString& strFrameName, BOOL bValue, CMusicInfoTag& tag)
+void CMusicInfoTagLoaderWMA::SetTagValueBool(const CStdString& strFrameName,
+                                             BOOL bValue,
+                                             CMusicInfoTag& tag)
 {
   //else if (strFrameName=="isVBR")
   //{

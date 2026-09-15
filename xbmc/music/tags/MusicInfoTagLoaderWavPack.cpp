@@ -24,10 +24,12 @@
 using namespace MUSIC_INFO;
 
 CMusicInfoTagLoaderWAVPack::CMusicInfoTagLoaderWAVPack(void)
-{}
+{
+}
 
 CMusicInfoTagLoaderWAVPack::~CMusicInfoTagLoaderWAVPack()
-{}
+{
+}
 
 int CMusicInfoTagLoaderWAVPack::ReadDuration(const CStdString& strFileName)
 {

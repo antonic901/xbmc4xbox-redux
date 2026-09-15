@@ -29,22 +29,25 @@
 #include "SortFileItem.h"
 #include "LabelFormatter.h"
 
-typedef enum {
+typedef enum
+{
   SortOrderNone = 0,
   SortOrderAscending,
   SortOrderDescending
 } SortOrder;
 
-typedef enum {
-  SortAttributeNone           = 0x0,
-  SortAttributeIgnoreArticle  = 0x1,
-  SortAttributeIgnoreFolders  = 0x2,
+typedef enum
+{
+  SortAttributeNone = 0x0,
+  SortAttributeIgnoreArticle = 0x1,
+  SortAttributeIgnoreFolders = 0x2,
   SortAttributeUseArtistSortName = 0x4
 } SortAttribute;
 
-typedef enum {
-  SortSpecialNone     = 0,
-  SortSpecialOnTop    = 1,
+typedef enum
+{
+  SortSpecialNone = 0,
+  SortSpecialOnTop = 1,
   SortSpecialOnBottom = 2
 } SortSpecial;
 
@@ -57,7 +60,8 @@ typedef enum {
 /// GUI to set this sort type.
 ///
 ///@{
-typedef enum {
+typedef enum
+{
   /// __0__  :
   SortByNone = 0,
   /// __1__  : Sort by Name                       <em>(String: <b><c>Label</c></b>)</em>
@@ -167,7 +171,8 @@ typedef enum {
 } SortBy;
 ///@}
 
-typedef struct SortDescription {
+typedef struct SortDescription
+{
   SortBy sortBy;
   SortOrder sortOrder;
   SortAttribute sortAttributes;
@@ -175,9 +180,13 @@ typedef struct SortDescription {
   int limitEnd;
 
   SortDescription()
-    : sortBy(SortByNone), sortOrder(SortOrderAscending), sortAttributes(SortAttributeNone),
-      limitStart(0), limitEnd(-1)
-  { }
+    : sortBy(SortByNone),
+      sortOrder(SortOrderAscending),
+      sortAttributes(SortAttributeNone),
+      limitStart(0),
+      limitEnd(-1)
+  {
+  }
 } SortDescription;
 
 typedef struct GUIViewSortDetails
@@ -208,18 +217,31 @@ public:
    */
   static int GetSortLabel(SortBy sortBy);
 
-  static void Sort(SortBy sortBy, SortOrder sortOrder, SortAttribute attributes, DatabaseResults& items, int limitEnd = -1, int limitStart = 0);
-  static void Sort(SortBy sortBy, SortOrder sortOrder, SortAttribute attributes, SortItems& items, int limitEnd = -1, int limitStart = 0);
-  static void Sort(const SortDescription &sortDescription, DatabaseResults& items);
-  static void Sort(const SortDescription &sortDescription, SortItems& items);
-  static bool SortFromDataset(const SortDescription &sortDescription, const MediaType &mediaType, const boost::movelib::unique_ptr<dbiplus::Dataset> &dataset, DatabaseResults &results);
+  static void Sort(SortBy sortBy,
+                   SortOrder sortOrder,
+                   SortAttribute attributes,
+                   DatabaseResults& items,
+                   int limitEnd = -1,
+                   int limitStart = 0);
+  static void Sort(SortBy sortBy,
+                   SortOrder sortOrder,
+                   SortAttribute attributes,
+                   SortItems& items,
+                   int limitEnd = -1,
+                   int limitStart = 0);
+  static void Sort(const SortDescription& sortDescription, DatabaseResults& items);
+  static void Sort(const SortDescription& sortDescription, SortItems& items);
+  static bool SortFromDataset(const SortDescription& sortDescription,
+                              const MediaType& mediaType,
+                              const boost::movelib::unique_ptr<dbiplus::Dataset>& dataset,
+                              DatabaseResults& results);
 
   static const Fields& GetFieldsForSorting(SortBy sortBy);
-  static std::string RemoveArticles(const std::string &label);
+  static std::string RemoveArticles(const std::string& label);
 
-  typedef std::string (*SortPreparator) (SortAttribute, const SortItem&);
-  typedef bool (*Sorter) (const DatabaseResult &, const DatabaseResult &);
-  typedef bool (*SorterIndirect) (const SortItemPtr &, const SortItemPtr &);
+  typedef std::string (*SortPreparator)(SortAttribute, const SortItem&);
+  typedef bool (*Sorter)(const DatabaseResult&, const DatabaseResult&);
+  typedef bool (*SorterIndirect)(const SortItemPtr&, const SortItemPtr&);
 
 private:
   static const SortPreparator& getPreparator(SortBy sortBy);

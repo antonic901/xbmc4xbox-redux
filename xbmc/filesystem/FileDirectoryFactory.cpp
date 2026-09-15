@@ -18,7 +18,6 @@
  *
  */
 
-
 #include "system.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
@@ -51,13 +50,17 @@ using namespace PLAYLIST;
 using namespace std;
 
 CFactoryFileDirectory::CFactoryFileDirectory(void)
-{}
+{
+}
 
 CFactoryFileDirectory::~CFactoryFileDirectory(void)
-{}
+{
+}
 
 // return NULL + set pItem->m_bIsFolder to remove it completely from list.
-IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem, const std::string& strMask)
+IFileDirectory* CFactoryFileDirectory::Create(const CURL& url,
+                                              CFileItem* pItem,
+                                              const std::string& strMask)
 {
   if (url.IsProtocol("stack")) // disqualify stack as we need to work with each of the parts instead
     return NULL;
@@ -65,7 +68,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
 #ifdef HAS_FILESYSTEM
   if ((url.IsFileType("ogg") || url.IsFileType("oga")) && CFile::Exists(url))
   {
-    IFileDirectory* pDir=new COGGFileDirectory;
+    IFileDirectory* pDir = new COGGFileDirectory;
     //  Has the ogg file more than one bitstream?
     if (pDir->ContainsFiles(url))
     {
@@ -77,7 +80,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
   }
   if (url.IsFileType("nsf") && CFile::Exists(url))
   {
-    IFileDirectory* pDir=new CNSFFileDirectory;
+    IFileDirectory* pDir = new CNSFFileDirectory;
     //  Has the nsf file more than one track?
     if (pDir->ContainsFiles(url))
       return pDir; // treat as directory
@@ -87,7 +90,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
   }
   if (url.IsFileType("sid") && CFile::Exists(url))
   {
-    IFileDirectory* pDir=new CSIDFileDirectory;
+    IFileDirectory* pDir = new CSIDFileDirectory;
     //  Has the sid file more than one track?
     if (pDir->ContainsFiles(url))
       return pDir; // treat as directory
@@ -97,7 +100,7 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
   }
   if (ASAPCodec::IsSupportedFormat(url.GetFileType()) && CFile::Exists(url))
   {
-    IFileDirectory* pDir=new CASAPFileDirectory;
+    IFileDirectory* pDir = new CASAPFileDirectory;
     //  Has the asap file more than one track?
     if (pDir->ContainsFiles(url))
       return pDir; // treat as directory
@@ -118,10 +121,10 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
     CDirectory::GetDirectory(zipURL, items, strMask, DIR_FLAG_DEFAULTS);
     if (items.Size() == 0) // no files
       pItem->m_bIsFolder = true;
-    else if (items.Size() == 1 && items[0]->m_idepth == 0) 
+    else if (items.Size() == 1 && items[0]->m_idepth == 0)
     {
       // one STORED file - collapse it down
-      *pItem = *items[0]; 
+      *pItem = *items[0];
     }
     else
     { // compressed or more than one file -> create a zip dir
@@ -134,25 +137,27 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
   {
     vector<std::string> tokens;
     const std::string strPath = url.Get();
-    StringUtils::Tokenize(strPath,tokens,".");
+    StringUtils::Tokenize(strPath, tokens, ".");
     if (tokens.size() > 2)
     {
       if (url.IsFileType("001"))
       {
-        if (StringUtils::EqualsNoCase(tokens[tokens.size()-2], "ts")) // .ts.001 - treat as a movie file to scratch some users itch
+        if (StringUtils::EqualsNoCase(
+                tokens[tokens.size() - 2],
+                "ts")) // .ts.001 - treat as a movie file to scratch some users itch
           return NULL;
       }
-      std::string token = tokens[tokens.size()-2];
+      std::string token = tokens[tokens.size() - 2];
       if (StringUtils::StartsWith(token, "part")) // only list '.part01.rar'
       {
         // need this crap to avoid making mistakes - yeyh for the new rar naming scheme :/
         __stat64 stat;
-        int digits = token.size()-4;
+        int digits = token.size() - 4;
         std::string strFormat = StringUtils::Format("part%%0%ii", digits);
         std::string strNumber = StringUtils::Format(strFormat.c_str(), 1);
         std::string strPath2 = strPath;
-        StringUtils::Replace(strPath2,token,strNumber);
-        if (atoi(token.substr(4).c_str()) > 1 && CFile::Stat(strPath2,&stat) == 0)
+        StringUtils::Replace(strPath2, token, strNumber);
+        if (atoi(token.substr(4).c_str()) > 1 && CFile::Stat(strPath2, &stat) == 0)
         {
           pItem->m_bIsFolder = true;
           return NULL;
@@ -187,15 +192,15 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
       pItem->SetLabel(playlist.GetName());
       pItem->SetLabelPreformated(true);
     }
-    IFileDirectory* pDir=new CSmartPlaylistDirectory;
+    IFileDirectory* pDir = new CSmartPlaylistDirectory;
     return pDir; // treat as directory
   }
   if (CPlayListFactory::IsPlaylist(url))
   { // Playlist file
     // currently we only return the directory if it contains
     // more than one file.  Reason is that .pls and .m3u may be used
-    // for links to http streams etc. 
-    IFileDirectory *pDir = new CPlaylistFileDirectory();
+    // for links to http streams etc.
+    IFileDirectory* pDir = new CPlaylistFileDirectory();
     CFileItemList items;
     if (pDir->GetDirectory(url, items))
     {
@@ -207,4 +212,3 @@ IFileDirectory* CFactoryFileDirectory::Create(const CURL& url, CFileItem* pItem,
   }
   return NULL;
 }
-

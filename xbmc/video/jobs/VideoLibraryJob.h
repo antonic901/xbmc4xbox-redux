@@ -46,7 +46,7 @@ public:
 
   // implementation of CJob
   virtual bool DoWork();
-  virtual const char *GetType() const { return "VideoLibraryJob"; }
+  virtual const char* GetType() const { return "VideoLibraryJob"; }
   virtual bool operator==(const CJob* job) const { return false; }
 
 protected:
@@ -58,5 +58,5 @@ protected:
    \param[in] db Already open video database to be used for interaction
    \return True if the process succeeded, false otherwise
    */
-  virtual bool Work(CVideoDatabase &db) = 0;
+  virtual bool Work(CVideoDatabase& db) = 0;
 };

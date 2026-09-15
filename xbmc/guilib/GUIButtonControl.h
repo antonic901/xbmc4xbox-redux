@@ -39,17 +39,23 @@
 class CGUIButtonControl : public CGUIControl
 {
 public:
-  CGUIButtonControl(int parentID, int controlID,
-                    float posX, float posY, float width, float height,
-                    const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus,
-                    const CLabelInfo &label, bool wrapMultiline = false);
+  CGUIButtonControl(int parentID,
+                    int controlID,
+                    float posX,
+                    float posY,
+                    float width,
+                    float height,
+                    const CTextureInfo& textureFocus,
+                    const CTextureInfo& textureNoFocus,
+                    const CLabelInfo& label,
+                    bool wrapMultiline = false);
 
   virtual ~CGUIButtonControl(void);
-  virtual CGUIButtonControl *Clone() const { return new CGUIButtonControl(*this); };
+  virtual CGUIButtonControl* Clone() const { return new CGUIButtonControl(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual bool OnAction(const CAction &action) ;
+  virtual bool OnAction(const CAction& action);
   virtual bool OnMessage(CGUIMessage& message);
   virtual void PreAllocResources();
   virtual void AllocResources();
@@ -57,10 +63,10 @@ public:
   virtual void DynamicResourceAlloc(bool bOnOff);
   virtual void SetInvalid();
   virtual void SetPosition(float posX, float posY);
-  virtual void SetLabel(const std::string & aLabel);
-  virtual void SetLabel2(const std::string & aLabel2);
+  virtual void SetLabel(const std::string& aLabel);
+  virtual void SetLabel2(const std::string& aLabel2);
   void SetClickActions(const CGUIAction& clickActions) { m_clickActions = clickActions; };
-  const CGUIAction &GetClickActions() const { return m_clickActions; };
+  const CGUIAction& GetClickActions() const { return m_clickActions; };
   void SetFocusActions(const CGUIAction& focusActions) { m_focusActions = focusActions; };
   void SetUnFocusActions(const CGUIAction& unfocusActions) { m_unfocusActions = unfocusActions; };
   const CLabelInfo& GetLabelInfo() const { return m_label.GetLabelInfo(); };
@@ -72,7 +78,11 @@ public:
   virtual void SetMinWidth(float minWidth);
   void SetAlpha(unsigned char alpha);
 
-  void PythonSetLabel(const std::string &strFont, const std::string &strText, color_t textColor, color_t shadowColor, color_t focusedColor);
+  void PythonSetLabel(const std::string& strFont,
+                      const std::string& strText,
+                      color_t textColor,
+                      color_t shadowColor,
+                      color_t focusedColor);
   void PythonSetDisabledColor(color_t disabledColor);
 
   virtual void OnClick();
@@ -92,16 +102,16 @@ protected:
 
   CGUITexture m_imgFocus;
   CGUITexture m_imgNoFocus;
-  unsigned int  m_focusCounter;
+  unsigned int m_focusCounter;
   unsigned char m_alpha;
 
   float m_minWidth;
   float m_maxWidth;
 
-  CGUIInfoLabel  m_info;
-  CGUIInfoLabel  m_info2;
-  CGUILabel      m_label;
-  CGUILabel      m_label2;
+  CGUIInfoLabel m_info;
+  CGUIInfoLabel m_info2;
+  CGUILabel m_label;
+  CGUILabel m_label2;
 
   CGUIAction m_clickActions;
   CGUIAction m_focusActions;

@@ -41,15 +41,20 @@ void CProgramInfoTag::Reset()
   m_type.clear();
 }
 
-bool CProgramInfoTag::Save(TiXmlNode *node, const std::string &tag, bool savePathInfo, const TiXmlElement *additionalNode)
+bool CProgramInfoTag::Save(TiXmlNode* node,
+                           const std::string& tag,
+                           bool savePathInfo,
+                           const TiXmlElement* additionalNode)
 {
-  if (!node) return false;
+  if (!node)
+    return false;
 
   // we start with a <tag> tag
   TiXmlElement programElement(tag.c_str());
-  TiXmlNode *program = node->InsertEndChild(programElement);
+  TiXmlNode* program = node->InsertEndChild(programElement);
 
-  if (!program) return false;
+  if (!program)
+    return false;
 
   if (savePathInfo)
   {
@@ -91,7 +96,7 @@ bool CProgramInfoTag::Save(TiXmlNode *node, const std::string &tag, bool savePat
   return true;
 }
 
-bool CProgramInfoTag::Load(const TiXmlElement *element, bool prioritise)
+bool CProgramInfoTag::Load(const TiXmlElement* element, bool prioritise)
 {
   if (!element)
     return false;
@@ -191,19 +196,29 @@ void CProgramInfoTag::ToSortable(SortItem& sortable, Field field) const
 {
   switch (field)
   {
-  case FieldTitle:
-  {
-    // make sure not to overwrite an existing title with an empty one
-    std::string title = m_strTitle;
-    if (!title.empty() || sortable.find(FieldTitle) == sortable.end())
-      sortable[FieldTitle] = title;
-    break;
-  }
-  case FieldPlaycount:                sortable[FieldPlaycount] = m_playCount; break;
-  case FieldYear:                     sortable[FieldYear] = m_releaseDate.GetYear(); break;
-  case FieldRating:                   sortable[FieldRating] = m_rating; break;
-  case FieldDateAdded:                sortable[FieldDateAdded] = m_dateAdded.IsValid() ? m_dateAdded.GetAsDBDateTime() : StringUtils::Empty; break;
-  default: break;
+    case FieldTitle:
+    {
+      // make sure not to overwrite an existing title with an empty one
+      std::string title = m_strTitle;
+      if (!title.empty() || sortable.find(FieldTitle) == sortable.end())
+        sortable[FieldTitle] = title;
+      break;
+    }
+    case FieldPlaycount:
+      sortable[FieldPlaycount] = m_playCount;
+      break;
+    case FieldYear:
+      sortable[FieldYear] = m_releaseDate.GetYear();
+      break;
+    case FieldRating:
+      sortable[FieldRating] = m_rating;
+      break;
+    case FieldDateAdded:
+      sortable[FieldDateAdded] =
+          m_dateAdded.IsValid() ? m_dateAdded.GetAsDBDateTime() : StringUtils::Empty;
+      break;
+    default:
+      break;
   }
 }
 
@@ -234,31 +249,38 @@ void CProgramInfoTag::ParseNative(const TiXmlElement* program, bool prioritise)
   std::string value;
 
   std::vector<std::string> developers(m_developer);
-  if (XMLUtils::GetStringArray(program, "developer", developers, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "developer", developers, prioritise,
+                               g_advancedSettings.m_programItemSeparator))
     SetDeveloper(developers);
 
   std::vector<std::string> publishers(m_publisher);
-  if (XMLUtils::GetStringArray(program, "publisher", publishers, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "publisher", publishers, prioritise,
+                               g_advancedSettings.m_programItemSeparator))
     SetPublisher(publishers);
 
   std::vector<std::string> genres(m_genre);
-  if (XMLUtils::GetStringArray(program, "genre", genres, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "genre", genres, prioritise,
+                               g_advancedSettings.m_programItemSeparator))
     SetGenre(genres);
 
   std::vector<std::string> generalFeatures(m_generalFeature);
-  if (XMLUtils::GetStringArray(program, "generalfeature", generalFeatures, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "generalfeature", generalFeatures, prioritise,
+                               g_advancedSettings.m_programItemSeparator))
     SetGeneralFeature(generalFeatures);
 
   std::vector<std::string> onlineFeatures(m_onlineFeature);
-  if (XMLUtils::GetStringArray(program, "onlinefeature", onlineFeatures, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "onlinefeature", onlineFeatures, prioritise,
+                               g_advancedSettings.m_programItemSeparator))
     SetOnlineFeature(onlineFeatures);
 
   std::vector<std::string> platforms(m_platform);
-  if (XMLUtils::GetStringArray(program, "platform", platforms, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "platform", platforms, prioritise,
+                               g_advancedSettings.m_programItemSeparator))
     SetPlatform(platforms);
 
   std::vector<std::string> tags(m_tags);
-  if (XMLUtils::GetStringArray(program, "tag", tags, prioritise, g_advancedSettings.m_programItemSeparator))
+  if (XMLUtils::GetStringArray(program, "tag", tags, prioritise,
+                               g_advancedSettings.m_programItemSeparator))
     SetTags(tags);
 
   if (XMLUtils::GetString(program, "type", value))
@@ -435,12 +457,13 @@ void CProgramInfoTag::SetType(std::string type)
   m_type = type;
 }
 
-std::string CProgramInfoTag::Trim(std::string &value)
+std::string CProgramInfoTag::Trim(std::string& value)
 {
   return StringUtils::Trim(value);
 }
 
-void TrimStr(std::string& str) {
+void TrimStr(std::string& str)
+{
   str = StringUtils::Trim(str);
 }
 

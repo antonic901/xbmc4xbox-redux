@@ -30,8 +30,8 @@ public:
   virtual ~CGUIWindowSettingsCategory();
 
   // specialization of CGUIControl
-  virtual bool OnMessage(CGUIMessage &message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnMessage(CGUIMessage& message);
+  virtual bool OnAction(const CAction& action);
   virtual bool OnBack(int actionID);
   virtual int GetID() const { return CGUIDialogSettingsManagerBase::GetID() + m_iSection; };
 

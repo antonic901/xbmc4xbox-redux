@@ -23,8 +23,9 @@
 
 class TiXmlNode;
 
-typedef enum {
-  SettingUpdateTypeNone   = 0,
+typedef enum
+{
+  SettingUpdateTypeNone = 0,
   SettingUpdateTypeRename,
   SettingUpdateTypeChange
 } SettingUpdateType;
@@ -33,17 +34,17 @@ class CSettingUpdate
 {
 public:
   CSettingUpdate();
-  virtual ~CSettingUpdate() { }
+  virtual ~CSettingUpdate() {}
 
   bool operator<(const CSettingUpdate& rhs) const;
 
-  virtual bool Deserialize(const TiXmlNode *node);
+  virtual bool Deserialize(const TiXmlNode* node);
 
   SettingUpdateType GetType() const { return m_type; }
   const std::string& GetValue() const { return m_value; }
 
 private:
-  bool setType(const std::string &type);
+  bool setType(const std::string& type);
 
   SettingUpdateType m_type;
   std::string m_value;

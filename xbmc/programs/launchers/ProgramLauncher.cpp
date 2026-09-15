@@ -16,10 +16,12 @@
 using namespace LAUNCHERS;
 
 CProgramLauncher::CProgramLauncher()
-{}
+{
+}
 
 CProgramLauncher::~CProgramLauncher()
-{}
+{
+}
 
 bool CProgramLauncher::LaunchProgram(const std::string& strExecutable)
 {
@@ -39,7 +41,7 @@ bool CProgramLauncher::LaunchProgram(const CURL& url)
     if (pProgramLauncher->Launch())
       return true;
   }
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "%s - Unhandled exception", __FUNCTION__);
   }

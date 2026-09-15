@@ -25,12 +25,12 @@
 using namespace MUSIC_GRABBER;
 using namespace ADDON;
 
-CMusicInfoScraper::CMusicInfoScraper(const ADDON::ScraperPtr &scraper) : CThread("MusicInfoScraper")
+CMusicInfoScraper::CMusicInfoScraper(const ADDON::ScraperPtr& scraper) : CThread("MusicInfoScraper")
 {
-  m_bSucceeded=false;
-  m_bCanceled=false;
-  m_iAlbum=-1;
-  m_iArtist=-1;
+  m_bSucceeded = false;
+  m_bCanceled = false;
+  m_iAlbum = -1;
+  m_iArtist = -1;
   m_scraper = scraper;
   m_http = new XFILE::CCurlFile;
 }
@@ -61,19 +61,20 @@ CMusicArtistInfo& CMusicInfoScraper::GetArtist(int iArtist)
   return m_vecArtists[iArtist];
 }
 
-void CMusicInfoScraper::FindAlbumInfo(const std::string& strAlbum, const std::string& strArtist /* = "" */)
+void CMusicInfoScraper::FindAlbumInfo(const std::string& strAlbum,
+                                      const std::string& strArtist /* = "" */)
 {
-  m_strAlbum=strAlbum;
-  m_strArtist=strArtist;
-  m_bSucceeded=false;
+  m_strAlbum = strAlbum;
+  m_strArtist = strArtist;
+  m_bSucceeded = false;
   StopThread();
   Create();
 }
 
 void CMusicInfoScraper::FindArtistInfo(const std::string& strArtist)
 {
-  m_strArtist=strArtist;
-  m_bSucceeded=false;
+  m_strArtist = strArtist;
+  m_bSucceeded = false;
   StopThread();
   Create();
 }
@@ -92,42 +93,42 @@ void CMusicInfoScraper::FindArtistInfo()
 
 void CMusicInfoScraper::LoadAlbumInfo(int iAlbum)
 {
-  m_iAlbum=iAlbum;
-  m_iArtist=-1;
+  m_iAlbum = iAlbum;
+  m_iArtist = -1;
   StopThread();
   Create();
 }
 
-void CMusicInfoScraper::LoadArtistInfo(int iArtist, const std::string &strSearch)
+void CMusicInfoScraper::LoadArtistInfo(int iArtist, const std::string& strSearch)
 {
-  m_iAlbum=-1;
-  m_iArtist=iArtist;
-  m_strSearch=strSearch;
+  m_iAlbum = -1;
+  m_iArtist = iArtist;
+  m_strSearch = strSearch;
   StopThread();
   Create();
 }
 
 void CMusicInfoScraper::LoadAlbumInfo()
 {
-  if (m_iAlbum<0 || m_iAlbum>=(int)m_vecAlbums.size())
+  if (m_iAlbum < 0 || m_iAlbum >= (int)m_vecAlbums.size())
     return;
 
-  CMusicAlbumInfo& album=m_vecAlbums[m_iAlbum];
+  CMusicAlbumInfo& album = m_vecAlbums[m_iAlbum];
   // Clear album artist credits
   album.GetAlbum().artistCredits.clear();
-  if (album.Load(*m_http,m_scraper))
-    m_bSucceeded=true;
+  if (album.Load(*m_http, m_scraper))
+    m_bSucceeded = true;
 }
 
 void CMusicInfoScraper::LoadArtistInfo()
 {
-  if (m_iArtist<0 || m_iArtist>=(int)m_vecArtists.size())
+  if (m_iArtist < 0 || m_iArtist >= (int)m_vecArtists.size())
     return;
 
-  CMusicArtistInfo& artist=m_vecArtists[m_iArtist];
+  CMusicArtistInfo& artist = m_vecArtists[m_iArtist];
   artist.GetArtist().strArtist.clear();
-  if (artist.Load(*m_http,m_scraper,m_strSearch))
-    m_bSucceeded=true;
+  if (artist.Load(*m_http, m_scraper, m_strSearch))
+    m_bSucceeded = true;
 }
 
 bool CMusicInfoScraper::Completed()
@@ -143,7 +144,7 @@ bool CMusicInfoScraper::Succeeded()
 void CMusicInfoScraper::Cancel()
 {
   m_http->Cancel();
-  m_bCanceled=true;
+  m_bCanceled = true;
   m_http->Reset();
 }
 
@@ -154,8 +155,8 @@ bool CMusicInfoScraper::IsCanceled()
 
 void CMusicInfoScraper::OnStartup()
 {
-  m_bSucceeded=false;
-  m_bCanceled=false;
+  m_bSucceeded = false;
+  m_bCanceled = false;
 }
 
 void CMusicInfoScraper::Process()
@@ -173,28 +174,28 @@ void CMusicInfoScraper::Process()
       FindArtistInfo();
       m_strArtist.clear();
     }
-    if (m_iAlbum>-1)
+    if (m_iAlbum > -1)
     {
       LoadAlbumInfo();
-      m_iAlbum=-1;
+      m_iAlbum = -1;
     }
-    if (m_iArtist>-1)
+    if (m_iArtist > -1)
     {
       LoadArtistInfo();
-      m_iArtist=-1;
+      m_iArtist = -1;
     }
   }
-  catch(...)
+  catch (...)
   {
     CLog::Log(LOGERROR, "Exception in CMusicInfoScraper::Process()");
   }
 }
 
-bool CMusicInfoScraper::CheckValidOrFallback(const std::string &fallbackScraper)
+bool CMusicInfoScraper::CheckValidOrFallback(const std::string& fallbackScraper)
 {
   return true;
-//! @todo Handle fallback mechanism
-/*
+  //! @todo Handle fallback mechanism
+  /*
   if (m_scraper->Path() != fallbackScraper &&
       parser.Load("special://xbmc/system/scrapers/music/" + fallbackScraper))
   {

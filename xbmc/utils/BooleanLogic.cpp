@@ -23,12 +23,12 @@
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 
-bool CBooleanLogicValue::Deserialize(const TiXmlNode *node)
+bool CBooleanLogicValue::Deserialize(const TiXmlNode* node)
 {
   if (node == NULL)
     return false;
 
-  const TiXmlElement *elem = node->ToElement();
+  const TiXmlElement* elem = node->ToElement();
   if (elem == NULL)
     return false;
 
@@ -36,7 +36,7 @@ bool CBooleanLogicValue::Deserialize(const TiXmlNode *node)
     m_value = node->FirstChild()->ValueStr();
 
   m_negated = false;
-  const char *strNegated = elem->Attribute("negated");
+  const char* strNegated = elem->Attribute("negated");
   if (strNegated != NULL)
   {
     if (StringUtils::EqualsNoCase(strNegated, "true"))
@@ -57,7 +57,7 @@ CBooleanLogicOperation::~CBooleanLogicOperation()
   m_values.clear();
 }
 
-bool CBooleanLogicOperation::Deserialize(const TiXmlNode *node)
+bool CBooleanLogicOperation::Deserialize(const TiXmlNode* node)
 {
   if (node == NULL)
     return false;
@@ -69,7 +69,8 @@ bool CBooleanLogicOperation::Deserialize(const TiXmlNode *node)
     CBooleanLogicValuePtr value = CBooleanLogicValuePtr(newValue());
     if (value == NULL || !value->Deserialize(node))
     {
-      CLog::Log(LOGDEBUG, "CBooleanLogicOperation: failed to deserialize implicit boolean value definition");
+      CLog::Log(LOGDEBUG,
+                "CBooleanLogicOperation: failed to deserialize implicit boolean value definition");
       return false;
     }
 
@@ -77,7 +78,7 @@ bool CBooleanLogicOperation::Deserialize(const TiXmlNode *node)
     return true;
   }
 
-  const TiXmlNode *operationNode = node->FirstChild();
+  const TiXmlNode* operationNode = node->FirstChild();
   while (operationNode != NULL)
   {
     std::string tag = operationNode->ValueStr();
@@ -87,10 +88,12 @@ bool CBooleanLogicOperation::Deserialize(const TiXmlNode *node)
       if (operation == NULL)
         return false;
 
-      operation->SetOperation(StringUtils::EqualsNoCase(tag, "and") ? BooleanLogicOperationAnd : BooleanLogicOperationOr);
+      operation->SetOperation(StringUtils::EqualsNoCase(tag, "and") ? BooleanLogicOperationAnd
+                                                                    : BooleanLogicOperationOr);
       if (!operation->Deserialize(operationNode))
       {
-        CLog::Log(LOGDEBUG, "CBooleanLogicOperation: failed to deserialize <%s> definition", tag.c_str());
+        CLog::Log(LOGDEBUG, "CBooleanLogicOperation: failed to deserialize <%s> definition",
+                  tag.c_str());
         return false;
       }
 
@@ -106,14 +109,16 @@ bool CBooleanLogicOperation::Deserialize(const TiXmlNode *node)
       {
         if (!value->Deserialize(operationNode))
         {
-          CLog::Log(LOGDEBUG, "CBooleanLogicOperation: failed to deserialize <%s> definition", tag.c_str());
+          CLog::Log(LOGDEBUG, "CBooleanLogicOperation: failed to deserialize <%s> definition",
+                    tag.c_str());
           return false;
         }
 
         m_values.push_back(value);
       }
       else if (operationNode->Type() == TiXmlNode::TINYXML_ELEMENT)
-        CLog::Log(LOGDEBUG, "CBooleanLogicOperation: unknown <%s> definition encountered", tag.c_str());
+        CLog::Log(LOGDEBUG, "CBooleanLogicOperation: unknown <%s> definition encountered",
+                  tag.c_str());
     }
 
     operationNode = operationNode->NextSibling();
@@ -122,7 +127,7 @@ bool CBooleanLogicOperation::Deserialize(const TiXmlNode *node)
   return true;
 }
 
-bool CBooleanLogic::Deserialize(const TiXmlNode *node)
+bool CBooleanLogic::Deserialize(const TiXmlNode* node)
 {
   if (node == NULL)
     return false;

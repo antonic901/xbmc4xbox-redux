@@ -39,11 +39,16 @@ public:
   virtual int64_t GetPosition();
   virtual int64_t GetLength();
   virtual bool Open(const CURL& url);
-  virtual bool Exists(const CURL& url) { return true;};
-  virtual int Stat(const CURL& url, struct __stat64* buffer) { errno = ENOENT; return -1; };
+  virtual bool Exists(const CURL& url) { return true; };
+  virtual int Stat(const CURL& url, struct __stat64* buffer)
+  {
+    errno = ENOENT;
+    return -1;
+  };
   virtual ssize_t Read(void* lpBuf, size_t uiBufSize);
   virtual int64_t Seek(int64_t iFilePosition, int iWhence = SEEK_SET);
   virtual void Close();
+
 protected:
   void ExtractTagInfo(const char* buf);
   void ReadTruncated(char* buf2, int size);
@@ -56,4 +61,4 @@ protected:
   char* m_buffer; // buffer used for tags
   MUSIC_INFO::CMusicInfoTag m_tag;
 };
-}
+} // namespace XFILE

@@ -27,7 +27,7 @@
 
 enum VideoSelectAction
 {
-  SELECT_ACTION_CHOOSE          = 0,
+  SELECT_ACTION_CHOOSE = 0,
   SELECT_ACTION_PLAY_OR_RESUME,
   SELECT_ACTION_RESUME,
   SELECT_ACTION_INFO,
@@ -39,18 +39,17 @@ enum VideoSelectAction
 class CGUIWindowVideoBase : public CGUIMediaWindow, public IBackgroundLoaderObserver
 {
 public:
-  CGUIWindowVideoBase(int id, const std::string &xmlFile);
+  CGUIWindowVideoBase(int id, const std::string& xmlFile);
   virtual ~CGUIWindowVideoBase(void);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
 
-  void PlayMovie(const CFileItem *item, const std::string &player = "");
-  static void GetResumeItemOffset(const CFileItem *item, int& startoffset, int& partNumber);
-  static bool HasResumeItemOffset(const CFileItem *item);
+  void PlayMovie(const CFileItem* item, const std::string& player = "");
+  static void GetResumeItemOffset(const CFileItem* item, int& startoffset, int& partNumber);
+  static bool HasResumeItemOffset(const CFileItem* item);
 
   void AddToDatabase(int iItem);
   virtual void OnItemInfo(const CFileItem& fileItem, ADDON::ScraperPtr& scraper);
-
 
   /*! \brief Show the resume menu for this item (if it has a resume bookmark)
    If a resume bookmark is found, we set the item's m_lStartOffset to STARTOFFSET_RESUME.
@@ -60,7 +59,7 @@ public:
    \param item item to check for a resume bookmark
    \return true if an option was chosen, false if the resume menu was cancelled.
    */
-  static bool ShowResumeMenu(CFileItem &item);
+  static bool ShowResumeMenu(CFileItem& item);
 
   /*! \brief Append a set of search items to a results list using a specific prepend label
    Sorts the search items first, then appends with the given prependLabel to the results list.
@@ -70,40 +69,42 @@ public:
    \param results the fileitemlist to append the search results to.
    \sa DoSearch
    */
-  static void AppendAndClearSearchItems(CFileItemList &searchItems, const std::string &prependLabel, CFileItemList &results);
+  static void AppendAndClearSearchItems(CFileItemList& searchItems,
+                                        const std::string& prependLabel,
+                                        CFileItemList& results);
 
   /*! \brief Prompt the user for assigning content to a path.
    Based on changes, we then call OnUnassignContent, update or refresh scraper information in the database
    and optionally start a scan
    \param path the path to assign content for
    */
-  static void OnAssignContent(const std::string &path);
+  static void OnAssignContent(const std::string& path);
 
   /*! \brief checks the database for a resume position and puts together a string
    \param item selected item
    \return string containing the resume position or an empty string if there is no resume position
    */
-  static std::string GetResumeString(const CFileItem &item);
+  static std::string GetResumeString(const CFileItem& item);
 
 protected:
   void OnScan(const std::string& strPath, bool scanAll = false);
-  virtual bool Update(const std::string &strDirectory, bool updateFilterPath = true);
-  virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
+  virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);
+  virtual bool GetDirectory(const std::string& strDirectory, CFileItemList& items);
   virtual void OnItemLoaded(CFileItem* pItem) {};
-  virtual void GetGroupedItems(CFileItemList &items);
+  virtual void GetGroupedItems(CFileItemList& items);
 
-  virtual bool CheckFilterAdvanced(CFileItemList &items) const;
-  virtual bool CanContainFilter(const std::string &strDirectory) const;
+  virtual bool CheckFilterAdvanced(CFileItemList& items) const;
+  virtual bool CanContainFilter(const std::string& strDirectory) const;
 
-  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  virtual void GetContextButtons(int itemNumber, CContextButtons& buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   virtual void OnQueueItem(int iItem);
   virtual void OnDeleteItem(CFileItemPtr pItem);
   virtual void OnDeleteItem(int iItem);
   virtual void DoSearch(const std::string& strSearch, CFileItemList& items) {};
-  virtual std::string GetStartFolder(const std::string &dir);
+  virtual std::string GetStartFolder(const std::string& dir);
 
-  bool OnClick(int iItem, const std::string &player = "");
+  bool OnClick(int iItem, const std::string& player = "");
   bool OnSelect(int iItem);
   /*! \brief react to an Info action on a view item
    \param item the selected item
@@ -117,24 +118,24 @@ protected:
    */
   bool OnFileAction(int item, int action, std::string player);
 
-  void OnRestartItem(int iItem, const std::string &player = "");
-  bool OnResumeItem(int iItem, const std::string &player = "");
-  void PlayItem(int iItem, const std::string &player = "");
-  virtual bool OnPlayMedia(int iItem, const std::string &player = "");
-  virtual bool OnPlayAndQueueMedia(const CFileItemPtr &item, std::string player = "");
+  void OnRestartItem(int iItem, const std::string& player = "");
+  bool OnResumeItem(int iItem, const std::string& player = "");
+  void PlayItem(int iItem, const std::string& player = "");
+  virtual bool OnPlayMedia(int iItem, const std::string& player = "");
+  virtual bool OnPlayAndQueueMedia(const CFileItemPtr& item, std::string player = "");
   void LoadPlayList(const std::string& strPlayList, int iPlayList = PLAYLIST_VIDEO);
 
   bool ShowIMDB(CFileItemPtr item, const ADDON::ScraperPtr& content, bool fromDB);
 
-  void AddItemToPlayList(const CFileItemPtr &pItem, CFileItemList &queuedItems);
+  void AddItemToPlayList(const CFileItemPtr& pItem, CFileItemList& queuedItems);
 
   void OnSearch();
   void OnSearchItemFound(const CFileItem* pSelItem);
-  int GetScraperForItem(CFileItem *item, ADDON::ScraperPtr &info, VIDEO::SScanSettings& settings);
+  int GetScraperForItem(CFileItem* item, ADDON::ScraperPtr& info, VIDEO::SScanSettings& settings);
 
-  static bool OnUnAssignContent(const std::string &path, int header, int text);
+  static bool OnUnAssignContent(const std::string& path, int header, int text);
 
-  static bool StackingAvailable(const CFileItemList &items);
+  static bool StackingAvailable(const CFileItemList& items);
 
   bool OnPlayStackPart(int item);
 

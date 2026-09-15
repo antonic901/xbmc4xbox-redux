@@ -23,7 +23,7 @@
 class IRenderingCallback
 {
 public:
-  virtual bool Create(int x, int y, int w, int h, void *device) = 0;
+  virtual bool Create(int x, int y, int w, int h, void* device) = 0;
   virtual void Render() = 0;
   virtual void Stop() = 0;
   virtual bool IsDirty() { return true; }

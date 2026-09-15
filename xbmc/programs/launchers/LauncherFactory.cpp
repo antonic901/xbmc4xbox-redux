@@ -41,4 +41,3 @@ IProgramLauncher* CLauncherFactory::Create(const CURL& url)
   CLog::Log(LOGWARNING, "%s - unsupported executable: %s", __FUNCTION__, url.Get().c_str());
   return NULL;
 }
-

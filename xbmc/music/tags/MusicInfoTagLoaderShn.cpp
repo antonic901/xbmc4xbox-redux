@@ -25,12 +25,16 @@
 using namespace MUSIC_INFO;
 
 CMusicInfoTagLoaderSHN::CMusicInfoTagLoaderSHN(void)
-{}
+{
+}
 
 CMusicInfoTagLoaderSHN::~CMusicInfoTagLoaderSHN()
-{}
+{
+}
 
-bool CMusicInfoTagLoaderSHN::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderSHN::Load(const CStdString& strFileName,
+                                  CMusicInfoTag& tag,
+                                  EmbeddedArt* art)
 {
   try
   {

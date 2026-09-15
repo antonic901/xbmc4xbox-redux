@@ -28,7 +28,7 @@
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-bool CMusicFileItemListModifier::CanModify(const CFileItemList &items) const
+bool CMusicFileItemListModifier::CanModify(const CFileItemList& items) const
 {
   if (items.IsMusicDb())
     return true;
@@ -36,7 +36,7 @@ bool CMusicFileItemListModifier::CanModify(const CFileItemList &items) const
   return false;
 }
 
-bool CMusicFileItemListModifier::Modify(CFileItemList &items) const
+bool CMusicFileItemListModifier::Modify(CFileItemList& items) const
 {
   AddQueuingFolder(items);
   return true;
@@ -49,7 +49,7 @@ void CMusicFileItemListModifier::AddQueuingFolder(CFileItemList& items)
   if (!items.IsMusicDb())
     return;
 
-  CDirectoryNode *directoryNode = CDirectoryNode::ParseURL(items.GetPath());
+  CDirectoryNode* directoryNode = CDirectoryNode::ParseURL(items.GetPath());
 
   CFileItemPtr pItem;
 
@@ -67,34 +67,37 @@ void CMusicFileItemListModifier::AddQueuingFolder(CFileItemList& items)
 
   switch (directoryNode->GetChildType())
   {
-  case NODE_TYPE_ARTIST:
-    if (directoryNode->GetType() == NODE_TYPE_OVERVIEW) return;
-    pItem.reset(new CFileItem(g_localizeStrings.Get(15103)));  // "All Artists"
-    musicUrl.AppendPath("-1/");
-    pItem->SetPath(musicUrl.ToString());
-    break;
+    case NODE_TYPE_ARTIST:
+      if (directoryNode->GetType() == NODE_TYPE_OVERVIEW)
+        return;
+      pItem.reset(new CFileItem(g_localizeStrings.Get(15103))); // "All Artists"
+      musicUrl.AppendPath("-1/");
+      pItem->SetPath(musicUrl.ToString());
+      break;
 
-    //  All album related nodes
-  case NODE_TYPE_ALBUM:
-    if (directoryNode->GetType() == NODE_TYPE_OVERVIEW) return;
-  case NODE_TYPE_ALBUM_RECENTLY_PLAYED:
-  case NODE_TYPE_ALBUM_RECENTLY_ADDED:
-  case NODE_TYPE_ALBUM_COMPILATIONS:
-  case NODE_TYPE_ALBUM_TOP100:
-  case NODE_TYPE_YEAR_ALBUM:
-    pItem.reset(new CFileItem(g_localizeStrings.Get(15102)));  // "All Albums"
-    musicUrl.AppendPath("-1/");
-    pItem->SetPath(musicUrl.ToString());
-    break;
+      //  All album related nodes
+    case NODE_TYPE_ALBUM:
+      if (directoryNode->GetType() == NODE_TYPE_OVERVIEW)
+        return;
+    case NODE_TYPE_ALBUM_RECENTLY_PLAYED:
+    case NODE_TYPE_ALBUM_RECENTLY_ADDED:
+    case NODE_TYPE_ALBUM_COMPILATIONS:
+    case NODE_TYPE_ALBUM_TOP100:
+    case NODE_TYPE_YEAR_ALBUM:
+      pItem.reset(new CFileItem(g_localizeStrings.Get(15102))); // "All Albums"
+      musicUrl.AppendPath("-1/");
+      pItem->SetPath(musicUrl.ToString());
+      break;
 
-  default:
-    break;
+    default:
+      break;
   }
 
   if (pItem)
   {
     pItem->m_bIsFolder = true;
-    pItem->SetSpecialSort(g_advancedSettings.m_bMusicLibraryAllItemsOnBottom ? SortSpecialOnBottom : SortSpecialOnTop);
+    pItem->SetSpecialSort(g_advancedSettings.m_bMusicLibraryAllItemsOnBottom ? SortSpecialOnBottom
+                                                                             : SortSpecialOnTop);
     pItem->SetCanQueue(false);
     pItem->SetLabelPreformated(true);
     if (g_advancedSettings.m_bMusicLibraryAllItemsOnBottom)

@@ -27,9 +27,9 @@ using namespace XFILE;
 //////////////////////////////////////////////////////////////////////
 
 //*********************************************************************************************
-CSndtrkFile::CSndtrkFile()
-    : m_hFile(INVALID_HANDLE_VALUE)
-{}
+CSndtrkFile::CSndtrkFile() : m_hFile(INVALID_HANDLE_VALUE)
+{
+}
 
 //*********************************************************************************************
 CSndtrkFile::~CSndtrkFile()
@@ -38,8 +38,10 @@ CSndtrkFile::~CSndtrkFile()
 //*********************************************************************************************
 bool CSndtrkFile::Open(const CURL& url)
 {
-  m_hFile.attach( CreateFile(url.GetFileName().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL));
-  if ( !m_hFile.isValid() ) return false;
+  m_hFile.attach(CreateFile(url.GetFileName().c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
+                            OPEN_EXISTING, 0, NULL));
+  if (!m_hFile.isValid())
+    return false;
 
   m_i64FilePos = 0;
   LARGE_INTEGER i64Size;
@@ -52,8 +54,10 @@ bool CSndtrkFile::Open(const CURL& url)
 //*********************************************************************************************
 bool CSndtrkFile::OpenForWrite(const char* strFileName)
 {
-  m_hFile.attach(CreateFile(strFileName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
-  if (!m_hFile.isValid()) return false;
+  m_hFile.attach(CreateFile(strFileName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL,
+                            OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL));
+  if (!m_hFile.isValid())
+    return false;
 
   m_i64FilePos = 0;
   LARGE_INTEGER i64Size;
@@ -65,7 +69,7 @@ bool CSndtrkFile::OpenForWrite(const char* strFileName)
 }
 
 //*********************************************************************************************
-ssize_t CSndtrkFile::Read(void *lpBuf, size_t uiBufSize)
+ssize_t CSndtrkFile::Read(void* lpBuf, size_t uiBufSize)
 {
   if (!m_hFile.isValid())
     return -1;
@@ -74,7 +78,7 @@ ssize_t CSndtrkFile::Read(void *lpBuf, size_t uiBufSize)
     uiBufSize = SSIZE_MAX;
 
   DWORD nBytesRead;
-  if ( ReadFile((HANDLE)m_hFile, lpBuf, (DWORD)uiBufSize, &nBytesRead, NULL) )
+  if (ReadFile((HANDLE)m_hFile, lpBuf, (DWORD)uiBufSize, &nBytesRead, NULL))
   {
     m_i64FilePos += nBytesRead;
     return nBytesRead;
@@ -83,11 +87,12 @@ ssize_t CSndtrkFile::Read(void *lpBuf, size_t uiBufSize)
 }
 
 //*********************************************************************************************
-unsigned int CSndtrkFile::Write(void *lpBuf, int64_t uiBufSize)
+unsigned int CSndtrkFile::Write(void* lpBuf, int64_t uiBufSize)
 {
-  if (!m_hFile.isValid()) return 0;
+  if (!m_hFile.isValid())
+    return 0;
   DWORD nBytesWriten;
-  if ( WriteFile((HANDLE)m_hFile, lpBuf, (DWORD)uiBufSize, &nBytesWriten, NULL) )
+  if (WriteFile((HANDLE)m_hFile, lpBuf, (DWORD)uiBufSize, &nBytesWriten, NULL))
   {
     return nBytesWriten;
   }
@@ -107,19 +112,19 @@ int64_t CSndtrkFile::Seek(int64_t iFilePosition, int iWhence)
   lPos.QuadPart = iFilePosition;
   switch (iWhence)
   {
-  case SEEK_SET:
-    SetFilePointerEx((HANDLE)m_hFile, lPos, &lNewPos, FILE_BEGIN);
-    break;
+    case SEEK_SET:
+      SetFilePointerEx((HANDLE)m_hFile, lPos, &lNewPos, FILE_BEGIN);
+      break;
 
-  case SEEK_CUR:
-    SetFilePointerEx((HANDLE)m_hFile, lPos, &lNewPos, FILE_CURRENT);
-    break;
+    case SEEK_CUR:
+      SetFilePointerEx((HANDLE)m_hFile, lPos, &lNewPos, FILE_CURRENT);
+      break;
 
-  case SEEK_END:
-    SetFilePointerEx((HANDLE)m_hFile, lPos, &lNewPos, FILE_END);
-    break;
-  default:
-    return -1;
+    case SEEK_END:
+      SetFilePointerEx((HANDLE)m_hFile, lPos, &lNewPos, FILE_END);
+      break;
+    default:
+      return -1;
   }
   m_i64FilePos = lNewPos.QuadPart;
   return (lNewPos.QuadPart);
@@ -141,10 +146,10 @@ int64_t CSndtrkFile::GetPosition()
   return m_i64FilePos;
 }
 
-
 ssize_t CSndtrkFile::Write(const void* lpBuf, size_t uiBufSize)
 {
-  if (!m_hFile.isValid()) return -1;
+  if (!m_hFile.isValid())
+    return -1;
   DWORD dwNumberOfBytesWritten = 0;
   WriteFile((HANDLE)m_hFile, lpBuf, (DWORD)uiBufSize, &dwNumberOfBytesWritten, NULL);
   return (ssize_t)dwNumberOfBytesWritten;

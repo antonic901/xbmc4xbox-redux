@@ -12,9 +12,10 @@
 
 namespace XBMCAddon
 {
-  template <class T> class List : public std::list<T>
-  {
-  public:
-    static List<T> nullList;
-  };
-}
+template<class T>
+class List : public std::list<T>
+{
+public:
+  static List<T> nullList;
+};
+} // namespace XBMCAddon

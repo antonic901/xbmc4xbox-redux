@@ -48,7 +48,7 @@ public:
   RESOLUTION GetSafeMode() const;
   RESOLUTION GetBestMode() const;
   bool IsValidResolution(RESOLUTION res) const;
-  RESOLUTION GetInitialMode(LPDIRECT3D8 pD3D, D3DPRESENT_PARAMETERS *p3dParams);
+  RESOLUTION GetInitialMode(LPDIRECT3D8 pD3D, D3DPRESENT_PARAMETERS* p3dParams);
   void PrintInfo() const;
 
   void Set480p(bool bEnable);
@@ -58,7 +58,6 @@ public:
   void SetNormal();
   void SetLetterbox(bool bEnable);
   void SetWidescreen(bool bEnable);
-
 
   bool NeedsSave();
   void Save();

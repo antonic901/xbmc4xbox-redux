@@ -30,7 +30,7 @@ public:
   virtual ~CGUIWindowMusicPlayList(void);
 
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual bool OnBack(int actionID);
 
   void RemovePlayListItem(int iItem);
@@ -41,10 +41,10 @@ protected:
   virtual void UpdateButtons();
   virtual void OnItemLoaded(CFileItem* pItem);
   virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);
-  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  virtual void GetContextButtons(int itemNumber, CContextButtons& buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   void OnMove(int iItem, int iAction);
-  virtual bool OnPlayMedia(int iItem, const std::string &player = "");
+  virtual bool OnPlayMedia(int iItem, const std::string& player = "");
 
   void SavePlayList();
   void ClearPlayList();

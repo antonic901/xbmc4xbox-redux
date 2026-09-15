@@ -41,7 +41,8 @@ class CURL;
 
 static const std::string PATH_TRAVERSAL("(^|\\/|\\\\)\\.\\.($|\\/|\\\\)");
 
-struct SZipEntry {
+struct SZipEntry
+{
   unsigned int header;
   unsigned short version;
   unsigned short flags;
@@ -56,7 +57,7 @@ struct SZipEntry {
   unsigned short eclength; // extra field length (central file header)
   unsigned short clength; // file comment length (central file header)
   unsigned int lhdrOffset; // Relative offset of local header
-  int64_t offset;         // offset in file to compressed data
+  int64_t offset; // offset in file to compressed data
   char name[255];
 
   SZipEntry()
@@ -81,22 +82,22 @@ struct SZipEntry {
 
   SZipEntry(const SZipEntry& SNewItem)
   {
-    memcpy(&header,&SNewItem.header,sizeof(unsigned int));
-    memcpy(&version,&SNewItem.version,sizeof(unsigned short));
-    memcpy(&flags,&SNewItem.flags,sizeof(unsigned short));
-    memcpy(&method,&SNewItem.method,sizeof(unsigned short));
-    memcpy(&mod_time,&SNewItem.mod_time,sizeof(unsigned short));
-    memcpy(&mod_date,&SNewItem.mod_date,sizeof(unsigned short));
-    memcpy(&crc32,&SNewItem.crc32,sizeof(unsigned int));
-    memcpy(&csize,&SNewItem.csize,sizeof(unsigned int));
-    memcpy(&usize,&SNewItem.usize,sizeof(unsigned int));
-    memcpy(&flength,&SNewItem.flength,sizeof(unsigned short));
-    memcpy(&elength,&SNewItem.elength,sizeof(unsigned short));
-    memcpy(&eclength,&SNewItem.eclength,sizeof(unsigned short));
-    memcpy(&clength,&SNewItem.clength,sizeof(unsigned short));
-    memcpy(&lhdrOffset,&SNewItem.lhdrOffset,sizeof(unsigned int));
-    memcpy(&offset,&SNewItem.offset,sizeof(int64_t));
-    memcpy(name,SNewItem.name,255*sizeof(char));
+    memcpy(&header, &SNewItem.header, sizeof(unsigned int));
+    memcpy(&version, &SNewItem.version, sizeof(unsigned short));
+    memcpy(&flags, &SNewItem.flags, sizeof(unsigned short));
+    memcpy(&method, &SNewItem.method, sizeof(unsigned short));
+    memcpy(&mod_time, &SNewItem.mod_time, sizeof(unsigned short));
+    memcpy(&mod_date, &SNewItem.mod_date, sizeof(unsigned short));
+    memcpy(&crc32, &SNewItem.crc32, sizeof(unsigned int));
+    memcpy(&csize, &SNewItem.csize, sizeof(unsigned int));
+    memcpy(&usize, &SNewItem.usize, sizeof(unsigned int));
+    memcpy(&flength, &SNewItem.flength, sizeof(unsigned short));
+    memcpy(&elength, &SNewItem.elength, sizeof(unsigned short));
+    memcpy(&eclength, &SNewItem.eclength, sizeof(unsigned short));
+    memcpy(&clength, &SNewItem.clength, sizeof(unsigned short));
+    memcpy(&lhdrOffset, &SNewItem.lhdrOffset, sizeof(unsigned int));
+    memcpy(&offset, &SNewItem.offset, sizeof(int64_t));
+    memcpy(name, SNewItem.name, 255 * sizeof(char));
   }
 };
 
@@ -113,9 +114,10 @@ public:
   void release(const std::string& strPath); // release resources used by list zip
   static void readHeader(const char* buffer, SZipEntry& info);
   static void readCHeader(const char* buffer, SZipEntry& info);
+
 private:
-  std::map<std::string,std::vector<SZipEntry> > mZipMap;
-  std::map<std::string,int64_t> mZipDate;
+  std::map<std::string, std::vector<SZipEntry> > mZipMap;
+  std::map<std::string, int64_t> mZipDate;
 };
 
 extern CZipManager g_ZipManager;

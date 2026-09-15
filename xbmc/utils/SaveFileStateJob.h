@@ -9,32 +9,38 @@ class CSaveFileStateJob : public CJob
   CFileItem m_item;
   CFileItem m_item_discstack;
   CBookmark m_bookmark;
-  bool      m_updatePlayCount;
+  bool m_updatePlayCount;
+
 public:
-                CSaveFileStateJob(const CFileItem& item,
-                                  const CFileItem& item_discstack,
-                                  const CBookmark& bookmark,
-                                  bool updatePlayCount)
-                  : m_item(item),
-                    m_item_discstack(item_discstack),
-                    m_bookmark(bookmark),
-                    m_updatePlayCount(updatePlayCount) {}
-  virtual       ~CSaveFileStateJob() {}
-  virtual bool  DoWork();
+  CSaveFileStateJob(const CFileItem& item,
+                    const CFileItem& item_discstack,
+                    const CBookmark& bookmark,
+                    bool updatePlayCount)
+    : m_item(item),
+      m_item_discstack(item_discstack),
+      m_bookmark(bookmark),
+      m_updatePlayCount(updatePlayCount)
+  {
+  }
+  virtual ~CSaveFileStateJob() {}
+  virtual bool DoWork();
 };
 
 bool CSaveFileStateJob::DoWork()
 {
   CStdString progressTrackingFile = m_item.GetPath();
 
-  if (m_item.IsDVD()) 
-    progressTrackingFile = m_item.GetVideoInfoTag()->m_strFileNameAndPath; // this variable contains removable:// suffixed by disc label
+  if (m_item.IsDVD())
+    progressTrackingFile =
+        m_item.GetVideoInfoTag()
+            ->m_strFileNameAndPath; // this variable contains removable:// suffixed by disc label
 
   if (progressTrackingFile != "")
   {
     if (m_item.IsVideo())
     {
-      CLog::Log(LOGDEBUG, "%s - Saving file state for video item %s", __FUNCTION__, progressTrackingFile.c_str());
+      CLog::Log(LOGDEBUG, "%s - Saving file state for video item %s", __FUNCTION__,
+                progressTrackingFile.c_str());
 
       CVideoDatabase videodatabase;
       if (videodatabase.Open())
@@ -45,14 +51,16 @@ bool CSaveFileStateJob::DoWork()
         {
           if (m_updatePlayCount)
           {
-            CLog::Log(LOGDEBUG, "%s - Marking video item %s as watched", __FUNCTION__, progressTrackingFile.c_str());
+            CLog::Log(LOGDEBUG, "%s - Marking video item %s as watched", __FUNCTION__,
+                      progressTrackingFile.c_str());
 
             // consider this item as played
             videodatabase.IncrementPlayCount(m_item);
             updateListing = true;
           }
 
-          if (!m_item.HasVideoInfoTag() || m_item.GetVideoInfoTag()->m_resumePoint.timeInSeconds != m_bookmark.timeInSeconds)
+          if (!m_item.HasVideoInfoTag() ||
+              m_item.GetVideoInfoTag()->m_resumePoint.timeInSeconds != m_bookmark.timeInSeconds)
           {
             if (m_bookmark.timeInSeconds <= 0.0f)
             {
@@ -68,9 +76,11 @@ bool CSaveFileStateJob::DoWork()
           }
         }
 
-        if (CMediaSettings::Get().GetCurrentVideoSettings() != CMediaSettings::Get().GetDefaultVideoSettings())
+        if (CMediaSettings::Get().GetCurrentVideoSettings() !=
+            CMediaSettings::Get().GetDefaultVideoSettings())
         {
-          videodatabase.SetVideoSettings(progressTrackingFile, CMediaSettings::Get().GetCurrentVideoSettings());
+          videodatabase.SetVideoSettings(progressTrackingFile,
+                                         CMediaSettings::Get().GetCurrentVideoSettings());
         }
 
         if (m_item.HasVideoInfoTag() && m_item.GetVideoInfoTag()->HasStreamDetails())
@@ -79,9 +89,12 @@ bool CSaveFileStateJob::DoWork()
           videodatabase.GetStreamDetails(dbItem); // Fetch stream details from the db (if any)
 
           // Check whether the item's db streamdetails need updating
-          if (!dbItem.GetVideoInfoTag()->HasStreamDetails() || dbItem.GetVideoInfoTag()->m_streamDetails != m_item.GetVideoInfoTag()->m_streamDetails)
+          if (!dbItem.GetVideoInfoTag()->HasStreamDetails() ||
+              dbItem.GetVideoInfoTag()->m_streamDetails !=
+                  m_item.GetVideoInfoTag()->m_streamDetails)
           {
-            videodatabase.SetStreamDetailsForFile(m_item.GetVideoInfoTag()->m_streamDetails, progressTrackingFile);
+            videodatabase.SetStreamDetailsForFile(m_item.GetVideoInfoTag()->m_streamDetails,
+                                                  progressTrackingFile);
             updateListing = true;
           }
         }
@@ -97,7 +110,8 @@ bool CSaveFileStateJob::DoWork()
         if (updateListing)
         {
           CUtil::DeleteVideoDatabaseDirectoryCache();
-          CGUIMessage message(GUI_MSG_NOTIFY_ALL, g_windowManager.GetActiveWindow(), 0, GUI_MSG_UPDATE, 0);
+          CGUIMessage message(GUI_MSG_NOTIFY_ALL, g_windowManager.GetActiveWindow(), 0,
+                              GUI_MSG_UPDATE, 0);
           g_windowManager.SendThreadMessage(message);
         }
       }
@@ -105,7 +119,8 @@ bool CSaveFileStateJob::DoWork()
 
     if (m_item.IsAudio())
     {
-      CLog::Log(LOGDEBUG, "%s - Saving file state for audio item %s", __FUNCTION__, m_item.GetPath().c_str());
+      CLog::Log(LOGDEBUG, "%s - Saving file state for audio item %s", __FUNCTION__,
+                m_item.GetPath().c_str());
 
       if (m_updatePlayCount)
       {
@@ -116,7 +131,8 @@ bool CSaveFileStateJob::DoWork()
 #endif
         {
           // consider this item as played
-          CLog::Log(LOGDEBUG, "%s - Marking audio item %s as listened", __FUNCTION__, m_item.GetPath().c_str());
+          CLog::Log(LOGDEBUG, "%s - Marking audio item %s as listened", __FUNCTION__,
+                    m_item.GetPath().c_str());
 
           CMusicDatabase musicdatabase;
           if (musicdatabase.Open())

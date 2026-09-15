@@ -28,13 +28,14 @@ SOUNDTRACK datastorage; //created a vector of the XSOUNDTRACK_DATA class to keep
 using namespace XFILE;
 
 CSndtrkDirectory::CSndtrkDirectory(void)
-{}
+{
+}
 
 CSndtrkDirectory::~CSndtrkDirectory(void)
-{}
+{
+}
 
-
-bool CSndtrkDirectory::GetDirectory(const CURL& url, CFileItemList &items)
+bool CSndtrkDirectory::GetDirectory(const CURL& url, CFileItemList& items)
 {
   std::string strRoot = url.Get();
   if (IsAlone(strRoot))
@@ -42,31 +43,31 @@ bool CSndtrkDirectory::GetDirectory(const CURL& url, CFileItemList &items)
     // Add each user provided soundtrack to the soundtrack vector
     // Took code from samples in XDK
     XSOUNDTRACK_DATA stData;
-    HANDLE hSoundtrack = XFindFirstSoundtrack( &stData );
-    if ( INVALID_HANDLE_VALUE != hSoundtrack )
+    HANDLE hSoundtrack = XFindFirstSoundtrack(&stData);
+    if (INVALID_HANDLE_VALUE != hSoundtrack)
     {
       do
       {
         // Ignore empty soundtracks && parent directories
-        if ( stData.uSongCount > 0 && strRoot != "..")
+        if (stData.uSongCount > 0 && strRoot != "..")
         {
           CSoundtrack stInfo;
           stInfo.uSoundtrackId = stData.uSoundtrackId;
           stInfo.uSongCount = stData.uSongCount;
-          wcscpy(stInfo.strName, stData.szName );
+          wcscpy(stInfo.strName, stData.szName);
 
-          ISOUNDTRACK it=datastorage.find(stData.uSoundtrackId);
-          if (it==datastorage.end())
+          ISOUNDTRACK it = datastorage.find(stData.uSoundtrackId);
+          if (it == datastorage.end())
             datastorage.insert(SOUNDTRACK_PAIR(stInfo.uSoundtrackId, stInfo));
           else
-            it->second=stInfo;
+            it->second = stInfo;
 
           // convert from WCHAR to std::string
           std::string strName;
           size_t bufferSize = 32 * sizeof(char);
           char narrowStr[32];
           size_t numConverted = wcstombs(narrowStr, stData.szName, bufferSize);
-          if (numConverted == static_cast<size_t>(-1)) 
+          if (numConverted == static_cast<size_t>(-1))
             strName = "";
           else
             strName = narrowStr;
@@ -74,42 +75,41 @@ bool CSndtrkDirectory::GetDirectory(const CURL& url, CFileItemList &items)
           CFileItemPtr pItem(new CFileItem(strName));
           pItem->SetLabelPreformated(true);
           char tmpvar[4];
-          sprintf(tmpvar,"%i",stData.uSoundtrackId);
+          sprintf(tmpvar, "%i", stData.uSoundtrackId);
           pItem->SetPath(strRoot + tmpvar);
           pItem->m_bIsFolder = true;
           items.Add(pItem);
         }
-      }
-      while ( XFindNextSoundtrack( hSoundtrack, &stData ) );
+      } while (XFindNextSoundtrack(hSoundtrack, &stData));
 
       XFindClose(hSoundtrack);
     }
   }
   else
   {
-    char *ptr = strstr(strRoot.c_str(), "//");
+    char* ptr = strstr(strRoot.c_str(), "//");
     ptr += 2;
     int m_iconvert = atoi(ptr); //convert from char back to int to compare to data
 
-    ISOUNDTRACK it=datastorage.find(m_iconvert);
+    ISOUNDTRACK it = datastorage.find(m_iconvert);
     if (it == datastorage.end())
       return false;
 
     CSoundtrack stInfo = it->second;
-    for ( UINT i = 0; i < stInfo.uSongCount; ++i )
+    for (UINT i = 0; i < stInfo.uSongCount; ++i)
     {
       DWORD dwSongId;
       DWORD dwSongLength;
       WCHAR wcSong[64];
-      if ( XGetSoundtrackSongInfo( stInfo.uSoundtrackId, i, &dwSongId,
-                                   &dwSongLength, wcSong, MAX_SONG_NAME ) )
+      if (XGetSoundtrackSongInfo(stInfo.uSoundtrackId, i, &dwSongId, &dwSongLength, wcSong,
+                                 MAX_SONG_NAME))
       {
         // convert from WCHAR to std::string
         std::string strSong;
         size_t bufferSize = 64 * sizeof(char);
         char narrowStr[64];
         size_t numConverted = wcstombs(narrowStr, wcSong, bufferSize);
-        if (numConverted == static_cast<size_t>(-1)) 
+        if (numConverted == static_cast<size_t>(-1))
           strSong = "";
         else
           strSong = narrowStr;
@@ -140,14 +140,15 @@ bool CSndtrkDirectory::IsAlone(const std::string& strPath)
   return (strcmp("soundtrack://", strPath.c_str()) == 0);
 }
 
-bool CSndtrkDirectory::FindTrackName(const std::string& strPath, char *NameOfSong)
+bool CSndtrkDirectory::FindTrackName(const std::string& strPath, char* NameOfSong)
 {
   char* ptr = strstr(strPath.c_str(), "E:\\TDATA\\fffe0000\\music\\");
-  if (ptr == NULL) return false;
+  if (ptr == NULL)
+    return false;
   ptr += strlen("E:\\TDATA\\fffe0000\\music\\");
   char album[5];
   int x = 0;
-  for (x = 0;x < 4;x++)
+  for (x = 0; x < 4; x++)
   {
     album[x] = *ptr;
     ptr += 1;
@@ -155,7 +156,7 @@ bool CSndtrkDirectory::FindTrackName(const std::string& strPath, char *NameOfSon
   album[4] = '\0';
   ptr += 1;
   char trackno[9];
-  for (x = 0;x < 8;x++)
+  for (x = 0; x < 8; x++)
   {
     trackno[x] = *ptr;
     ptr += 1;
@@ -171,7 +172,8 @@ bool CSndtrkDirectory::FindTrackName(const std::string& strPath, char *NameOfSon
     DWORD dwSongId;
     DWORD dwSongLength;
     WCHAR Songname[64];
-    if ( XGetSoundtrackSongInfo( AlbumID, x, &dwSongId, &dwSongLength, Songname, MAX_SONG_NAME ) == false)
+    if (XGetSoundtrackSongInfo(AlbumID, x, &dwSongId, &dwSongLength, Songname, MAX_SONG_NAME) ==
+        false)
       test = false;
     if (dwSongId == SongID)
     {

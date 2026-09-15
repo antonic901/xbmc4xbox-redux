@@ -87,10 +87,10 @@ static int ExportLibrary(const std::vector<std::string>& params)
   g_mediaManager.GetRemovableDrives(shares);
 #endif
   bool singleFile;
-  bool thumbs=false;
-  bool actorThumbs=false;
-  bool overwrite=false;
-  bool cancelled=false;
+  bool thumbs = false;
+  bool actorThumbs = false;
+  bool overwrite = false;
+  bool cancelled = false;
 
   if (params.size() > 1)
     singleFile = StringUtils::EqualsNoCase(params[1], "false");
@@ -150,10 +150,9 @@ static int ExportLibrary(const std::vector<std::string>& params)
     return -1;
 
   if (params.size() > 2)
-    path=params[2];
+    path = params[2];
   if (!singleFile || !path.empty() ||
-      CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(661),
-                                                 path, true))
+      CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(661), path, true))
   {
     if (StringUtils::EqualsNoCase(params[0], "video"))
     {
@@ -240,8 +239,9 @@ static int ExportLibrary2(const std::vector<std::string>& params)
   {
     CVideoDatabase videodatabase;
     videodatabase.Open();
-    videodatabase.ExportToXML(settings.m_strPath, settings.IsSingleFile(),
-      settings.m_artwork, settings.IsItemExported(ELIBEXPORT_ACTORTHUMBS), settings.m_overwrite);
+    videodatabase.ExportToXML(settings.m_strPath, settings.IsSingleFile(), settings.m_artwork,
+                              settings.IsItemExported(ELIBEXPORT_ACTORTHUMBS),
+                              settings.m_overwrite);
     videodatabase.Close();
   }
   return 0;
@@ -362,9 +362,9 @@ CBuiltins::CommandMap CLibraryBuiltins::GetOperations() const
   CBuiltins::BUILT_IN builtin4 = {"Update the selected library (music or video)", 1, UpdateLibrary};
   commands.insert(std::make_pair("updatelibrary", builtin4));
 
-  CBuiltins::BUILT_IN builtin5 = {"Brings up a search dialog which will search the library", 0, SearchVideoLibrary};
+  CBuiltins::BUILT_IN builtin5 = {"Brings up a search dialog which will search the library", 0,
+                                  SearchVideoLibrary};
   commands.insert(std::make_pair("videolibrary.search", builtin5));
 
   return commands;
 }
-

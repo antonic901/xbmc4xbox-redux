@@ -10,5 +10,5 @@
 
 namespace XBMCAddon
 {
-  String emptyString;
+String emptyString;
 }

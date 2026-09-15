@@ -24,14 +24,13 @@
 #include "IProgressCallback.h"
 #include "threads/Event.h"
 
-class CGUIDialogProgress :
-      public CGUIDialogBoxBase, public IProgressCallback
+class CGUIDialogProgress : public CGUIDialogBoxBase, public IProgressCallback
 {
 public:
   CGUIDialogProgress(void);
   virtual ~CGUIDialogProgress(void);
 
-  void Open(const std::string &param = "");
+  void Open(const std::string& param = "");
   virtual bool OnMessage(CGUIMessage& message);
   virtual bool OnBack(int actionID);
   virtual void OnWindowLoaded();
@@ -59,7 +58,7 @@ public:
 
   // Implements IProgressCallback
   virtual void SetProgressMax(int iMax);
-  virtual void SetProgressAdvance(int nSteps=1);
+  virtual void SetProgressAdvance(int nSteps = 1);
   virtual bool Abort();
 
   void SetCanCancel(bool bCanCancel);
@@ -67,13 +66,13 @@ public:
 protected:
   virtual void OnInitWindow();
   virtual int GetDefaultLabelID(int controlId) const;
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
 
   bool m_bCanCancel;
   bool m_bCanceled;
 
-  int  m_iCurrent;
-  int  m_iMax;
+  int m_iCurrent;
+  int m_iMax;
   int m_percentage;
   bool m_showProgress;
 

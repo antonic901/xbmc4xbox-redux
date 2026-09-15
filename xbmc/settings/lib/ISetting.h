@@ -39,8 +39,8 @@ public:
    \param id Identifier of the setting object
    \param settingsManager Reference to the settings manager
    */
-  ISetting(const std::string &id, CSettingsManager *settingsManager = NULL);
-  virtual ~ISetting() { }
+  ISetting(const std::string& id, CSettingsManager* settingsManager = NULL);
+  virtual ~ISetting() {}
 
   /*!
    \brief Deserializes the given XML node into the properties of the setting
@@ -53,7 +53,7 @@ public:
    \param update Whether to perform checks for mandatory properties or not
    \return True if deserialization was successful, false otherwise
    */
-  virtual bool Deserialize(const TiXmlNode *node, bool update = false);
+  virtual bool Deserialize(const TiXmlNode* node, bool update = false);
 
   /*!
    \brief Gets the identifier of the setting object.
@@ -73,7 +73,7 @@ public:
    \param visible Whether the setting object shall be visible or not
    */
   virtual void SetVisible(bool visible) { m_visible = visible; }
-   /*!
+  /*!
    \brief Gets the localizeable label ID of the setting group.
 
    \return Localizeable label ID of the setting group
@@ -122,11 +122,11 @@ public:
    \param identification Will contain the deserialized setting object's identifier
    \return True if a setting object's identifier was deserialized, false otherwise
    */
-  static bool DeserializeIdentification(const TiXmlNode *node, std::string &identification);
+  static bool DeserializeIdentification(const TiXmlNode* node, std::string& identification);
 
 protected:
   std::string m_id;
-  CSettingsManager *m_settingsManager;
+  CSettingsManager* m_settingsManager;
 
 private:
   bool m_visible;

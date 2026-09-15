@@ -26,18 +26,21 @@ class CSmartPlaylist;
 
 namespace XFILE
 {
-  class CSmartPlaylistDirectory : public IFileDirectory
-  {
-  public:
-    CSmartPlaylistDirectory();
-    ~CSmartPlaylistDirectory();
-    virtual bool GetDirectory(const CURL& url, CFileItemList& items);
-    virtual bool AllowAll() const { return true; }
-    virtual bool ContainsFiles(const CURL& url);
-    virtual bool Remove(const CURL& url);
+class CSmartPlaylistDirectory : public IFileDirectory
+{
+public:
+  CSmartPlaylistDirectory();
+  ~CSmartPlaylistDirectory();
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool AllowAll() const { return true; }
+  virtual bool ContainsFiles(const CURL& url);
+  virtual bool Remove(const CURL& url);
 
-    static bool GetDirectory(const CSmartPlaylist &playlist, CFileItemList& items, const std::string &strBaseDir = "", bool filter = false);
+  static bool GetDirectory(const CSmartPlaylist& playlist,
+                           CFileItemList& items,
+                           const std::string& strBaseDir = "",
+                           bool filter = false);
 
-    static std::string GetPlaylistByName(const std::string& name, const std::string& playlistType);
-  };
-}
+  static std::string GetPlaylistByName(const std::string& name, const std::string& playlistType);
+};
+} // namespace XFILE

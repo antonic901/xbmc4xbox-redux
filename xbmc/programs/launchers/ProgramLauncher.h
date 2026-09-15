@@ -29,4 +29,4 @@ public:
   static bool LaunchProgram(const std::string& strExecutable);
   static bool LaunchProgram(const CURL& url);
 };
-}
+} // namespace LAUNCHERS

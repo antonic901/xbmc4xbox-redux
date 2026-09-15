@@ -24,16 +24,16 @@
 
 namespace XbmcCommons
 {
-  void ILogger::Log(int loglevel, const char *format, ... )
-  {
-    CStdString strData;
+void ILogger::Log(int loglevel, const char* format, ...)
+{
+  CStdString strData;
 
-    strData.reserve(16384);
-    va_list va;
-    va_start(va, format);
-    strData = StringUtils::FormatV(format,va);
-    va_end(va);
+  strData.reserve(16384);
+  va_list va;
+  va_start(va, format);
+  strData = StringUtils::FormatV(format, va);
+  va_end(va);
 
-    log(loglevel, strData);
-  }
+  log(loglevel, strData);
 }
+} // namespace XbmcCommons

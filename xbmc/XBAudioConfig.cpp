@@ -50,19 +50,25 @@ void XBAudioConfig::OnSettingsLoaded()
     CSettings::GetInstance().SetInt("audiooutput.mode", AUDIO_ANALOG);
   CSettings::GetInstance().SetBool("audiooutput.ac3passthrough", GetAC3Enabled());
   CSettings::GetInstance().SetBool("audiooutput.dtspassthrough", GetDTSEnabled());
-  CLog::Log(LOGINFO, "Using %s output", CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_ANALOG ? "analog" : "digital");
-  CLog::Log(LOGINFO, "AC3 pass through is %s", CSettings::GetInstance().GetBool("audiooutput.ac3passthrough") ? "enabled" : "disabled");
-  CLog::Log(LOGINFO, "DTS pass through is %s", CSettings::GetInstance().GetBool("audiooutput.dtspassthrough") ? "enabled" : "disabled");
-  CLog::Log(LOGINFO, "AAC pass through is %s", CSettings::GetInstance().GetBool("audiooutput.aacpassthrough") ? "enabled" : "disabled");
+  CLog::Log(LOGINFO, "Using %s output",
+            CSettings::GetInstance().GetInt("audiooutput.mode") == AUDIO_ANALOG ? "analog"
+                                                                                : "digital");
+  CLog::Log(LOGINFO, "AC3 pass through is %s",
+            CSettings::GetInstance().GetBool("audiooutput.ac3passthrough") ? "enabled"
+                                                                           : "disabled");
+  CLog::Log(LOGINFO, "DTS pass through is %s",
+            CSettings::GetInstance().GetBool("audiooutput.dtspassthrough") ? "enabled"
+                                                                           : "disabled");
+  CLog::Log(LOGINFO, "AAC pass through is %s",
+            CSettings::GetInstance().GetBool("audiooutput.aacpassthrough") ? "enabled"
+                                                                           : "disabled");
 }
 
 bool XBAudioConfig::HasDigitalOutput()
 {
 #ifdef HAS_XBOX_AUDIO
   DWORD dwAVPack = XGetAVPack();
-  if (dwAVPack == XC_AV_PACK_SCART ||
-      dwAVPack == XC_AV_PACK_HDTV ||
-      dwAVPack == XC_AV_PACK_VGA ||
+  if (dwAVPack == XC_AV_PACK_SCART || dwAVPack == XC_AV_PACK_HDTV || dwAVPack == XC_AV_PACK_VGA ||
       dwAVPack == XC_AV_PACK_SVIDEO)
     return true;
 #endif
@@ -81,7 +87,8 @@ void XBAudioConfig::SetAC3Enabled(bool bEnable)
 
 bool XBAudioConfig::GetAC3Enabled()
 {
-  if (!HasDigitalOutput()) return false;
+  if (!HasDigitalOutput())
+    return false;
 #ifdef HAS_XBOX_AUDIO
   return (XC_AUDIO_FLAGS_ENCODED(XGetAudioFlags()) & XC_AUDIO_FLAGS_ENABLE_AC3) != 0;
 #else
@@ -101,7 +108,8 @@ void XBAudioConfig::SetDTSEnabled(bool bEnable)
 
 bool XBAudioConfig::GetDTSEnabled()
 {
-  if (!HasDigitalOutput()) return false;
+  if (!HasDigitalOutput())
+    return false;
 #ifdef HAS_XBOX_AUDIO
   return (XC_AUDIO_FLAGS_ENCODED(XGetAudioFlags()) & XC_AUDIO_FLAGS_ENABLE_DTS) != 0;
 #else
@@ -147,7 +155,8 @@ bool XBAudioConfig::GetMP3Enabled()
 
 bool XBAudioConfig::NeedsSave()
 {
-  if (!HasDigitalOutput()) return false;
+  if (!HasDigitalOutput())
+    return false;
 #ifdef HAS_XBOX_AUDIO
   return m_dwAudioFlags != XGetAudioFlags();
 #else
@@ -158,7 +167,8 @@ bool XBAudioConfig::NeedsSave()
 // USE VERY CAREFULLY!!
 void XBAudioConfig::Save()
 {
-  if (!NeedsSave()) return ;
+  if (!NeedsSave())
+    return;
 #ifdef HAS_XBOX_AUDIO
   // update the EEPROM settings
   DWORD type = REG_BINARY;
@@ -171,7 +181,10 @@ void XBAudioConfig::Save()
 #endif
 }
 
-void XBAudioConfig::SettingAudioOutputFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void XBAudioConfig::SettingAudioOutputFiller(const CSetting* setting,
+                                             std::vector<std::pair<std::string, int> >& list,
+                                             int& current,
+                                             void* data)
 {
   list.push_back(std::make_pair(g_localizeStrings.Get(38630), 0)); // ANALOG
   list.push_back(std::make_pair(g_localizeStrings.Get(38631), 1)); // DIGITAL

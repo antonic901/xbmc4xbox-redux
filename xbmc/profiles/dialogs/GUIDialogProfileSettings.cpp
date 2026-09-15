@@ -42,27 +42,30 @@
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
 
-#define SETTING_PROFILE_NAME          "profile.name"
-#define SETTING_PROFILE_IMAGE         "profile.image"
-#define SETTING_PROFILE_DIRECTORY     "profile.directory"
-#define SETTING_PROFILE_LOCKS         "profile.locks"
-#define SETTING_PROFILE_MEDIA         "profile.media"
+#define SETTING_PROFILE_NAME "profile.name"
+#define SETTING_PROFILE_IMAGE "profile.image"
+#define SETTING_PROFILE_DIRECTORY "profile.directory"
+#define SETTING_PROFILE_LOCKS "profile.locks"
+#define SETTING_PROFILE_MEDIA "profile.media"
 #define SETTING_PROFILE_MEDIA_SOURCES "profile.mediasources"
 
 CGUIDialogProfileSettings::CGUIDialogProfileSettings()
-    : CGUIDialogSettingsManualBase(WINDOW_DIALOG_PROFILE_SETTINGS, "DialogSettings.xml"),
-      m_needsSaving(false)
-{ }
+  : CGUIDialogSettingsManualBase(WINDOW_DIALOG_PROFILE_SETTINGS, "DialogSettings.xml"),
+    m_needsSaving(false)
+{
+}
 
 CGUIDialogProfileSettings::~CGUIDialogProfileSettings()
-{ }
+{
+}
 
 bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool firstLogin)
 {
   if (firstLogin && iProfile > CProfilesManager::Get().GetNumberOfProfiles())
     return false;
 
-  CGUIDialogProfileSettings *dialog = (CGUIDialogProfileSettings *)g_windowManager.GetWindow(WINDOW_DIALOG_PROFILE_SETTINGS);
+  CGUIDialogProfileSettings* dialog =
+      (CGUIDialogProfileSettings*)g_windowManager.GetWindow(WINDOW_DIALOG_PROFILE_SETTINGS);
   if (dialog == NULL)
     return false;
 
@@ -70,7 +73,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
   dialog->m_isDefault = iProfile == 0;
   dialog->m_showDetails = !firstLogin;
 
-  const CProfile *profile = CProfilesManager::Get().GetProfile(iProfile);
+  const CProfile* profile = CProfilesManager::Get().GetProfile(iProfile);
   if (profile == NULL)
   {
     dialog->m_name.clear();
@@ -78,7 +81,8 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
     dialog->m_sourcesMode = 2;
     dialog->m_locks = CProfile::CLock();
 
-    bool bLock = CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE && !g_passwordManager.bMasterUser;
+    bool bLock = CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE &&
+                 !g_passwordManager.bMasterUser;
     dialog->m_locks.addonManager = bLock;
     dialog->m_locks.settings = (bLock) ? LOCK_LEVEL::ALL : LOCK_LEVEL::NONE;
     dialog->m_locks.files = bLock;
@@ -88,12 +92,14 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
 
     // prompt for a name
     std::string profileName;
-    if (!CGUIKeyboardFactory::ShowAndGetInput(profileName, g_localizeStrings.Get(20093), false) || profileName.empty())
+    if (!CGUIKeyboardFactory::ShowAndGetInput(profileName, g_localizeStrings.Get(20093), false) ||
+        profileName.empty())
       return false;
     dialog->m_name = profileName;
 
     // create a default path
-    std::string defaultDir = URIUtils::AddFileToFolder("profiles", CUtil::MakeLegalFileName(dialog->m_name));
+    std::string defaultDir =
+        URIUtils::AddFileToFolder("profiles", CUtil::MakeLegalFileName(dialog->m_name));
 #ifdef _XBOX
     // Do we need this on Xbox?
     CStdString strDefaultDir(defaultDir);
@@ -108,7 +114,8 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
     if (GetProfilePath(userDir, false)) // can't be the master user
     {
       if (!URIUtils::PathHasParent(userDir, defaultDir)) // user chose a different folder
-        XFILE::CDirectory::Remove(URIUtils::AddFileToFolder("special://masterprofile/", defaultDir));
+        XFILE::CDirectory::Remove(
+            URIUtils::AddFileToFolder("special://masterprofile/", defaultDir));
     }
     dialog->m_directory = userDir;
     dialog->m_needsSaving = true;
@@ -145,9 +152,11 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
       }*/
 
       // check for old profile settings
-      CProfile profile(dialog->m_directory, dialog->m_name, CProfilesManager::Get().GetNextProfileId());
+      CProfile profile(dialog->m_directory, dialog->m_name,
+                       CProfilesManager::Get().GetNextProfileId());
       CProfilesManager::Get().AddProfile(profile);
-      bool exists = XFILE::CFile::Exists(URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory, "guisettings.xml"));
+      bool exists = XFILE::CFile::Exists(URIUtils::AddFileToFolder(
+          "special://masterprofile/", dialog->m_directory, "guisettings.xml"));
 
       if (exists && !CGUIDialogYesNo::ShowAndGetInput(20058, 20104))
         exists = false;
@@ -159,12 +168,15 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
         // guisettings.xml will be created on first profile use.
         if (CGUIDialogYesNo::ShowAndGetInput(20058, 20048, "", "", 20044, 20064))
         {
-          XFILE::CFile::Copy(URIUtils::AddFileToFolder("special://masterprofile/", "guisettings.xml"),
-                              URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory, "guisettings.xml"));
+          XFILE::CFile::Copy(
+              URIUtils::AddFileToFolder("special://masterprofile/", "guisettings.xml"),
+              URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory,
+                                        "guisettings.xml"));
         }
       }
 
-      exists = XFILE::CFile::Exists(URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory, "sources.xml"));
+      exists = XFILE::CFile::Exists(URIUtils::AddFileToFolder("special://masterprofile/",
+                                                              dialog->m_directory, "sources.xml"));
       if (exists && !CGUIDialogYesNo::ShowAndGetInput(20058, 20106))
         exists = false;
 
@@ -176,7 +188,8 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
           if (CGUIDialogYesNo::ShowAndGetInput(20058, 20071, "", "", 20044, 20064))
           {
             XFILE::CFile::Copy(URIUtils::AddFileToFolder("special://masterprofile/", "sources.xml"),
-                                URIUtils::AddFileToFolder("special://masterprofile/", dialog->m_directory, "sources.xml"));
+                               URIUtils::AddFileToFolder("special://masterprofile/",
+                                                         dialog->m_directory, "sources.xml"));
           }
       }
     }
@@ -185,7 +198,7 @@ bool CGUIDialogProfileSettings::ShowForProfile(unsigned int iProfile, bool first
       if (!CGUIDialogYesNo::ShowAndGetInput(20067, 20103))
         return false;*/
 
-    CProfile *profile = CProfilesManager::Get().GetProfile(iProfile);
+    CProfile* profile = CProfilesManager::Get().GetProfile(iProfile);
     assert(profile);
     profile->setName(dialog->m_name);
     profile->setDirectory(dialog->m_directory);
@@ -208,14 +221,14 @@ void CGUIDialogProfileSettings::OnWindowLoaded()
   CGUIDialogSettingsManualBase::OnWindowLoaded();
 }
 
-void CGUIDialogProfileSettings::OnSettingChanged(const CSetting *setting)
+void CGUIDialogProfileSettings::OnSettingChanged(const CSetting* setting)
 {
   if (setting == NULL)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingChanged(setting);
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
   if (settingId == SETTING_PROFILE_NAME)
   {
     m_name = static_cast<const CSettingString*>(setting)->GetValue();
@@ -228,14 +241,14 @@ void CGUIDialogProfileSettings::OnSettingChanged(const CSetting *setting)
   m_needsSaving = true;
 }
 
-void CGUIDialogProfileSettings::OnSettingAction(const CSetting *setting)
+void CGUIDialogProfileSettings::OnSettingAction(const CSetting* setting)
 {
   if (setting == NULL)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingAction(setting);
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
   if (settingId == SETTING_PROFILE_IMAGE)
   {
     VECSOURCES shares;
@@ -277,20 +290,24 @@ void CGUIDialogProfileSettings::OnSettingAction(const CSetting *setting)
   {
     if (m_showDetails)
     {
-      if (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE && !m_isDefault)
+      if (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE &&
+          !m_isDefault)
       {
         if (CGUIDialogYesNo::ShowAndGetInput(20066, 20118))
           g_passwordManager.SetMasterLockMode(false);
         if (CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE)
           return;
       }
-      if (CGUIDialogLockSettings::ShowAndGetLock(m_locks, m_isDefault ? 12360 : 20068,
-              CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE || m_isDefault))
+      if (CGUIDialogLockSettings::ShowAndGetLock(
+              m_locks, m_isDefault ? 12360 : 20068,
+              CProfilesManager::Get().GetMasterProfile().getLockMode() == LOCK_MODE_EVERYONE ||
+                  m_isDefault))
         m_needsSaving = true;
     }
     else
     {
-      if (CGUIDialogLockSettings::ShowAndGetLock(m_locks, m_isDefault ? 12360 : 20068, false, false))
+      if (CGUIDialogLockSettings::ShowAndGetLock(m_locks, m_isDefault ? 12360 : 20068, false,
+                                                 false))
         m_needsSaving = true;
     }
   }
@@ -323,14 +340,14 @@ void CGUIDialogProfileSettings::InitializeSettings()
 {
   CGUIDialogSettingsManualBase::InitializeSettings();
 
-  CSettingCategory *category = AddCategory("profilesettings", -1);
+  CSettingCategory* category = AddCategory("profilesettings", -1);
   if (category == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogProfileSettings: unable to setup settings");
     return;
   }
 
-  CSettingGroup *group = AddGroup(category);
+  CSettingGroup* group = AddGroup(category);
   if (group == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogProfileSettings: unable to setup settings");
@@ -344,12 +361,13 @@ void CGUIDialogProfileSettings::InitializeSettings()
     AddButton(group, SETTING_PROFILE_DIRECTORY, 20070, 0);
 
   if (m_showDetails ||
-     (m_locks.mode == LOCK_MODE_EVERYONE && CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE))
+      (m_locks.mode == LOCK_MODE_EVERYONE &&
+       CProfilesManager::Get().GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE))
     AddButton(group, SETTING_PROFILE_LOCKS, 20066, 0);
 
   if (!m_isDefault && m_showDetails)
   {
-    CSettingGroup *groupMedia = AddGroup(category);
+    CSettingGroup* groupMedia = AddGroup(category);
     if (groupMedia == NULL)
     {
       CLog::Log(LOGERROR, "CGUIDialogProfileSettings: unable to setup settings");
@@ -368,7 +386,7 @@ void CGUIDialogProfileSettings::InitializeSettings()
   }
 }
 
-bool CGUIDialogProfileSettings::GetProfilePath(std::string &directory, bool isDefault)
+bool CGUIDialogProfileSettings::GetProfilePath(std::string& directory, bool isDefault)
 {
   VECSOURCES shares;
   CMediaSource share;
@@ -382,7 +400,8 @@ bool CGUIDialogProfileSettings::GetProfilePath(std::string &directory, bool isDe
   else
     strDirectory = URIUtils::AddFileToFolder("special://masterprofile/", directory);
 
-  if (!CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(657), strDirectory, true))
+  if (!CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(657), strDirectory,
+                                                  true))
     return false;
 
   directory = strDirectory;

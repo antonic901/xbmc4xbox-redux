@@ -25,36 +25,40 @@
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 
-CSettingAddon::CSettingAddon(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
+CSettingAddon::CSettingAddon(const std::string& id, CSettingsManager* settingsManager /* = NULL */)
   : CSettingString(id, settingsManager),
     m_addonType(ADDON::ADDON_UNKNOWN)
-{ }
+{
+}
 
-CSettingAddon::CSettingAddon(const std::string &id, int label, const std::string &value, CSettingsManager *settingsManager /* = NULL */)
+CSettingAddon::CSettingAddon(const std::string& id,
+                             int label,
+                             const std::string& value,
+                             CSettingsManager* settingsManager /* = NULL */)
   : CSettingString(id, label, value, settingsManager),
     m_addonType(ADDON::ADDON_UNKNOWN)
-{ }
+{
+}
 
-CSettingAddon::CSettingAddon(const std::string &id, const CSettingAddon &setting)
+CSettingAddon::CSettingAddon(const std::string& id, const CSettingAddon& setting)
   : CSettingString(id, setting)
 {
   copyaddontype(setting);
 }
 
-CSetting* CSettingAddon::Clone(const std::string &id) const
+CSetting* CSettingAddon::Clone(const std::string& id) const
 {
   return new CSettingAddon(id, *this);
 }
 
-bool CSettingAddon::Deserialize(const TiXmlNode *node, bool update /* = false */)
+bool CSettingAddon::Deserialize(const TiXmlNode* node, bool update /* = false */)
 {
   CExclusiveLock lock(m_critical);
 
   if (!CSettingString::Deserialize(node, update))
     return false;
 
-  if (m_control != NULL &&
-     (m_control->GetType() != "button" || m_control->GetFormat() != "addon"))
+  if (m_control != NULL && (m_control->GetType() != "button" || m_control->GetFormat() != "addon"))
   {
     CLog::Log(LOGERROR, "CSettingAddon: invalid <control> of \"%s\"", m_id.c_str());
     return false;
@@ -62,7 +66,7 @@ bool CSettingAddon::Deserialize(const TiXmlNode *node, bool update /* = false */
 
   bool ok = false;
   std::string strAddonType;
-  const TiXmlNode *constraints = node->FirstChild("constraints");
+  const TiXmlNode* constraints = node->FirstChild("constraints");
   if (constraints != NULL)
   {
     // get the addon type
@@ -76,14 +80,15 @@ bool CSettingAddon::Deserialize(const TiXmlNode *node, bool update /* = false */
 
   if (!ok && !update)
   {
-    CLog::Log(LOGERROR, "CSettingAddon: error reading the addontype value \"%s\" of \"%s\"", strAddonType.c_str(), m_id.c_str());
+    CLog::Log(LOGERROR, "CSettingAddon: error reading the addontype value \"%s\" of \"%s\"",
+              strAddonType.c_str(), m_id.c_str());
     return false;
   }
 
   return true;
 }
 
-void CSettingAddon::copyaddontype(const CSettingAddon &setting)
+void CSettingAddon::copyaddontype(const CSettingAddon& setting)
 {
   CSettingString::Copy(setting);
 

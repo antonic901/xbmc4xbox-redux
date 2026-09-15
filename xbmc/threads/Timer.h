@@ -25,15 +25,15 @@
 class ITimerCallback
 {
 public:
-  virtual ~ITimerCallback() { }
-  
+  virtual ~ITimerCallback() {}
+
   virtual void OnTimeout() = 0;
 };
 
 class CTimer : protected CThread
 {
 public:
-  CTimer(ITimerCallback *callback);
+  CTimer(ITimerCallback* callback);
   virtual ~CTimer();
 
   bool Start(uint32_t timeout, bool interval = false);
@@ -45,12 +45,12 @@ public:
 
   float GetElapsedSeconds() const;
   float GetElapsedMilliseconds() const;
-  
+
 protected:
   virtual void Process();
-  
+
 private:
-  ITimerCallback *m_callback;
+  ITimerCallback* m_callback;
   uint32_t m_timeout;
   bool m_interval;
   uint32_t m_endTime;

@@ -26,16 +26,18 @@
 #include "cores/VideoRenderers/RenderManager.h"
 #endif
 
-CGUIVideoControl::CGUIVideoControl(int parentID, int controlID, float posX, float posY, float width, float height)
-    : CGUIControl(parentID, controlID, posX, posY, width, height)
+CGUIVideoControl::CGUIVideoControl(
+    int parentID, int controlID, float posX, float posY, float width, float height)
+  : CGUIControl(parentID, controlID, posX, posY, width, height)
 {
   ControlType = GUICONTROL_VIDEO;
 }
 
 CGUIVideoControl::~CGUIVideoControl(void)
-{}
+{
+}
 
-void CGUIVideoControl::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIVideoControl::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   // TODO Proper processing which marks when its actually changed. Just mark always for now.
   MarkDirtyRegion();
@@ -75,7 +77,7 @@ bool CGUIVideoControl::CanFocus() const
   return false;
 }
 
-bool CGUIVideoControl::CanFocusFromPoint(const CPoint &point) const
+bool CGUIVideoControl::CanFocusFromPoint(const CPoint& point) const
 { // mouse is allowed to focus this control, but it doesn't actually receive focus
   return IsVisible() && HitTest(point);
 }

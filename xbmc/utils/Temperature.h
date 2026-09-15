@@ -50,43 +50,43 @@ public:
   static CTemperature CreateFromDelisle(double value);
   static CTemperature CreateFromNewton(double value);
 
-  bool operator >(const CTemperature& right) const;
-  bool operator >=(const CTemperature& right) const;
-  bool operator <(const CTemperature& right) const;
-  bool operator <=(const CTemperature& right) const;
-  bool operator ==(const CTemperature& right) const;
-  bool operator !=(const CTemperature& right) const;
+  bool operator>(const CTemperature& right) const;
+  bool operator>=(const CTemperature& right) const;
+  bool operator<(const CTemperature& right) const;
+  bool operator<=(const CTemperature& right) const;
+  bool operator==(const CTemperature& right) const;
+  bool operator!=(const CTemperature& right) const;
 
-  const CTemperature& operator =(const CTemperature& right);
-  const CTemperature& operator +=(const CTemperature& right);
-  const CTemperature& operator -=(const CTemperature& right);
-  const CTemperature& operator *=(const CTemperature& right);
-  const CTemperature& operator /=(const CTemperature& right);
-  CTemperature operator +(const CTemperature& right) const;
-  CTemperature operator -(const CTemperature& right) const;
-  CTemperature operator *(const CTemperature& right) const;
-  CTemperature operator /(const CTemperature& right) const;
+  const CTemperature& operator=(const CTemperature& right);
+  const CTemperature& operator+=(const CTemperature& right);
+  const CTemperature& operator-=(const CTemperature& right);
+  const CTemperature& operator*=(const CTemperature& right);
+  const CTemperature& operator/=(const CTemperature& right);
+  CTemperature operator+(const CTemperature& right) const;
+  CTemperature operator-(const CTemperature& right) const;
+  CTemperature operator*(const CTemperature& right) const;
+  CTemperature operator/(const CTemperature& right) const;
 
-  bool operator >(double right) const;
-  bool operator >=(double right) const;
-  bool operator <(double right) const;
-  bool operator <=(double right) const;
-  bool operator ==(double right) const;
-  bool operator !=(double right) const;
+  bool operator>(double right) const;
+  bool operator>=(double right) const;
+  bool operator<(double right) const;
+  bool operator<=(double right) const;
+  bool operator==(double right) const;
+  bool operator!=(double right) const;
 
-  const CTemperature& operator +=(double right);
-  const CTemperature& operator -=(double right);
-  const CTemperature& operator *=(double right);
-  const CTemperature& operator /=(double right);
-  CTemperature operator +(double right) const;
-  CTemperature operator -(double right) const;
-  CTemperature operator *(double right) const;
-  CTemperature operator /(double right) const;
+  const CTemperature& operator+=(double right);
+  const CTemperature& operator-=(double right);
+  const CTemperature& operator*=(double right);
+  const CTemperature& operator/=(double right);
+  CTemperature operator+(double right) const;
+  CTemperature operator-(double right) const;
+  CTemperature operator*(double right) const;
+  CTemperature operator/(double right) const;
 
-  CTemperature& operator ++();
-  CTemperature& operator --();
-  CTemperature operator ++(int);
-  CTemperature operator --(int);
+  CTemperature& operator++();
+  CTemperature& operator--();
+  CTemperature operator++(int);
+  CTemperature operator--(int);
 
   virtual void Archive(CArchive& ar);
 
@@ -111,4 +111,3 @@ protected:
   double m_value; // we store as fahrenheit
   bool m_valid;
 };
-

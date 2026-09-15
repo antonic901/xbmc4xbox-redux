@@ -23,15 +23,22 @@
 #include <stdint.h>
 #include "guilib/GUIDialog.h"
 
-class CGUIDialogNumeric :
-      public CGUIDialog
+class CGUIDialogNumeric : public CGUIDialog
 {
 public:
-  enum INPUT_MODE { INPUT_TIME = 1, INPUT_DATE, INPUT_IP_ADDRESS, INPUT_PASSWORD, INPUT_NUMBER, INPUT_TIME_SECONDS };
+  enum INPUT_MODE
+  {
+    INPUT_TIME = 1,
+    INPUT_DATE,
+    INPUT_IP_ADDRESS,
+    INPUT_PASSWORD,
+    INPUT_NUMBER,
+    INPUT_TIME_SECONDS
+  };
   CGUIDialogNumeric(void);
   virtual ~CGUIDialogNumeric(void);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual bool OnBack(int actionID);
   virtual void FrameMove();
 
@@ -40,20 +47,26 @@ public:
   bool IsInputHidden() const { return m_mode == INPUT_PASSWORD; };
 
   static bool ShowAndVerifyNewPassword(std::string& strNewPassword);
-  static int ShowAndVerifyPassword(std::string& strPassword, const std::string& strHeading, int iRetries);
-  static bool ShowAndVerifyInput(std::string& strPassword, const std::string& strHeading, bool bGetUserInput);
+  static int ShowAndVerifyPassword(std::string& strPassword,
+                                   const std::string& strHeading,
+                                   int iRetries);
+  static bool ShowAndVerifyInput(std::string& strPassword,
+                                 const std::string& strHeading,
+                                 bool bGetUserInput);
 
-  void SetHeading(const std::string &strHeading);
-  void SetMode(INPUT_MODE mode, const SYSTEMTIME &initial);
-  void SetMode(INPUT_MODE mode, const std::string &initial);
+  void SetHeading(const std::string& strHeading);
+  void SetMode(INPUT_MODE mode, const SYSTEMTIME& initial);
+  void SetMode(INPUT_MODE mode, const std::string& initial);
   SYSTEMTIME GetOutput() const;
   std::string GetOutputString() const;
 
-  static bool ShowAndGetTime(SYSTEMTIME &time, const std::string &heading);
-  static bool ShowAndGetDate(SYSTEMTIME &date, const std::string &heading);
-  static bool ShowAndGetIPAddress(std::string &IPAddress, const std::string &heading);
-  static bool ShowAndGetNumber(std::string& strInput, const std::string &strHeading, unsigned int iAutoCloseTimeoutMs = 0);
-  static bool ShowAndGetSeconds(std::string& timeString, const std::string &heading);
+  static bool ShowAndGetTime(SYSTEMTIME& time, const std::string& heading);
+  static bool ShowAndGetDate(SYSTEMTIME& date, const std::string& heading);
+  static bool ShowAndGetIPAddress(std::string& IPAddress, const std::string& heading);
+  static bool ShowAndGetNumber(std::string& strInput,
+                               const std::string& strHeading,
+                               unsigned int iAutoCloseTimeoutMs = 0);
+  static bool ShowAndGetSeconds(std::string& timeString, const std::string& heading);
 
 protected:
   virtual void OnInitWindow();
@@ -75,11 +88,11 @@ protected:
   bool m_bConfirmed;
   bool m_bCanceled;
 
-  INPUT_MODE m_mode;                // the current input mode
-  SYSTEMTIME m_datetime;            // for time and date modes
-  uint8_t m_ip[4];                  // for ip address mode
-  uint32_t m_block;             // for time, date, and IP methods.
+  INPUT_MODE m_mode; // the current input mode
+  SYSTEMTIME m_datetime; // for time and date modes
+  uint8_t m_ip[4]; // for ip address mode
+  uint32_t m_block; // for time, date, and IP methods.
   uint32_t m_lastblock;
-  bool m_dirty;                     // true if the current block has been changed.
-  std::string m_number;              ///< for number or password input
+  bool m_dirty; // true if the current block has been changed.
+  std::string m_number; ///< for number or password input
 };

@@ -37,64 +37,64 @@ using namespace std;
 
 map<CStdString, CStdString> CSpecialProtocol::m_pathMap;
 
-void CSpecialProtocol::SetProfilePath(const CStdString &dir)
+void CSpecialProtocol::SetProfilePath(const CStdString& dir)
 {
   SetPath("profile", dir);
   CLog::Log(LOGNOTICE, "special://profile/ is mapped to: %s", GetPath("profile").c_str());
 }
 
-void CSpecialProtocol::SetXBMCPath(const CStdString &dir)
+void CSpecialProtocol::SetXBMCPath(const CStdString& dir)
 {
   SetPath("xbmc", dir);
 }
 
-void CSpecialProtocol::SetXBMCBinPath(const std::string &dir)
+void CSpecialProtocol::SetXBMCBinPath(const std::string& dir)
 {
   SetPath("xbmcbin", dir);
 }
 
-void CSpecialProtocol::SetXBMCBinAddonPath(const std::string &dir)
+void CSpecialProtocol::SetXBMCBinAddonPath(const std::string& dir)
 {
   SetPath("xbmcbinaddons", dir);
 }
 
-void CSpecialProtocol::SetHomePath(const CStdString &dir)
+void CSpecialProtocol::SetHomePath(const CStdString& dir)
 {
   SetPath("home", dir);
 }
 
-void CSpecialProtocol::SetUserHomePath(const CStdString &dir)
+void CSpecialProtocol::SetUserHomePath(const CStdString& dir)
 {
   SetPath("userhome", dir);
 }
 
-void CSpecialProtocol::SetMasterProfilePath(const CStdString &dir)
+void CSpecialProtocol::SetMasterProfilePath(const CStdString& dir)
 {
   SetPath("masterprofile", dir);
 }
 
-void CSpecialProtocol::SetTempPath(const CStdString &dir)
+void CSpecialProtocol::SetTempPath(const CStdString& dir)
 {
   SetPath("temp", dir);
 }
 
-bool CSpecialProtocol::ComparePath(const CStdString &path1, const CStdString &path2)
+bool CSpecialProtocol::ComparePath(const CStdString& path1, const CStdString& path2)
 {
   return TranslatePath(path1) == TranslatePath(path2);
 }
 
-CStdString CSpecialProtocol::TranslatePath(const CStdString &path)
+CStdString CSpecialProtocol::TranslatePath(const CStdString& path)
 {
   CURL url(path);
   if (!url.IsProtocol("special"))
   {
     return path;
   }
-  
+
   return TranslatePath(url);
 }
 
-CStdString CSpecialProtocol::TranslatePath(const CURL &url)
+CStdString CSpecialProtocol::TranslatePath(const CURL& url)
 {
   // check for special-protocol, if not, return
   if (!url.IsProtocol("special"))
@@ -121,17 +121,23 @@ CStdString CSpecialProtocol::TranslatePath(const CURL &url)
     RootDir = FullFileName;
 
   if (RootDir.Equals("subtitles"))
-    translatedPath = URIUtils::AddFileToFolder(CSettings::GetInstance().GetString("subtitles.custompath"), FileName);
+    translatedPath = URIUtils::AddFileToFolder(
+        CSettings::GetInstance().GetString("subtitles.custompath"), FileName);
   else if (RootDir.Equals("userdata"))
-    translatedPath = URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), FileName);
+    translatedPath =
+        URIUtils::AddFileToFolder(CProfilesManager::Get().GetUserDataFolder(), FileName);
   else if (RootDir.Equals("database"))
-    translatedPath = URIUtils::AddFileToFolder(CProfilesManager::Get().GetDatabaseFolder(), FileName);
+    translatedPath =
+        URIUtils::AddFileToFolder(CProfilesManager::Get().GetDatabaseFolder(), FileName);
   else if (RootDir.Equals("thumbnails"))
-    translatedPath = URIUtils::AddFileToFolder(CProfilesManager::Get().GetThumbnailsFolder(), FileName);
+    translatedPath =
+        URIUtils::AddFileToFolder(CProfilesManager::Get().GetThumbnailsFolder(), FileName);
   else if (RootDir.Equals("recordings") || RootDir.Equals("cdrips"))
-    translatedPath = URIUtils::AddFileToFolder(CSettings::GetInstance().GetString("audiocds.recordingpath"), FileName);
+    translatedPath = URIUtils::AddFileToFolder(
+        CSettings::GetInstance().GetString("audiocds.recordingpath"), FileName);
   else if (RootDir.Equals("screenshots"))
-    translatedPath = URIUtils::AddFileToFolder(CSettings::GetInstance().GetString("debug.screenshotpath"), FileName);
+    translatedPath = URIUtils::AddFileToFolder(
+        CSettings::GetInstance().GetString("debug.screenshotpath"), FileName);
   else if (RootDir.Equals("musicplaylists"))
     translatedPath = URIUtils::AddFileToFolder(CUtil::MusicPlaylistsLocation(), FileName);
   else if (RootDir.Equals("videoplaylists"))
@@ -142,14 +148,9 @@ CStdString CSpecialProtocol::TranslatePath(const CURL &url)
     translatedPath = URIUtils::AddFileToFolder(g_advancedSettings.m_logFolder, FileName);
 
   // from here on, we have our "real" special paths
-  else if (RootDir.Equals("xbmc") ||
-           RootDir.Equals("xbmcbin") ||
-           RootDir.Equals("xbmcbinaddons") ||
-           RootDir.Equals("home") ||
-           RootDir.Equals("userhome") ||
-           RootDir.Equals("temp") ||
-           RootDir.Equals("profile") ||
-           RootDir.Equals("masterprofile") ||
+  else if (RootDir.Equals("xbmc") || RootDir.Equals("xbmcbin") || RootDir.Equals("xbmcbinaddons") ||
+           RootDir.Equals("home") || RootDir.Equals("userhome") || RootDir.Equals("temp") ||
+           RootDir.Equals("profile") || RootDir.Equals("masterprofile") ||
            RootDir.Equals("frameworks"))
   {
     CStdString basePath = GetPath(RootDir);
@@ -237,20 +238,22 @@ void CSpecialProtocol::LogPaths()
 {
   CLog::Log(LOGNOTICE, "special://xbmc/ is mapped to: %s", GetPath("xbmc").c_str());
   CLog::Log(LOGNOTICE, "special://xbmcbin/ is mapped to: %s", GetPath("xbmcbin").c_str());
-  CLog::Log(LOGNOTICE, "special://xbmcbinaddons/ is mapped to: %s", GetPath("xbmcbinaddons").c_str());
-  CLog::Log(LOGNOTICE, "special://masterprofile/ is mapped to: %s", GetPath("masterprofile").c_str());
+  CLog::Log(LOGNOTICE, "special://xbmcbinaddons/ is mapped to: %s",
+            GetPath("xbmcbinaddons").c_str());
+  CLog::Log(LOGNOTICE, "special://masterprofile/ is mapped to: %s",
+            GetPath("masterprofile").c_str());
   CLog::Log(LOGNOTICE, "special://home/ is mapped to: %s", GetPath("home").c_str());
   CLog::Log(LOGNOTICE, "special://temp/ is mapped to: %s", GetPath("temp").c_str());
   //CLog::Log(LOGNOTICE, "special://userhome/ is mapped to: %s", GetPath("userhome").c_str());
 }
 
 // private routines, to ensure we only set/get an appropriate path
-void CSpecialProtocol::SetPath(const CStdString &key, const CStdString &path)
+void CSpecialProtocol::SetPath(const CStdString& key, const CStdString& path)
 {
   m_pathMap[key] = path;
 }
 
-CStdString CSpecialProtocol::GetPath(const CStdString &key)
+CStdString CSpecialProtocol::GetPath(const CStdString& key)
 {
   map<CStdString, CStdString>::iterator it = m_pathMap.find(key);
   if (it != m_pathMap.end())

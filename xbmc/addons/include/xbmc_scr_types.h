@@ -31,22 +31,22 @@ extern "C"
 
   struct SCR_PROPS
   {
-    void *device;
+    void* device;
     int x;
     int y;
     int width;
     int height;
     float pixelRatio;
-    const char *name;
-    const char *presets;
-    const char *profile;
+    const char* name;
+    const char* presets;
+    const char* profile;
   };
 
   struct ScreenSaver
   {
-    void (__cdecl* Start) ();
-    void (__cdecl* Render) ();
-    void (__cdecl* GetInfo)(SCR_INFO *info);
+    void(__cdecl* Start)();
+    void(__cdecl* Render)();
+    void(__cdecl* GetInfo)(SCR_INFO* info);
   };
 }
 

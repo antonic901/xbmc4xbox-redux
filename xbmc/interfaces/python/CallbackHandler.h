@@ -14,27 +14,27 @@
 
 namespace XBMCAddon
 {
-  namespace Python
-  {
-    /**
+namespace Python
+{
+/**
      * This class represents a specialization of the callback handler
      *  that specifically checks to see if we're in an OK thread state
      *  based on Python specifics.
      */
-    class PythonCallbackHandler : public RetardedAsyncCallbackHandler
-    {
-      PyThreadState* objectThreadState;
-    public:
+class PythonCallbackHandler : public RetardedAsyncCallbackHandler
+{
+  PyThreadState* objectThreadState;
 
-      /**
+public:
+  /**
        * We are ASS-U-MEing that this construction is happening
        *  within the context of a Python call. This way we can
        *  store off the PyThreadState to later verify that we're
        *  handling callbacks in the appropriate thread.
        */
-      PythonCallbackHandler();
-      virtual bool isStateOk(AddonClass* obj);
-      virtual bool shouldRemoveCallback(AddonClass* obj, void* threadState);
-    };
-  }
-}
+  PythonCallbackHandler();
+  virtual bool isStateOk(AddonClass* obj);
+  virtual bool shouldRemoveCallback(AddonClass* obj, void* threadState);
+};
+} // namespace Python
+} // namespace XBMCAddon

@@ -32,7 +32,7 @@ public:
 
   // implementation of CJob
   virtual bool DoWork();
-  virtual const char *GetType() const { return "CVideoLibraryProgressJob"; }
+  virtual const char* GetType() const { return "CVideoLibraryProgressJob"; }
   virtual bool operator==(const CJob* job) const { return false; }
 
 protected:

@@ -31,19 +31,19 @@
 using ADDON::CVisualisation;
 
 CGUIDialogVisualisationPresetList::CGUIDialogVisualisationPresetList()
-    : CGUIDialogSelect(WINDOW_DIALOG_VIS_PRESET_LIST),
-      m_viz(NULL)
+  : CGUIDialogSelect(WINDOW_DIALOG_VIS_PRESET_LIST),
+    m_viz(NULL)
 {
   m_loadType = KEEP_IN_MEMORY;
 }
 
-bool CGUIDialogVisualisationPresetList::OnMessage(CGUIMessage &message)
+bool CGUIDialogVisualisationPresetList::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
   {
-  case GUI_MSG_VISUALISATION_UNLOADING:
-    SetVisualisation(nullptr);
-    break;
+    case GUI_MSG_VISUALISATION_UNLOADING:
+      SetVisualisation(nullptr);
+      break;
   }
   return CGUIDialogSelect::OnMessage(message);
 }

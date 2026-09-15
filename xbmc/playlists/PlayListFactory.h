@@ -26,15 +26,15 @@ class CURL;
 
 namespace PLAYLIST
 {
-  class CPlayList;
+class CPlayList;
 
-  class CPlayListFactory
-  {
-  public:
-    static CPlayList* Create(const std::string& filename);
-    static CPlayList* Create(const CFileItem& item);
-    static bool IsPlaylist(const CURL& url);
-    static bool IsPlaylist(const std::string& filename);
-    static bool IsPlaylist(const CFileItem& item);
-  };
-}
+class CPlayListFactory
+{
+public:
+  static CPlayList* Create(const std::string& filename);
+  static CPlayList* Create(const CFileItem& item);
+  static bool IsPlaylist(const CURL& url);
+  static bool IsPlaylist(const std::string& filename);
+  static bool IsPlaylist(const CFileItem& item);
+};
+} // namespace PLAYLIST

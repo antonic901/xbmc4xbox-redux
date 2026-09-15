@@ -32,12 +32,11 @@
 namespace ADDON
 {
 
-void CContextMenuAddon::ParseMenu(
-    const AddonProps& props,
-    cp_cfg_element_t* elem,
-    const std::string& parent,
-    int& anonGroupCount,
-    std::vector<CContextMenuItem>& items)
+void CContextMenuAddon::ParseMenu(const AddonProps& props,
+                                  cp_cfg_element_t* elem,
+                                  const std::string& parent,
+                                  int& anonGroupCount,
+                                  std::vector<CContextMenuItem>& items)
 {
   std::string menuId = CServiceBroker::GetAddonMgr().GetExtValue(elem, "@id");
   std::string menuLabel = CServiceBroker::GetAddonMgr().GetExtValue(elem, "label");
@@ -64,7 +63,7 @@ void CContextMenuAddon::ParseMenu(
   {
     for (ELEMENTS::iterator it = elems.begin(); it != elems.end(); ++it)
     {
-      cp_cfg_element_t *const &elem = *it;
+      cp_cfg_element_t* const& elem = *it;
       std::string visCondition = CServiceBroker::GetAddonMgr().GetExtValue(elem, "visible");
       std::string library = CServiceBroker::GetAddonMgr().GetExtValue(elem, "@library");
       std::string label = CServiceBroker::GetAddonMgr().GetExtValue(elem, "label");
@@ -73,15 +72,16 @@ void CContextMenuAddon::ParseMenu(
 
       if (!label.empty() && !library.empty() && !visCondition.empty())
       {
-        CContextMenuItem menu = CContextMenuItem::CreateItem(label, menuId,
-            URIUtils::AddFileToFolder(props.path, library), visCondition, props.id);
+        CContextMenuItem menu = CContextMenuItem::CreateItem(
+            label, menuId, URIUtils::AddFileToFolder(props.path, library), visCondition, props.id);
         items.push_back(menu);
       }
     }
   }
 }
 
-boost::movelib::unique_ptr<CContextMenuAddon> CContextMenuAddon::FromExtension(AddonProps props, const cp_extension_t* ext)
+boost::movelib::unique_ptr<CContextMenuAddon> CContextMenuAddon::FromExtension(
+    AddonProps props, const cp_extension_t* ext)
 {
   std::vector<CContextMenuItem> items;
 
@@ -97,32 +97,37 @@ boost::movelib::unique_ptr<CContextMenuAddon> CContextMenuAddon::FromExtension(A
     ELEMENTS elems;
     if (CServiceBroker::GetAddonMgr().GetExtElements(ext->configuration, "item", elems))
     {
-      cp_cfg_element_t *elem = elems[0];
+      cp_cfg_element_t* elem = elems[0];
 
       std::string visCondition = CServiceBroker::GetAddonMgr().GetExtValue(elem, "visible");
       if (visCondition.empty())
         visCondition = "false";
 
-      std::string parent = CServiceBroker::GetAddonMgr().GetExtValue(elem, "parent") == "kodi.core.manage"
-          ? CContextMenuManager::MANAGE.m_groupId : CContextMenuManager::MAIN.m_groupId;
+      std::string parent =
+          CServiceBroker::GetAddonMgr().GetExtValue(elem, "parent") == "kodi.core.manage"
+              ? CContextMenuManager::MANAGE.m_groupId
+              : CContextMenuManager::MAIN.m_groupId;
 
       std::string label = CServiceBroker::GetAddonMgr().GetExtValue(elem, "label");
       if (StringUtils::IsNaturalNumber(label))
         label = g_localizeStrings.GetAddonString(props.id, atoi(label.c_str()));
 
-      CContextMenuItem menuItem = CContextMenuItem::CreateItem(label, parent,
-          URIUtils::AddFileToFolder(props.path, props.libname), visCondition, props.id);
+      CContextMenuItem menuItem = CContextMenuItem::CreateItem(
+          label, parent, URIUtils::AddFileToFolder(props.path, props.libname), visCondition,
+          props.id);
 
       items.push_back(menuItem);
     }
   }
 
-  return boost::movelib::unique_ptr<CContextMenuAddon>(new CContextMenuAddon(boost::move(props), boost::move(items)));
+  return boost::movelib::unique_ptr<CContextMenuAddon>(
+      new CContextMenuAddon(boost::move(props), boost::move(items)));
 }
 
 CContextMenuAddon::CContextMenuAddon(AddonProps props, std::vector<CContextMenuItem> items)
-    : CAddon(boost::move(props)), m_items(boost::move(items))
+  : CAddon(boost::move(props)),
+    m_items(boost::move(items))
 {
 }
 
-}
+} // namespace ADDON

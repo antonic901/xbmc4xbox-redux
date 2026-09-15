@@ -27,7 +27,6 @@
 class CSoundtrack
 {
 public:
-
   //VOID    GetSoundtrackName( WCHAR* strName ) { wcscpy( strName, m_strName ); }
   //UINT    GetSongCount() { return m_uSongCount; }
 
@@ -43,14 +42,13 @@ typedef std::pair<UINT, CSoundtrack> SOUNDTRACK_PAIR;
 namespace XFILE
 {
 
-class CSndtrkDirectory :
-      public IDirectory
+class CSndtrkDirectory : public IDirectory
 {
 public:
   CSndtrkDirectory(void);
   virtual ~CSndtrkDirectory(void);
-  virtual bool GetDirectory(const CURL& url, CFileItemList &items);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
   bool IsAlone(const std::string& strPath);
   bool FindTrackName(const std::string& strPath, char* NameOfSong);
 };
-};
+}; // namespace XFILE

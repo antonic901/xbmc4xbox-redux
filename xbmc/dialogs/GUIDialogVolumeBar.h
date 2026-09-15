@@ -28,5 +28,5 @@ public:
   CGUIDialogVolumeBar(void);
   virtual ~CGUIDialogVolumeBar(void);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
 };

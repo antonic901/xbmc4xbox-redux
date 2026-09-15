@@ -24,22 +24,27 @@
 #include "threads/Timer.h"
 
 class CGUIKeyboard;
-enum FILTERING { FILTERING_NONE = 0, FILTERING_CURRENT, FILTERING_SEARCH };
-typedef void (*char_callback_t) (CGUIKeyboard *ref, const std::string &typedString);
+enum FILTERING
+{
+  FILTERING_NONE = 0,
+  FILTERING_CURRENT,
+  FILTERING_SEARCH
+};
+typedef void (*char_callback_t)(CGUIKeyboard* ref, const std::string& typedString);
 
 #ifdef _WIN32 // disable 4355: 'this' used in base member initializer list
 #pragma warning(push)
-#pragma warning(disable: 4355)
+#pragma warning(disable : 4355)
 #endif
 
 class CGUIKeyboard : public ITimerCallback
 {
-  public:
-    CGUIKeyboard():m_idleTimer(this){};
-    virtual ~CGUIKeyboard(){ };
+public:
+  CGUIKeyboard() : m_idleTimer(this) {};
+  virtual ~CGUIKeyboard() {};
 
-    // entrypoint
-    /*!
+  // entrypoint
+  /*!
      * \brief each native keyboard needs to implement this function with the following behaviour:
      *
      * \param pCallback implementation should call this on each keypress with the current whole string
@@ -51,43 +56,43 @@ class CGUIKeyboard : public ITimerCallback
      * \return - true if typedstring is valid and user has confirmed input - false if typedstring is undefined and user canceled the input
      *
      */
-    virtual bool ShowAndGetInput(char_callback_t pCallback,
-                                 const std::string &initialString,
-                                 std::string &typedString,
-                                 const std::string &heading,
-                                 bool bHiddenInput = false) = 0;
+  virtual bool ShowAndGetInput(char_callback_t pCallback,
+                               const std::string& initialString,
+                               std::string& typedString,
+                               const std::string& heading,
+                               bool bHiddenInput = false) = 0;
 
-    /*!
+  /*!
     *\brief This call should cancel a currently shown keyboard dialog. The implementation should
     * return false from the modal ShowAndGetInput once anyone calls this metohod.
     */
-    virtual void Cancel() = 0;
+  virtual void Cancel() = 0;
 
-    virtual int GetWindowId() const {return 0;}
+  virtual int GetWindowId() const { return 0; }
 
-    // CTimer Interface for autoclose
-    virtual void OnTimeout()
-    {
-      Cancel();
-    }
+  // CTimer Interface for autoclose
+  virtual void OnTimeout() { Cancel(); }
 
-    // helpers for autoclose function
-    void startAutoCloseTimer(unsigned int autoCloseMs)
-    {
-      if ( autoCloseMs > 0 )
-        m_idleTimer.Start(autoCloseMs, false);
-    }
+  // helpers for autoclose function
+  void startAutoCloseTimer(unsigned int autoCloseMs)
+  {
+    if (autoCloseMs > 0)
+      m_idleTimer.Start(autoCloseMs, false);
+  }
 
-    void resetAutoCloseTimer()
-    {
-      if (m_idleTimer.IsRunning())
-        m_idleTimer.Restart();
-    }
+  void resetAutoCloseTimer()
+  {
+    if (m_idleTimer.IsRunning())
+      m_idleTimer.Restart();
+  }
 
-    virtual bool SetTextToKeyboard(const std::string &text, bool closeKeyboard = false) { return false; }
+  virtual bool SetTextToKeyboard(const std::string& text, bool closeKeyboard = false)
+  {
+    return false;
+  }
 
-  private:
-    CTimer m_idleTimer;
+private:
+  CTimer m_idleTimer;
 };
 
 #ifdef _WIN32

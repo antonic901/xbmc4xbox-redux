@@ -32,7 +32,7 @@ public:
 
   // implementation of CJob
   bool DoWork();
-  const char *GetType() const { return "CMusicLibraryProgressJob"; }
+  const char* GetType() const { return "CMusicLibraryProgressJob"; }
   bool operator==(const CJob* job) const { return false; }
 
 protected:

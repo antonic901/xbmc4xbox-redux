@@ -33,7 +33,9 @@ CMusicInfoTagLoaderYM::~CMusicInfoTagLoaderYM()
 {
 }
 
-bool CMusicInfoTagLoaderYM::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderYM::Load(const CStdString& strFileName,
+                                 CMusicInfoTag& tag,
+                                 EmbeddedArt* art)
 {
   tag.SetLoaded(false);
 
@@ -43,7 +45,7 @@ bool CMusicInfoTagLoaderYM::Load(const CStdString& strFileName, CMusicInfoTag& t
   m_ym = m_dll.LoadYM(strFileName.c_str());
   if (!m_ym)
   {
-    CLog::Log(LOGERROR,"MusicInfoTagLoaderYM: failed to open YM %s",strFileName.c_str());
+    CLog::Log(LOGERROR, "MusicInfoTagLoaderYM: failed to open YM %s", strFileName.c_str());
     return false;
   }
 
@@ -52,7 +54,7 @@ bool CMusicInfoTagLoaderYM::Load(const CStdString& strFileName, CMusicInfoTag& t
   tag.SetLoaded(false);
   char* szTitle = (char*)m_dll.GetTitle(m_ym); // no alloc
   if (szTitle)
-    if( strcmp(szTitle,"") )
+    if (strcmp(szTitle, ""))
     {
       tag.SetTitle(szTitle);
       tag.SetLoaded(true);
@@ -60,7 +62,7 @@ bool CMusicInfoTagLoaderYM::Load(const CStdString& strFileName, CMusicInfoTag& t
 
   char* szArtist = (char*)m_dll.GetArtist(m_ym); // no alloc
   if (szArtist)
-    if( strcmp(szArtist,"") && tag.Loaded() )
+    if (strcmp(szArtist, "") && tag.Loaded())
       tag.SetArtist(szArtist);
 
   tag.SetDuration(m_dll.GetLength(m_ym));

@@ -32,9 +32,12 @@ extern "C" void mplayer_exit_player(void);
 
 using namespace KODI::MESSAGING;
 
-CGUIDialogCache::CGUIDialogCache(DWORD dwDelay, const std::string& strHeader, const std::string& strMsg) : CThread("GUIDialogCache"),
-  m_strHeader(strHeader),
-  m_strLinePrev(strMsg)
+CGUIDialogCache::CGUIDialogCache(DWORD dwDelay,
+                                 const std::string& strHeader,
+                                 const std::string& strMsg)
+  : CThread("GUIDialogCache"),
+    m_strHeader(strHeader),
+    m_strLinePrev(strMsg)
 {
   bSentCancel = false;
 
@@ -44,10 +47,10 @@ CGUIDialogCache::CGUIDialogCache(DWORD dwDelay, const std::string& strHeader, co
     return;
 
   /* if progress dialog is already running, take it over */
-  if( m_pDlg->IsDialogRunning() )
+  if (m_pDlg->IsDialogRunning())
     dwDelay = 0;
 
-  if(dwDelay == 0)
+  if (dwDelay == 0)
     OpenDialog();
   else
     m_endtime.Set((unsigned int)dwDelay);
@@ -62,7 +65,8 @@ void CGUIDialogCache::Close(bool bForceClose)
   // we cannot wait for the app thread to process the close message
   // as this might happen during player startup which leads to a deadlock
   if (m_pDlg && m_pDlg->IsDialogRunning())
-    CApplicationMessenger::Get().PostMsg(TMSG_GUI_WINDOW_CLOSE, -1, bForceClose ? 1 : 0, static_cast<void*>(m_pDlg));
+    CApplicationMessenger::Get().PostMsg(TMSG_GUI_WINDOW_CLOSE, -1, bForceClose ? 1 : 0,
+                                         static_cast<void*>(m_pDlg));
 
   //Set stop, this will kill this object, when thread stops
   CThread::m_bStop = true;
@@ -70,7 +74,7 @@ void CGUIDialogCache::Close(bool bForceClose)
 
 CGUIDialogCache::~CGUIDialogCache()
 {
-  if(m_pDlg && m_pDlg->IsDialogRunning())
+  if (m_pDlg && m_pDlg->IsDialogRunning())
     m_pDlg->Close();
 }
 
@@ -119,7 +123,7 @@ bool CGUIDialogCache::OnFileCallback(void* pContext, int ipercent, float avgSpee
     m_pDlg->SetPercentage(ipercent);
   }
 
-  if( IsCanceled() )
+  if (IsCanceled())
     return false;
   else
     return true;
@@ -130,35 +134,36 @@ void CGUIDialogCache::Process()
   if (!m_pDlg)
     return;
 
-  while( true )
+  while (true)
   {
 
     { //Section to make the lock go out of scope before sleep
 
-      if( CThread::m_bStop ) break;
+      if (CThread::m_bStop)
+        break;
 
       try
       {
         CSingleLock lock(g_graphicsContext);
         m_pDlg->Progress();
-        if( bSentCancel )
+        if (bSentCancel)
         {
           Sleep(10);
           continue;
         }
 
-        if(m_pDlg->IsCanceled())
+        if (m_pDlg->IsCanceled())
         {
           bSentCancel = true;
 #ifdef _XBOX
-          mplayer_exit_player(); 
+          mplayer_exit_player();
 #endif
         }
-        else if( !m_pDlg->IsDialogRunning() && m_endtime.IsTimePast()
-              && !g_windowManager.IsWindowActive(WINDOW_DIALOG_YES_NO) )
+        else if (!m_pDlg->IsDialogRunning() && m_endtime.IsTimePast() &&
+                 !g_windowManager.IsWindowActive(WINDOW_DIALOG_YES_NO))
           OpenDialog();
       }
-      catch(...)
+      catch (...)
       {
         CLog::Log(LOGERROR, "Exception in CGUIDialogCache::Process()");
       }

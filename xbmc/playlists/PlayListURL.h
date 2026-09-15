@@ -22,12 +22,11 @@
 
 namespace PLAYLIST
 {
-class CPlayListURL :
-      public CPlayList
+class CPlayListURL : public CPlayList
 {
 public:
   CPlayListURL(void);
   virtual ~CPlayListURL(void);
   virtual bool Load(const std::string& strFileName);
 };
-}
+} // namespace PLAYLIST

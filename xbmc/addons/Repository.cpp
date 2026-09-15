@@ -55,13 +55,17 @@ using namespace KODI::MESSAGING;
 
 using KODI::MESSAGING::HELPERS::DialogResponse;
 
-bool dirHasParent(const ADDON::CRepository::DirInfo &dir, const std::string &path) { return URIUtils::PathHasParent(path, dir.datadir, true); }
+bool dirHasParent(const ADDON::CRepository::DirInfo& dir, const std::string& path)
+{
+  return URIUtils::PathHasParent(path, dir.datadir, true);
+}
 
 CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon) const
 {
   std::string const& path = addon->Path();
 
-  ADDON::CRepository::DirList::const_iterator dirIt = std::find_if(m_dirs.begin(), m_dirs.end(), boost::bind(dirHasParent, _1, boost::cref(path)));
+  ADDON::CRepository::DirList::const_iterator dirIt =
+      std::find_if(m_dirs.begin(), m_dirs.end(), boost::bind(dirHasParent, _1, boost::cref(path)));
   if (dirIt == m_dirs.end())
   {
     CLog::Log(LOGERROR, "Requested path {} not found in known repository directories", path);
@@ -91,7 +95,8 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
   // (saves one request per addon install)
   std::string location = file.GetRedirectURL();
   // content-* headers are base64, convert to base16
-  std::string hash = StringUtils::ToHexadecimal(Base64::Decode(file.GetHttpHeader().GetValue("content-md5")));
+  std::string hash =
+      StringUtils::ToHexadecimal(Base64::Decode(file.GetHttpHeader().GetValue("content-md5")));
 
   if (hash.empty())
   {
@@ -117,7 +122,7 @@ CRepository::ResolveResult CRepository::ResolvePathAndHash(const AddonPtr& addon
 
 CRepository::DirInfo CRepository::ParseDirConfiguration(cp_cfg_element_t* configuration)
 {
-  const ADDON::CAddonMgr &mgr = CServiceBroker::GetAddonMgr();
+  const ADDON::CAddonMgr& mgr = CServiceBroker::GetAddonMgr();
   DirInfo dir;
   dir.checksum = mgr.GetExtValue(configuration, "checksum");
   dir.info = mgr.GetExtValue(configuration, "info");
@@ -132,7 +137,8 @@ CRepository::DirInfo CRepository::ParseDirConfiguration(cp_cfg_element_t* config
   return dir;
 }
 
-boost::movelib::unique_ptr<CRepository> CRepository::FromExtension(AddonProps props, const cp_extension_t* ext)
+boost::movelib::unique_ptr<CRepository> CRepository::FromExtension(AddonProps props,
+                                                                   const cp_extension_t* ext)
 {
   DirList dirs;
   AddonVersion version("0.0.0");
@@ -142,7 +148,7 @@ boost::movelib::unique_ptr<CRepository> CRepository::FromExtension(AddonProps pr
   for (size_t i = 0; i < ext->configuration->num_children; ++i)
   {
     cp_cfg_element_t* element = &ext->configuration->children[i];
-    if(element->name && strcmp(element->name, "dir") == 0)
+    if (element->name && strcmp(element->name, "dir") == 0)
     {
       DirInfo dir = ParseDirConfiguration(element);
       if (dir.version <= version)
@@ -155,18 +161,23 @@ boost::movelib::unique_ptr<CRepository> CRepository::FromExtension(AddonProps pr
   {
     dirs.push_back(ParseDirConfiguration(ext->configuration));
   }
-  return boost::movelib::unique_ptr<CRepository>(new CRepository(boost::move(props), boost::move(dirs)));
+  return boost::movelib::unique_ptr<CRepository>(
+      new CRepository(boost::move(props), boost::move(dirs)));
 }
 
 CRepository::CRepository(AddonProps props, DirList dirs)
-    : CAddon(boost::move(props)), m_dirs(boost::move(dirs))
+  : CAddon(boost::move(props)),
+    m_dirs(boost::move(dirs))
 {
   for (DirList::const_iterator it = m_dirs.begin(); it != m_dirs.end(); ++it)
   {
-    const ADDON::CRepository::DirInfo &dir = *it;
+    const ADDON::CRepository::DirInfo& dir = *it;
     if (CURL(dir.datadir).IsProtocol("http"))
     {
-      CLog::Log(LOGWARNING, "Repository {} uses plain HTTP for add-on downloads - this is insecure and will make your Kodi installation vulnerable to attacks if enabled!", Name());
+      CLog::Log(LOGWARNING,
+                "Repository {} uses plain HTTP for add-on downloads - this is insecure and will "
+                "make your Kodi installation vulnerable to attacks if enabled!",
+                Name());
     }
   }
 }
@@ -207,8 +218,8 @@ bool CRepository::FetchIndex(const DirInfo& repo, VECADDONS& addons)
     return false;
   }
 
-  if (URIUtils::HasExtension(repo.info, ".gz")
-      || CMime::GetFileTypeFromMime(http.GetMimeType()) == CMime::EFileType::FileTypeGZip)
+  if (URIUtils::HasExtension(repo.info, ".gz") ||
+      CMime::GetFileTypeFromMime(http.GetMimeType()) == CMime::EFileType::FileTypeGZip)
   {
     CLog::Log(LOGDEBUG, "CRepository '%s' is gzip. decompressing", repo.info.c_str());
     std::string buffer;
@@ -224,12 +235,13 @@ bool CRepository::FetchIndex(const DirInfo& repo, VECADDONS& addons)
 }
 
 CRepository::FetchStatus CRepository::FetchIfChanged(const std::string& oldChecksum,
-    std::string& checksum, VECADDONS& addons) const
+                                                     std::string& checksum,
+                                                     VECADDONS& addons) const
 {
   checksum = "";
   for (DirList::const_iterator it = m_dirs.begin(); it != m_dirs.end(); ++it)
   {
-    const ADDON::CRepository::DirInfo &dir = *it;
+    const ADDON::CRepository::DirInfo& dir = *it;
     if (!dir.checksum.empty())
     {
       std::string part;
@@ -247,7 +259,7 @@ CRepository::FetchStatus CRepository::FetchIfChanged(const std::string& oldCheck
 
   for (DirList::const_iterator it = m_dirs.begin(); it != m_dirs.end(); ++it)
   {
-    const ADDON::CRepository::DirInfo &dir = *it;
+    const ADDON::CRepository::DirInfo& dir = *it;
     VECADDONS tmp;
     if (!FetchIndex(dir, tmp))
       return STATUS_ERROR;
@@ -256,7 +268,9 @@ CRepository::FetchStatus CRepository::FetchIfChanged(const std::string& oldCheck
   return STATUS_OK;
 }
 
-CRepositoryUpdateJob::CRepositoryUpdateJob(const RepositoryPtr& repo) : m_repo(repo) {}
+CRepositoryUpdateJob::CRepositoryUpdateJob(const RepositoryPtr& repo) : m_repo(repo)
+{
+}
 
 bool CRepositoryUpdateJob::DoWork()
 {
@@ -273,7 +287,7 @@ bool CRepositoryUpdateJob::DoWork()
   ADDON::CRepository::FetchStatus status = m_repo->FetchIfChanged(oldChecksum, newChecksum, addons);
 
   database.SetLastChecked(m_repo->ID(), m_repo->Version(),
-      CDateTime::GetCurrentDateTime().GetAsDBDateTime());
+                          CDateTime::GetCurrentDateTime().GetAsDBDateTime());
 
   MarkFinished();
 
@@ -294,18 +308,20 @@ bool CRepositoryUpdateJob::DoWork()
 
     for (VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
     {
-      const ADDON::AddonPtr &addon = *it;
+      const ADDON::AddonPtr& addon = *it;
       AddonPtr oldAddon;
       if (database.GetAddon(addon->ID(), oldAddon) && addon->Version() > oldAddon->Version())
       {
-        if (!oldAddon->Icon().empty() || !oldAddon->Art().empty() || !oldAddon->Screenshots().empty())
+        if (!oldAddon->Icon().empty() || !oldAddon->Art().empty() ||
+            !oldAddon->Screenshots().empty())
           CLog::Log(LOGDEBUG, "CRepository: invalidating cached art for '%s'", addon->ID().c_str());
 
         if (!oldAddon->Icon().empty())
           textureDB.InvalidateCachedTexture(oldAddon->Icon());
 
         std::vector<std::string> vecScreenshots = oldAddon->Screenshots();
-        for (std::vector<std::string>::const_iterator it = vecScreenshots.begin(); it != vecScreenshots.end(); ++it)
+        for (std::vector<std::string>::const_iterator it = vecScreenshots.begin();
+             it != vecScreenshots.end(); ++it)
           textureDB.InvalidateCachedTexture(*it);
 
         ArtMap mapArt = oldAddon->Art();

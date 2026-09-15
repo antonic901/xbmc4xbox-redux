@@ -33,11 +33,11 @@ struct FT_LibraryRec_;
 struct FT_GlyphSlotRec_;
 struct FT_StrokerRec_;
 
-typedef struct FT_FaceRec_ *FT_Face;
-typedef struct FT_LibraryRec_ *FT_Library;
-typedef struct FT_GlyphSlotRec_ *FT_GlyphSlot;
-typedef struct FT_BitmapGlyphRec_ *FT_BitmapGlyph;
-typedef struct FT_StrokerRec_ *FT_Stroker;
+typedef struct FT_FaceRec_* FT_Face;
+typedef struct FT_LibraryRec_* FT_Library;
+typedef struct FT_GlyphSlotRec_* FT_GlyphSlot;
+typedef struct FT_BitmapGlyphRec_* FT_BitmapGlyph;
+typedef struct FT_StrokerRec_* FT_Stroker;
 
 typedef uint32_t character_t;
 typedef uint32_t color_t;
@@ -58,14 +58,18 @@ class CGUIFontTTF
     float advance;
     DWORD letterAndStyle;
   };
-public:
 
+public:
   CGUIFontTTF(const CStdString& strFileName);
   virtual ~CGUIFontTTF(void);
 
   void Clear();
 
-  bool Load(const CStdString& strFilename, float height = 20.0f, float aspect = 1.0f, float lineSpacing = 1.0f, bool border = false);
+  bool Load(const CStdString& strFilename,
+            float height = 20.0f,
+            float aspect = 1.0f,
+            float lineSpacing = 1.0f,
+            bool border = false);
 
   void Begin();
   void End();
@@ -84,16 +88,22 @@ protected:
   float GetLineHeight(float lineSpacing) const;
   float GetFontHeight() const { return m_height; }
 
-  void DrawTextInternal(float x, float y, const vecColors &colors, const vecText &text,
-                            uint32_t alignment, float maxPixelWidth, bool scrolling);
+  void DrawTextInternal(float x,
+                        float y,
+                        const vecColors& colors,
+                        const vecText& text,
+                        uint32_t alignment,
+                        float maxPixelWidth,
+                        bool scrolling);
 
   float m_height;
   CStdString m_strFilename;
 
   // Stuff for pre-rendering for speed
-  inline Character *GetCharacter(character_t letter);
-  bool CacheCharacter(wchar_t letter, uint32_t style, Character *ch);
-  inline void RenderCharacter(float posX, float posY, const Character *ch, D3DCOLOR dwColor, bool roundX);
+  inline Character* GetCharacter(character_t letter);
+  bool CacheCharacter(wchar_t letter, uint32_t style, Character* ch);
+  inline void RenderCharacter(
+      float posX, float posY, const Character* ch, D3DCOLOR dwColor, bool roundX);
   void ClearCharacterCache();
 
   // modifying glyphs
@@ -102,10 +112,10 @@ protected:
   void ObliqueGlyph(FT_GlyphSlot slot);
 
   LPDIRECT3DDEVICE8 m_pD3DDevice;
-  LPDIRECT3DTEXTURE8 m_texture;      // texture that holds our rendered characters (8bit alpha only)
-  unsigned int m_textureWidth;       // width of our texture
-  unsigned int m_textureHeight;      // heigth of our texture
-  int m_posX;                        // current position in the texture
+  LPDIRECT3DTEXTURE8 m_texture; // texture that holds our rendered characters (8bit alpha only)
+  unsigned int m_textureWidth; // width of our texture
+  unsigned int m_textureHeight; // heigth of our texture
+  int m_posX; // current position in the texture
   int m_posY;
 
   /*! \brief the height of each line in the texture.
@@ -114,20 +124,20 @@ protected:
   unsigned int GetTextureLineHeight() const;
   static unsigned int spacing_between_characters_in_texture;
 
-  Character *m_char;                 // our characters
-  Character *m_charquick[256*7];     // ascii chars (7 styles) here
-  int m_maxChars;                    // size of character array (can be incremented)
-  int m_numChars;                    // the current number of cached characters
+  Character* m_char; // our characters
+  Character* m_charquick[256 * 7]; // ascii chars (7 styles) here
+  int m_maxChars; // size of character array (can be incremented)
+  int m_numChars; // the current number of cached characters
 
-  float m_ellipsesWidth;               // this is used every character (width of '.')
+  float m_ellipsesWidth; // this is used every character (width of '.')
 
   unsigned int m_cellBaseLine;
   unsigned int m_cellHeight;
 
-  unsigned int m_nestedBeginCount;             // speedups
+  unsigned int m_nestedBeginCount; // speedups
 
   // freetype stuff
-  FT_Face    m_face;
+  FT_Face m_face;
   FT_Stroker m_stroker;
 
   float m_originX;

@@ -31,4 +31,3 @@ protected:
   virtual void SaveViewState();
   virtual std::string GetExtensions();
 };
-

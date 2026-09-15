@@ -42,7 +42,7 @@ public:
    \brief The only way through which the global instance of the CDatabaseManager should be accessed.
    \return the global instance.
    */
-  static CDatabaseManager &GetInstance();
+  static CDatabaseManager& GetInstance();
 
   /*! \brief Initalize the database manager
    Checks that all databases are up to date, otherwise updates them.
@@ -62,7 +62,7 @@ public:
    \param name the name of the database to check.
    \return true if the database can be opened, false otherwise.
    */
-  bool CanOpen(const std::string &name);
+  bool CanOpen(const std::string& name);
   volatile bool m_bIsUpgrading;
 
 private:
@@ -72,12 +72,18 @@ private:
   CDatabaseManager const& operator=(CDatabaseManager const&);
   virtual ~CDatabaseManager();
 
-  enum DB_STATUS { DB_CLOSED, DB_UPDATING, DB_READY, DB_FAILED };
-  void UpdateStatus(const std::string &name, DB_STATUS status);
-  void UpdateDatabase(CDatabase &db, DatabaseSettings *settings = NULL);
-  bool Update(CDatabase &db, const DatabaseSettings &settings);
-  bool UpdateVersion(CDatabase &db, const std::string &dbName);
+  enum DB_STATUS
+  {
+    DB_CLOSED,
+    DB_UPDATING,
+    DB_READY,
+    DB_FAILED
+  };
+  void UpdateStatus(const std::string& name, DB_STATUS status);
+  void UpdateDatabase(CDatabase& db, DatabaseSettings* settings = NULL);
+  bool Update(CDatabase& db, const DatabaseSettings& settings);
+  bool UpdateVersion(CDatabase& db, const std::string& dbName);
 
-  CCriticalSection            m_section;     ///< Critical section protecting m_dbStatus.
-  std::map<std::string, DB_STATUS> m_dbStatus;    ///< Our database status map.
+  CCriticalSection m_section; ///< Critical section protecting m_dbStatus.
+  std::map<std::string, DB_STATUS> m_dbStatus; ///< Our database status map.
 };
