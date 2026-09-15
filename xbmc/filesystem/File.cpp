@@ -704,11 +704,11 @@ int64_t CFile::Seek(int64_t iFilePosition, int iWhence)
   if (m_pBuffer)
   {
     if(iWhence == SEEK_CUR)
-      return m_pBuffer->pubseekoff(iFilePosition, std::ios_base::cur);
+      return m_pBuffer->Seekoff(iFilePosition, std::ios_base::cur);
     else if(iWhence == SEEK_END)
-      return m_pBuffer->pubseekoff(iFilePosition, std::ios_base::end);
+      return m_pBuffer->Seekoff(iFilePosition, std::ios_base::end);
     else if(iWhence == SEEK_SET)
-      return m_pBuffer->pubseekoff(iFilePosition, std::ios_base::beg);
+      return m_pBuffer->Seekoff(iFilePosition, std::ios_base::beg);
   }
 
   try
@@ -756,7 +756,7 @@ int64_t CFile::GetPosition() const
     return -1;
 
   if (m_pBuffer)
-    return m_pBuffer->pubseekoff(0, std::ios_base::cur);
+    return m_pBuffer->Seekoff(0, std::ios_base::cur);
 
   try
   {
@@ -1141,15 +1141,12 @@ CFileStreamBuffer::int_type CFileStreamBuffer::underflow()
   return traits_type::to_int_type(*gptr());
 }
 
-CFileStreamBuffer::pos_type CFileStreamBuffer::seekoff(
-  off_type offset,
-  std::ios_base::seekdir way,
-  std::ios_base::openmode mode)
+int64_t CFileStreamBuffer::Seekoff(int64_t offset, std::ios_base::seekdir way)
 {
   // calculate relative offset
-  off_type aheadbytes  = (egptr() - gptr());
-  off_type pos  = m_file->GetPosition() - aheadbytes;
-  off_type offset2;
+  int64_t aheadbytes  = (int64_t)(egptr() - gptr());
+  int64_t pos  = m_file->GetPosition() - aheadbytes;
+  int64_t offset2;
   if(way == std::ios_base::cur)
     offset2 = offset;
   else if(way == std::ios_base::beg)
@@ -1157,16 +1154,19 @@ CFileStreamBuffer::pos_type CFileStreamBuffer::seekoff(
   else if(way == std::ios_base::end)
     offset2 = offset + m_file->GetLength() - pos;
   else
-    return std::streampos(-1);
+    return -1;
 
   // a non seek shouldn't modify our buffer
   if(offset2 == 0)
     return pos;
 
   // try to seek within buffer
-  if(gptr()+offset2 >= eback() && gptr()+offset2 < egptr())
+  const int64_t back = (int64_t)(gptr() - eback());
+  const int64_t forward = (int64_t)(egptr() - gptr());
+  if (offset2 >= -back && offset2 < forward)
   {
-    gbump(offset2);
+    // Safe because offset2 is bounded by the buffer size here.
+    gbump((int)offset2);
     return pos + offset2;
   }
 
@@ -1183,17 +1183,12 @@ CFileStreamBuffer::pos_type CFileStreamBuffer::seekoff(
   else
     position = m_file->Seek(offset, SEEK_SET);
 
-  if(position<0)
-    return std::streampos(-1);
-
   return position;
 }
 
-CFileStreamBuffer::pos_type CFileStreamBuffer::seekpos(
-  pos_type pos,
-  std::ios_base::openmode mode)
+int64_t CFileStreamBuffer::Seekpos(int64_t pos)
 {
-  return seekoff(pos, std::ios_base::beg, mode);
+  return Seekoff(pos, std::ios_base::beg);
 }
 
 std::streamsize CFileStreamBuffer::showmanyc()

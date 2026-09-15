@@ -190,11 +190,15 @@ public:
   void Attach(IFile *file);
   void Detach();
 
+  // Our own implementation is needed because off_type / pos_type are long in C++98
+  int64_t Seekoff(int64_t offset, std::ios_base::seekdir way);
+  int64_t Seekpos(int64_t pos);
+
 private:
   virtual int_type underflow();
   virtual std::streamsize showmanyc();
-  virtual pos_type seekoff(off_type, std::ios_base::seekdir,std::ios_base::openmode = std::ios_base::in | std::ios_base::out);
-  virtual pos_type seekpos(pos_type, std::ios_base::openmode = std::ios_base::in | std::ios_base::out);
+  virtual pos_type seekoff(off_type, std::ios_base::seekdir,std::ios_base::openmode = std::ios_base::in | std::ios_base::out) { throw std::runtime_error("Use custom implementation"); }
+  virtual pos_type seekpos(pos_type, std::ios_base::openmode = std::ios_base::in | std::ios_base::out) { throw std::runtime_error("Use custom implementation"); }
 
   IFile* m_file;
   char*  m_buffer;
