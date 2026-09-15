@@ -33,7 +33,8 @@ CGUIMessage::CGUIMessage(int msg, int senderID, int controlID, int param1, int p
   m_pointer = NULL;
 }
 
-CGUIMessage::CGUIMessage(int msg, int senderID, int controlID, int param1, int param2, CFileItemList *item)
+CGUIMessage::CGUIMessage(
+    int msg, int senderID, int controlID, int param1, int param2, CFileItemList* item)
 {
   m_message = msg;
   m_senderID = senderID;
@@ -43,7 +44,8 @@ CGUIMessage::CGUIMessage(int msg, int senderID, int controlID, int param1, int p
   m_pointer = item;
 }
 
-CGUIMessage::CGUIMessage(int msg, int senderID, int controlID, int param1, int param2, const CGUIListItemPtr &item)
+CGUIMessage::CGUIMessage(
+    int msg, int senderID, int controlID, int param1, int param2, const CGUIListItemPtr& item)
 {
   m_message = msg;
   m_senderID = senderID;
@@ -60,8 +62,8 @@ CGUIMessage::CGUIMessage(const CGUIMessage& msg)
 }
 
 CGUIMessage::~CGUIMessage(void)
-{}
-
+{
+}
 
 int CGUIMessage::GetControlId() const
 {
@@ -98,10 +100,10 @@ int CGUIMessage::GetSenderId() const
   return m_senderID;
 }
 
-
-CGUIMessage& CGUIMessage::operator = (const CGUIMessage& msg)
+CGUIMessage& CGUIMessage::operator=(const CGUIMessage& msg)
 {
-  if (this == &msg) return * this;
+  if (this == &msg)
+    return *this;
 
   m_message = msg.m_message;
   m_controlID = msg.m_controlID;
@@ -114,7 +116,6 @@ CGUIMessage& CGUIMessage::operator = (const CGUIMessage& msg)
   m_item = msg.m_item;
   return *this;
 }
-
 
 void CGUIMessage::SetParam1(int param1)
 {
@@ -153,7 +154,7 @@ void CGUIMessage::SetStringParam(const std::string& strParam)
     m_params.push_back(strParam);
 }
 
-void CGUIMessage::SetStringParams(const std::vector<std::string> &params)
+void CGUIMessage::SetStringParams(const std::vector<std::string>& params)
 {
   m_params = params;
 }

@@ -24,17 +24,17 @@
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 
-bool CSettingConditionItem::Deserialize(const TiXmlNode *node)
+bool CSettingConditionItem::Deserialize(const TiXmlNode* node)
 {
   if (!CBooleanLogicValue::Deserialize(node))
     return false;
 
-  const TiXmlElement *elem = node->ToElement();
+  const TiXmlElement* elem = node->ToElement();
   if (elem == NULL)
     return false;
 
   // get the "name" attribute
-  const char *strAttribute = elem->Attribute(SETTING_XML_ATTR_NAME);
+  const char* strAttribute = elem->Attribute(SETTING_XML_ATTR_NAME);
   if (strAttribute != NULL)
     m_name = strAttribute;
 
@@ -51,7 +51,8 @@ bool CSettingConditionItem::Check() const
   if (m_settingsManager == NULL)
     return false;
 
-  return m_settingsManager->GetConditions().Check(m_name, m_value, m_settingsManager->GetSetting(m_setting)) == !m_negated;
+  return m_settingsManager->GetConditions().Check(
+             m_name, m_value, m_settingsManager->GetSetting(m_setting)) == !m_negated;
 }
 
 bool CSettingConditionCombination::Check() const
@@ -63,7 +64,8 @@ bool CSettingConditionCombination::Check() const
     if (*operation == NULL)
       continue;
 
-    CSettingConditionCombination *combination = static_cast<CSettingConditionCombination*>((*operation).get());
+    CSettingConditionCombination* combination =
+        static_cast<CSettingConditionCombination*>((*operation).get());
     if (combination == NULL)
       continue;
 
@@ -73,13 +75,13 @@ bool CSettingConditionCombination::Check() const
       return false;
   }
 
-  for (CBooleanLogicValues::const_iterator value = m_values.begin();
-       value != m_values.end(); ++value)
+  for (CBooleanLogicValues::const_iterator value = m_values.begin(); value != m_values.end();
+       ++value)
   {
     if (*value == NULL)
       continue;
 
-    CSettingConditionItem *condition = static_cast<CSettingConditionItem*>((*value).get());
+    CSettingConditionItem* condition = static_cast<CSettingConditionItem*>((*value).get());
     if (condition == NULL)
       continue;
 
@@ -92,7 +94,7 @@ bool CSettingConditionCombination::Check() const
   return ok;
 }
 
-CSettingCondition::CSettingCondition(CSettingsManager *settingsManager /* = NULL */)
+CSettingCondition::CSettingCondition(CSettingsManager* settingsManager /* = NULL */)
   : ISettingCondition(settingsManager)
 {
   m_operation = CBooleanLogicOperationPtr(new CSettingConditionCombination(settingsManager));
@@ -100,14 +102,15 @@ CSettingCondition::CSettingCondition(CSettingsManager *settingsManager /* = NULL
 
 bool CSettingCondition::Check() const
 {
-  CSettingConditionCombination *combination = static_cast<CSettingConditionCombination*>(m_operation.get());
+  CSettingConditionCombination* combination =
+      static_cast<CSettingConditionCombination*>(m_operation.get());
   if (combination == NULL)
     return false;
 
   return combination->Check();
 }
 
-void CSettingConditionsManager::AddCondition(const std::string &condition)
+void CSettingConditionsManager::AddCondition(const std::string& condition)
 {
   if (condition.empty())
     return;
@@ -118,7 +121,9 @@ void CSettingConditionsManager::AddCondition(const std::string &condition)
   m_defines.insert(tmpCondition);
 }
 
-void CSettingConditionsManager::AddCondition(const std::string &identifier, SettingConditionCheck condition, void *data /*= NULL*/)
+void CSettingConditionsManager::AddCondition(const std::string& identifier,
+                                             SettingConditionCheck condition,
+                                             void* data /*= NULL*/)
 {
   if (identifier.empty() || condition == NULL)
     return;
@@ -129,7 +134,9 @@ void CSettingConditionsManager::AddCondition(const std::string &identifier, Sett
   m_conditions.insert(SettingConditionPair(tmpIdentifier, std::make_pair(condition, data)));
 }
 
-bool CSettingConditionsManager::Check(const std::string &condition, const std::string &value /* = "" */, const CSetting *setting /* = NULL */) const
+bool CSettingConditionsManager::Check(const std::string& condition,
+                                      const std::string& value /* = "" */,
+                                      const CSetting* setting /* = NULL */) const
 {
   if (condition.empty())
     return false;
@@ -154,7 +161,8 @@ bool CSettingConditionsManager::Check(const std::string &condition, const std::s
 }
 
 CSettingConditionsManager::CSettingConditionsManager()
-{ }
+{
+}
 
 CSettingConditionsManager::~CSettingConditionsManager()
 {

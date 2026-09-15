@@ -39,5 +39,5 @@ void RandomShuffle(TIterator begin, TIterator end)
   std::random_shuffle(begin, end);
 #endif
 }
-}
-}
+} // namespace UTILS
+} // namespace KODI

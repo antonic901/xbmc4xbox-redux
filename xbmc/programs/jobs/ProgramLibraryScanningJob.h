@@ -48,12 +48,12 @@ public:
   virtual bool Cancel();
 
   // specialization of CJob
-  virtual const char *GetType() const { return "ProgramLibraryScanningJob"; }
+  virtual const char* GetType() const { return "ProgramLibraryScanningJob"; }
   virtual bool operator==(const CJob* job) const;
 
 protected:
   // implementation of CProgramLibraryJob
-  virtual bool Work(CProgramDatabase &db);
+  virtual bool Work(CProgramDatabase& db);
 
 private:
   PROGRAM::CProgramInfoScanner m_scanner;

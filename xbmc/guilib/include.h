@@ -42,7 +42,7 @@
 #include <FStream>
 #include <stdlib.h>
 #include <crtdbg.h>
-#define new new( _NORMAL_BLOCK, __FILE__, __LINE__)
+#define new new (_NORMAL_BLOCK, __FILE__, __LINE__)
 #endif
 #endif
 #include "utils/log.h"
@@ -50,21 +50,27 @@
 // guilib internal
 #include "gui3d.h"
 
-
 #ifdef _XBOX
- #ifdef QueryPerformanceFrequency
-  #undef QueryPerformanceFrequency
- #endif
- WINBASEAPI BOOL WINAPI QueryPerformanceFrequencyXbox(LARGE_INTEGER *lpFrequency);
- #define QueryPerformanceFrequency(a) QueryPerformanceFrequencyXbox(a)
+#ifdef QueryPerformanceFrequency
+#undef QueryPerformanceFrequency
+#endif
+WINBASEAPI BOOL WINAPI QueryPerformanceFrequencyXbox(LARGE_INTEGER* lpFrequency);
+#define QueryPerformanceFrequency(a) QueryPerformanceFrequencyXbox(a)
 #endif
 
-#define SAFE_RELEASE(p)      { if(p) { (p)->Release(); (p)=NULL; } }
+#define SAFE_RELEASE(p) \
+  { \
+    if (p) \
+    { \
+      (p)->Release(); \
+      (p) = NULL; \
+    } \
+  }
 
 // Useful pixel colour manipulation macros
-#define GET_A(color)            ((color & AMASK) >> PIXEL_ASHIFT)
-#define GET_R(color)            ((color & RMASK) >> PIXEL_RSHIFT)
-#define GET_G(color)            ((color & GMASK) >> PIXEL_GSHIFT)
-#define GET_B(color)            ((color & BMASK) >> PIXEL_BSHIFT)
+#define GET_A(color) ((color & AMASK) >> PIXEL_ASHIFT)
+#define GET_R(color) ((color & RMASK) >> PIXEL_RSHIFT)
+#define GET_G(color) ((color & GMASK) >> PIXEL_GSHIFT)
+#define GET_B(color) ((color & BMASK) >> PIXEL_BSHIFT)
 
 // TODO: reference additional headers your program requires here

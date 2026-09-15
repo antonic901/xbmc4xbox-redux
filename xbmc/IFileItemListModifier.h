@@ -24,9 +24,9 @@ class CFileItemList;
 class IFileItemListModifier
 {
 public:
-  IFileItemListModifier() { }
-  virtual ~IFileItemListModifier() { }
+  IFileItemListModifier() {}
+  virtual ~IFileItemListModifier() {}
 
-  virtual bool CanModify(const CFileItemList &items) const = 0;
-  virtual bool Modify(CFileItemList &items) const = 0;
+  virtual bool CanModify(const CFileItemList& items) const = 0;
+  virtual bool Modify(CFileItemList& items) const = 0;
 };

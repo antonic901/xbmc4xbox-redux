@@ -32,20 +32,22 @@
 #include "utils/log.h"
 
 #ifdef _WIN32PC
-extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
+extern "C" FILE* fopen_utf8(const char* _Filename, const char* _Mode);
 #else
 #define fopen_utf8 fopen
 #endif
 
 #pragma pack(1)
 // Error processing macro (NO-OP by default):
-#define ERRORMSG(PARAM) {}
+#define ERRORMSG(PARAM) \
+  { \
+  }
 
 #ifndef BI_RGB
- #define BI_RGB        0L
- #define BI_RLE8       1L
- #define BI_RLE4       2L
- #define BI_BITFIELDS  3L
+#define BI_RGB 0L
+#define BI_RLE8 1L
+#define BI_RLE4 2L
+#define BI_BITFIELDS 3L
 #endif
 
 // Use SDL macros to swap data endianness
@@ -55,20 +57,20 @@ extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
 #include <SDL/SDL_endian.h>
 
 #if SDL_BYTEORDER == SDL_LIL_ENDIAN
-#define SWAP16(X)    (void)X
-#define SWAP32(X)    (void)X
+#define SWAP16(X) (void)X
+#define SWAP32(X) (void)X
 #else
-#define SWAP16(X)    X=SDL_Swap16(X)
-#define SWAP32(X)    X=SDL_Swap32(X)
+#define SWAP16(X) X = SDL_Swap16(X)
+#define SWAP32(X) X = SDL_Swap32(X)
 #endif
 
 #else
-#define SWAP16(X)    (void)X
-#define SWAP32(X)    (void)X
+#define SWAP16(X) (void)X
+#define SWAP32(X) (void)X
 #endif
 
 // pre-declaration:
-int LZWDecoder (char*, char*, short, int, int, int, const int);
+int LZWDecoder(char*, char*, short, int, int, int, const int);
 
 // ****************************************************************************
 // * CAnimatedGif Member definitions                                               *
@@ -87,8 +89,8 @@ CAnimatedGif::CAnimatedGif()
 
 CAnimatedGif::~CAnimatedGif()
 {
-  delete [] pbmi;
-  delete [] Raster;
+  delete[] pbmi;
+  delete[] Raster;
 }
 
 #ifdef _XBOX
@@ -99,15 +101,15 @@ CAnimatedGif::~CAnimatedGif()
 DWORD __forceinline __stdcall PadPow2(DWORD x)
 {
   __asm {
-    mov edx, x    // put the value in edx
-    xor ecx, ecx  // clear ecx - if x is 0 bsr doesn't alter it
-    bsr ecx, edx  // find MSB position
-    mov eax, 1    // shift 1 by result effectively
-    shl eax, cl   // doing a round down to power of 2
-    cmp eax, edx  // check if x was already a power of two
-    adc ecx, 0    // if it wasn't then CF is set so add to ecx
-    mov eax, 1    // shift 1 by result again, this does a round
-    shl eax, cl   // up as a result of adding CF to ecx
+    mov edx, x // put the value in edx
+    xor ecx, ecx // clear ecx - if x is 0 bsr doesn't alter it
+    bsr ecx, edx // find MSB position
+    mov eax, 1 // shift 1 by result effectively
+    shl eax, cl // doing a round down to power of 2
+    cmp eax, edx // check if x was already a power of two
+    adc ecx, 0 // if it wasn't then CF is set so add to ecx
+    mov eax, 1 // shift 1 by result again, this does a round
+    shl eax, cl // up as a result of adding CF to ecx
   }
   // return result in eax
 }
@@ -143,7 +145,7 @@ void CAnimatedGif::Init(int iWidth, int iHeight, int iBPP, int iLoops)
   if (BPP == 24)
   {
     BytesPerRow *= 3;
-    pbmi = (GUIBITMAPINFO*)new char [sizeof(GUIBITMAPINFO)];
+    pbmi = (GUIBITMAPINFO*)new char[sizeof(GUIBITMAPINFO)];
   }
   else
   {
@@ -157,14 +159,14 @@ void CAnimatedGif::Init(int iWidth, int iHeight, int iBPP, int iLoops)
 #else
   // align to multiple of 4096 for XGSwizzleRect
   int size = BytesPerRow * Height;
-  size += (4096 - size % 4096) % 4096;  // align size
+  size += (4096 - size % 4096) % 4096; // align size
 #endif
 
-  Raster = new char [size];
+  Raster = new char[size];
 
-  pbmi->bmiHeader.biSize = sizeof (GUIBITMAPINFOHEADER);
+  pbmi->bmiHeader.biSize = sizeof(GUIBITMAPINFOHEADER);
   pbmi->bmiHeader.biWidth = Width;
-  pbmi->bmiHeader.biHeight = -Height;   // negative means up-to-bottom
+  pbmi->bmiHeader.biHeight = -Height; // negative means up-to-bottom
   pbmi->bmiHeader.biPlanes = 1;
   pbmi->bmiHeader.biBitCount = (BPP < 8 ? 8 : BPP); // Our raster is byte-aligned
   pbmi->bmiHeader.biCompression = BI_RGB;
@@ -177,22 +179,20 @@ void CAnimatedGif::Init(int iWidth, int iHeight, int iBPP, int iLoops)
 
 #ifndef _XBOX
 // GDIPaint: Paint the raster image onto a DC
-int CAnimatedGif::GDIPaint (HDC hdc, int x, int y)
+int CAnimatedGif::GDIPaint(HDC hdc, int x, int y)
 {
-  return SetDIBitsToDevice (hdc, x, y, Width, Height, 0, 0, 0, Height, (LPVOID)Raster, pbmi, 0);
+  return SetDIBitsToDevice(hdc, x, y, Width, Height, 0, 0, 0, Height, (LPVOID)Raster, pbmi, 0);
 }
 #endif
 
 // operator=: copies an object's content to another
-CAnimatedGif& CAnimatedGif::operator = (CAnimatedGif& rhs)
+CAnimatedGif& CAnimatedGif::operator=(CAnimatedGif& rhs)
 {
   Init(rhs.Width, rhs.Height, rhs.BPP); // respects virtualization
-  memcpy(Raster, rhs.Raster, BytesPerRow*Height);
-  memcpy((char*)Palette, (char*)rhs.Palette, (1 << BPP)*sizeof(*Palette));
+  memcpy(Raster, rhs.Raster, BytesPerRow * Height);
+  memcpy((char*)Palette, (char*)rhs.Palette, (1 << BPP) * sizeof(*Palette));
   return *this;
 }
-
-
 
 CAnimatedGifSet::CAnimatedGifSet()
 {
@@ -215,7 +215,6 @@ void CAnimatedGifSet::Release()
     delete pImage;
   }
   m_vecimg.erase(m_vecimg.begin(), m_vecimg.end());
-
 }
 
 // ****************************************************************************
@@ -223,7 +222,7 @@ void CAnimatedGifSet::Release()
 // ****************************************************************************
 
 // AddImage: Adds an image object to the back of the img vector.
-void CAnimatedGifSet::AddImage (CAnimatedGif* newimage)
+void CAnimatedGifSet::AddImage(CAnimatedGif* newimage)
 {
   m_vecimg.push_back(newimage);
 }
@@ -233,7 +232,7 @@ int CAnimatedGifSet::GetImageCount() const
   return m_vecimg.size();
 }
 
-unsigned char CAnimatedGifSet::getbyte(FILE *fd)
+unsigned char CAnimatedGifSet::getbyte(FILE* fd)
 {
   unsigned char uchar;
   if (fread(&uchar, 1, 1, fd) == 1)
@@ -241,58 +240,56 @@ unsigned char CAnimatedGifSet::getbyte(FILE *fd)
   else
     return 0;
 }
-extern "C" void dllprintf( const char *format, ... );
+extern "C" void dllprintf(const char* format, ...);
 // ****************************************************************************
 // * LoadGIF                                                                  *
 // *   Load a GIF File into the CAnimatedGifSet object                             *
 // *                        (c) Nov 2000, Juan Soulie <jsoulie@cplusplus.com> *
 // ****************************************************************************
-int CAnimatedGifSet::LoadGIF (const char * szFileName)
+int CAnimatedGifSet::LoadGIF(const char* szFileName)
 {
   int n;
   // Global GIF variables:
-  int GlobalBPP;       // Bits per Pixel.
-  COLOR * GlobalColorMap;     // Global colormap (allocate)
+  int GlobalBPP; // Bits per Pixel.
+  COLOR* GlobalColorMap; // Global colormap (allocate)
 
   struct GIFGCEtag
-  {                // GRAPHIC CONTROL EXTENSION
-    unsigned char BlockSize;   // Block Size: 4 bytes
-    unsigned char PackedFields;  // 3.. Packed Fields. Bits detail:
+  { // GRAPHIC CONTROL EXTENSION
+    unsigned char BlockSize; // Block Size: 4 bytes
+    unsigned char PackedFields; // 3.. Packed Fields. Bits detail:
     //    0: Transparent Color Flag
     //    1: User Input Flag
     //  2-4: Disposal Method
-    unsigned short Delay;     // 4..5 Delay Time (1/100 seconds)
-    unsigned char Transparent;  // 6.. Transparent Color Index
-  }
-  gifgce;
+    unsigned short Delay; // 4..5 Delay Time (1/100 seconds)
+    unsigned char Transparent; // 6.. Transparent Color Index
+  } gifgce;
 
   struct GIFNetscapeTag
   {
-    unsigned char comment[11];  //4...14  NETSCAPE2.0
+    unsigned char comment[11]; //4...14  NETSCAPE2.0
     unsigned char SubBlockLength; //15      0x3
-    unsigned char reserved;       //16      0x1
-    unsigned short iIterations ;    //17..18  number of iterations (lo-hi)
-  }
-  gifnetscape;
+    unsigned char reserved; //16      0x1
+    unsigned short iIterations; //17..18  number of iterations (lo-hi)
+  } gifnetscape;
 
   int GraphicExtensionFound = 0;
 
   // OPEN FILE
-  FILE *fd = fopen_utf8(CSpecialProtocol::TranslatePath(szFileName), "rb");
+  FILE* fd = fopen_utf8(CSpecialProtocol::TranslatePath(szFileName), "rb");
   if (!fd)
   {
     return 0;
   }
 
   // *1* READ HEADERBLOCK (6bytes) (SIGNATURE + VERSION)
-  char szSignature[6];    // First 6 bytes (GIF87a or GIF89a)
+  char szSignature[6]; // First 6 bytes (GIF87a or GIF89a)
   int iRead = fread(szSignature, 1, 6, fd);
   if (iRead != 6)
   {
     fclose(fd);
     return 0;
   }
-  if ( memcmp(szSignature, "GIF", 2) != 0)
+  if (memcmp(szSignature, "GIF", 2) != 0)
   {
     fclose(fd);
     return 0;
@@ -300,17 +297,16 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
   // *2* READ LOGICAL SCREEN DESCRIPTOR
   struct GIFLSDtag
   {
-    unsigned short ScreenWidth;  // Logical Screen Width
+    unsigned short ScreenWidth; // Logical Screen Width
     unsigned short ScreenHeight; // Logical Screen Height
-    unsigned char PackedFields;  // Packed Fields. Bits detail:
+    unsigned char PackedFields; // Packed Fields. Bits detail:
     //  0-2: Size of Global Color Table
     //    3: Sort Flag
     //  4-6: Color Resolution
     //    7: Global Color Table Flag
-    unsigned char Background;  // Background Color Index
+    unsigned char Background; // Background Color Index
     unsigned char PixelAspectRatio; // Pixel Aspect Ratio
-  }
-  giflsd;
+  } giflsd;
 
   iRead = fread(&giflsd, 1, sizeof(giflsd), fd);
   if (iRead != sizeof(giflsd))
@@ -330,9 +326,9 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
   nLoops = 1; //default=play animation 1 time
 
   // *3* READ/GENERATE GLOBAL COLOR MAP
-  GlobalColorMap = new COLOR [1 << GlobalBPP];
+  GlobalColorMap = new COLOR[1 << GlobalBPP];
   if (giflsd.PackedFields & 0x80) // File has global color map?
-    for (n = 0;n < 1 << GlobalBPP;n++)
+    for (n = 0; n < 1 << GlobalBPP; n++)
     {
       GlobalColorMap[n].r = getbyte(fd);
       GlobalColorMap[n].g = getbyte(fd);
@@ -341,7 +337,7 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
     }
 
   else // GIF standard says to provide an internal default Palette:
-    for (n = 0;n < 256;n++)
+    for (n = 0; n < 256; n++)
     {
       GlobalColorMap[n].r = GlobalColorMap[n].g = GlobalColorMap[n].b = n;
       GlobalColorMap[n].x = 0;
@@ -355,12 +351,12 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
   {
     int charGot = getbyte(fd);
 
-    if (charGot == 0x21)  // *A* EXTENSION BLOCK
+    if (charGot == 0x21) // *A* EXTENSION BLOCK
     {
       unsigned char extensionType = getbyte(fd);
       switch (extensionType)
       {
-      case 0xF9:    // Graphic Control Extension
+        case 0xF9: // Graphic Control Extension
         {
           if (fread((char*)&gifgce, 1, sizeof(gifgce), fd) == sizeof(gifgce))
             SWAP16(gifgce.Delay);
@@ -369,21 +365,23 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
         }
         break;
 
-      case 0xFE:    // Comment Extension: Ignored
+        case 0xFE: // Comment Extension: Ignored
         {
           while (int nBlockLength = getbyte(fd))
-            for (n = 0;n < nBlockLength;n++) getbyte(fd);
+            for (n = 0; n < nBlockLength; n++)
+              getbyte(fd);
         }
         break;
 
-      case 0x01:    // PlainText Extension: Ignored
+        case 0x01: // PlainText Extension: Ignored
         {
           while (int nBlockLength = getbyte(fd))
-            for (n = 0;n < nBlockLength;n++) getbyte(fd);
+            for (n = 0; n < nBlockLength; n++)
+              getbyte(fd);
         }
         break;
 
-      case 0xFF:    // Application Extension: Ignored
+        case 0xFF: // Application Extension: Ignored
         {
           int nBlockLength = getbyte(fd);
           if (nBlockLength == 0x0b)
@@ -397,25 +395,27 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
             else
               nLoops = 0;
 
-            if (nLoops) nLoops++;
+            if (nLoops)
+              nLoops++;
             getbyte(fd);
           }
           else
           {
             do
             {
-              for (n = 0;n < nBlockLength;n++) getbyte(fd);
-            }
-            while ((nBlockLength = getbyte(fd)) != 0);
+              for (n = 0; n < nBlockLength; n++)
+                getbyte(fd);
+            } while ((nBlockLength = getbyte(fd)) != 0);
           }
         }
         break;
 
-       default:    // Unknown Extension: Ignored
+        default: // Unknown Extension: Ignored
         {
           // read (and ignore) data sub-blocks
           while (int nBlockLength = getbyte(fd))
-            for (n = 0;n < nBlockLength;n++) getbyte(fd);
+            for (n = 0; n < nBlockLength; n++)
+              getbyte(fd);
         }
         break;
       }
@@ -428,18 +428,17 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
       // Read Image Descriptor
       struct GIFIDtag
       {
-        unsigned short xPos;     // Image Left Position
-        unsigned short yPos;     // Image Top Position
-        unsigned short Width;     // Image Width
-        unsigned short Height;    // Image Height
-        unsigned char PackedFields;  // Packed Fields. Bits detail:
+        unsigned short xPos; // Image Left Position
+        unsigned short yPos; // Image Top Position
+        unsigned short Width; // Image Width
+        unsigned short Height; // Image Height
+        unsigned char PackedFields; // Packed Fields. Bits detail:
         //  0-2: Size of Local Color Table
         //  3-4: (Reserved)
         //    5: Sort Flag
         //    6: Interlace Flag
         //    7: Local Color Table Flag
-      }
-      gifid;
+      } gifid;
 
       memset(&gifid, 0, sizeof(gifid));
 
@@ -454,10 +453,12 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
         LocalColorMap = (gifid.PackedFields & 0x08) ? 1 : 0;
       }
 
-      NextImage->Init(gifid.Width, gifid.Height, LocalColorMap ? (gifid.PackedFields&7) + 1 : GlobalBPP);
+      NextImage->Init(gifid.Width, gifid.Height,
+                      LocalColorMap ? (gifid.PackedFields & 7) + 1 : GlobalBPP);
 
       /* verify that all the image is inside the screen dimensions */
-      if (gifid.xPos + gifid.Width > giflsd.ScreenWidth || gifid.yPos + gifid.Height > giflsd.ScreenHeight)
+      if (gifid.xPos + gifid.Width > giflsd.ScreenWidth ||
+          gifid.yPos + gifid.Height > giflsd.ScreenHeight)
         return 0;
 
       // Fill NextImage Data
@@ -471,12 +472,13 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
       }
 
       if (NextImage->Transparent != -1)
-        memset(NextImage->Raster, NextImage->Transparent, NextImage->BytesPerRow * NextImage->Height);
+        memset(NextImage->Raster, NextImage->Transparent,
+               NextImage->BytesPerRow * NextImage->Height);
       else
         memset(NextImage->Raster, giflsd.Background, NextImage->BytesPerRow * NextImage->Height);
 
       // Read Color Map (if descriptor says so)
-      size_t palSize = sizeof(COLOR)*(1 << NextImage->BPP);
+      size_t palSize = sizeof(COLOR) * (1 << NextImage->BPP);
       bool isPalRead = false;
       if (LocalColorMap && fread((char*)NextImage->Palette, 1, palSize, fd) == palSize)
         isPalRead = true;
@@ -491,31 +493,30 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
       // to fix: this allocates an extra byte per block
       long ImgStart, ImgEnd;
       ImgEnd = ImgStart = ftell(fd);
-      while ((n = getbyte(fd)) !=  0) fseek (fd, ImgEnd += n + 1, SEEK_SET );
-      fseek (fd, ImgStart, SEEK_SET);
+      while ((n = getbyte(fd)) != 0)
+        fseek(fd, ImgEnd += n + 1, SEEK_SET);
+      fseek(fd, ImgStart, SEEK_SET);
 
       // Allocate Space for Compressed Image
-      char * pCompressedImage = new char [ImgEnd - ImgStart + 4];
+      char* pCompressedImage = new char[ImgEnd - ImgStart + 4];
 
       // Read and store Compressed Image
-      char * pTemp = pCompressedImage;
+      char* pTemp = pCompressedImage;
       while (int nBlockLength = getbyte(fd))
       {
         if (fread(pTemp, 1, nBlockLength, fd) != (size_t)nBlockLength)
         {
-        // Error?
+          // Error?
         }
         pTemp += nBlockLength;
       }
 
       // Call LZW/GIF decompressor
-      n = LZWDecoder(
-            (char*) pCompressedImage,
-            (char*) NextImage->Raster,
-            firstbyte, NextImage->BytesPerRow, //NextImage->AlignedWidth,
-            gifid.Width, gifid.Height,
-            ((gifid.PackedFields & 0x40) ? 1 : 0) //Interlaced?
-          );
+      n = LZWDecoder((char*)pCompressedImage, (char*)NextImage->Raster, firstbyte,
+                     NextImage->BytesPerRow, //NextImage->AlignedWidth,
+                     gifid.Width, gifid.Height,
+                     ((gifid.PackedFields & 0x40) ? 1 : 0) //Interlaced?
+      );
 
       if (n)
         AddImage(NextImage);
@@ -536,12 +537,12 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
       break; // Ok. Standard End.
     }
 
-  }
-  while ( !feof(fd) );
+  } while (!feof(fd));
 
   delete[] GlobalColorMap;
   fclose(fd);
-  if ( GetImageCount() == 0) ERRORMSG("Premature End Of File");
+  if (GetImageCount() == 0)
+    ERRORMSG("Premature End Of File");
   return GetImageCount();
 }
 
@@ -560,36 +561,40 @@ int CAnimatedGifSet::LoadGIF (const char * szFileName)
 //  - Width, Height: Physical dimensions of image.
 //  - Interlace: 1 for Interlaced GIFs.
 //
-int LZWDecoder (char * bufIn, char * bufOut,
-                short InitCodeSize, int AlignedWidth,
-                int Width, int Height, const int Interlace)
+int LZWDecoder(char* bufIn,
+               char* bufOut,
+               short InitCodeSize,
+               int AlignedWidth,
+               int Width,
+               int Height,
+               const int Interlace)
 {
   if (InitCodeSize < 1 || InitCodeSize >= LZW_MAXBITS)
     return 0;
   int n;
-  int row = 0, col = 0;    // used to point output if Interlaced
+  int row = 0, col = 0; // used to point output if Interlaced
   int nPixels, maxPixels; // Output pixel counter
 
-  short CodeSize;      // Current CodeSize (size in bits of codes)
-  short ClearCode;     // Clear code : resets decompressor
-  short EndCode;      // End code : marks end of information
+  short CodeSize; // Current CodeSize (size in bits of codes)
+  short ClearCode; // Clear code : resets decompressor
+  short EndCode; // End code : marks end of information
 
-  long whichBit;      // Index of next bit in bufIn
-  long LongCode;      // Temp. var. from which Code is retrieved
-  short Code;        // Code extracted
-  short PrevCode;      // Previous Code
-  short OutCode;      // Code to output
+  long whichBit; // Index of next bit in bufIn
+  long LongCode; // Temp. var. from which Code is retrieved
+  short Code; // Code extracted
+  short PrevCode; // Previous Code
+  short OutCode; // Code to output
 
   // Translation Table:
-  short Prefix[LZW_SIZETABLE] = {};    // Prefix: index of another Code
-  unsigned char Suffix[LZW_SIZETABLE] = {};    // Suffix: terminating character
-  short FirstEntry;     // Index of first free entry in table
-  short NextEntry;     // Index of next free entry in table
+  short Prefix[LZW_SIZETABLE] = {}; // Prefix: index of another Code
+  unsigned char Suffix[LZW_SIZETABLE] = {}; // Suffix: terminating character
+  short FirstEntry; // Index of first free entry in table
+  short NextEntry; // Index of next free entry in table
 
-  unsigned char OutStack[LZW_SIZETABLE + 1];   // Output buffer
-  int OutIndex;      // Characters in OutStack
+  unsigned char OutStack[LZW_SIZETABLE + 1]; // Output buffer
+  int OutIndex; // Characters in OutStack
 
-  int RowOffset;     // Offset in output buffer for current row
+  int RowOffset; // Offset in output buffer for current row
 
   // Set up values that depend on InitCodeSize Parameter.
   CodeSize = InitCodeSize + 1;
@@ -605,37 +610,37 @@ int LZWDecoder (char * bufIn, char * bufOut,
 
   while (nPixels < maxPixels)
   {
-    OutIndex = 0;       // Reset Output Stack
+    OutIndex = 0; // Reset Output Stack
 
     // GET NEXT CODE FROM bufIn:
     // LZW compression uses code items longer than a single byte.
     // For GIF Files, code sizes are variable between 9 and 12 bits
     // That's why we must read data (Code) this way:
-    LongCode = *((long*)(bufIn + whichBit / 8));     // Get some bytes from bufIn
+    LongCode = *((long*)(bufIn + whichBit / 8)); // Get some bytes from bufIn
     SWAP32(LongCode);
-    LongCode >>= (whichBit&7);            // Discard too low bits
-    Code = (short)((LongCode & ((1 << CodeSize) - 1) )); // Discard too high bits
-    whichBit += CodeSize;              // Increase Bit Offset
+    LongCode >>= (whichBit & 7); // Discard too low bits
+    Code = (short)((LongCode & ((1 << CodeSize) - 1))); // Discard too high bits
+    whichBit += CodeSize; // Increase Bit Offset
 
     // SWITCH, DIFFERENT POSIBILITIES FOR CODE:
-    if (Code == EndCode)     // END CODE
-      break;           // Exit LZW Decompression loop
+    if (Code == EndCode) // END CODE
+      break; // Exit LZW Decompression loop
 
     if (Code == ClearCode)
     {
       // CLEAR CODE:
       CodeSize = InitCodeSize + 1; // Reset CodeSize
-      NextEntry = FirstEntry;   // Reset Translation Table
-      PrevCode = Code;       // Prevent next to be added to table.
-      continue;          // restart, to get another code
+      NextEntry = FirstEntry; // Reset Translation Table
+      PrevCode = Code; // Prevent next to be added to table.
+      continue; // restart, to get another code
     }
-    if (Code < NextEntry)     // CODE IS IN TABLE
-      OutCode = Code;       // Set code to output.
+    if (Code < NextEntry) // CODE IS IN TABLE
+      OutCode = Code; // Set code to output.
 
     else
-    {               // CODE IS NOT IN TABLE:
-      OutIndex++;         // Keep "first" character of previous output.
-      OutCode = PrevCode;     // Set PrevCode to be output
+    { // CODE IS NOT IN TABLE:
+      OutIndex++; // Keep "first" character of previous output.
+      OutCode = PrevCode; // Set PrevCode to be output
     }
 
     // EXPAND OutCode IN OutStack
@@ -647,13 +652,13 @@ int LZWDecoder (char * bufIn, char * bufOut,
       if (OutIndex > LZW_SIZETABLE || OutCode >= LZW_SIZETABLE)
         return 0;
       OutStack[OutIndex++] = Suffix[OutCode]; // Add suffix to Output Stack
-      OutCode = Prefix[OutCode];       // Loop with preffix
+      OutCode = Prefix[OutCode]; // Loop with preffix
     }
 
     // NOW OutCode IS A RAW CODE, ADD IT TO OUTPUT STACK.
     if (OutIndex > LZW_SIZETABLE)
       return 0;
-    OutStack[OutIndex++] = (unsigned char) OutCode;
+    OutStack[OutIndex++] = (unsigned char)OutCode;
 
     // ADD NEW ENTRY TO TABLE (PrevCode + OutCode)
     // (EXCEPT IF PREVIOUS CODE WAS A CLEARCODE)
@@ -664,46 +669,65 @@ int LZWDecoder (char * bufIn, char * bufOut,
         return 0;
 
       Prefix[NextEntry] = PrevCode;
-      Suffix[NextEntry] = (unsigned char) OutCode;
+      Suffix[NextEntry] = (unsigned char)OutCode;
       NextEntry++;
 
       // INCREASE CodeSize IF NextEntry IS INVALID WITH CURRENT CodeSize
       if (NextEntry >= (1 << CodeSize))
       {
-        if (CodeSize < LZW_MAXBITS) CodeSize++;
+        if (CodeSize < LZW_MAXBITS)
+          CodeSize++;
         else
         {
           ;
-        }    // Do nothing. Maybe next is Clear Code.
+        } // Do nothing. Maybe next is Clear Code.
       }
     }
 
     PrevCode = Code;
 
     // Avoid the possibility of overflow on 'bufOut'.
-    if (nPixels + OutIndex > maxPixels) OutIndex = maxPixels - nPixels;
+    if (nPixels + OutIndex > maxPixels)
+      OutIndex = maxPixels - nPixels;
 
     // OUTPUT OutStack (LAST-IN FIRST-OUT ORDER)
     for (n = OutIndex - 1; n >= 0; n--)
     {
-      if (col == Width)      // Check if new row.
+      if (col == Width) // Check if new row.
       {
         if (Interlace)
         {
           // If interlaced::
-          if ((row&7) == 0) {row += 8; if (row >= Height) row = 4;}
-        else if ((row&3) == 0) {row += 8; if (row >= Height) row = 2;}
-        else if ((row&1) == 0) {row += 4; if (row >= Height) row = 1;}
-          else row += 2;
+          if ((row & 7) == 0)
+          {
+            row += 8;
+            if (row >= Height)
+              row = 4;
+          }
+          else if ((row & 3) == 0)
+          {
+            row += 8;
+            if (row >= Height)
+              row = 2;
+          }
+          else if ((row & 1) == 0)
+          {
+            row += 4;
+            if (row >= Height)
+              row = 1;
+          }
+          else
+            row += 2;
         }
-        else       // If not interlaced:
+        else // If not interlaced:
           row++;
 
-        RowOffset = row * AlignedWidth;  // Set new row offset
+        RowOffset = row * AlignedWidth; // Set new row offset
         col = 0;
       }
       bufOut[RowOffset + col] = OutStack[n]; // Write output
-      col++; nPixels++;     // Increase counters.
+      col++;
+      nPixels++; // Increase counters.
     }
 
   } // while (main decompressor loop)

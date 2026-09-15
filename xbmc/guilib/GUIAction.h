@@ -26,7 +26,8 @@
 #include "boost/shared_ptr.hpp"
 
 class CGUIControl;
-class CGUIListItem; typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
+class CGUIListItem;
+typedef boost::shared_ptr<CGUIListItem> CGUIListItemPtr;
 
 /**
  * Class containing vector of condition->(action/navigation route) pairs and handling its execution.
@@ -40,7 +41,9 @@ public:
   /**
    * Execute actions (no navigation paths), if action is paired with condition - evaluate condition first
    */
-  bool ExecuteActions(int controlID, int parentID, const CGUIListItemPtr &item = CGUIListItemPtr()) const;
+  bool ExecuteActions(int controlID,
+                      int parentID,
+                      const CGUIListItemPtr& item = CGUIListItemPtr()) const;
   /**
    * Check if there is any action that meet its condition
    */
@@ -60,6 +63,7 @@ public:
 
   // GetFirstAction is only needed in deprecated http api
   std::string GetFirstAction() const { return m_actions.size() > 0 ? m_actions[0].action : ""; };
+
 private:
   struct cond_action_pair
   {

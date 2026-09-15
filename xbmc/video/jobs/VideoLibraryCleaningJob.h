@@ -49,12 +49,12 @@ public:
   virtual ~CVideoLibraryCleaningJob();
 
   // specialization of CJob
-  virtual const char *GetType() const { return "VideoLibraryCleaningJob"; }
+  virtual const char* GetType() const { return "VideoLibraryCleaningJob"; }
   virtual bool operator==(const CJob* job) const;
 
 protected:
   // implementation of CVideoLibraryJob
-  virtual bool Work(CVideoDatabase &db);
+  virtual bool Work(CVideoDatabase& db);
 
 private:
   std::set<int> m_paths;

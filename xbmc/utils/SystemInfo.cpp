@@ -53,39 +53,40 @@ CSysInfoJob::CSysInfoJob()
 
 bool CSysInfoJob::DoWork()
 {
-  m_info.systemUptime      = GetSystemUpTime(false);
+  m_info.systemUptime = GetSystemUpTime(false);
   m_info.systemTotalUptime = GetSystemUpTime(true);
-  m_info.internetState     = GetInternetState();
+  m_info.internetState = GetInternetState();
 
 #ifdef _XBOX
   if (!g_sysinfo.m_bRequestDone)
   {
-    m_info.videoEncoder      = GetVideoEncoder();
-    m_info.cpuFrequency      = GetCPUFreqInfo();
-    m_info.kernelVersion     = CSysInfo::GetKernelVersion();
-    m_info.macAddress        = GetMACAddress();
+    m_info.videoEncoder = GetVideoEncoder();
+    m_info.cpuFrequency = GetCPUFreqInfo();
+    m_info.kernelVersion = CSysInfo::GetKernelVersion();
+    m_info.macAddress = GetMACAddress();
 
     // The X2 series of modchips cause an error on XBE launching if GetModChipInfo()
-    if(!g_advancedSettings.m_DisableModChipDetection)
-      m_info.xboxModChip     = CSysInfo::GetModChipInfo();
-    m_info.xboxBios          = g_sysinfo.GetBIOSInfo();
-    m_info.mplayerversion    = CSysInfo::GetMPlayerVersion();
-    m_info.xboxversion       = CSysInfo::GetXBVerInfo();
-    m_info.avpackinfo        = CSysInfo::GetAVPackInfo();
-    m_info.xboxserial        = g_sysinfo.GetXBOXSerial();
-    m_info.hddlockkey        = g_sysinfo.GetHDDKey();
-    m_info.videoxberegion    = g_sysinfo.GetVideoXBERegion();
-    m_info.videodvdzone      = g_sysinfo.GetDVDZone();
-    m_info.produceinfo       = g_sysinfo.GetXBProduceInfo();
+    if (!g_advancedSettings.m_DisableModChipDetection)
+      m_info.xboxModChip = CSysInfo::GetModChipInfo();
+    m_info.xboxBios = g_sysinfo.GetBIOSInfo();
+    m_info.mplayerversion = CSysInfo::GetMPlayerVersion();
+    m_info.xboxversion = CSysInfo::GetXBVerInfo();
+    m_info.avpackinfo = CSysInfo::GetAVPackInfo();
+    m_info.xboxserial = g_sysinfo.GetXBOXSerial();
+    m_info.hddlockkey = g_sysinfo.GetHDDKey();
+    m_info.videoxberegion = g_sysinfo.GetVideoXBERegion();
+    m_info.videodvdzone = g_sysinfo.GetDVDZone();
+    m_info.produceinfo = g_sysinfo.GetXBProduceInfo();
     CSysInfo::GetRefurbInfo(m_info.hddbootdate, m_info.hddcyclecount);
 
-    g_sysinfo.GetHDDInfo(m_info.HDDModel, m_info.HDDSerial, m_info.HDDFirmware, m_info.HDDpw, m_info.HDDLockState);
+    g_sysinfo.GetHDDInfo(m_info.HDDModel, m_info.HDDSerial, m_info.HDDFirmware, m_info.HDDpw,
+                         m_info.HDDLockState);
     if (!g_advancedSettings.m_noDVDROM)
       g_sysinfo.GetDVDInfo(m_info.DVDModel, m_info.DVDFirmware);
   }
-  
+
   if (g_sysinfo.m_bSmartEnabled)
-  { // this will waste 4-8KB of memory on each refresh (this is issue on 3.5.3 too) 
+  { // this will waste 4-8KB of memory on each refresh (this is issue on 3.5.3 too)
     m_info.HDDTemp = XKHDD::GetHddSmartTemp();
   }
   else
@@ -95,7 +96,7 @@ bool CSysInfoJob::DoWork()
   return true;
 }
 
-const CSysData &CSysInfoJob::GetData() const
+const CSysData& CSysInfoJob::GetData() const
 {
   return m_info;
 }
@@ -150,25 +151,28 @@ CStdString CSysInfoJob::GetVideoEncoder()
   return "GPU: " + g_Windowing.GetRenderRenderer();
 #else
   int iTemp;
-  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_CONNEXANT,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
-  { 
-    CLog::Log(LOGDEBUG, "Video Encoder: CONNEXANT");  
-    return "CONNEXANT"; 
+  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_CONNEXANT, XKUtils::VIDEO_ENCODER_CMD_DETECT,
+                        0, (LPBYTE)&iTemp) == 0)
+  {
+    CLog::Log(LOGDEBUG, "Video Encoder: CONNEXANT");
+    return "CONNEXANT";
   }
-  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_FOCUS,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
-  { 
+  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_FOCUS, XKUtils::VIDEO_ENCODER_CMD_DETECT, 0,
+                        (LPBYTE)&iTemp) == 0)
+  {
     CLog::Log(LOGDEBUG, "Video Encoder: FOCUS");
-    return "FOCUS";   
+    return "FOCUS";
   }
-  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_XCALIBUR,XKUtils::VIDEO_ENCODER_CMD_DETECT,0,(LPBYTE)&iTemp)==0)
-  { 
-    CLog::Log(LOGDEBUG, "Video Encoder: XCALIBUR");   
+  if (HalReadSMBusValue(XKUtils::SMBDEV_VIDEO_ENCODER_XCALIBUR, XKUtils::VIDEO_ENCODER_CMD_DETECT,
+                        0, (LPBYTE)&iTemp) == 0)
+  {
+    CLog::Log(LOGDEBUG, "Video Encoder: XCALIBUR");
     return "XCALIBUR";
   }
-  else 
-  {  
-    CLog::Log(LOGDEBUG, "Video Encoder: UNKNOWN");  
-    return "UNKNOWN"; 
+  else
+  {
+    CLog::Log(LOGDEBUG, "Video Encoder: UNKNOWN");
+    return "UNKNOWN";
   }
 #endif
 }
@@ -176,7 +180,7 @@ CStdString CSysInfoJob::GetVideoEncoder()
 double CSysInfoJob::GetCPUFrequency()
 {
 #ifndef _XBOX
-  return double (g_cpuInfo.getCPUFrequency());
+  return double(g_cpuInfo.getCPUFrequency());
 #else
   DWORD Twin_fsb, Twin_result;
   double Tcpu_fsb, Tcpu_result, Fcpu, CPUSpeed;
@@ -189,24 +193,26 @@ double CSysInfoJob::GetCPUFrequency()
   Tcpu_result = CSysInfo::RDTSC();
   Twin_result = GetTickCount();
 
-  Fcpu  = (Tcpu_result-Tcpu_fsb);
-  Fcpu /= (Twin_result-Twin_fsb);
+  Fcpu = (Tcpu_result - Tcpu_fsb);
+  Fcpu /= (Twin_result - Twin_fsb);
 
-  CPUSpeed = Fcpu/1000;
+  CPUSpeed = Fcpu / 1000;
 
-  CLog::Log(LOGDEBUG, "- CPU Speed: %4.6fMHz",CPUSpeed);
+  CLog::Log(LOGDEBUG, "- CPU Speed: %4.6fMHz", CPUSpeed);
   return CPUSpeed;
 #endif
 }
 
-bool CSysInfoJob::SystemUpTime(int iInputMinutes, int &iMinutes, int &iHours, int &iDays)
+bool CSysInfoJob::SystemUpTime(int iInputMinutes, int& iMinutes, int& iHours, int& iDays)
 {
-  iMinutes=0;iHours=0;iDays=0;
+  iMinutes = 0;
+  iHours = 0;
+  iDays = 0;
   iMinutes = iInputMinutes;
   if (iMinutes >= 60) // Hour's
   {
     iHours = iMinutes / 60;
-    iMinutes = iMinutes - (iHours *60);
+    iMinutes = iMinutes - (iHours * 60);
   }
   if (iHours >= 24) // Days
   {
@@ -219,9 +225,9 @@ bool CSysInfoJob::SystemUpTime(int iInputMinutes, int &iMinutes, int &iHours, in
 CStdString CSysInfoJob::GetSystemUpTime(bool bTotalUptime)
 {
   CStdString strSystemUptime;
-  int iInputMinutes, iMinutes,iHours,iDays;
+  int iInputMinutes, iMinutes, iHours, iDays;
 
-  if(bTotalUptime)
+  if (bTotalUptime)
   {
     //Total Uptime
     iInputMinutes = g_sysinfo.GetTotalUptime() + ((int)(XbmcThreads::SystemClockMillis() / 60000));
@@ -232,101 +238,97 @@ CStdString CSysInfoJob::GetSystemUpTime(bool bTotalUptime)
     iInputMinutes = (int)(XbmcThreads::SystemClockMillis() / 60000);
   }
 
-  SystemUpTime(iInputMinutes,iMinutes, iHours, iDays);
+  SystemUpTime(iInputMinutes, iMinutes, iHours, iDays);
   if (iDays > 0)
   {
-    strSystemUptime.Format("%i %s, %i %s, %i %s",
-      iDays,g_localizeStrings.Get(12393),
-      iHours,g_localizeStrings.Get(12392),
-      iMinutes, g_localizeStrings.Get(12391));
+    strSystemUptime.Format("%i %s, %i %s, %i %s", iDays, g_localizeStrings.Get(12393), iHours,
+                           g_localizeStrings.Get(12392), iMinutes, g_localizeStrings.Get(12391));
   }
-  else if (iDays == 0 && iHours >= 1 )
+  else if (iDays == 0 && iHours >= 1)
   {
-    strSystemUptime.Format("%i %s, %i %s",
-      iHours,g_localizeStrings.Get(12392),
-      iMinutes, g_localizeStrings.Get(12391));
+    strSystemUptime.Format("%i %s, %i %s", iHours, g_localizeStrings.Get(12392), iMinutes,
+                           g_localizeStrings.Get(12391));
   }
-  else if (iDays == 0 && iHours == 0 &&  iMinutes >= 0)
+  else if (iDays == 0 && iHours == 0 && iMinutes >= 0)
   {
-    strSystemUptime.Format("%i %s",
-      iMinutes, g_localizeStrings.Get(12391));
+    strSystemUptime.Format("%i %s", iMinutes, g_localizeStrings.Get(12391));
   }
   return strSystemUptime;
 }
 
 std::string CSysInfo::TranslateInfo(int info) const
 {
-  switch(info)
+  switch (info)
   {
 #ifdef HAS_XBOX_HARDWARE
-  case SYSTEM_MPLAYER_VERSION:
-    return m_info.mplayerversion;
-  case SYSTEM_OS_VERSION_INFO:
-    return m_info.kernelVersion;
-  case SYSTEM_CPUFREQUENCY:
-    return m_info.cpuFrequency;
-  case SYSTEM_XBOX_VERSION:
-    return m_info.xboxversion;
-  case SYSTEM_AV_PACK_INFO:
-    return m_info.avpackinfo;
-  case SYSTEM_VIDEO_ENCODER_INFO:
-    return m_info.videoEncoder;
-  case SYSTEM_XBOX_SERIAL:
-    return m_info.xboxserial;
-  case SYSTEM_HDD_LOCKKEY:
-    return m_info.hddlockkey;
-  case SYSTEM_HDD_BOOTDATE:
-    return m_info.hddbootdate;
-  case SYSTEM_HDD_CYCLECOUNT:
-    return m_info.hddcyclecount;
-  case NETWORK_MAC_ADDRESS:
-    return m_info.macAddress;
-  case SYSTEM_XBE_REGION:
-    return m_info.videoxberegion;
-  case SYSTEM_DVD_ZONE:
-    return m_info.videodvdzone;
-  case SYSTEM_XBOX_PRODUCE_INFO:
-    return m_info.produceinfo;
-  case SYSTEM_XBOX_BIOS:
-    return m_info.xboxBios;
-  case SYSTEM_XBOX_MODCHIP:
-    if (g_advancedSettings.m_DisableModChipDetection)
+    case SYSTEM_MPLAYER_VERSION:
+      return m_info.mplayerversion;
+    case SYSTEM_OS_VERSION_INFO:
+      return m_info.kernelVersion;
+    case SYSTEM_CPUFREQUENCY:
+      return m_info.cpuFrequency;
+    case SYSTEM_XBOX_VERSION:
+      return m_info.xboxversion;
+    case SYSTEM_AV_PACK_INFO:
+      return m_info.avpackinfo;
+    case SYSTEM_VIDEO_ENCODER_INFO:
+      return m_info.videoEncoder;
+    case SYSTEM_XBOX_SERIAL:
+      return m_info.xboxserial;
+    case SYSTEM_HDD_LOCKKEY:
+      return m_info.hddlockkey;
+    case SYSTEM_HDD_BOOTDATE:
+      return m_info.hddbootdate;
+    case SYSTEM_HDD_CYCLECOUNT:
+      return m_info.hddcyclecount;
+    case NETWORK_MAC_ADDRESS:
+      return m_info.macAddress;
+    case SYSTEM_XBE_REGION:
+      return m_info.videoxberegion;
+    case SYSTEM_DVD_ZONE:
+      return m_info.videodvdzone;
+    case SYSTEM_XBOX_PRODUCE_INFO:
+      return m_info.produceinfo;
+    case SYSTEM_XBOX_BIOS:
+      return m_info.xboxBios;
+    case SYSTEM_XBOX_MODCHIP:
+      if (g_advancedSettings.m_DisableModChipDetection)
         return "Modchip lookup is disabled";
-    return m_info.xboxModChip;
-  // HDD request
-  case SYSTEM_HDD_MODEL:
-    return m_info.HDDModel;
-  case SYSTEM_HDD_SERIAL:
-    return m_info.HDDSerial;
-  case SYSTEM_HDD_FIRMWARE:
-    return m_info.HDDFirmware;
-  case SYSTEM_HDD_PASSWORD:
-    return m_info.HDDpw;
-  case SYSTEM_HDD_LOCKSTATE:
-    return m_info.HDDLockState;
-  // DVD request
-  case SYSTEM_DVD_MODEL:
-    return m_info.DVDModel;
-  case SYSTEM_DVD_FIRMWARE:
-    return m_info.DVDFirmware;
-  // All Time request
-  case LCD_HDD_TEMPERATURE:
-  case SYSTEM_HDD_TEMPERATURE:
-  {
-    CTemperature temp;
-    if(m_bSmartEnabled && m_info.HDDTemp != 0)
-      temp = CTemperature::CreateFromCelsius((double)m_info.HDDTemp);
-    return temp.IsValid() ? g_langInfo.GetTemperatureAsString(temp) : "N/A";
-  }
+      return m_info.xboxModChip;
+    // HDD request
+    case SYSTEM_HDD_MODEL:
+      return m_info.HDDModel;
+    case SYSTEM_HDD_SERIAL:
+      return m_info.HDDSerial;
+    case SYSTEM_HDD_FIRMWARE:
+      return m_info.HDDFirmware;
+    case SYSTEM_HDD_PASSWORD:
+      return m_info.HDDpw;
+    case SYSTEM_HDD_LOCKSTATE:
+      return m_info.HDDLockState;
+    // DVD request
+    case SYSTEM_DVD_MODEL:
+      return m_info.DVDModel;
+    case SYSTEM_DVD_FIRMWARE:
+      return m_info.DVDFirmware;
+    // All Time request
+    case LCD_HDD_TEMPERATURE:
+    case SYSTEM_HDD_TEMPERATURE:
+    {
+      CTemperature temp;
+      if (m_bSmartEnabled && m_info.HDDTemp != 0)
+        temp = CTemperature::CreateFromCelsius((double)m_info.HDDTemp);
+      return temp.IsValid() ? g_langInfo.GetTemperatureAsString(temp) : "N/A";
+    }
 #endif
-  case SYSTEM_UPTIME:
-    return m_info.systemUptime;
-  case SYSTEM_TOTALUPTIME:
-    return m_info.systemTotalUptime;
-  case SYSTEM_INTERNET_STATE:
-    return m_info.internetState;
-  default:
-    return "";
+    case SYSTEM_UPTIME:
+      return m_info.systemUptime;
+    case SYSTEM_TOTALUPTIME:
+      return m_info.systemTotalUptime;
+    case SYSTEM_INTERNET_STATE:
+      return m_info.internetState;
+    default:
+      return "";
   }
 }
 
@@ -357,103 +359,108 @@ CSysInfo::CSysInfo(void) : CInfoLoader(15 * 1000)
 CSysInfo::~CSysInfo()
 {
 #ifdef HAS_XBOX_HARDWARE
-   delete m_XKEEPROM;
+  delete m_XKEEPROM;
 #endif
 }
 #ifdef HAS_XBOX_HARDWARE
-struct Bios * CSysInfo::LoadBiosSigns()
+struct Bios* CSysInfo::LoadBiosSigns()
 {
-  FILE *infile;
+  FILE* infile;
 
-  if ((infile = fopen(XBOX_BIOS_ID_INI_FILE,"r")) == NULL)
+  if ((infile = fopen(XBOX_BIOS_ID_INI_FILE, "r")) == NULL)
   {
     CLog::Log(LOGDEBUG, "ERROR LOADING BIOSES.INI!!");
     return NULL;
   }
   else
   {
-    struct Bios * Listone = (struct Bios *)calloc(1000, sizeof(struct Bios));
-    int cntBioses=0;
+    struct Bios* Listone = (struct Bios*)calloc(1000, sizeof(struct Bios));
+    int cntBioses = 0;
     char buffer[255];
     char stringone[255];
     do
     {
-      fgets(stringone,255,infile);
-      if  (stringone[0] != '#')
+      fgets(stringone, 255, infile);
+      if (stringone[0] != '#')
       {
-        if (strstr(stringone,"=")!= NULL)
+        if (strstr(stringone, "=") != NULL)
         {
-          strcpy(Listone[cntBioses].Name,ReturnBiosName(buffer, stringone));
-          strcpy(Listone[cntBioses].Signature,ReturnBiosSign(buffer, stringone));
+          strcpy(Listone[cntBioses].Name, ReturnBiosName(buffer, stringone));
+          strcpy(Listone[cntBioses].Signature, ReturnBiosSign(buffer, stringone));
           cntBioses++;
         }
       }
-    } while( !feof( infile ) && cntBioses < 999 );
+    } while (!feof(infile) && cntBioses < 999);
     fclose(infile);
-    strcpy(Listone[cntBioses++].Name,"\0");
-    strcpy(Listone[cntBioses++].Signature,"\0");
+    strcpy(Listone[cntBioses++].Name, "\0");
+    strcpy(Listone[cntBioses++].Signature, "\0");
     return Listone;
   }
 }
-char* CSysInfo::MD5Buffer(char *buffer, long PosizioneInizio,int KBytes)
+char* CSysInfo::MD5Buffer(char* buffer, long PosizioneInizio, int KBytes)
 {
   XBMC::XBMC_MD5 mdContext;
   CStdString md5sumstring;
-  mdContext.append((unsigned char *)(buffer + PosizioneInizio), KBytes * 1024);
+  mdContext.append((unsigned char*)(buffer + PosizioneInizio), KBytes * 1024);
   mdContext.getDigest(md5sumstring);
   strcpy(MD5_Sign, md5sumstring.c_str());
   return MD5_Sign;
 }
 
-char* CSysInfo::ReturnBiosName(char *buffer, char *str)
+char* CSysInfo::ReturnBiosName(char* buffer, char* str)
 {
-  int cnt1,cnt2,i;
-  cnt1=cnt2=0;
+  int cnt1, cnt2, i;
+  cnt1 = cnt2 = 0;
 
-  for (i=0;i<255;i++) buffer[i]='\0';
-  if ( (strstr(str,"(1MB)")==0) || (strstr(str,"(512)")==0) || (strstr(str,"(256)")==0) )
-    cnt2=5;
+  for (i = 0; i < 255; i++)
+    buffer[i] = '\0';
+  if ((strstr(str, "(1MB)") == 0) || (strstr(str, "(512)") == 0) || (strstr(str, "(256)") == 0))
+    cnt2 = 5;
 
   while (str[cnt2] != '=')
   {
-    buffer[cnt1]=str[cnt2];
+    buffer[cnt1] = str[cnt2];
     cnt1++;
     cnt2++;
   }
-  buffer[cnt1++]='\0';
+  buffer[cnt1++] = '\0';
   return buffer;
 }
-char* CSysInfo::ReturnBiosSign(char *buffer, char *str)
+char* CSysInfo::ReturnBiosSign(char* buffer, char* str)
 {
-  int cnt1,cnt2,i;
-  cnt1=cnt2=0;
-  for (i=0;i<255;i++) buffer[i]='\0';
-  while (str[cnt2] != '=') cnt2++;
+  int cnt1, cnt2, i;
+  cnt1 = cnt2 = 0;
+  for (i = 0; i < 255; i++)
+    buffer[i] = '\0';
+  while (str[cnt2] != '=')
+    cnt2++;
   cnt2++;
   while (str[cnt2] != NULL)
   {
-    if ( str[cnt2] != ' ' )
+    if (str[cnt2] != ' ')
     {
-      buffer[cnt1]=toupper(str[cnt2]);
+      buffer[cnt1] = toupper(str[cnt2]);
       cnt1++;
       cnt2++;
     }
-    else cnt2++;
+    else
+      cnt2++;
   }
-  buffer[cnt1++]='\0';
+  buffer[cnt1++] = '\0';
   return buffer;
 }
-char* CSysInfo::CheckMD5 (struct Bios *Listone, char *Sign)
+char* CSysInfo::CheckMD5(struct Bios* Listone, char* Sign)
 {
   int cntBioses;
-  cntBioses=0;
+  cntBioses = 0;
   do
   {
-    if  (strstr(Listone[cntBioses].Signature, Sign) != NULL)
-    { return (Listone[cntBioses].Name);   }
+    if (strstr(Listone[cntBioses].Signature, Sign) != NULL)
+    {
+      return (Listone[cntBioses].Name);
+    }
     cntBioses++;
-  }
-  while( strcmp(Listone[cntBioses].Name,"\0") != 0);
+  } while (strcmp(Listone[cntBioses].Name, "\0") != 0);
   return ("Unknown");
 }
 
@@ -468,28 +475,30 @@ void CSysInfo::WriteTXTInfoFile()
   ZeroMemory(tmpData, SYSINFO_TMP_SIZE);
   ZeroMemory(tmpFileStr, 2048);
 
-  HANDLE hf = CreateFile(strFilename, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-  if (hf !=  INVALID_HANDLE_VALUE)
+  HANDLE hf = CreateFile(strFilename, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
+                         FILE_ATTRIBUTE_NORMAL, NULL);
+  if (hf != INVALID_HANDLE_VALUE)
   {
     //Write File Header..
     strcat(tmpFileStr, "*******  XBOXMEDIACENTER [XBMC] INFORMATION FILE  *******\r\n");
-    if (m_XBOXVersion== m_XKEEPROM->V1_0)
+    if (m_XBOXVersion == m_XKEEPROM->V1_0)
       strcat(tmpFileStr, "\r\nXBOX Version = \t\tV1.0");
     else if (m_XBOXVersion == m_XKEEPROM->V1_1)
       strcat(tmpFileStr, "\r\nXBOX Version = \t\tV1.1-V1.5");
     else if (m_XBOXVersion == m_XKEEPROM->V1_6)
-      strcat(tmpFileStr,  "\r\nXBOX Version = \t\tV1.6");
+      strcat(tmpFileStr, "\r\nXBOX Version = \t\tV1.6");
     //Get Kernel Version
     ZeroMemory(tmpData, SYSINFO_TMP_SIZE);
-    sprintf(tmpData, "\r\nKernel Version: \t%d.%d.%d.%d", XboxKrnlVersion->VersionMajor,XboxKrnlVersion->VersionMinor,XboxKrnlVersion->Build,XboxKrnlVersion->Qfe);
+    sprintf(tmpData, "\r\nKernel Version: \t%d.%d.%d.%d", XboxKrnlVersion->VersionMajor,
+            XboxKrnlVersion->VersionMinor, XboxKrnlVersion->Build, XboxKrnlVersion->Qfe);
     strcat(tmpFileStr, tmpData);
 
     //Get Memory Status
     strcat(tmpFileStr, "\r\nXBOX RAM = \t\t");
     ZeroMemory(tmpData, SYSINFO_TMP_SIZE);
     MEMORYSTATUS stat;
-    GlobalMemoryStatus( &stat );
-    ltoa(stat.dwTotalPhys/1024/1024, tmpData, 10);
+    GlobalMemoryStatus(&stat);
+    ltoa(stat.dwTotalPhys / 1024 / 1024, tmpData, 10);
     strcat(tmpFileStr, tmpData);
     strcat(tmpFileStr, " MBytes");
 
@@ -563,7 +572,7 @@ void CSysInfo::WriteTXTInfoFile()
     ZeroMemory(tmpData, SYSINFO_TMP_SIZE);
     BYTE HDDpwd[20];
     ZeroMemory(HDDpwd, 20);
-    XKHDD::GenerateHDDPwd((UCHAR *)XboxHDKey, cmdObj.DATA_BUFFER, (UCHAR*)&HDDpwd);
+    XKHDD::GenerateHDDPwd((UCHAR*)XboxHDKey, cmdObj.DATA_BUFFER, (UCHAR*)&HDDpwd);
     XKGeneral::BytesToHexStr(HDDpwd, 20, tmpData);
     strcat(tmpFileStr, tmpData);
 
@@ -587,20 +596,20 @@ void CSysInfo::WriteTXTInfoFile()
 }
 bool CSysInfo::CreateBiosBackup()
 {
-  FILE *fp;
-  DWORD addr        = FLASH_BASE_ADDRESS;
+  FILE* fp;
+  DWORD addr = FLASH_BASE_ADDRESS;
   DWORD addr_kernel = KERNEL_BASE_ADDRESS;
-  char * flash_copy, data;
+  char *flash_copy, data;
   CXBoxFlash mbFlash;
 
-  flash_copy = (char *) malloc(0x100000);
+  flash_copy = (char*)malloc(0x100000);
 
-  if((fp = fopen(XBOX_BIOS_BACKUP_FILE, "wb")) != NULL)
+  if ((fp = fopen(XBOX_BIOS_BACKUP_FILE, "wb")) != NULL)
   {
-    for(int loop=0;loop<0x100000;loop++)
+    for (int loop = 0; loop < 0x100000; loop++)
     {
-        data = mbFlash.Read(addr++);
-        flash_copy[loop] = data;
+      data = mbFlash.Read(addr++);
+      flash_copy[loop] = data;
     }
     fwrite(flash_copy, 0x100000, 1, fp);
     fclose(fp);
@@ -623,49 +632,49 @@ bool CSysInfo::CreateEEPROMBackup()
 bool CSysInfo::CheckBios(CStdString& strDetBiosNa)
 {
   BYTE data;
-  char *BIOS_Name;
-  int BiosTrovato,i;
-  DWORD addr        = FLASH_BASE_ADDRESS;
+  char* BIOS_Name;
+  int BiosTrovato, i;
+  DWORD addr = FLASH_BASE_ADDRESS;
   DWORD addr_kernel = KERNEL_BASE_ADDRESS;
   CXBoxFlash mbFlash;
-  char * flash_copy;
+  char* flash_copy;
 
-  flash_copy = (char *) malloc(0x100000);
+  flash_copy = (char*)malloc(0x100000);
 
-  BiosTrovato     = 0;
-  BIOS_Name     = (char*) malloc(100);
+  BiosTrovato = 0;
+  BIOS_Name = (char*)malloc(100);
 
-  struct Bios *Listone = LoadBiosSigns();
+  struct Bios* Listone = LoadBiosSigns();
 
-  if( !Listone )
+  if (!Listone)
   {
     free(BIOS_Name);
     return false;
   }
 
-  for(int loop=0;loop<0x100000;loop++)
+  for (int loop = 0; loop < 0x100000; loop++)
   {
     data = mbFlash.Read(addr++);
     flash_copy[loop] = data;
   }
 
   // Detect a 1024 KB Bios MD5
-  MD5Buffer (flash_copy,0,1024);
-  strcpy(BIOS_Name,CheckMD5(Listone, MD5_Sign));
-  if ( strcmp(BIOS_Name, "Unknown") == 0)
+  MD5Buffer(flash_copy, 0, 1024);
+  strcpy(BIOS_Name, CheckMD5(Listone, MD5_Sign));
+  if (strcmp(BIOS_Name, "Unknown") == 0)
   {
     // Detect a 512 KB Bios MD5
-    MD5Buffer (flash_copy,0,512);
+    MD5Buffer(flash_copy, 0, 512);
     strcpy(BIOS_Name, CheckMD5(Listone, MD5_Sign));
-    if ( strcmp(BIOS_Name,"Unknown") == 0)
+    if (strcmp(BIOS_Name, "Unknown") == 0)
     {
       // Detect a 256 KB Bios MD5
-      MD5Buffer (flash_copy,0,256);
-      strcpy(BIOS_Name,CheckMD5(Listone, MD5_Sign));
-      if ( strcmp(BIOS_Name,"Unknown") != 0)
+      MD5Buffer(flash_copy, 0, 256);
+      strcpy(BIOS_Name, CheckMD5(Listone, MD5_Sign));
+      if (strcmp(BIOS_Name, "Unknown") != 0)
       {
-        CLog::Log(LOGDEBUG, "- Detected BIOS [256 KB]: %hs",BIOS_Name);
-        CLog::Log(LOGDEBUG, "- BIOS MD5 Hash: %hs",MD5_Sign);
+        CLog::Log(LOGDEBUG, "- Detected BIOS [256 KB]: %hs", BIOS_Name);
+        CLog::Log(LOGDEBUG, "- BIOS MD5 Hash: %hs", MD5_Sign);
         strDetBiosNa = BIOS_Name;
         free(flash_copy);
         free(Listone);
@@ -676,31 +685,34 @@ bool CSysInfo::CheckBios(CStdString& strDetBiosNa)
       {
         CLog::Log(LOGINFO, "------------------- BIOS Detection Log ------------------");
         // 256k Bios MD5
-        if ( (MD5BufferNew(flash_copy,0,256) == MD5BufferNew(flash_copy,262144,256)) && (MD5BufferNew(flash_copy,524288,256)== MD5BufferNew(flash_copy,786432,256)) )
+        if ((MD5BufferNew(flash_copy, 0, 256) == MD5BufferNew(flash_copy, 262144, 256)) &&
+            (MD5BufferNew(flash_copy, 524288, 256) == MD5BufferNew(flash_copy, 786432, 256)))
         {
-            for (i=0;i<16; i++) MD5_Sign[i]='\0';
-            MD5Buffer(flash_copy,0,256);
-            CLog::Log(LOGINFO, "256k BIOSES: Checksums are (256)");
-            CLog::Log(LOGINFO, "  1.Bios > %hs",CheckMD5(Listone, MD5_Sign));
-            CLog::Log(LOGINFO, "  Add this to BiosIDs.ini: (256)BiosNameHere = %hs",MD5_Sign);
-            CLog::Log(LOGINFO, "---------------------------------------------------------");
-            strDetBiosNa = g_localizeStrings.Get(38768);
-            free(flash_copy);
-            free(Listone);
-            free(BIOS_Name);
-            return true;
+          for (i = 0; i < 16; i++)
+            MD5_Sign[i] = '\0';
+          MD5Buffer(flash_copy, 0, 256);
+          CLog::Log(LOGINFO, "256k BIOSES: Checksums are (256)");
+          CLog::Log(LOGINFO, "  1.Bios > %hs", CheckMD5(Listone, MD5_Sign));
+          CLog::Log(LOGINFO, "  Add this to BiosIDs.ini: (256)BiosNameHere = %hs", MD5_Sign);
+          CLog::Log(LOGINFO, "---------------------------------------------------------");
+          strDetBiosNa = g_localizeStrings.Get(38768);
+          free(flash_copy);
+          free(Listone);
+          free(BIOS_Name);
+          return true;
         }
         else
-        { 
+        {
           CLog::Log(LOGINFO, "- BIOS: This is not a 256KB Bios!");
           // 512k Bios MD5
-          if ((MD5BufferNew(flash_copy,0,512)) == (MD5BufferNew(flash_copy,524288,512)))
+          if ((MD5BufferNew(flash_copy, 0, 512)) == (MD5BufferNew(flash_copy, 524288, 512)))
           {
-            for (i=0;i<16; i++) MD5_Sign[i]='\0';
-            MD5Buffer(flash_copy,0,512);
+            for (i = 0; i < 16; i++)
+              MD5_Sign[i] = '\0';
+            MD5Buffer(flash_copy, 0, 512);
             CLog::Log(LOGINFO, "512k BIOSES: Checksums are (512)");
-            CLog::Log(LOGINFO, "  1.Bios > %hs",CheckMD5(Listone,MD5_Sign));
-            CLog::Log(LOGINFO, "  Add. this to BiosIDs.ini: (512)BiosNameHere = %hs",MD5_Sign);
+            CLog::Log(LOGINFO, "  1.Bios > %hs", CheckMD5(Listone, MD5_Sign));
+            CLog::Log(LOGINFO, "  Add. this to BiosIDs.ini: (512)BiosNameHere = %hs", MD5_Sign);
             CLog::Log(LOGINFO, "---------------------------------------------------------");
             strDetBiosNa = g_localizeStrings.Get(38768);
             free(flash_copy);
@@ -712,11 +724,12 @@ bool CSysInfo::CheckBios(CStdString& strDetBiosNa)
           {
             CLog::Log(LOGINFO, "- BIOS: This is not a 512KB Bios!");
             // 1024k Bios MD5
-            for (i=0;i<16; i++) MD5_Sign[i]='\0';
-            MD5Buffer(flash_copy,0,1024);
+            for (i = 0; i < 16; i++)
+              MD5_Sign[i] = '\0';
+            MD5Buffer(flash_copy, 0, 1024);
             CLog::Log(LOGINFO, "1024k BIOS: Checksums are (1MB)");
-            CLog::Log(LOGINFO, "  1.Bios > %hs",CheckMD5(Listone, MD5_Sign));
-            CLog::Log(LOGINFO, "  Add. this to BiosIDs.ini: (1MB)BiosNameHere = %hs",MD5_Sign);
+            CLog::Log(LOGINFO, "  1.Bios > %hs", CheckMD5(Listone, MD5_Sign));
+            CLog::Log(LOGINFO, "  Add. this to BiosIDs.ini: (1MB)BiosNameHere = %hs", MD5_Sign);
             CLog::Log(LOGINFO, "---------------------------------------------------------");
             strDetBiosNa = g_localizeStrings.Get(38768);
             free(flash_copy);
@@ -729,20 +742,19 @@ bool CSysInfo::CheckBios(CStdString& strDetBiosNa)
     }
     else
     {
-      CLog::Log(LOGINFO, "- Detected BIOS [512 KB]: %hs",BIOS_Name);
-      CLog::Log(LOGINFO, "- BIOS MD5 Hash: %hs",MD5_Sign);
+      CLog::Log(LOGINFO, "- Detected BIOS [512 KB]: %hs", BIOS_Name);
+      CLog::Log(LOGINFO, "- BIOS MD5 Hash: %hs", MD5_Sign);
       strDetBiosNa = BIOS_Name;
       free(flash_copy);
       free(Listone);
       free(BIOS_Name);
       return true;
-
     }
   }
   else
   {
-    CLog::Log(LOGINFO, "- Detected BIOS [1024 KB]: %hs",BIOS_Name);
-    CLog::Log(LOGINFO, "- BIOS MD5 Hash: %hs",MD5_Sign);
+    CLog::Log(LOGINFO, "- Detected BIOS [1024 KB]: %hs", BIOS_Name);
+    CLog::Log(LOGINFO, "- BIOS MD5 Hash: %hs", MD5_Sign);
     strDetBiosNa = BIOS_Name;
     free(flash_copy);
     free(Listone);
@@ -759,24 +771,62 @@ bool CSysInfo::GetXBOXVersionDetected(CStdString& strXboxVer)
   unsigned int iTemp;
   char Ver[6];
 
-  HalReadSMBusValue(0x20,0x01,0,(LPBYTE)&Ver[0]);
-  HalReadSMBusValue(0x20,0x01,0,(LPBYTE)&Ver[1]);
-  HalReadSMBusValue(0x20,0x01,0,(LPBYTE)&Ver[2]);
-  Ver[3] = 0; Ver[4] = 0; Ver[5] = 0;
+  HalReadSMBusValue(0x20, 0x01, 0, (LPBYTE)&Ver[0]);
+  HalReadSMBusValue(0x20, 0x01, 0, (LPBYTE)&Ver[1]);
+  HalReadSMBusValue(0x20, 0x01, 0, (LPBYTE)&Ver[2]);
+  Ver[3] = 0;
+  Ver[4] = 0;
+  Ver[5] = 0;
 
-  if ( strcmp(Ver,("01D")) == NULL || strcmp(Ver,("D01")) == NULL || strcmp(Ver,("1D0")) == NULL || strcmp(Ver,("0D1")) == NULL)
-  { strXboxVer = "DEVKIT";  return true;}
-  else if ( strcmp(Ver,("DBG")) == NULL){ strXboxVer = "DEBUGKIT Green";  return true;}
-  else if ( strcmp(Ver,("B11")) == NULL){ strXboxVer = "DEBUGKIT Green";  return true;}
-  else if ( strcmp(Ver,("P01")) == NULL){ strXboxVer = "v1.0";  return true;}
-  else if ( strcmp(Ver,("P05")) == NULL){ strXboxVer = "v1.1";  return true;}
-  else if ( strcmp(Ver,("P11")) == NULL ||  strcmp(Ver,("1P1")) == NULL || strcmp(Ver,("11P")) == NULL )
+  if (strcmp(Ver, ("01D")) == NULL || strcmp(Ver, ("D01")) == NULL ||
+      strcmp(Ver, ("1D0")) == NULL || strcmp(Ver, ("0D1")) == NULL)
   {
-    if (HalReadSMBusValue(0xD4,0x00,0,(LPBYTE)&iTemp)==0){  strXboxVer = "v1.4";  return true; }
-    else {  strXboxVer = "v1.2/v1.3";   return true;}
+    strXboxVer = "DEVKIT";
+    return true;
   }
-  else if ( strcmp(Ver,("P2L")) == NULL){ strXboxVer = "v1.6";  return true;}
-  else  { strXboxVer.Format("UNKNOWN: Please report this --> %s",Ver); return true;
+  else if (strcmp(Ver, ("DBG")) == NULL)
+  {
+    strXboxVer = "DEBUGKIT Green";
+    return true;
+  }
+  else if (strcmp(Ver, ("B11")) == NULL)
+  {
+    strXboxVer = "DEBUGKIT Green";
+    return true;
+  }
+  else if (strcmp(Ver, ("P01")) == NULL)
+  {
+    strXboxVer = "v1.0";
+    return true;
+  }
+  else if (strcmp(Ver, ("P05")) == NULL)
+  {
+    strXboxVer = "v1.1";
+    return true;
+  }
+  else if (strcmp(Ver, ("P11")) == NULL || strcmp(Ver, ("1P1")) == NULL ||
+           strcmp(Ver, ("11P")) == NULL)
+  {
+    if (HalReadSMBusValue(0xD4, 0x00, 0, (LPBYTE)&iTemp) == 0)
+    {
+      strXboxVer = "v1.4";
+      return true;
+    }
+    else
+    {
+      strXboxVer = "v1.2/v1.3";
+      return true;
+    }
+  }
+  else if (strcmp(Ver, ("P2L")) == NULL)
+  {
+    strXboxVer = "v1.6";
+    return true;
+  }
+  else
+  {
+    strXboxVer.Format("UNKNOWN: Please report this --> %s", Ver);
+    return true;
   }
 }
 
@@ -795,26 +845,30 @@ bool CSysInfo::GetDVDInfo(CStdString& strDVDModel, CStdString& strDVDFirmware)
   {
     //Get DVD Model
     CHAR lpsDVDModel[100];
-    ZeroMemory(&lpsDVDModel,100);
+    ZeroMemory(&lpsDVDModel, 100);
     XKHDD::GetIDEModel(hddcommand.DATA_BUFFER, lpsDVDModel);
-    CLog::Log(LOGDEBUG, "DVD Model: %s",lpsDVDModel);
-    strDVDModel.Format("%s",lpsDVDModel);
+    CLog::Log(LOGDEBUG, "DVD Model: %s", lpsDVDModel);
+    strDVDModel.Format("%s", lpsDVDModel);
 
     //Get DVD FirmWare...
     CHAR lpsDVDFirmware[100];
-    ZeroMemory(&lpsDVDFirmware,100);
+    ZeroMemory(&lpsDVDFirmware, 100);
     XKHDD::GetIDEFirmWare(hddcommand.DATA_BUFFER, lpsDVDFirmware);
-    CLog::Log(LOGDEBUG, "DVD Firmware: %s",lpsDVDFirmware);
-    strDVDFirmware.Format("%s",lpsDVDFirmware);
-    m_dvdRequest= true;
+    CLog::Log(LOGDEBUG, "DVD Firmware: %s", lpsDVDFirmware);
+    strDVDFirmware.Format("%s", lpsDVDFirmware);
+    m_dvdRequest = true;
   }
   //check if the requested values are empty to reset the request..
-  if(m_dvdRequest && strDVDModel.IsEmpty() && strDVDFirmware.IsEmpty())
-    m_dvdRequest=false;
+  if (m_dvdRequest && strDVDModel.IsEmpty() && strDVDFirmware.IsEmpty())
+    m_dvdRequest = false;
 
   return m_dvdRequest;
 }
-bool CSysInfo::GetHDDInfo(CStdString& strHDDModel, CStdString& strHDDSerial,CStdString& strHDDFirmware,CStdString& strHDDpw,CStdString& strHDDLockState)
+bool CSysInfo::GetHDDInfo(CStdString& strHDDModel,
+                          CStdString& strHDDSerial,
+                          CStdString& strHDDFirmware,
+                          CStdString& strHDDpw,
+                          CStdString& strHDDLockState)
 {
   XKHDD::ATA_COMMAND_OBJ hddcommand;
 
@@ -828,7 +882,7 @@ bool CSysInfo::GetHDDInfo(CStdString& strHDDModel, CStdString& strHDDSerial,CStd
     //Get Model Name
     CHAR lpsHDDModel[100] = "";
     XKHDD::GetIDEModel(hddcommand.DATA_BUFFER, lpsHDDModel);
-    strHDDModel.Format("%s",lpsHDDModel);
+    strHDDModel.Format("%s", lpsHDDModel);
 
     //Get Serial...
     CHAR lpsHDDSerial[100] = "";
@@ -843,7 +897,7 @@ bool CSysInfo::GetHDDInfo(CStdString& strHDDModel, CStdString& strHDDSerial,CStd
     //Print HDD Password...
     BYTE pbHDDPassword[32] = "";
     CHAR lpsHDDPassword[65] = "";
-    XKHDD::GenerateHDDPwd((UCHAR *)XboxHDKey, hddcommand.DATA_BUFFER, pbHDDPassword);
+    XKHDD::GenerateHDDPwd((UCHAR*)XboxHDKey, hddcommand.DATA_BUFFER, pbHDDPassword);
     XKGeneral::BytesToHexStr(pbHDDPassword, 20, lpsHDDPassword);
     strHDDpw.Format("%s", lpsHDDPassword);
 
@@ -875,7 +929,7 @@ bool CSysInfo::GetHDDInfo(CStdString& strHDDModel, CStdString& strHDDSerial,CStd
     m_hddRequest = true;
   }
   //check if the requested values are empty to reset the request..
-  if(m_hddRequest && strHDDModel.IsEmpty() && strHDDSerial.IsEmpty())
+  if (m_hddRequest && strHDDModel.IsEmpty() && strHDDSerial.IsEmpty())
     m_hddRequest = false;
 
   return m_hddRequest;
@@ -888,36 +942,32 @@ bool CSysInfo::GetRefurbInfo(CStdString& rfi_FirstBootTime, CStdString& rfi_Powe
     return false;
 
   FileTimeToSystemTime((FILETIME*)&xri.FirstBootTime, &sys_time);
-  rfi_FirstBootTime.Format("%d-%d-%d %d:%02d", 
-    sys_time.wMonth, 
-    sys_time.wDay, 
-    sys_time.wYear,
-    sys_time.wHour,
-    sys_time.wMinute);
+  rfi_FirstBootTime.Format("%d-%d-%d %d:%02d", sys_time.wMonth, sys_time.wDay, sys_time.wYear,
+                           sys_time.wHour, sys_time.wMinute);
 
   rfi_PowerCycleCount.Format("%d", xri.PowerCycleCount);
   return true;
 }
 #endif
 
-bool CSysInfo::Load(const TiXmlNode *settings)
+bool CSysInfo::Load(const TiXmlNode* settings)
 {
   if (settings == NULL)
     return false;
 
-  const TiXmlElement *pElement = settings->FirstChildElement("general");
+  const TiXmlElement* pElement = settings->FirstChildElement("general");
   if (pElement)
     XMLUtils::GetInt(pElement, "systemtotaluptime", m_iSystemTimeTotalUp, 0, INT_MAX);
 
   return true;
 }
 
-bool CSysInfo::Save(TiXmlNode *settings) const
+bool CSysInfo::Save(TiXmlNode* settings) const
 {
   if (settings == NULL)
     return false;
 
-  TiXmlNode *generalNode = settings->FirstChild("general");
+  TiXmlNode* generalNode = settings->FirstChild("general");
   if (generalNode == NULL)
   {
     TiXmlElement generalNodeNew("general");
@@ -930,7 +980,12 @@ bool CSysInfo::Save(TiXmlNode *settings) const
   return true;
 }
 
-bool CSysInfo::GetDiskSpace(const CStdString drive,int& iTotal, int& iTotalFree, int& iTotalUsed, int& iPercentFree, int& iPercentUsed)
+bool CSysInfo::GetDiskSpace(const CStdString drive,
+                            int& iTotal,
+                            int& iTotalFree,
+                            int& iTotalUsed,
+                            int& iPercentFree,
+                            int& iPercentUsed)
 {
   CStdString driveName = drive + ":\\";
   ULARGE_INTEGER total, totalFree, totalUsed;
@@ -944,7 +999,7 @@ bool CSysInfo::GetDiskSpace(const CStdString drive,int& iTotal, int& iTotalFree,
     ULARGE_INTEGER totalX, totalFreeX;
     ULARGE_INTEGER totalY, totalFreeY;
     ULARGE_INTEGER totalZ, totalFreeZ;
-    
+
     BOOL bC = GetDiskFreeSpaceEx("C:\\", NULL, &totalC, &totalFreeC);
     BOOL bE = GetDiskFreeSpaceEx("E:\\", NULL, &totalE, &totalFreeE);
     BOOL bF = GetDiskFreeSpaceEx("F:\\", NULL, &totalF, &totalFreeF);
@@ -952,41 +1007,35 @@ bool CSysInfo::GetDiskSpace(const CStdString drive,int& iTotal, int& iTotalFree,
     BOOL bX = GetDiskFreeSpaceEx("X:\\", NULL, &totalX, &totalFreeX);
     BOOL bY = GetDiskFreeSpaceEx("Y:\\", NULL, &totalY, &totalFreeY);
     BOOL bZ = GetDiskFreeSpaceEx("Z:\\", NULL, &totalZ, &totalFreeZ);
-    
-    total.QuadPart = (bC?totalC.QuadPart:0)+
-      (bE?totalE.QuadPart:0)+
-      (bF?totalF.QuadPart:0)+
-      (bG?totalG.QuadPart:0)+
-      (bX?totalX.QuadPart:0)+
-      (bY?totalY.QuadPart:0)+
-      (bZ?totalZ.QuadPart:0);
-    totalFree.QuadPart = (bC?totalFreeC.QuadPart:0)+
-      (bE?totalFreeE.QuadPart:0)+
-      (bF?totalFreeF.QuadPart:0)+
-      (bG?totalFreeG.QuadPart:0)+
-      (bX?totalFreeX.QuadPart:0)+
-      (bY?totalFreeY.QuadPart:0)+
-      (bZ?totalFreeZ.QuadPart:0);
-    
-    iTotal = (int)(total.QuadPart/MB);
-    iTotalFree = (int)(totalFree.QuadPart/MB);
-    iTotalUsed = (int)((total.QuadPart - totalFree.QuadPart)/MB);
+
+    total.QuadPart = (bC ? totalC.QuadPart : 0) + (bE ? totalE.QuadPart : 0) +
+                     (bF ? totalF.QuadPart : 0) + (bG ? totalG.QuadPart : 0) +
+                     (bX ? totalX.QuadPart : 0) + (bY ? totalY.QuadPart : 0) +
+                     (bZ ? totalZ.QuadPart : 0);
+    totalFree.QuadPart = (bC ? totalFreeC.QuadPart : 0) + (bE ? totalFreeE.QuadPart : 0) +
+                         (bF ? totalFreeF.QuadPart : 0) + (bG ? totalFreeG.QuadPart : 0) +
+                         (bX ? totalFreeX.QuadPart : 0) + (bY ? totalFreeY.QuadPart : 0) +
+                         (bZ ? totalFreeZ.QuadPart : 0);
+
+    iTotal = (int)(total.QuadPart / MB);
+    iTotalFree = (int)(totalFree.QuadPart / MB);
+    iTotalUsed = (int)((total.QuadPart - totalFree.QuadPart) / MB);
 
     totalUsed.QuadPart = total.QuadPart - totalFree.QuadPart;
-    iPercentUsed = (int)(100.0f * totalUsed.QuadPart/total.QuadPart + 0.5f);
+    iPercentUsed = (int)(100.0f * totalUsed.QuadPart / total.QuadPart + 0.5f);
     iPercentFree = 100 - iPercentUsed;
     return true;
   }
-  else if ( GetDiskFreeSpaceEx(driveName.c_str(), NULL, &total, &totalFree))
+  else if (GetDiskFreeSpaceEx(driveName.c_str(), NULL, &total, &totalFree))
   {
-    iTotal = (int)(total.QuadPart/MB);
-    iTotalFree = (int)(totalFree.QuadPart/MB);
-    iTotalUsed = (int)((total.QuadPart - totalFree.QuadPart)/MB);
+    iTotal = (int)(total.QuadPart / MB);
+    iTotalFree = (int)(totalFree.QuadPart / MB);
+    iTotalUsed = (int)((total.QuadPart - totalFree.QuadPart) / MB);
 
-    if( total.QuadPart > 0 )
+    if (total.QuadPart > 0)
     {
       totalUsed.QuadPart = total.QuadPart - totalFree.QuadPart;
-      iPercentUsed = (int)(100.0f * totalUsed.QuadPart/total.QuadPart + 0.5f);
+      iPercentUsed = (int)(100.0f * totalUsed.QuadPart / total.QuadPart + 0.5f);
     }
     else
     {
@@ -1003,241 +1052,258 @@ double CSysInfo::RDTSC(void)
   unsigned long a, b;
   double x;
   __asm
-  {
+      {
     RDTSC
     mov [a],eax
     mov [b],edx
-  }
-  x=b;
-  x*=0x100000000;
-  x+=a;
+      }
+  x = b;
+  x *= 0x100000000;
+  x += a;
   return x;
 }
 
 CStdString CSysInfo::GetModCHIPDetected()
 {
-  CXBoxFlash *mbFlash=new CXBoxFlash(); //Max description Leng= 40
+  CXBoxFlash* mbFlash = new CXBoxFlash(); //Max description Leng= 40
   {
     // Unknown or TSOP
-    mbFlash->AddFCI(0x09,0x00,"Unknown/Onboard TSOP (protected)",0x00000);
+    mbFlash->AddFCI(0x09, 0x00, "Unknown/Onboard TSOP (protected)", 0x00000);
 
     // Known XBOX ModCHIP IDs&Names
-    mbFlash->AddFCI(0x01,0xAD,"XECUTER 3",0x100000); // if Write Protection is ON!: this chip can not detected! X3 Bug or Feature! it will return Unknown/Onboard TSOP (protected)!
-    mbFlash->AddFCI(0x01,0xD5,"XECUTER 2",0x100000);
-    mbFlash->AddFCI(0x01,0xC4,"XENIUM",0x100000);
-    mbFlash->AddFCI(0x01,0xC4,"XENIUM",0x000000);
-    mbFlash->AddFCI(0x04,0xBA,"ALX2+ R3 FLASH",0x40000);
+    mbFlash->AddFCI(
+        0x01, 0xAD, "XECUTER 3",
+        0x100000); // if Write Protection is ON!: this chip can not detected! X3 Bug or Feature! it will return Unknown/Onboard TSOP (protected)!
+    mbFlash->AddFCI(0x01, 0xD5, "XECUTER 2", 0x100000);
+    mbFlash->AddFCI(0x01, 0xC4, "XENIUM", 0x100000);
+    mbFlash->AddFCI(0x01, 0xC4, "XENIUM", 0x000000);
+    mbFlash->AddFCI(0x04, 0xBA, "ALX2+ R3 FLASH", 0x40000);
     // XBOX Possible Flash CHIPs
-    mbFlash->AddFCI(0x01,0xb0,"AMD Am29F002BT/NBT",0x40000);
-    mbFlash->AddFCI(0x01,0x34,"AMD Am29F002BB/NBB",0x40000);
-    mbFlash->AddFCI(0x01,0x51,"AMD Am29F200BT",0x40000);
-    mbFlash->AddFCI(0x01,0x57,"AMD Am29F200BB",0x40000);
-    mbFlash->AddFCI(0x01,0x40,"AMD Am29LV002BT",0x40000);
-    mbFlash->AddFCI(0x01,0xc2,"AMD Am29LV002BB",0x40000);
-    mbFlash->AddFCI(0x01,0x3b,"AMD Am29LV200BT",0x40000);
-    mbFlash->AddFCI(0x01,0xbf,"AMD Am29LV200BB",0x40000);
-    mbFlash->AddFCI(0x01,0x0c,"AMD Am29DL400BT",0x80000);
-    mbFlash->AddFCI(0x01,0x0f,"AMD Am29DL400BB",0x80000);
-    mbFlash->AddFCI(0x01,0x77,"AMD Am29F004BT",0x80000);
-    mbFlash->AddFCI(0x01,0x7b,"AMD Am29F004BB",0x80000);
-    mbFlash->AddFCI(0x01,0xa4,"AMD Am29F040B",0x80000);
-    mbFlash->AddFCI(0x01,0x23,"AMD Am29F400BT",0x80000);
-    mbFlash->AddFCI(0x01,0xab,"AMD Am29F400BB",0x80000);
-    mbFlash->AddFCI(0x01,0xb5,"AMD Am29LV004BT",0x80000);
-    mbFlash->AddFCI(0x01,0xb6,"AMD Am29LV004BB",0x80000);
-    mbFlash->AddFCI(0x01,0x4f,"AMD Am29LV040B",0x80000);
-    mbFlash->AddFCI(0x01,0xb9,"AMD Am29LV400BT",0x80000);
-    mbFlash->AddFCI(0x01,0xba,"AMD Am29LV400BB",0x80000);
-    mbFlash->AddFCI(0x01,0x4a,"AMD Am29DL800BT",0x100000);
-    mbFlash->AddFCI(0x01,0xcb,"AMD Am29DL800BB",0x100000);
-    mbFlash->AddFCI(0x01,0xd5,"AMD Am29F080B",0x100000);
-    mbFlash->AddFCI(0x01,0xd6,"AMD Am29F800BT",0x100000);
-    mbFlash->AddFCI(0x01,0x58,"AMD Am29F800BB",0x100000);
-    mbFlash->AddFCI(0x01,0x3e,"AMD Am29LV008BT",0x100000);
-    mbFlash->AddFCI(0x01,0x37,"AMD Am29LV008BB",0x100000);
-    mbFlash->AddFCI(0x01,0x38,"AMD Am29LV080B",0x100000);
-    mbFlash->AddFCI(0x01,0xda,"AMD Am29LV800BT/DT",0x100000);
-    mbFlash->AddFCI(0x01,0x5b,"AMD Am29LV800BB/DB",0x100000);
+    mbFlash->AddFCI(0x01, 0xb0, "AMD Am29F002BT/NBT", 0x40000);
+    mbFlash->AddFCI(0x01, 0x34, "AMD Am29F002BB/NBB", 0x40000);
+    mbFlash->AddFCI(0x01, 0x51, "AMD Am29F200BT", 0x40000);
+    mbFlash->AddFCI(0x01, 0x57, "AMD Am29F200BB", 0x40000);
+    mbFlash->AddFCI(0x01, 0x40, "AMD Am29LV002BT", 0x40000);
+    mbFlash->AddFCI(0x01, 0xc2, "AMD Am29LV002BB", 0x40000);
+    mbFlash->AddFCI(0x01, 0x3b, "AMD Am29LV200BT", 0x40000);
+    mbFlash->AddFCI(0x01, 0xbf, "AMD Am29LV200BB", 0x40000);
+    mbFlash->AddFCI(0x01, 0x0c, "AMD Am29DL400BT", 0x80000);
+    mbFlash->AddFCI(0x01, 0x0f, "AMD Am29DL400BB", 0x80000);
+    mbFlash->AddFCI(0x01, 0x77, "AMD Am29F004BT", 0x80000);
+    mbFlash->AddFCI(0x01, 0x7b, "AMD Am29F004BB", 0x80000);
+    mbFlash->AddFCI(0x01, 0xa4, "AMD Am29F040B", 0x80000);
+    mbFlash->AddFCI(0x01, 0x23, "AMD Am29F400BT", 0x80000);
+    mbFlash->AddFCI(0x01, 0xab, "AMD Am29F400BB", 0x80000);
+    mbFlash->AddFCI(0x01, 0xb5, "AMD Am29LV004BT", 0x80000);
+    mbFlash->AddFCI(0x01, 0xb6, "AMD Am29LV004BB", 0x80000);
+    mbFlash->AddFCI(0x01, 0x4f, "AMD Am29LV040B", 0x80000);
+    mbFlash->AddFCI(0x01, 0xb9, "AMD Am29LV400BT", 0x80000);
+    mbFlash->AddFCI(0x01, 0xba, "AMD Am29LV400BB", 0x80000);
+    mbFlash->AddFCI(0x01, 0x4a, "AMD Am29DL800BT", 0x100000);
+    mbFlash->AddFCI(0x01, 0xcb, "AMD Am29DL800BB", 0x100000);
+    mbFlash->AddFCI(0x01, 0xd5, "AMD Am29F080B", 0x100000);
+    mbFlash->AddFCI(0x01, 0xd6, "AMD Am29F800BT", 0x100000);
+    mbFlash->AddFCI(0x01, 0x58, "AMD Am29F800BB", 0x100000);
+    mbFlash->AddFCI(0x01, 0x3e, "AMD Am29LV008BT", 0x100000);
+    mbFlash->AddFCI(0x01, 0x37, "AMD Am29LV008BB", 0x100000);
+    mbFlash->AddFCI(0x01, 0x38, "AMD Am29LV080B", 0x100000);
+    mbFlash->AddFCI(0x01, 0xda, "AMD Am29LV800BT/DT", 0x100000);
+    mbFlash->AddFCI(0x01, 0x5b, "AMD Am29LV800BB/DB", 0x100000);
 
-    mbFlash->AddFCI(0x37,0x8c,"AMIC A29002T/290021T",0x40000);
-    mbFlash->AddFCI(0x37,0x0d,"AMIC A29002U/290021U",0x40000);
-    mbFlash->AddFCI(0x37,0x86,"AMIC A29040A",0x80000);
-    mbFlash->AddFCI(0x37,0xb0,"AMIC A29400T/294001T",0x80000);
-    mbFlash->AddFCI(0x37,0x31,"AMIC A29400U/294001U",0x80000);
-    mbFlash->AddFCI(0x37,0x34,"AMIC A29L004T/A29L400T",0x80000);
-    mbFlash->AddFCI(0x37,0xb5,"AMIC A29L004U/A29L400U",0x80000);
-    mbFlash->AddFCI(0x37,0x92,"AMIC A29L040",0x80000);
-    mbFlash->AddFCI(0x37,0x0e,"AMIC A29800T",0x100000);
-    mbFlash->AddFCI(0x37,0x8f,"AMIC A29800U",0x100000);
-    mbFlash->AddFCI(0x37,0x1a,"AMIC A29L008T/A29L800T",0x100000);
-    mbFlash->AddFCI(0x37,0x9b,"AMIC A29L008U/A29L800U",0x100000);
+    mbFlash->AddFCI(0x37, 0x8c, "AMIC A29002T/290021T", 0x40000);
+    mbFlash->AddFCI(0x37, 0x0d, "AMIC A29002U/290021U", 0x40000);
+    mbFlash->AddFCI(0x37, 0x86, "AMIC A29040A", 0x80000);
+    mbFlash->AddFCI(0x37, 0xb0, "AMIC A29400T/294001T", 0x80000);
+    mbFlash->AddFCI(0x37, 0x31, "AMIC A29400U/294001U", 0x80000);
+    mbFlash->AddFCI(0x37, 0x34, "AMIC A29L004T/A29L400T", 0x80000);
+    mbFlash->AddFCI(0x37, 0xb5, "AMIC A29L004U/A29L400U", 0x80000);
+    mbFlash->AddFCI(0x37, 0x92, "AMIC A29L040", 0x80000);
+    mbFlash->AddFCI(0x37, 0x0e, "AMIC A29800T", 0x100000);
+    mbFlash->AddFCI(0x37, 0x8f, "AMIC A29800U", 0x100000);
+    mbFlash->AddFCI(0x37, 0x1a, "AMIC A29L008T/A29L800T", 0x100000);
+    mbFlash->AddFCI(0x37, 0x9b, "AMIC A29L008U/A29L800U", 0x100000);
 
-    mbFlash->AddFCI(0x1f,0x07,"Atmel AT49F002A",0x40000);
-    mbFlash->AddFCI(0x1f,0x08,"Atmel AT49F002AT",0x40000);
+    mbFlash->AddFCI(0x1f, 0x07, "Atmel AT49F002A", 0x40000);
+    mbFlash->AddFCI(0x1f, 0x08, "Atmel AT49F002AT", 0x40000);
 
-    mbFlash->AddFCI(0x04,0xb0,"Fujitsu MBM29F002TC",0x40000);
-    mbFlash->AddFCI(0x04,0x34,"Fujitsu MBM29F002BC",0x40000);
-    mbFlash->AddFCI(0x04,0x51,"Fujitsu MBM29F200TC",0x40000);
-    mbFlash->AddFCI(0x04,0x57,"Fujitsu MBM29F200BC",0x40000);
-    mbFlash->AddFCI(0x04,0x40,"Fujitsu MBM29LV002TC",0x40000);
-    mbFlash->AddFCI(0x04,0xc2,"Fujitsu MBM29LV002BC",0x40000);
-    mbFlash->AddFCI(0x04,0x3b,"Fujitsu MBM29LV200TC",0x40000);
-    mbFlash->AddFCI(0x04,0xbf,"Fujitsu MBM29LV200BC",0x40000);
-    mbFlash->AddFCI(0x04,0x0c,"Fujitsu MBM29DL400TC",0x80000);
-    mbFlash->AddFCI(0x04,0x0f,"Fujitsu MBM29DL400BC",0x80000);
-    mbFlash->AddFCI(0x04,0x77,"Fujitsu MBM29F004TC",0x80000);
-    mbFlash->AddFCI(0x04,0x7b,"Fujitsu MBM29F004BC",0x80000);
-    mbFlash->AddFCI(0x04,0xa4,"Fujitsu MBM29F040C",0x80000);
-    mbFlash->AddFCI(0x04,0x23,"Fujitsu MBM29F400TC",0x80000);
-    mbFlash->AddFCI(0x04,0xab,"Fujitsu MBM29F400BC",0x80000);
-    mbFlash->AddFCI(0x04,0xb5,"Fujitsu MBM29LV004TC",0x80000);
-    mbFlash->AddFCI(0x04,0xb6,"Fujitsu MBM29LV004BC",0x80000);
-    mbFlash->AddFCI(0x04,0xb9,"Fujitsu MBM29LV400TC",0x80000);
-    mbFlash->AddFCI(0x04,0xba,"Fujitsu MBM29LV400BC",0x80000);
-    mbFlash->AddFCI(0x04,0x4a,"Fujitsu MBM29DL800TA",0x100000);
-    mbFlash->AddFCI(0x04,0xcb,"Fujitsu MBM29DL800BA",0x100000);
-    mbFlash->AddFCI(0x04,0xd5,"Fujitsu MBM29F080A",0x100000);
-    mbFlash->AddFCI(0x04,0xd6,"Fujitsu MBM29F800TA",0x100000);
-    mbFlash->AddFCI(0x04,0x58,"Fujitsu MBM29F800BA",0x100000);
-    mbFlash->AddFCI(0x04,0x3e,"Fujitsu MBM29LV008TA",0x100000);
-    mbFlash->AddFCI(0x04,0x37,"Fujitsu MBM29LV008BA",0x100000);
-    mbFlash->AddFCI(0x04,0x38,"Fujitsu MBM29LV080A",0x100000);
-    mbFlash->AddFCI(0x04,0xda,"Fujitsu MBM29LV800TA/TE",0x100000);
-    mbFlash->AddFCI(0x04,0x5b,"Fujitsu MBM29LV800BA/BE",0x100000);
+    mbFlash->AddFCI(0x04, 0xb0, "Fujitsu MBM29F002TC", 0x40000);
+    mbFlash->AddFCI(0x04, 0x34, "Fujitsu MBM29F002BC", 0x40000);
+    mbFlash->AddFCI(0x04, 0x51, "Fujitsu MBM29F200TC", 0x40000);
+    mbFlash->AddFCI(0x04, 0x57, "Fujitsu MBM29F200BC", 0x40000);
+    mbFlash->AddFCI(0x04, 0x40, "Fujitsu MBM29LV002TC", 0x40000);
+    mbFlash->AddFCI(0x04, 0xc2, "Fujitsu MBM29LV002BC", 0x40000);
+    mbFlash->AddFCI(0x04, 0x3b, "Fujitsu MBM29LV200TC", 0x40000);
+    mbFlash->AddFCI(0x04, 0xbf, "Fujitsu MBM29LV200BC", 0x40000);
+    mbFlash->AddFCI(0x04, 0x0c, "Fujitsu MBM29DL400TC", 0x80000);
+    mbFlash->AddFCI(0x04, 0x0f, "Fujitsu MBM29DL400BC", 0x80000);
+    mbFlash->AddFCI(0x04, 0x77, "Fujitsu MBM29F004TC", 0x80000);
+    mbFlash->AddFCI(0x04, 0x7b, "Fujitsu MBM29F004BC", 0x80000);
+    mbFlash->AddFCI(0x04, 0xa4, "Fujitsu MBM29F040C", 0x80000);
+    mbFlash->AddFCI(0x04, 0x23, "Fujitsu MBM29F400TC", 0x80000);
+    mbFlash->AddFCI(0x04, 0xab, "Fujitsu MBM29F400BC", 0x80000);
+    mbFlash->AddFCI(0x04, 0xb5, "Fujitsu MBM29LV004TC", 0x80000);
+    mbFlash->AddFCI(0x04, 0xb6, "Fujitsu MBM29LV004BC", 0x80000);
+    mbFlash->AddFCI(0x04, 0xb9, "Fujitsu MBM29LV400TC", 0x80000);
+    mbFlash->AddFCI(0x04, 0xba, "Fujitsu MBM29LV400BC", 0x80000);
+    mbFlash->AddFCI(0x04, 0x4a, "Fujitsu MBM29DL800TA", 0x100000);
+    mbFlash->AddFCI(0x04, 0xcb, "Fujitsu MBM29DL800BA", 0x100000);
+    mbFlash->AddFCI(0x04, 0xd5, "Fujitsu MBM29F080A", 0x100000);
+    mbFlash->AddFCI(0x04, 0xd6, "Fujitsu MBM29F800TA", 0x100000);
+    mbFlash->AddFCI(0x04, 0x58, "Fujitsu MBM29F800BA", 0x100000);
+    mbFlash->AddFCI(0x04, 0x3e, "Fujitsu MBM29LV008TA", 0x100000);
+    mbFlash->AddFCI(0x04, 0x37, "Fujitsu MBM29LV008BA", 0x100000);
+    mbFlash->AddFCI(0x04, 0x38, "Fujitsu MBM29LV080A", 0x100000);
+    mbFlash->AddFCI(0x04, 0xda, "Fujitsu MBM29LV800TA/TE", 0x100000);
+    mbFlash->AddFCI(0x04, 0x5b, "Fujitsu MBM29LV800BA/BE", 0x100000);
 
-    mbFlash->AddFCI(0xad,0xb0,"Hynix HY29F002",0x40000);
-    mbFlash->AddFCI(0xad,0xa4,"Hynix HY29F040A",0x80000);
-    mbFlash->AddFCI(0xad,0x23,"Hynix HY29F400T/AT",0x80000);
-    mbFlash->AddFCI(0xad,0xab,"Hynix HY29F400B/AB",0x80000);
-    mbFlash->AddFCI(0xad,0xb9,"Hynix HY29LV400T",0x80000);
-    mbFlash->AddFCI(0xad,0xba,"Hynix HY29LV400B",0x80000);
-    mbFlash->AddFCI(0xad,0xd5,"Hynix HY29F080",0x100000);
-    mbFlash->AddFCI(0xad,0xd6,"Hynix HY29F800T/AT",0x100000);
-    mbFlash->AddFCI(0xad,0x58,"Hynix HY29F800B/AB",0x100000);
-    mbFlash->AddFCI(0xad,0xda,"Hynix HY29LV800T",0x100000);
-    mbFlash->AddFCI(0xad,0x5b,"Hynix HY29LV800B",0x100000);
+    mbFlash->AddFCI(0xad, 0xb0, "Hynix HY29F002", 0x40000);
+    mbFlash->AddFCI(0xad, 0xa4, "Hynix HY29F040A", 0x80000);
+    mbFlash->AddFCI(0xad, 0x23, "Hynix HY29F400T/AT", 0x80000);
+    mbFlash->AddFCI(0xad, 0xab, "Hynix HY29F400B/AB", 0x80000);
+    mbFlash->AddFCI(0xad, 0xb9, "Hynix HY29LV400T", 0x80000);
+    mbFlash->AddFCI(0xad, 0xba, "Hynix HY29LV400B", 0x80000);
+    mbFlash->AddFCI(0xad, 0xd5, "Hynix HY29F080", 0x100000);
+    mbFlash->AddFCI(0xad, 0xd6, "Hynix HY29F800T/AT", 0x100000);
+    mbFlash->AddFCI(0xad, 0x58, "Hynix HY29F800B/AB", 0x100000);
+    mbFlash->AddFCI(0xad, 0xda, "Hynix HY29LV800T", 0x100000);
+    mbFlash->AddFCI(0xad, 0x5b, "Hynix HY29LV800B", 0x100000);
 
-    mbFlash->AddFCI(0xc2,0xb0,"Macronix MX29F002T/NT",0x40000);
-    mbFlash->AddFCI(0xc2,0x34,"Macronix MX29F002B/NB",0x40000);
-    mbFlash->AddFCI(0xc2,0x36,"Macronix MX29F022T/NT",0x40000);
-    mbFlash->AddFCI(0xc2,0x37,"Macronix MX29F022B/NB",0x40000);
-    mbFlash->AddFCI(0xc2,0x51,"Macronix MX29F200T",0x40000);
-    mbFlash->AddFCI(0xc2,0x57,"Macronix MX29F200B",0x40000);
-    mbFlash->AddFCI(0xc2,0x45,"Macronix MX29F004T",0x80000);
-    mbFlash->AddFCI(0xc2,0x46,"Macronix MX29F004B",0x80000);
-    mbFlash->AddFCI(0xc2,0xa4,"Macronix MX29F040",0x80000);
-    mbFlash->AddFCI(0xc2,0x23,"Macronix MX29F400T",0x80000);
-    mbFlash->AddFCI(0xc2,0xab,"Macronix MX29F400B",0x80000);
-    mbFlash->AddFCI(0xc2,0xb5,"Macronix MX29LV004T",0x80000);
-    mbFlash->AddFCI(0xc2,0xb6,"Macronix MX29LV004B",0x80000);
-    mbFlash->AddFCI(0xc2,0x4f,"Macronix MX29LV040",0x80000);
-    mbFlash->AddFCI(0xc2,0xb9,"Macronix MX29LV400T",0x80000);
-    mbFlash->AddFCI(0xc2,0xba,"Macronix MX29LV400B",0x80000);
-    mbFlash->AddFCI(0xc2,0xd5,"Macronix MX29F080",0x100000);
-    mbFlash->AddFCI(0xc2,0xd6,"Macronix MX29F800T",0x100000);
-    mbFlash->AddFCI(0xc2,0x58,"Macronix MX29F800B",0x100000);
-    mbFlash->AddFCI(0xc2,0x3e,"Macronix MX29LV008T",0x100000);
-    mbFlash->AddFCI(0xc2,0x37,"Macronix MX29LV008B",0x100000);
-    mbFlash->AddFCI(0xc2,0x38,"Macronix MX29LV081",0x100000);
-    mbFlash->AddFCI(0xc2,0xda,"Macronix MX29LV800T",0x100000);
-    mbFlash->AddFCI(0xc2,0x5b,"Macronix MX29LV800B",0x100000);
+    mbFlash->AddFCI(0xc2, 0xb0, "Macronix MX29F002T/NT", 0x40000);
+    mbFlash->AddFCI(0xc2, 0x34, "Macronix MX29F002B/NB", 0x40000);
+    mbFlash->AddFCI(0xc2, 0x36, "Macronix MX29F022T/NT", 0x40000);
+    mbFlash->AddFCI(0xc2, 0x37, "Macronix MX29F022B/NB", 0x40000);
+    mbFlash->AddFCI(0xc2, 0x51, "Macronix MX29F200T", 0x40000);
+    mbFlash->AddFCI(0xc2, 0x57, "Macronix MX29F200B", 0x40000);
+    mbFlash->AddFCI(0xc2, 0x45, "Macronix MX29F004T", 0x80000);
+    mbFlash->AddFCI(0xc2, 0x46, "Macronix MX29F004B", 0x80000);
+    mbFlash->AddFCI(0xc2, 0xa4, "Macronix MX29F040", 0x80000);
+    mbFlash->AddFCI(0xc2, 0x23, "Macronix MX29F400T", 0x80000);
+    mbFlash->AddFCI(0xc2, 0xab, "Macronix MX29F400B", 0x80000);
+    mbFlash->AddFCI(0xc2, 0xb5, "Macronix MX29LV004T", 0x80000);
+    mbFlash->AddFCI(0xc2, 0xb6, "Macronix MX29LV004B", 0x80000);
+    mbFlash->AddFCI(0xc2, 0x4f, "Macronix MX29LV040", 0x80000);
+    mbFlash->AddFCI(0xc2, 0xb9, "Macronix MX29LV400T", 0x80000);
+    mbFlash->AddFCI(0xc2, 0xba, "Macronix MX29LV400B", 0x80000);
+    mbFlash->AddFCI(0xc2, 0xd5, "Macronix MX29F080", 0x100000);
+    mbFlash->AddFCI(0xc2, 0xd6, "Macronix MX29F800T", 0x100000);
+    mbFlash->AddFCI(0xc2, 0x58, "Macronix MX29F800B", 0x100000);
+    mbFlash->AddFCI(0xc2, 0x3e, "Macronix MX29LV008T", 0x100000);
+    mbFlash->AddFCI(0xc2, 0x37, "Macronix MX29LV008B", 0x100000);
+    mbFlash->AddFCI(0xc2, 0x38, "Macronix MX29LV081", 0x100000);
+    mbFlash->AddFCI(0xc2, 0xda, "Macronix MX29LV800T", 0x100000);
+    mbFlash->AddFCI(0xc2, 0x5b, "Macronix MX29LV800B", 0x100000);
 
-    mbFlash->AddFCI(0xb0,0xc9,"Sharp LHF00L02/L06/L07",0x100000);
-    mbFlash->AddFCI(0xb0,0xcf,"Sharp LHF00L03/L04/L05",0x100000);
-    mbFlash->AddFCI(0x89,0xa2,"Sharp LH28F008SA series",0x100000);
-    mbFlash->AddFCI(0x89,0xa6,"Sharp LH28F008SC series",0x100000);
-    mbFlash->AddFCI(0xb0,0xec,"Sharp LH28F008BJxx-PT series",0x100000);
-    mbFlash->AddFCI(0xb0,0xed,"Sharp LH28F008BJxx-PB series",0x100000);
-    mbFlash->AddFCI(0xb0,0x4b,"Sharp LH28F800BVxx-BTL series",0x100000);
-    mbFlash->AddFCI(0xb0,0x4c,"Sharp LH28F800BVxx-TV series",0x100000);
-    mbFlash->AddFCI(0xb0,0x4d,"Sharp LH28F800BVxx-BV series",0x100000);
+    mbFlash->AddFCI(0xb0, 0xc9, "Sharp LHF00L02/L06/L07", 0x100000);
+    mbFlash->AddFCI(0xb0, 0xcf, "Sharp LHF00L03/L04/L05", 0x100000);
+    mbFlash->AddFCI(0x89, 0xa2, "Sharp LH28F008SA series", 0x100000);
+    mbFlash->AddFCI(0x89, 0xa6, "Sharp LH28F008SC series", 0x100000);
+    mbFlash->AddFCI(0xb0, 0xec, "Sharp LH28F008BJxx-PT series", 0x100000);
+    mbFlash->AddFCI(0xb0, 0xed, "Sharp LH28F008BJxx-PB series", 0x100000);
+    mbFlash->AddFCI(0xb0, 0x4b, "Sharp LH28F800BVxx-BTL series", 0x100000);
+    mbFlash->AddFCI(0xb0, 0x4c, "Sharp LH28F800BVxx-TV series", 0x100000);
+    mbFlash->AddFCI(0xb0, 0x4d, "Sharp LH28F800BVxx-BV series", 0x100000);
 
-    mbFlash->AddFCI(0xbf,0x10,"SST 29EE020",0x40000);
-    mbFlash->AddFCI(0xbf,0x12,"SST 29LE020/29VE020",0x40000);
-    mbFlash->AddFCI(0xbf,0xd6,"SST 39LF020/39VF020",0x40000);
-    mbFlash->AddFCI(0xbf,0xb6,"SST 39SF020A",0x40000);
-    mbFlash->AddFCI(0xbf,0x57,"SST 49LF002A",0x40000);
-    mbFlash->AddFCI(0xbf,0x57,"SST 49LF002A",0x100000);
-    mbFlash->AddFCI(0xbf,0x52,"SST 49LF020A",0x40000);
-    mbFlash->AddFCI(0xbf,0x1b,"SST 49LF003A",0x60000);
-    mbFlash->AddFCI(0xbf,0x1c,"SST 49LF030A",0x60000);
-    mbFlash->AddFCI(0xbf,0x61,"SST 49LF020",0x40000);
-    mbFlash->AddFCI(0xbf,0x13,"SST 29SF040",0x80000);
-    mbFlash->AddFCI(0xbf,0x14,"SST 29VF040",0x80000);
-    mbFlash->AddFCI(0xbf,0xd7,"SST 39LF040/39VF040",0x80000);
-    mbFlash->AddFCI(0xbf,0xb7,"SST 39SF040",0x80000);
-    mbFlash->AddFCI(0xbf,0x60,"SST 49LF004A/B",0x80000);
-    mbFlash->AddFCI(0xbf,0x51,"SST 49LF040",0x80000);
-    mbFlash->AddFCI(0xbf,0xd8,"SST 39LF080/39VF080/39VF088",0x100000);
-    mbFlash->AddFCI(0xbf,0x5a,"SST 49LF008A",0x100000);
-    mbFlash->AddFCI(0xbf,0x5b,"SST 49LF080A",0x100000);
-    mbFlash->AddFCI(0x20,0xb0,"ST M29F002T/NT/BT/BNT",0x40000);
-    mbFlash->AddFCI(0x20,0x34,"ST M29F002B/BB",0x40000);
-    mbFlash->AddFCI(0x20,0xd3,"ST M29F200BT",0x40000);
-    mbFlash->AddFCI(0x20,0xd4,"ST M29F200BB",0x40000);
-    mbFlash->AddFCI(0x20,0xe2,"ST M29F040 series",0x80000);
-    mbFlash->AddFCI(0x20,0xd5,"ST M29F400T/BT",0x80000);
-    mbFlash->AddFCI(0x20,0xd6,"ST M29F400B/BB",0x80000);
-    mbFlash->AddFCI(0x20,0xf1,"ST M29F080 series",0x100000);
-    mbFlash->AddFCI(0x20,0xec,"ST M29F800DT",0x100000);
-    mbFlash->AddFCI(0x20,0x58,"ST M29F800DB",0x100000);
-    mbFlash->AddFCI(0xda,0x45,"Winbond W29C020",0x40000);
-    mbFlash->AddFCI(0x09,0x00,"Winbond W49F020T",0x40000);
-    mbFlash->AddFCI(0xda,0xb5,"Winbond W39L020",0x40000);
-    mbFlash->AddFCI(0xda,0x0b,"Winbond W49F002U",0x40000);
-    mbFlash->AddFCI(0xda,0x8c,"Winbond W49F020",0x40000);
-    mbFlash->AddFCI(0xda,0xb0,"Winbond W49V002A",0x40000);
-    mbFlash->AddFCI(0xda,0x46,"Winbond W29C040",0x40000);
-    mbFlash->AddFCI(0xda,0xb6,"Winbond W39L040",0x80000);
-    mbFlash->AddFCI(0xda,0x3d,"Winbond W39V040A",0x80000);
+    mbFlash->AddFCI(0xbf, 0x10, "SST 29EE020", 0x40000);
+    mbFlash->AddFCI(0xbf, 0x12, "SST 29LE020/29VE020", 0x40000);
+    mbFlash->AddFCI(0xbf, 0xd6, "SST 39LF020/39VF020", 0x40000);
+    mbFlash->AddFCI(0xbf, 0xb6, "SST 39SF020A", 0x40000);
+    mbFlash->AddFCI(0xbf, 0x57, "SST 49LF002A", 0x40000);
+    mbFlash->AddFCI(0xbf, 0x57, "SST 49LF002A", 0x100000);
+    mbFlash->AddFCI(0xbf, 0x52, "SST 49LF020A", 0x40000);
+    mbFlash->AddFCI(0xbf, 0x1b, "SST 49LF003A", 0x60000);
+    mbFlash->AddFCI(0xbf, 0x1c, "SST 49LF030A", 0x60000);
+    mbFlash->AddFCI(0xbf, 0x61, "SST 49LF020", 0x40000);
+    mbFlash->AddFCI(0xbf, 0x13, "SST 29SF040", 0x80000);
+    mbFlash->AddFCI(0xbf, 0x14, "SST 29VF040", 0x80000);
+    mbFlash->AddFCI(0xbf, 0xd7, "SST 39LF040/39VF040", 0x80000);
+    mbFlash->AddFCI(0xbf, 0xb7, "SST 39SF040", 0x80000);
+    mbFlash->AddFCI(0xbf, 0x60, "SST 49LF004A/B", 0x80000);
+    mbFlash->AddFCI(0xbf, 0x51, "SST 49LF040", 0x80000);
+    mbFlash->AddFCI(0xbf, 0xd8, "SST 39LF080/39VF080/39VF088", 0x100000);
+    mbFlash->AddFCI(0xbf, 0x5a, "SST 49LF008A", 0x100000);
+    mbFlash->AddFCI(0xbf, 0x5b, "SST 49LF080A", 0x100000);
+    mbFlash->AddFCI(0x20, 0xb0, "ST M29F002T/NT/BT/BNT", 0x40000);
+    mbFlash->AddFCI(0x20, 0x34, "ST M29F002B/BB", 0x40000);
+    mbFlash->AddFCI(0x20, 0xd3, "ST M29F200BT", 0x40000);
+    mbFlash->AddFCI(0x20, 0xd4, "ST M29F200BB", 0x40000);
+    mbFlash->AddFCI(0x20, 0xe2, "ST M29F040 series", 0x80000);
+    mbFlash->AddFCI(0x20, 0xd5, "ST M29F400T/BT", 0x80000);
+    mbFlash->AddFCI(0x20, 0xd6, "ST M29F400B/BB", 0x80000);
+    mbFlash->AddFCI(0x20, 0xf1, "ST M29F080 series", 0x100000);
+    mbFlash->AddFCI(0x20, 0xec, "ST M29F800DT", 0x100000);
+    mbFlash->AddFCI(0x20, 0x58, "ST M29F800DB", 0x100000);
+    mbFlash->AddFCI(0xda, 0x45, "Winbond W29C020", 0x40000);
+    mbFlash->AddFCI(0x09, 0x00, "Winbond W49F020T", 0x40000);
+    mbFlash->AddFCI(0xda, 0xb5, "Winbond W39L020", 0x40000);
+    mbFlash->AddFCI(0xda, 0x0b, "Winbond W49F002U", 0x40000);
+    mbFlash->AddFCI(0xda, 0x8c, "Winbond W49F020", 0x40000);
+    mbFlash->AddFCI(0xda, 0xb0, "Winbond W49V002A", 0x40000);
+    mbFlash->AddFCI(0xda, 0x46, "Winbond W29C040", 0x40000);
+    mbFlash->AddFCI(0xda, 0xb6, "Winbond W39L040", 0x80000);
+    mbFlash->AddFCI(0xda, 0x3d, "Winbond W39V040A", 0x80000);
   }
   CStdString strTemp = "", strTemp1 = "", strTemp2 = "";
-  if (mbFlash->CheckID()!=0 || mbFlash->CheckID2()!=0)
+  if (mbFlash->CheckID() != 0 || mbFlash->CheckID2() != 0)
   {
-    CLog::Log(LOGDEBUG, "- Detected TSOP/ModChip: %s",mbFlash->CheckID()->text);
-    CLog::Log(LOGDEBUG, "- Detected TSOP/ModChip: %s",mbFlash->CheckID2()->text);
+    CLog::Log(LOGDEBUG, "- Detected TSOP/ModChip: %s", mbFlash->CheckID()->text);
+    CLog::Log(LOGDEBUG, "- Detected TSOP/ModChip: %s", mbFlash->CheckID2()->text);
     strTemp1 = mbFlash->CheckID()->text;
     strTemp2 = mbFlash->CheckID2()->text;
   }
-  else {  CLog::Log(LOGDEBUG, "- Detected TSOP/MOdCHIP: Unknown");  strTemp2 = "Unknown"; }
+  else
+  {
+    CLog::Log(LOGDEBUG, "- Detected TSOP/MOdCHIP: Unknown");
+    strTemp2 = "Unknown";
+  }
 
   if (strTemp1 != strTemp2)
   {
-    CLog::Log(LOGDEBUG, "- Detected TSOP/MOdCHIP: Detection does not match! (%s != %s)",strTemp1.c_str(),strTemp2.c_str());
-    CLog::Log(LOGDEBUG, "- Detected TSOP/ModChip: Using -> %s",strTemp1.c_str());
-    strTemp.Format("%s",strTemp1.c_str());
+    CLog::Log(LOGDEBUG, "- Detected TSOP/MOdCHIP: Detection does not match! (%s != %s)",
+              strTemp1.c_str(), strTemp2.c_str());
+    CLog::Log(LOGDEBUG, "- Detected TSOP/ModChip: Using -> %s", strTemp1.c_str());
+    strTemp.Format("%s", strTemp1.c_str());
   }
-  else strTemp = strTemp2;
+  else
+    strTemp = strTemp2;
 
   delete mbFlash;
 
   return strTemp;
 }
 
-CStdString CSysInfo::MD5BufferNew(char *buffer,long PosizioneInizio,int KBytes)
+CStdString CSysInfo::MD5BufferNew(char* buffer, long PosizioneInizio, int KBytes)
 {
   CStdString strReturn;
   XBMC::XBMC_MD5 mdContext;
-  mdContext.append((unsigned char *)(buffer + PosizioneInizio), KBytes * 1024);
+  mdContext.append((unsigned char*)(buffer + PosizioneInizio), KBytes * 1024);
   mdContext.getDigest(strReturn);
   return strReturn;
 }
 
 CStdString CSysInfo::GetAVPackInfo()
-{  
+{
   //AV-Pack Detection PICReg(0x04)
   int cAVPack;
-  HalReadSMBusValue(0x20,XKUtils::PIC16L_CMD_AV_PACK,0,(LPBYTE)&cAVPack);
+  HalReadSMBusValue(0x20, XKUtils::PIC16L_CMD_AV_PACK, 0, (LPBYTE)&cAVPack);
 
-  if (cAVPack == XKUtils::AV_PACK_SCART) return "SCART";
-  else if (cAVPack == XKUtils::AV_PACK_HDTV) return "HDTV";
-  else if (cAVPack == XKUtils::AV_PACK_VGA) return "VGA";
-  else if (cAVPack == XKUtils::AV_PACK_RFU) return "RFU";
-  else if (cAVPack == XKUtils::AV_PACK_SVideo) return "S-Video";
-  else if (cAVPack == XKUtils::AV_PACK_Undefined) return "Undefined";
-  else if (cAVPack == XKUtils::AV_PACK_Standard) return "Standard RGB";
-  else if (cAVPack == XKUtils::AV_PACK_Missing) return "Missing or Unknown";
-  else return "Unknown";
+  if (cAVPack == XKUtils::AV_PACK_SCART)
+    return "SCART";
+  else if (cAVPack == XKUtils::AV_PACK_HDTV)
+    return "HDTV";
+  else if (cAVPack == XKUtils::AV_PACK_VGA)
+    return "VGA";
+  else if (cAVPack == XKUtils::AV_PACK_RFU)
+    return "RFU";
+  else if (cAVPack == XKUtils::AV_PACK_SVideo)
+    return "S-Video";
+  else if (cAVPack == XKUtils::AV_PACK_Undefined)
+    return "Undefined";
+  else if (cAVPack == XKUtils::AV_PACK_Standard)
+    return "Standard RGB";
+  else if (cAVPack == XKUtils::AV_PACK_Missing)
+    return "Missing or Unknown";
+  else
+    return "Unknown";
 }
 
 CStdString CSysInfo::SmartXXModCHIP()
@@ -1245,33 +1311,33 @@ CStdString CSysInfo::SmartXXModCHIP()
   // SmartXX ModChip Detection
   unsigned char uSmartXX_ID = ((_inp(0xf701)) & 0xf);
 
-  if ( uSmartXX_ID == 1 )      // SmartXX V1+V2
+  if (uSmartXX_ID == 1) // SmartXX V1+V2
     return "SmartXX V1/V2";
-  else if ( uSmartXX_ID == 2 ) // SmartXX V1+V2
+  else if (uSmartXX_ID == 2) // SmartXX V1+V2
     return "SmartXX V1/V2";
-  else if ( uSmartXX_ID == 5 ) // SmartXX OPX
+  else if (uSmartXX_ID == 5) // SmartXX OPX
     return "SmartXX OPX";
-  else if ( uSmartXX_ID == 8 ) // SmartXX V3
+  else if (uSmartXX_ID == 8) // SmartXX V3
     return "SmartXX V3";
-  else 
+  else
     return "None";
 }
 
 CStdString CSysInfo::GetMPlayerVersion()
 {
-  CStdString strVersion="";
+  CStdString strVersion = "";
   DllLoader* mplayerDll;
-  const char* (__cdecl* pMplayerGetVersion)();
-  const char* (__cdecl* pMplayerGetCompileDate)();
-  const char* (__cdecl* pMplayerGetCompileTime)();
+  const char*(__cdecl * pMplayerGetVersion)();
+  const char*(__cdecl * pMplayerGetCompileDate)();
+  const char*(__cdecl * pMplayerGetCompileTime)();
 
-  const char *version = NULL;
-  const char *date = NULL;
-  const char *btime = NULL;
+  const char* version = NULL;
+  const char* date = NULL;
+  const char* btime = NULL;
 
-  mplayerDll = new DllLoader("Q:\\system\\players\\mplayer\\mplayer.dll",true);
+  mplayerDll = new DllLoader("Q:\\system\\players\\mplayer\\mplayer.dll", true);
 
-  if( mplayerDll->Load() )
+  if (mplayerDll->Load())
   {
     if (mplayerDll->ResolveExport("mplayer_getversion", (void**)&pMplayerGetVersion))
       version = pMplayerGetVersion();
@@ -1281,15 +1347,15 @@ CStdString CSysInfo::GetMPlayerVersion()
       btime = pMplayerGetCompileTime();
     if (version && date && btime)
     {
-      strVersion.Format("%s (%s - %s)",version, date, btime);
+      strVersion.Format("%s (%s - %s)", version, date, btime);
     }
     else if (version)
     {
-      strVersion.Format("%s",version);
+      strVersion.Format("%s", version);
     }
   }
   delete mplayerDll;
-  mplayerDll=NULL;
+  mplayerDll = NULL;
   return strVersion;
 }
 CStdString CSysInfo::GetKernelVersion()
@@ -1298,7 +1364,8 @@ CStdString CSysInfo::GetKernelVersion()
   CLog::Log(LOGDEBUG, "- XBOX Kernel Qfe= %i", XboxKrnlVersion->Qfe);
   CLog::Log(LOGDEBUG, "- XBOX Kernel Drive FG result= %i", ikrnl);
   CStdString strKernel;
-  strKernel.Format("%u.%u.%u.%u", XboxKrnlVersion->VersionMajor,XboxKrnlVersion->VersionMinor,XboxKrnlVersion->Build,XboxKrnlVersion->Qfe);
+  strKernel.Format("%u.%u.%u.%u", XboxKrnlVersion->VersionMajor, XboxKrnlVersion->VersionMinor,
+                   XboxKrnlVersion->Build, XboxKrnlVersion->Qfe);
   return strKernel;
 }
 bool CSysInfo::HasInternet() const
@@ -1310,7 +1377,7 @@ CStdString CSysInfo::GetXBVerInfo()
   CStdString strXBOXVersion;
   if (GetXBOXVersionDetected(strXBOXVersion))
     return strXBOXVersion;
-  else 
+  else
     return g_localizeStrings.Get(13205); // "Unknown"
 }
 
@@ -1340,43 +1407,61 @@ CStdString CSysInfo::GetUnits(int iFrontPort)
   // Values 14 -> on Port 2&3&4
   // Values 15 -> on Port 1&2&3&4
 
-  bool bPad=false, bMem=false, bKeyb=false, bHeadSet=false, bMic=false, bIR=false;
+  bool bPad = false, bMem = false, bKeyb = false, bHeadSet = false, bMic = false, bIR = false;
   if (iFrontPort == 1)
   {
-    bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 1 || dwDeviceGamePad == 3 || dwDeviceGamePad == 5 || dwDeviceGamePad == 7 || dwDeviceGamePad == 9 || dwDeviceGamePad == 11 || dwDeviceGamePad == 13 || dwDeviceGamePad == 15;
-    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 1 || dwDeviceMemory == 3 || dwDeviceMemory == 5 || dwDeviceMemory == 7 || dwDeviceMemory == 9 || dwDeviceMemory == 11 || dwDeviceMemory == 13 || dwDeviceMemory == 15;
+    bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 1 || dwDeviceGamePad == 3 ||
+           dwDeviceGamePad == 5 || dwDeviceGamePad == 7 || dwDeviceGamePad == 9 ||
+           dwDeviceGamePad == 11 || dwDeviceGamePad == 13 || dwDeviceGamePad == 15;
+    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 1 || dwDeviceMemory == 3 ||
+           dwDeviceMemory == 5 || dwDeviceMemory == 7 || dwDeviceMemory == 9 ||
+           dwDeviceMemory == 11 || dwDeviceMemory == 13 || dwDeviceMemory == 15;
   }
   else if (iFrontPort == 2)
   {
-    bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 2 || dwDeviceGamePad == 3 || dwDeviceGamePad == 6 || dwDeviceGamePad == 7 || dwDeviceGamePad == 10 || dwDeviceGamePad == 11 || dwDeviceGamePad == 14 || dwDeviceGamePad == 15;
-    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 2 || dwDeviceMemory == 3 || dwDeviceMemory == 6 || dwDeviceMemory == 7 || dwDeviceMemory == 10 || dwDeviceMemory == 11 || dwDeviceMemory == 14 || dwDeviceMemory == 15;
+    bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 2 || dwDeviceGamePad == 3 ||
+           dwDeviceGamePad == 6 || dwDeviceGamePad == 7 || dwDeviceGamePad == 10 ||
+           dwDeviceGamePad == 11 || dwDeviceGamePad == 14 || dwDeviceGamePad == 15;
+    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 2 || dwDeviceMemory == 3 ||
+           dwDeviceMemory == 6 || dwDeviceMemory == 7 || dwDeviceMemory == 10 ||
+           dwDeviceMemory == 11 || dwDeviceMemory == 14 || dwDeviceMemory == 15;
   }
   else if (iFrontPort == 3)
   {
-    bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 4 || dwDeviceGamePad == 5 || dwDeviceGamePad == 6 || dwDeviceGamePad == 7 || dwDeviceGamePad == 12 || dwDeviceGamePad == 13 || dwDeviceGamePad == 14 || dwDeviceGamePad == 15;
-    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 4 || dwDeviceMemory == 5 || dwDeviceMemory == 6 || dwDeviceMemory == 7 || dwDeviceMemory == 12 || dwDeviceMemory == 13 || dwDeviceMemory == 14 || dwDeviceMemory == 15;
+    bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 4 || dwDeviceGamePad == 5 ||
+           dwDeviceGamePad == 6 || dwDeviceGamePad == 7 || dwDeviceGamePad == 12 ||
+           dwDeviceGamePad == 13 || dwDeviceGamePad == 14 || dwDeviceGamePad == 15;
+    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 4 || dwDeviceMemory == 5 ||
+           dwDeviceMemory == 6 || dwDeviceMemory == 7 || dwDeviceMemory == 12 ||
+           dwDeviceMemory == 13 || dwDeviceMemory == 14 || dwDeviceMemory == 15;
     iFrontPort = 4;
   }
   else if (iFrontPort == 4)
   {
-    bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 8 || dwDeviceGamePad == 9 || dwDeviceGamePad == 10 || dwDeviceGamePad == 11 || dwDeviceGamePad == 12 || dwDeviceGamePad == 13 || dwDeviceGamePad == 14 || dwDeviceGamePad == 15;
-    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 8 || dwDeviceMemory == 9 || dwDeviceMemory == 10 || dwDeviceMemory == 11 || dwDeviceMemory == 12 || dwDeviceMemory == 13 || dwDeviceMemory == 14 || dwDeviceMemory == 15;
+    bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 8 || dwDeviceGamePad == 9 ||
+           dwDeviceGamePad == 10 || dwDeviceGamePad == 11 || dwDeviceGamePad == 12 ||
+           dwDeviceGamePad == 13 || dwDeviceGamePad == 14 || dwDeviceGamePad == 15;
+    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 8 || dwDeviceMemory == 9 ||
+           dwDeviceMemory == 10 || dwDeviceMemory == 11 || dwDeviceMemory == 12 ||
+           dwDeviceMemory == 13 || dwDeviceMemory == 14 || dwDeviceMemory == 15;
     iFrontPort = 8;
   }
   bKeyb = dwDeviceKeyboard > 0 && dwDeviceKeyboard == iFrontPort;
   bHeadSet = dwDeviceHeadPhone > 0 && dwDeviceHeadPhone == iFrontPort;
   bMic = dwDeviceMicroPhone > 0 && dwDeviceMicroPhone == iFrontPort;
   bIR = dwDeviceIRRemote > 0 && dwDeviceIRRemote == iFrontPort;
-  
+
   CStdString strReturn;
-  if (iFrontPort==4) iFrontPort = 3;
-  if (iFrontPort==8) iFrontPort = 4;
-  strReturn.Format("%s%s%s%s%s%s%s%s%s%s%s", 
-    bPad ? g_localizeStrings.Get(38730):"", bPad && bKeyb ? ", ":"", bPad && bMem ? ", ":"", bPad && (bHeadSet || bMic) ? ", ":"",
-    bHeadSet || bMic ? g_localizeStrings.Get(38733):"", (bHeadSet || bMic) && bMem ? ", ":"",
-    bMem ? g_localizeStrings.Get(38734):"", bMem && bIR ? ", ":"",
-    bIR ? g_localizeStrings.Get(38735):""
-    );
+  if (iFrontPort == 4)
+    iFrontPort = 3;
+  if (iFrontPort == 8)
+    iFrontPort = 4;
+  strReturn.Format("%s%s%s%s%s%s%s%s%s%s%s", bPad ? g_localizeStrings.Get(38730) : "",
+                   bPad && bKeyb ? ", " : "", bPad && bMem ? ", " : "",
+                   bPad && (bHeadSet || bMic) ? ", " : "",
+                   bHeadSet || bMic ? g_localizeStrings.Get(38733) : "",
+                   (bHeadSet || bMic) && bMem ? ", " : "", bMem ? g_localizeStrings.Get(38734) : "",
+                   bMem && bIR ? ", " : "", bIR ? g_localizeStrings.Get(38735) : "");
 
   return strReturn;
 }
@@ -1388,45 +1473,40 @@ CStdString CSysInfo::GetXBOXSerial()
 
   CStdString strXBOXSerial;
   strXBOXSerial.Format("%s", serial);
-  return strXBOXSerial;  
+  return strXBOXSerial;
 }
 
 CStdString CSysInfo::GetXBProduceInfo()
 {
   CStdString serial = GetXBOXSerial();
   // Print XBOX Production Place and Date
-  char *info = (char *) serial.c_str();
-  char *country;
+  char* info = (char*)serial.c_str();
+  char* country;
   switch (atoi(&info[11]))
   {
-  case 2:
-    country = "Mexico";
-    break;
-  case 3:
-    country = "Hungary";
-    break;
-  case 5:
-    country = "China";
-    break;
-  case 6:
-    country = "Taiwan";
-    break;
-  default:
-    country = "Unknown";
-    break;
+    case 2:
+      country = "Mexico";
+      break;
+    case 3:
+      country = "Hungary";
+      break;
+    case 5:
+      country = "China";
+      break;
+    case 6:
+      country = "Taiwan";
+      break;
+    default:
+      country = "Unknown";
+      break;
   }
-  
-  CLog::Log(LOGDEBUG, "- XBOX production info: Country: %s, LineNumber: %c, Week %c%c, Year 200%c", country, info[0x00], info[0x08], info[0x09],info[0x07]);
+
+  CLog::Log(LOGDEBUG, "- XBOX production info: Country: %s, LineNumber: %c, Week %c%c, Year 200%c",
+            country, info[0x00], info[0x08], info[0x09], info[0x07]);
   CStdString strXBProDate;
-  strXBProDate.Format("%s, %s 200%c, %s: %c%c %s: %c",
-    country, 
-    g_localizeStrings.Get(201),
-    info[0x07],
-    g_localizeStrings.Get(20169),
-    info[0x08],
-    info[0x09],
-    g_localizeStrings.Get(20170),
-    info[0x00]);
+  strXBProDate.Format("%s, %s 200%c, %s: %c%c %s: %c", country, g_localizeStrings.Get(201),
+                      info[0x07], g_localizeStrings.Get(20169), info[0x08], info[0x09],
+                      g_localizeStrings.Get(20170), info[0x00]);
   return strXBProDate;
 }
 
@@ -1436,35 +1516,35 @@ CStdString CSysInfo::GetVideoXBERegion()
   CStdString XBEString, VideoStdString;
   switch (m_XKEEPROM->GetVideoStandardVal())
   {
-  case XKEEPROM::NTSC_J:
-    VideoStdString = "NTSC J";
-    break;
-  case XKEEPROM::NTSC_M:
-    VideoStdString = "NTSC M";
-    break;
-  case XKEEPROM::PAL_I:
-    VideoStdString = "PAL I";
-    break;
-  case XKEEPROM::PAL_M:
-    VideoStdString = "PAL M";
-    break;
-  default:
-    VideoStdString = g_localizeStrings.Get(13205); // "Unknown"
+    case XKEEPROM::NTSC_J:
+      VideoStdString = "NTSC J";
+      break;
+    case XKEEPROM::NTSC_M:
+      VideoStdString = "NTSC M";
+      break;
+    case XKEEPROM::PAL_I:
+      VideoStdString = "PAL I";
+      break;
+    case XKEEPROM::PAL_M:
+      VideoStdString = "PAL M";
+      break;
+    default:
+      VideoStdString = g_localizeStrings.Get(13205); // "Unknown"
   }
 
-  switch(m_XKEEPROM->GetXBERegionVal())
+  switch (m_XKEEPROM->GetXBERegionVal())
   {
-  case XKEEPROM::NORTH_AMERICA:
-    XBEString = "North America";
-    break;
-  case XKEEPROM::JAPAN:
-    XBEString = "Japan";
-    break;
-  case XKEEPROM::EURO_AUSTRALIA:
-    XBEString = "Europe / Australia";
-    break;
-  default:
-    XBEString = g_localizeStrings.Get(13205); // "Unknown"
+    case XKEEPROM::NORTH_AMERICA:
+      XBEString = "North America";
+      break;
+    case XKEEPROM::JAPAN:
+      XBEString = "Japan";
+      break;
+    case XKEEPROM::EURO_AUSTRALIA:
+      XBEString = "Europe / Australia";
+      break;
+    default:
+      XBEString = g_localizeStrings.Get(13205); // "Unknown"
   }
 
   CStdString strVideoXBERegion;
@@ -1510,16 +1590,16 @@ CStdString CSysInfo::GetModChipInfo()
   // XBOX Modchip Type Detection
   CStdString ModChip = GetModCHIPDetected();
   CStdString SmartXX = SmartXXModCHIP();
-  
+
   // Check if it is a SmartXX
   if (!SmartXX.Equals("None"))
   {
     strModChipInfo.Format("%s %s", g_localizeStrings.Get(38741), SmartXX);
-    CLog::Log(LOGDEBUG, "- Detected ModChip: %s",SmartXX.c_str());
+    CLog::Log(LOGDEBUG, "- Detected ModChip: %s", SmartXX.c_str());
   }
   else
   {
-    if ( !ModChip.Equals("Unknown/Onboard TSOP (protected)"))
+    if (!ModChip.Equals("Unknown/Onboard TSOP (protected)"))
     {
       strModChipInfo.Format("%s %s", g_localizeStrings.Get(38741), ModChip);
     }
@@ -1535,7 +1615,7 @@ CStdString CSysInfo::GetBIOSInfo()
 {
   //Format bios informations
   CStdString cBIOSName;
-  if(CheckBios(cBIOSName))
+  if (CheckBios(cBIOSName))
     return cBIOSName;
   else
     return "File: BiosIDs.ini Not Found!";
@@ -1547,21 +1627,21 @@ CStdString CSysInfo::GetTrayState()
   CStdString trayState = "D: ";
   switch (CIoSupport::GetTrayState())
   {
-  case TRAY_OPEN:
-    trayState+=g_localizeStrings.Get(162);
-    break;
-  case DRIVE_NOT_READY:
-    trayState+=g_localizeStrings.Get(163);
-    break;
-  case TRAY_CLOSED_NO_MEDIA:
-    trayState+=g_localizeStrings.Get(164);
-    break;
-  case TRAY_CLOSED_MEDIA_PRESENT:
-    trayState+=g_localizeStrings.Get(165);
-    break;
-  default:
-    trayState+=g_localizeStrings.Get(503); //Busy
-    break;
+    case TRAY_OPEN:
+      trayState += g_localizeStrings.Get(162);
+      break;
+    case DRIVE_NOT_READY:
+      trayState += g_localizeStrings.Get(163);
+      break;
+    case TRAY_CLOSED_NO_MEDIA:
+      trayState += g_localizeStrings.Get(164);
+      break;
+    case TRAY_CLOSED_MEDIA_PRESENT:
+      trayState += g_localizeStrings.Get(165);
+      break;
+    default:
+      trayState += g_localizeStrings.Get(503); //Busy
+      break;
   }
   return trayState;
 }
@@ -1569,15 +1649,15 @@ CStdString CSysInfo::GetTrayState()
 
 CStdString CSysInfo::GetHddSpaceInfo(int drive, bool shortText)
 {
- int percent;
- return GetHddSpaceInfo( percent, drive, shortText);
+  int percent;
+  return GetHddSpaceInfo(percent, drive, shortText);
 }
 
 CStdString CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
 {
   int total, totalFree, totalUsed, percentFree, percentused;
-  CStdString strDrive; 
-  bool bRet=false;
+  CStdString strDrive;
+  bool bRet = false;
   percent = 0;
   CStdString strRet;
   switch (drive)
@@ -1587,7 +1667,7 @@ CStdString CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
     case SYSTEM_TOTAL_SPACE:
     case SYSTEM_FREE_SPACE_PERCENT:
     case SYSTEM_USED_SPACE_PERCENT:
-      bRet = g_sysinfo.GetDiskSpace("",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("", total, totalFree, totalUsed, percentFree, percentused);
       break;
     case LCD_FREE_SPACE_C:
     case SYSTEM_FREE_SPACE_C:
@@ -1596,7 +1676,7 @@ CStdString CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
     case SYSTEM_FREE_SPACE_PERCENT_C:
     case SYSTEM_USED_SPACE_PERCENT_C:
       strDrive = "C";
-      bRet = g_sysinfo.GetDiskSpace("C",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("C", total, totalFree, totalUsed, percentFree, percentused);
       break;
     case LCD_FREE_SPACE_E:
     case SYSTEM_FREE_SPACE_E:
@@ -1605,7 +1685,7 @@ CStdString CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
     case SYSTEM_FREE_SPACE_PERCENT_E:
     case SYSTEM_USED_SPACE_PERCENT_E:
       strDrive = "E";
-      bRet = g_sysinfo.GetDiskSpace("E",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("E", total, totalFree, totalUsed, percentFree, percentused);
       break;
     case LCD_FREE_SPACE_F:
     case SYSTEM_FREE_SPACE_F:
@@ -1614,7 +1694,7 @@ CStdString CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
     case SYSTEM_FREE_SPACE_PERCENT_F:
     case SYSTEM_USED_SPACE_PERCENT_F:
       strDrive = "F";
-      bRet = g_sysinfo.GetDiskSpace("F",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("F", total, totalFree, totalUsed, percentFree, percentused);
       break;
     case LCD_FREE_SPACE_G:
     case SYSTEM_FREE_SPACE_G:
@@ -1623,32 +1703,32 @@ CStdString CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
     case SYSTEM_FREE_SPACE_PERCENT_G:
     case SYSTEM_USED_SPACE_PERCENT_G:
       strDrive = "G";
-      bRet = g_sysinfo.GetDiskSpace("G",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("G", total, totalFree, totalUsed, percentFree, percentused);
       break;
     case SYSTEM_USED_SPACE_X:
     case SYSTEM_FREE_SPACE_X:
     case SYSTEM_TOTAL_SPACE_X:
       strDrive = "X";
-      bRet = g_sysinfo.GetDiskSpace("X",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("X", total, totalFree, totalUsed, percentFree, percentused);
       break;
     case SYSTEM_USED_SPACE_Y:
     case SYSTEM_FREE_SPACE_Y:
     case SYSTEM_TOTAL_SPACE_Y:
       strDrive = "Y";
-      bRet = g_sysinfo.GetDiskSpace("Y",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("Y", total, totalFree, totalUsed, percentFree, percentused);
       break;
     case SYSTEM_USED_SPACE_Z:
     case SYSTEM_FREE_SPACE_Z:
     case SYSTEM_TOTAL_SPACE_Z:
       strDrive = "Z";
-      bRet = g_sysinfo.GetDiskSpace("Z",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("Z", total, totalFree, totalUsed, percentFree, percentused);
       break;
   }
   if (bRet)
   {
     if (shortText)
     {
-      switch(drive)
+      switch (drive)
       {
         case LCD_FREE_SPACE_C:
         case LCD_FREE_SPACE_E:
@@ -1680,64 +1760,64 @@ CStdString CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
     }
     else
     {
-      switch(drive)
+      switch (drive)
       {
-      case SYSTEM_FREE_SPACE:
-      case SYSTEM_FREE_SPACE_C:
-      case SYSTEM_FREE_SPACE_E:
-      case SYSTEM_FREE_SPACE_F:
-      case SYSTEM_FREE_SPACE_G:
-      case SYSTEM_FREE_SPACE_X:
-      case SYSTEM_FREE_SPACE_Y:
-      case SYSTEM_FREE_SPACE_Z:
-        if (strDrive.IsEmpty())
-          strRet.Format("%i MB %s", totalFree, g_localizeStrings.Get(160));
-        else
-          strRet.Format("%s: %i MB %s", strDrive, totalFree, g_localizeStrings.Get(160));
-        break;
-      case SYSTEM_USED_SPACE:
-      case SYSTEM_USED_SPACE_C:
-      case SYSTEM_USED_SPACE_E:
-      case SYSTEM_USED_SPACE_F:
-      case SYSTEM_USED_SPACE_G:
-      case SYSTEM_USED_SPACE_X:
-      case SYSTEM_USED_SPACE_Y:
-      case SYSTEM_USED_SPACE_Z:
-        if (strDrive.IsEmpty())
-          strRet.Format("%i MB %s", totalUsed, g_localizeStrings.Get(20162));
-        else
-          strRet.Format("%s: %i MB %s", strDrive, totalUsed, g_localizeStrings.Get(20162));
-        break;
-      case SYSTEM_TOTAL_SPACE:
-      case SYSTEM_TOTAL_SPACE_C:
-      case SYSTEM_TOTAL_SPACE_E:
-      case SYSTEM_TOTAL_SPACE_F:
-      case SYSTEM_TOTAL_SPACE_G:
-        if (strDrive.IsEmpty())
-          strRet.Format("%i MB %s", total, g_localizeStrings.Get(20161));
-        else
-          strRet.Format("%s: %i MB %s", strDrive, total, g_localizeStrings.Get(20161));
-        break;
-      case SYSTEM_FREE_SPACE_PERCENT:
-      case SYSTEM_FREE_SPACE_PERCENT_C:
-      case SYSTEM_FREE_SPACE_PERCENT_E:
-      case SYSTEM_FREE_SPACE_PERCENT_F:
-      case SYSTEM_FREE_SPACE_PERCENT_G:
-        if (strDrive.IsEmpty())
-          strRet.Format("%i %% %s", percentFree, g_localizeStrings.Get(160));
-        else
-          strRet.Format("%s: %i %% %s", strDrive, percentFree, g_localizeStrings.Get(160));
-        break;
-      case SYSTEM_USED_SPACE_PERCENT:
-      case SYSTEM_USED_SPACE_PERCENT_C:
-      case SYSTEM_USED_SPACE_PERCENT_E:
-      case SYSTEM_USED_SPACE_PERCENT_F:
-      case SYSTEM_USED_SPACE_PERCENT_G:
-        if (strDrive.IsEmpty())
-          strRet.Format("%i %% %s", percentused, g_localizeStrings.Get(20162));
-        else
-          strRet.Format("%s: %i %% %s", strDrive, percentused, g_localizeStrings.Get(20162));
-        break;
+        case SYSTEM_FREE_SPACE:
+        case SYSTEM_FREE_SPACE_C:
+        case SYSTEM_FREE_SPACE_E:
+        case SYSTEM_FREE_SPACE_F:
+        case SYSTEM_FREE_SPACE_G:
+        case SYSTEM_FREE_SPACE_X:
+        case SYSTEM_FREE_SPACE_Y:
+        case SYSTEM_FREE_SPACE_Z:
+          if (strDrive.IsEmpty())
+            strRet.Format("%i MB %s", totalFree, g_localizeStrings.Get(160));
+          else
+            strRet.Format("%s: %i MB %s", strDrive, totalFree, g_localizeStrings.Get(160));
+          break;
+        case SYSTEM_USED_SPACE:
+        case SYSTEM_USED_SPACE_C:
+        case SYSTEM_USED_SPACE_E:
+        case SYSTEM_USED_SPACE_F:
+        case SYSTEM_USED_SPACE_G:
+        case SYSTEM_USED_SPACE_X:
+        case SYSTEM_USED_SPACE_Y:
+        case SYSTEM_USED_SPACE_Z:
+          if (strDrive.IsEmpty())
+            strRet.Format("%i MB %s", totalUsed, g_localizeStrings.Get(20162));
+          else
+            strRet.Format("%s: %i MB %s", strDrive, totalUsed, g_localizeStrings.Get(20162));
+          break;
+        case SYSTEM_TOTAL_SPACE:
+        case SYSTEM_TOTAL_SPACE_C:
+        case SYSTEM_TOTAL_SPACE_E:
+        case SYSTEM_TOTAL_SPACE_F:
+        case SYSTEM_TOTAL_SPACE_G:
+          if (strDrive.IsEmpty())
+            strRet.Format("%i MB %s", total, g_localizeStrings.Get(20161));
+          else
+            strRet.Format("%s: %i MB %s", strDrive, total, g_localizeStrings.Get(20161));
+          break;
+        case SYSTEM_FREE_SPACE_PERCENT:
+        case SYSTEM_FREE_SPACE_PERCENT_C:
+        case SYSTEM_FREE_SPACE_PERCENT_E:
+        case SYSTEM_FREE_SPACE_PERCENT_F:
+        case SYSTEM_FREE_SPACE_PERCENT_G:
+          if (strDrive.IsEmpty())
+            strRet.Format("%i %% %s", percentFree, g_localizeStrings.Get(160));
+          else
+            strRet.Format("%s: %i %% %s", strDrive, percentFree, g_localizeStrings.Get(160));
+          break;
+        case SYSTEM_USED_SPACE_PERCENT:
+        case SYSTEM_USED_SPACE_PERCENT_C:
+        case SYSTEM_USED_SPACE_PERCENT_E:
+        case SYSTEM_USED_SPACE_PERCENT_F:
+        case SYSTEM_USED_SPACE_PERCENT_G:
+          if (strDrive.IsEmpty())
+            strRet.Format("%i %% %s", percentused, g_localizeStrings.Get(20162));
+          else
+            strRet.Format("%s: %i %% %s", strDrive, percentused, g_localizeStrings.Get(20162));
+          break;
       }
     }
   }
@@ -1768,28 +1848,28 @@ CStdString CSysInfo::GetUserAgent()
   return result;
 }
 
-CJob *CSysInfo::GetJob() const
+CJob* CSysInfo::GetJob() const
 {
   return new CSysInfoJob();
 }
 
-void CSysInfo::OnJobComplete(unsigned int jobID, bool success, CJob *job)
+void CSysInfo::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 {
 #ifdef _XBOX
   if (m_bRequestDone)
   {
-    m_info.systemUptime = ((CSysInfoJob *)job)->GetData().systemUptime;
-    m_info.systemTotalUptime = ((CSysInfoJob *)job)->GetData().systemTotalUptime;
-    m_info.internetState = ((CSysInfoJob *)job)->GetData().internetState;
-    m_info.HDDTemp = ((CSysInfoJob *)job)->GetData().HDDTemp;
+    m_info.systemUptime = ((CSysInfoJob*)job)->GetData().systemUptime;
+    m_info.systemTotalUptime = ((CSysInfoJob*)job)->GetData().systemTotalUptime;
+    m_info.internetState = ((CSysInfoJob*)job)->GetData().internetState;
+    m_info.HDDTemp = ((CSysInfoJob*)job)->GetData().HDDTemp;
   }
   else
   {
     m_bRequestDone = true;
-    m_info = ((CSysInfoJob *)job)->GetData();
+    m_info = ((CSysInfoJob*)job)->GetData();
   }
 #else
-  m_info = ((CSysInfoJob *)job)->GetData();
+  m_info = ((CSysInfoJob*)job)->GetData();
 #endif
   CInfoLoader::OnJobComplete(jobID, success, job);
 }

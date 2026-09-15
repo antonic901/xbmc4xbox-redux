@@ -50,12 +50,12 @@ CCacheStrategy::CCacheStrategy() : m_bEndOfInput(false)
 {
 }
 
-
 CCacheStrategy::~CCacheStrategy()
 {
 }
 
-void CCacheStrategy::EndOfInput() {
+void CCacheStrategy::EndOfInput()
+{
   m_bEndOfInput = true;
 }
 
@@ -70,12 +70,13 @@ void CCacheStrategy::ClearEndOfInput()
 }
 
 CSimpleFileCache::CSimpleFileCache()
-  : m_cacheFileRead(new CacheLocalFile())
-  , m_cacheFileWrite(new CacheLocalFile())
-  , m_hDataAvailEvent(NULL)
-  , m_nStartPosition(0)
-  , m_nWritePosition(0)
-  , m_nReadPosition(0) {
+  : m_cacheFileRead(new CacheLocalFile()),
+    m_cacheFileWrite(new CacheLocalFile()),
+    m_hDataAvailEvent(NULL),
+    m_nStartPosition(0),
+    m_nWritePosition(0),
+    m_nReadPosition(0)
+{
 }
 
 CSimpleFileCache::~CSimpleFileCache()
@@ -91,7 +92,8 @@ int CSimpleFileCache::Open()
 
   m_hDataAvailEvent = new CEvent;
 
-  m_filename = CSpecialProtocol::TranslatePath(CUtil::GetNextFilename("special://temp/filecache%03d.cache", 999));
+  m_filename = CSpecialProtocol::TranslatePath(
+      CUtil::GetNextFilename("special://temp/filecache%03d.cache", 999));
   if (m_filename.empty())
   {
     CLog::Log(LOGERROR, "%s - Unable to generate a new filename", __FUNCTION__);
@@ -139,12 +141,13 @@ size_t CSimpleFileCache::GetMaxWriteSize(const size_t& iRequestSize)
   return iRequestSize; // Can always write since it's on disk
 }
 
-int CSimpleFileCache::WriteToCache(const char *pBuffer, size_t iSize)
+int CSimpleFileCache::WriteToCache(const char* pBuffer, size_t iSize)
 {
   size_t written = 0;
   while (iSize > 0)
   {
-    const ssize_t lastWritten = m_cacheFileWrite->Write(pBuffer, (iSize > SSIZE_MAX) ? SSIZE_MAX : iSize);
+    const ssize_t lastWritten =
+        m_cacheFileWrite->Write(pBuffer, (iSize > SSIZE_MAX) ? SSIZE_MAX : iSize);
     if (lastWritten <= 0)
     {
       CLog::Log(LOGERROR, "failed to write to file");
@@ -166,18 +169,19 @@ int64_t CSimpleFileCache::GetAvailableRead()
   return m_nWritePosition - m_nReadPosition;
 }
 
-int CSimpleFileCache::ReadFromCache(char *pBuffer, size_t iMaxSize)
+int CSimpleFileCache::ReadFromCache(char* pBuffer, size_t iMaxSize)
 {
   int64_t iAvailable = GetAvailableRead();
-  if ( iAvailable <= 0 )
-    return m_bEndOfInput? 0 : CACHE_RC_WOULD_BLOCK;
+  if (iAvailable <= 0)
+    return m_bEndOfInput ? 0 : CACHE_RC_WOULD_BLOCK;
 
   size_t toRead = ((int64_t)iMaxSize > iAvailable) ? (size_t)iAvailable : iMaxSize;
 
   size_t readBytes = 0;
   while (toRead > 0)
   {
-    const ssize_t lastRead = m_cacheFileRead->Read(pBuffer, (toRead > SSIZE_MAX) ? SSIZE_MAX : toRead);
+    const ssize_t lastRead =
+        m_cacheFileRead->Read(pBuffer, (toRead > SSIZE_MAX) ? SSIZE_MAX : toRead);
     if (lastRead == 0)
       break;
     if (lastRead < 0)
@@ -198,7 +202,7 @@ int CSimpleFileCache::ReadFromCache(char *pBuffer, size_t iMaxSize)
 
 int64_t CSimpleFileCache::WaitForData(unsigned int iMinAvail, unsigned int iMillis)
 {
-  if( iMillis == 0 || IsEndOfInput() )
+  if (iMillis == 0 || IsEndOfInput())
     return GetAvailableRead();
 
   XbmcThreads::EndTime endTime(iMillis);
@@ -220,14 +224,15 @@ int64_t CSimpleFileCache::Seek(int64_t iFilePosition)
 
   if (iTarget < 0)
   {
-    CLog::Log(LOGDEBUG,"CSimpleFileCache::Seek, request seek before start of cache.");
+    CLog::Log(LOGDEBUG, "CSimpleFileCache::Seek, request seek before start of cache.");
     return CACHE_RC_ERROR;
   }
 
   int64_t nDiff = iTarget - m_nWritePosition;
-  if (nDiff > 500000 || (nDiff > 0 && WaitForData((unsigned int)(iTarget - m_nReadPosition), 5000) == CACHE_RC_TIMEOUT))
+  if (nDiff > 500000 || (nDiff > 0 && WaitForData((unsigned int)(iTarget - m_nReadPosition),
+                                                  5000) == CACHE_RC_TIMEOUT))
   {
-    CLog::Log(LOGDEBUG,"CSimpleFileCache::Seek - Attempt to seek past read data");
+    CLog::Log(LOGDEBUG, "CSimpleFileCache::Seek - Attempt to seek past read data");
     return CACHE_RC_ERROR;
   }
 
@@ -280,13 +285,12 @@ bool CSimpleFileCache::IsCachedPosition(int64_t iFilePosition)
   return iFilePosition >= m_nStartPosition && iFilePosition <= m_nStartPosition + m_nWritePosition;
 }
 
-CCacheStrategy *CSimpleFileCache::CreateNew()
+CCacheStrategy* CSimpleFileCache::CreateNew()
 {
   return new CSimpleFileCache();
 }
 
-
-CDoubleCache::CDoubleCache(CCacheStrategy *impl)
+CDoubleCache::CDoubleCache(CCacheStrategy* impl)
 {
   assert(NULL != impl);
   m_pCache = impl;
@@ -319,12 +323,12 @@ size_t CDoubleCache::GetMaxWriteSize(const size_t& iRequestSize)
   return m_pCache->GetMaxWriteSize(iRequestSize); // NOTE: Check the active cache only
 }
 
-int CDoubleCache::WriteToCache(const char *pBuffer, size_t iSize)
+int CDoubleCache::WriteToCache(const char* pBuffer, size_t iSize)
 {
   return m_pCache->WriteToCache(pBuffer, iSize);
 }
 
-int CDoubleCache::ReadFromCache(char *pBuffer, size_t iMaxSize)
+int CDoubleCache::ReadFromCache(char* pBuffer, size_t iMaxSize)
 {
   return m_pCache->ReadFromCache(pBuffer, iMaxSize);
 }
@@ -340,8 +344,8 @@ int64_t CDoubleCache::Seek(int64_t iFilePosition)
    * This is faster/more efficient than having to possibly wait for data in the
    * Seek() call below
    */
-  if (!m_pCache->IsCachedPosition(iFilePosition) &&
-       m_pCacheOld && m_pCacheOld->IsCachedPosition(iFilePosition))
+  if (!m_pCache->IsCachedPosition(iFilePosition) && m_pCacheOld &&
+      m_pCacheOld->IsCachedPosition(iFilePosition))
   {
     return CACHE_RC_ERROR; // Request seek event, so caches are swapped
   }
@@ -351,15 +355,15 @@ int64_t CDoubleCache::Seek(int64_t iFilePosition)
 
 bool CDoubleCache::Reset(int64_t iSourcePosition, bool clearAnyway)
 {
-  if (!clearAnyway && m_pCache->IsCachedPosition(iSourcePosition)
-      && (!m_pCacheOld || !m_pCacheOld->IsCachedPosition(iSourcePosition)
-          || m_pCache->CachedDataEndPos() >= m_pCacheOld->CachedDataEndPos()))
+  if (!clearAnyway && m_pCache->IsCachedPosition(iSourcePosition) &&
+      (!m_pCacheOld || !m_pCacheOld->IsCachedPosition(iSourcePosition) ||
+       m_pCache->CachedDataEndPos() >= m_pCacheOld->CachedDataEndPos()))
   {
     return m_pCache->Reset(iSourcePosition, clearAnyway);
   }
   if (!m_pCacheOld)
   {
-    CCacheStrategy *pCacheNew = m_pCache->CreateNew();
+    CCacheStrategy* pCacheNew = m_pCache->CreateNew();
     if (pCacheNew->Open() != CACHE_RC_OK)
     {
       delete pCacheNew;
@@ -371,7 +375,7 @@ bool CDoubleCache::Reset(int64_t iSourcePosition, bool clearAnyway)
     return bRes;
   }
   bool bRes = m_pCacheOld->Reset(iSourcePosition, clearAnyway);
-  CCacheStrategy *tmp = m_pCacheOld;
+  CCacheStrategy* tmp = m_pCacheOld;
   m_pCacheOld = m_pCache;
   m_pCache = tmp;
   return bRes;
@@ -407,11 +411,11 @@ int64_t CDoubleCache::CachedDataEndPosIfSeekTo(int64_t iFilePosition)
 
 bool CDoubleCache::IsCachedPosition(int64_t iFilePosition)
 {
-  return m_pCache->IsCachedPosition(iFilePosition) || (m_pCacheOld && m_pCacheOld->IsCachedPosition(iFilePosition));
+  return m_pCache->IsCachedPosition(iFilePosition) ||
+         (m_pCacheOld && m_pCacheOld->IsCachedPosition(iFilePosition));
 }
 
-CCacheStrategy *CDoubleCache::CreateNew()
+CCacheStrategy* CDoubleCache::CreateNew()
 {
   return new CDoubleCache(m_pCache->CreateNew());
 }
-

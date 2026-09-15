@@ -27,7 +27,6 @@
 class CFilesystemInstaller
 {
 public:
-
   CFilesystemInstaller();
 
   /*!

@@ -25,16 +25,18 @@
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
 
-ISetting::ISetting(const std::string &id, CSettingsManager *settingsManager /* = NULL */)
+ISetting::ISetting(const std::string& id, CSettingsManager* settingsManager /* = NULL */)
   : m_id(id),
     m_settingsManager(settingsManager),
     m_visible(true),
-    m_label(-1), m_help(-1),
+    m_label(-1),
+    m_help(-1),
     m_meetsRequirements(true),
     m_requirementCondition(settingsManager)
-{ }
+{
+}
 
-bool ISetting::Deserialize(const TiXmlNode *node, bool update /* = false */)
+bool ISetting::Deserialize(const TiXmlNode* node, bool update /* = false */)
 {
   if (node == NULL)
     return false;
@@ -43,7 +45,7 @@ bool ISetting::Deserialize(const TiXmlNode *node, bool update /* = false */)
   if (XMLUtils::GetBoolean(node, SETTING_XML_ELM_VISIBLE, value))
     m_visible = value;
 
-  const TiXmlElement *element = node->ToElement();
+  const TiXmlElement* element = node->ToElement();
   if (element == NULL)
     return false;
 
@@ -53,23 +55,23 @@ bool ISetting::Deserialize(const TiXmlNode *node, bool update /* = false */)
   if (element->QueryIntAttribute(SETTING_XML_ATTR_HELP, &iValue) == TIXML_SUCCESS && iValue > 0)
     m_help = iValue;
 
-  const TiXmlNode *requirementNode = node->FirstChild(SETTING_XML_ELM_REQUIREMENT);
+  const TiXmlNode* requirementNode = node->FirstChild(SETTING_XML_ELM_REQUIREMENT);
   if (requirementNode == NULL)
     return true;
 
   return m_requirementCondition.Deserialize(requirementNode);
 }
 
-bool ISetting::DeserializeIdentification(const TiXmlNode *node, std::string &identification)
+bool ISetting::DeserializeIdentification(const TiXmlNode* node, std::string& identification)
 {
   if (node == NULL)
     return false;
 
-  const TiXmlElement *element = node->ToElement();
+  const TiXmlElement* element = node->ToElement();
   if (element == NULL)
     return false;
 
-  const char *idAttribute = element->Attribute(SETTING_XML_ATTR_ID);
+  const char* idAttribute = element->Attribute(SETTING_XML_ATTR_ID);
   if (idAttribute == NULL || strlen(idAttribute) <= 0)
     return false;
 

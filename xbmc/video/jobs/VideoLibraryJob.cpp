@@ -22,10 +22,12 @@
 #include "video/VideoDatabase.h"
 
 CVideoLibraryJob::CVideoLibraryJob()
-{ }
+{
+}
 
 CVideoLibraryJob::~CVideoLibraryJob()
-{ }
+{
+}
 
 bool CVideoLibraryJob::DoWork()
 {

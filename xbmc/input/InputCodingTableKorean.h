@@ -36,7 +36,7 @@ public:
 
   virtual void SetTextPrev(const std::string& strTextPrev);
   virtual std::string ConvertString(const std::string& strCode);
-  virtual int GetType() { return TYPE_CONVERT_STRING;  }
+  virtual int GetType() { return TYPE_CONVERT_STRING; }
 
 protected:
   int MergeCode(int choseong, int jungseong, int jongseong);

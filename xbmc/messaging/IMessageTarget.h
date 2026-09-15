@@ -28,9 +28,9 @@ class ThreadMessage;
 class IMessageTarget
 {
 public:
-  virtual ~IMessageTarget() { }
+  virtual ~IMessageTarget() {}
   virtual int GetMessageMask() = 0;
   virtual void OnApplicationMessage(ThreadMessage* msg) = 0;
 };
-}
-}
+} // namespace MESSAGING
+} // namespace KODI

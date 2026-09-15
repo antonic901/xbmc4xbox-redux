@@ -25,9 +25,9 @@
 #include <vector>
 #include <string>
 
-#define INSIGNIA_LABEL_GAMES_SUPPORTED  10
+#define INSIGNIA_LABEL_GAMES_SUPPORTED 10
 #define INSIGNIA_LABEL_REGISTERED_USERS 11
-#define INSIGNIA_LABEL_ONLINE_USERS     12
+#define INSIGNIA_LABEL_ONLINE_USERS 12
 
 struct game_info
 {
@@ -74,7 +74,7 @@ public:
 
   virtual bool DoWork();
 
-  const CInsigniaInfo &GetInfo() const;
+  const CInsigniaInfo& GetInfo() const;
 
 private:
   void SetWindowProperties();
@@ -88,14 +88,14 @@ public:
   CInsignia(void);
   virtual ~CInsignia(void);
 
-  const std::string &GetLastUpdateTime() const { return m_info.lastUpdateTime; };
+  const std::string& GetLastUpdateTime() const { return m_info.lastUpdateTime; };
   bool IsFetched();
   void Reset();
 
 protected:
-  virtual CJob *GetJob() const;
+  virtual CJob* GetJob() const;
   virtual std::string TranslateInfo(int info) const;
-  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob* job);
 
 private:
   CInsigniaInfo m_info;

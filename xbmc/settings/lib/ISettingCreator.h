@@ -31,7 +31,7 @@ class CSettingsManager;
 class ISettingCreator
 {
 public:
-  virtual ~ISettingCreator() { }
+  virtual ~ISettingCreator() {}
 
   /*!
    \brief Creates a new setting of the given custom setting type.
@@ -41,5 +41,7 @@ public:
    \param settingsManager Reference to the settings manager
    \return A new setting object of the given (custom) setting type or NULL if the setting type is unknown
    */
-  virtual CSetting* CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = NULL) const = 0;
+  virtual CSetting* CreateSetting(const std::string& settingType,
+                                  const std::string& settingId,
+                                  CSettingsManager* settingsManager = NULL) const = 0;
 };

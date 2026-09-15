@@ -35,7 +35,9 @@ bool CMediaSource::IsWritable() const
   return CUtil::SupportsWriteFileOperations(strPath);
 }
 
-void CMediaSource::FromNameAndPaths(const CStdString &category, const CStdString &name, const std::vector<std::string> &paths)
+void CMediaSource::FromNameAndPaths(const CStdString& category,
+                                    const CStdString& name,
+                                    const std::vector<std::string>& paths)
 {
   vecPaths = paths;
   if (paths.size() == 0)
@@ -83,7 +85,7 @@ void CMediaSource::FromNameAndPaths(const CStdString &category, const CStdString
   strPath = CURL(strPath).Get();
 }
 
-bool CMediaSource::operator==(const CMediaSource &share) const
+bool CMediaSource::operator==(const CMediaSource& share) const
 {
   // NOTE: we may wish to filter this through CURL to enable better "fuzzy" matching
   if (strPath != share.strPath)
@@ -96,10 +98,10 @@ bool CMediaSource::operator==(const CMediaSource &share) const
 void AddOrReplace(VECSOURCES& sources, const VECSOURCES& extras)
 {
   unsigned int i;
-  for( i=0;i<extras.size();++i )
+  for (i = 0; i < extras.size(); ++i)
   {
     unsigned int j;
-    for ( j=0;j<sources.size();++j)
+    for (j = 0; j < sources.size(); ++j)
     {
       if (sources[j].strPath.Equals(extras[i].strPath))
       {
@@ -115,9 +117,9 @@ void AddOrReplace(VECSOURCES& sources, const VECSOURCES& extras)
 void AddOrReplace(VECSOURCES& sources, const CMediaSource& source)
 {
   unsigned int i;
-  for( i=0;i<sources.size();++i )
+  for (i = 0; i < sources.size(); ++i)
   {
-    if (sources[i].strPath.Equals(source.strPath)) 
+    if (sources[i].strPath.Equals(source.strPath))
     {
       sources[i] = source;
       break;

@@ -46,12 +46,12 @@ public:
   bool Cancel();
 
   // specialization of CJob
-  const char *GetType() const { return "MusicLibraryScanningJob"; }
+  const char* GetType() const { return "MusicLibraryScanningJob"; }
   bool operator==(const CJob* job) const;
 
 protected:
   // implementation of CMusicLibraryJob
-  bool Work(CMusicDatabase &db);
+  bool Work(CMusicDatabase& db);
 
 private:
   MUSIC_INFO::CMusicInfoScanner m_scanner;

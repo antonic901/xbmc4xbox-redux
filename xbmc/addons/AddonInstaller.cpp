@@ -36,8 +36,8 @@
 #include "utils/JobManager.h"
 #include "addons/AddonManager.h"
 #include "addons/Repository.h"
-#include "guilib/GUIWindowManager.h"      // for callback
-#include "GUIUserMessages.h"              // for callback
+#include "guilib/GUIWindowManager.h" // for callback
+#include "GUIUserMessages.h" // for callback
 #include "utils/StringUtils.h"
 #include "dialogs/GUIDialogOK.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
@@ -54,21 +54,24 @@ using namespace KODI::MESSAGING;
 
 using namespace KODI::MESSAGING::HELPERS;
 
-struct find_map : public std::binary_function<CAddonInstaller::JobMap::value_type, unsigned int, bool>
+struct find_map
+  : public std::binary_function<CAddonInstaller::JobMap::value_type, unsigned int, bool>
 {
-  bool operator() (CAddonInstaller::JobMap::value_type t, unsigned int id) const
+  bool operator()(CAddonInstaller::JobMap::value_type t, unsigned int id) const
   {
     return (t.second.jobID == id);
   }
 };
 
 CAddonInstaller::CAddonInstaller() : m_idle(true)
-{ }
+{
+}
 
 CAddonInstaller::~CAddonInstaller()
-{ }
+{
+}
 
-CAddonInstaller &CAddonInstaller::GetInstance()
+CAddonInstaller& CAddonInstaller::GetInstance()
 {
   static CAddonInstaller addonInstaller;
   return addonInstaller;
@@ -77,7 +80,8 @@ CAddonInstaller &CAddonInstaller::GetInstance()
 void CAddonInstaller::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 {
   CSingleLock lock(m_critSection);
-  JobMap::iterator i = find_if(m_downloadJobs.begin(), m_downloadJobs.end(), bind2nd(find_map(), jobID));
+  JobMap::iterator i =
+      find_if(m_downloadJobs.begin(), m_downloadJobs.end(), bind2nd(find_map(), jobID));
   if (i != m_downloadJobs.end())
     m_downloadJobs.erase(i);
   if (m_downloadJobs.empty())
@@ -89,10 +93,14 @@ void CAddonInstaller::OnJobComplete(unsigned int jobID, bool success, CJob* job)
   g_windowManager.SendThreadMessage(msg);
 }
 
-void CAddonInstaller::OnJobProgress(unsigned int jobID, unsigned int progress, unsigned int total, const CJob *job)
+void CAddonInstaller::OnJobProgress(unsigned int jobID,
+                                    unsigned int progress,
+                                    unsigned int total,
+                                    const CJob* job)
 {
   CSingleLock lock(m_critSection);
-  JobMap::iterator i = find_if(m_downloadJobs.begin(), m_downloadJobs.end(), bind2nd(find_map(), jobID));
+  JobMap::iterator i =
+      find_if(m_downloadJobs.begin(), m_downloadJobs.end(), bind2nd(find_map(), jobID));
   if (i != m_downloadJobs.end())
   {
     // update job progress
@@ -110,7 +118,7 @@ bool CAddonInstaller::IsDownloading() const
   return !m_downloadJobs.empty();
 }
 
-void CAddonInstaller::GetInstallList(VECADDONS &addons) const
+void CAddonInstaller::GetInstallList(VECADDONS& addons) const
 {
   CSingleLock lock(m_critSection);
   std::vector<std::string> addonIDs;
@@ -131,7 +139,7 @@ void CAddonInstaller::GetInstallList(VECADDONS &addons) const
   }
 }
 
-bool CAddonInstaller::GetProgress(const std::string &addonID, unsigned int &percent) const
+bool CAddonInstaller::GetProgress(const std::string& addonID, unsigned int& percent) const
 {
   CSingleLock lock(m_critSection);
   JobMap::const_iterator i = m_downloadJobs.find(addonID);
@@ -143,7 +151,7 @@ bool CAddonInstaller::GetProgress(const std::string &addonID, unsigned int &perc
   return false;
 }
 
-bool CAddonInstaller::Cancel(const std::string &addonID)
+bool CAddonInstaller::Cancel(const std::string& addonID)
 {
   CSingleLock lock(m_critSection);
   JobMap::iterator i = m_downloadJobs.find(addonID);
@@ -159,7 +167,9 @@ bool CAddonInstaller::Cancel(const std::string &addonID)
   return false;
 }
 
-bool CAddonInstaller::InstallModal(const std::string &addonID, ADDON::AddonPtr &addon, bool promptForInstall /* = true */)
+bool CAddonInstaller::InstallModal(const std::string& addonID,
+                                   ADDON::AddonPtr& addon,
+                                   bool promptForInstall /* = true */)
 {
   if (!g_passwordManager.CheckMenuLock(WINDOW_ADDON_BROWSER))
     return false;
@@ -167,7 +177,7 @@ bool CAddonInstaller::InstallModal(const std::string &addonID, ADDON::AddonPtr &
   // we assume that addons that are enabled don't get to this routine (i.e. that GetAddon() has been called)
   if (CServiceBroker::GetAddonMgr().GetAddon(addonID, addon, ADDON_UNKNOWN, false))
     return false; // addon is installed but disabled, and the user has specifically activated something that needs
-                  // the addon - should we enable it?
+  // the addon - should we enable it?
 
   // check we have it available
   CAddonDatabase database;
@@ -178,8 +188,7 @@ bool CAddonInstaller::InstallModal(const std::string &addonID, ADDON::AddonPtr &
   // if specified ask the user if he wants it installed
   if (promptForInstall)
   {
-    if (HELPERS::ShowYesNoDialogLines(24076, 24100, addon->Name(), 24101) !=
-      YES)
+    if (HELPERS::ShowYesNoDialogLines(24076, 24100, addon->Name(), 24101) != YES)
     {
       return false;
     }
@@ -191,8 +200,9 @@ bool CAddonInstaller::InstallModal(const std::string &addonID, ADDON::AddonPtr &
   return CServiceBroker::GetAddonMgr().GetAddon(addonID, addon);
 }
 
-
-bool CAddonInstaller::InstallOrUpdate(const std::string &addonID, bool background /* = true */, bool modal /* = false */)
+bool CAddonInstaller::InstallOrUpdate(const std::string& addonID,
+                                      bool background /* = true */,
+                                      bool modal /* = false */)
 {
   AddonPtr addon;
   RepositoryPtr repo;
@@ -202,10 +212,12 @@ bool CAddonInstaller::InstallOrUpdate(const std::string &addonID, bool backgroun
   return DoInstall(addon, repo, background, modal);
 }
 
-void CAddonInstaller::Install(const std::string& addonId, const AddonVersion& version, const std::string& repoId)
+void CAddonInstaller::Install(const std::string& addonId,
+                              const AddonVersion& version,
+                              const std::string& repoId)
 {
   CLog::Log(LOGDEBUG, "CAddonInstaller: installing '%s' version '%s' from repository '%s'",
-      addonId.c_str(), version.asString().c_str(), repoId.c_str());
+            addonId.c_str(), version.asString().c_str(), repoId.c_str());
 
   AddonPtr addon;
   CAddonDatabase database;
@@ -220,7 +232,11 @@ void CAddonInstaller::Install(const std::string& addonId, const AddonVersion& ve
   DoInstall(addon, boost::static_pointer_cast<CRepository>(repo), true, false);
 }
 
-bool CAddonInstaller::DoInstall(const AddonPtr &addon, const RepositoryPtr& repo, bool background /* = true */, bool modal /* = false */, bool autoUpdate /* = false*/)
+bool CAddonInstaller::DoInstall(const AddonPtr& addon,
+                                const RepositoryPtr& repo,
+                                bool background /* = true */,
+                                bool modal /* = false */,
+                                bool autoUpdate /* = false*/)
 {
   // check whether we already have the addon installing
   CSingleLock lock(m_critSection);
@@ -232,7 +248,8 @@ bool CAddonInstaller::DoInstall(const AddonPtr &addon, const RepositoryPtr& repo
   {
     // Workaround: because CAddonInstallJob is blocking waiting for other jobs, it needs to be run
     // with priority dedicated.
-    unsigned int jobID = CJobManager::GetInstance().AddJob(installJob, this, CJob::PRIORITY_DEDICATED);
+    unsigned int jobID =
+        CJobManager::GetInstance().AddJob(installJob, this, CJob::PRIORITY_DEDICATED);
     m_downloadJobs.insert(make_pair(addon->ID(), CDownloadJob(jobID)));
     m_idle.Reset();
     return true;
@@ -258,7 +275,7 @@ bool CAddonInstaller::DoInstall(const AddonPtr &addon, const RepositoryPtr& repo
   return result;
 }
 
-bool CAddonInstaller::InstallFromZip(const std::string &path)
+bool CAddonInstaller::InstallFromZip(const std::string& path)
 {
   if (!g_passwordManager.CheckMenuLock(WINDOW_ADDON_BROWSER))
     return false;
@@ -270,8 +287,8 @@ bool CAddonInstaller::InstallFromZip(const std::string &path)
   //! @bug some zip files return a single item (root folder) that we think is stored, so we don't use the zip:// protocol
   CURL pathToUrl(path);
   CURL zipDir = URIUtils::CreateArchivePath("zip", pathToUrl, "");
-  if (!CDirectory::GetDirectory(zipDir, items, "", DIR_FLAG_DEFAULTS) ||
-      items.Size() != 1 || !items[0]->m_bIsFolder)
+  if (!CDirectory::GetDirectory(zipDir, items, "", DIR_FLAG_DEFAULTS) || items.Size() != 1 ||
+      !items[0]->m_bIsFolder)
   {
     return false;
   }
@@ -283,13 +300,16 @@ bool CAddonInstaller::InstallFromZip(const std::string &path)
   return false;
 }
 
-bool CAddonInstaller::CheckDependencies(const AddonPtr &addon, CAddonDatabase *database /* = NULL */)
+bool CAddonInstaller::CheckDependencies(const AddonPtr& addon,
+                                        CAddonDatabase* database /* = NULL */)
 {
   std::pair<std::string, std::string> failedDep;
   return CheckDependencies(addon, failedDep, database);
 }
 
-bool CAddonInstaller::CheckDependencies(const AddonPtr &addon, std::pair<std::string, std::string> &failedDep, CAddonDatabase *database /* = NULL */)
+bool CAddonInstaller::CheckDependencies(const AddonPtr& addon,
+                                        std::pair<std::string, std::string>& failedDep,
+                                        CAddonDatabase* database /* = NULL */)
 {
   std::vector<std::string> preDeps;
   preDeps.push_back(addon->ID());
@@ -300,9 +320,10 @@ bool CAddonInstaller::CheckDependencies(const AddonPtr &addon, std::pair<std::st
   return CheckDependencies(addon, preDeps, *database, failedDep);
 }
 
-bool CAddonInstaller::CheckDependencies(const AddonPtr &addon,
-                                        std::vector<std::string>& preDeps, CAddonDatabase &database,
-                                        std::pair<std::string, std::string> &failedDep)
+bool CAddonInstaller::CheckDependencies(const AddonPtr& addon,
+                                        std::vector<std::string>& preDeps,
+                                        CAddonDatabase& database,
+                                        std::pair<std::string, std::string>& failedDep)
 {
   if (addon == NULL)
     return true; // a NULL addon has no dependencies
@@ -313,8 +334,8 @@ bool CAddonInstaller::CheckDependencies(const AddonPtr &addon,
   ADDONDEPS deps = addon->GetDeps();
   for (ADDONDEPS::const_iterator i = deps.begin(); i != deps.end(); ++i)
   {
-    const std::string &addonID = i->first;
-    const AddonVersion &version = i->second.first;
+    const std::string& addonID = i->first;
+    const AddonVersion& version = i->second.first;
     bool optional = i->second.second;
     AddonPtr dep;
     bool haveAddon = CServiceBroker::GetAddonMgr().GetAddon(addonID, dep);
@@ -324,7 +345,8 @@ bool CAddonInstaller::CheckDependencies(const AddonPtr &addon,
       if (!database.GetAddon(addonID, dep) || !dep->MeetsVersion(version))
       {
         // we don't have it in a repo, or we have it but the version isn't good enough, so dep isn't satisfied.
-        CLog::Log(LOGDEBUG, "CAddonInstallJob[%s]: requires %s version %s which is not available", addon->ID().c_str(), addonID.c_str(), version.asString().c_str());
+        CLog::Log(LOGDEBUG, "CAddonInstallJob[%s]: requires %s version %s which is not available",
+                  addon->ID().c_str(), addonID.c_str(), version.asString().c_str());
         database.Close();
 
         // fill in the details of the failed dependency
@@ -360,7 +382,7 @@ bool CAddonInstaller::HasJob(const std::string& ID) const
 
 void CAddonInstaller::PrunePackageCache()
 {
-  std::map<std::string,CFileItemList*> packs;
+  std::map<std::string, CFileItemList*> packs;
   int64_t size = EnumeratePackageFolder(packs);
   int64_t limit = (int64_t)g_advancedSettings.m_addonPackageFolderSize * 1024 * 1024;
   if (size < limit)
@@ -371,7 +393,8 @@ void CAddonInstaller::PrunePackageCache()
   CFileItemList items;
   CAddonDatabase db;
   db.Open();
-  for (std::map<std::string,CFileItemList*>::const_iterator it = packs.begin(); it != packs.end(); ++it)
+  for (std::map<std::string, CFileItemList*>::const_iterator it = packs.begin(); it != packs.end();
+       ++it)
   {
     it->second->Sort(SortByLabel, SortOrderDescending);
     for (int j = 2; j < it->second->Size(); j++)
@@ -391,7 +414,8 @@ void CAddonInstaller::PrunePackageCache()
   {
     // 2. Remove the oldest packages (leaving least 1 for each add-on)
     items.Clear();
-    for (std::map<std::string,CFileItemList*>::iterator it = packs.begin(); it != packs.end(); ++it)
+    for (std::map<std::string, CFileItemList*>::iterator it = packs.begin(); it != packs.end();
+         ++it)
     {
       if (it->second->Size() > 1)
         items.Add(CFileItemPtr(new CFileItem(*it->second->Get(1))));
@@ -403,12 +427,12 @@ void CAddonInstaller::PrunePackageCache()
     {
       size -= items[i]->m_dwSize;
       db.RemovePackage(items[i]->GetPath());
-      CFileUtils::DeleteItem(items[i++],true);
+      CFileUtils::DeleteItem(items[i++], true);
     }
   }
 
   // clean up our mess
-  for (std::map<std::string,CFileItemList*>::iterator it = packs.begin(); it != packs.end(); ++it)
+  for (std::map<std::string, CFileItemList*>::iterator it = packs.begin(); it != packs.end(); ++it)
     delete it->second;
 }
 
@@ -417,7 +441,7 @@ void CAddonInstaller::InstallUpdates()
   ADDON::VECADDONS updates = CServiceBroker::GetAddonMgr().GetAvailableUpdates();
   for (VECADDONS::const_iterator it = updates.begin(); it != updates.end(); ++it)
   {
-    const ADDON::AddonPtr &addon = *it;
+    const ADDON::AddonPtr& addon = *it;
     if (!CServiceBroker::GetAddonMgr().IsBlacklisted(addon->ID()))
     {
       AddonPtr toInstall;
@@ -440,10 +464,10 @@ void CAddonInstaller::InstallUpdatesAndWait()
   }
 }
 
-int64_t CAddonInstaller::EnumeratePackageFolder(std::map<std::string,CFileItemList*>& result)
+int64_t CAddonInstaller::EnumeratePackageFolder(std::map<std::string, CFileItemList*>& result)
 {
   CFileItemList items;
-  CDirectory::GetDirectory("special://home/addons/packages/",items,".zip",DIR_FLAG_NO_FILE_DIRS);
+  CDirectory::GetDirectory("special://home/addons/packages/", items, ".zip", DIR_FLAG_NO_FILE_DIRS);
   int64_t size = 0;
   for (int i = 0; i < items.Size(); i++)
   {
@@ -451,7 +475,7 @@ int64_t CAddonInstaller::EnumeratePackageFolder(std::map<std::string,CFileItemLi
       continue;
 
     size += items[i]->m_dwSize;
-    std::string pack,dummy;
+    std::string pack, dummy;
     AddonVersion::SplitFileName(pack, dummy, items[i]->GetLabel());
     if (result.find(pack) == result.end())
       result[pack] = new CFileItemList;
@@ -461,7 +485,9 @@ int64_t CAddonInstaller::EnumeratePackageFolder(std::map<std::string,CFileItemLi
   return size;
 }
 
-CAddonInstallJob::CAddonInstallJob(const AddonPtr &addon, const RepositoryPtr &repo, bool isAutoUpdate)
+CAddonInstallJob::CAddonInstallJob(const AddonPtr& addon,
+                                   const RepositoryPtr& repo,
+                                   bool isAutoUpdate)
   : m_addon(addon),
     m_repo(repo),
     m_isAutoUpdate(isAutoUpdate)
@@ -470,8 +496,9 @@ CAddonInstallJob::CAddonInstallJob(const AddonPtr &addon, const RepositoryPtr &r
   m_isUpdate = CServiceBroker::GetAddonMgr().GetAddon(addon->ID(), dummy, ADDON_UNKNOWN, false);
 }
 
-bool CAddonInstallJob::GetAddon(const std::string& addonID, RepositoryPtr& repo,
-    ADDON::AddonPtr& addon)
+bool CAddonInstallJob::GetAddon(const std::string& addonID,
+                                RepositoryPtr& repo,
+                                ADDON::AddonPtr& addon)
 {
   if (!CServiceBroker::GetAddonMgr().FindInstallableById(addonID, addon))
     return false;
@@ -495,7 +522,8 @@ bool CAddonInstallJob::DoWork()
   std::pair<std::string, std::string> failedDep;
   if (!CAddonInstaller::GetInstance().CheckDependencies(m_addon, failedDep))
   {
-    std::string details = StringUtils::Format(g_localizeStrings.Get(24142).c_str(), failedDep.first.c_str(), failedDep.second.c_str());
+    std::string details = StringUtils::Format(g_localizeStrings.Get(24142).c_str(),
+                                              failedDep.first.c_str(), failedDep.second.c_str());
     CLog::Log(LOGERROR, "CAddonInstallJob[%s]: %s", m_addon->ID().c_str(), details.c_str());
     ReportInstallError(m_addon->ID(), m_addon->ID(), details);
     return false;
@@ -525,7 +553,8 @@ bool CAddonInstallJob::DoWork()
         hash = resolvedAddon.hash;
         if (path.empty())
         {
-          CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to resolve addon install source path", m_addon->ID().c_str());
+          CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to resolve addon install source path",
+                    m_addon->ID().c_str());
           ReportInstallError(m_addon->ID(), m_addon->ID());
           return false;
         }
@@ -560,7 +589,8 @@ bool CAddonInstallJob::DoWork()
         {
           CFile::Delete(package);
 
-          CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to download %s", m_addon->ID().c_str(), package.c_str());
+          CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to download %s", m_addon->ID().c_str(),
+                    package.c_str());
           ReportInstallError(m_addon->ID(), URIUtils::GetFileName(package));
           return false;
         }
@@ -575,8 +605,9 @@ bool CAddonInstallJob::DoWork()
         {
           CFile::Delete(package);
 
-          CLog::Log(LOGERROR, "CAddonInstallJob[%s]: MD5 mismatch after download. Expected %s, was %s",
-              m_addon->ID().c_str(), hash.c_str(), md5.c_str());
+          CLog::Log(LOGERROR,
+                    "CAddonInstallJob[%s]: MD5 mismatch after download. Expected %s, was %s",
+                    m_addon->ID().c_str(), hash.c_str(), md5.c_str());
           ReportInstallError(m_addon->ID(), URIUtils::GetFileName(package));
           return false;
         }
@@ -593,7 +624,8 @@ bool CAddonInstallJob::DoWork()
           archivedFiles.Size() != 1 || !archivedFiles[0]->m_bIsFolder ||
           !CServiceBroker::GetAddonMgr().LoadAddonDescription(archivedFiles[0]->GetPath(), temp))
       {
-        CLog::Log(LOGERROR, "CAddonInstallJob[%s]: invalid package %s", m_addon->ID().c_str(), package.c_str());
+        CLog::Log(LOGERROR, "CAddonInstallJob[%s]: invalid package %s", m_addon->ID().c_str(),
+                  package.c_str());
         db.RemovePackage(package);
         CFile::Delete(package);
         ReportInstallError(m_addon->ID(), URIUtils::GetFileName(package));
@@ -617,7 +649,8 @@ bool CAddonInstallJob::DoWork()
     return false;
   }
 
-  g_localizeStrings.LoadAddonStrings(URIUtils::AddFileToFolder(m_addon->Path(), "resources/language/"),
+  g_localizeStrings.LoadAddonStrings(
+      URIUtils::AddFileToFolder(m_addon->Path(), "resources/language/"),
       CSettings::GetInstance().GetString("locale.language"), m_addon->ID());
 
   ADDON::OnPostInstall(m_addon, m_isUpdate, IsModal());
@@ -630,12 +663,14 @@ bool CAddonInstallJob::DoWork()
       database.SetLastUpdated(m_addon->ID(), CDateTime::GetCurrentDateTime());
   }
 
-  bool notify = (CSettings::GetInstance().GetBool("general.addonnotifications")
-        || !m_isAutoUpdate) && !IsModal();
+  bool notify =
+      (CSettings::GetInstance().GetBool("general.addonnotifications") || !m_isAutoUpdate) &&
+      !IsModal();
 
   if (m_isAutoUpdate && !m_addon->Broken().empty())
   {
-    CLog::Log(LOGDEBUG, "CAddonInstallJob[%s]: auto-disabling due to being marked as broken", m_addon->ID().c_str());
+    CLog::Log(LOGDEBUG, "CAddonInstallJob[%s]: auto-disabling due to being marked as broken",
+              m_addon->ID().c_str());
     CServiceBroker::GetAddonMgr().DisableAddon(m_addon->ID());
   }
 
@@ -644,7 +679,7 @@ bool CAddonInstallJob::DoWork()
   return true;
 }
 
-bool CAddonInstallJob::DownloadPackage(const std::string &path, const std::string &dest)
+bool CAddonInstallJob::DownloadPackage(const std::string& path, const std::string& dest)
 {
   if (ShouldCancel(0, 1))
     return false;
@@ -659,7 +694,10 @@ bool CAddonInstallJob::DownloadPackage(const std::string &path, const std::strin
   return DoFileOperation(CFileOperationJob::ActionReplace, list, dest, true);
 }
 
-bool CAddonInstallJob::DoFileOperation(FileAction action, CFileItemList &items, const std::string &file, bool useSameJob /* = true */)
+bool CAddonInstallJob::DoFileOperation(FileAction action,
+                                       CFileItemList& items,
+                                       const std::string& file,
+                                       bool useSameJob /* = true */)
 {
   bool result = false;
   if (useSameJob)
@@ -682,19 +720,19 @@ bool CAddonInstallJob::DoFileOperation(FileAction action, CFileItemList &items, 
   }
   else
   {
-   CFileOperationJob job(action, items, file);
+    CFileOperationJob job(action, items, file);
 
-   // pass our progress indicators to the temporary job and only allow it to
-   // show progress updates (no title or text changes)
-   job.SetProgressIndicators(GetProgressBar(), GetProgressDialog(), GetUpdateProgress(), false);
+    // pass our progress indicators to the temporary job and only allow it to
+    // show progress updates (no title or text changes)
+    job.SetProgressIndicators(GetProgressBar(), GetProgressDialog(), GetUpdateProgress(), false);
 
-   result = job.DoWork();
+    result = job.DoWork();
   }
 
   return result;
 }
 
-bool CAddonInstallJob::Install(const std::string &installFrom, const RepositoryPtr& repo)
+bool CAddonInstallJob::Install(const std::string& installFrom, const RepositoryPtr& repo)
 {
   SetText(g_localizeStrings.Get(24079));
   ADDONDEPS deps = m_addon->GetDeps();
@@ -708,11 +746,12 @@ bool CAddonInstallJob::Install(const std::string &installFrom, const RepositoryP
   {
     if (it->first != "xbmc.metadata")
     {
-      const std::string &addonID = it->first;
-      const AddonVersion &version = it->second.first;
+      const std::string& addonID = it->first;
+      const AddonVersion& version = it->second.first;
       bool optional = it->second.second;
       AddonPtr dependency;
-      bool haveAddon = CServiceBroker::GetAddonMgr().GetAddon(addonID, dependency, ADDON_UNKNOWN, false);
+      bool haveAddon =
+          CServiceBroker::GetAddonMgr().GetAddon(addonID, dependency, ADDON_UNKNOWN, false);
       if ((haveAddon && !dependency->MeetsVersion(version)) || (!haveAddon && !optional))
       {
         // we have it but our version isn't good enough, or we don't have it and we need it
@@ -727,7 +766,8 @@ bool CAddonInstallJob::Install(const std::string &installFrom, const RepositoryP
 
           if (!CServiceBroker::GetAddonMgr().IsAddonInstalled(addonID))
           {
-            CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to install dependency %s", m_addon->ID().c_str(), addonID.c_str());
+            CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to install dependency %s",
+                      m_addon->ID().c_str(), addonID.c_str());
             ReportInstallError(m_addon->ID(), m_addon->ID(), g_localizeStrings.Get(24085));
             return false;
           }
@@ -739,7 +779,8 @@ bool CAddonInstallJob::Install(const std::string &installFrom, const RepositoryP
           AddonPtr addon;
           if (!CAddonInstallJob::GetAddon(addonID, repoForDep, addon))
           {
-            CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to find dependency %s", m_addon->ID().c_str(), addonID.c_str());
+            CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to find dependency %s",
+                      m_addon->ID().c_str(), addonID.c_str());
             ReportInstallError(m_addon->ID(), m_addon->ID(), g_localizeStrings.Get(24085));
             return false;
           }
@@ -752,14 +793,16 @@ bool CAddonInstallJob::Install(const std::string &installFrom, const RepositoryP
 
           if (!dependencyJob.DoModal())
           {
-            CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to install dependency %s", m_addon->ID().c_str(), addonID.c_str());
+            CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to install dependency %s",
+                      m_addon->ID().c_str(), addonID.c_str());
             ReportInstallError(m_addon->ID(), m_addon->ID(), g_localizeStrings.Get(24085));
             return false;
           }
         }
         else if (!CAddonInstaller::GetInstance().InstallOrUpdate(addonID, false))
         {
-          CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to install dependency %s", m_addon->ID().c_str(), addonID.c_str());
+          CLog::Log(LOGERROR, "CAddonInstallJob[%s]: failed to install dependency %s",
+                    m_addon->ID().c_str(), addonID.c_str());
           ReportInstallError(m_addon->ID(), m_addon->ID(), g_localizeStrings.Get(24085));
           return false;
         }
@@ -785,7 +828,9 @@ bool CAddonInstallJob::Install(const std::string &installFrom, const RepositoryP
   return true;
 }
 
-void CAddonInstallJob::ReportInstallError(const std::string& addonID, const std::string& fileName, const std::string& message /* = "" */)
+void CAddonInstallJob::ReportInstallError(const std::string& addonID,
+                                          const std::string& fileName,
+                                          const std::string& message /* = "" */)
 {
   AddonPtr addon;
   CAddonDatabase database;
@@ -815,9 +860,9 @@ void CAddonInstallJob::ReportInstallError(const std::string& addonID, const std:
   }
 }
 
-CAddonUnInstallJob::CAddonUnInstallJob(const AddonPtr &addon)
-  : m_addon(addon)
-{ }
+CAddonUnInstallJob::CAddonUnInstallJob(const AddonPtr& addon) : m_addon(addon)
+{
+}
 
 bool CAddonUnInstallJob::DoWork()
 {
@@ -834,7 +879,8 @@ bool CAddonUnInstallJob::DoWork()
   CFilesystemInstaller fsInstaller;
   if (!fsInstaller.UnInstallFromFilesystem(m_addon->Path()))
   {
-    CLog::Log(LOGERROR, "CAddonUnInstallJob[%s]: could not delete addon data.", m_addon->ID().c_str());
+    CLog::Log(LOGERROR, "CAddonUnInstallJob[%s]: could not delete addon data.",
+              m_addon->ID().c_str());
     return false;
   }
 

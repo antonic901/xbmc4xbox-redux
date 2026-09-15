@@ -22,10 +22,12 @@
 #include "programs/ProgramDatabase.h"
 
 CProgramLibraryJob::CProgramLibraryJob()
-{ }
+{
+}
 
 CProgramLibraryJob::~CProgramLibraryJob()
-{ }
+{
+}
 
 bool CProgramLibraryJob::DoWork()
 {

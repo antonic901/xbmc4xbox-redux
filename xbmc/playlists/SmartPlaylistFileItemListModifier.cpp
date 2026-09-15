@@ -26,16 +26,16 @@
 #include "playlists/SmartPlayList.h"
 #include "utils/StringUtils.h"
 
-#define URL_OPTION_XSP              "xsp"
-#define PROPERTY_SORT_ORDER         "sort.order"
-#define PROPERTY_SORT_ASCENDING     "sort.ascending"
+#define URL_OPTION_XSP "xsp"
+#define PROPERTY_SORT_ORDER "sort.order"
+#define PROPERTY_SORT_ASCENDING "sort.ascending"
 
-bool CSmartPlaylistFileItemListModifier::CanModify(const CFileItemList &items) const
+bool CSmartPlaylistFileItemListModifier::CanModify(const CFileItemList& items) const
 {
   return !GetUrlOption(items.GetPath(), URL_OPTION_XSP).empty();
 }
 
-bool CSmartPlaylistFileItemListModifier::Modify(CFileItemList &items) const
+bool CSmartPlaylistFileItemListModifier::Modify(CFileItemList& items) const
 {
   if (items.HasProperty(PROPERTY_SORT_ORDER))
     return false;
@@ -55,7 +55,8 @@ bool CSmartPlaylistFileItemListModifier::Modify(CFileItemList &items) const
   return true;
 }
 
-std::string CSmartPlaylistFileItemListModifier::GetUrlOption(const std::string &path, const std::string &option)
+std::string CSmartPlaylistFileItemListModifier::GetUrlOption(const std::string& path,
+                                                             const std::string& option)
 {
   if (path.empty() || option.empty())
     return StringUtils::Empty;

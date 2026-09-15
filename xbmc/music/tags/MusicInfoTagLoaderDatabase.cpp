@@ -34,20 +34,21 @@ CMusicInfoTagLoaderDatabase::~CMusicInfoTagLoaderDatabase()
 {
 }
 
-bool CMusicInfoTagLoaderDatabase::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderDatabase::Load(const CStdString& strFileName,
+                                       CMusicInfoTag& tag,
+                                       EmbeddedArt* art)
 {
   tag.SetLoaded(false);
   CMusicDatabase database;
   database.Open();
   XFILE::MUSICDATABASEDIRECTORY::CQueryParams param;
-  XFILE::MUSICDATABASEDIRECTORY::CDirectoryNode::GetDatabaseInfo(strFileName,param);
+  XFILE::MUSICDATABASEDIRECTORY::CDirectoryNode::GetDatabaseInfo(strFileName, param);
 
   CSong song;
-  if (database.GetSong(param.GetSongId(),song))
+  if (database.GetSong(param.GetSongId(), song))
     tag.SetSong(song);
 
   database.Close();
 
   return tag.Loaded();
 }
-

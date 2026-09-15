@@ -37,18 +37,17 @@ public:
 
   enum NFOResult
   {
-    NO_NFO       = 0,
-    FULL_NFO     = 1,
-    URL_NFO      = 2,
+    NO_NFO = 0,
+    FULL_NFO = 1,
+    URL_NFO = 2,
     COMBINED_NFO = 3,
-    ERROR_NFO    = 4,
-    PARTIAL_NFO  = 5
+    ERROR_NFO = 4,
+    PARTIAL_NFO = 5
   };
 
-  NFOResult Create(const std::string&, const ADDON::ScraperPtr&, int episode=-1);
+  NFOResult Create(const std::string&, const ADDON::ScraperPtr&, int episode = -1);
   template<class T>
-    bool GetDetails(T& details, const char* document=NULL,
-                    bool prioritise=false)
+  bool GetDetails(T& details, const char* document = NULL, bool prioritise = false)
   {
     CXBMCTinyXML doc;
     if (document)
@@ -64,7 +63,7 @@ public:
   void Close();
   void SetScraperInfo(const ADDON::ScraperPtr& info) { m_info = info; }
   const ADDON::ScraperPtr& GetScraperInfo() const { return m_info; }
-  const CScraperUrl &ScraperUrl() const { return m_scurl; }
+  const CScraperUrl& ScraperUrl() const { return m_scurl; }
 
 private:
   std::string m_doc;

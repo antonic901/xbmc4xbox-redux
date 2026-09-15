@@ -32,7 +32,8 @@
 using namespace XFILE;
 using namespace ADDON;
 
-CGUIViewStateWindowPictures::CGUIViewStateWindowPictures(const CFileItemList& items) : CGUIViewState(items)
+CGUIViewStateWindowPictures::CGUIViewStateWindowPictures(const CFileItemList& items)
+  : CGUIViewState(items)
 {
   if (items.IsVirtualDirectoryRoot())
   {
@@ -46,13 +47,18 @@ CGUIViewStateWindowPictures::CGUIViewStateWindowPictures(const CFileItemList& it
   }
   else
   {
-    AddSortMethod(SortByLabel, 551, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | Foldername, empty
-    AddSortMethod(SortBySize, 553, LABEL_MASKS("%L", "%I", "%L", "%I"));  // Filename, Size | Foldername, Size
-    AddSortMethod(SortByDate, 552, LABEL_MASKS("%L", "%J", "%L", "%J"));  // Filename, Date | Foldername, Date
-    AddSortMethod(SortByDateTaken, 577, LABEL_MASKS("%L", "%t", "%L", "%J"));  // Filename, DateTaken | Foldername, Date
-    AddSortMethod(SortByFile, 561, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | FolderName, empty
+    AddSortMethod(SortByLabel, 551,
+                  LABEL_MASKS("%L", "%I", "%L", "")); // Filename, Size | Foldername, empty
+    AddSortMethod(SortBySize, 553,
+                  LABEL_MASKS("%L", "%I", "%L", "%I")); // Filename, Size | Foldername, Size
+    AddSortMethod(SortByDate, 552,
+                  LABEL_MASKS("%L", "%J", "%L", "%J")); // Filename, Date | Foldername, Date
+    AddSortMethod(SortByDateTaken, 577,
+                  LABEL_MASKS("%L", "%t", "%L", "%J")); // Filename, DateTaken | Foldername, Date
+    AddSortMethod(SortByFile, 561,
+                  LABEL_MASKS("%L", "%I", "%L", "")); // Filename, Size | FolderName, empty
 
-    const CViewState *viewState = CViewStateSettings::Get().Get("pictures");
+    const CViewState* viewState = CViewStateSettings::Get().Get("pictures");
     SetSortMethod(viewState->m_sortDescription);
     SetViewAsControl(viewState->m_viewMode);
     SetSortOrder(viewState->m_sortDescription.sortOrder);
@@ -81,7 +87,7 @@ std::string CGUIViewStateWindowPictures::GetExtensions()
 
 VECSOURCES& CGUIViewStateWindowPictures::GetSources()
 {
-  VECSOURCES *pictureSources = CMediaSourceSettings::Get().GetSources("pictures");
+  VECSOURCES* pictureSources = CMediaSourceSettings::Get().GetSources("pictures");
 
   // Guard against source type not existing
   if (pictureSources == nullptr)
@@ -98,4 +104,3 @@ VECSOURCES& CGUIViewStateWindowPictures::GetSources()
 
   return *pictureSources;
 }
-

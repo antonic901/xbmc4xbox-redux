@@ -29,17 +29,21 @@
 
 using namespace XFILE;
 
-CFTPDirectory::CFTPDirectory(void){}
-CFTPDirectory::~CFTPDirectory(void){}
+CFTPDirectory::CFTPDirectory(void)
+{
+}
+CFTPDirectory::~CFTPDirectory(void)
+{
+}
 
-bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList &items)
+bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList& items)
 {
   CCurlFile reader;
 
   CURL url(url2);
 
   CStdString path = url.GetFileName();
-  if( !path.IsEmpty() && !StringUtils::EndsWith(path, "/") )
+  if (!path.IsEmpty() && !StringUtils::EndsWith(path, "/"))
   {
     path += "/";
     url.SetFileName(path);
@@ -48,9 +52,8 @@ bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList &items)
   if (!reader.Open(url))
     return false;
 
-
   char buffer[MAX_PATH + 1024];
-  while( reader.ReadString(buffer, sizeof(buffer)) )
+  while (reader.ReadString(buffer, sizeof(buffer)))
   {
     CStdString strBuffer = buffer;
 
@@ -59,17 +62,17 @@ bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList &items)
     struct ftpparse lp = {};
     if (ftpparse(&lp, (char*)strBuffer.c_str(), strBuffer.size()) == 1)
     {
-      if( lp.namelen == 0 )
+      if (lp.namelen == 0)
         continue;
 
-      if( lp.flagtrycwd == 0 && lp.flagtryretr == 0 )
+      if (lp.flagtrycwd == 0 && lp.flagtryretr == 0)
         continue;
 
       /* buffer name as it's not allways null terminated */
       CStdString name;
       name.assign(lp.name, lp.namelen);
 
-      if( name.Equals("..") || name.Equals(".") )
+      if (name.Equals("..") || name.Equals("."))
         continue;
 
       /* this should be conditional if we ever add    */
@@ -88,7 +91,7 @@ bool CFTPDirectory::GetDirectory(const CURL& url2, CFileItemList &items)
       pItem->SetPath(url.Get());
 
       pItem->m_dwSize = lp.size;
-      pItem->m_dateTime=lp.mtime;
+      pItem->m_dateTime = lp.mtime;
 
       items.Add(pItem);
     }

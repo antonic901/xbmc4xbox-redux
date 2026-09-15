@@ -28,11 +28,11 @@
 #include "settings/Settings.h"
 #include "utils/log.h"
 
-
 namespace ADDON
 {
 
-std::map<ADDON::TYPE, std::string> CreateActiveSettings() {
+std::map<ADDON::TYPE, std::string> CreateActiveSettings()
+{
   std::map<ADDON::TYPE, std::string> settings;
   settings[ADDON::ADDON_VIZ] = "musicplayer.visualisation";
   settings[ADDON::ADDON_SCREENSAVER] = "screensaver.mode";
@@ -49,9 +49,9 @@ std::map<ADDON::TYPE, std::string> CreateActiveSettings() {
   return settings;
 }
 
-CAddonSystemSettings::CAddonSystemSettings() :
-  m_activeSettings(CreateActiveSettings())
-{}
+CAddonSystemSettings::CAddonSystemSettings() : m_activeSettings(CreateActiveSettings())
+{
+}
 
 CAddonSystemSettings& CAddonSystemSettings::GetInstance()
 {
@@ -81,9 +81,9 @@ void CAddonSystemSettings::OnSettingChanged(const CSetting* setting)
 {
   using namespace KODI::MESSAGING::HELPERS;
 
-  if (setting->GetId() == "addons.unknownsources"
-    && CSettings::GetInstance().GetBool("addons.unknownsources")
-    && ShowYesNoDialogText(19098, 36618) != YES)
+  if (setting->GetId() == "addons.unknownsources" &&
+      CSettings::GetInstance().GetBool("addons.unknownsources") &&
+      ShowYesNoDialogText(19098, 36618) != YES)
   {
     CSettings::GetInstance().SetBool("addons.unknownsources", false);
   }
@@ -123,7 +123,8 @@ bool CAddonSystemSettings::UnsetActive(const AddonPtr& addon)
   if (it == m_activeSettings.end())
     return true;
 
-  CSettingString *setting = static_cast<CSettingString*>(CSettings::GetInstance().GetSetting(it->second));
+  CSettingString* setting =
+      static_cast<CSettingString*>(CSettings::GetInstance().GetSetting(it->second));
   if (setting->GetValue() != addon->ID())
     return true;
 
@@ -166,12 +167,13 @@ std::vector<std::string> CAddonSystemSettings::MigrateAddons(boost::function<voi
 
   VECADDONS incompatible = getIncompatible();
   for (VECADDONS::const_iterator it = incompatible.begin(); it != incompatible.end(); ++it)
-    CLog::Log(LOGNOTICE, "ADDON: %s version %s is incompatible", (*it)->ID().c_str(), (*it)->Version().asString().c_str());
+    CLog::Log(LOGNOTICE, "ADDON: %s version %s is incompatible", (*it)->ID().c_str(),
+              (*it)->Version().asString().c_str());
 
   std::vector<std::string> changed;
   for (VECADDONS::const_iterator it = incompatible.begin(); it != incompatible.end(); ++it)
   {
-    const ADDON::AddonPtr &addon = *it;
+    const ADDON::AddonPtr& addon = *it;
     if (!UnsetActive(addon))
     {
       CLog::Log(LOGWARNING, "ADDON: failed to unset %s", addon->ID().c_str());
@@ -186,4 +188,4 @@ std::vector<std::string> CAddonSystemSettings::MigrateAddons(boost::function<voi
 
   return changed;
 }
-}
+} // namespace ADDON

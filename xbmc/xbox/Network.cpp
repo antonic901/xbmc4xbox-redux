@@ -34,10 +34,11 @@
 using namespace KODI::MESSAGING;
 
 #ifdef _XBOX
-static char* inet_ntoa (struct in_addr in)
+static char* inet_ntoa(struct in_addr in)
 {
   static char _inetaddress[32];
-  sprintf(_inetaddress, "%d.%d.%d.%d", in.S_un.S_un_b.s_b1, in.S_un.S_un_b.s_b2, in.S_un.S_un_b.s_b3, in.S_un.S_un_b.s_b4);
+  sprintf(_inetaddress, "%d.%d.%d.%d", in.S_un.S_un_b.s_b1, in.S_un.S_un_b.s_b2,
+          in.S_un.S_un_b.s_b3, in.S_un.S_un_b.s_b4);
   return _inetaddress;
 }
 #endif
@@ -45,13 +46,13 @@ static char* inet_ntoa (struct in_addr in)
 #ifdef HAS_XBOX_NETWORK
 /* translator function wich will take our network info and make TXNetConfigParams of it */
 /* returns true if config is different from default */
-static bool TranslateConfig( const struct network_info& networkinfo, TXNetConfigParams &params )
-{    
+static bool TranslateConfig(const struct network_info& networkinfo, TXNetConfigParams& params)
+{
   bool bDirty = false;
 
-  if ( !networkinfo.DHCP )
+  if (!networkinfo.DHCP)
   {
-    bool bXboxVersion2 = (params.V2_Tag == 0x58425632 );  // "XBV2"
+    bool bXboxVersion2 = (params.V2_Tag == 0x58425632); // "XBV2"
 
     if (bXboxVersion2)
     {
@@ -138,7 +139,7 @@ static bool TranslateConfig( const struct network_info& networkinfo, TXNetConfig
       }
     }
 
-    if (params.Flag != (0x04 | 0x08) )
+    if (params.Flag != (0x04 | 0x08))
     {
       params.Flag = 0x04 | 0x08;
       bDirty = true;
@@ -147,7 +148,7 @@ static bool TranslateConfig( const struct network_info& networkinfo, TXNetConfig
   else
   {
 
-    if( params.Flag != 0 )
+    if (params.Flag != 0)
     {
       params.Flag = 0;
       bDirty = true;
@@ -191,7 +192,12 @@ static bool TranslateConfig( const struct network_info& networkinfo, TXNetConfig
 }
 #endif
 
-bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const char* szLocalSubnet, const char* szLocalGateway, const char* szNameServer, const char* szNameServerAlt)
+bool CNetwork::Initialize(int iAssignment,
+                          const char* szLocalAddress,
+                          const char* szLocalSubnet,
+                          const char* szLocalGateway,
+                          const char* szNameServer,
+                          const char* szNameServerAlt)
 {
 #ifdef HAS_XBOX_NETWORK
   XNetStartupParams xnsp = {};
@@ -200,16 +206,16 @@ bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const cha
   DWORD dwState = 0;
   bool dashconfig = false;
 
-  memset(&m_networkinfo , 0, sizeof(m_networkinfo ));
+  memset(&m_networkinfo, 0, sizeof(m_networkinfo));
 
   /* load current params */
-  XNetLoadConfigParams( &params );
+  XNetLoadConfigParams(&params);
 
   if (iAssignment == NETWORK_DHCP)
   {
-    m_networkinfo.DHCP = true;    
+    m_networkinfo.DHCP = true;
     strcpy(m_networkinfo.ip, "0.0.0.0");
-    
+
     TranslateConfig(m_networkinfo, params);
     CLog::Log(LOGNOTICE, "Network: Using DHCP IP settings");
   }
@@ -231,11 +237,11 @@ bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const cha
     CLog::Log(LOGNOTICE, "Network: Using dashboard IP settings");
   }
 
-  /* configure addresses */  
-  if( !dashconfig )
-  { 
-    /* override dashboard setting with this, if it was different */      
-    XNetSaveConfigParams( &params );    
+  /* configure addresses */
+  if (!dashconfig)
+  {
+    /* override dashboard setting with this, if it was different */
+    XNetSaveConfigParams(&params);
   }
 
   // Zero struct, just in case
@@ -256,27 +262,27 @@ bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const cha
   xnsp.cfgSockDefaultSendBufsizeInK = 128; // default = 16
 
   dwState = XNetStartup(&xnsp);
-  if( dwState != 0 )
+  if (dwState != 0)
   {
-    CLog::Log(LOGERROR, __FUNCTION__" - XNetStartup failed with error %d", dwState);
+    CLog::Log(LOGERROR, __FUNCTION__ " - XNetStartup failed with error %d", dwState);
     return false;
   }
 
-  if( !dashconfig )
+  if (!dashconfig)
   {
-    dwState = XNetConfig( &params, 0 );
-    if( dwState != 0 )
+    dwState = XNetConfig(&params, 0);
+    if (dwState != 0)
     {
-      CLog::Log(LOGERROR, __FUNCTION__" - XNetConfig failed with error %d", dwState);
+      CLog::Log(LOGERROR, __FUNCTION__ " - XNetConfig failed with error %d", dwState);
       return false;
-    }      
+    }
   }
 
-  /* startup winsock */  
-  dwState = WSAStartup( MAKEWORD(2, 2), &WsaData );
-  if( NO_ERROR != dwState )
+  /* startup winsock */
+  dwState = WSAStartup(MAKEWORD(2, 2), &WsaData);
+  if (NO_ERROR != dwState)
   {
-    CLog::Log(LOGERROR, __FUNCTION__" - WSAStartup failed with error %d", dwState);
+    CLog::Log(LOGERROR, __FUNCTION__ " - WSAStartup failed with error %d", dwState);
     return false;
   }
 
@@ -288,7 +294,7 @@ bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const cha
 void CNetwork::NetworkDown()
 {
   CLog::Log(LOGDEBUG, "%s - Network service is down", __FUNCTION__);
-  
+
   memset(&m_networkinfo, 0, sizeof(m_networkinfo));
   m_lastlink = 0;
   m_laststate = 0;
@@ -300,7 +306,7 @@ void CNetwork::NetworkUp()
 {
   CLog::Log(LOGDEBUG, "%s - Network service is up", __FUNCTION__);
 #ifdef HAS_XBOX_NETWORK
-  
+
   /* get the current status */
   TXNetConfigStatus status;
   XNetGetConfigStatus(&status);
@@ -317,7 +323,7 @@ void CNetwork::NetworkUp()
 #endif
 
   m_networkup = true;
-  
+
   CApplicationMessenger::Get().PostMsg(TMSG_NETWORKMESSAGE, SERVICES_UP, 0);
 }
 
@@ -325,13 +331,13 @@ void CNetwork::NetworkUp()
 DWORD CNetwork::UpdateState()
 {
 #ifdef HAS_XBOX_NETWORK
-  CSingleLock lock (m_critSection);
-  
+  CSingleLock lock(m_critSection);
+
   XNADDR xna;
   DWORD dwState = XNetGetTitleXnAddr(&xna);
   DWORD dwLink = XNetGetEthernetLinkStatus();
 
-  if( m_lastlink != dwLink || m_laststate != dwState )
+  if (m_lastlink != dwLink || m_laststate != dwState)
   {
     if (m_networkup)
       NetworkDown();
@@ -339,9 +345,12 @@ DWORD CNetwork::UpdateState()
     m_lastlink = dwLink;
     m_laststate = dwState;
 
-    if ((dwLink & XNET_ETHERNET_LINK_ACTIVE) && (dwState & XNET_GET_XNADDR_DHCP || dwState & XNET_GET_XNADDR_STATIC) && !(dwState & XNET_GET_XNADDR_NONE || dwState & XNET_GET_XNADDR_TROUBLESHOOT || dwState & XNET_GET_XNADDR_PENDING))
+    if ((dwLink & XNET_ETHERNET_LINK_ACTIVE) &&
+        (dwState & XNET_GET_XNADDR_DHCP || dwState & XNET_GET_XNADDR_STATIC) &&
+        !(dwState & XNET_GET_XNADDR_NONE || dwState & XNET_GET_XNADDR_TROUBLESHOOT ||
+          dwState & XNET_GET_XNADDR_PENDING))
       NetworkUp();
-    
+
     LogState();
   }
 
@@ -355,21 +364,22 @@ DWORD CNetwork::UpdateState()
 bool CNetwork::CheckNetwork(int count)
 {
 #ifdef HAS_XBOX_NETWORK
-  static DWORD lastLink;  // will hold the last link, to notice changes
+  static DWORD lastLink; // will hold the last link, to notice changes
   static int netRetryCounter;
 
   // get our network state
   DWORD dwState = UpdateState();
   DWORD dwLink = XNetGetEthernetLinkStatus();
-  
+
   // Check the network status every count itterations
   if (++netRetryCounter > count || lastLink != dwLink)
   {
     netRetryCounter = 0;
     lastLink = dwLink;
-    
+
     // In case the network failed, try to set it up again
-    if ( !(dwLink & XNET_ETHERNET_LINK_ACTIVE) || !IsInited() || dwState & XNET_GET_XNADDR_NONE || dwState & XNET_GET_XNADDR_TROUBLESHOOT )
+    if (!(dwLink & XNET_ETHERNET_LINK_ACTIVE) || !IsInited() || dwState & XNET_GET_XNADDR_NONE ||
+        dwState & XNET_GET_XNADDR_TROUBLESHOOT)
     {
       Deinitialize();
 
@@ -394,17 +404,17 @@ bool CNetwork::SetupNetwork()
   if (IsEthernetConnected())
   {
     CLog::Log(LOGDEBUG, "%s - Setting up network...", __FUNCTION__);
-    
+
     Initialize(CSettings::GetInstance().GetInt("network.assignment"),
-      CSettings::GetInstance().GetString("network.ipaddress").c_str(),
-      CSettings::GetInstance().GetString("network.subnet").c_str(),
-      CSettings::GetInstance().GetString("network.gateway").c_str(),
-      CSettings::GetInstance().GetString("network.dns").c_str(),
-      CSettings::GetInstance().GetString("network.dns2").c_str());
-      
+               CSettings::GetInstance().GetString("network.ipaddress").c_str(),
+               CSettings::GetInstance().GetString("network.subnet").c_str(),
+               CSettings::GetInstance().GetString("network.gateway").c_str(),
+               CSettings::GetInstance().GetString("network.dns").c_str(),
+               CSettings::GetInstance().GetString("network.dns2").c_str());
+
     return true;
   }
-  
+
   // Setup failed
   CLog::Log(LOGDEBUG, "%s - Not setting up network as ethernet is not connected!", __FUNCTION__);
   return false;
@@ -429,10 +439,13 @@ bool CNetwork::WaitForSetup(unsigned int iTimeout)
   do
   {
     DWORD dwState = UpdateState();
-    
-    if (IsEthernetConnected() && (dwState & XNET_GET_XNADDR_DHCP || dwState & XNET_GET_XNADDR_STATIC) && !(dwState & XNET_GET_XNADDR_NONE || dwState & XNET_GET_XNADDR_TROUBLESHOOT || dwState & XNET_GET_XNADDR_PENDING))
+
+    if (IsEthernetConnected() &&
+        (dwState & XNET_GET_XNADDR_DHCP || dwState & XNET_GET_XNADDR_STATIC) &&
+        !(dwState & XNET_GET_XNADDR_NONE || dwState & XNET_GET_XNADDR_TROUBLESHOOT ||
+          dwState & XNET_GET_XNADDR_PENDING))
       return true;
-    
+
     Sleep(100);
   } while (!timeout.IsTimePast());
 
@@ -444,13 +457,13 @@ bool CNetwork::WaitForSetup(unsigned int iTimeout)
 }
 
 /* slightly modified in_ether taken from the etherboot project (http://sourceforge.net/projects/etherboot) */
-bool in_ether (char *bufp, unsigned char *addr)
+bool in_ether(char* bufp, unsigned char* addr)
 {
   if (strlen(bufp) != 17)
     return false;
 
   char c, *orig;
-  unsigned char *ptr = addr;
+  unsigned char* ptr = addr;
   unsigned val;
 
   int i = 0;
@@ -467,7 +480,7 @@ bool in_ether (char *bufp, unsigned char *addr)
       val = c - 'a' + 10;
     else if (c >= 'A' && c <= 'F')
       val = c - 'A' + 10;
-      else
+    else
       return false;
 
     val <<= 4;
@@ -486,7 +499,7 @@ bool in_ether (char *bufp, unsigned char *addr)
     if (c != 0)
       bufp++;
 
-    *ptr++ = (unsigned char) (val & 0377);
+    *ptr++ = (unsigned char)(val & 0377);
     i++;
 
     if (*bufp == ':' || *bufp == '-')
@@ -515,9 +528,9 @@ CNetwork::~CNetwork(void)
 
 void CNetwork::Deinitialize()
 {
-  if( m_networkup )
+  if (m_networkup)
     NetworkDown();
-  
+
   m_inited = false;
   WSACleanup();
 #ifdef HAS_XBOX_NETWORK
@@ -531,59 +544,59 @@ void CNetwork::LogState()
   DWORD dwState = m_laststate;
 
 #ifdef HAS_XBOX_NETWORK
-  if ( dwLink & XNET_ETHERNET_LINK_FULL_DUPLEX )
-    CLog::Log(LOGINFO, __FUNCTION__" - Link: full duplex");
+  if (dwLink & XNET_ETHERNET_LINK_FULL_DUPLEX)
+    CLog::Log(LOGINFO, __FUNCTION__ " - Link: full duplex");
 
-  if ( dwLink & XNET_ETHERNET_LINK_HALF_DUPLEX )
-    CLog::Log(LOGINFO, __FUNCTION__" - Link: half duplex");
+  if (dwLink & XNET_ETHERNET_LINK_HALF_DUPLEX)
+    CLog::Log(LOGINFO, __FUNCTION__ " - Link: half duplex");
 
-  if ( dwLink & XNET_ETHERNET_LINK_100MBPS )
-    CLog::Log(LOGINFO, __FUNCTION__" - Link: 100 mbps");
+  if (dwLink & XNET_ETHERNET_LINK_100MBPS)
+    CLog::Log(LOGINFO, __FUNCTION__ " - Link: 100 mbps");
 
-  if ( dwLink & XNET_ETHERNET_LINK_10MBPS )
-    CLog::Log(LOGINFO, __FUNCTION__" - Link: 10 mbps");
-    
-  if ( !(dwLink & XNET_ETHERNET_LINK_ACTIVE) )
-    CLog::Log(LOGINFO, __FUNCTION__" - Link: none");
+  if (dwLink & XNET_ETHERNET_LINK_10MBPS)
+    CLog::Log(LOGINFO, __FUNCTION__ " - Link: 10 mbps");
 
-  if ( dwState & XNET_GET_XNADDR_DNS )
-    CLog::Log(LOGINFO, __FUNCTION__" - State: dns");
+  if (!(dwLink & XNET_ETHERNET_LINK_ACTIVE))
+    CLog::Log(LOGINFO, __FUNCTION__ " - Link: none");
 
-  if ( dwState & XNET_GET_XNADDR_ETHERNET )
-    CLog::Log(LOGINFO, __FUNCTION__" - State: ethernet");
+  if (dwState & XNET_GET_XNADDR_DNS)
+    CLog::Log(LOGINFO, __FUNCTION__ " - State: dns");
 
-  if ( dwState & XNET_GET_XNADDR_NONE )
-    CLog::Log(LOGINFO, __FUNCTION__" - State: none");
+  if (dwState & XNET_GET_XNADDR_ETHERNET)
+    CLog::Log(LOGINFO, __FUNCTION__ " - State: ethernet");
 
-  if ( dwState & XNET_GET_XNADDR_ONLINE )
-    CLog::Log(LOGINFO, __FUNCTION__" - State: online");
+  if (dwState & XNET_GET_XNADDR_NONE)
+    CLog::Log(LOGINFO, __FUNCTION__ " - State: none");
 
-  if ( dwState & XNET_GET_XNADDR_PENDING )
-    CLog::Log(LOGINFO, __FUNCTION__" - State: pending");
+  if (dwState & XNET_GET_XNADDR_ONLINE)
+    CLog::Log(LOGINFO, __FUNCTION__ " - State: online");
 
-  if ( dwState & XNET_GET_XNADDR_TROUBLESHOOT )
-    CLog::Log(LOGINFO, __FUNCTION__" - State: error");
+  if (dwState & XNET_GET_XNADDR_PENDING)
+    CLog::Log(LOGINFO, __FUNCTION__ " - State: pending");
 
-  if ( dwState & XNET_GET_XNADDR_PPPOE )
-    CLog::Log(LOGINFO, __FUNCTION__" - State: pppoe");
+  if (dwState & XNET_GET_XNADDR_TROUBLESHOOT)
+    CLog::Log(LOGINFO, __FUNCTION__ " - State: error");
 
-  if ( dwState & XNET_GET_XNADDR_STATIC )
-    CLog::Log(LOGINFO, __FUNCTION__" - State: static");
+  if (dwState & XNET_GET_XNADDR_PPPOE)
+    CLog::Log(LOGINFO, __FUNCTION__ " - State: pppoe");
 
-  if ( dwState & XNET_GET_XNADDR_DHCP )
-    CLog::Log(LOGINFO, __FUNCTION__" - State: dhcp");
+  if (dwState & XNET_GET_XNADDR_STATIC)
+    CLog::Log(LOGINFO, __FUNCTION__ " - State: static");
+
+  if (dwState & XNET_GET_XNADDR_DHCP)
+    CLog::Log(LOGINFO, __FUNCTION__ " - State: dhcp");
 #endif
-  CLog::Log(LOGINFO,  "%s - ip: %s", __FUNCTION__, m_networkinfo.ip);
-  CLog::Log(LOGINFO,  "%s - subnet: %s", __FUNCTION__, m_networkinfo.subnet);
-  CLog::Log(LOGINFO,  "%s - gateway: %s", __FUNCTION__, m_networkinfo.gateway);
-//  CLog::Log(LOGINFO,  __FUNCTION__" - DHCPSERVER: %s", m_networkinfo.dhcpserver);
-  CLog::Log(LOGINFO,  "%s - dns: %s, %s", __FUNCTION__, m_networkinfo.DNS1, m_networkinfo.DNS2);
+  CLog::Log(LOGINFO, "%s - ip: %s", __FUNCTION__, m_networkinfo.ip);
+  CLog::Log(LOGINFO, "%s - subnet: %s", __FUNCTION__, m_networkinfo.subnet);
+  CLog::Log(LOGINFO, "%s - gateway: %s", __FUNCTION__, m_networkinfo.gateway);
+  //  CLog::Log(LOGINFO,  __FUNCTION__" - DHCPSERVER: %s", m_networkinfo.dhcpserver);
+  CLog::Log(LOGINFO, "%s - dns: %s, %s", __FUNCTION__, m_networkinfo.DNS1, m_networkinfo.DNS2);
 }
 
 bool CNetwork::IsAvailable(bool wait)
 {
   // if network isn't up, wait for it to setup
-  if( !m_networkup && wait )
+  if (!m_networkup && wait)
     WaitForSetup();
 
 #ifdef HAS_XBOX_NETWORK
@@ -595,16 +608,17 @@ bool CNetwork::IsAvailable(bool wait)
 
 void CNetwork::NetworkMessage(EMESSAGE message, DWORD dwParam)
 {
-  switch( message )
+  switch (message)
   {
     case SERVICES_UP:
-      CLog::Log(LOGDEBUG, "%s - Starting network services",__FUNCTION__);
+      CLog::Log(LOGDEBUG, "%s - Starting network services", __FUNCTION__);
       CNetworkServices::Get().Start();
       break;
     case SERVICES_DOWN:
-      CLog::Log(LOGDEBUG, "%s - Stopping network services",__FUNCTION__);
-      CNetworkServices::Get().Stop(false); // tell network services to stop, but don't wait for them yet
-      CLog::Log(LOGDEBUG, "%s - Waiting for network services to stop",__FUNCTION__);
+      CLog::Log(LOGDEBUG, "%s - Stopping network services", __FUNCTION__);
+      CNetworkServices::Get().Stop(
+          false); // tell network services to stop, but don't wait for them yet
+      CLog::Log(LOGDEBUG, "%s - Waiting for network services to stop", __FUNCTION__);
       CNetworkServices::Get().Stop(true); // wait for network services to stop
       break;
   }
@@ -614,8 +628,8 @@ bool CNetwork::WakeOnLan(char* mac)
 {
   int i, j, packet;
   unsigned char ethaddr[8];
-  unsigned char buf [128];
-  unsigned char *ptr;
+  unsigned char buf[128];
+  unsigned char* ptr;
 
   // Fetch the hardware address
   if (!in_ether(mac, ethaddr))
@@ -625,12 +639,12 @@ bool CNetwork::WakeOnLan(char* mac)
   }
 
   // Setup the socket
-  if ((packet = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
+  if ((packet = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) < 0)
   {
-    CLog::Log(LOGERROR, "%s - Unable to create socket (%s)", __FUNCTION__, strerror (errno));
+    CLog::Log(LOGERROR, "%s - Unable to create socket (%s)", __FUNCTION__, strerror(errno));
     return false;
   }
- 
+
   // Set socket options
   struct sockaddr_in saddr;
   saddr.sin_family = AF_INET;
@@ -638,13 +652,14 @@ bool CNetwork::WakeOnLan(char* mac)
   saddr.sin_port = htons(60000);
 
   unsigned int value = 1;
-  if (setsockopt (packet, SOL_SOCKET, SO_BROADCAST, (char*) &value, sizeof( unsigned int ) ) == SOCKET_ERROR)
+  if (setsockopt(packet, SOL_SOCKET, SO_BROADCAST, (char*)&value, sizeof(unsigned int)) ==
+      SOCKET_ERROR)
   {
-    CLog::Log(LOGERROR, "%s - Unable to set socket options (%s)", __FUNCTION__, strerror (errno));
+    CLog::Log(LOGERROR, "%s - Unable to set socket options (%s)", __FUNCTION__, strerror(errno));
     closesocket(packet);
     return false;
   }
- 
+
   // Build the magic packet (6 x 0xff + 16 x MAC address)
   ptr = buf;
   for (i = 0; i < 6; i++)
@@ -653,11 +668,11 @@ bool CNetwork::WakeOnLan(char* mac)
   for (j = 0; j < 16; j++)
     for (i = 0; i < 6; i++)
       *ptr++ = ethaddr[i];
- 
+
   // Send the magic packet
-  if (sendto (packet, (char *)buf, 102, 0, (struct sockaddr *)&saddr, sizeof (saddr)) < 0)
+  if (sendto(packet, (char*)buf, 102, 0, (struct sockaddr*)&saddr, sizeof(saddr)) < 0)
   {
-    CLog::Log(LOGERROR, "%s - Unable to send magic packet (%s)", __FUNCTION__, strerror (errno));
+    CLog::Log(LOGERROR, "%s - Unable to send magic packet (%s)", __FUNCTION__, strerror(errno));
     closesocket(packet);
     return false;
   }
@@ -672,9 +687,8 @@ bool CNetwork::IsLocalHost(const std::string& hostname)
   if (hostname.empty())
     return false;
 
-  if (StringUtils::StartsWith(hostname, "127.")
-      || (hostname == "::1")
-      || StringUtils::EqualsNoCase(hostname, "localhost"))
+  if (StringUtils::StartsWith(hostname, "127.") || (hostname == "::1") ||
+      StringUtils::EqualsNoCase(hostname, "localhost"))
     return true;
 
   return m_networkinfo.ip == hostname;

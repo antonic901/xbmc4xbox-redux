@@ -30,7 +30,7 @@
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 
-#define XML_SKINSETTINGS  "skinsettings"
+#define XML_SKINSETTINGS "skinsettings"
 
 CSkinSettings::CSkinSettings()
 {
@@ -38,7 +38,8 @@ CSkinSettings::CSkinSettings()
 }
 
 CSkinSettings::~CSkinSettings()
-{ }
+{
+}
 
 CSkinSettings& CSkinSettings::Get()
 {
@@ -46,7 +47,7 @@ CSkinSettings& CSkinSettings::Get()
   return sSkinSettings;
 }
 
-int CSkinSettings::TranslateString(const std::string &setting)
+int CSkinSettings::TranslateString(const std::string& setting)
 {
   return g_SkinInfo->TranslateString(setting);
 }
@@ -56,12 +57,12 @@ const std::string& CSkinSettings::GetString(int setting) const
   return g_SkinInfo->GetString(setting);
 }
 
-void CSkinSettings::SetString(int setting, const std::string &label)
+void CSkinSettings::SetString(int setting, const std::string& label)
 {
   g_SkinInfo->SetString(setting, label);
 }
 
-int CSkinSettings::TranslateBool(const std::string &setting)
+int CSkinSettings::TranslateBool(const std::string& setting)
 {
   return g_SkinInfo->TranslateBool(setting);
 }
@@ -76,7 +77,7 @@ void CSkinSettings::SetBool(int setting, bool set)
   g_SkinInfo->SetBool(setting, set);
 }
 
-void CSkinSettings::Reset(const std::string &setting)
+void CSkinSettings::Reset(const std::string& setting)
 {
   g_SkinInfo->Reset(setting);
 }
@@ -88,12 +89,12 @@ void CSkinSettings::Reset()
   g_infoManager.ResetCache();
 }
 
-bool CSkinSettings::Load(const TiXmlNode *settings)
+bool CSkinSettings::Load(const TiXmlNode* settings)
 {
   if (settings == nullptr)
     return false;
 
-  const TiXmlElement *rootElement = settings->FirstChildElement(XML_SKINSETTINGS);
+  const TiXmlElement* rootElement = settings->FirstChildElement(XML_SKINSETTINGS);
 
   //return true in the case skinsettings is missing. It just means that
   //it's been migrated and it's not an error
@@ -110,7 +111,7 @@ bool CSkinSettings::Load(const TiXmlNode *settings)
   return true;
 }
 
-bool CSkinSettings::Save(TiXmlNode *settings) const
+bool CSkinSettings::Save(TiXmlNode* settings) const
 {
   if (settings == nullptr)
     return false;
@@ -130,9 +131,10 @@ bool CSkinSettings::Save(TiXmlNode *settings) const
   }
 
   TiXmlElement* settingsElement = settingsNode->ToElement();
-  for (std::set<ADDON::CSkinSettingPtr>::const_iterator it = m_settings.begin(); it != m_settings.end(); ++it)
+  for (std::set<ADDON::CSkinSettingPtr>::const_iterator it = m_settings.begin();
+       it != m_settings.end(); ++it)
   {
-    const ADDON::CSkinSettingPtr &setting = *it;
+    const ADDON::CSkinSettingPtr& setting = *it;
     if (!setting->Serialize(settingsElement))
       CLog::Log(LOGWARNING, "CSkinSettings: unable to save setting \"%s\"", setting->name.c_str());
   }
@@ -156,9 +158,10 @@ void CSkinSettings::MigrateSettings(const ADDON::SkinPtr& skin)
   bool settingsMigrated = false;
   const std::string& skinId = skin->ID();
   std::set<ADDON::CSkinSettingPtr> settingsCopy(m_settings.begin(), m_settings.end());
-  for (std::set<ADDON::CSkinSettingPtr>::const_iterator it = settingsCopy.begin(); it != settingsCopy.end(); ++it)
+  for (std::set<ADDON::CSkinSettingPtr>::const_iterator it = settingsCopy.begin();
+       it != settingsCopy.end(); ++it)
   {
-    const ADDON::CSkinSettingPtr &setting = *it;
+    const ADDON::CSkinSettingPtr& setting = *it;
     if (!StringUtils::StartsWith(setting->name, skinId + "."))
       continue;
 
@@ -168,13 +171,15 @@ void CSkinSettings::MigrateSettings(const ADDON::SkinPtr& skin)
     {
       int settingNumber = skin->TranslateString(settingName);
       if (settingNumber >= 0)
-        skin->SetString(settingNumber, boost::dynamic_pointer_cast<ADDON::CSkinSettingString>(setting)->value);
+        skin->SetString(settingNumber,
+                        boost::dynamic_pointer_cast<ADDON::CSkinSettingString>(setting)->value);
     }
     else if (setting->GetType() == "bool")
     {
       int settingNumber = skin->TranslateBool(settingName);
       if (settingNumber >= 0)
-        skin->SetBool(settingNumber, boost::dynamic_pointer_cast<ADDON::CSkinSettingBool>(setting)->value);
+        skin->SetBool(settingNumber,
+                      boost::dynamic_pointer_cast<ADDON::CSkinSettingBool>(setting)->value);
     }
 
     m_settings.erase(setting);
@@ -190,4 +195,3 @@ void CSkinSettings::MigrateSettings(const ADDON::SkinPtr& skin)
     CSettings::GetInstance().Save();
   }
 }
-

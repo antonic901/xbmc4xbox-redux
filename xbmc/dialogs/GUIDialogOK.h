@@ -25,8 +25,7 @@
 class CGUIMessage;
 class CVariant;
 
-class CGUIDialogOK :
-      public CGUIDialogBoxBase
+class CGUIDialogOK : public CGUIDialogBoxBase
 {
 public:
   CGUIDialogOK(void);
@@ -34,6 +33,7 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   static bool ShowAndGetInput(CVariant heading, CVariant text);
   static bool ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2);
+
 protected:
   virtual void OnInitWindow();
   virtual int GetDefaultLabelID(int controlId) const;

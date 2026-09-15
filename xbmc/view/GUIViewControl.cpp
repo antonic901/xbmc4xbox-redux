@@ -47,10 +47,11 @@ void CGUIViewControl::Reset()
   m_allViews.clear();
 }
 
-void CGUIViewControl::AddView(const CGUIControl *control)
+void CGUIViewControl::AddView(const CGUIControl* control)
 {
-  if (!control || !control->IsContainer()) return;
-  m_allViews.push_back((CGUIControl *)control);
+  if (!control || !control->IsContainer())
+    return;
+  m_allViews.push_back((CGUIControl*)control);
 }
 
 void CGUIViewControl::SetViewControlID(int control)
@@ -66,10 +67,10 @@ void CGUIViewControl::SetParentWindow(int window)
 void CGUIViewControl::SetCurrentView(int viewMode)
 {
   // grab the previous control
-  CGUIControl *previousView = NULL;
+  CGUIControl* previousView = NULL;
   if (m_currentView >= 0 && m_currentView < (int)m_visibleViews.size())
     previousView = m_visibleViews[m_currentView];
-  
+
   UpdateViewVisibility();
 
   // viewMode is of the form TYPE << 16 | ID
@@ -93,7 +94,7 @@ void CGUIViewControl::SetCurrentView(int viewMode)
     return;
 
   m_currentView = newView;
-  CGUIControl *pNewView = m_visibleViews[m_currentView];
+  CGUIControl* pNewView = m_visibleViews[m_currentView];
 
   // make only current control visible...
   for (ciViews view = m_allViews.begin(); view != m_allViews.end(); view++)
@@ -103,7 +104,7 @@ void CGUIViewControl::SetCurrentView(int viewMode)
   if (pNewView == previousView)
     return; // no need to actually update anything (other than visibility above)
 
-//  CLog::Log(LOGDEBUG,"SetCurrentView: Oldview: %i, Newview :%i", m_currentView, viewMode);
+  //  CLog::Log(LOGDEBUG,"SetCurrentView: Oldview: %i, Newview :%i", m_currentView, viewMode);
 
   bool hasFocus(false);
   int item = -1;
@@ -126,39 +127,42 @@ void CGUIViewControl::SetCurrentView(int viewMode)
   }
 
   // Update our view control
-  UpdateViewAsControl(((IGUIContainer *)pNewView)->GetLabel());
+  UpdateViewAsControl(((IGUIContainer*)pNewView)->GetLabel());
 }
 
-void CGUIViewControl::SetItems(CFileItemList &items)
+void CGUIViewControl::SetItems(CFileItemList& items)
 {
-//  CLog::Log(LOGDEBUG,"SetItems: %i", m_currentView);
+  //  CLog::Log(LOGDEBUG,"SetItems: %i", m_currentView);
   m_fileItems = &items;
   // update our current view control...
   UpdateView();
 }
 
-void CGUIViewControl::UpdateContents(const CGUIControl *control, int currentItem)
+void CGUIViewControl::UpdateContents(const CGUIControl* control, int currentItem)
 {
-  if (!control || !m_fileItems) return;
-  CGUIMessage msg(GUI_MSG_LABEL_BIND, m_parentWindow, control->GetID(), currentItem, 0, m_fileItems);
+  if (!control || !m_fileItems)
+    return;
+  CGUIMessage msg(GUI_MSG_LABEL_BIND, m_parentWindow, control->GetID(), currentItem, 0,
+                  m_fileItems);
   g_windowManager.SendMessage(msg, m_parentWindow);
 }
 
 void CGUIViewControl::UpdateView()
 {
-//  CLog::Log(LOGDEBUG,"UpdateView: %i", m_currentView);
+  //  CLog::Log(LOGDEBUG,"UpdateView: %i", m_currentView);
   if (m_currentView < 0 || m_currentView >= (int)m_visibleViews.size())
     return; // no valid current view!
 
-  CGUIControl *pControl = m_visibleViews[m_currentView];
+  CGUIControl* pControl = m_visibleViews[m_currentView];
   // get the currently selected item
   int item = GetSelectedItem(pControl);
   UpdateContents(pControl, item < 0 ? 0 : item);
 }
 
-int CGUIViewControl::GetSelectedItem(const CGUIControl *control) const
+int CGUIViewControl::GetSelectedItem(const CGUIControl* control) const
 {
-  if (!control || !m_fileItems) return -1;
+  if (!control || !m_fileItems)
+    return -1;
   CGUIMessage msg(GUI_MSG_ITEM_SELECTED, m_parentWindow, control->GetID());
   g_windowManager.SendMessage(msg, m_parentWindow);
 
@@ -184,11 +188,12 @@ void CGUIViewControl::SetSelectedItem(int item)
   if (m_currentView < 0 || m_currentView >= (int)m_visibleViews.size())
     return; // no valid current view!
 
-  CGUIMessage msg(GUI_MSG_ITEM_SELECT, m_parentWindow, m_visibleViews[m_currentView]->GetID(), item);
+  CGUIMessage msg(GUI_MSG_ITEM_SELECT, m_parentWindow, m_visibleViews[m_currentView]->GetID(),
+                  item);
   g_windowManager.SendMessage(msg, m_parentWindow);
 }
 
-void CGUIViewControl::SetSelectedItem(const CStdString &itemPath)
+void CGUIViewControl::SetSelectedItem(const CStdString& itemPath)
 {
   if (!m_fileItems || itemPath.IsEmpty())
     return;
@@ -199,7 +204,7 @@ void CGUIViewControl::SetSelectedItem(const CStdString &itemPath)
   int item = -1;
   for (int i = 0; i < m_fileItems->Size(); ++i)
   {
-    CStdString strPath =(*m_fileItems)[i]->GetPath();
+    CStdString strPath = (*m_fileItems)[i]->GetPath();
     URIUtils::RemoveSlashAtEnd(strPath);
     if (strPath.CompareNoCase(comparePath) == 0)
     {
@@ -241,14 +246,14 @@ int CGUIViewControl::GetCurrentControl() const
 // returns the number-th view's viewmode (type and id)
 int CGUIViewControl::GetViewModeNumber(int number) const
 {
-  IGUIContainer *nextView = NULL;
+  IGUIContainer* nextView = NULL;
   if (number >= 0 && number < (int)m_visibleViews.size())
-    nextView = (IGUIContainer *)m_visibleViews[number];
+    nextView = (IGUIContainer*)m_visibleViews[number];
   else if (m_visibleViews.size())
-    nextView = (IGUIContainer *)m_visibleViews[0];
+    nextView = (IGUIContainer*)m_visibleViews[0];
   if (nextView)
     return (nextView->GetType() << 16) | nextView->GetID();
-  return 0;  // no view modes :(
+  return 0; // no view modes :(
 }
 
 // returns the amount of visible views
@@ -261,11 +266,11 @@ int CGUIViewControl::GetViewModeByID(int id) const
 {
   for (unsigned int i = 0; i < m_visibleViews.size(); ++i)
   {
-    IGUIContainer *view = (IGUIContainer *)m_visibleViews[i];
+    IGUIContainer* view = (IGUIContainer*)m_visibleViews[i];
     if (view->GetID() == id)
       return (view->GetType() << 16) | view->GetID();
   }
-  return 0;  // no view modes :(
+  return 0; // no view modes :(
 }
 
 // returns the next viewmode in the cycle
@@ -275,8 +280,9 @@ int CGUIViewControl::GetNextViewMode(int direction) const
     return 0; // no view modes :(
 
   int viewNumber = (m_currentView + direction) % (int)m_visibleViews.size();
-  if (viewNumber < 0) viewNumber += m_visibleViews.size();
-  IGUIContainer *nextView = (IGUIContainer *)m_visibleViews[viewNumber];
+  if (viewNumber < 0)
+    viewNumber += m_visibleViews.size();
+  IGUIContainer* nextView = (IGUIContainer*)m_visibleViews[viewNumber];
   return (nextView->GetType() << 16) | nextView->GetID();
 }
 
@@ -293,21 +299,22 @@ int CGUIViewControl::GetView(VIEW_TYPE type, int id) const
 {
   for (int i = 0; i < (int)m_visibleViews.size(); i++)
   {
-    IGUIContainer *view = (IGUIContainer *)m_visibleViews[i];
+    IGUIContainer* view = (IGUIContainer*)m_visibleViews[i];
     if ((type == VIEW_TYPE_NONE || type == view->GetType()) && (!id || view->GetID() == id))
       return i;
   }
   return -1;
 }
 
-void CGUIViewControl::UpdateViewAsControl(const CStdString &viewLabel)
+void CGUIViewControl::UpdateViewAsControl(const CStdString& viewLabel)
 {
   // the view as control could be a select/spin/dropdown button
-  std::vector< std::pair<std::string, int> > labels;
+  std::vector<std::pair<std::string, int> > labels;
   for (unsigned int i = 0; i < m_visibleViews.size(); i++)
   {
-    IGUIContainer *view = (IGUIContainer *)m_visibleViews[i];
-    std::string label = StringUtils::Format(g_localizeStrings.Get(534).c_str(), view->GetLabel().c_str()); // View: %s
+    IGUIContainer* view = (IGUIContainer*)m_visibleViews[i];
+    std::string label = StringUtils::Format(g_localizeStrings.Get(534).c_str(),
+                                            view->GetLabel().c_str()); // View: %s
     labels.push_back(make_pair(label, i));
   }
   CGUIMessage msg(GUI_MSG_SET_LABELS, m_parentWindow, m_viewAsControl, m_currentView);
@@ -330,7 +337,7 @@ void CGUIViewControl::UpdateViewVisibility()
   m_visibleViews.clear();
   for (unsigned int i = 0; i < m_allViews.size(); i++)
   {
-    CGUIControl *view = m_allViews[i];
+    CGUIControl* view = m_allViews[i];
     if (view->HasVisibleCondition())
     {
       view->UpdateVisibility();
@@ -341,4 +348,3 @@ void CGUIViewControl::UpdateViewVisibility()
       m_visibleViews.push_back(view);
   }
 }
-

@@ -21,12 +21,12 @@
 
 #include "JSONVariantWriter.h"
 
-std::string CJSONVariantWriter::Write(const CVariant &value, bool compact)
+std::string CJSONVariantWriter::Write(const CVariant& value, bool compact)
 {
   std::string output;
 
   Json::Value root;
-  if(InternalWrite(root, value))
+  if (InternalWrite(root, value))
   {
     Json::StreamWriterBuilder writerBuilder;
     writerBuilder.settings_["indentation"] = compact ? "" : "\t";
@@ -37,7 +37,7 @@ std::string CJSONVariantWriter::Write(const CVariant &value, bool compact)
   return output;
 }
 
-bool CJSONVariantWriter::InternalWrite(Json::Value &jsonValue, const CVariant &value)
+bool CJSONVariantWriter::InternalWrite(Json::Value& jsonValue, const CVariant& value)
 {
   switch (value.type())
   {
@@ -60,7 +60,7 @@ bool CJSONVariantWriter::InternalWrite(Json::Value &jsonValue, const CVariant &v
       for (CVariant::const_iterator_array it = value.begin_array(); it != value.end_array(); ++it)
       {
         Json::Value subJsonValue;
-        if(!InternalWrite(subJsonValue, *it))
+        if (!InternalWrite(subJsonValue, *it))
           return false;
         jsonValue.append(subJsonValue);
       }
@@ -69,7 +69,7 @@ bool CJSONVariantWriter::InternalWrite(Json::Value &jsonValue, const CVariant &v
       for (CVariant::const_iterator_map it = value.begin_map(); it != value.end_map(); ++it)
       {
         Json::Value subJsonValue;
-        if(!InternalWrite(subJsonValue, it->second))
+        if (!InternalWrite(subJsonValue, it->second))
           return false;
         jsonValue[it->first] = subJsonValue;
       }

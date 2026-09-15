@@ -42,30 +42,32 @@ CLocalizeStrings g_localizeStringsTemp;
  \param offset An offset value to place strings from the id value.
  \return false if no strings.xml file was loaded.
  */
-static bool LoadXML(const std::string &filename, std::map<uint32_t, LocStr>& strings,
-    std::string &encoding, uint32_t offset = 0)
+static bool LoadXML(const std::string& filename,
+                    std::map<uint32_t, LocStr>& strings,
+                    std::string& encoding,
+                    uint32_t offset = 0)
 {
   CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(filename))
   {
-    CLog::Log(LOGDEBUG, "unable to load %s: %s at line %d", filename.c_str(), xmlDoc.ErrorDesc(), xmlDoc.ErrorRow());
+    CLog::Log(LOGDEBUG, "unable to load %s: %s at line %d", filename.c_str(), xmlDoc.ErrorDesc(),
+              xmlDoc.ErrorRow());
     return false;
   }
 
   TiXmlElement* pRootElement = xmlDoc.RootElement();
-  if (!pRootElement || pRootElement->NoChildren() ||
-      pRootElement->ValueStr()!="strings")
+  if (!pRootElement || pRootElement->NoChildren() || pRootElement->ValueStr() != "strings")
   {
     CLog::Log(LOGERROR, "%s Doesn't contain <strings>", filename.c_str());
     return false;
   }
 
   const std::size_t originalSize = strings.size();
-  const TiXmlElement *pChild = pRootElement->FirstChildElement("string");
+  const TiXmlElement* pChild = pRootElement->FirstChildElement("string");
   while (pChild)
   {
     // Load old style language file with id as attribute
-    const char* attrId=pChild->Attribute("id");
+    const char* attrId = pChild->Attribute("id");
     if (attrId && !pChild->NoChildren())
     {
       uint32_t id = atoi(attrId) + offset;
@@ -74,7 +76,8 @@ static bool LoadXML(const std::string &filename, std::map<uint32_t, LocStr>& str
     }
     pChild = pChild->NextSiblingElement("string");
   }
-  CLog::Log(LOGDEBUG, "LocalizeStrings: loaded %lu strings from file %s", strings.size() - originalSize, filename.c_str());
+  CLog::Log(LOGDEBUG, "LocalizeStrings: loaded %lu strings from file %s",
+            strings.size() - originalSize, filename.c_str());
   return true;
 }
 
@@ -87,8 +90,11 @@ static bool LoadXML(const std::string &filename, std::map<uint32_t, LocStr>& str
  \param bSourceLanguage If we are loading the source English strings.po.
  \return false if no strings.po file was loaded.
  */
-static bool LoadPO(const std::string &filename, std::map<uint32_t, LocStr>& strings,
-    std::string &encoding, uint32_t offset = 0 , bool bSourceLanguage = false)
+static bool LoadPO(const std::string& filename,
+                   std::map<uint32_t, LocStr>& strings,
+                   std::string& encoding,
+                   uint32_t offset = 0,
+                   bool bSourceLanguage = false)
 {
   CPODocument PODoc;
   if (!PODoc.LoadFile(filename))
@@ -110,9 +116,11 @@ static bool LoadPO(const std::string &filename, std::map<uint32_t, LocStr>& stri
                           PODoc.GetMsgid() == strings[id + offset].strOriginal))
           continue;
         else if (bStrInMem)
-          CLog::Log(LOGDEBUG,
+          CLog::Log(
+              LOGDEBUG,
               "POParser: id:%i was recently re-used in the English string file, which is not yet "
-                  "changed in the translated file. Using the English string instead", id);
+              "changed in the translated file. Using the English string instead",
+              id);
         strings[id + offset].strTranslated = PODoc.GetMsgid();
         counter++;
       }
@@ -151,8 +159,11 @@ static bool LoadPO(const std::string &filename, std::map<uint32_t, LocStr>& stri
  \param offset An offset value to place strings from the id value.
  \return false if no strings.po or strings.xml file was loaded.
  */
-static bool LoadStr2Mem(const std::string &pathname_in, const std::string &language,
-    std::map<uint32_t, LocStr>& strings,  std::string &encoding, uint32_t offset = 0 )
+static bool LoadStr2Mem(const std::string& pathname_in,
+                        const std::string& language,
+                        std::map<uint32_t, LocStr>& strings,
+                        std::string& encoding,
+                        uint32_t offset = 0)
 {
   std::string pathname = CSpecialProtocol::TranslatePathConvertCase(pathname_in + language);
   if (!XFILE::CDirectory::Exists(pathname))
@@ -170,14 +181,18 @@ static bool LoadStr2Mem(const std::string &pathname_in, const std::string &langu
       return false;
   }
 
-  bool useSourceLang = StringUtils::EqualsNoCase(language, LANGUAGE_DEFAULT) || StringUtils::EqualsNoCase(language, LANGUAGE_OLD_DEFAULT);
-  if (LoadPO(URIUtils::AddFileToFolder(pathname, "strings.po"), strings, encoding, offset, useSourceLang))
+  bool useSourceLang = StringUtils::EqualsNoCase(language, LANGUAGE_DEFAULT) ||
+                       StringUtils::EqualsNoCase(language, LANGUAGE_OLD_DEFAULT);
+  if (LoadPO(URIUtils::AddFileToFolder(pathname, "strings.po"), strings, encoding, offset,
+             useSourceLang))
     return true;
 
   return LoadXML(URIUtils::AddFileToFolder(pathname, "strings.xml"), strings, encoding, offset);
 }
 
-static bool LoadWithFallback(const std::string& path, const std::string& language, std::map<uint32_t, LocStr>& strings)
+static bool LoadWithFallback(const std::string& path,
+                             const std::string& language,
+                             std::map<uint32_t, LocStr>& strings)
 {
   std::string encoding;
   if (!LoadStr2Mem(path, language, strings, encoding))
@@ -195,12 +210,10 @@ static bool LoadWithFallback(const std::string& path, const std::string& languag
 
 CLocalizeStrings::CLocalizeStrings(void)
 {
-
 }
 
 CLocalizeStrings::~CLocalizeStrings(void)
 {
-
 }
 
 void CLocalizeStrings::ClearSkinStrings()
@@ -285,7 +298,9 @@ void CLocalizeStrings::Clear(uint32_t start, uint32_t end)
   }
 }
 
-bool CLocalizeStrings::LoadAddonStrings(const std::string& path, const std::string& language, const std::string& addonId)
+bool CLocalizeStrings::LoadAddonStrings(const std::string& path,
+                                        const std::string& language,
+                                        const std::string& addonId)
 {
   std::map<uint32_t, LocStr> strings;
   if (!LoadWithFallback(path, language, strings))

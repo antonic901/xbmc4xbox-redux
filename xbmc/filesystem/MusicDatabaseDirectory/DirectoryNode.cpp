@@ -49,9 +49,9 @@ using namespace XFILE::MUSICDATABASEDIRECTORY;
 //  Constructor is protected use ParseURL()
 CDirectoryNode::CDirectoryNode(NODE_TYPE Type, const std::string& strName, CDirectoryNode* pParent)
 {
-  m_Type=Type;
-  m_strName=strName;
-  m_pParent=pParent;
+  m_Type = Type;
+  m_strName = strName;
+  m_pParent = pParent;
 }
 
 CDirectoryNode::~CDirectoryNode()
@@ -64,7 +64,7 @@ CDirectoryNode* CDirectoryNode::ParseURL(const std::string& strPath)
 {
   CURL url(strPath);
 
-  std::string strDirectory=url.GetFileName();
+  std::string strDirectory = url.GetFileName();
   URIUtils::RemoveSlashAtEnd(strDirectory);
 
   std::vector<std::string> Path = StringUtils::Split(strDirectory, '/');
@@ -74,7 +74,7 @@ CDirectoryNode* CDirectoryNode::ParseURL(const std::string& strPath)
   CDirectoryNode* pParent = nullptr;
   NODE_TYPE NodeType = NODE_TYPE_ROOT;
 
-  for (int i=0; i < static_cast<int>(Path.size()); ++i)
+  for (int i = 0; i < static_cast<int>(Path.size()); ++i)
   {
     pNode = CreateNode(NodeType, Path[i], pParent);
     NodeType = pNode ? pNode->GetChildType() : NODE_TYPE_NONE;
@@ -100,52 +100,54 @@ void CDirectoryNode::GetDatabaseInfo(const std::string& strPath, CQueryParams& p
 }
 
 //  Create a node object
-CDirectoryNode* CDirectoryNode::CreateNode(NODE_TYPE Type, const std::string& strName, CDirectoryNode* pParent)
+CDirectoryNode* CDirectoryNode::CreateNode(NODE_TYPE Type,
+                                           const std::string& strName,
+                                           CDirectoryNode* pParent)
 {
   switch (Type)
   {
-  case NODE_TYPE_ROOT:
-    return new CDirectoryNodeRoot(strName, pParent);
-  case NODE_TYPE_OVERVIEW:
-    return new CDirectoryNodeOverview(strName, pParent);
-  case NODE_TYPE_GENRE:
-  case NODE_TYPE_ROLE:
-  case NODE_TYPE_YEAR:
-    return new CDirectoryNodeGrouped(Type, strName, pParent);
-  case NODE_TYPE_ARTIST:
-    return new CDirectoryNodeArtist(strName, pParent);
-  case NODE_TYPE_ALBUM:
-    return new CDirectoryNodeAlbum(strName, pParent);
-  case NODE_TYPE_SONG:
-    return new CDirectoryNodeSong(strName, pParent);
-  case NODE_TYPE_SINGLES:
-    return new CDirectoryNodeSingles(strName, pParent);
-  case NODE_TYPE_TOP100:
-    return new CDirectoryNodeTop100(strName, pParent);
-  case NODE_TYPE_ALBUM_TOP100:
-    return new CDirectoryNodeAlbumTop100(strName, pParent);
-  case NODE_TYPE_ALBUM_TOP100_SONGS:
-    return new CDirectoryNodeAlbumTop100Song(strName, pParent);
-  case NODE_TYPE_SONG_TOP100:
-    return new CDirectoryNodeSongTop100(strName, pParent);
-  case NODE_TYPE_ALBUM_RECENTLY_ADDED:
-    return new CDirectoryNodeAlbumRecentlyAdded(strName, pParent);
-  case NODE_TYPE_ALBUM_RECENTLY_ADDED_SONGS:
-    return new CDirectoryNodeAlbumRecentlyAddedSong(strName, pParent);
-  case NODE_TYPE_ALBUM_RECENTLY_PLAYED:
-    return new CDirectoryNodeAlbumRecentlyPlayed(strName, pParent);
-  case NODE_TYPE_ALBUM_RECENTLY_PLAYED_SONGS:
-    return new CDirectoryNodeAlbumRecentlyPlayedSong(strName, pParent);
-  case NODE_TYPE_ALBUM_COMPILATIONS:
-    return new CDirectoryNodeAlbumCompilations(strName, pParent);
-  case NODE_TYPE_ALBUM_COMPILATIONS_SONGS:
-    return new CDirectoryNodeAlbumCompilationsSongs(strName, pParent);
-  case NODE_TYPE_YEAR_ALBUM:
-    return new CDirectoryNodeYearAlbum(strName, pParent);
-  case NODE_TYPE_YEAR_SONG:
-    return new CDirectoryNodeYearSong(strName, pParent);
-  default:
-    break;
+    case NODE_TYPE_ROOT:
+      return new CDirectoryNodeRoot(strName, pParent);
+    case NODE_TYPE_OVERVIEW:
+      return new CDirectoryNodeOverview(strName, pParent);
+    case NODE_TYPE_GENRE:
+    case NODE_TYPE_ROLE:
+    case NODE_TYPE_YEAR:
+      return new CDirectoryNodeGrouped(Type, strName, pParent);
+    case NODE_TYPE_ARTIST:
+      return new CDirectoryNodeArtist(strName, pParent);
+    case NODE_TYPE_ALBUM:
+      return new CDirectoryNodeAlbum(strName, pParent);
+    case NODE_TYPE_SONG:
+      return new CDirectoryNodeSong(strName, pParent);
+    case NODE_TYPE_SINGLES:
+      return new CDirectoryNodeSingles(strName, pParent);
+    case NODE_TYPE_TOP100:
+      return new CDirectoryNodeTop100(strName, pParent);
+    case NODE_TYPE_ALBUM_TOP100:
+      return new CDirectoryNodeAlbumTop100(strName, pParent);
+    case NODE_TYPE_ALBUM_TOP100_SONGS:
+      return new CDirectoryNodeAlbumTop100Song(strName, pParent);
+    case NODE_TYPE_SONG_TOP100:
+      return new CDirectoryNodeSongTop100(strName, pParent);
+    case NODE_TYPE_ALBUM_RECENTLY_ADDED:
+      return new CDirectoryNodeAlbumRecentlyAdded(strName, pParent);
+    case NODE_TYPE_ALBUM_RECENTLY_ADDED_SONGS:
+      return new CDirectoryNodeAlbumRecentlyAddedSong(strName, pParent);
+    case NODE_TYPE_ALBUM_RECENTLY_PLAYED:
+      return new CDirectoryNodeAlbumRecentlyPlayed(strName, pParent);
+    case NODE_TYPE_ALBUM_RECENTLY_PLAYED_SONGS:
+      return new CDirectoryNodeAlbumRecentlyPlayedSong(strName, pParent);
+    case NODE_TYPE_ALBUM_COMPILATIONS:
+      return new CDirectoryNodeAlbumCompilations(strName, pParent);
+    case NODE_TYPE_ALBUM_COMPILATIONS_SONGS:
+      return new CDirectoryNodeAlbumCompilationsSongs(strName, pParent);
+    case NODE_TYPE_YEAR_ALBUM:
+      return new CDirectoryNodeYearAlbum(strName, pParent);
+    case NODE_TYPE_YEAR_SONG:
+      return new CDirectoryNodeYearSong(strName, pParent);
+    default:
+      break;
   }
 
   return nullptr;
@@ -200,19 +202,19 @@ std::string CDirectoryNode::BuildPath() const
   if (!m_strName.empty())
     array.insert(array.begin(), m_strName);
 
-  CDirectoryNode* pParent=m_pParent;
+  CDirectoryNode* pParent = m_pParent;
   while (pParent != nullptr)
   {
-    const std::string& strNodeName=pParent->GetName();
+    const std::string& strNodeName = pParent->GetName();
     if (!strNodeName.empty())
       array.insert(array.begin(), strNodeName);
 
-    pParent=pParent->GetParent();
+    pParent = pParent->GetParent();
   }
 
-  std::string strPath="musicdb://";
+  std::string strPath = "musicdb://";
   for (int i = 0; i < static_cast<int>(array.size()); ++i)
-    strPath+=array[i]+"/";
+    strPath += array[i] + "/";
 
   std::string options = m_options.GetOptionsString();
   if (!options.empty())
@@ -221,7 +223,7 @@ std::string CDirectoryNode::BuildPath() const
   return strPath;
 }
 
-void CDirectoryNode::AddOptions(const std::string &options)
+void CDirectoryNode::AddOptions(const std::string& options)
 {
   if (options.empty())
     return;
@@ -236,11 +238,11 @@ void CDirectoryNode::CollectQueryParams(CQueryParams& params) const
 {
   params.SetQueryParam(m_Type, m_strName);
 
-  CDirectoryNode* pParent=m_pParent;
+  CDirectoryNode* pParent = m_pParent;
   while (pParent != nullptr)
   {
     params.SetQueryParam(pParent->GetType(), pParent->GetName());
-    pParent=pParent->GetParent();
+    pParent = pParent->GetParent();
   }
 }
 
@@ -257,13 +259,14 @@ bool CDirectoryNode::GetChilds(CFileItemList& items)
   if (CanCache() && items.Load())
     return true;
 
-  boost::movelib::unique_ptr<CDirectoryNode> pNode(CDirectoryNode::CreateNode(GetChildType(), "", this));
+  boost::movelib::unique_ptr<CDirectoryNode> pNode(
+      CDirectoryNode::CreateNode(GetChildType(), "", this));
 
-  bool bSuccess=false;
+  bool bSuccess = false;
   if (pNode.get())
   {
     pNode->m_options = m_options;
-    bSuccess=pNode->GetContent(items);
+    bSuccess = pNode->GetContent(items);
     if (bSuccess)
     {
       if (CanCache())
@@ -277,7 +280,6 @@ bool CDirectoryNode::GetChilds(CFileItemList& items)
 
   return bSuccess;
 }
-
 
 bool CDirectoryNode::CanCache() const
 {

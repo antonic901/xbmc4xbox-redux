@@ -52,12 +52,12 @@ public:
   CStdString GetLyrics() { return m_strLyrics; };
   bool GetCompilation() { return m_bCompilation; };
   char GetRating() { return m_rating; };
-  void GetReplayGainFromTag(apetag *tag);
-  const CReplayGain &GetReplayGain() { return m_replayGain; };
+  void GetReplayGainFromTag(apetag* tag);
+  const CReplayGain& GetReplayGain() { return m_replayGain; };
 
-  static size_t fread_callback(void *ptr, size_t size, size_t nmemb, void *fp);  
-  static int fseek_callback(void *fp, long int offset, int whence);
-  static long ftell_callback(void *fp);
+  static size_t fread_callback(void* ptr, size_t size, size_t nmemb, void* fp);
+  static int fseek_callback(void* fp, long int offset, int whence);
+  static long ftell_callback(void* fp);
 
 protected:
   CStdString m_strTitle;
@@ -82,4 +82,4 @@ protected:
 
   DllLibApeTag m_dll;
 };
-}
+} // namespace MUSIC_INFO

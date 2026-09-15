@@ -27,15 +27,20 @@
 
 using namespace ADDON;
 
-boost::movelib::unique_ptr<CWebinterface> CWebinterface::FromExtension(AddonProps props, const cp_extension_t* ext)
+boost::movelib::unique_ptr<CWebinterface> CWebinterface::FromExtension(AddonProps props,
+                                                                       const cp_extension_t* ext)
 {
   // determine the type of the webinterface
   WebinterfaceType type(WebinterfaceTypeStatic);
-  std::string webinterfaceType = CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "@type");
+  std::string webinterfaceType =
+      CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "@type");
   if (StringUtils::EqualsNoCase(webinterfaceType.c_str(), "wsgi"))
     type = WebinterfaceTypeWsgi;
-  else if (!webinterfaceType.empty() && !StringUtils::EqualsNoCase(webinterfaceType.c_str(), "static") && !StringUtils::EqualsNoCase(webinterfaceType.c_str(), "html"))
-    CLog::Log(LOGWARNING, "Webinterface addon \"%s\" has specified an unsupported type \"%s\"", props.id.c_str(), webinterfaceType.c_str());
+  else if (!webinterfaceType.empty() &&
+           !StringUtils::EqualsNoCase(webinterfaceType.c_str(), "static") &&
+           !StringUtils::EqualsNoCase(webinterfaceType.c_str(), "html"))
+    CLog::Log(LOGWARNING, "Webinterface addon \"%s\" has specified an unsupported type \"%s\"",
+              props.id.c_str(), webinterfaceType.c_str());
 
   // determine the entry point of the webinterface
   std::string entryPoint(WEBINTERFACE_DEFAULT_ENTRY_POINT);
@@ -43,14 +48,20 @@ boost::movelib::unique_ptr<CWebinterface> CWebinterface::FromExtension(AddonProp
   if (!entry.empty())
     entryPoint = entry;
 
-  return boost::movelib::unique_ptr<CWebinterface>(new CWebinterface(boost::move(props), type, entryPoint));
+  return boost::movelib::unique_ptr<CWebinterface>(
+      new CWebinterface(boost::move(props), type, entryPoint));
 }
 
-CWebinterface::CWebinterface(ADDON::AddonProps props, WebinterfaceType type,
-    const std::string &entryPoint) : CAddon(boost::move(props)), m_type(type), m_entryPoint(entryPoint)
-{ }
+CWebinterface::CWebinterface(ADDON::AddonProps props,
+                             WebinterfaceType type,
+                             const std::string& entryPoint)
+  : CAddon(boost::move(props)),
+    m_type(type),
+    m_entryPoint(entryPoint)
+{
+}
 
-std::string CWebinterface::GetEntryPoint(const std::string &path) const
+std::string CWebinterface::GetEntryPoint(const std::string& path) const
 {
   if (m_type == WebinterfaceTypeWsgi)
     return LibPath();

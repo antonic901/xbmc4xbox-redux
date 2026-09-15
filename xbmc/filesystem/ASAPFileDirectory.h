@@ -25,13 +25,14 @@
 
 namespace XFILE
 {
-  class CASAPFileDirectory : public CMusicFileDirectory
-  {
-  public:
-    CASAPFileDirectory(void);
-    virtual ~CASAPFileDirectory(void);
-  private:
-    DllASAP m_dll;
-    virtual int GetTrackCount(const std::string& strPath);
-  };
-}
+class CASAPFileDirectory : public CMusicFileDirectory
+{
+public:
+  CASAPFileDirectory(void);
+  virtual ~CASAPFileDirectory(void);
+
+private:
+  DllASAP m_dll;
+  virtual int GetTrackCount(const std::string& strPath);
+};
+} // namespace XFILE

@@ -18,22 +18,22 @@
 #define MODULE "xbmc"
 
 #define RUNSCRIPT_PREAMBLE \
-        "" \
-        "import " MODULE "\n" \
-        "xbmc.abortRequested = False\n" \
-        "class xbmcout:\n" \
-        "  def __init__(self, loglevel=" MODULE ".LOGDEBUG):\n" \
-        "    self.ll=loglevel\n" \
-        "  def write(self, data):\n" \
-        "    " MODULE ".log(data,self.ll)\n" \
-        "  def close(self):\n" \
-        "    " MODULE ".log('.')\n" \
-        "  def flush(self):\n" \
-        "    " MODULE ".log('.')\n" \
-        "import sys\n" \
-        "sys.stdout = xbmcout()\n" \
-        "sys.stderr = xbmcout(" MODULE ".LOGERROR)\n" \
-        ""
+  "" \
+  "import " MODULE "\n" \
+  "xbmc.abortRequested = False\n" \
+  "class xbmcout:\n" \
+  "  def __init__(self, loglevel=" MODULE ".LOGDEBUG):\n" \
+  "    self.ll=loglevel\n" \
+  "  def write(self, data):\n" \
+  "    " MODULE ".log(data,self.ll)\n" \
+  "  def close(self):\n" \
+  "    " MODULE ".log('.')\n" \
+  "  def flush(self):\n" \
+  "    " MODULE ".log('.')\n" \
+  "import sys\n" \
+  "sys.stdout = xbmcout()\n" \
+  "sys.stderr = xbmcout(" MODULE ".LOGERROR)\n" \
+  ""
 
 #define RUNSCRIPT_SETUPTOOLS_HACK \
   "" \
@@ -49,56 +49,55 @@
   ""
 
 #define RUNSCRIPT_POSTSCRIPT \
-        "print('-->Python Interpreter Initialized<--')\n" \
-        ""
+  "print('-->Python Interpreter Initialized<--')\n" \
+  ""
 
 #if defined(TARGET_ANDROID)
 
-#define RUNSCRIPT_COMPLIANT \
-  RUNSCRIPT_PREAMBLE RUNSCRIPT_SETUPTOOLS_HACK RUNSCRIPT_POSTSCRIPT
+#define RUNSCRIPT_COMPLIANT RUNSCRIPT_PREAMBLE RUNSCRIPT_SETUPTOOLS_HACK RUNSCRIPT_POSTSCRIPT
 
 #else
 
-#define RUNSCRIPT_COMPLIANT \
-  RUNSCRIPT_PREAMBLE RUNSCRIPT_POSTSCRIPT
+#define RUNSCRIPT_COMPLIANT RUNSCRIPT_PREAMBLE RUNSCRIPT_POSTSCRIPT
 
 #endif
 
-namespace PythonBindings {
-  void initModule_xbmcgui(void);
-  void initModule_xbmc(void);
-  void initModule_xbmcplugin(void);
-  void initModule_xbmcaddon(void);
-  void initModule_xbmcvfs(void);
-}
+namespace PythonBindings
+{
+void initModule_xbmcgui(void);
+void initModule_xbmc(void);
+void initModule_xbmcplugin(void);
+void initModule_xbmcaddon(void);
+void initModule_xbmcvfs(void);
+} // namespace PythonBindings
 
 using namespace PythonBindings;
 
 typedef struct
 {
-  const char *name;
+  const char* name;
   CPythonInvoker::PythonModuleInitialization initialization;
 } PythonModule;
 
-static PythonModule PythonModules[] =
-  {
-    { "xbmcgui",    initModule_xbmcgui    },
-    { "xbmc",       initModule_xbmc       },
-    { "xbmcplugin", initModule_xbmcplugin },
-    { "xbmcaddon",  initModule_xbmcaddon  },
-    { "xbmcvfs",    initModule_xbmcvfs    }
-  };
+static PythonModule PythonModules[] = {{"xbmcgui", initModule_xbmcgui},
+                                       {"xbmc", initModule_xbmc},
+                                       {"xbmcplugin", initModule_xbmcplugin},
+                                       {"xbmcaddon", initModule_xbmcaddon},
+                                       {"xbmcvfs", initModule_xbmcvfs}};
 
 #define PythonModulesSize sizeof(PythonModules) / sizeof(PythonModule)
 
-CAddonPythonInvoker::CAddonPythonInvoker(ILanguageInvocationHandler *invocationHandler)
+CAddonPythonInvoker::CAddonPythonInvoker(ILanguageInvocationHandler* invocationHandler)
   : CPythonInvoker(invocationHandler)
-{ }
+{
+}
 
 CAddonPythonInvoker::~CAddonPythonInvoker()
-{ }
+{
+}
 
-std::map<std::string, CPythonInvoker::PythonModuleInitialization> CAddonPythonInvoker::getModules() const
+std::map<std::string, CPythonInvoker::PythonModuleInitialization> CAddonPythonInvoker::getModules()
+    const
 {
   static std::map<std::string, PythonModuleInitialization> modules;
   if (modules.empty())

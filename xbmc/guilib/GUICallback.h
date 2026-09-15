@@ -25,7 +25,7 @@
 #include "memory.h"
 
 #ifndef __GNUC__
-#pragma warning( disable : 4786 )
+#pragma warning(disable : 4786)
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,11 +39,10 @@
 // the only way I know how to get around this limitation.                                     //
 ////////////////////////////////////////////////////////////////////////////////////////////////
 
-template <class Cookie>
+template<class Cookie>
 class GUIEvent
 {
 public:
-
   typedef void (GUIEvent::*MethodPtr)(Cookie);
 
   GUIEvent()
@@ -53,7 +52,7 @@ public:
   }
 
   // Assign an EventHandler (EventHandler's are derived from Event)
-  GUIEvent<Cookie> &operator=(GUIEvent<Cookie> &aEvent)
+  GUIEvent<Cookie>& operator=(GUIEvent<Cookie>& aEvent)
   {
     if (&aEvent != this)
     {
@@ -64,10 +63,7 @@ public:
   }
 
   // Are the class instance and method pointers initialised?
-  bool HasAHandler() const
-  {
-    return (m_pInstance && m_pMethod);
-  }
+  bool HasAHandler() const { return (m_pInstance && m_pMethod); }
 
   // Execute the associated class method
   void Fire(Cookie aCookie) const
@@ -88,7 +84,7 @@ protected:
   GUIEvent* m_pInstance;
 };
 
-template <class Class, class Cookie>
+template<class Class, class Cookie>
 class GUIEventHandler : public GUIEvent<Cookie>
 {
 public:
@@ -96,7 +92,7 @@ public:
 
   GUIEventHandler(Class* pInstance, MethodPtr aMethodPtr)
   {
-    GUIEvent<Cookie>::m_pInstance = (GUIEvent<Cookie>*) ((LPVOID) pInstance);
+    GUIEvent<Cookie>::m_pInstance = (GUIEvent<Cookie>*)((LPVOID)pInstance);
 
 #ifndef TARGET_POSIX
     // Its dirty but it works!
@@ -105,18 +101,16 @@ public:
     // Well, GCC doesn't like that dirty stuff... here's another version of the same thing
     // but even dirtier *grin*
 
-#define my_offsetof(TYPE, MEMBER) \
-               ((size_t)((char *)&(((TYPE *)0x10)->MEMBER) - (char*)0x10))
+#define my_offsetof(TYPE, MEMBER) ((size_t)((char*)&(((TYPE*)0x10)->MEMBER) - (char*)0x10))
 
-    void* target = (void*) (((char*) this) + my_offsetof(GUIEvent<Cookie>, m_pMethod));
+    void* target = (void*)(((char*)this) + my_offsetof(GUIEvent<Cookie>, m_pMethod));
     memcpy(target, &aMethodPtr, sizeof(GUIEvent<Cookie>::m_pMethod));
 #endif
   }
 };
 
-
 // Callbacks are identical to Events except that a Callback returns a result value
-template <class Result, class Cookie>
+template<class Result, class Cookie>
 class Callback
 {
 public:
@@ -129,7 +123,7 @@ public:
   }
 
   // Assign a CallbackHandler (CallbackHandler's are derived from Callback)
-  Callback<Result, Cookie> &operator=(Callback<Result, Cookie> &aCallback)
+  Callback<Result, Cookie>& operator=(Callback<Result, Cookie>& aCallback)
   {
     if (&aCallback != this)
     {
@@ -140,10 +134,7 @@ public:
   }
 
   // Are the class instance and method pointers initialised?
-  bool HasAHandler() const
-  {
-    return (m_pInstance && m_pMethod);
-  }
+  bool HasAHandler() const { return (m_pInstance && m_pMethod); }
 
   // Execute the associated class method and return the result
   Result Fire(Cookie aCookie) const
@@ -163,20 +154,19 @@ protected:
   MethodPtr m_pMethod;
 };
 
-
-template <class Class, class Result, class Cookie>
+template<class Class, class Result, class Cookie>
 class CallbackHandler : public Callback<Result, Cookie>
 {
 public:
   typedef Result (Class::*MethodPtr)(Cookie);
 
-  CallbackHandler (Class* pInstance, MethodPtr aMethodPtr)
+  CallbackHandler(Class* pInstance, MethodPtr aMethodPtr)
   {
-    Callback<Result, Cookie>::m_pInstance = (Callback<Result, Cookie>*) ((LPVOID) pInstance);
+    Callback<Result, Cookie>::m_pInstance = (Callback<Result, Cookie>*)((LPVOID)pInstance);
     // Its dirty but it works!
-    memcpy(&Callback<Result, Cookie>::m_pMethod, &aMethodPtr, sizeof(Callback<Result, Cookie>::m_pMethod));
+    memcpy(&Callback<Result, Cookie>::m_pMethod, &aMethodPtr,
+           sizeof(Callback<Result, Cookie>::m_pMethod));
   }
 };
 
 #endif // GUICALLBACK_H
-

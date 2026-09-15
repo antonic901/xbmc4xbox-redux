@@ -31,61 +31,56 @@ using namespace MEDIA_DETECT;
 boost::shared_ptr<CLibcdio> CLibcdio::m_pInstance;
 
 /* Some interesting sector numbers stored in the above buffer. */
-#define ISO_SUPERBLOCK_SECTOR  16  /* buffer[0] */
-#define UFS_SUPERBLOCK_SECTOR   4  /* buffer[2] */
-#define BOOT_SECTOR            17  /* buffer[3] */
-#define VCD_INFO_SECTOR       150  /* buffer[4] */
-#define UDFX_SECTOR          32  /* buffer[4] */
-#define UDF_ANCHOR_SECTOR   256  /* buffer[5] */
+#define ISO_SUPERBLOCK_SECTOR 16 /* buffer[0] */
+#define UFS_SUPERBLOCK_SECTOR 4 /* buffer[2] */
+#define BOOT_SECTOR 17 /* buffer[3] */
+#define VCD_INFO_SECTOR 150 /* buffer[4] */
+#define UDFX_SECTOR 32 /* buffer[4] */
+#define UDF_ANCHOR_SECTOR 256 /* buffer[5] */
 
-
-signature_t CCdIoSupport::sigs[] =
-  {
-    /*buffer[x] off look for     description */
-    {0, 1, "CD001\0", "ISO 9660\0"},
-    {0, 1, "CD-I", "CD-I"},
-    {0, 8, "CDTV", "CDTV"},
-    {0, 8, "CD-RTOS", "CD-RTOS"},
-    {0, 9, "CDROM", "HIGH SIERRA"},
-    {0, 16, "CD-BRIDGE", "BRIDGE"},
-    {0, 1024, "CD-XA001", "XA"},
-    {1, 64, "PPPPHHHHOOOOTTTTOOOO____CCCCDDDD", "PHOTO CD"},
-    {1, 0x438, "\x53\xef", "EXT2 FS"},
-    {2, 1372, "\x54\x19\x01\x0", "UFS"},
-    {3, 7, "EL TORITO", "BOOTABLE"},
-    {4, 0, "VIDEO_CD", "VIDEO CD"},
-    {4, 0, "SUPERVCD", "Chaoji VCD"},
-    {0, 0, "MICROSOFT*XBOX*MEDIA", "UDFX CD"},
-    {0, 1, "BEA01", "UDF"},
-    { 0 }
-  };
+signature_t CCdIoSupport::sigs[] = {/*buffer[x] off look for     description */
+                                    {0, 1, "CD001\0", "ISO 9660\0"},
+                                    {0, 1, "CD-I", "CD-I"},
+                                    {0, 8, "CDTV", "CDTV"},
+                                    {0, 8, "CD-RTOS", "CD-RTOS"},
+                                    {0, 9, "CDROM", "HIGH SIERRA"},
+                                    {0, 16, "CD-BRIDGE", "BRIDGE"},
+                                    {0, 1024, "CD-XA001", "XA"},
+                                    {1, 64, "PPPPHHHHOOOOTTTTOOOO____CCCCDDDD", "PHOTO CD"},
+                                    {1, 0x438, "\x53\xef", "EXT2 FS"},
+                                    {2, 1372, "\x54\x19\x01\x0", "UFS"},
+                                    {3, 7, "EL TORITO", "BOOTABLE"},
+                                    {4, 0, "VIDEO_CD", "VIDEO CD"},
+                                    {4, 0, "SUPERVCD", "Chaoji VCD"},
+                                    {0, 0, "MICROSOFT*XBOX*MEDIA", "UDFX CD"},
+                                    {0, 1, "BEA01", "UDF"},
+                                    {0}};
 
 #undef DEBUG_CDIO
 
-static void
-xbox_cdio_log_handler (cdio_log_level_t level, const char message[])
+static void xbox_cdio_log_handler(cdio_log_level_t level, const char message[])
 {
 #ifdef DEBUG_CDIO
   switch (level)
   {
-  case CDIO_LOG_ERROR:
-    CLog::Log(LOGDEBUG,"**ERROR: %s", message);
-    break;
-  case CDIO_LOG_DEBUG:
-    CLog::Log(LOGDEBUG,"--DEBUG: %s", message);
-    break;
-  case CDIO_LOG_WARN:
-    CLog::Log(LOGDEBUG,"++ WARN: %s", message);
-    break;
-  case CDIO_LOG_INFO:
-    CLog::Log(LOGDEBUG,"   INFO: %s", message);
-    break;
-  case CDIO_LOG_ASSERT:
-    CLog::Log(LOGDEBUG,"!ASSERT: %s", message);
-    break;
-  default:
-    //cdio_assert_not_reached ();
-    break;
+    case CDIO_LOG_ERROR:
+      CLog::Log(LOGDEBUG, "**ERROR: %s", message);
+      break;
+    case CDIO_LOG_DEBUG:
+      CLog::Log(LOGDEBUG, "--DEBUG: %s", message);
+      break;
+    case CDIO_LOG_WARN:
+      CLog::Log(LOGDEBUG, "++ WARN: %s", message);
+      break;
+    case CDIO_LOG_INFO:
+      CLog::Log(LOGDEBUG, "   INFO: %s", message);
+      break;
+    case CDIO_LOG_ASSERT:
+      CLog::Log(LOGDEBUG, "!ASSERT: %s", message);
+      break;
+    default:
+      //cdio_assert_not_reached ();
+      break;
   }
 #endif
 }
@@ -95,7 +90,7 @@ xbox_cdio_log_handler (cdio_log_level_t level, const char message[])
 //////////////////////////////////////////////////////////////////////
 CLibcdio::CLibcdio()
 {
-  cdio_log_set_handler( xbox_cdio_log_handler );
+  cdio_log_set_handler(xbox_cdio_log_handler);
 }
 
 CLibcdio::~CLibcdio()
@@ -116,83 +111,83 @@ boost::shared_ptr<CLibcdio> CLibcdio::GetInstance()
   return m_pInstance;
 }
 
-CdIo_t* CLibcdio::cdio_open(const char *psz_source, driver_id_t driver_id)
+CdIo_t* CLibcdio::cdio_open(const char* psz_source, driver_id_t driver_id)
 {
   CSingleLock lock(*this);
 
-  return( ::cdio_open(psz_source, driver_id) );
+  return (::cdio_open(psz_source, driver_id));
 }
 
-CdIo_t* CLibcdio::cdio_open_win32(const char *psz_source)
+CdIo_t* CLibcdio::cdio_open_win32(const char* psz_source)
 {
   CSingleLock lock(*this);
 
-  return( ::cdio_open_win32(psz_source) );
+  return (::cdio_open_win32(psz_source));
 }
 
-void CLibcdio::cdio_destroy(CdIo_t *p_cdio)
+void CLibcdio::cdio_destroy(CdIo_t* p_cdio)
 {
   CSingleLock lock(*this);
 
   ::cdio_destroy(p_cdio);
 }
 
-discmode_t CLibcdio::cdio_get_discmode(CdIo_t *p_cdio)
+discmode_t CLibcdio::cdio_get_discmode(CdIo_t* p_cdio)
 {
   CSingleLock lock(*this);
 
-  return( ::cdio_get_discmode(p_cdio) );
+  return (::cdio_get_discmode(p_cdio));
 }
 
-int CLibcdio::mmc_get_tray_status(const CdIo_t *p_cdio)
+int CLibcdio::mmc_get_tray_status(const CdIo_t* p_cdio)
 {
 #ifdef _LINUX
   CSingleLock lock(*this);
 
-  return( ::mmc_get_tray_status(p_cdio) );
+  return (::mmc_get_tray_status(p_cdio));
 #else
   // win32 doesn't implement this routine
   return 0;
 #endif
 }
 
-int CLibcdio::cdio_eject_media(CdIo_t **p_cdio)
+int CLibcdio::cdio_eject_media(CdIo_t** p_cdio)
 {
   CSingleLock lock(*this);
 
-  return( ::cdio_eject_media(p_cdio) );
+  return (::cdio_eject_media(p_cdio));
 }
 
-track_t CLibcdio::cdio_get_last_track_num(const CdIo_t *p_cdio)
+track_t CLibcdio::cdio_get_last_track_num(const CdIo_t* p_cdio)
 {
   CSingleLock lock(*this);
 
-  return( ::cdio_get_last_track_num(p_cdio) );
+  return (::cdio_get_last_track_num(p_cdio));
 }
 
-lsn_t CLibcdio::cdio_get_track_lsn(const CdIo_t *p_cdio, track_t i_track)
+lsn_t CLibcdio::cdio_get_track_lsn(const CdIo_t* p_cdio, track_t i_track)
 {
   CSingleLock lock(*this);
 
-  return( ::cdio_get_track_lsn(p_cdio, i_track) );
+  return (::cdio_get_track_lsn(p_cdio, i_track));
 }
 
-lsn_t CLibcdio::cdio_get_track_last_lsn(const CdIo_t *p_cdio, track_t i_track)
+lsn_t CLibcdio::cdio_get_track_last_lsn(const CdIo_t* p_cdio, track_t i_track)
 {
   CSingleLock lock(*this);
 
-  return( ::cdio_get_track_last_lsn(p_cdio, i_track) );
+  return (::cdio_get_track_last_lsn(p_cdio, i_track));
 }
 
-driver_return_code_t CLibcdio::cdio_read_audio_sectors(
-    const CdIo_t *p_cdio, void *p_buf, lsn_t i_lsn, uint32_t i_blocks)
+driver_return_code_t CLibcdio::cdio_read_audio_sectors(const CdIo_t* p_cdio,
+                                                       void* p_buf,
+                                                       lsn_t i_lsn,
+                                                       uint32_t i_blocks)
 {
   CSingleLock lock(*this);
 
-  return( ::cdio_read_audio_sectors(p_cdio, p_buf, i_lsn, i_blocks) );
+  return (::cdio_read_audio_sectors(p_cdio, p_buf, i_lsn, i_blocks));
 }
-
-
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -200,11 +195,11 @@ driver_return_code_t CLibcdio::cdio_read_audio_sectors(
 CCdIoSupport::CCdIoSupport()
 {
   m_cdio = CLibcdio::GetInstance();
-  m_nFirstData = -1;        /* # of first data track */
-  m_nNumData = 0;                /* # of data tracks */
-  m_nFirstAudio = -1;      /* # of first audio track */
-  m_nNumAudio = 0;              /* # of audio tracks */
-  m_nIsofsSize = 0;               /* size of session */
+  m_nFirstData = -1; /* # of first data track */
+  m_nNumData = 0; /* # of data tracks */
+  m_nFirstAudio = -1; /* # of first audio track */
+  m_nNumAudio = 0; /* # of audio tracks */
+  m_nIsofsSize = 0; /* size of session */
   m_nJolietLevel = 0;
   m_nFs = 0;
   m_nUDFVerMinor = 0;
@@ -231,27 +226,27 @@ HANDLE CCdIoSupport::OpenCDROM()
   char* source_name = "\\\\.\\D:";
   CdIo* cdio = ::cdio_open(source_name, DRIVER_UNKNOWN);
 
-  return (HANDLE) cdio;
+  return (HANDLE)cdio;
 }
 
-HANDLE CCdIoSupport::OpenIMAGE( CStdString& strFilename )
+HANDLE CCdIoSupport::OpenIMAGE(CStdString& strFilename)
 {
   CSingleLock lock(*m_cdio);
 
   CdIo* cdio = ::cdio_open(strFilename, DRIVER_UNKNOWN);
 
-  return (HANDLE) cdio;
+  return (HANDLE)cdio;
 }
 
 INT CCdIoSupport::ReadSector(HANDLE hDevice, DWORD dwSector, LPSTR lpczBuffer)
 {
   CSingleLock lock(*m_cdio);
 
-  CdIo* cdio = (CdIo*) hDevice;
-  if ( cdio == NULL )
+  CdIo* cdio = (CdIo*)hDevice;
+  if (cdio == NULL)
     return -1;
 
-  if ( ::cdio_read_mode1_sector( cdio, lpczBuffer, dwSector, false ) == 0 )
+  if (::cdio_read_mode1_sector(cdio, lpczBuffer, dwSector, false) == 0)
     return dwSector;
 
   return -1;
@@ -261,11 +256,11 @@ INT CCdIoSupport::ReadSectorMode2(HANDLE hDevice, DWORD dwSector, LPSTR lpczBuff
 {
   CSingleLock lock(*m_cdio);
 
-  CdIo* cdio = (CdIo*) hDevice;
-  if ( cdio == NULL )
+  CdIo* cdio = (CdIo*)hDevice;
+  if (cdio == NULL)
     return -1;
 
-  if ( ::cdio_read_mode2_sector( cdio, lpczBuffer, dwSector, false ) == 0 )
+  if (::cdio_read_mode2_sector(cdio, lpczBuffer, dwSector, false) == 0)
     return dwSector;
 
   return -1;
@@ -275,11 +270,11 @@ INT CCdIoSupport::ReadSectorCDDA(HANDLE hDevice, DWORD dwSector, LPSTR lpczBuffe
 {
   CSingleLock lock(*m_cdio);
 
-  CdIo* cdio = (CdIo*) hDevice;
-  if ( cdio == NULL )
+  CdIo* cdio = (CdIo*)hDevice;
+  if (cdio == NULL)
     return -1;
 
-  if ( ::cdio_read_audio_sector( cdio, lpczBuffer, dwSector ) == 0 )
+  if (::cdio_read_audio_sector(cdio, lpczBuffer, dwSector) == 0)
     return dwSector;
 
   return -1;
@@ -289,88 +284,86 @@ VOID CCdIoSupport::CloseCDROM(HANDLE hDevice)
 {
   CSingleLock lock(*m_cdio);
 
-  CdIo* cdio = (CdIo*) hDevice;
+  CdIo* cdio = (CdIo*)hDevice;
 
-  if ( cdio == NULL )
-    return ;
+  if (cdio == NULL)
+    return;
 
-  ::cdio_destroy( cdio );
+  ::cdio_destroy(cdio);
 }
 
 void CCdIoSupport::PrintAnalysis(int fs, int num_audio)
 {
   switch (fs & FS_MASK)
   {
-  case FS_UDF:
-    CLog::Log(LOGINFO, "CD-ROM with UDF filesystem");
-    break;
-  case FS_NO_DATA:
-    CLog::Log(LOGINFO, "CD-ROM with audio tracks");
-    break;
-  case FS_ISO_9660:
-    CLog::Log(LOGINFO, "CD-ROM with ISO 9660 filesystem");
-    if (fs & JOLIET)
-    {
-      CLog::Log(LOGINFO, " with joliet extension level %d", m_nJolietLevel);
-    }
-    if (fs & ROCKRIDGE)
-    {
-      CLog::Log(LOGINFO, " and rockridge extensions");
-    }
-    break;
-  case FS_ISO_9660_INTERACTIVE:
-    CLog::Log(LOGINFO, "CD-ROM with CD-RTOS and ISO 9660 filesystem");
-    break;
-  case FS_HIGH_SIERRA:
-    CLog::Log(LOGINFO, "CD-ROM with High Sierra filesystem");
-    break;
-  case FS_INTERACTIVE:
-    CLog::Log(LOGINFO, "CD-Interactive%s", num_audio > 0 ? "/Ready" : "");
-    break;
-  case FS_HFS:
-    CLog::Log(LOGINFO, "CD-ROM with Macintosh HFS");
-    break;
-  case FS_ISO_HFS:
-    CLog::Log(LOGINFO, "CD-ROM with both Macintosh HFS and ISO 9660 filesystem");
-    break;
-  case FS_ISO_UDF:
-    CLog::Log(LOGINFO, "CD-ROM with both UDF and ISO 9660 filesystem");
-    break;
-  case FS_UFS:
-    CLog::Log(LOGINFO, "CD-ROM with Unix UFS");
-    break;
-  case FS_EXT2:
-    CLog::Log(LOGINFO, "CD-ROM with Linux second extended filesystem");
-    break;
-  case FS_3DO:
-    CLog::Log(LOGINFO, "CD-ROM with Panasonic 3DO filesystem");
-    break;
-  case FS_UDFX:
-    CLog::Log(LOGINFO, "CD-ROM with UDFX filesystem");
-    break;
-  case FS_UNKNOWN:
-    CLog::Log(LOGINFO, "CD-ROM with unknown filesystem");
-    break;
+    case FS_UDF:
+      CLog::Log(LOGINFO, "CD-ROM with UDF filesystem");
+      break;
+    case FS_NO_DATA:
+      CLog::Log(LOGINFO, "CD-ROM with audio tracks");
+      break;
+    case FS_ISO_9660:
+      CLog::Log(LOGINFO, "CD-ROM with ISO 9660 filesystem");
+      if (fs & JOLIET)
+      {
+        CLog::Log(LOGINFO, " with joliet extension level %d", m_nJolietLevel);
+      }
+      if (fs & ROCKRIDGE)
+      {
+        CLog::Log(LOGINFO, " and rockridge extensions");
+      }
+      break;
+    case FS_ISO_9660_INTERACTIVE:
+      CLog::Log(LOGINFO, "CD-ROM with CD-RTOS and ISO 9660 filesystem");
+      break;
+    case FS_HIGH_SIERRA:
+      CLog::Log(LOGINFO, "CD-ROM with High Sierra filesystem");
+      break;
+    case FS_INTERACTIVE:
+      CLog::Log(LOGINFO, "CD-Interactive%s", num_audio > 0 ? "/Ready" : "");
+      break;
+    case FS_HFS:
+      CLog::Log(LOGINFO, "CD-ROM with Macintosh HFS");
+      break;
+    case FS_ISO_HFS:
+      CLog::Log(LOGINFO, "CD-ROM with both Macintosh HFS and ISO 9660 filesystem");
+      break;
+    case FS_ISO_UDF:
+      CLog::Log(LOGINFO, "CD-ROM with both UDF and ISO 9660 filesystem");
+      break;
+    case FS_UFS:
+      CLog::Log(LOGINFO, "CD-ROM with Unix UFS");
+      break;
+    case FS_EXT2:
+      CLog::Log(LOGINFO, "CD-ROM with Linux second extended filesystem");
+      break;
+    case FS_3DO:
+      CLog::Log(LOGINFO, "CD-ROM with Panasonic 3DO filesystem");
+      break;
+    case FS_UDFX:
+      CLog::Log(LOGINFO, "CD-ROM with UDFX filesystem");
+      break;
+    case FS_UNKNOWN:
+      CLog::Log(LOGINFO, "CD-ROM with unknown filesystem");
+      break;
   }
 
   switch (fs & FS_MASK)
   {
-  case FS_ISO_9660:
-  case FS_ISO_9660_INTERACTIVE:
-  case FS_ISO_HFS:
-  case FS_ISO_UDF:
-    CLog::Log(LOGINFO, "ISO 9660: %i blocks, label `%.32s'\n",
-              m_nIsofsSize, buffer[0] + 40);
-    break;
+    case FS_ISO_9660:
+    case FS_ISO_9660_INTERACTIVE:
+    case FS_ISO_HFS:
+    case FS_ISO_UDF:
+      CLog::Log(LOGINFO, "ISO 9660: %i blocks, label `%.32s'\n", m_nIsofsSize, buffer[0] + 40);
+      break;
   }
 
   switch (fs & FS_MASK)
   {
-  case FS_UDF:
-  case FS_ISO_UDF:
-    CLog::Log(LOGINFO, "UDF: version %x.%2.2x\n",
-              m_nUDFVerMajor, m_nUDFVerMinor);
-    break;
+    case FS_UDF:
+    case FS_ISO_UDF:
+      CLog::Log(LOGINFO, "UDF: version %x.%2.2x\n", m_nUDFVerMajor, m_nUDFVerMinor);
+      break;
   }
 
   if (m_nFirstData == 1 && num_audio > 0)
@@ -415,7 +408,6 @@ void CCdIoSupport::PrintAnalysis(int fs, int num_audio)
       print_vcd_info();
     }
 #endif
-
   }
   if (fs & CVD)
   {
@@ -430,26 +422,23 @@ int CCdIoSupport::ReadBlock(int superblock, uint32_t offset, uint8_t bufnum, tra
   unsigned int track_sec_count = ::cdio_get_track_sec_count(cdio, track_num);
   memset(buffer[bufnum], 0, CDIO_CD_FRAMESIZE);
 
-  if ( track_sec_count < (UINT)superblock)
+  if (track_sec_count < (UINT)superblock)
   {
-    ::cdio_debug("reading block %u skipped track %d has only %u sectors\n",
-               superblock, track_num, track_sec_count);
+    ::cdio_debug("reading block %u skipped track %d has only %u sectors\n", superblock, track_num,
+                 track_sec_count);
     return -1;
   }
 
-  ::cdio_debug("about to read sector %lu\n",
-             (long unsigned int) offset + superblock);
+  ::cdio_debug("about to read sector %lu\n", (long unsigned int)offset + superblock);
 
   if (::cdio_get_track_green(cdio, track_num))
   {
-    if (0 < ::cdio_read_mode2_sector(cdio, buffer[bufnum],
-                                   offset + superblock, false))
+    if (0 < ::cdio_read_mode2_sector(cdio, buffer[bufnum], offset + superblock, false))
       return -1;
   }
   else
   {
-    if (0 < ::cdio_read_mode1_sector(cdio, buffer[bufnum],
-                                   offset + superblock, false))
+    if (0 < ::cdio_read_mode1_sector(cdio, buffer[bufnum], offset + superblock, false))
       return -1;
   }
 
@@ -458,7 +447,7 @@ int CCdIoSupport::ReadBlock(int superblock, uint32_t offset, uint8_t bufnum, tra
 
 bool CCdIoSupport::IsIt(int num)
 {
-  signature_t *sigp = &sigs[num];
+  signature_t* sigp = &sigs[num];
   int len = strlen(sigp->sig_str);
 
   /* TODO: check that num < largest sig. */
@@ -467,8 +456,7 @@ bool CCdIoSupport::IsIt(int num)
 
 int CCdIoSupport::IsHFS(void)
 {
-  return (0 == memcmp(&buffer[1][512], "PM", 2)) ||
-         (0 == memcmp(&buffer[1][512], "TS", 2)) ||
+  return (0 == memcmp(&buffer[1][512], "PM", 2)) || (0 == memcmp(&buffer[1][512], "TS", 2)) ||
          (0 == memcmp(&buffer[1][1024], "BD", 2));
 }
 
@@ -491,22 +479,20 @@ int CCdIoSupport::IsUDF(void)
 /* ISO 9660 volume space in M2F1_SECTOR_SIZE byte units */
 int CCdIoSupport::GetSize(void)
 {
-  return ((buffer[0][80] & 0xff) |
-          ((buffer[0][81] & 0xff) << 8) |
-          ((buffer[0][82] & 0xff) << 16) |
+  return ((buffer[0][80] & 0xff) | ((buffer[0][81] & 0xff) << 8) | ((buffer[0][82] & 0xff) << 16) |
           ((buffer[0][83] & 0xff) << 24));
 }
 
-int CCdIoSupport::GetJolietLevel( void )
+int CCdIoSupport::GetJolietLevel(void)
 {
   switch (buffer[3][90])
   {
-  case 0x40:
-    return 1;
-  case 0x43:
-    return 2;
-  case 0x45:
-    return 3;
+    case 0x40:
+      return 1;
+    case 0x43:
+      return 2;
+    case 0x45:
+      return 3;
   }
   return 0;
 }
@@ -521,7 +507,7 @@ int CCdIoSupport::GuessFilesystem(int start_session, track_t track_num)
   if (ReadBlock(UDFX_SECTOR, start_session, 0, track_num) < 0)
     return ret;
 
-  if ( IsIt(IS_UDFX) )
+  if (IsIt(IS_UDFX))
   {
     return FS_UDFX;
   }
@@ -573,7 +559,7 @@ int CCdIoSupport::GuessFilesystem(int start_session, track_t track_num)
 
       // Maybe there is an UDF anchor in iso session
       // so its ISO/UDF session and we prefere UDF
-      if ( IsUDF() )
+      if (IsUDF())
       {
         // Detect UDF version
         // Test if we have a valid version of UDF the xbox can read nativly
@@ -642,22 +628,25 @@ int CCdIoSupport::GuessFilesystem(int start_session, track_t track_num)
   }
 
   /* other checks */
-  if (IsIt(IS_XA)) ret |= XA;
-  if (IsIt(IS_PHOTO_CD)) ret |= PHOTO_CD;
-  if (IsIt(IS_CDTV)) ret |= CDTV;
+  if (IsIt(IS_XA))
+    ret |= XA;
+  if (IsIt(IS_PHOTO_CD))
+    ret |= PHOTO_CD;
+  if (IsIt(IS_CDTV))
+    ret |= CDTV;
 
   return ret;
 }
 
-void CCdIoSupport::GetCdTextInfo(xbmc_cdtext_t &xcdt, int trackNum)
+void CCdIoSupport::GetCdTextInfo(xbmc_cdtext_t& xcdt, int trackNum)
 {
   CSingleLock lock(*m_cdio);
 
   // Get the CD-Text , if any
-  cdtext_t *pcdtext = (cdtext_t *)::cdio_get_cdtext(cdio, trackNum);
+  cdtext_t* pcdtext = (cdtext_t*)::cdio_get_cdtext(cdio, trackNum);
 
   if (pcdtext == NULL)
-    return ;
+    return;
 
   // same ids used in libcdio and for our structure + the ids are consecutive make this copy loop safe.
   for (int i = 0; i < MAX_CDTEXT_FIELDS; i++)
@@ -673,9 +662,8 @@ CCdInfo* CCdIoSupport::GetCdInfo()
   if (cdio == NULL)
   {
     char buf[1024];
-    sprintf(buf, "%s: Error in automatically selecting driver with input\n",
-            __FUNCTION__);
-    OutputDebugString( buf );
+    sprintf(buf, "%s: Error in automatically selecting driver with input\n", __FUNCTION__);
+    OutputDebugString(buf);
     return NULL;
   }
 
@@ -694,8 +682,8 @@ CCdInfo* CCdIoSupport::GetCdInfo()
   }
 
   CCdInfo* info = new CCdInfo;
-  info->SetFirstTrack( m_nFirstTrackNum );
-  info->SetTrackCount( m_nNumTracks );
+  info->SetFirstTrack(m_nFirstTrackNum);
+  info->SetTrackCount(m_nNumTracks);
 
   for (i = m_nFirstTrackNum; i <= CDIO_CDROM_LEADOUT_TRACK; i++)
   {
@@ -709,9 +697,9 @@ CCdInfo* CCdIoSupport::GetCdInfo()
       ti.isofs_size = 0;
       ti.nJolietLevel = 0;
       ti.nFrames = 0;
-      info->SetTrackInformation( i, ti );
-      sprintf( buf, "cdio_track_msf for track %i failed, I give up.\n", i);
-      OutputDebugString( buf );
+      info->SetTrackInformation(i, ti);
+      sprintf(buf, "cdio_track_msf for track %i failed, I give up.\n", i);
+      OutputDebugString(buf);
       delete info;
       ::cdio_destroy(cdio);
       return NULL;
@@ -726,11 +714,11 @@ CCdInfo* CCdIoSupport::GetCdInfo()
       int temp1 = ::cdio_get_track_lba(cdio, i) - CDIO_PREGAP_SECTORS;
       int temp2 = ::cdio_get_track_lba(cdio, i + 1) - CDIO_PREGAP_SECTORS;
       // the length is the address of the second track minus the address of the first track
-      temp2 -= temp1;    // temp2 now has length of track1 in frames
-      ti.nMins = temp2 / (60 * 75);    // calculate the number of minutes
-      temp2 %= 60 * 75;    // calculate the left-over frames
-      ti.nSecs = temp2 / 75;    // calculate the number of seconds
-      if ( -1 == m_nFirstAudio)
+      temp2 -= temp1; // temp2 now has length of track1 in frames
+      ti.nMins = temp2 / (60 * 75); // calculate the number of minutes
+      temp2 %= 60 * 75; // calculate the left-over frames
+      ti.nSecs = temp2 / 75; // calculate the number of seconds
+      if (-1 == m_nFirstAudio)
         m_nFirstAudio = i;
 
       // Make sure that we have the Disc related info available
@@ -738,7 +726,7 @@ CCdInfo* CCdIoSupport::GetCdInfo()
       {
         xbmc_cdtext_t xcdt;
         GetCdTextInfo(xcdt, 0);
-        info->SetDiscCDTextInformation( xcdt );
+        info->SetDiscCDTextInformation(xcdt);
       }
 
       // Get this tracks info
@@ -747,26 +735,27 @@ CCdInfo* CCdIoSupport::GetCdInfo()
     else
     {
       m_nNumData++;
-      if ( -1 == m_nFirstData)
+      if (-1 == m_nFirstData)
         m_nFirstData = i;
     }
     ti.ms_offset = 0;
     ti.isofs_size = 0;
     ti.nJolietLevel = 0;
     ti.nFrames = ::cdio_get_track_lba(cdio, i);
-    info->SetTrackInformation( i, ti );
+    info->SetTrackInformation(i, ti);
     /* skip to leadout? */
     if (i == m_nNumTracks)
       i = CDIO_CDROM_LEADOUT_TRACK;
   }
 
-  info->SetCddbDiscId( CddbDiscId() );
-  info->SetDiscLength( ::cdio_get_track_lba(cdio, CDIO_CDROM_LEADOUT_TRACK) / CDIO_CD_FRAMES_PER_SEC );
+  info->SetCddbDiscId(CddbDiscId());
+  info->SetDiscLength(::cdio_get_track_lba(cdio, CDIO_CDROM_LEADOUT_TRACK) /
+                      CDIO_CD_FRAMES_PER_SEC);
 
-  info->SetAudioTrackCount( m_nNumAudio );
-  info->SetDataTrackCount( m_nNumData );
-  info->SetFirstAudioTrack( m_nFirstAudio );
-  info->SetFirstDataTrack( m_nFirstData );
+  info->SetAudioTrackCount(m_nNumAudio);
+  info->SetDataTrackCount(m_nNumData);
+  info->SetFirstAudioTrack(m_nFirstAudio);
+  info->SetFirstDataTrack(m_nFirstData);
 
   char buf[1024];
   CLog::Log(LOGINFO, "CD Analysis Report");
@@ -790,10 +779,11 @@ CCdInfo* CCdIoSupport::GetCdInfo()
       else
       {
         m_nFs &= ~FS_MASK; /* del filesystem info */
-        sprintf(buf, "Oops: %i unused sectors at start, "
+        sprintf(buf,
+                "Oops: %i unused sectors at start, "
                 "but hidden track check failed.\n",
                 m_nStartTrack);
-        OutputDebugString( buf );
+        OutputDebugString(buf);
       }
     }
     PrintAnalysis(m_nFs, m_nNumAudio);
@@ -808,26 +798,26 @@ CCdInfo* CCdIoSupport::GetCdInfo()
 
       ::cdio_get_track_msf(cdio, i, &msf);
 
-      switch ( track_format )
+      switch (track_format)
       {
-      case TRACK_FORMAT_AUDIO:
+        case TRACK_FORMAT_AUDIO:
         {
-        trackinfo ti;
-        ti.nfsInfo = FS_NO_DATA;
-        m_nFs = FS_NO_DATA;
-        ti.ms_offset = 0;
-        ti.isofs_size = 0;
-        ti.nJolietLevel = 0;
-        ti.nFrames = ::cdio_get_track_lba(cdio, i);
-        info->SetTrackInformation( i + 1, ti );
+          trackinfo ti;
+          ti.nfsInfo = FS_NO_DATA;
+          m_nFs = FS_NO_DATA;
+          ti.ms_offset = 0;
+          ti.isofs_size = 0;
+          ti.nJolietLevel = 0;
+          ti.nFrames = ::cdio_get_track_lba(cdio, i);
+          info->SetTrackInformation(i + 1, ti);
         }
-      case TRACK_FORMAT_ERROR:
-        break;
-      case TRACK_FORMAT_CDI:
-      case TRACK_FORMAT_XA:
-      case TRACK_FORMAT_DATA:
-      case TRACK_FORMAT_PSX:
-        break;
+        case TRACK_FORMAT_ERROR:
+          break;
+        case TRACK_FORMAT_CDI:
+        case TRACK_FORMAT_XA:
+        case TRACK_FORMAT_DATA:
+        case TRACK_FORMAT_PSX:
+          break;
       }
 
       m_nStartTrack = (i == 1) ? 0 : ::cdio_msf_to_lsn(&msf);
@@ -874,18 +864,17 @@ CCdInfo* CCdIoSupport::GetCdInfo()
       ti.nFrames = ::cdio_get_track_lba(cdio, i);
       info->SetDiscLabel(m_strDiscLabel);
 
-
       if (i > 1)
       {
         /* track is beyond last session -> new session found */
         m_nMsOffset = m_nStartTrack;
 
-        CLog::Log(LOGINFO, "Session #%d starts at track %2i, LSN: %6i,"
+        CLog::Log(LOGINFO,
+                  "Session #%d starts at track %2i, LSN: %6i,"
                   " ISO 9660 blocks: %6i",
                   j++, i, m_nStartTrack, m_nIsofsSize);
 
-        CLog::Log(LOGINFO, "ISO 9660: %i blocks, label '%.32s'\n",
-                  m_nIsofsSize, buffer[0] + 40);
+        CLog::Log(LOGINFO, "ISO 9660: %i blocks, label '%.32s'\n", m_nIsofsSize, buffer[0] + 40);
         m_nFs |= MULTISESSION;
         ti.nfsInfo = m_nFs;
       }
@@ -894,20 +883,18 @@ CCdInfo* CCdIoSupport::GetCdInfo()
         PrintAnalysis(m_nFs, m_nNumAudio);
       }
 
-      info->SetTrackInformation( i, ti );
+      info->SetTrackInformation(i, ti);
 
       // xbox does not support multisession cd's
-      if (!(((m_nFs & FS_MASK) == FS_ISO_9660 ||
-             (m_nFs & FS_MASK) == FS_ISO_HFS ||
+      if (!(((m_nFs & FS_MASK) == FS_ISO_9660 || (m_nFs & FS_MASK) == FS_ISO_HFS ||
              /* (fs & FS_MASK) == FS_ISO_9660_INTERACTIVE) && (fs & XA))) */
              (m_nFs & FS_MASK) == FS_ISO_9660_INTERACTIVE)))
         break; /* no method for non-iso9660 multisessions */
     }
   }
-  ::cdio_destroy( cdio );
+  ::cdio_destroy(cdio);
   return info;
 }
-
 
 // Returns the sum of the decimal digits in a number. Eg. 1955 = 20
 int CCdIoSupport::CddbDecDigitSum(int n)
@@ -924,12 +911,11 @@ int CCdIoSupport::CddbDecDigitSum(int n)
 }
 
 // Return the number of seconds (discarding frame portion) of an MSF
-UINT CCdIoSupport::MsfSeconds(msf_t *msf)
+UINT CCdIoSupport::MsfSeconds(msf_t* msf)
 {
   CSingleLock lock(*m_cdio);
-  return from_bcd8(msf->m)*60 + from_bcd8(msf->s);
+  return from_bcd8(msf->m) * 60 + from_bcd8(msf->s);
 }
-
 
 // Compute the CDDB disk ID for an Audio disk.  This is a funny checksum
 // consisting of the concatenation of 3 things:
@@ -958,4 +944,3 @@ ULONG CCdIoSupport::CddbDiscId()
 
   return ((n % 0xff) << 24 | t << 8 | m_nNumTracks);
 }
-

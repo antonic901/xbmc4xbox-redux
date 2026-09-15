@@ -19,19 +19,18 @@
  *
  */
 
-
 #include "IFileDirectory.h"
 
-namespace XFILE 
+namespace XFILE
 {
-  class CRarDirectory : public IFileDirectory
-  {
-  public:
-    CRarDirectory();
-    ~CRarDirectory();
-    virtual bool GetDirectory(const CURL& url, CFileItemList& items);
-    virtual bool ContainsFiles(const CURL& url);
-    virtual bool Exists(const CURL& url);
-    virtual DIR_CACHE_TYPE GetCacheType(const CURL& url) const { return DIR_CACHE_ALWAYS; };
-  };
-}
+class CRarDirectory : public IFileDirectory
+{
+public:
+  CRarDirectory();
+  ~CRarDirectory();
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool ContainsFiles(const CURL& url);
+  virtual bool Exists(const CURL& url);
+  virtual DIR_CACHE_TYPE GetCacheType(const CURL& url) const { return DIR_CACHE_ALWAYS; };
+};
+} // namespace XFILE

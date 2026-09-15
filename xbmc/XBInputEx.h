@@ -9,7 +9,6 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -21,22 +20,19 @@ extern "C"
 }
 #endif
 
-
 typedef struct _XINPUT_STATEEX
 {
-#pragma pack( push, before_header )
+#pragma pack(push, before_header)
 #pragma pack(1)
   DWORD dwPacketNumber;
   union // added by JM to attempt to fix the memory corruption issues - XGetInputState() writes to an
-        // XINPUT_STATE pointer, so we pad this structure out so that it's at least sizeof(XINPUT_STATE)
+  // XINPUT_STATE pointer, so we pad this structure out so that it's at least sizeof(XINPUT_STATE)
   {
     XINPUT_GAMEPAD Gamepad;
     XINPUT_IR_REMOTE IR_Remote;
   };
-#pragma pack( pop, before_header )
-}
-XINPUT_STATEEX, *PXINPUT_STATEEX;
-
+#pragma pack(pop, before_header)
+} XINPUT_STATEEX, *PXINPUT_STATEEX;
 
 //-----------------------------------------------------------------------------
 // Name: struct XBGAMEPAD
@@ -69,15 +65,12 @@ extern XBIR_REMOTE g_IR_Remote[4];
 // Name: XBInput_CreateIR_Remotes()
 // Desc: Creates the ir remote devices
 //-----------------------------------------------------------------------------
-HRESULT XBInput_CreateIR_Remotes( );
+HRESULT XBInput_CreateIR_Remotes();
 
 //-----------------------------------------------------------------------------
 // Name: XBInput_GetInput()
 // Desc: Processes input from the ir remote
 //-----------------------------------------------------------------------------
-VOID XBInput_GetInput( XBIR_REMOTE* pIR_Remote = NULL);
-
-
+VOID XBInput_GetInput(XBIR_REMOTE* pIR_Remote = NULL);
 
 #endif // !defined(AFX_XBINPUTEX_H__A3816A1D_6A04_4295_95C0_AF9708BA0D07__INCLUDED_)
-

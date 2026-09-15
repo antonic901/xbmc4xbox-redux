@@ -39,13 +39,11 @@
 #include <utility>
 #include <vector>
 
-
 using namespace MUSIC_INFO;
 using namespace XFILE;
 using namespace PLAYLIST;
 
-CPlayList::CPlayList(int id)
-  : m_id(id)
+CPlayList::CPlayList(int id) : m_id(id)
 {
   m_strPlayListName = "";
   m_iPlayableItems = -1;
@@ -61,7 +59,8 @@ void CPlayList::AnnounceRemove(int pos)
   CVariant data;
   data["playlistid"] = m_id;
   data["position"] = pos;
-  ANNOUNCEMENT::CAnnouncementManager::GetInstance().Announce(ANNOUNCEMENT::Playlist, "xbmc", "OnRemove", data);
+  ANNOUNCEMENT::CAnnouncementManager::GetInstance().Announce(ANNOUNCEMENT::Playlist, "xbmc",
+                                                             "OnRemove", data);
 }
 
 void CPlayList::AnnounceClear()
@@ -71,7 +70,8 @@ void CPlayList::AnnounceClear()
 
   CVariant data;
   data["playlistid"] = m_id;
-  ANNOUNCEMENT::CAnnouncementManager::GetInstance().Announce(ANNOUNCEMENT::Playlist, "xbmc", "OnClear", data);
+  ANNOUNCEMENT::CAnnouncementManager::GetInstance().Announce(ANNOUNCEMENT::Playlist, "xbmc",
+                                                             "OnClear", data);
 }
 
 void CPlayList::AnnounceAdd(const CFileItemPtr& item, int pos)
@@ -82,10 +82,11 @@ void CPlayList::AnnounceAdd(const CFileItemPtr& item, int pos)
   CVariant data;
   data["playlistid"] = m_id;
   data["position"] = pos;
-  ANNOUNCEMENT::CAnnouncementManager::GetInstance().Announce(ANNOUNCEMENT::Playlist, "xbmc", "OnAdd", item, data);
+  ANNOUNCEMENT::CAnnouncementManager::GetInstance().Announce(ANNOUNCEMENT::Playlist, "xbmc",
+                                                             "OnAdd", item, data);
 }
 
-void CPlayList::Add(const CFileItemPtr &item, int iPosition, int iOrder)
+void CPlayList::Add(const CFileItemPtr& item, int iPosition, int iOrder)
 {
   int iOldSize = size();
   if (iPosition < 0 || iPosition >= iOldSize)
@@ -123,7 +124,7 @@ void CPlayList::Add(const CFileItemPtr &item, int iPosition, int iOrder)
   AnnounceAdd(item, iPosition);
 }
 
-void CPlayList::Add(const CFileItemPtr &item)
+void CPlayList::Add(const CFileItemPtr& item)
 {
   Add(item, -1, -1);
 }
@@ -171,7 +172,7 @@ void CPlayList::Insert(CFileItemList& items, int iPosition /* = -1 */)
   }
 }
 
-void CPlayList::Insert(const CFileItemPtr &item, int iPosition /* = -1 */)
+void CPlayList::Insert(const CFileItemPtr& item, int iPosition /* = -1 */)
 {
   // out of bounds so just add to the end
   int iSize = size();
@@ -185,10 +186,12 @@ void CPlayList::Insert(const CFileItemPtr &item, int iPosition /* = -1 */)
 
 void CPlayList::DecrementOrder(int iOrder)
 {
-  if (iOrder < 0) return;
+  if (iOrder < 0)
+    return;
 
   // it was the last item so do nothing
-  if (iOrder == size()) return;
+  if (iOrder == size())
+    return;
 
   // fix all items with an order greater than the removed iOrder
   ivecItems it;
@@ -207,7 +210,8 @@ void CPlayList::DecrementOrder(int iOrder)
 
 void CPlayList::IncrementOrder(int iPosition, int iOrder)
 {
-  if (iOrder < 0) return;
+  if (iOrder < 0)
+    return;
 
   // fix all items with an order equal or greater to the added iOrder at iPos
   ivecItems it;
@@ -245,7 +249,7 @@ int CPlayList::size() const
   return (int)m_vecItems.size();
 }
 
-const CFileItemPtr CPlayList::operator[] (int iItem) const
+const CFileItemPtr CPlayList::operator[](int iItem) const
 {
   if (iItem < 0 || iItem >= size())
   {
@@ -256,7 +260,7 @@ const CFileItemPtr CPlayList::operator[] (int iItem) const
   return m_vecItems[iItem];
 }
 
-CFileItemPtr CPlayList::operator[] (int iItem)
+CFileItemPtr CPlayList::operator[](int iItem)
 {
   if (iItem < 0 || iItem >= size())
   {
@@ -278,7 +282,7 @@ void CPlayList::Shuffle(int iPosition)
       return;
     if (iPosition < 0)
       iPosition = 0;
-    CLog::Log(LOGDEBUG,"%s shuffling at pos:%i", __FUNCTION__, iPosition);
+    CLog::Log(LOGDEBUG, "%s shuffling at pos:%i", __FUNCTION__, iPosition);
 
     ivecItems it = m_vecItems.begin() + iPosition;
     KODI::UTILS::RandomShuffle(it, m_vecItems.end());
@@ -290,7 +294,7 @@ void CPlayList::Shuffle(int iPosition)
 
 struct SSortPlayListItem
 {
-  static bool PlaylistSort(const CFileItemPtr &left, const CFileItemPtr &right)
+  static bool PlaylistSort(const CFileItemPtr& left, const CFileItemPtr& right)
   {
     return (left->m_iprogramCount < right->m_iprogramCount);
   }
@@ -314,7 +318,7 @@ void CPlayList::Remove(const std::string& strFileName)
   int position = 0;
   ivecItems it;
   it = m_vecItems.begin();
-  while (it != m_vecItems.end() )
+  while (it != m_vecItems.end())
   {
     CFileItemPtr item = *it;
     if (item->GetPath() == strFileName)
@@ -359,46 +363,41 @@ void CPlayList::Remove(int position)
 
 int CPlayList::RemoveDVDItems()
 {
-  std::vector <std::string> vecFilenames;
+  std::vector<std::string> vecFilenames;
 
   // Collect playlist items from DVD share
   ivecItems it;
   it = m_vecItems.begin();
-  while (it != m_vecItems.end() )
+  while (it != m_vecItems.end())
   {
     CFileItemPtr item = *it;
-    if ( item->IsCDDA() || item->IsOnDVD() )
+    if (item->IsCDDA() || item->IsOnDVD())
     {
-      vecFilenames.push_back( item->GetPath() );
+      vecFilenames.push_back(item->GetPath());
     }
     ++it;
   }
 
   // Delete them from playlist
   int nFileCount = vecFilenames.size();
-  if ( nFileCount )
+  if (nFileCount)
   {
-    std::vector <std::string>::iterator it;
+    std::vector<std::string>::iterator it;
     it = vecFilenames.begin();
-    while (it != vecFilenames.end() )
+    while (it != vecFilenames.end())
     {
       std::string& strFilename = *it;
-      Remove( strFilename );
+      Remove(strFilename);
       ++it;
     }
-    vecFilenames.erase( vecFilenames.begin(), vecFilenames.end() );
+    vecFilenames.erase(vecFilenames.begin(), vecFilenames.end());
   }
   return nFileCount;
 }
 
 bool CPlayList::Swap(int position1, int position2)
 {
-  if (
-    (position1 < 0) ||
-    (position2 < 0) ||
-    (position1 >= size()) ||
-    (position2 >= size())
-  )
+  if ((position1 < 0) || (position2 < 0) || (position1 >= size()) || (position2 >= size()))
   {
     return false;
   }
@@ -431,7 +430,6 @@ void CPlayList::SetUnPlayable(int iItem)
   }
 }
 
-
 bool CPlayList::Load(const std::string& strFileName)
 {
   Clear();
@@ -441,16 +439,17 @@ bool CPlayList::Load(const std::string& strFileName)
   if (!file.Open(strFileName))
     return false;
 
-  if (file.GetLength() > 1024*1024)
+  if (file.GetLength() > 1024 * 1024)
   {
-    CLog::Log(LOGWARNING, "%s - File is larger than 1 MB, most likely not a playlist", __FUNCTION__);
+    CLog::Log(LOGWARNING, "%s - File is larger than 1 MB, most likely not a playlist",
+              __FUNCTION__);
     return false;
   }
 
   return LoadData(file);
 }
 
-bool CPlayList::LoadData(std::istream &stream)
+bool CPlayList::LoadData(std::istream& stream)
 {
   // try to read as a string
   std::ostringstream ostr;
@@ -463,28 +462,27 @@ bool CPlayList::LoadData(const std::string& strData)
   return false;
 }
 
-
 bool CPlayList::Expand(int position)
 {
   CFileItemPtr item = m_vecItems[position];
-  boost::movelib::unique_ptr<CPlayList> playlist (CPlayListFactory::Create(*item.get()));
-  if ( NULL == playlist.get())
+  boost::movelib::unique_ptr<CPlayList> playlist(CPlayListFactory::Create(*item.get()));
+  if (NULL == playlist.get())
     return false;
 
-  if(!playlist->Load(item->GetPath()))
+  if (!playlist->Load(item->GetPath()))
     return false;
 
   // remove any item that points back to itself
-  for(int i = 0;i<playlist->size();i++)
+  for (int i = 0; i < playlist->size(); i++)
   {
-    if(StringUtils::EqualsNoCase((*playlist)[i]->GetPath(), item->GetPath()))
+    if (StringUtils::EqualsNoCase((*playlist)[i]->GetPath(), item->GetPath()))
     {
       playlist->Remove(i);
       i--;
     }
   }
 
-  if(playlist->size() <= 0)
+  if (playlist->size() <= 0)
     return false;
 
   Remove(position);
@@ -492,9 +490,10 @@ bool CPlayList::Expand(int position)
   return true;
 }
 
-void CPlayList::UpdateItem(const CFileItem *item)
+void CPlayList::UpdateItem(const CFileItem* item)
 {
-  if (!item) return;
+  if (!item)
+    return;
 
   for (ivecItems it = m_vecItems.begin(); it != m_vecItems.end(); ++it)
   {
@@ -509,7 +508,7 @@ void CPlayList::UpdateItem(const CFileItem *item)
   }
 }
 
-const std::string& CPlayList::ResolveURL(const CFileItemPtr &item ) const
+const std::string& CPlayList::ResolveURL(const CFileItemPtr& item) const
 {
   if (item->IsMusicDb() && item->HasMusicInfoTag())
     return item->GetMusicInfoTag()->GetURL();

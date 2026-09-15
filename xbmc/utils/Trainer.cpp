@@ -49,18 +49,24 @@ using namespace XFILE;
 #define XBTF_SELECTIONS_OFFSET 0x0A // option states (0 or 1)
 #define XBTF_SELECTIONS_TEXT_OFFSET 0x0E // option labels
 #define XBTF_ID_LIST 0x12 // TitleID(s) trainer is meant for
-#define XBTF_SECTION 0x16 // section to patch the locations in memory our xbtf support functions end up
+#define XBTF_SECTION \
+  0x16 // section to patch the locations in memory our xbtf support functions end up
 #define XBTF_ENTRYPOINT 0x1A // entry point for xbtf file (really com).
 
 #define NUM_KB(n) (n * 1024)
-#define ETM_HEAP_SIZE NUM_KB(32)  // room for up to 32kb trainers
-#define XBTF_HEAP_SIZE (ETM_HEAP_SIZE + NUM_KB(8)) // plenty of room for trainer + xbtf support functions, 8kb more
+#define ETM_HEAP_SIZE NUM_KB(32) // room for up to 32kb trainers
+#define XBTF_HEAP_SIZE \
+  (ETM_HEAP_SIZE + NUM_KB(8)) // plenty of room for trainer + xbtf support functions, 8kb more
 
-#define KERNEL_STORE_ADDRESS 0x8000000C // this is address in kernel we store the address of our allocated memory block
+#define KERNEL_STORE_ADDRESS \
+  0x8000000C // this is address in kernel we store the address of our allocated memory block
 #define KERNEL_START_ADDRESS 0x80010000 // base addy of kernel
-#define KERNEL_ALLOCATE_ADDRESS 0x7FFD2200 // where we want to put our allocated memory block (under kernel so it works retail)
-#define KERNEL_SEARCH_RANGE 0x02AF90 // used for loop control base + search range to look xbe entry point bytes
+#define KERNEL_ALLOCATE_ADDRESS \
+  0x7FFD2200 // where we want to put our allocated memory block (under kernel so it works retail)
+#define KERNEL_SEARCH_RANGE \
+  0x02AF90 // used for loop control base + search range to look xbe entry point bytes
 
+// clang-format off
 // magic kernel patch (asm included w/ source)
 static unsigned char trainerloaderdata[167] =
 {
@@ -194,6 +200,7 @@ static unsigned char lcd_toy_x3[246] =
   0x04, 0x11, 0x3C, 0x00, 0x74, 0x0B, 0x6A, 0x02, 0x50, 0xE8, 0x26, 0xFF, 0xFF, 0xFF, 0x41, 0xEB,
   0xEE, 0x61, 0xC9, 0xC2, 0x08, 0x00,
 };
+// clang-format on
 
 CTrainer::CTrainer(int idTrainer /* = 0 */)
 {
@@ -217,37 +224,40 @@ bool CTrainer::InstallTrainer(CTrainer& trainer)
 {
   bool Found = false;
 #ifdef HAS_XBOX_HARDWARE
-  unsigned char *xboxkrnl = (unsigned char *)KERNEL_START_ADDRESS;
-  unsigned char *hackptr = (unsigned char *)KERNEL_STORE_ADDRESS;
-  void *ourmemaddr = NULL; // pointer used to allocated trainer mem
+  unsigned char* xboxkrnl = (unsigned char*)KERNEL_START_ADDRESS;
+  unsigned char* hackptr = (unsigned char*)KERNEL_STORE_ADDRESS;
+  void* ourmemaddr = NULL; // pointer used to allocated trainer mem
   unsigned int i = 0;
   DWORD memsize;
 
-  CLog::Log(LOGDEBUG,"installing trainer %s",trainer.GetPath().c_str());
+  CLog::Log(LOGDEBUG, "installing trainer %s", trainer.GetPath().c_str());
 
   if (trainer.IsXBTF()) // size of our allocation buffer for trainer
     memsize = XBTF_HEAP_SIZE;
   else
     memsize = ETM_HEAP_SIZE;
 
-  unsigned char xbe_entry_point[] = {0xff,0x15,0x28,0x01,0x01,0x00}; // xbe entry point bytes in kernel
-  unsigned char evox_tsr_hook[] = {0xff,0x15,0x10,0x00,0x00,0x80}; // check for evox's evil tsr hook
+  unsigned char xbe_entry_point[] = {0xff, 0x15, 0x28,
+                                     0x01, 0x01, 0x00}; // xbe entry point bytes in kernel
+  unsigned char evox_tsr_hook[] = {0xff, 0x15, 0x10,
+                                   0x00, 0x00, 0x80}; // check for evox's evil tsr hook
 
-  for(i = 0; i < KERNEL_SEARCH_RANGE; i++)
+  for (i = 0; i < KERNEL_SEARCH_RANGE; i++)
   {
     if (memcmp(&xboxkrnl[i], xbe_entry_point, sizeof(xbe_entry_point)) == 0 ||
-      memcmp(&xboxkrnl[i], evox_tsr_hook, sizeof(evox_tsr_hook)) == 0)
+        memcmp(&xboxkrnl[i], evox_tsr_hook, sizeof(evox_tsr_hook)) == 0)
     {
       Found = true;
       break;
     }
   }
 
-  if(Found)
+  if (Found)
   {
-    unsigned char *patchlocation = xboxkrnl;
+    unsigned char* patchlocation = xboxkrnl;
 
-    patchlocation += i + 2; // adjust to xbe entry point bytes in kernel (skipping actual call opcodes)
+    patchlocation +=
+        i + 2; // adjust to xbe entry point bytes in kernel (skipping actual call opcodes)
     _asm
     {
       pushad
@@ -292,18 +302,20 @@ cleanup:
   // allocate our memory space BELOW the kernel (so we can access buffer from game's scope)
   // if you allocate above kernel our buffer is out of scope and only debug bio will allow
   // game to access it
-  ourmemaddr = MmAllocateContiguousMemoryEx(memsize, 0, -1, KERNEL_ALLOCATE_ADDRESS, PAGE_NOCACHE | PAGE_READWRITE);
+  ourmemaddr = MmAllocateContiguousMemoryEx(memsize, 0, -1, KERNEL_ALLOCATE_ADDRESS,
+                                            PAGE_NOCACHE | PAGE_READWRITE);
   if ((DWORD)ourmemaddr > 0)
   {
     MmPersistContiguousMemory(ourmemaddr, memsize, true); // so we survive soft boots
     memcpy(hackptr, &ourmemaddr, 4); // store location of ourmemaddr in kernel
 
     memset(ourmemaddr, 0xFF, memsize); // init trainer buffer
-    memcpy(ourmemaddr, trainerloaderdata, sizeof(trainerloaderdata)); // copy loader data (actual kernel hack)
+    memcpy(ourmemaddr, trainerloaderdata,
+           sizeof(trainerloaderdata)); // copy loader data (actual kernel hack)
 
     // patch loaderdata with trainer base address
     _asm
-    {
+        {
       pushad
 
       mov eax, ourmemaddr
@@ -312,10 +324,10 @@ cleanup:
       mov dword ptr [eax+2], ebx
 
       popad
-    }
+        }
 
     // adjust ourmemaddr pointer past loaderdata
-    ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + sizeof(trainerloaderdata));
+    ourmemaddr = (PVOID*)(((unsigned int)ourmemaddr) + sizeof(trainerloaderdata));
 
     // copy our trainer data into allocated mem
     memcpy(ourmemaddr, trainer.data(), trainer.Size());
@@ -346,16 +358,15 @@ cleanup:
         popad
       }
 
-      if (dwSection == 0)
-        return Found; // its a converted etm so we do not have toys section :)
+      if (dwSection == 0) return Found; // its a converted etm so we do not have toys section :)
 
       // adjust past trainer
-      ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + trainer.Size());
+      ourmemaddr = (PVOID*)(((unsigned int)ourmemaddr) + trainer.Size());
 
       // inject SMBus code
       memcpy(ourmemaddr, sm_bus, sizeof(sm_bus));
       _asm
-      {
+          {
         pushad
 
         mov eax, dwSection
@@ -365,14 +376,14 @@ cleanup:
         mov DWORD PTR [eax], ebx
       nosmbus:
         popad
-      }
+          }
       // adjust past SMBus
-      ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + sizeof(sm_bus));
+      ourmemaddr = (PVOID*)(((unsigned int)ourmemaddr) + sizeof(sm_bus));
 
       // PatchIt
       memcpy(ourmemaddr, patch_it_toy, sizeof(patch_it_toy));
       _asm
-      {
+          {
         pushad
 
         mov eax, dwSection
@@ -383,15 +394,15 @@ cleanup:
         mov DWORD PTR [eax], ebx
       nopatchit:
         popad
-      }
+          }
 
       // adjust past PatchIt
-      ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + sizeof(patch_it_toy));
+      ourmemaddr = (PVOID*)(((unsigned int)ourmemaddr) + sizeof(patch_it_toy));
 
       // HookIt
       memcpy(ourmemaddr, hookit_toy, sizeof(hookit_toy));
       _asm
-      {
+          {
         pushad
 
         mov eax, dwSection
@@ -402,16 +413,15 @@ cleanup:
         mov DWORD PTR [eax], ebx
       nohookit:
         popad
-      }
+          }
 
       // adjust past HookIt
-      ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + sizeof(hookit_toy));
+      ourmemaddr = (PVOID*)(((unsigned int)ourmemaddr) + sizeof(hookit_toy));
 
       // igk_main_toy
       memcpy(ourmemaddr, igk_main_toy, sizeof(igk_main_toy));
       _asm
-      {
-        // patch hook_igk_toy w/ address
+          {// patch hook_igk_toy w/ address
         pushad
 
         mov edx, offset hook_igk_toy
@@ -420,15 +430,15 @@ cleanup:
         mov dword PTR [edx], ecx
 
         popad
-      }
+          }
 
       // adjust past igk_main_toy
-      ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + sizeof(igk_main_toy));
+      ourmemaddr = (PVOID*)(((unsigned int)ourmemaddr) + sizeof(igk_main_toy));
 
       // hook_igk_toy
       memcpy(ourmemaddr, hook_igk_toy, sizeof(hook_igk_toy));
       _asm
-      {
+          {
         pushad
 
         mov eax, dwSection
@@ -439,14 +449,15 @@ cleanup:
         mov DWORD PTR [eax], ebx
       nohookigk:
         popad
-      }
-      ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + sizeof(igk_main_toy));
+          }
+      ourmemaddr = (PVOID*)(((unsigned int)ourmemaddr) + sizeof(igk_main_toy));
 
-      if (CSettings::GetInstance().GetInt("lcd.mode") > 0 && CSettings::GetInstance().GetInt("lcd.type") == MODCHIP_SMARTXX)
+      if (CSettings::GetInstance().GetInt("lcd.mode") > 0 &&
+          CSettings::GetInstance().GetInt("lcd.type") == MODCHIP_SMARTXX)
       {
         memcpy(ourmemaddr, lcd_toy_xx, sizeof(lcd_toy_xx));
         _asm
-        {
+            {
           pushad
 
           mov ecx, ourmemaddr
@@ -468,15 +479,15 @@ cleanup:
           mov dword ptr [eax], ecx
         nolcdxx:
           popad
-        }
-        ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + sizeof(lcd_toy_xx));
+            }
+        ourmemaddr = (PVOID*)(((unsigned int)ourmemaddr) + sizeof(lcd_toy_xx));
       }
       else
       {
         // lcd toy
         memcpy(ourmemaddr, lcd_toy_x3, sizeof(lcd_toy_x3));
         _asm
-        {
+            {
           pushad
 
           mov ecx, ourmemaddr
@@ -498,8 +509,8 @@ cleanup:
           mov dword ptr [eax], ecx
         nolcd:
           popad
-        }
-        ourmemaddr=(PVOID *)(((unsigned int) ourmemaddr) + sizeof(lcd_toy_x3));
+            }
+        ourmemaddr = (PVOID*)(((unsigned int)ourmemaddr) + sizeof(lcd_toy_x3));
       }
     }
   }
@@ -512,13 +523,14 @@ bool CTrainer::RemoveTrainer()
 {
   bool Found = false;
 #ifdef HAS_XBOX_HARDWARE
-  unsigned char *xboxkrnl = (unsigned char *)KERNEL_START_ADDRESS;
+  unsigned char* xboxkrnl = (unsigned char*)KERNEL_START_ADDRESS;
   unsigned int i = 0;
 
-  unsigned char xbe_entry_point[] = {0xff,0x15,0x80,0x00,0x00,0x0c}; // xbe entry point bytes in kernel
-  *((DWORD*)(xbe_entry_point+2)) = KERNEL_STORE_ADDRESS;
+  unsigned char xbe_entry_point[] = {0xff, 0x15, 0x80,
+                                     0x00, 0x00, 0x0c}; // xbe entry point bytes in kernel
+  *((DWORD*)(xbe_entry_point + 2)) = KERNEL_STORE_ADDRESS;
 
-  for(i = 0; i < KERNEL_SEARCH_RANGE; i++)
+  for (i = 0; i < KERNEL_SEARCH_RANGE; i++)
   {
     if (memcmp(&xboxkrnl[i], xbe_entry_point, 6) == 0)
     {
@@ -527,10 +539,11 @@ bool CTrainer::RemoveTrainer()
     }
   }
 
-  if(Found)
+  if (Found)
   {
-    unsigned char *patchlocation = xboxkrnl;
-    patchlocation += i + 2; // adjust to xbe entry point bytes in kernel (skipping actual call opcodes)
+    unsigned char* patchlocation = xboxkrnl;
+    patchlocation +=
+        i + 2; // adjust to xbe entry point bytes in kernel (skipping actual call opcodes)
     __asm // recycle check
     {
         pushad
@@ -567,22 +580,26 @@ bool CTrainer::Load(const std::string& strPath)
   m_iSize = (unsigned int)file.GetLength();
   if (!m_bIsXBTF && m_iSize > ETM_HEAP_SIZE)
   {
-    CLog::Log(LOGINFO, "CTrainer::Load: trainer \"%s\" size %d greater than ETM_HEAP_SIZE of %d bytes!", strPath.c_str(), m_iSize, ETM_HEAP_SIZE);
+    CLog::Log(LOGINFO,
+              "CTrainer::Load: trainer \"%s\" size %d greater than ETM_HEAP_SIZE of %d bytes!",
+              strPath.c_str(), m_iSize, ETM_HEAP_SIZE);
     return false;
   }
   if (m_bIsXBTF && m_iSize > XBTF_HEAP_SIZE)
   {
-    CLog::Log(LOGINFO, "CTrainer::Load: trainer \"%s\" size %d greater than XBTF_HEAP_SIZE of %d bytes!", strPath.c_str(), m_iSize, XBTF_HEAP_SIZE);
+    CLog::Log(LOGINFO,
+              "CTrainer::Load: trainer \"%s\" size %d greater than XBTF_HEAP_SIZE of %d bytes!",
+              strPath.c_str(), m_iSize, XBTF_HEAP_SIZE);
     return false;
   }
   if (m_iSize < ETM_SELECTIONS_OFFSET)
   {
-    CLog::Log(LOGINFO,"CTrainer::Load: Broken trainer %s",strPath.c_str());
+    CLog::Log(LOGINFO, "CTrainer::Load: Broken trainer %s", strPath.c_str());
     return false;
   }
-  m_pData = new unsigned char[(unsigned int)file.GetLength()+1];
+  m_pData = new unsigned char[(unsigned int)file.GetLength() + 1];
   m_pData[file.GetLength()] = '\0'; // to make sure strlen doesn't crash
-  file.Read(m_pData,m_iSize);
+  file.Read(m_pData, m_iSize);
   file.Close();
 
   unsigned int iTextOffset;
@@ -592,7 +609,7 @@ bool CTrainer::Load(const std::string& strPath)
     unsigned int trainerbytesread = m_iSize;
 
     __asm // unmangle trainer
-    {
+        {
       pushad
 
       mov esi, buffer
@@ -617,58 +634,58 @@ bool CTrainer::Load(const std::string& strPath)
       loop loopme
 
       popad
-    }
+        }
 
-    strncpy(m_szCreationKey,(char*)(m_pData+4),200);
-    unsigned int iKeyLength = strlen(m_szCreationKey)+1;
+    strncpy(m_szCreationKey, (char*)(m_pData + 4), 200);
+    unsigned int iKeyLength = strlen(m_szCreationKey) + 1;
     if (m_szCreationKey[6] != '-')
     {
-      CLog::Log(LOGERROR,"CTrainer::Load: Broken trainer %s",strPath.c_str());
+      CLog::Log(LOGERROR, "CTrainer::Load: Broken trainer %s", strPath.c_str());
       return false;
     }
 
-    m_pTrainerData = m_pData+4+iKeyLength;
-    unsigned int iTextLength = strlen((char*)m_pTrainerData)+1;
+    m_pTrainerData = m_pData + 4 + iKeyLength;
+    unsigned int iTextLength = strlen((char*)m_pTrainerData) + 1;
     // read scroller text here if interested
     m_pTrainerData += iTextLength;
-    m_iSize -= 4+iKeyLength+iTextLength;
-    iTextOffset = *((unsigned int*)(m_pTrainerData+XBTF_SELECTIONS_TEXT_OFFSET));
-    m_iOptions = *((unsigned int*)(m_pTrainerData+XBTF_SELECTIONS_OFFSET));
+    m_iSize -= 4 + iKeyLength + iTextLength;
+    iTextOffset = *((unsigned int*)(m_pTrainerData + XBTF_SELECTIONS_TEXT_OFFSET));
+    m_iOptions = *((unsigned int*)(m_pTrainerData + XBTF_SELECTIONS_OFFSET));
   }
   else
   {
-    iTextOffset = *((unsigned int*)(m_pData+ETM_SELECTIONS_TEXT_OFFSET));
-    m_iOptions = *((unsigned int*)(m_pData+ETM_SELECTIONS_OFFSET));
+    iTextOffset = *((unsigned int*)(m_pData + ETM_SELECTIONS_TEXT_OFFSET));
+    m_iOptions = *((unsigned int*)(m_pData + ETM_SELECTIONS_OFFSET));
     m_pTrainerData = m_pData;
   }
 
   if (iTextOffset > m_iSize)
   {
-    CLog::Log(LOGINFO,"CTrainer::Load: Broken trainer %s",strPath.c_str());
+    CLog::Log(LOGINFO, "CTrainer::Load: Broken trainer %s", strPath.c_str());
     return false;
   }
 
-  m_iNumOptions = iTextOffset-m_iOptions;
+  m_iNumOptions = iTextOffset - m_iOptions;
 
   char temp[85];
   unsigned int i;
-  for (i=0;i<m_iNumOptions+2;++i)
+  for (i = 0; i < m_iNumOptions + 2; ++i)
   {
     unsigned int iOffset;
-    memcpy(&iOffset,m_pTrainerData+iTextOffset+4*i,4);
+    memcpy(&iOffset, m_pTrainerData + iTextOffset + 4 * i, 4);
     if (!iOffset)
       break;
 
-    if (iOffset > m_iSize || iTextOffset+4*i > m_iSize)
+    if (iOffset > m_iSize || iTextOffset + 4 * i > m_iSize)
     {
-      CLog::Log(LOGINFO,"CTrainer::Load: Broken trainer %s",strPath.c_str());
+      CLog::Log(LOGINFO, "CTrainer::Load: Broken trainer %s", strPath.c_str());
       return false;
     }
-    strcpy(temp,(char*)(m_pTrainerData+iOffset));
+    strcpy(temp, (char*)(m_pTrainerData + iOffset));
     m_vecText.push_back(temp);
   }
 
-  m_iNumOptions = i-1;
+  m_iNumOptions = i - 1;
 
   m_strPath = strPath;
   return true;
@@ -679,11 +696,11 @@ void CTrainer::GetTitleIds(unsigned int& title1, unsigned int& title2, unsigned 
   if (m_pData)
   {
     DWORD ID_List;
-    unsigned char* pList = m_pTrainerData+(m_bIsXBTF?XBTF_ID_LIST:ETM_ID_LIST);
+    unsigned char* pList = m_pTrainerData + (m_bIsXBTF ? XBTF_ID_LIST : ETM_ID_LIST);
     memcpy(&ID_List, pList, 4);
-    memcpy(&title1,m_pTrainerData+ID_List,4);
-    memcpy(&title2,m_pTrainerData+ID_List+4,4);
-    memcpy(&title3,m_pTrainerData+ID_List+8,4);
+    memcpy(&title1, m_pTrainerData + ID_List, 4);
+    memcpy(&title2, m_pTrainerData + ID_List + 4, 4);
+    memcpy(&title3, m_pTrainerData + ID_List + 8, 4);
   }
   else
     title1 = title2 = title3 = 0;
@@ -692,20 +709,21 @@ void CTrainer::GetTitleIds(unsigned int& title1, unsigned int& title2, unsigned 
 void CTrainer::GetOptionLabels(std::vector<std::string>& vecOptionLabels) const
 {
   vecOptionLabels.clear();
-  for (int i=0;i<int(m_vecText.size())-2;++i)
+  for (int i = 0; i < int(m_vecText.size()) - 2; ++i)
   {
-    vecOptionLabels.push_back(m_vecText[i+2]);
+    vecOptionLabels.push_back(m_vecText[i + 2]);
   }
 }
 
 void CTrainer::SetOptions(unsigned char* options)
 {
-  memcpy(m_pTrainerData+m_iOptions,options,100);
+  memcpy(m_pTrainerData + m_iOptions, options, 100);
 }
 
 bool CTrainer::ScanTrainers()
 {
-  CGUIDialogProgress* progress = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+  CGUIDialogProgress* progress =
+      (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
   if (!progress)
     return false;
 
@@ -736,13 +754,15 @@ bool CTrainer::ScanTrainers()
   for (int i = 0; i < items.Size(); i++)
   {
     CFileItemPtr item = items[i];
-    std::string strLine = StringUtils::Format("%s %i / %i", g_localizeStrings.Get(38710).c_str(), i+1, items.Size());
+    std::string strLine = StringUtils::Format("%s %i / %i", g_localizeStrings.Get(38710).c_str(),
+                                              i + 1, items.Size());
 
     progress->SetPercentage((int)((float)i / (float)items.Size() * 100.f));
     progress->SetLine(1, strLine);
     progress->Progress();
 
-    if (!CFile::Exists(item->GetPath()) || item->GetPath().find(strTrainersPath) == std::string::npos)
+    if (!CFile::Exists(item->GetPath()) ||
+        item->GetPath().find(strTrainersPath) == std::string::npos)
       database.RemoveTrainer(item->GetProperty("idtrainer").asInteger32());
 
     if (progress->IsCanceled())
@@ -755,7 +775,7 @@ bool CTrainer::ScanTrainers()
   CFileItemList trainers, archives;
   CDirectory::GetDirectory(strTrainersPath, trainers, ".xbtf|.etm", DIR_FLAG_DEFAULTS);
   CDirectory::GetDirectory(strTrainersPath, archives, ".rar|.zip", DIR_FLAG_DEFAULTS);
-  for(int i = 0; i < archives.Size(); i++)
+  for (int i = 0; i < archives.Size(); i++)
   {
     if (URIUtils::HasExtension(archives[i]->GetPath(), ".rar"))
     { // add trainers in rar
@@ -767,7 +787,8 @@ bool CTrainer::ScanTrainers()
         {
           CFileItemPtr item(new CFileItem(*inArchives[j]));
           std::string strPathInArchive = item->GetPath();
-          CURL url = URIUtils::CreateArchivePath("zip", CURL(archives[i]->GetPath()), strPathInArchive);
+          CURL url =
+              URIUtils::CreateArchivePath("zip", CURL(archives[i]->GetPath()), strPathInArchive);
           item->SetURL(url);
           trainers.Add(item);
         }
@@ -800,13 +821,14 @@ bool CTrainer::ScanTrainers()
       j--; // don't confuse loop
     }
   }
-  CLog::Log(LOGDEBUG,"Found %i trainers", trainers.Size());
+  CLog::Log(LOGDEBUG, "Found %i trainers", trainers.Size());
 
   for (int i = 0; i < trainers.Size(); i++)
   {
-    std::string strLine = StringUtils::Format("%s %i / %i", g_localizeStrings.Get(38710).c_str(), i+1, trainers.Size());
+    std::string strLine = StringUtils::Format("%s %i / %i", g_localizeStrings.Get(38710).c_str(),
+                                              i + 1, trainers.Size());
     progress->SetLine(0, strLine);
-    progress->SetPercentage((int)((float)(i) / trainers.Size() *100.f));
+    progress->SetPercentage((int)((float)(i) / trainers.Size() * 100.f));
     progress->Progress();
 
     // skip existing trainers

@@ -34,12 +34,7 @@ class CCueDocument
   class CCueTrack
   {
   public:
-    CCueTrack()
-      : iTrackNumber(0)
-      , iStartTime(0)
-      , iEndTime(0)
-    {
-    }
+    CCueTrack() : iTrackNumber(0), iStartTime(0), iEndTime(0) {}
     std::string strArtist;
     std::string strTitle;
     std::string strFile;
@@ -48,13 +43,14 @@ class CCueDocument
     int iEndTime;
     ReplayGain::Info replayGain;
   };
+
 public:
   CCueDocument(void);
   ~CCueDocument(void);
   // USED
-  bool ParseFile(const std::string &strFilePath);
-  bool ParseTag(const std::string &strContent);
-  void GetSongs(VECSONGS &songs);
+  bool ParseFile(const std::string& strFilePath);
+  bool ParseTag(const std::string& strContent);
+  void GetSongs(VECSONGS& songs);
   bool GetSong(int aTrackNumber, CSong& aSong);
   std::string GetMediaPath();
   std::string GetMediaTitle();
@@ -62,17 +58,18 @@ public:
   void UpdateMediaFile(const std::string& oldMediaFile, const std::string& mediaFile);
   bool IsOneFilePerTrack() const;
   bool IsLoaded() const;
+
 private:
   void Clear();
   bool Parse(CueReader& reader, const std::string& strFile = std::string());
 
   // Member variables
-  std::string m_strArtist;  // album artist
-  std::string m_strAlbum;  // album title
-  std::string m_strGenre;  // album genre
-  int m_iYear;            //album year
-  int m_iTrack;   // current track
-  int m_iDiscNumber;  // Disc number
+  std::string m_strArtist; // album artist
+  std::string m_strAlbum; // album title
+  std::string m_strGenre; // album genre
+  int m_iYear; //album year
+  int m_iTrack; // current track
+  int m_iDiscNumber; // Disc number
   ReplayGain::Info m_albumReplayGain;
 
   bool m_bOneFilePerTrack;
@@ -81,8 +78,8 @@ private:
   typedef std::vector<CCueTrack> Tracks;
   Tracks m_tracks;
 
-  std::string ExtractInfo(const std::string &line);
-  int ExtractTimeFromIndex(const std::string &index);
-  int ExtractNumericInfo(const std::string &info);
-  bool ResolvePath(std::string &strPath, const std::string &strBase);
+  std::string ExtractInfo(const std::string& line);
+  int ExtractTimeFromIndex(const std::string& index);
+  int ExtractNumericInfo(const std::string& info);
+  bool ResolvePath(std::string& strPath, const std::string& strBase);
 };

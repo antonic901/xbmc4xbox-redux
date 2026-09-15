@@ -22,8 +22,7 @@
 
 #include "guilib/GUIWindow.h"
 
-class CGUIWindowSettingsProfile :
-      public CGUIWindow
+class CGUIWindowSettingsProfile : public CGUIWindow
 {
 public:
   CGUIWindowSettingsProfile(void);
@@ -32,7 +31,7 @@ public:
 
 protected:
   virtual void OnInitWindow();
-  CFileItemList *m_listItems;
+  CFileItemList* m_listItems;
 
   void OnPopupMenu(int iItem);
   void DoRename(int iItem);
@@ -41,5 +40,5 @@ protected:
   void LoadList();
   void SetLastLoaded();
   void ClearListItems();
-  bool GetAutoLoginProfileChoice(int &iProfile);
+  bool GetAutoLoginProfileChoice(int& iProfile);
 };

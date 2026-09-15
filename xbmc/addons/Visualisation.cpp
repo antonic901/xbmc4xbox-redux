@@ -45,7 +45,7 @@ CAudioBuffer::CAudioBuffer(int iSize)
 
 CAudioBuffer::~CAudioBuffer()
 {
-  delete [] m_pBuffer;
+  delete[] m_pBuffer;
 }
 
 const float* CAudioBuffer::Get() const
@@ -55,19 +55,20 @@ const float* CAudioBuffer::Get() const
 
 void CAudioBuffer::Set(const float* psBuffer, int iSize)
 {
-  if (iSize<0)
+  if (iSize < 0)
     return;
   memcpy(m_pBuffer, psBuffer, iSize * sizeof(float));
-  for (int i = iSize; i < m_iLen; ++i) m_pBuffer[i] = 0;
+  for (int i = iSize; i < m_iLen; ++i)
+    m_pBuffer[i] = 0;
 }
 
-bool CVisualisation::Create(int x, int y, int w, int h, void *device)
+bool CVisualisation::Create(int x, int y, int w, int h, void* device)
 {
   m_pInfo = new VIS_PROPS;
 #ifdef HAS_XBOX_D3D
-  m_pInfo->device     = g_graphicsContext.Get3DDevice();
+  m_pInfo->device = g_graphicsContext.Get3DDevice();
 #else
-  m_pInfo->device     = NULL;
+  m_pInfo->device = NULL;
 #endif
   m_pInfo->x = x;
   m_pInfo->y = y;
@@ -111,7 +112,10 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   return false;
 }
 
-void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const std::string &strSongName)
+void CVisualisation::Start(int iChannels,
+                           int iSamplesPerSec,
+                           int iBitsPerSample,
+                           const std::string& strSongName)
 {
   // notify visz. that new song has been started
   // pass it the nr of audio channels, sample rate, bits/sample and offcourse the songname
@@ -128,7 +132,10 @@ void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample
   }
 }
 
-void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
+void CVisualisation::AudioData(const float* pAudioData,
+                               int iAudioDataLength,
+                               float* pFreqData,
+                               int iFreqDataLength)
 {
   // pass audio data to visz.
   // audio data: is short audiodata [channel][iAudioDataLength] containing the raw audio data
@@ -173,7 +180,7 @@ void CVisualisation::Stop()
   }
 }
 
-void CVisualisation::GetInfo(VIS_INFO *info)
+void CVisualisation::GetInfo(VIS_INFO* info)
 {
   if (Initialized())
   {
@@ -188,7 +195,7 @@ void CVisualisation::GetInfo(VIS_INFO *info)
   }
 }
 
-bool CVisualisation::OnAction(VIS_ACTION action, void *param)
+bool CVisualisation::OnAction(VIS_ACTION action, void* param)
 {
   if (!Initialized())
     return false;
@@ -202,26 +209,27 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
     {
       // if this is a VIS_ACTION_UPDATE_TRACK action, copy relevant
       // tags from CMusicInfoTag to VisTag
-      if ( action == VIS_ACTION_UPDATE_TRACK && param )
+      if (action == VIS_ACTION_UPDATE_TRACK && param)
       {
         const CMusicInfoTag* tag = (const CMusicInfoTag*)param;
         std::string artist(tag->GetArtistString());
         std::string albumArtist(tag->GetAlbumArtistString());
-        std::string genre(StringUtils::Join(tag->GetGenre(), g_advancedSettings.m_musicItemSeparator));
+        std::string genre(
+            StringUtils::Join(tag->GetGenre(), g_advancedSettings.m_musicItemSeparator));
 
         VisTrack track;
-        track.title       = tag->GetTitle().c_str();
-        track.artist      = artist.c_str();
-        track.album       = tag->GetAlbum().c_str();
+        track.title = tag->GetTitle().c_str();
+        track.artist = artist.c_str();
+        track.album = tag->GetAlbum().c_str();
         track.albumArtist = albumArtist.c_str();
-        track.genre       = genre.c_str();
-        track.comment     = tag->GetComment().c_str();
-        track.lyrics      = tag->GetLyrics().c_str();
+        track.genre = genre.c_str();
+        track.comment = tag->GetComment().c_str();
+        track.lyrics = tag->GetLyrics().c_str();
         track.trackNumber = tag->GetTrackNumber();
-        track.discNumber  = tag->GetDiscNumber();
-        track.duration    = tag->GetDuration();
-        track.year        = tag->GetYear();
-        track.rating      = tag->GetUserrating();
+        track.discNumber = tag->GetDiscNumber();
+        track.duration = tag->GetDuration();
+        track.year = tag->GetYear();
+        track.rating = tag->GetUserrating();
 
         return m_pStruct->OnAction(action, &track);
       }
@@ -238,7 +246,7 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
 void CVisualisation::OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPerSample)
 {
   if (!m_pStruct)
-    return ;
+    return;
   CLog::Log(LOGDEBUG, "OnInitialize() started");
 
   m_iChannels = iChannels;
@@ -252,39 +260,41 @@ void CVisualisation::OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPe
 void CVisualisation::OnAudioData(const float* pAudioData, int iAudioDataLength)
 {
   if (!m_pStruct)
-    return ;
+    return;
 
   // FIXME: iAudioDataLength should never be less than 0
-  if (iAudioDataLength<0)
+  if (iAudioDataLength < 0)
     return;
 
   // Save our audio data in the buffers
-  boost::movelib::unique_ptr<CAudioBuffer> pBuffer ( new CAudioBuffer(iAudioDataLength) );
+  boost::movelib::unique_ptr<CAudioBuffer> pBuffer(new CAudioBuffer(iAudioDataLength));
   pBuffer->Set(pAudioData, iAudioDataLength);
-  m_vecBuffers.push_back( pBuffer.release() );
+  m_vecBuffers.push_back(pBuffer.release());
 
-  if ( (int)m_vecBuffers.size() < m_iNumBuffers) return ;
+  if ((int)m_vecBuffers.size() < m_iNumBuffers)
+    return;
 
-  boost::movelib::unique_ptr<CAudioBuffer> ptrAudioBuffer ( m_vecBuffers.front() );
+  boost::movelib::unique_ptr<CAudioBuffer> ptrAudioBuffer(m_vecBuffers.front());
   m_vecBuffers.pop_front();
   // Fourier transform the data if the vis wants it...
   if (m_bWantsFreq)
   {
-    const float *psAudioData = ptrAudioBuffer->Get();
+    const float* psAudioData = ptrAudioBuffer->Get();
 
     if (!m_transform)
-      m_transform.reset(new RFFT(AUDIO_BUFFER_SIZE/2, false)); // half due to stereo
+      m_transform.reset(new RFFT(AUDIO_BUFFER_SIZE / 2, false)); // half due to stereo
 
     m_transform->calc(psAudioData, m_fFreq);
 
     // Transfer data to our visualisation
-    AudioData(psAudioData, iAudioDataLength, m_fFreq, AUDIO_BUFFER_SIZE/2); // half due to complex-conjugate
+    AudioData(psAudioData, iAudioDataLength, m_fFreq,
+              AUDIO_BUFFER_SIZE / 2); // half due to complex-conjugate
   }
   else
   { // Transfer data to our visualisation
     AudioData(ptrAudioBuffer->Get(), iAudioDataLength, NULL, 0);
   }
-  return ;
+  return;
 }
 
 void CVisualisation::CreateBuffers()
@@ -325,7 +335,8 @@ bool CVisualisation::UpdateTrack()
   if (Initialized())
   {
     // get the current album art filename
-    m_AlbumThumb = CSpecialProtocol::TranslatePath(g_infoManager.GetImage(MUSICPLAYER_COVER, WINDOW_INVALID));
+    m_AlbumThumb =
+        CSpecialProtocol::TranslatePath(g_infoManager.GetImage(MUSICPLAYER_COVER, WINDOW_INVALID));
 
     // get the current track tag
     const CMusicInfoTag* tag = g_infoManager.GetCurrentSongTag();
@@ -333,20 +344,20 @@ bool CVisualisation::UpdateTrack()
     if (m_AlbumThumb == "DefaultAlbumCover.png")
       m_AlbumThumb = "";
     else
-      CLog::Log(LOGDEBUG,"Updating visualisation albumart: %s", m_AlbumThumb.c_str());
+      CLog::Log(LOGDEBUG, "Updating visualisation albumart: %s", m_AlbumThumb.c_str());
 
     // inform the visualisation of the current album art
-    if (OnAction( VIS_ACTION_UPDATE_ALBUMART, (void*)( m_AlbumThumb.c_str() ) ) )
+    if (OnAction(VIS_ACTION_UPDATE_ALBUMART, (void*)(m_AlbumThumb.c_str())))
       handled = true;
 
     // inform the visualisation of the current track's tag information
-    if ( tag && OnAction( VIS_ACTION_UPDATE_TRACK, (void*)tag ) )
+    if (tag && OnAction(VIS_ACTION_UPDATE_TRACK, (void*)tag))
       handled = true;
   }
   return handled;
 }
 
-bool CVisualisation::GetPresetList(std::vector<std::string> &vecpresets)
+bool CVisualisation::GetPresetList(std::vector<std::string>& vecpresets)
 {
   vecpresets = m_presets;
   return !m_presets.empty();
@@ -355,7 +366,7 @@ bool CVisualisation::GetPresetList(std::vector<std::string> &vecpresets)
 bool CVisualisation::GetPresets()
 {
   m_presets.clear();
-  char **presets = NULL;
+  char** presets = NULL;
   unsigned int entries = 0;
   try
   {
@@ -368,7 +379,7 @@ bool CVisualisation::GetPresets()
   }
   if (presets && entries > 0)
   {
-    for (unsigned i=0; i < entries; i++)
+    for (unsigned i = 0; i < entries; i++)
     {
       if (presets[i])
       {
@@ -379,7 +390,7 @@ bool CVisualisation::GetPresets()
   return (!m_presets.empty());
 }
 
-bool CVisualisation::GetSubModuleList(std::vector<std::string> &vecmodules)
+bool CVisualisation::GetSubModuleList(std::vector<std::string>& vecmodules)
 {
   vecmodules = m_submodules;
   return !m_submodules.empty();
@@ -388,7 +399,7 @@ bool CVisualisation::GetSubModuleList(std::vector<std::string> &vecmodules)
 bool CVisualisation::GetSubModules()
 {
   m_submodules.clear();
-  char **modules = NULL;
+  char** modules = NULL;
   unsigned int entries = 0;
   try
   {
@@ -401,7 +412,7 @@ bool CVisualisation::GetSubModules()
   }
   if (modules && entries > 0)
   {
-    for (unsigned i=0; i < entries; i++)
+    for (unsigned i = 0; i < entries; i++)
     {
       if (modules[i])
       {
@@ -436,10 +447,10 @@ void CVisualisation::Destroy()
   // Free what was allocated in method CVisualisation::Create
   if (m_pInfo)
   {
-    free((void *) m_pInfo->name);
-    free((void *) m_pInfo->presets);
-    free((void *) m_pInfo->profile);
-    free((void *) m_pInfo->submodule);
+    free((void*)m_pInfo->name);
+    free((void*)m_pInfo->presets);
+    free((void*)m_pInfo->profile);
+    free((void*)m_pInfo->submodule);
 
     delete m_pInfo;
     m_pInfo = NULL;
@@ -455,7 +466,7 @@ unsigned CVisualisation::GetPreset()
   {
     index = m_pStruct->GetPreset();
   }
-  catch(...)
+  catch (...)
   {
     return 0;
   }

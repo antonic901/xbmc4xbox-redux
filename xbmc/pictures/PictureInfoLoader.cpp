@@ -51,15 +51,16 @@ void CPictureInfoLoader::OnLoaderStart()
 
 bool CPictureInfoLoader::LoadItem(CFileItem* pItem)
 {
-  bool result  = LoadItemCached(pItem);
-       result |= LoadItemLookup(pItem);
+  bool result = LoadItemCached(pItem);
+  result |= LoadItemLookup(pItem);
 
   return result;
 }
 
 bool CPictureInfoLoader::LoadItemCached(CFileItem* pItem)
 {
-  if (!pItem->IsPicture() || pItem->IsZIP() || pItem->IsRAR() || pItem->IsCBR() || pItem->IsCBZ() || pItem->IsInternetStream() || pItem->IsVideo())
+  if (!pItem->IsPicture() || pItem->IsZIP() || pItem->IsRAR() || pItem->IsCBR() || pItem->IsCBZ() ||
+      pItem->IsInternetStream() || pItem->IsVideo())
     return false;
 
   if (pItem->HasPictureInfoTag())
@@ -67,7 +68,7 @@ bool CPictureInfoLoader::LoadItemCached(CFileItem* pItem)
 
   // Check the cached item
   CFileItemPtr mapItem = (*m_mapFileItems)[pItem->GetPath()];
-  if (mapItem && mapItem->m_dateTime==pItem->m_dateTime && mapItem->HasPictureInfoTag())
+  if (mapItem && mapItem->m_dateTime == pItem->m_dateTime && mapItem->HasPictureInfoTag())
   { // Query map if we previously cached the file on HD
     *pItem->GetPictureInfoTag() = *mapItem->GetPictureInfoTag();
     pItem->SetArt("thumb", mapItem->GetArt("thumb"));
@@ -82,7 +83,8 @@ bool CPictureInfoLoader::LoadItemLookup(CFileItem* pItem)
   if (m_pProgressCallback && !pItem->m_bIsFolder)
     m_pProgressCallback->SetProgressAdvance();
 
-  if (!pItem->IsPicture() || pItem->IsZIP() || pItem->IsRAR() || pItem->IsCBR() || pItem->IsCBZ() || pItem->IsInternetStream() || pItem->IsVideo())
+  if (!pItem->IsPicture() || pItem->IsZIP() || pItem->IsRAR() || pItem->IsCBR() || pItem->IsCBZ() ||
+      pItem->IsInternetStream() || pItem->IsVideo())
     return false;
 
   if (pItem->HasPictureInfoTag())

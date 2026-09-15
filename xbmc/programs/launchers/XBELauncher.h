@@ -19,33 +19,33 @@ struct SProgramSettings;
 
 namespace LAUNCHERS
 {
-  class CXBELauncher : public IProgramLauncher
-  {
-  public:
-    CXBELauncher(std::string strExecutable);
-    virtual ~CXBELauncher(void);
+class CXBELauncher : public IProgramLauncher
+{
+public:
+  CXBELauncher(std::string strExecutable);
+  virtual ~CXBELauncher(void);
 
-    static CVariant GetTitleID(const std::string& strExecutable, bool bAsHex = false);
+  static CVariant GetTitleID(const std::string& strExecutable, bool bAsHex = false);
 
-    static CTrainer* LoadTrainer(unsigned int iTitleID);
+  static CTrainer* LoadTrainer(unsigned int iTitleID);
 
-    /*! \brief Applies a flicker filter patch to an Xbox Executable (XBE) file.
+  /*! \brief Applies a flicker filter patch to an Xbox Executable (XBE) file.
      \param strExecutable path to original XBE file that needs patching.
      \param strPatchedExecutable path to patched XBE
      */
-    static bool ApplyFFPatch(const std::string& strExecutable, std::string& strPatchedExecutable);
+  static bool ApplyFFPatch(const std::string& strExecutable, std::string& strPatchedExecutable);
 
-  protected:
-    virtual bool LoadSettings();
+protected:
+  virtual bool LoadSettings();
 
-  private:
-    virtual bool Launch();
-    virtual bool IsSupported();
+private:
+  virtual bool Launch();
+  virtual bool IsSupported();
 
-    std::string m_strExecutable;
+  std::string m_strExecutable;
 
-    CTrainer* m_trainer;
-    CProgramDatabase* m_database;
-    SProgramSettings* m_settings;
-  };
-}
+  CTrainer* m_trainer;
+  CProgramDatabase* m_database;
+  SProgramSettings* m_settings;
+};
+} // namespace LAUNCHERS

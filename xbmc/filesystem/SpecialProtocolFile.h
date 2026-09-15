@@ -47,4 +47,4 @@ public:
 protected:
   CFile m_file;
 };
-}
+} // namespace XFILE

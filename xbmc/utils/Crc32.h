@@ -32,12 +32,8 @@ public:
   void Compute(const CStdString& strValue);
   void ComputeFromLowerCase(const CStdString& strValue);
 
-  operator uint32_t () const
-  {
-    return m_crc;
-  }
+  operator uint32_t() const { return m_crc; }
 
 private:
   uint32_t m_crc;
 };
-

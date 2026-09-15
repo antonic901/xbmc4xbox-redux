@@ -45,7 +45,7 @@ public:
 
   // implementation of CJob
   bool DoWork();
-  const char *GetType() const { return "MusicLibraryJob"; }
+  const char* GetType() const { return "MusicLibraryJob"; }
   bool operator==(const CJob* job) const { return false; }
 
 protected:
@@ -57,5 +57,5 @@ protected:
    \param[in] db Already open music database to be used for interaction
    \return True if the process succeeded, false otherwise
    */
-  virtual bool Work(CMusicDatabase &db) = 0;
+  virtual bool Work(CMusicDatabase& db) = 0;
 };

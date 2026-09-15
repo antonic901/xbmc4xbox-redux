@@ -32,7 +32,7 @@
 #define SLIDE_STRING_BASE 21800 - SLIDE_INFO_START
 
 CGUIDialogPictureInfo::CGUIDialogPictureInfo(void)
-    : CGUIDialog(WINDOW_DIALOG_PICTURE_INFO, "DialogPictureInfo.xml")
+  : CGUIDialog(WINDOW_DIALOG_PICTURE_INFO, "DialogPictureInfo.xml")
 {
   m_pictureInfo = new CFileItemList;
   m_loadType = KEEP_IN_MEMORY;
@@ -43,7 +43,7 @@ CGUIDialogPictureInfo::~CGUIDialogPictureInfo(void)
   delete m_pictureInfo;
 }
 
-void CGUIDialogPictureInfo::SetPicture(CFileItem *item)
+void CGUIDialogPictureInfo::SetPicture(CFileItem* item)
 {
   g_infoManager.SetCurrentSlide(*item);
 }
@@ -97,7 +97,8 @@ void CGUIDialogPictureInfo::UpdatePictureInfo()
   {
     // we only want to add SLIDE_EXIF_DATE_TIME
     // so we skip the other date formats
-    if (info == SLIDE_EXIF_DATE || info == SLIDE_EXIF_LONG_DATE || info == SLIDE_EXIF_LONG_DATE_TIME )
+    if (info == SLIDE_EXIF_DATE || info == SLIDE_EXIF_LONG_DATE ||
+        info == SLIDE_EXIF_LONG_DATE_TIME)
       continue;
 
     std::string picInfo = g_infoManager.GetLabel(info);

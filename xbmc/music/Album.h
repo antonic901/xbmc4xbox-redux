@@ -38,18 +38,17 @@ class CAlbum
 public:
   CAlbum(const CFileItem& item);
   CAlbum()
-    : idAlbum(-1)
-    , fRating(-1)
-    , iUserrating(-1)
-    , iVotes(-1)
-    , iYear(-1)
-    , bCompilation(false)
-    , iTimesPlayed(0)
-    , releaseType(Album)
-    , bScrapedMBID(false)
-    , bArtistSongMerge(false)
-  {};
-  bool operator<(const CAlbum &a) const;
+    : idAlbum(-1),
+      fRating(-1),
+      iUserrating(-1),
+      iVotes(-1),
+      iYear(-1),
+      bCompilation(false),
+      iTimesPlayed(0),
+      releaseType(Album),
+      bScrapedMBID(false),
+      bArtistSongMerge(false) {};
+  bool operator<(const CAlbum& a) const;
   void MergeScrapedAlbum(const CAlbum& album, bool override = true);
 
   void Reset()
@@ -115,7 +114,8 @@ public:
   */
   const std::vector<int> GetArtistIDArray() const;
 
-  typedef enum ReleaseType {
+  typedef enum ReleaseType
+  {
     Album = 0,
     Single
   } ReleaseType;
@@ -135,8 +135,8 @@ public:
    \param prioritise if appending, whether additive tags should be prioritised (i.e. replace or prepend) over existing values. Defaults to false.
    \sa CVideoInfoTag::Load
    */
-  bool Load(const TiXmlElement *element, bool append = false, bool prioritise = false);
-  bool Save(TiXmlNode *node, const std::string &tag, const std::string& strPath);
+  bool Load(const TiXmlElement* element, bool append = false, bool prioritise = false);
+  bool Save(TiXmlNode* node, const std::string& tag, const std::string& strPath);
 
   long idAlbum;
   std::string strAlbum;
@@ -164,7 +164,7 @@ public:
   int iTimesPlayed;
   CDateTime dateAdded;
   CDateTime lastPlayed;
-  VECSONGS songs;     ///< Local songs
+  VECSONGS songs; ///< Local songs
   ReleaseType releaseType;
   std::string strLastScraped;
   bool bScrapedMBID;

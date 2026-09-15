@@ -28,31 +28,31 @@
 namespace XBMC
 {
 
-  class ContextOpaque
-  {
-  public:
-    XbmcCommons::ILogger* loggerImpl;
+class ContextOpaque
+{
+public:
+  XbmcCommons::ILogger* loggerImpl;
 
-    ContextOpaque() : loggerImpl(NULL) {}
-  };
+  ContextOpaque() : loggerImpl(NULL) {}
+};
 
-  Context::Context()
-  {
-    impl = new ContextOpaque;
+Context::Context()
+{
+  impl = new ContextOpaque;
 
-    // instantiate
-    impl->loggerImpl = new XbmcUtils::LogImplementation;
+  // instantiate
+  impl->loggerImpl = new XbmcUtils::LogImplementation;
 
-    // set
-    XbmcCommons::Exception::SetLogger(impl->loggerImpl);
-    CThread::SetLogger(impl->loggerImpl);
-  }
-
-  Context::~Context()
-  {
-    // cleanup
-    delete impl->loggerImpl;
-
-    delete impl;
-  }
+  // set
+  XbmcCommons::Exception::SetLogger(impl->loggerImpl);
+  CThread::SetLogger(impl->loggerImpl);
 }
+
+Context::~Context()
+{
+  // cleanup
+  delete impl->loggerImpl;
+
+  delete impl;
+}
+} // namespace XBMC

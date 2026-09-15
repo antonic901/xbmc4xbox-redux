@@ -52,25 +52,25 @@ class CURL;
 class CSpecialProtocol
 {
 public:
-  static void SetProfilePath(const CStdString &path);
-  static void SetXBMCPath(const CStdString &path);
-  static void SetXBMCBinPath(const std::string &path);
-  static void SetXBMCBinAddonPath(const std::string &path);
-  static void SetHomePath(const CStdString &path);
-  static void SetUserHomePath(const CStdString &path);
-  static void SetMasterProfilePath(const CStdString &path);
-  static void SetTempPath(const CStdString &path);
+  static void SetProfilePath(const CStdString& path);
+  static void SetXBMCPath(const CStdString& path);
+  static void SetXBMCBinPath(const std::string& path);
+  static void SetXBMCBinAddonPath(const std::string& path);
+  static void SetHomePath(const CStdString& path);
+  static void SetUserHomePath(const CStdString& path);
+  static void SetMasterProfilePath(const CStdString& path);
+  static void SetTempPath(const CStdString& path);
 
-  static bool ComparePath(const CStdString &path1, const CStdString &path2);
+  static bool ComparePath(const CStdString& path1, const CStdString& path2);
   static void LogPaths();
 
-  static CStdString TranslatePath(const CStdString &path);
-  static CStdString TranslatePath(const CURL &url);
+  static CStdString TranslatePath(const CStdString& path);
+  static CStdString TranslatePath(const CURL& url);
   static CStdString TranslatePathConvertCase(const CStdString& path);
 
 private:
-  static void SetPath(const CStdString &key, const CStdString &path);
-  static CStdString GetPath(const CStdString &key);
+  static void SetPath(const CStdString& key, const CStdString& path);
+  static CStdString GetPath(const CStdString& key);
 
   static std::map<CStdString, CStdString> m_pathMap;
 };

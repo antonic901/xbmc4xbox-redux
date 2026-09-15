@@ -65,11 +65,10 @@ CVariant CXBELauncher::GetTitleID(const std::string& strExecutable, bool bAsHex 
 bool CXBELauncher::ApplyFFPatch(const std::string& strExecutable, std::string& strPatchedExecutable)
 {
   RESOLUTION res = CDisplaySettings::Get().GetCurrentResolution();
-  if (res == RES_HDTV_480p_4x3 ||
-      res == RES_HDTV_480p_16x9 ||
-      res == RES_HDTV_720p)
+  if (res == RES_HDTV_480p_4x3 || res == RES_HDTV_480p_16x9 || res == RES_HDTV_720p)
   {
-    CLog::Log(LOGDEBUG, "%s - Progressive Mode detected: Skipping Filter Flicker Patching!", __FUNCTION__);
+    CLog::Log(LOGDEBUG, "%s - Progressive Mode detected: Skipping Filter Flicker Patching!",
+              __FUNCTION__);
     return false;
   }
 
@@ -80,9 +79,12 @@ bool CXBELauncher::ApplyFFPatch(const std::string& strExecutable, std::string& s
   }
 
   CXBE m_xbe;
-  if((int)m_xbe.ExtractGameRegion(strExecutable.c_str()) <= 0) // Reading the GameRegion is enought to detect a Patchable xbe!
+  if ((int)m_xbe.ExtractGameRegion(strExecutable.c_str()) <=
+      0) // Reading the GameRegion is enought to detect a Patchable xbe!
   {
-    CLog::Log(LOGDEBUG, "%s - Not Patchable xbe detected (Homebrew?): Skipping Filter Flicker Patching!", __FUNCTION__);
+    CLog::Log(LOGDEBUG,
+              "%s - Not Patchable xbe detected (Homebrew?): Skipping Filter Flicker Patching!",
+              __FUNCTION__);
     return false;
   }
 
@@ -93,7 +95,8 @@ bool CXBELauncher::ApplyFFPatch(const std::string& strExecutable, std::string& s
     CLog::Log(LOGERROR, "%s - Filter Flicker Patching failed!", __FUNCTION__);
     return false;
   }
-  CLog::Log(LOGDEBUG, "%s - Filter Flicker Patching done. Saved to %s.", __FUNCTION__, strPatchedExecutable.c_str());
+  CLog::Log(LOGDEBUG, "%s - Filter Flicker Patching done. Saved to %s.", __FUNCTION__,
+            strPatchedExecutable.c_str());
   return true;
 }
 
@@ -112,7 +115,8 @@ CTrainer* CXBELauncher::LoadTrainer(unsigned int iTitleID)
       {
         CTrainer* trainer = new CTrainer(items[i]->GetProperty("idtrainer").asInteger32());
         if (trainer->Load(items[i]->GetPath()) &&
-            database.GetTrainerOptions(trainer->GetTrainerId(), iTitleID, trainer->GetOptions(), trainer->GetNumberOfOptions()))
+            database.GetTrainerOptions(trainer->GetTrainerId(), iTitleID, trainer->GetOptions(),
+                                       trainer->GetNumberOfOptions()))
           return trainer;
         else
         {
@@ -140,14 +144,16 @@ bool CXBELauncher::Launch()
   m_trainer = LoadTrainer(CUtil::GetXbeID(m_strExecutable));
   if (m_trainer && !CTrainer::InstallTrainer(*m_trainer))
   {
-    CLog::Log(LOGERROR, "%s - Trainer could not be installed: %s", __FUNCTION__, m_trainer->GetPath());
+    CLog::Log(LOGERROR, "%s - Trainer could not be installed: %s", __FUNCTION__,
+              m_trainer->GetPath());
     return false;
   }
 
   std::string strExecutable = m_strExecutable;
 
   // apply flicker filter
-  if (!URIUtils::IsOnDVD(m_strExecutable) && CSettings::GetInstance().GetBool("myprograms.autoffpatch"))
+  if (!URIUtils::IsOnDVD(m_strExecutable) &&
+      CSettings::GetInstance().GetBool("myprograms.autoffpatch"))
   {
     std::string strPatchedExecutable;
     if (ApplyFFPatch(m_strExecutable, strPatchedExecutable))
@@ -160,7 +166,8 @@ bool CXBELauncher::Launch()
     iRegion = CGUIDialogProgramSettings::GetXBERegion(m_strExecutable);
 
   // look for default executable
-  if (!URIUtils::IsOnDVD(m_strExecutable) && !m_settings->strExecutable.empty() && !CSettings::GetInstance().GetBool("myprograms.autoffpatch"))
+  if (!URIUtils::IsOnDVD(m_strExecutable) && !m_settings->strExecutable.empty() &&
+      !CSettings::GetInstance().GetBool("myprograms.autoffpatch"))
   {
     std::string strParentPath = URIUtils::GetParentPath(m_strExecutable);
     strExecutable = URIUtils::AddFileToFolder(strParentPath, m_settings->strExecutable);

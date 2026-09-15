@@ -41,13 +41,14 @@ class CFileItemList;
 #define RAR_DEFAULT_CACHE "special://temp/"
 #define RAR_DEFAULT_PASSWORD ""
 
-class CFileInfo{
+class CFileInfo
+{
 public:
   CFileInfo();
   ~CFileInfo();
   CStdString m_strCachedPath;
   CStdString m_strPathInRar;
-  bool  m_bAutoDel;
+  bool m_bAutoDel;
   int m_iUsed;
   int64_t m_iOffset;
 
@@ -69,22 +70,28 @@ class CRarManager
 public:
   CRarManager();
   ~CRarManager();
-  bool CacheRarredFile(CStdString& strPathInCache, const CStdString& strRarPath,
-                       const CStdString& strPathInRar, uint8_t bOptions = EXFILE_AUTODELETE,
-                       const CStdString& strDir =RAR_DEFAULT_CACHE, const int64_t iSize=-1);
-  bool GetPathInCache(CStdString& strPathInCache, const CStdString& strRarPath,
+  bool CacheRarredFile(CStdString& strPathInCache,
+                       const CStdString& strRarPath,
+                       const CStdString& strPathInRar,
+                       uint8_t bOptions = EXFILE_AUTODELETE,
+                       const CStdString& strDir = RAR_DEFAULT_CACHE,
+                       const int64_t iSize = -1);
+  bool GetPathInCache(CStdString& strPathInCache,
+                      const CStdString& strRarPath,
                       const CStdString& strPathInRar = "");
-  bool GetFilesInRar(CFileItemList& vecpItems, const CStdString& strRarPath,
-                     bool bMask=true, const CStdString& strPathInRar="");
+  bool GetFilesInRar(CFileItemList& vecpItems,
+                     const CStdString& strRarPath,
+                     bool bMask = true,
+                     const CStdString& strPathInRar = "");
   CFileInfo* GetFileInRar(const CStdString& strRarPath, const CStdString& strPathInRar);
   bool IsFileInRar(bool& bResult, const CStdString& strRarPath, const CStdString& strPathInRar);
-  void ClearCache(bool force=false);
+  void ClearCache(bool force = false);
   void ClearCachedFile(const CStdString& strRarPath, const CStdString& strPathInRar);
   void ExtractArchive(const CStdString& strArchive, const CStdString& strPath);
-protected:
 
-  bool ListArchive(const CStdString& strRarPath, ArchiveList_struct* &pArchiveList);
-  std::map<CStdString, std::pair<ArchiveList_struct*,std::vector<CFileInfo> > > m_ExFiles;
+protected:
+  bool ListArchive(const CStdString& strRarPath, ArchiveList_struct*& pArchiveList);
+  std::map<CStdString, std::pair<ArchiveList_struct*, std::vector<CFileInfo> > > m_ExFiles;
   CCriticalSection m_CritSection;
 
   int64_t CheckFreeSpace(const CStdString& strDrive);
@@ -92,4 +99,3 @@ protected:
 
 extern CRarManager g_RarManager;
 #endif
-

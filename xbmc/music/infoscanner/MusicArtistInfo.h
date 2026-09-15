@@ -40,12 +40,11 @@ public:
   const CArtist& GetArtist() const { return m_artist; }
   CArtist& GetArtist() { return m_artist; }
   const CScraperUrl& GetArtistURL() const { return m_artistURL; }
-  bool Load(XFILE::CCurlFile& http, const ADDON::ScraperPtr& scraper,
-    const std::string &strSearch);
+  bool Load(XFILE::CCurlFile& http, const ADDON::ScraperPtr& scraper, const std::string& strSearch);
 
 protected:
   CArtist m_artist;
   CScraperUrl m_artistURL;
   bool m_bLoaded;
 };
-}
+} // namespace MUSIC_GRABBER

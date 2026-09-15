@@ -27,47 +27,45 @@
 
 namespace XbmcCommons
 {
-  /**
+/**
      @brief The class type_index provides a simple wrapper for type_info
      which can be used as an index type in associative containers (23.6)
      and in unordered associative containers (23.7).
    */
-  struct type_index
+struct type_index
+{
+  inline type_index(const std::type_info& __rhs) : _M_target(&__rhs) {}
+
+  inline bool operator==(const type_index& __rhs) const { return *_M_target == *__rhs._M_target; }
+
+  inline bool operator!=(const type_index& __rhs) const { return *_M_target != *__rhs._M_target; }
+
+  inline bool operator<(const type_index& __rhs) const
   {
-    inline type_index(const std::type_info& __rhs)
-    : _M_target(&__rhs) { }
+    return _M_target->before(*__rhs._M_target) != 0;
+  }
 
-    inline bool
-    operator==(const type_index& __rhs) const
-    { return *_M_target == *__rhs._M_target; }
+  inline bool operator<=(const type_index& __rhs) const
+  {
+    return !__rhs._M_target->before(*_M_target);
+  }
 
-    inline bool
-    operator!=(const type_index& __rhs) const
-    { return *_M_target != *__rhs._M_target; }
+  inline bool operator>(const type_index& __rhs) const
+  {
+    return __rhs._M_target->before(*_M_target) != 0;
+  }
 
-    inline bool
-    operator<(const type_index& __rhs) const
-    { return _M_target->before(*__rhs._M_target) != 0; }
+  inline bool operator>=(const type_index& __rhs) const
+  {
+    return !_M_target->before(*__rhs._M_target);
+  }
 
-    inline bool
-    operator<=(const type_index& __rhs) const
-    { return !__rhs._M_target->before(*_M_target); }
+  inline const char* name() const { return _M_target->name(); }
 
-    inline bool
-    operator>(const type_index& __rhs) const
-    { return __rhs._M_target->before(*_M_target) != 0; }
+private:
+  const std::type_info* _M_target;
+};
 
-    inline bool
-    operator>=(const type_index& __rhs) const
-    { return !_M_target->before(*__rhs._M_target); }
-
-    inline const char*
-    name() const
-    { return _M_target->name(); }
-
-  private:
-    const std::type_info* _M_target;
-  };
-
-  template<typename _Tp> struct hash;
-}
+template<typename _Tp>
+struct hash;
+} // namespace XbmcCommons

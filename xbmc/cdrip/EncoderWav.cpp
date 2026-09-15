@@ -32,10 +32,12 @@ bool CEncoderWav::Init(const char* strFile, int iInChannels, int iInRate, int iI
   m_iBytesWritten = 0;
 
   // we only accept 2 / 44100 / 16 atm
-  if (iInChannels != 2 || iInRate != 44100 || iInBits != 16) return false;
+  if (iInChannels != 2 || iInRate != 44100 || iInBits != 16)
+    return false;
 
   // set input stream information and open the file
-  if (!CEncoder::Init(strFile, iInChannels, iInRate, iInBits)) return false;
+  if (!CEncoder::Init(strFile, iInChannels, iInRate, iInBits))
+    return false;
 
   // write dummy header file
   WAVHDR dummyheader;
@@ -70,7 +72,8 @@ bool CEncoderWav::WriteWavHeader()
   WAVHDR wav;
   int bps = 1;
 
-  if (!m_file) return false;
+  if (!m_file)
+    return false;
 
   memcpy(wav.riff, "RIFF", 4);
   wav.len = m_iBytesWritten + 44 - 8;
@@ -80,7 +83,8 @@ bool CEncoderWav::WriteWavHeader()
   wav.wNumChannels = m_iInChannels;
   wav.dwSampleRate = m_iInSampleRate;
   wav.wBitsPerSample = m_iInBitsPerSample;
-  if (wav.wBitsPerSample == 16) bps = 2;
+  if (wav.wBitsPerSample == 16)
+    bps = 2;
   wav.dwBytesPerSec = m_iInBitsPerSample * m_iInChannels * bps;
   wav.wBlockAlign = 4;
   memcpy(wav.cData, "data", 4);

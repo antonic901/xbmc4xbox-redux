@@ -23,12 +23,10 @@ using namespace LAUNCHERS;
 
 #define CUSTOM_LAUNCH "special://temp/emu_launch.xbe"
 
-SystemMapping Systems[] = {
-                            {"Nintendo Entertainment System", "nes", ".nes"},
-                            {"Sega Master System", "mastersystem", ".sms"},
-                            {"Sega Megadrive / Genesis", "megadrive|genesis", ".md"},
-                            {"Super Nintendo Entertainment System", "snes", ".sfc"}
-                          };
+SystemMapping Systems[] = {{"Nintendo Entertainment System", "nes", ".nes"},
+                           {"Sega Master System", "mastersystem", ".sms"},
+                           {"Sega Megadrive / Genesis", "megadrive|genesis", ".md"},
+                           {"Super Nintendo Entertainment System", "snes", ".sfc"}};
 
 CROMLauncher::CROMLauncher(std::string strExecutable)
 {
@@ -82,7 +80,8 @@ bool CROMLauncher::FindEmulators(const std::string strRomFile, CFileItemList& em
     std::vector<std::string> shortnames = StringUtils::Split(Systems[i].shortname, "|");
     for (std::vector<std::string>::iterator it = shortnames.begin(); it != shortnames.end(); ++it)
     {
-      if (strRomFile.find(*it) != std::string::npos && URIUtils::HasExtension(strRomFile, Systems[i].extension))
+      if (strRomFile.find(*it) != std::string::npos &&
+          URIUtils::HasExtension(strRomFile, Systems[i].extension))
         return database.GetEmulators(Systems[i].shortname, emulators);
     }
   }
@@ -114,7 +113,8 @@ bool CROMLauncher::Launch()
     emulator = emulators[0];
     if (emulators.Size() > 1)
     { // let the user to choose if there is more then one
-      CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+      CGUIDialogSelect* dialog =
+          static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
       dialog->Reset();
       dialog->SetHeading(22080);
       dialog->SetItems(emulators);

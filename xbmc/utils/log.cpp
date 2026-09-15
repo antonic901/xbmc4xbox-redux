@@ -36,18 +36,20 @@
 #define m_logLevel XBMC_GLOBAL_USE(CLog::CLogGlobals).m_logLevel
 #define m_extraLogLevels XBMC_GLOBAL_USE(CLog::CLogGlobals).m_extraLogLevels
 
-static char levelNames[][8] =
-{"DEBUG", "INFO", "NOTICE", "WARNING", "ERROR", "SEVERE", "FATAL", "NONE"};
+static char levelNames[][8] = {"DEBUG", "INFO",   "NOTICE", "WARNING",
+                               "ERROR", "SEVERE", "FATAL",  "NONE"};
 
 CLog::CLog()
-{}
+{
+}
 
 CLog::~CLog()
-{}
+{
+}
 
 void CLog::Close()
 {
-  
+
   CSingleLock waitLock(critSec);
   if (m_file)
   {
@@ -57,15 +59,14 @@ void CLog::Close()
   m_repeatLine.clear();
 }
 
-void CLog::Log(int loglevel, const char *format, ... )
+void CLog::Log(int loglevel, const char* format, ...)
 {
-  static const char* prefixFormat = "%02.2d:%02.2d:%02.2d T:%"PRIu64" %7s: ";
+  static const char* prefixFormat = "%02.2d:%02.2d:%02.2d T:%" PRIu64 " %7s: ";
   CSingleLock waitLock(critSec);
   int extras = (loglevel >> LOGMASKBIT) << LOGMASKBIT;
   loglevel = loglevel & LOGMASK;
 #if !(defined(_DEBUG) || defined(PROFILE))
-  if (m_logLevel > LOG_LEVEL_NORMAL ||
-     (m_logLevel > LOG_LEVEL_NONE && loglevel >= LOGNOTICE))
+  if (m_logLevel > LOG_LEVEL_NORMAL || (m_logLevel > LOG_LEVEL_NONE && loglevel >= LOGNOTICE))
 #endif
   {
     if (!m_file)
@@ -82,7 +83,7 @@ void CLog::Log(int loglevel, const char *format, ... )
     strData.reserve(16384);
     va_list va;
     va_start(va, format);
-    strData = StringUtils::FormatV(format,va);
+    strData = StringUtils::FormatV(format, va);
     va_end(va);
 
     if (m_repeatLogLevel == loglevel && m_repeatLine == strData)
@@ -93,7 +94,8 @@ void CLog::Log(int loglevel, const char *format, ... )
     else if (m_repeatCount)
     {
       CStdString strData2;
-      strPrefix.Format(prefixFormat, time.wHour, time.wMinute, time.wSecond, (uint64_t)CThread::GetCurrentThreadId(), levelNames[m_repeatLogLevel]);
+      strPrefix.Format(prefixFormat, time.wHour, time.wMinute, time.wSecond,
+                       (uint64_t)CThread::GetCurrentThreadId(), levelNames[m_repeatLogLevel]);
 
       strData2.Format("Previous line repeats %d times." LINE_ENDING, m_repeatCount);
       fputs(strPrefix.c_str(), m_file);
@@ -101,12 +103,12 @@ void CLog::Log(int loglevel, const char *format, ... )
       OutputDebugString(strData2);
       m_repeatCount = 0;
     }
-    
-    m_repeatLine      = strData;
-    m_repeatLogLevel  = loglevel;
+
+    m_repeatLine = strData;
+    m_repeatLogLevel = loglevel;
 
     unsigned int length = 0;
-    while ( length != strData.length() )
+    while (length != strData.length())
     {
       length = strData.length();
       strData.TrimRight(" ");
@@ -116,14 +118,15 @@ void CLog::Log(int loglevel, const char *format, ... )
 
     if (!length)
       return;
-    
+
     OutputDebugString(strData);
 
     /* fixup newline alignment, number of spaces should equal prefix length */
-    strData.Replace("\n", LINE_ENDING"                                            ");
+    strData.Replace("\n", LINE_ENDING "                                            ");
     strData += LINE_ENDING;
 
-    strPrefix.Format(prefixFormat, time.wHour, time.wMinute, time.wSecond, (uint64_t)CThread::GetCurrentThreadId(), levelNames[loglevel]);
+    strPrefix.Format(prefixFormat, time.wHour, time.wMinute, time.wSecond,
+                     (uint64_t)CThread::GetCurrentThreadId(), levelNames[loglevel]);
 
     fputs(strPrefix.c_str(), m_file);
     fputs(strData.c_str(), m_file);
@@ -144,14 +147,13 @@ bool CLog::Init(const char* path)
     strLogFileOld.Format("%sxbmc.old.log", path);
 
     struct stat64 info;
-    if (stat64_utf8(strLogFileOld.c_str(),&info) == 0 &&
-        remove_utf8(strLogFileOld.c_str()) != 0)
+    if (stat64_utf8(strLogFileOld.c_str(), &info) == 0 && remove_utf8(strLogFileOld.c_str()) != 0)
       return false;
-    if (stat64_utf8(strLogFile.c_str(),&info) == 0 &&
-        rename_utf8(strLogFile.c_str(),strLogFileOld.c_str()) != 0)
+    if (stat64_utf8(strLogFile.c_str(), &info) == 0 &&
+        rename_utf8(strLogFile.c_str(), strLogFileOld.c_str()) != 0)
       return false;
 
-    m_file = fopen64_utf8(strLogFile.c_str(),"wb");
+    m_file = fopen64_utf8(strLogFile.c_str(), "wb");
   }
 
   if (m_file)
@@ -163,17 +165,17 @@ bool CLog::Init(const char* path)
   return m_file != NULL;
 }
 
-void CLog::MemDump(char *pData, int length)
+void CLog::MemDump(char* pData, int length)
 {
   Log(LOGDEBUG, "MEM_DUMP: Dumping from %p", pData);
-  for (int i = 0; i < length; i+=16)
+  for (int i = 0; i < length; i += 16)
   {
     CStdString strLine;
     strLine.Format("MEM_DUMP: %04x ", i);
-    char *alpha = pData;
-    for (int k=0; k < 4 && i + 4*k < length; k++)
+    char* alpha = pData;
+    for (int k = 0; k < 4 && i + 4 * k < length; k++)
     {
-      for (int j=0; j < 4 && i + 4*k + j < length; j++)
+      for (int j = 0; j < 4 && i + 4 * k + j < length; j++)
       {
         CStdString strFormat;
         strFormat.Format(" %02x", (unsigned char)*pData++);
@@ -182,9 +184,9 @@ void CLog::MemDump(char *pData, int length)
       strLine += " ";
     }
     // pad with spaces
-    while (strLine.size() < 13*4 + 16)
+    while (strLine.size() < 13 * 4 + 16)
       strLine += " ";
-    for (int j=0; j < 16 && i + j < length; j++)
+    for (int j = 0; j < 16 && i + j < length; j++)
     {
       if (*alpha > 31)
         strLine += *alpha;

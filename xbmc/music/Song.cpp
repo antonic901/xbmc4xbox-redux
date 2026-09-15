@@ -41,7 +41,8 @@ CSong::CSong(CFileItem& item)
   strArtistSort = tag.GetArtistSort();
   m_strComposerSort = tag.GetComposerSort();
   //Split the artist sort string to try and get sort names for individual artists
-  std::vector<std::string> artistSort = StringUtils::Split(strArtistSort, g_advancedSettings.m_musicItemSeparator);
+  std::vector<std::string> artistSort =
+      StringUtils::Split(strArtistSort, g_advancedSettings.m_musicItemSeparator);
 
   if (!tag.GetMusicBrainzArtistID().empty())
   { // Have musicbrainz artist info, so use it
@@ -67,7 +68,8 @@ CSong::CSong(CFileItem& item)
     {
       // Tags mis-match - report it and then try to fix
       CLog::Log(LOGDEBUG, "Mis-match in song file tags: %i mbid %i names %s %s",
-        (int)tag.GetMusicBrainzArtistID().size(), (int)artist.size(), strTitle.c_str(), strArtistDesc.c_str());
+                (int)tag.GetMusicBrainzArtistID().size(), (int)artist.size(), strTitle.c_str(),
+                strArtistDesc.c_str());
       /*
         Most likey we have no hints and a single artist name like "Artist1 feat. Artist2"
         or "Composer; Conductor, Orchestra, Soloist" or "Artist1/Artist2" where the
@@ -80,14 +82,15 @@ CSong::CSong(CFileItem& item)
       */
       // Do hints exist yet mis-match
       if (musicBrainzArtistHints.size() > 0 &&
-        musicBrainzArtistHints.size() != tag.GetMusicBrainzArtistID().size())
+          musicBrainzArtistHints.size() != tag.GetMusicBrainzArtistID().size())
       {
         if (artist.size() == tag.GetMusicBrainzArtistID().size())
           // Artist name count matches, use that as hints
           musicBrainzArtistHints = artist;
         else if (musicBrainzArtistHints.size() < tag.GetMusicBrainzArtistID().size())
         { // Try splitting the hints until have matching number
-          musicBrainzArtistHints = StringUtils::SplitMulti(musicBrainzArtistHints, separators, tag.GetMusicBrainzArtistID().size());
+          musicBrainzArtistHints = StringUtils::SplitMulti(musicBrainzArtistHints, separators,
+                                                           tag.GetMusicBrainzArtistID().size());
         }
         else
           // Extra hints, discard them.
@@ -99,7 +102,8 @@ CSong::CSong(CFileItem& item)
       // Still mis-match, try splitting the hints (now artists) until have matching number
       if (musicBrainzArtistHints.size() < tag.GetMusicBrainzArtistID().size())
       {
-        musicBrainzArtistHints = StringUtils::SplitMulti(musicBrainzArtistHints, separators, tag.GetMusicBrainzArtistID().size());
+        musicBrainzArtistHints = StringUtils::SplitMulti(musicBrainzArtistHints, separators,
+                                                         tag.GetMusicBrainzArtistID().size());
       }
     }
     else
@@ -114,7 +118,8 @@ CSong::CSong(CFileItem& item)
     if (artistSort.size() != tag.GetMusicBrainzArtistID().size())
     {
       std::string tempArray[] = {";", ":", "|", "#"};
-      std::vector<std::string> temp(tempArray, tempArray + sizeof(tempArray) / sizeof(tempArray[0]));
+      std::vector<std::string> temp(tempArray,
+                                    tempArray + sizeof(tempArray) / sizeof(tempArray[0]));
       artistSort = StringUtils::SplitMulti(artistSort, temp);
     }
 
@@ -137,7 +142,8 @@ CSong::CSong(CFileItem& item)
       // otherwise something is wrong with them so ignore and leave blank
       if (artistSort.size() == tag.GetMusicBrainzArtistID().size())
       {
-        CArtistCredit artist(StringUtils::Trim(artistName), StringUtils::Trim(artistSort[i]), artistId);
+        CArtistCredit artist(StringUtils::Trim(artistName), StringUtils::Trim(artistSort[i]),
+                             artistId);
         artistCredits.push_back(artist);
       }
       else
@@ -160,7 +166,8 @@ CSong::CSong(CFileItem& item)
     if (artistSort.size() != artist.size())
     { // Split artist sort names further using multiple possible delimiters, over single separator applied in Tag loader
       std::string tempArray[] = {";", ":", "|", "#"};
-      std::vector<std::string> temp(tempArray, tempArray + sizeof(tempArray) / sizeof(tempArray[0]));
+      std::vector<std::string> temp(tempArray,
+                                    tempArray + sizeof(tempArray) / sizeof(tempArray[0]));
       artistSort = StringUtils::SplitMulti(artistSort, temp);
     }
 
@@ -181,8 +188,10 @@ CSong::CSong(CFileItem& item)
     m_albumArtist = tag.GetMusicBrainzAlbumArtistHints();
   else
     // Split album artist names further using multiple possible delimiters, over single separator applied in Tag loader
-    m_albumArtist = StringUtils::SplitMulti(m_albumArtist, g_advancedSettings.m_musicArtistSeparators);
-  for (std::vector<std::string>::iterator it = m_albumArtist.begin(); it != m_albumArtist.end(); ++it)
+    m_albumArtist =
+        StringUtils::SplitMulti(m_albumArtist, g_advancedSettings.m_musicArtistSeparators);
+  for (std::vector<std::string>::iterator it = m_albumArtist.begin(); it != m_albumArtist.end();
+       ++it)
     StringUtils::Trim(*it);
   m_strAlbumArtistSort = tag.GetAlbumArtistSort();
 
@@ -226,7 +235,8 @@ void CSong::MergeScrapedSong(const CSong& source, bool override)
   if (override)
   {
     artistCredits = source.artistCredits; // Replace artists and store mbid returned by scraper
-    strArtistDesc.clear();  // @todo: set artist display string e.g. "artist1 feat. artist2" when scraped
+    strArtistDesc
+        .clear(); // @todo: set artist display string e.g. "artist1 feat. artist2" when scraped
   }
 }
 
@@ -235,7 +245,8 @@ void CSong::Serialize(CVariant& value) const
   value["filename"] = strFileName;
   value["title"] = strTitle;
   value["artist"] = GetArtist();
-  value["artistsort"] = GetArtistSort();  // a string for the song not vector of values for each artist
+  value["artistsort"] =
+      GetArtistSort(); // a string for the song not vector of values for each artist
   value["album"] = strAlbum;
   value["albumartist"] = GetAlbumArtist();
   value["genre"] = genre;
@@ -289,7 +300,8 @@ const std::vector<std::string> CSong::GetArtist() const
 {
   //Get artist names as vector from artist credits
   std::vector<std::string> songartists;
-  for (VECARTISTCREDITS::const_iterator artistCredit = artistCredits.begin(); artistCredit != artistCredits.end(); ++artistCredit)
+  for (VECARTISTCREDITS::const_iterator artistCredit = artistCredits.begin();
+       artistCredit != artistCredits.end(); ++artistCredit)
   {
     songartists.push_back(artistCredit->GetArtist());
   }
@@ -321,7 +333,8 @@ const std::vector<std::string> CSong::GetMusicBrainzArtistID() const
 {
   //Get artist MusicBrainz IDs as vector from artist credits
   std::vector<std::string> muisicBrainzID;
-  for (VECARTISTCREDITS::const_iterator artistCredit = artistCredits.begin(); artistCredit != artistCredits.end(); ++artistCredit)
+  for (VECARTISTCREDITS::const_iterator artistCredit = artistCredits.begin();
+       artistCredit != artistCredits.end(); ++artistCredit)
   {
     muisicBrainzID.push_back(artistCredit->GetMusicBrainzArtistID());
   }
@@ -347,7 +360,8 @@ const std::vector<int> CSong::GetArtistIDArray() const
 {
   // Get song artist IDs for json rpc
   std::vector<int> artistids;
-  for (VECARTISTCREDITS::const_iterator artistCredit = artistCredits.begin(); artistCredit != artistCredits.end(); ++artistCredit)
+  for (VECARTISTCREDITS::const_iterator artistCredit = artistCredits.begin();
+       artistCredit != artistCredits.end(); ++artistCredit)
     artistids.push_back(artistCredit->GetArtistId());
   return artistids;
 }
@@ -359,13 +373,14 @@ void CSong::AppendArtistRole(const CMusicRole& musicRole)
 
 bool CSong::HasArt() const
 {
-  if (!strThumb.empty()) return true;
-  if (!embeddedArt.empty()) return true;
+  if (!strThumb.empty())
+    return true;
+  if (!embeddedArt.empty())
+    return true;
   return false;
 }
 
-bool CSong::ArtMatches(const CSong &right) const
+bool CSong::ArtMatches(const CSong& right) const
 {
-  return (right.strThumb == strThumb &&
-          embeddedArt.matches(right.embeddedArt));
+  return (right.strThumb == strThumb && embeddedArt.matches(right.embeddedArt));
 }

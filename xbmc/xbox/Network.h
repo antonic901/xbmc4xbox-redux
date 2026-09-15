@@ -41,7 +41,6 @@ struct network_info
 class CNetwork
 {
 public:
-
   enum EMESSAGE
   {
     SERVICES_UP,
@@ -52,15 +51,20 @@ public:
   ~CNetwork(void);
 
   /* initializes network settings */
-  bool Initialize(int iAssignment, const char* szLocalAddress, const char* szLocalSubnet, const char* szLocalGateway, const char* szNameServer, const char* szNameServerAlt);
+  bool Initialize(int iAssignment,
+                  const char* szLocalAddress,
+                  const char* szLocalSubnet,
+                  const char* szLocalGateway,
+                  const char* szNameServer,
+                  const char* szNameServerAlt);
   void Deinitialize();
 
   /* waits for network to finish init */
   bool WaitForSetup(unsigned int iTimeout = WAIT_TIME);
-  
+
   // Return true if the magic packet was send
-  bool WakeOnLan(char *mac); 
-  
+  bool WakeOnLan(char* mac);
+
   bool CheckNetwork(int count);
   bool SetupNetwork();
   bool IsEthernetConnected();
@@ -74,21 +78,22 @@ public:
   /* be unplugged */
   DWORD UpdateState();
   void LogState();
-  
+
   /* callback from application controlled thread to handle any setup */
   void NetworkMessage(EMESSAGE message, DWORD dwParam);
 
   struct network_info m_networkinfo;
 
-   // Return true if given name or ip address corresponds to localhost
-   bool IsLocalHost(const std::string& hostname);
+  // Return true if given name or ip address corresponds to localhost
+  bool IsLocalHost(const std::string& hostname);
+
 protected:
-  bool  m_networkup;  /* true if network is available */
-  bool  m_inited;     /* true if initalized() has been called */
-  DWORD m_laststate;  /* will hold the last state, to notice changes */
-  DWORD m_lastlink;   /* will hold the last link, to notice changes */
+  bool m_networkup; /* true if network is available */
+  bool m_inited; /* true if initalized() has been called */
+  DWORD m_laststate; /* will hold the last state, to notice changes */
+  DWORD m_lastlink; /* will hold the last link, to notice changes */
 private:
   void NetworkDown();
   void NetworkUp();
-  CCriticalSection  m_critSection;
+  CCriticalSection m_critSection;
 };

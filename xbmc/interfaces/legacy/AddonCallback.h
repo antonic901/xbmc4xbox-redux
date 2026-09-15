@@ -16,28 +16,28 @@
 namespace XBMCAddon
 {
 
-  /**
+/**
    * This class is the superclass for all API classes that are expected
    * to be able to handle cross-language polymorphism.
    */
-  class AddonCallback : public AddonClass
+class AddonCallback : public AddonClass
+{
+protected:
+  AddonClass::Ref<CallbackHandler> handler;
+
+  bool hasHandler() { return handler.isNotNull(); }
+
+  inline AddonCallback() : handler(NULL)
   {
-  protected:
-    AddonClass::Ref<CallbackHandler> handler;
+    // if there is a LanguageHook, it should be set already.
+    if (languageHook != NULL)
+      setHandler(languageHook->GetCallbackHandler());
+  }
 
-    bool hasHandler() { return handler.isNotNull(); }
+public:
+  virtual ~AddonCallback();
 
-    inline AddonCallback() : handler(NULL)
-    {
-      // if there is a LanguageHook, it should be set already.
-      if (languageHook != NULL)
-        setHandler(languageHook->GetCallbackHandler());
-    }
-  public:
-
-    virtual ~AddonCallback();
-
-    inline void setHandler(CallbackHandler* _handler) { handler = _handler; }
-    void invokeCallback(Callback* callback);
-  };
-}
+  inline void setHandler(CallbackHandler* _handler) { handler = _handler; }
+  void invokeCallback(Callback* callback);
+};
+} // namespace XBMCAddon

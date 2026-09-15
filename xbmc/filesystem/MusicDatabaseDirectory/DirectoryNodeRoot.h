@@ -23,16 +23,15 @@
 
 namespace XFILE
 {
-  namespace MUSICDATABASEDIRECTORY
-  {
-    class CDirectoryNodeRoot : public CDirectoryNode
-    {
-    public:
-      CDirectoryNodeRoot(const std::string& strName, CDirectoryNode* pParent);
-    protected:
-      virtual NODE_TYPE GetChildType() const;
-    };
-  }
-}
+namespace MUSICDATABASEDIRECTORY
+{
+class CDirectoryNodeRoot : public CDirectoryNode
+{
+public:
+  CDirectoryNodeRoot(const std::string& strName, CDirectoryNode* pParent);
 
-
+protected:
+  virtual NODE_TYPE GetChildType() const;
+};
+} // namespace MUSICDATABASEDIRECTORY
+} // namespace XFILE

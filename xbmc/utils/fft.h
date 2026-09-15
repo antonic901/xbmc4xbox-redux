@@ -25,15 +25,16 @@
  *  Arvin Schnell, Am Heidberg 8, 28865 Lilienthal, Germany
  *
  */
-static __inline long double sqr( long double arg )
+static __inline long double sqr(long double arg)
 {
   return arg * arg;
 }
 
-
-static __inline void swap( float &a, float &b )
+static __inline void swap(float& a, float& b)
 {
-  float t = a; a = b; b = t;
+  float t = a;
+  a = b;
+  b = t;
 }
 
 // (complex) fast fourier transformation
@@ -43,10 +44,9 @@ static __inline void swap( float &a, float &b )
 // only on isign (+1 for fft, -1 for inverse fft). The number of complex numbers
 // n must be a power of 2 (which is not checked).
 
-void fft( float data[], int nn, int isign );
+void fft(float data[], int nn, int isign);
 
 void twochannelrfft(float data[], int n);
 void twochanwithwindow(float data[], int n); // test
-
 
 #endif

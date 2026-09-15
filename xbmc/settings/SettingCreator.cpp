@@ -23,7 +23,9 @@
 #include "settings/SettingPath.h"
 #include "utils/StringUtils.h"
 
-CSetting* CSettingCreator::CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager /* = NULL */) const
+CSetting* CSettingCreator::CreateSetting(const std::string& settingType,
+                                         const std::string& settingId,
+                                         CSettingsManager* settingsManager /* = NULL */) const
 {
   if (StringUtils::EqualsNoCase(settingType, "addon"))
     return new CSettingAddon(settingId, settingsManager);

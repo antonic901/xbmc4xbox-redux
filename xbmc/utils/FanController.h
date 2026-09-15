@@ -27,11 +27,10 @@
 class CFanController : public ISettingCallback, public CThread
 {
 public:
-
   void Start(int targetTemperature, int minFanspeed);
   void Stop();
 
-  virtual void OnSettingChanged(const CSetting *setting);
+  virtual void OnSettingChanged(const CSetting* setting);
 
   int GetFanSpeed();
   void SetFanSpeed(const int fanspeed, const bool force = true);
@@ -45,11 +44,18 @@ public:
   static void RemoveInstance();
   virtual ~CFanController();
 
-  static void SettingOptionsSpeedsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data); 
-  static void SettingOptionsTemperaturesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+  static void SettingOptionsSpeedsFiller(const CSetting* setting,
+                                         std::vector<std::pair<std::string, int> >& list,
+                                         int& current,
+                                         void* data);
+  static void SettingOptionsTemperaturesFiller(const CSetting* setting,
+                                               std::vector<std::pair<std::string, int> >& list,
+                                               int& current,
+                                               void* data);
 
 private:
-  enum SensorType {
+  enum SensorType
+  {
     ST_GPU = 0,
     ST_CPU = 1
   };
@@ -67,7 +73,7 @@ private:
   bool bIs16Box;
   CTemperature cpuTemp;
   float cpuFrac;
-  int   cpuTempCount;
+  int cpuTempCount;
   CTemperature cpuLastTemp;
   CTemperature gpuTemp;
   CTemperature gpuLastTemp;

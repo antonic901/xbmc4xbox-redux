@@ -27,34 +27,34 @@
 
 namespace MUSIC_INFO
 {
-  class EmbeddedArtInfo : public IArchivable
-  {
-  public:
-    EmbeddedArtInfo() : size(0) { }
-    EmbeddedArtInfo(size_t size, const std::string &mime);
-    ~EmbeddedArtInfo() { }
+class EmbeddedArtInfo : public IArchivable
+{
+public:
+  EmbeddedArtInfo() : size(0) {}
+  EmbeddedArtInfo(size_t size, const std::string& mime);
+  ~EmbeddedArtInfo() {}
 
-    // implementation of IArchivable
-    virtual void Archive(CArchive& ar);
+  // implementation of IArchivable
+  virtual void Archive(CArchive& ar);
 
-    void set(size_t size, const std::string &mime);
-    void clear();
-    bool empty() const;
-    bool matches(const EmbeddedArtInfo &right) const;
+  void set(size_t size, const std::string& mime);
+  void clear();
+  bool empty() const;
+  bool matches(const EmbeddedArtInfo& right) const;
 
-    size_t size;
-    std::string mime;
-  };
+  size_t size;
+  std::string mime;
+};
 
-  class EmbeddedArt : public EmbeddedArtInfo
-  {
-  public:
-    EmbeddedArt() { }
-    EmbeddedArt(const uint8_t *data, size_t size, const std::string &mime);
-    ~EmbeddedArt() { }
+class EmbeddedArt : public EmbeddedArtInfo
+{
+public:
+  EmbeddedArt() {}
+  EmbeddedArt(const uint8_t* data, size_t size, const std::string& mime);
+  ~EmbeddedArt() {}
 
-    void set(const uint8_t *data, size_t size, const std::string &mime);
+  void set(const uint8_t* data, size_t size, const std::string& mime);
 
-    std::vector<uint8_t> data;
-  };
-}
+  std::vector<uint8_t> data;
+};
+} // namespace MUSIC_INFO

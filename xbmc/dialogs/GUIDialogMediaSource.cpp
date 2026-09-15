@@ -46,20 +46,20 @@
 
 using namespace XFILE;
 
-#define CONTROL_HEADING          2
-#define CONTROL_PATH            10
-#define CONTROL_PATH_BROWSE     11
-#define CONTROL_NAME            12
-#define CONTROL_PATH_ADD        13
-#define CONTROL_PATH_REMOVE     14
-#define CONTROL_OK              18
-#define CONTROL_CANCEL          19
-#define CONTROL_CONTENT         20
+#define CONTROL_HEADING 2
+#define CONTROL_PATH 10
+#define CONTROL_PATH_BROWSE 11
+#define CONTROL_NAME 12
+#define CONTROL_PATH_ADD 13
+#define CONTROL_PATH_REMOVE 14
+#define CONTROL_OK 18
+#define CONTROL_CANCEL 19
+#define CONTROL_CONTENT 20
 
 CGUIDialogMediaSource::CGUIDialogMediaSource(void)
-    : CGUIDialog(WINDOW_DIALOG_MEDIA_SOURCE, "DialogMediaSource.xml")
-    , m_confirmed(false)
-    , m_bNameChanged(false)
+  : CGUIDialog(WINDOW_DIALOG_MEDIA_SOURCE, "DialogMediaSource.xml"),
+    m_confirmed(false),
+    m_bNameChanged(false)
 {
   m_paths = new CFileItemList;
   m_loadType = KEEP_IN_MEMORY;
@@ -80,57 +80,60 @@ bool CGUIDialogMediaSource::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
   {
-  case GUI_MSG_CLICKED:
-  {
-    int iControl = message.GetSenderId();
-    int iAction = message.GetParam1();
-    if (iControl == CONTROL_PATH && (iAction == ACTION_SELECT_ITEM || iAction == ACTION_MOUSE_LEFT_CLICK))
-      OnPath(GetSelectedItem());
-    else if (iControl == CONTROL_PATH_BROWSE)
-      OnPathBrowse(GetSelectedItem());
-    else if (iControl == CONTROL_PATH_ADD)
-      OnPathAdd();
-    else if (iControl == CONTROL_PATH_REMOVE)
-      OnPathRemove(GetSelectedItem());
-    else if (iControl == CONTROL_NAME)
+    case GUI_MSG_CLICKED:
     {
-      OnEditChanged(iControl, m_name);
+      int iControl = message.GetSenderId();
+      int iAction = message.GetParam1();
+      if (iControl == CONTROL_PATH &&
+          (iAction == ACTION_SELECT_ITEM || iAction == ACTION_MOUSE_LEFT_CLICK))
+        OnPath(GetSelectedItem());
+      else if (iControl == CONTROL_PATH_BROWSE)
+        OnPathBrowse(GetSelectedItem());
+      else if (iControl == CONTROL_PATH_ADD)
+        OnPathAdd();
+      else if (iControl == CONTROL_PATH_REMOVE)
+        OnPathRemove(GetSelectedItem());
+      else if (iControl == CONTROL_NAME)
+      {
+        OnEditChanged(iControl, m_name);
+        UpdateButtons();
+      }
+      else if (iControl == CONTROL_OK)
+        OnOK();
+      else if (iControl == CONTROL_CANCEL)
+        OnCancel();
+      else
+        break;
+      return true;
+    }
+    break;
+    case GUI_MSG_WINDOW_INIT:
+    {
       UpdateButtons();
     }
-    else if (iControl == CONTROL_OK)
-      OnOK();
-    else if (iControl == CONTROL_CANCEL)
-      OnCancel();
-    else
-      break;
-    return true;
-  }
-  break;
-  case GUI_MSG_WINDOW_INIT:
-  {
-    UpdateButtons();
-  }
-  break;
-  case GUI_MSG_SETFOCUS:
-    if (message.GetControlId() == CONTROL_PATH_BROWSE ||
-      message.GetControlId() == CONTROL_PATH_ADD ||
-      message.GetControlId() == CONTROL_PATH_REMOVE)
-    {
-      HighlightItem(GetSelectedItem());
-    }
-    else
-      HighlightItem(-1);
     break;
+    case GUI_MSG_SETFOCUS:
+      if (message.GetControlId() == CONTROL_PATH_BROWSE ||
+          message.GetControlId() == CONTROL_PATH_ADD ||
+          message.GetControlId() == CONTROL_PATH_REMOVE)
+      {
+        HighlightItem(GetSelectedItem());
+      }
+      else
+        HighlightItem(-1);
+      break;
   }
   return CGUIDialog::OnMessage(message);
 }
 
 // \brief Show CGUIDialogMediaSource dialog and prompt for a new media source.
 // \return True if the media source is added, false otherwise.
-bool CGUIDialogMediaSource::ShowAndAddMediaSource(const std::string &type)
+bool CGUIDialogMediaSource::ShowAndAddMediaSource(const std::string& type)
 {
-  CGUIDialogMediaSource *dialog = (CGUIDialogMediaSource *)g_windowManager.GetWindow(WINDOW_DIALOG_MEDIA_SOURCE);
-  if (!dialog) return false;
+  CGUIDialogMediaSource* dialog =
+      (CGUIDialogMediaSource*)g_windowManager.GetWindow(WINDOW_DIALOG_MEDIA_SOURCE);
+  if (!dialog)
+    return false;
   dialog->Initialize();
   dialog->SetShare(CMediaSource());
   dialog->SetTypeOfMedia(type);
@@ -145,7 +148,7 @@ bool CGUIDialogMediaSource::ShowAndAddMediaSource(const std::string &type)
     std::string strName = dialog->m_name;
     while (!bConfirmed)
     {
-      for (i = 0;i<pShares->size();++i)
+      for (i = 0; i < pShares->size(); ++i)
       {
         if (StringUtils::EqualsNoCase((*pShares)[i].strName, strName))
           break;
@@ -156,7 +159,8 @@ bool CGUIDialogMediaSource::ShowAndAddMediaSource(const std::string &type)
         bConfirmed = true;
     }
     share.FromNameAndPaths(type, strName, dialog->GetPaths());
-    if (dialog->m_paths->Size() > 0) {
+    if (dialog->m_paths->Size() > 0)
+    {
       share.m_strThumbnailImage = dialog->m_paths->Get(0)->GetArt("thumb");
     }
     CMediaSourceSettings::Get().AddShare(type, share);
@@ -165,12 +169,13 @@ bool CGUIDialogMediaSource::ShowAndAddMediaSource(const std::string &type)
   return confirmed;
 }
 
-bool CGUIDialogMediaSource::ShowAndEditMediaSource(const std::string &type, const std::string&share)
+bool CGUIDialogMediaSource::ShowAndEditMediaSource(const std::string& type,
+                                                   const std::string& share)
 {
   VECSOURCES* pShares = CMediaSourceSettings::Get().GetSources(type);
   if (pShares)
   {
-    for (unsigned int i = 0;i<pShares->size();++i)
+    for (unsigned int i = 0; i < pShares->size(); ++i)
     {
       if (StringUtils::EqualsNoCase((*pShares)[i].strName, share))
         return ShowAndEditMediaSource(type, (*pShares)[i]);
@@ -179,11 +184,14 @@ bool CGUIDialogMediaSource::ShowAndEditMediaSource(const std::string &type, cons
   return false;
 }
 
-bool CGUIDialogMediaSource::ShowAndEditMediaSource(const std::string &type, const CMediaSource &share)
+bool CGUIDialogMediaSource::ShowAndEditMediaSource(const std::string& type,
+                                                   const CMediaSource& share)
 {
   std::string strOldName = share.strName;
-  CGUIDialogMediaSource *dialog = (CGUIDialogMediaSource *)g_windowManager.GetWindow(WINDOW_DIALOG_MEDIA_SOURCE);
-  if (!dialog) return false;
+  CGUIDialogMediaSource* dialog =
+      (CGUIDialogMediaSource*)g_windowManager.GetWindow(WINDOW_DIALOG_MEDIA_SOURCE);
+  if (!dialog)
+    return false;
   dialog->Initialize();
   dialog->SetShare(share);
   dialog->SetTypeOfMedia(type, true);
@@ -197,7 +205,7 @@ bool CGUIDialogMediaSource::ShowAndEditMediaSource(const std::string &type, cons
     std::string strName = dialog->m_name;
     while (!bConfirmed)
     {
-      for (i = 0;i<pShares->size();++i)
+      for (i = 0; i < pShares->size(); ++i)
       {
         if (StringUtils::EqualsNoCase((*pShares)[i].strName, strName))
           break;
@@ -218,7 +226,8 @@ bool CGUIDialogMediaSource::ShowAndEditMediaSource(const std::string &type, cons
 
 void CGUIDialogMediaSource::OnPathBrowse(int item)
 {
-  if (item < 0 || item > m_paths->Size()) return;
+  if (item < 0 || item > m_paths->Size())
+    return;
   // Browse is called.  Open the filebrowser dialog.
   // Ignore current path is best at this stage??
   std::string path;
@@ -353,7 +362,8 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
   {
     // nothing to add
   }
-  if (CGUIDialogFileBrowser::ShowAndGetSource(path, allowNetworkShares, extraShares.size() == 0 ? NULL : &extraShares))
+  if (CGUIDialogFileBrowser::ShowAndGetSource(path, allowNetworkShares,
+                                              extraShares.size() == 0 ? NULL : &extraShares))
   {
     if (item < m_paths->Size()) // if the skin does funky things, m_paths may have been cleared
       m_paths->Get(item)->SetPath(path);
@@ -370,13 +380,14 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
 
 void CGUIDialogMediaSource::OnPath(int item)
 {
-  if (item < 0 || item > m_paths->Size()) return;
+  if (item < 0 || item > m_paths->Size())
+    return;
 
   if (m_name != CUtil::GetTitleFromPath(m_paths->Get(item)->GetPath()))
     m_bNameChanged = true;
 
   std::string path(m_paths->Get(item)->GetPath());
-  CGUIKeyboardFactory::ShowAndGetInput(path, g_localizeStrings.Get(1021) , false);
+  CGUIKeyboardFactory::ShowAndGetInput(path, g_localizeStrings.Get(1021), false);
   m_paths->Get(item)->SetPath(path);
 
   if (!m_bNameChanged || m_name.empty())
@@ -397,15 +408,18 @@ void CGUIDialogMediaSource::OnOK()
   CMediaSource share;
   share.FromNameAndPaths(m_type, m_name, GetPaths());
   // hack: Need to temporarily add the share, then get path, then remove share
-  VECSOURCES *shares = CMediaSourceSettings::Get().GetSources(m_type);
+  VECSOURCES* shares = CMediaSourceSettings::Get().GetSources(m_type);
   if (shares)
     shares->push_back(share);
-  if (StringUtils::StartsWithNoCase(share.strPath, "plugin://") || CDirectory::GetDirectory(share.strPath, items, "", DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_ALLOW_PROMPT) || CGUIDialogYesNo::ShowAndGetInput( 1001 ,  1025 ))
+  if (StringUtils::StartsWithNoCase(share.strPath, "plugin://") ||
+      CDirectory::GetDirectory(share.strPath, items, "",
+                               DIR_FLAG_NO_FILE_DIRS | DIR_FLAG_ALLOW_PROMPT) ||
+      CGUIDialogYesNo::ShowAndGetInput(1001, 1025))
   {
     m_confirmed = true;
     Close();
     if (!StringUtils::StartsWithNoCase(share.strPath, "rss://") &&
-      !StringUtils::StartsWithNoCase(share.strPath, "upnp://"))
+        !StringUtils::StartsWithNoCase(share.strPath, "upnp://"))
     {
       if (m_type == "video" && !URIUtils::IsLiveTV(share.strPath))
         CGUIWindowVideoBase::OnAssignContent(share.strPath);
@@ -445,7 +459,8 @@ void CGUIDialogMediaSource::UpdateButtons()
     std::string path;
     CURL url(item->GetPath());
     path = url.GetWithoutUserDetails();
-    if (path.empty()) path = "<" + g_localizeStrings.Get(231) + ">"; // <None>
+    if (path.empty())
+      path = "<" + g_localizeStrings.Get(231) + ">"; // <None>
     item->SetLabel(path);
   }
   CGUIMessage msg(GUI_MSG_LABEL_BIND, GetID(), CONTROL_PATH, 0, 0, m_paths);
@@ -455,7 +470,7 @@ void CGUIDialogMediaSource::UpdateButtons()
   SET_CONTROL_HIDDEN(CONTROL_CONTENT);
 }
 
-void CGUIDialogMediaSource::SetShare(const CMediaSource &share)
+void CGUIDialogMediaSource::SetShare(const CMediaSource& share)
 {
   m_paths->Clear();
   for (unsigned int i = 0; i < share.vecPaths.size(); i++)
@@ -472,7 +487,7 @@ void CGUIDialogMediaSource::SetShare(const CMediaSource &share)
   UpdateButtons();
 }
 
-void CGUIDialogMediaSource::SetTypeOfMedia(const std::string &type, bool editNotAdd)
+void CGUIDialogMediaSource::SetTypeOfMedia(const std::string& type, bool editNotAdd)
 {
   m_type = type;
   std::string heading;
@@ -510,7 +525,8 @@ int CGUIDialogMediaSource::GetSelectedItem()
   CGUIMessage message(GUI_MSG_ITEM_SELECTED, GetID(), CONTROL_PATH);
   OnMessage(message);
   int value = message.GetParam1();
-  if (value < 0 || value > m_paths->Size()) return 0;
+  if (value < 0 || value > m_paths->Size())
+    return 0;
   return value;
 }
 

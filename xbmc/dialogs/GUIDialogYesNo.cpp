@@ -24,7 +24,7 @@
 #include "messaging/helpers/DialogHelper.h"
 
 CGUIDialogYesNo::CGUIDialogYesNo(int overrideId /* = -1 */)
-    : CGUIDialogBoxBase(overrideId == -1 ? WINDOW_DIALOG_YES_NO : overrideId, "DialogConfirm.xml")
+  : CGUIDialogBoxBase(overrideId == -1 ? WINDOW_DIALOG_YES_NO : overrideId, "DialogConfirm.xml")
 {
   m_bConfirmed = false;
   m_bCanceled = false;
@@ -37,9 +37,9 @@ CGUIDialogYesNo::~CGUIDialogYesNo()
 
 bool CGUIDialogYesNo::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_CLICKED:
+    case GUI_MSG_CLICKED:
     {
       int iControl = message.GetSenderId();
       int iAction = message.GetParam1();
@@ -91,20 +91,34 @@ void CGUIDialogYesNo::OnInitWindow()
   CGUIDialogBoxBase::OnInitWindow();
 }
 
-bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2, bool &bCanceled)
+bool CGUIDialogYesNo::ShowAndGetInput(
+    CVariant heading, CVariant line0, CVariant line1, CVariant line2, bool& bCanceled)
 {
   return ShowAndGetInput(heading, line0, line1, line2, bCanceled, "", "", NO_TIMEOUT);
 }
 
-bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2, CVariant noLabel /* = "" */, CVariant yesLabel /* = "" */)
+bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading,
+                                      CVariant line0,
+                                      CVariant line1,
+                                      CVariant line2,
+                                      CVariant noLabel /* = "" */,
+                                      CVariant yesLabel /* = "" */)
 {
   bool bDummy(false);
   return ShowAndGetInput(heading, line0, line1, line2, bDummy, noLabel, yesLabel, NO_TIMEOUT);
 }
 
-bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant line0, CVariant line1, CVariant line2, bool &bCanceled, CVariant noLabel, CVariant yesLabel, unsigned int autoCloseTime)
+bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading,
+                                      CVariant line0,
+                                      CVariant line1,
+                                      CVariant line2,
+                                      bool& bCanceled,
+                                      CVariant noLabel,
+                                      CVariant yesLabel,
+                                      unsigned int autoCloseTime)
 {
-  CGUIDialogYesNo *dialog = static_cast<CGUIDialogYesNo *>(g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO));
+  CGUIDialogYesNo* dialog =
+      static_cast<CGUIDialogYesNo*>(g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO));
   if (!dialog)
     return false;
 
@@ -130,7 +144,12 @@ bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant text)
   return ShowAndGetInput(heading, text, "", "", bDummy);
 }
 
-bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant text, bool &bCanceled, CVariant noLabel /* = "" */, CVariant yesLabel /* = "" */, unsigned int autoCloseTime)
+bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading,
+                                      CVariant text,
+                                      bool& bCanceled,
+                                      CVariant noLabel /* = "" */,
+                                      CVariant yesLabel /* = "" */,
+                                      unsigned int autoCloseTime)
 {
   int result = ShowAndGetInput(heading, text, noLabel, yesLabel, "", autoCloseTime);
 
@@ -138,9 +157,15 @@ bool CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant text, bool &bCa
   return result == 1;
 }
 
-int CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant text, CVariant noLabel, CVariant yesLabel, CVariant customLabel, unsigned int autoCloseTime)
+int CGUIDialogYesNo::ShowAndGetInput(CVariant heading,
+                                     CVariant text,
+                                     CVariant noLabel,
+                                     CVariant yesLabel,
+                                     CVariant customLabel,
+                                     unsigned int autoCloseTime)
 {
-  CGUIDialogYesNo *dialog = static_cast<CGUIDialogYesNo *>(g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO));
+  CGUIDialogYesNo* dialog =
+      static_cast<CGUIDialogYesNo*>(g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO));
   if (!dialog)
     return false;
 
@@ -152,7 +177,7 @@ int CGUIDialogYesNo::ShowAndGetInput(CVariant heading, CVariant text, CVariant n
   dialog->m_bCustom = false;
   dialog->SetChoice(0, !noLabel.empty() ? noLabel : 106);
   dialog->SetChoice(1, !yesLabel.empty() ? yesLabel : 107);
-  dialog->SetChoice(2, customLabel);  // Button only visible when label is not empty
+  dialog->SetChoice(2, customLabel); // Button only visible when label is not empty
 
   dialog->Open();
 

@@ -14,35 +14,40 @@
 #ifndef SWIG
 namespace XBMCAddon
 {
-  XBMCCOMMONS_STANDARD_EXCEPTION(WrongTypeException);
+XBMCCOMMONS_STANDARD_EXCEPTION(WrongTypeException);
 
-  /**
+/**
    * UnimplementedException Can be used in places like the
    *  Control hierarchy where the
    *  requirements of dynamic language usage force us to add
    *  unimplemented methods to a class hierarchy. See the
    *  detailed explanation on the class Control for more.
    */
-  class UnimplementedException : public XbmcCommons::Exception
+class UnimplementedException : public XbmcCommons::Exception
+{
+public:
+  inline UnimplementedException(const UnimplementedException& other) : Exception(other) {}
+  inline UnimplementedException(const char* classname, const char* methodname)
+    : Exception("UnimplementedException")
   {
-  public:
-    inline UnimplementedException(const UnimplementedException& other) : Exception(other) { }
-    inline UnimplementedException(const char* classname, const char* methodname) :
-      Exception("UnimplementedException")
-    { SetMessage("Unimplemented method: %s::%s(...)", classname, methodname); }
-  };
+    SetMessage("Unimplemented method: %s::%s(...)", classname, methodname);
+  }
+};
 
-  /**
+/**
    * This is what callback exceptions from the scripting language
    *  are translated to.
    */
-  class UnhandledException : public XbmcCommons::Exception
+class UnhandledException : public XbmcCommons::Exception
+{
+public:
+  inline UnhandledException(const UnhandledException& other) : Exception(other) {}
+  inline UnhandledException(const char* _message, ...) : Exception("UnhandledException")
   {
-  public:
-    inline UnhandledException(const UnhandledException& other) : Exception(other) { }
-    inline UnhandledException(const char* _message,...) : Exception("UnhandledException") { XBMCCOMMONS_COPYVARARGS(_message); }
-  };
-}
+    XBMCCOMMONS_COPYVARARGS(_message);
+  }
+};
+} // namespace XBMCAddon
 #endif
 
 /**
@@ -52,4 +57,3 @@ namespace XBMCAddon
  *  languages. See the comment in AddonControl.h for more details.
  */
 #define THROW_UNIMP(classname) throw UnimplementedException(classname, __FUNCTION__)
-

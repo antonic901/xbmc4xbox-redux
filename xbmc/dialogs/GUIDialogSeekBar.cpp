@@ -23,13 +23,13 @@
 #include "GUIInfoManager.h"
 #include "utils/SeekHandler.h"
 
-#define POPUP_SEEK_PROGRESS     401
-#define POPUP_SEEK_LABEL        402
+#define POPUP_SEEK_PROGRESS 401
+#define POPUP_SEEK_LABEL 402
 
 CGUIDialogSeekBar::CGUIDialogSeekBar(void)
   : CGUIDialog(WINDOW_DIALOG_SEEK_BAR, "DialogSeekBar.xml", MODELESS)
 {
-  m_loadType = LOAD_ON_GUI_INIT;    // the application class handles our resources
+  m_loadType = LOAD_ON_GUI_INIT; // the application class handles our resources
 }
 
 CGUIDialogSeekBar::~CGUIDialogSeekBar(void)
@@ -38,21 +38,21 @@ CGUIDialogSeekBar::~CGUIDialogSeekBar(void)
 
 bool CGUIDialogSeekBar::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_INIT:
-  case GUI_MSG_WINDOW_DEINIT:
-    return CGUIDialog::OnMessage(message);
-
-  case GUI_MSG_LABEL_SET:
-    if (message.GetSenderId() == GetID() && message.GetControlId() == POPUP_SEEK_LABEL)
+    case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_DEINIT:
       return CGUIDialog::OnMessage(message);
-    break;
 
-  case GUI_MSG_ITEM_SELECT:
-    if (message.GetSenderId() == GetID() && message.GetControlId() == POPUP_SEEK_PROGRESS)
-      return CGUIDialog::OnMessage(message);
-    break;
+    case GUI_MSG_LABEL_SET:
+      if (message.GetSenderId() == GetID() && message.GetControlId() == POPUP_SEEK_LABEL)
+        return CGUIDialog::OnMessage(message);
+      break;
+
+    case GUI_MSG_ITEM_SELECT:
+      if (message.GetSenderId() == GetID() && message.GetControlId() == POPUP_SEEK_PROGRESS)
+        return CGUIDialog::OnMessage(message);
+      break;
   }
   return false; // don't process anything other than what we need!
 }
@@ -68,7 +68,9 @@ void CGUIDialogSeekBar::FrameMove()
   // update controls
   if (!CSeekHandler::Get().InProgress() && g_infoManager.GetTotalPlayTime())
   { // position the bar at our current time
-    CONTROL_SELECT_ITEM(POPUP_SEEK_PROGRESS, (unsigned int)(static_cast<float>(g_infoManager.GetPlayTime()) / g_infoManager.GetTotalPlayTime() * 0.1f));
+    CONTROL_SELECT_ITEM(POPUP_SEEK_PROGRESS,
+                        (unsigned int)(static_cast<float>(g_infoManager.GetPlayTime()) /
+                                       g_infoManager.GetTotalPlayTime() * 0.1f));
     SET_CONTROL_LABEL(POPUP_SEEK_LABEL, g_infoManager.GetCurrentPlayTime());
   }
   else

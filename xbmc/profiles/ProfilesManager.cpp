@@ -52,14 +52,14 @@
 // eventually the profile should dictate where special://masterprofile/ is
 // but for now it makes sense to leave all the profile settings in a user
 // writeable location like special://masterprofile/
-#define PROFILES_FILE     "special://masterprofile/profiles.xml"
+#define PROFILES_FILE "special://masterprofile/profiles.xml"
 
-#define XML_PROFILES      "profiles"
-#define XML_AUTO_LOGIN    "autologin"
-#define XML_LAST_LOADED   "lastloaded"
-#define XML_LOGIN_SCREEN  "useloginscreen"
-#define XML_NEXTID        "nextIdProfile"
-#define XML_PROFILE       "profile"
+#define XML_PROFILES "profiles"
+#define XML_AUTO_LOGIN "autologin"
+#define XML_LAST_LOADED "lastloaded"
+#define XML_LOGIN_SCREEN "useloginscreen"
+#define XML_NEXTID "nextIdProfile"
+#define XML_PROFILE "profile"
 
 using namespace std;
 using namespace XFILE;
@@ -67,12 +67,17 @@ using namespace XFILE;
 static CProfile EmptyProfile;
 
 CProfilesManager::CProfilesManager()
-  : m_usingLoginScreen(false), m_autoLoginProfile(-1), m_lastUsedProfile(0),
-    m_currentProfile(0), m_nextProfileId(0)
-{ }
+  : m_usingLoginScreen(false),
+    m_autoLoginProfile(-1),
+    m_lastUsedProfile(0),
+    m_currentProfile(0),
+    m_nextProfileId(0)
+{
+}
 
 CProfilesManager::~CProfilesManager()
-{ }
+{
+}
 
 CProfilesManager& CProfilesManager::Get()
 {
@@ -96,9 +101,9 @@ void CProfilesManager::OnSettingsLoaded()
   }
 
   CDirectory::Create(strDir);
-  CDirectory::Create(URIUtils::AddFileToFolder(strDir,"music"));
-  CDirectory::Create(URIUtils::AddFileToFolder(strDir,"video"));
-  CDirectory::Create(URIUtils::AddFileToFolder(strDir,"mixed"));
+  CDirectory::Create(URIUtils::AddFileToFolder(strDir, "music"));
+  CDirectory::Create(URIUtils::AddFileToFolder(strDir, "video"));
+  CDirectory::Create(URIUtils::AddFileToFolder(strDir, "mixed"));
 }
 
 void CProfilesManager::OnSettingsSaved()
@@ -117,7 +122,7 @@ bool CProfilesManager::Load()
   return Load(PROFILES_FILE);
 }
 
-bool CProfilesManager::Load(const std::string &file)
+bool CProfilesManager::Load(const std::string& file)
 {
   CSingleLock lock(m_critical);
   bool ret = true;
@@ -130,7 +135,7 @@ bool CProfilesManager::Load(const std::string &file)
     CXBMCTinyXML profilesDoc;
     if (profilesDoc.LoadFile(file))
     {
-      const TiXmlElement *rootElement = profilesDoc.RootElement();
+      const TiXmlElement* rootElement = profilesDoc.RootElement();
       if (rootElement && StringUtils::EqualsNoCase(rootElement->Value(), XML_PROFILES))
       {
         XMLUtils::GetUInt(rootElement, XML_LAST_LOADED, m_lastUsedProfile);
@@ -160,7 +165,8 @@ bool CProfilesManager::Load(const std::string &file)
     }
     else
     {
-      CLog::Log(LOGERROR, "CProfilesManager: error loading %s, Line %d\n%s", file.c_str(), profilesDoc.ErrorRow(), profilesDoc.ErrorDesc());
+      CLog::Log(LOGERROR, "CProfilesManager: error loading %s, Line %d\n%s", file.c_str(),
+                profilesDoc.ErrorRow(), profilesDoc.ErrorDesc());
       ret = false;
     }
   }
@@ -196,13 +202,13 @@ bool CProfilesManager::Save()
   return Save(PROFILES_FILE);
 }
 
-bool CProfilesManager::Save(const std::string &file) const
+bool CProfilesManager::Save(const std::string& file) const
 {
   CSingleLock lock(m_critical);
 
   CXBMCTinyXML xmlDoc;
   TiXmlElement xmlRootElement(XML_PROFILES);
-  TiXmlNode *pRoot = xmlDoc.InsertEndChild(xmlRootElement);
+  TiXmlNode* pRoot = xmlDoc.InsertEndChild(xmlRootElement);
   if (pRoot == NULL)
     return false;
 
@@ -211,7 +217,8 @@ bool CProfilesManager::Save(const std::string &file) const
   XMLUtils::SetInt(pRoot, XML_AUTO_LOGIN, m_autoLoginProfile);
   XMLUtils::SetInt(pRoot, XML_NEXTID, m_nextProfileId);
 
-  for (vector<CProfile>::const_iterator profile = m_profiles.begin(); profile != m_profiles.end(); profile++)
+  for (vector<CProfile>::const_iterator profile = m_profiles.begin(); profile != m_profiles.end();
+       profile++)
     profile->Save(pRoot);
 
   // save the file
@@ -247,7 +254,8 @@ bool CProfilesManager::LoadProfile(size_t index)
   // load the new settings
   if (!CSettings::GetInstance().Load())
   {
-    CLog::Log(LOGFATAL, "CProfilesManager: unable to load settings for profile \"%s\"", m_profiles.at(index).getName().c_str());
+    CLog::Log(LOGFATAL, "CProfilesManager: unable to load settings for profile \"%s\"",
+              m_profiles.at(index).getName().c_str());
     return false;
   }
   CSettings::GetInstance().SetLoaded();
@@ -290,7 +298,7 @@ bool CProfilesManager::LoadProfile(size_t index)
 bool CProfilesManager::DeleteProfile(size_t index)
 {
   CSingleLock lock(m_critical);
-  const CProfile *profile = GetProfile(index);
+  const CProfile* profile = GetProfile(index);
   if (profile == NULL)
     return false;
 
@@ -325,7 +333,8 @@ bool CProfilesManager::DeleteProfile(size_t index)
     CSettings::GetInstance().Save();
   }
 
-  CFileItemPtr item = CFileItemPtr(new CFileItem(URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory)));
+  CFileItemPtr item =
+      CFileItemPtr(new CFileItem(URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory)));
   item->SetPath(URIUtils::AddFileToFolder(GetUserDataFolder(), strDirectory + "/"));
   item->m_bIsFolder = true;
   item->Select(true);
@@ -348,7 +357,8 @@ void CProfilesManager::CreateProfileFolders()
   CDirectory::Create(GetGameSaveThumbFolder());
 #endif
   for (size_t hex = 0; hex < 16; hex++)
-    CDirectory::Create(URIUtils::AddFileToFolder(GetThumbnailsFolder(), StringUtils::Format("%x", hex)));
+    CDirectory::Create(
+        URIUtils::AddFileToFolder(GetThumbnailsFolder(), StringUtils::Format("%x", hex)));
 
   CDirectory::Create("special://profile/addon_data");
   CDirectory::Create("special://profile/keymaps");
@@ -370,7 +380,10 @@ const CProfile& CProfilesManager::GetCurrentProfile() const
   if (m_currentProfile < m_profiles.size())
     return m_profiles[m_currentProfile];
 
-  CLog::Log(LOGERROR, "CProfilesManager: current profile index (%u) is outside of the valid range (%" PRIdS ")", m_currentProfile, m_profiles.size());
+  CLog::Log(LOGERROR,
+            "CProfilesManager: current profile index (%u) is outside of the valid range (%" PRIdS
+            ")",
+            m_currentProfile, m_profiles.size());
   return EmptyProfile;
 }
 
@@ -392,7 +405,7 @@ CProfile* CProfilesManager::GetProfile(size_t index)
   return NULL;
 }
 
-int CProfilesManager::GetProfileIndex(const std::string &name) const
+int CProfilesManager::GetProfileIndex(const std::string& name) const
 {
   CSingleLock lock(m_critical);
   for (size_t i = 0; i < m_profiles.size(); i++)
@@ -404,7 +417,7 @@ int CProfilesManager::GetProfileIndex(const std::string &name) const
   return -1;
 }
 
-void CProfilesManager::AddProfile(const CProfile &profile)
+void CProfilesManager::AddProfile(const CProfile& profile)
 {
   CSingleLock lock(m_critical);
   // data integrity check - covers off migration from old profiles.xml,
@@ -433,7 +446,7 @@ void CProfilesManager::LoadMasterProfileForLogin()
 bool CProfilesManager::GetProfileName(const size_t profileId, std::string& name) const
 {
   CSingleLock lock(m_critical);
-  const CProfile *profile = GetProfile(profileId);
+  const CProfile* profile = GetProfile(profileId);
   if (!profile)
     return false;
 

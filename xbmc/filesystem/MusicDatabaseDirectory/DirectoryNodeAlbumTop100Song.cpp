@@ -23,10 +23,10 @@
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CDirectoryNodeAlbumTop100Song::CDirectoryNodeAlbumTop100Song(const std::string& strName, CDirectoryNode* pParent)
+CDirectoryNodeAlbumTop100Song::CDirectoryNodeAlbumTop100Song(const std::string& strName,
+                                                             CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_ALBUM_TOP100_SONGS, strName, pParent)
 {
-
 }
 
 bool CDirectoryNodeAlbumTop100Song::GetContent(CFileItemList& items) const
@@ -35,8 +35,8 @@ bool CDirectoryNodeAlbumTop100Song::GetContent(CFileItemList& items) const
   if (!musicdatabase.Open())
     return false;
 
-  std::string strBaseDir=BuildPath();
-  bool bSuccess=musicdatabase.GetTop100AlbumSongs(strBaseDir, items);
+  std::string strBaseDir = BuildPath();
+  bool bSuccess = musicdatabase.GetTop100AlbumSongs(strBaseDir, items);
 
   musicdatabase.Close();
 

@@ -36,7 +36,7 @@ const CSkinVariableString* CSkinVariable::CreateFromXML(const TiXmlElement& node
     while (valuenode)
     {
       CSkinVariableString::ConditionLabelPair pair;
-      const char *condition = valuenode->Attribute("condition");
+      const char* condition = valuenode->Attribute("condition");
       if (condition)
         pair.m_condition = g_infoManager.Register(condition, context);
 
@@ -69,9 +69,11 @@ const std::string& CSkinVariableString::GetName() const
   return m_name;
 }
 
-std::string CSkinVariableString::GetValue(bool preferImage /* = false*/, const CGUIListItem *item /* = NULL */)
+std::string CSkinVariableString::GetValue(bool preferImage /* = false*/,
+                                          const CGUIListItem* item /* = NULL */)
 {
-  for (VECCONDITIONLABELPAIR::const_iterator it = m_conditionLabelPairs.begin() ; it != m_conditionLabelPairs.end(); ++it)
+  for (VECCONDITIONLABELPAIR::const_iterator it = m_conditionLabelPairs.begin();
+       it != m_conditionLabelPairs.end(); ++it)
   {
     if (!it->m_condition || it->m_condition->Get(item))
     {

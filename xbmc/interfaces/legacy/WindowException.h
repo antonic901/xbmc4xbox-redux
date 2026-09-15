@@ -12,10 +12,8 @@
 
 namespace XBMCAddon
 {
-  namespace xbmcgui
-  {
-    XBMCCOMMONS_STANDARD_EXCEPTION(WindowException);
-  }
+namespace xbmcgui
+{
+XBMCCOMMONS_STANDARD_EXCEPTION(WindowException);
 }
-
-
+} // namespace XBMCAddon

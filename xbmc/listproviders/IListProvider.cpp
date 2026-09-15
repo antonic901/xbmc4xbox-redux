@@ -23,12 +23,12 @@
 #include "StaticProvider.h"
 #include "DirectoryProvider.h"
 
-IListProvider *IListProvider::Create(const TiXmlNode *node, int parentID)
+IListProvider* IListProvider::Create(const TiXmlNode* node, int parentID)
 {
-  const TiXmlElement *root = node->FirstChildElement("content");
+  const TiXmlElement* root = node->FirstChildElement("content");
   if (root)
   {
-    const TiXmlElement *item = root->FirstChildElement("item");
+    const TiXmlElement* item = root->FirstChildElement("item");
     if (item)
       return new CStaticListProvider(root, parentID);
 

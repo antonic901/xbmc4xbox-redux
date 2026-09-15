@@ -23,13 +23,13 @@
 
 namespace XFILE
 {
-  class CNSFFileDirectory : public CMusicFileDirectory
-  {
-    public:
-      CNSFFileDirectory(void);
-      virtual ~CNSFFileDirectory(void);
-    protected:
-      virtual int GetTrackCount(const std::string& strPath); 
-  };
-}
+class CNSFFileDirectory : public CMusicFileDirectory
+{
+public:
+  CNSFFileDirectory(void);
+  virtual ~CNSFFileDirectory(void);
 
+protected:
+  virtual int GetTrackCount(const std::string& strPath);
+};
+} // namespace XFILE

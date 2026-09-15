@@ -26,18 +26,18 @@ class CSettingsManager;
 class CGUIDialogSettingsManagerBase : public CGUIDialogSettingsBase
 {
 public:
-  CGUIDialogSettingsManagerBase(int windowId, const std::string &xmlFile);
+  CGUIDialogSettingsManagerBase(int windowId, const std::string& xmlFile);
   virtual ~CGUIDialogSettingsManagerBase();
 
 protected:
   // implementation of CGUIDialogSettingsBase
-  virtual CSetting* GetSetting(const std::string &settingId);
+  virtual CSetting* GetSetting(const std::string& settingId);
 
   virtual std::set<std::string> CreateSettings();
   virtual void FreeSettingsControls();
 
   // implementation of ISettingControlCreator
-  virtual ISettingControl* CreateControl(const std::string &controlType) const;
+  virtual ISettingControl* CreateControl(const std::string& controlType) const;
 
-  CSettingsManager *m_settingsManager;
+  CSettingsManager* m_settingsManager;
 };

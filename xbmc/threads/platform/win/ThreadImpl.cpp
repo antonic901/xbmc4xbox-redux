@@ -29,16 +29,18 @@ void CThread::SpawnThread(unsigned stacksize)
 {
   // Create in the suspended state, so that no matter the thread priorities and scheduled order, the handle will be assigned
   // before the new thread exits.
-  m_ThreadOpaque.handle = CreateThread(NULL, stacksize, (LPTHREAD_START_ROUTINE)&staticThread, this, CREATE_SUSPENDED, &m_ThreadId);
+  m_ThreadOpaque.handle = CreateThread(NULL, stacksize, (LPTHREAD_START_ROUTINE)&staticThread, this,
+                                       CREATE_SUSPENDED, &m_ThreadId);
   if (m_ThreadOpaque.handle == NULL)
   {
-    if (logger) logger->Log(LOGERROR, "%s - fatal error %d creating thread", __FUNCTION__, GetLastError());
+    if (logger)
+      logger->Log(LOGERROR, "%s - fatal error %d creating thread", __FUNCTION__, GetLastError());
     return;
   }
 
   if (ResumeThread(m_ThreadOpaque.handle) == -1)
-    if (logger) logger->Log(LOGERROR, "%s - fatal error %d resuming thread", __FUNCTION__, GetLastError());
-
+    if (logger)
+      logger->Log(LOGERROR, "%s - fatal error %d resuming thread", __FUNCTION__, GetLastError());
 }
 
 void CThread::TermHandler()
@@ -51,7 +53,7 @@ void CThread::SetThreadInfo()
 {
   const unsigned int MS_VC_EXCEPTION = 0x406d1388;
 
-#pragma pack(push,8)
+#pragma pack(push, 8)
   struct THREADNAME_INFO
   {
     DWORD dwType; // must be 0x1000
@@ -68,9 +70,9 @@ void CThread::SetThreadInfo()
 
   __try
   {
-    RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR *)&info);
+    RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
   }
-  __except(EXCEPTION_EXECUTE_HANDLER)
+  __except (EXCEPTION_EXECUTE_HANDLER)
   {
   }
 }
@@ -87,17 +89,17 @@ bool CThread::IsCurrentThread(const ThreadIdentifier tid)
 
 int CThread::GetMinPriority(void)
 {
-  return(THREAD_PRIORITY_IDLE);
+  return (THREAD_PRIORITY_IDLE);
 }
 
 int CThread::GetMaxPriority(void)
 {
-  return(THREAD_PRIORITY_HIGHEST);
+  return (THREAD_PRIORITY_HIGHEST);
 }
 
 int CThread::GetNormalPriority(void)
 {
-  return(THREAD_PRIORITY_NORMAL);
+  return (THREAD_PRIORITY_NORMAL);
 }
 
 int CThread::GetSchedRRPriority(void)
@@ -144,7 +146,7 @@ bool CThread::WaitForThreadExit(unsigned int milliseconds)
 #else
     int caller = GetThreadPriority(::GetCurrentThread());
 #endif
-    if(caller != THREAD_PRIORITY_ERROR_RETURN && caller > callee)
+    if (caller != THREAD_PRIORITY_ERROR_RETURN && caller > callee)
       SetThreadPriority(m_ThreadOpaque.handle, caller);
 
     lock.Leave();
@@ -152,7 +154,7 @@ bool CThread::WaitForThreadExit(unsigned int milliseconds)
     lock.Enter();
 
     // restore thread priority if thread hasn't exited
-    if(callee != THREAD_PRIORITY_ERROR_RETURN && caller > callee && m_ThreadOpaque.handle)
+    if (callee != THREAD_PRIORITY_ERROR_RETURN && caller > callee && m_ThreadOpaque.handle)
       SetThreadPriority(m_ThreadOpaque.handle, callee);
   }
   return bReturn;
@@ -167,7 +169,7 @@ int64_t CThread::GetAbsoluteUsage()
 
   uint64_t time = 0;
   FILETIME CreationTime, ExitTime, UserTime, KernelTime;
-  if( GetThreadTimes(m_ThreadOpaque.handle, &CreationTime, &ExitTime, &KernelTime, &UserTime ) )
+  if (GetThreadTimes(m_ThreadOpaque.handle, &CreationTime, &ExitTime, &KernelTime, &UserTime))
   {
     time = (((uint64_t)UserTime.dwHighDateTime) << 32) + ((uint64_t)UserTime.dwLowDateTime);
     time += (((uint64_t)KernelTime.dwHighDateTime) << 32) + ((uint64_t)KernelTime.dwLowDateTime);
@@ -181,12 +183,13 @@ float CThread::GetRelativeUsage()
   iTime *= 10000; // convert into 100ns tics
 
   // only update every 1 second
-  if( iTime < m_iLastTime + 1000*10000 ) return m_fLastUsage;
+  if (iTime < m_iLastTime + 1000 * 10000)
+    return m_fLastUsage;
 
   int64_t iUsage = GetAbsoluteUsage();
 
   if (m_iLastUsage > 0 && m_iLastTime > 0)
-    m_fLastUsage = (float)( iUsage - m_iLastUsage ) / (float)( iTime - m_iLastTime );
+    m_fLastUsage = (float)(iUsage - m_iLastUsage) / (float)(iTime - m_iLastTime);
 
   m_iLastUsage = iUsage;
   m_iLastTime = iTime;

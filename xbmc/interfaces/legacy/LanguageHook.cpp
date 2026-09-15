@@ -13,30 +13,32 @@
 
 namespace XBMCAddon
 {
-  // just need a place for the vtab
-  LanguageHook::~LanguageHook() {}
-
-  static XbmcThreads::ThreadLocal<LanguageHook> addonLanguageHookTls;
-  static bool threadLocalInitialized = false;
-  static xbmcutil::InitFlag initer(threadLocalInitialized);
-
-  void LanguageHook::SetLanguageHook(LanguageHook* languageHook)
-  {
-    XBMC_TRACE;
-    languageHook->Acquire();
-    addonLanguageHookTls.set(languageHook);
-  }
-
-  LanguageHook* LanguageHook::GetLanguageHook()
-  {
-    return threadLocalInitialized ? addonLanguageHookTls.get() : NULL;
-  }
-
-  void LanguageHook::ClearLanguageHook()
-  {
-    LanguageHook* lh = addonLanguageHookTls.get();
-    addonLanguageHookTls.set(NULL);
-    if (lh)
-      lh->Release();
-  }
+// just need a place for the vtab
+LanguageHook::~LanguageHook()
+{
 }
+
+static XbmcThreads::ThreadLocal<LanguageHook> addonLanguageHookTls;
+static bool threadLocalInitialized = false;
+static xbmcutil::InitFlag initer(threadLocalInitialized);
+
+void LanguageHook::SetLanguageHook(LanguageHook* languageHook)
+{
+  XBMC_TRACE;
+  languageHook->Acquire();
+  addonLanguageHookTls.set(languageHook);
+}
+
+LanguageHook* LanguageHook::GetLanguageHook()
+{
+  return threadLocalInitialized ? addonLanguageHookTls.get() : NULL;
+}
+
+void LanguageHook::ClearLanguageHook()
+{
+  LanguageHook* lh = addonLanguageHookTls.get();
+  addonLanguageHookTls.set(NULL);
+  if (lh)
+    lh->Release();
+}
+} // namespace XBMCAddon

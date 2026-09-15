@@ -28,42 +28,41 @@ namespace KODI
 {
 namespace MESSAGING
 {
-  class ThreadMessage;
+class ThreadMessage;
 }
-}
+} // namespace KODI
 
-typedef void* (*KODIAddOnLib_RegisterMe)(void *addonData);
-typedef void (*KODIAddOnLib_UnRegisterMe)(void *addonData, void *cbTable);
+typedef void* (*KODIAddOnLib_RegisterMe)(void* addonData);
+typedef void (*KODIAddOnLib_UnRegisterMe)(void* addonData, void* cbTable);
 
 typedef struct AddonCB
 {
-  const char* libBasePath;  ///< Never, never change this!!!
-  void*       addonData;
+  const char* libBasePath; ///< Never, never change this!!!
+  void* addonData;
 } AddonCB;
-
 
 namespace ADDON
 {
 
-  class CAddon;
+class CAddon;
 
-  class CAddonInterfaces
-  {
-  public:
-    CAddonInterfaces(CAddon* addon);
-    ~CAddonInterfaces();
+class CAddonInterfaces
+{
+public:
+  CAddonInterfaces(CAddon* addon);
+  ~CAddonInterfaces();
 
-    AddonCB* GetCallbacks()        { return m_callbacks; }
-    CAddon *GetAddon()             { return m_addon; }
-    const CAddon *GetAddon() const { return m_addon; }
-    /*
+  AddonCB* GetCallbacks() { return m_callbacks; }
+  CAddon* GetAddon() { return m_addon; }
+  const CAddon* GetAddon() const { return m_addon; }
+  /*
      * API level independent functions for Kodi
      */
-    static void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
+  static void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
 
-  private:
-    AddonCB*  m_callbacks;
-    CAddon*   m_addon;
-  };
+private:
+  AddonCB* m_callbacks;
+  CAddon* m_addon;
+};
 
 } /* namespace ADDON */

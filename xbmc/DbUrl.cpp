@@ -31,7 +31,8 @@ CDbUrl::CDbUrl()
 }
 
 CDbUrl::~CDbUrl()
-{ }
+{
+}
 
 void CDbUrl::Reset()
 {
@@ -49,7 +50,7 @@ std::string CDbUrl::ToString() const
   return m_url.Get();
 }
 
-bool CDbUrl::FromString(const std::string &dbUrl)
+bool CDbUrl::FromString(const std::string& dbUrl)
 {
   Reset();
 
@@ -62,7 +63,7 @@ bool CDbUrl::FromString(const std::string &dbUrl)
   return m_valid;
 }
 
-void CDbUrl::AppendPath(const std::string &subPath)
+void CDbUrl::AppendPath(const std::string& subPath)
 {
   if (!m_valid || subPath.empty())
     return;
@@ -70,7 +71,7 @@ void CDbUrl::AppendPath(const std::string &subPath)
   m_url.SetFileName(URIUtils::AddFileToFolder(m_url.GetFileName(), subPath));
 }
 
-void CDbUrl::AddOption(const std::string &key, const char *value)
+void CDbUrl::AddOption(const std::string& key, const char* value)
 {
   if (!validateOption(key, value))
     return;
@@ -79,7 +80,7 @@ void CDbUrl::AddOption(const std::string &key, const char *value)
   updateOptions();
 }
 
-void CDbUrl::AddOption(const std::string &key, const std::string &value)
+void CDbUrl::AddOption(const std::string& key, const std::string& value)
 {
   if (!validateOption(key, value))
     return;
@@ -88,7 +89,7 @@ void CDbUrl::AddOption(const std::string &key, const std::string &value)
   updateOptions();
 }
 
-void CDbUrl::AddOption(const std::string &key, int value)
+void CDbUrl::AddOption(const std::string& key, int value)
 {
   if (!validateOption(key, value))
     return;
@@ -97,7 +98,7 @@ void CDbUrl::AddOption(const std::string &key, int value)
   updateOptions();
 }
 
-void CDbUrl::AddOption(const std::string &key, float value)
+void CDbUrl::AddOption(const std::string& key, float value)
 {
   if (!validateOption(key, value))
     return;
@@ -106,7 +107,7 @@ void CDbUrl::AddOption(const std::string &key, float value)
   updateOptions();
 }
 
-void CDbUrl::AddOption(const std::string &key, double value)
+void CDbUrl::AddOption(const std::string& key, double value)
 {
   if (!validateOption(key, value))
     return;
@@ -115,7 +116,7 @@ void CDbUrl::AddOption(const std::string &key, double value)
   updateOptions();
 }
 
-void CDbUrl::AddOption(const std::string &key, bool value)
+void CDbUrl::AddOption(const std::string& key, bool value)
 {
   if (!validateOption(key, value))
     return;
@@ -124,19 +125,19 @@ void CDbUrl::AddOption(const std::string &key, bool value)
   updateOptions();
 }
 
-void CDbUrl::AddOptions(const std::string &options)
+void CDbUrl::AddOptions(const std::string& options)
 {
   CUrlOptions::AddOptions(options);
   updateOptions();
 }
 
-void CDbUrl::RemoveOption(const std::string &key)
+void CDbUrl::RemoveOption(const std::string& key)
 {
   CUrlOptions::RemoveOption(key);
-  updateOptions(); 
+  updateOptions();
 }
 
-bool CDbUrl::validateOption(const std::string &key, const CVariant &value)
+bool CDbUrl::validateOption(const std::string& key, const CVariant& value)
 {
   if (key.empty())
     return false;

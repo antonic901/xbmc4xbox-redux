@@ -44,16 +44,21 @@
 class CGUIResizeControl : public CGUIControl
 {
 public:
-  CGUIResizeControl(int parentID, int controlID,
-                    float posX, float posY, float width, float height,
-                    const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus);
+  CGUIResizeControl(int parentID,
+                    int controlID,
+                    float posX,
+                    float posY,
+                    float width,
+                    float height,
+                    const CTextureInfo& textureFocus,
+                    const CTextureInfo& textureNoFocus);
 
   virtual ~CGUIResizeControl(void);
-  virtual CGUIResizeControl *Clone() const { return new CGUIResizeControl(*this); };
+  virtual CGUIResizeControl* Clone() const { return new CGUIResizeControl(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual void OnUp();
   virtual void OnDown();
   virtual void OnLeft();

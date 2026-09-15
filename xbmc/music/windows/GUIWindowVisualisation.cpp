@@ -32,24 +32,27 @@
 
 using namespace MUSIC_INFO;
 
-#define START_FADE_LENGTH  2.0f // 2 seconds on startup
+#define START_FADE_LENGTH 2.0f // 2 seconds on startup
 
-#define CONTROL_VIS          2
+#define CONTROL_VIS 2
 
 CGUIWindowVisualisation::CGUIWindowVisualisation(void)
-    : CGUIWindow(WINDOW_VISUALISATION, "MusicVisualisation.xml"),
-      m_initTimer(true), m_lockedTimer(true)
+  : CGUIWindow(WINDOW_VISUALISATION, "MusicVisualisation.xml"),
+    m_initTimer(true),
+    m_lockedTimer(true)
 {
   m_bShowPreset = false;
   m_loadType = KEEP_IN_MEMORY;
 }
 
-bool CGUIWindowVisualisation::OnAction(const CAction &action)
+bool CGUIWindowVisualisation::OnAction(const CAction& action)
 {
 #ifndef _XBOX
   if (CSettings::GetInstance().GetBool(CSettings::SETTING_PVRPLAYBACK_CONFIRMCHANNELSWITCH) &&
       g_infoManager.IsPlayerChannelPreviewActive() &&
-      (action.GetID() == ACTION_SELECT_ITEM || CButtonTranslator::GetInstance().GetGlobalAction(action.GetButtonCode()).GetID() == ACTION_SELECT_ITEM))
+      (action.GetID() == ACTION_SELECT_ITEM ||
+       CButtonTranslator::GetInstance().GetGlobalAction(action.GetButtonCode()).GetID() ==
+           ACTION_SELECT_ITEM))
   {
     // If confirm channel switch is active, channel preview is currently shown
     // and the button that caused this action matches (global) action "Select" (OK)
@@ -62,15 +65,15 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
   bool passToVis = false;
   switch (action.GetID())
   {
-  case ACTION_VIS_PRESET_NEXT:
-  case ACTION_VIS_PRESET_PREV:
-  case ACTION_VIS_PRESET_RANDOM:
-  case ACTION_VIS_RATE_PRESET_PLUS:
-  case ACTION_VIS_RATE_PRESET_MINUS:
-    passToVis = true;
-    break;
+    case ACTION_VIS_PRESET_NEXT:
+    case ACTION_VIS_PRESET_PREV:
+    case ACTION_VIS_PRESET_RANDOM:
+    case ACTION_VIS_RATE_PRESET_PLUS:
+    case ACTION_VIS_RATE_PRESET_MINUS:
+      passToVis = true;
+      break;
 
-  case ACTION_SHOW_INFO:
+    case ACTION_SHOW_INFO:
     {
       m_initTimer.Stop();
       CSettings::GetInstance().SetBool("mymusic.songthumbinvis", g_infoManager.ToggleShowInfo());
@@ -78,18 +81,18 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
     }
     break;
 
-  case ACTION_SHOW_OSD:
-    g_windowManager.ActivateWindow(WINDOW_DIALOG_MUSIC_OSD);
-    return true;
+    case ACTION_SHOW_OSD:
+      g_windowManager.ActivateWindow(WINDOW_DIALOG_MUSIC_OSD);
+      return true;
 
-  case ACTION_SHOW_GUI:
-    // save the settings
-    CSettings::GetInstance().Save();
-    g_windowManager.PreviousWindow();
-    return true;
-    break;
+    case ACTION_SHOW_GUI:
+      // save the settings
+      CSettings::GetInstance().Save();
+      g_windowManager.PreviousWindow();
+      return true;
+      break;
 
-  case ACTION_VIS_PRESET_LOCK:
+    case ACTION_VIS_PRESET_LOCK:
     { // show the locked icon + fall through so that the vis handles the locking
       if (!m_bShowPreset)
       {
@@ -98,7 +101,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
       passToVis = true;
     }
     break;
-  case ACTION_VIS_PRESET_SHOW:
+    case ACTION_VIS_PRESET_SHOW:
     {
       if (!m_lockedTimer.IsRunning() || m_bShowPreset)
         m_bShowPreset = !m_bShowPreset;
@@ -106,17 +109,17 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
     }
     break;
 
-  case ACTION_DECREASE_RATING:
-  case ACTION_INCREASE_RATING:
+    case ACTION_DECREASE_RATING:
+    case ACTION_INCREASE_RATING:
     {
       // actual action is taken care of in CApplication::OnAction()
       m_initTimer.StartZero();
       g_infoManager.SetShowInfo(true);
     }
     break;
-    //! @todo These should be mapped to it's own function - at the moment it's overriding
-    //! the global action of fastforward/rewind and OSD.
-/*  case KEY_BUTTON_Y:
+      //! @todo These should be mapped to it's own function - at the moment it's overriding
+      //! the global action of fastforward/rewind and OSD.
+      /*  case KEY_BUTTON_Y:
     g_application.m_CdgParser.Pause();
     return true;
     break;
@@ -134,7 +137,7 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
 
   if (passToVis)
   {
-    CGUIControl *control = GetControl(CONTROL_VIS);
+    CGUIControl* control = GetControl(CONTROL_VIS);
     if (control)
       return control->OnAction(action);
   }
@@ -144,23 +147,23 @@ bool CGUIWindowVisualisation::OnAction(const CAction &action)
 
 bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_GET_VISUALISATION:
-  case GUI_MSG_VISUALISATION_RELOAD:
-  case GUI_MSG_PLAYBACK_STARTED:
+    case GUI_MSG_GET_VISUALISATION:
+    case GUI_MSG_VISUALISATION_RELOAD:
+    case GUI_MSG_PLAYBACK_STARTED:
     {
-      CGUIControl *control = GetControl(CONTROL_VIS);
+      CGUIControl* control = GetControl(CONTROL_VIS);
       if (control)
         return control->OnMessage(message);
     }
     break;
-  case GUI_MSG_VISUALISATION_ACTION:
-  {
-    CAction action(message.GetParam1());
-    return OnAction(action);
-  }
-  case GUI_MSG_WINDOW_DEINIT:
+    case GUI_MSG_VISUALISATION_ACTION:
+    {
+      CAction action(message.GetParam1());
+      return OnAction(action);
+    }
+    case GUI_MSG_WINDOW_DEINIT:
     {
       if (IsActive()) // save any changed settings from the OSD
         CSettings::GetInstance().Save();
@@ -169,7 +172,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
       g_windowManager.CloseInternalModalDialogs(true);
     }
     break;
-  case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_INIT:
     {
       // check whether we've come back here from a window during which time we've actually
       // stopped playing music
@@ -180,7 +183,7 @@ bool CGUIWindowVisualisation::OnMessage(CGUIMessage& message)
       }
 
       // hide or show the preset button(s)
-      g_infoManager.SetShowInfo(true);  // always show the info initially.
+      g_infoManager.SetShowInfo(true); // always show the info initially.
       CGUIWindow::OnMessage(message);
       if (g_infoManager.GetCurrentSongTag())
         m_tag = *g_infoManager.GetCurrentSongTag();
@@ -211,7 +214,8 @@ void CGUIWindowVisualisation::FrameMove()
     m_initTimer.StartZero();
     g_infoManager.SetShowInfo(true);
   }
-  if (m_initTimer.IsRunning() && m_initTimer.GetElapsedSeconds() > (float)g_advancedSettings.m_songInfoDuration)
+  if (m_initTimer.IsRunning() &&
+      m_initTimer.GetElapsedSeconds() > (float)g_advancedSettings.m_songInfoDuration)
   {
     m_initTimer.Stop();
     if (!CSettings::GetInstance().GetBool("mymusic.songthumbinvis"))

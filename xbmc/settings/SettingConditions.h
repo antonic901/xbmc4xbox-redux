@@ -30,9 +30,14 @@ public:
   static void Initialize();
 
   static const std::set<std::string>& GetSimpleConditions() { return m_simpleConditions; }
-  static const std::map<std::string, SettingConditionCheck>& GetComplexConditions() { return m_complexConditions; }
+  static const std::map<std::string, SettingConditionCheck>& GetComplexConditions()
+  {
+    return m_complexConditions;
+  }
 
-  static bool Check(const std::string &condition, const std::string &value = "", const CSetting *setting = NULL);
+  static bool Check(const std::string& condition,
+                    const std::string& value = "",
+                    const CSetting* setting = NULL);
 
 private:
   static std::set<std::string> m_simpleConditions;

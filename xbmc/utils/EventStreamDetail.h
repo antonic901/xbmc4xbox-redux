@@ -43,7 +43,7 @@ public:
   CSubscription(Owner* owner, Fn fn);
   void HandleEvent(const Event& event);
   void Cancel();
-  bool IsOwnedBy(void *obj);
+  bool IsOwnedBy(void* obj);
 
 private:
   Owner* m_owner;
@@ -52,9 +52,10 @@ private:
 };
 
 template<typename Event, typename Owner>
-CSubscription<Event, Owner>::CSubscription(Owner* owner, Fn fn)
-    : m_owner(owner), m_eventHandler(fn)
-{}
+CSubscription<Event, Owner>::CSubscription(Owner* owner, Fn fn) : m_owner(owner),
+                                                                  m_eventHandler(fn)
+{
+}
 
 template<typename Event, typename Owner>
 bool CSubscription<Event, Owner>::IsOwnedBy(void* obj)
@@ -77,4 +78,4 @@ void CSubscription<Event, Owner>::HandleEvent(const Event& event)
   if (m_owner)
     (m_owner->*m_eventHandler)(event);
 }
-}
+} // namespace detail

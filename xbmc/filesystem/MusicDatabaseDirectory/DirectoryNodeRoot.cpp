@@ -25,7 +25,6 @@ using namespace XFILE::MUSICDATABASEDIRECTORY;
 CDirectoryNodeRoot::CDirectoryNodeRoot(const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_ROOT, strName, pParent)
 {
-
 }
 
 NODE_TYPE CDirectoryNodeRoot::GetChildType() const

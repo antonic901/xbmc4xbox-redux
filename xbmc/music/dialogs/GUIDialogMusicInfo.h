@@ -30,28 +30,27 @@
 class CFileItem;
 class CFileItemList;
 
-class CGUIDialogMusicInfo :
-      public CGUIDialog
+class CGUIDialogMusicInfo : public CGUIDialog
 {
 public:
   CGUIDialogMusicInfo(void);
   virtual ~CGUIDialogMusicInfo(void);
   bool OnMessage(CGUIMessage& message);
-  bool OnAction(const CAction &action);
+  bool OnAction(const CAction& action);
   bool SetItem(CFileItem* item);
-  void SetAlbum(const CAlbum& album, const std::string &path);
-  void SetArtist(const CArtist& artist, const std::string &path);
+  void SetAlbum(const CAlbum& album, const std::string& path);
+  void SetArtist(const CArtist& artist, const std::string& path);
   bool HasUpdatedUserrating() const { return m_hasUpdatedUserrating; };
   bool HasRefreshed() const { return m_hasRefreshed; };
 
   bool HasListItems() const { return true; };
   CFileItemPtr GetCurrentListItem(int offset = 0);
   std::string GetContent();
-  static void AddItemPathToFileBrowserSources(VECSOURCES &sources, const CFileItem &item);
+  static void AddItemPathToFileBrowserSources(VECSOURCES& sources, const CFileItem& item);
   void SetDiscography(CMusicDatabase& database) const;
-  void SetSongs(const VECSONGS &songs) const;
+  void SetSongs(const VECSONGS& songs) const;
   void SetArtTypeList(CFileItemList& artlist);
-  void SetScrapedInfo(bool bScraped) { m_scraperAddInfo = bScraped;  }
+  void SetScrapedInfo(bool bScraped) { m_scraperAddInfo = bScraped; }
   CArtist& GetArtist() { return m_artist; };
   CAlbum& GetAlbum() { return m_album; };
   bool IsArtistInfo() const { return m_bArtistInfo; };
@@ -63,6 +62,7 @@ public:
   static void ShowForAlbum(int idAlbum);
   static void ShowForArtist(int idArtist);
   static void ShowFor(CFileItem* pItem);
+
 protected:
   void OnInitWindow();
   void Update();

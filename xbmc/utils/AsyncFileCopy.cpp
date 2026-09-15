@@ -38,7 +38,7 @@ CAsyncFileCopy::~CAsyncFileCopy()
   StopThread();
 }
 
-bool CAsyncFileCopy::Copy(const CStdString &from, const CStdString &to, const CStdString &heading)
+bool CAsyncFileCopy::Copy(const CStdString& from, const CStdString& to, const CStdString& heading)
 {
   // reset the variables to their appropriate states
   m_from = from;
@@ -53,7 +53,7 @@ bool CAsyncFileCopy::Copy(const CStdString &from, const CStdString &to, const CS
 
   // create our thread, which starts the file copy operation
   Create();
-  CGUIDialogProgress *dlg = (CGUIDialogProgress *)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
+  CGUIDialogProgress* dlg = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
   unsigned int time = XbmcThreads::SystemClockMillis();
   while (m_running)
   {
@@ -61,7 +61,8 @@ bool CAsyncFileCopy::Copy(const CStdString &from, const CStdString &to, const CS
     if (!m_running)
       break;
     // start the dialog up as needed
-    if (dlg && !dlg->IsDialogRunning() && (XbmcThreads::SystemClockMillis() - time) > 500) // wait 0.5 seconds before starting dialog
+    if (dlg && !dlg->IsDialogRunning() &&
+        (XbmcThreads::SystemClockMillis() - time) > 500) // wait 0.5 seconds before starting dialog
     {
       dlg->SetHeading(heading);
       dlg->SetLine(0, url1.GetWithoutUserDetails());
@@ -88,7 +89,7 @@ bool CAsyncFileCopy::Copy(const CStdString &from, const CStdString &to, const CS
   return !m_cancelled && m_succeeded;
 }
 
-bool CAsyncFileCopy::OnFileCallback(void *pContext, int ipercent, float avgSpeed)
+bool CAsyncFileCopy::OnFileCallback(void* pContext, int ipercent, float avgSpeed)
 {
   m_percent = ipercent;
   m_speed = avgSpeed;

@@ -21,7 +21,7 @@ CProgramDatabaseDirectory::~CProgramDatabaseDirectory(void)
 {
 }
 
-bool CProgramDatabaseDirectory::GetDirectory(const CURL& url, CFileItemList &items)
+bool CProgramDatabaseDirectory::GetDirectory(const CURL& url, CFileItemList& items)
 {
   CProgramDatabase database;
   if (!database.Open())

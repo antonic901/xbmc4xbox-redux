@@ -32,6 +32,7 @@ public:
   explicit CVideoInfo(MediaType mediaType);
   bool IsVisible(const CFileItem& item) const;
   bool Execute(const CFileItemPtr& item) const;
+
 private:
   const MediaType m_mediaType;
 };
@@ -83,4 +84,4 @@ struct CPlay : IContextMenuItem
   bool IsVisible(const CFileItem& item) const;
   bool Execute(const CFileItemPtr& _item) const;
 };
-}
+} // namespace CONTEXTMENU

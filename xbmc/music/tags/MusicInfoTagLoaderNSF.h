@@ -24,18 +24,19 @@
 
 namespace MUSIC_INFO
 {
-	class CMusicInfoTagLoaderNSF: public IMusicInfoTagLoader
-	{
-    public:
-      CMusicInfoTagLoaderNSF(void);
-      virtual ~CMusicInfoTagLoaderNSF();
+class CMusicInfoTagLoaderNSF : public IMusicInfoTagLoader
+{
+public:
+  CMusicInfoTagLoaderNSF(void);
+  virtual ~CMusicInfoTagLoaderNSF();
 
-      virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
-      virtual int GetStreamCount(const CStdString& strFileName);
-    private:
-      int m_nsf;
-      DllNosefart m_dll;
-	};
-}
+  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt* art = NULL);
+  virtual int GetStreamCount(const CStdString& strFileName);
+
+private:
+  int m_nsf;
+  DllNosefart m_dll;
+};
+} // namespace MUSIC_INFO
 
 extern CStdString strNSFDLL;

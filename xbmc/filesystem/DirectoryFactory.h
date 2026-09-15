@@ -47,4 +47,4 @@ class CFactoryDirectory
 public:
   static IDirectory* Create(const CURL& url);
 };
-}
+} // namespace XFILE

@@ -25,11 +25,20 @@
 
 class CFileItemList;
 
-class CGUIDialogSmartPlaylistEditor :
-      public CGUIDialog
+class CGUIDialogSmartPlaylistEditor : public CGUIDialog
 {
 public:
-  enum PLAYLIST_TYPE { TYPE_SONGS = 1, TYPE_ALBUMS, TYPE_ARTISTS, TYPE_MIXED, TYPE_MUSICVIDEOS, TYPE_MOVIES, TYPE_TVSHOWS, TYPE_EPISODES };
+  enum PLAYLIST_TYPE
+  {
+    TYPE_SONGS = 1,
+    TYPE_ALBUMS,
+    TYPE_ARTISTS,
+    TYPE_MIXED,
+    TYPE_MUSICVIDEOS,
+    TYPE_MOVIES,
+    TYPE_TVSHOWS,
+    TYPE_EPISODES
+  };
 
   CGUIDialogSmartPlaylistEditor(void);
   virtual ~CGUIDialogSmartPlaylistEditor(void);
@@ -38,8 +47,8 @@ public:
   virtual void OnInitWindow();
   virtual void OnDeinitWindow(int nextWindowID);
 
-  static bool EditPlaylist(const std::string &path, const std::string &type = "");
-  static bool NewPlaylist(const std::string &type);
+  static bool EditPlaylist(const std::string& path, const std::string& type = "");
+  static bool NewPlaylist(const std::string& type);
 
 protected:
   void OnRuleList(int item);
@@ -61,7 +70,7 @@ protected:
   int GetSelectedItem();
   void HighlightItem(int item);
   std::vector<PLAYLIST_TYPE> GetAllowedTypes(const std::string& mode);
-  PLAYLIST_TYPE ConvertType(const std::string &type);
+  PLAYLIST_TYPE ConvertType(const std::string& type);
   std::string ConvertType(PLAYLIST_TYPE type);
   std::string GetLocalizedType(PLAYLIST_TYPE type);
 
@@ -72,5 +81,5 @@ protected:
 
   std::string m_path;
   bool m_cancelled;
-  std::string m_mode;  // mode we're in (partymode etc.)
+  std::string m_mode; // mode we're in (partymode etc.)
 };

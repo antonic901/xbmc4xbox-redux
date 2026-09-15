@@ -44,13 +44,13 @@ class CSetting;
 
 struct OrigFontInfo
 {
-   int size;
-   float aspect;
-   std::string fontFilePath;
-   std::string fileName;
-   RESOLUTION_INFO sourceRes;
-   bool preserveAspect;
-   bool border;
+  int size;
+  float aspect;
+  std::string fontFilePath;
+  std::string fileName;
+  RESOLUTION_INFO sourceRes;
+  bool preserveAspect;
+  bool border;
 };
 
 /*!
@@ -63,11 +63,21 @@ public:
   GUIFontManager(void);
   virtual ~GUIFontManager(void);
 
-  virtual bool OnMessage(CGUIMessage &message);
+  virtual bool OnMessage(CGUIMessage& message);
 
   void Unload(const std::string& strFontName);
-  void LoadFonts(const std::string &fontSet);
-  CGUIFont* LoadTTF(const std::string& strFontName, const std::string& strFilename, color_t textColor, color_t shadowColor, const int iSize, const int iStyle, bool border = false, float lineSpacing = 1.0f, float aspect = 1.0f, const RESOLUTION_INFO *res = NULL, bool preserveAspect = false);
+  void LoadFonts(const std::string& fontSet);
+  CGUIFont* LoadTTF(const std::string& strFontName,
+                    const std::string& strFilename,
+                    color_t textColor,
+                    color_t shadowColor,
+                    const int iSize,
+                    const int iStyle,
+                    bool border = false,
+                    float lineSpacing = 1.0f,
+                    float aspect = 1.0f,
+                    const RESOLUTION_INFO* res = NULL,
+                    bool preserveAspect = false);
   CGUIFont* GetFont(const std::string& strFontName, bool fallback = true);
 
   /*! \brief return a default font
@@ -77,19 +87,28 @@ public:
   CGUIFont* GetDefaultFont(bool border = false);
 
   void Clear();
-  void FreeFontFile(CGUIFontTTF *pFont);
+  void FreeFontFile(CGUIFontTTF* pFont);
 
-  static void SettingOptionsFontsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
+  static void SettingOptionsFontsFiller(const CSetting* setting,
+                                        std::vector<std::pair<std::string, std::string> >& list,
+                                        std::string& current,
+                                        void* data);
 #ifdef _XBOX
-  static void SettingOptionsSubtitleHeightsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
+  static void SettingOptionsSubtitleHeightsFiller(const CSetting* setting,
+                                                  std::vector<std::pair<std::string, int> >& list,
+                                                  int& current,
+                                                  void* data);
 #endif
 
 protected:
   void ReloadTTFFonts();
-  static void RescaleFontSizeAndAspect(float *size, float *aspect, const RESOLUTION_INFO &sourceRes, bool preserveAspect);
+  static void RescaleFontSizeAndAspect(float* size,
+                                       float* aspect,
+                                       const RESOLUTION_INFO& sourceRes,
+                                       bool preserveAspect);
   void LoadFonts(const TiXmlNode* fontNode);
   CGUIFontTTF* GetFontFile(const std::string& strFontFile);
-  static void GetStyle(const TiXmlNode *fontNode, int &iStyle);
+  static void GetStyle(const TiXmlNode* fontNode, int& iStyle);
 
   std::vector<CGUIFont*> m_vecFonts;
   std::vector<CGUIFontTTF*> m_vecFontFiles;

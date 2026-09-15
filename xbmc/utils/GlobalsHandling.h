@@ -99,7 +99,7 @@
 
 namespace xbmcutil
 {
-  /**
+/**
    * This class is an implementation detail of the macros defined below and
    *  is NOT meant to be used as a general purpose utility. IOW, DO NOT USE THIS
    *  CLASS to support a general singleton design pattern, it's specialized
@@ -116,22 +116,28 @@ namespace xbmcutil
    * Therefore this hack depends on the fact that compilation unit global/static 
    *  initialization is done in a single thread.
    */
-  template <class T> class GlobalsSingleton
-  {
-    /**
+template<class T>
+class GlobalsSingleton
+{
+  /**
      * This thing just deletes the shared_ptr when the 'instance'
      * goes out of scope (when the bss segment of the compilation unit
      * that 'instance' is sitting in is deinitialized). See the comment
      * on 'instance' for more information.
      */
-    template <class K> class Deleter
+  template<class K>
+  class Deleter
+  {
+  public:
+    K* guarded;
+    ~Deleter()
     {
-    public:
-      K* guarded;
-      ~Deleter() { if (guarded) delete guarded; }
-    };
+      if (guarded)
+        delete guarded;
+    }
+  };
 
-    /**
+  /**
      * Is it possible that getInstance can be called prior to the shared_ptr 'instance'
      *  being initialized as a global? If so, then the shared_ptr constructor would 
      *  effectively 'reset' the shared pointer after it had been set by the prior 
@@ -141,57 +147,62 @@ namespace xbmcutil
      *  Deleter class above so that when the bss segment that this static is
      *  sitting in is deinitialized, the shared_ptr pointer will be cleaned up.
      */
-    static Deleter<boost::shared_ptr<T> > instance; 
+  static Deleter<boost::shared_ptr<T> > instance;
 
-    /**
+  /**
      * See 'getQuick' below.
      */
-    static T* quick;
-  public:
+  static T* quick;
 
-    /**
+public:
+  /**
      * Retrieve an instance of the singleton using a shared pointer for 
      *  referenece counting.
      */
-    inline static boost::shared_ptr<T> getInstance()
+  inline static boost::shared_ptr<T> getInstance()
+  {
+    if (!instance.guarded)
     {
-      if (!instance.guarded)
-      {
-        if (!quick)
-          quick = new T;
-        instance.guarded = new boost::shared_ptr<T>(quick);
-      }
-      return *(instance.guarded);
+      if (!quick)
+        quick = new T;
+      instance.guarded = new boost::shared_ptr<T>(quick);
     }
+    return *(instance.guarded);
+  }
 
-    /**
+  /**
      * This is for quick access when using form (2) of the pattern. Before 'mdd' points
      * it out, this might be a case of 'solving problems we don't have' but this access
      * is used frequently within the event loop so any help here should benefit the 
      * overall performance and there is nothing complicated or tricky here and not
      * a lot of code to maintain.
      */
-    inline static T* getQuick()
-    {
-      if (!quick)
-        quick = new T;
+  inline static T* getQuick()
+  {
+    if (!quick)
+      quick = new T;
 
-      return quick;
-    }
+    return quick;
+  }
+};
 
-  };
+template<class T>
+typename GlobalsSingleton<T>::template Deleter<boost::shared_ptr<T> > GlobalsSingleton<T>::instance;
+template<class T>
+T* GlobalsSingleton<T>::quick;
 
-  template <class T> typename GlobalsSingleton<T>::template Deleter<boost::shared_ptr<T> > GlobalsSingleton<T>::instance;
-  template <class T> T* GlobalsSingleton<T>::quick;
-
-  /**
+/**
    * This is another bit of hackery that will act as a flag for 
    *  whether or not a global/static has been initialized yet. An instance
    *  should be placed in the cpp file after the static/global it's meant to
    *  monitor. 
    */
-  class InitFlag {  public:  InitFlag(bool& flag) { flag = true; }  };
-}
+class InitFlag
+{
+public:
+  InitFlag(bool& flag) { flag = true; }
+};
+} // namespace xbmcutil
 
 /**
  * For pattern (2) above, you can use the following macro. This pattern is safe to
@@ -204,8 +215,9 @@ namespace xbmcutil
  * #define g_Windowing XBMC_GLOBAL_USE(CWinSystemWin32DX)
  *
  */
-#define XBMC_GLOBAL_REF(classname,g_variable) \
-  static boost::shared_ptr<classname> g_variable##Ref(xbmcutil::GlobalsSingleton<classname>::getInstance())
+#define XBMC_GLOBAL_REF(classname, g_variable) \
+  static boost::shared_ptr<classname> g_variable##Ref( \
+      xbmcutil::GlobalsSingleton<classname>::getInstance())
 
 /**
  * This declares the actual use of the variable. It needs to be used in another #define
@@ -220,6 +232,6 @@ namespace xbmcutil
  * be used when the global in question is never accessed, directly or indirectly, from
  * a static method called (again, directly or indirectly) during startup or shutdown.
  */
-#define XBMC_GLOBAL(classname,g_variable) \
-  XBMC_GLOBAL_REF(classname,g_variable); \
-  static classname & g_variable = (*(g_variable##Ref.get()))
+#define XBMC_GLOBAL(classname, g_variable) \
+  XBMC_GLOBAL_REF(classname, g_variable); \
+  static classname& g_variable = (*(g_variable##Ref.get()))

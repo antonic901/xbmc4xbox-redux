@@ -40,7 +40,7 @@ using namespace XFILE;
 //arbitrarily chosen, should be plenty big enough for our strings
 //without causing random bad things happening
 //not very bad, just tiny bad
-#define MAX_STRING_SIZE 100*1024*1024
+#define MAX_STRING_SIZE 100 * 1024 * 1024
 
 CArchive::CArchive(CFile* pFile, int mode)
 {
@@ -181,41 +181,41 @@ CArchive& CArchive::operator<<(const CVariant& variant)
   *this << static_cast<int>(variant.type());
   switch (variant.type())
   {
-  case CVariant::VariantTypeInteger:
-    *this << variant.asInteger();
-    break;
-  case CVariant::VariantTypeUnsignedInteger:
-    *this << variant.asUnsignedInteger();
-    break;
-  case CVariant::VariantTypeBoolean:
-    *this << variant.asBoolean();
-    break;
-  case CVariant::VariantTypeString:
-    *this << variant.asString();
-    break;
-  case CVariant::VariantTypeWideString:
-    *this << variant.asWideString();
-    break;
-  case CVariant::VariantTypeDouble:
-    *this << variant.asDouble();
-    break;
-  case CVariant::VariantTypeArray:
-    *this << variant.size();
-    for (CVariant::const_iterator_array i = variant.begin_array(); i != variant.end_array(); ++i)
-      *this << *i;
-    break;
-  case CVariant::VariantTypeObject:
-    *this << variant.size();
-    for (CVariant::const_iterator_map itr = variant.begin_map(); itr != variant.end_map(); ++itr)
-    {
-      *this << itr->first;
-      *this << itr->second;
-    }
-    break;
-  case CVariant::VariantTypeNull:
-  case CVariant::VariantTypeConstNull:
-  default:
-    break;
+    case CVariant::VariantTypeInteger:
+      *this << variant.asInteger();
+      break;
+    case CVariant::VariantTypeUnsignedInteger:
+      *this << variant.asUnsignedInteger();
+      break;
+    case CVariant::VariantTypeBoolean:
+      *this << variant.asBoolean();
+      break;
+    case CVariant::VariantTypeString:
+      *this << variant.asString();
+      break;
+    case CVariant::VariantTypeWideString:
+      *this << variant.asWideString();
+      break;
+    case CVariant::VariantTypeDouble:
+      *this << variant.asDouble();
+      break;
+    case CVariant::VariantTypeArray:
+      *this << variant.size();
+      for (CVariant::const_iterator_array i = variant.begin_array(); i != variant.end_array(); ++i)
+        *this << *i;
+      break;
+    case CVariant::VariantTypeObject:
+      *this << variant.size();
+      for (CVariant::const_iterator_map itr = variant.begin_map(); itr != variant.end_map(); ++itr)
+      {
+        *this << itr->first;
+        *this << itr->second;
+      }
+      break;
+    case CVariant::VariantTypeNull:
+    case CVariant::VariantTypeConstNull:
+    default:
+      break;
   }
 
   return *this;
@@ -255,7 +255,7 @@ CArchive& CArchive::operator>>(std::string& str)
   if (iLength > MAX_STRING_SIZE)
     throw std::out_of_range("String too large, over 100MB");
 
-  boost::movelib::unique_ptr<char []> s = boost::movelib::unique_ptr<char[]>(new char[iLength]);
+  boost::movelib::unique_ptr<char[]> s = boost::movelib::unique_ptr<char[]>(new char[iLength]);
   streamin(s.get(), iLength * sizeof(char));
   str.assign(s.get(), iLength);
 
@@ -270,7 +270,8 @@ CArchive& CArchive::operator>>(std::wstring& wstr)
   if (iLength > MAX_STRING_SIZE)
     throw std::out_of_range("String too large, over 100MB");
 
-  boost::movelib::unique_ptr<wchar_t []> p = boost::movelib::unique_ptr<wchar_t[]>(new wchar_t[iLength]);
+  boost::movelib::unique_ptr<wchar_t[]> p =
+      boost::movelib::unique_ptr<wchar_t[]>(new wchar_t[iLength]);
   streamin(p.get(), iLength * sizeof(wchar_t));
   wstr.assign(p.get(), iLength);
 
@@ -297,78 +298,78 @@ CArchive& CArchive::operator>>(CVariant& variant)
 
   switch (variant.type())
   {
-  case CVariant::VariantTypeInteger:
-  {
-    int64_t value;
-    *this >> value;
-    variant = value;
-    break;
-  }
-  case CVariant::VariantTypeUnsignedInteger:
-  {
-    uint64_t value;
-    *this >> value;
-    variant = value;
-    break;
-  }
-  case CVariant::VariantTypeBoolean:
-  {
-    bool value;
-    *this >> value;
-    variant = value;
-    break;
-  }
-  case CVariant::VariantTypeString:
-  {
-    std::string value;
-    *this >> value;
-    variant = value;
-    break;
-  }
-  case CVariant::VariantTypeWideString:
-  {
-    std::wstring value;
-    *this >> value;
-    variant = value;
-    break;
-  }
-  case CVariant::VariantTypeDouble:
-  {
-    double value;
-    *this >> value;
-    variant = value;
-    break;
-  }
-  case CVariant::VariantTypeArray:
-  {
-    unsigned int size;
-    *this >> size;
-    for (; size > 0; size--)
+    case CVariant::VariantTypeInteger:
     {
-      CVariant value;
+      int64_t value;
       *this >> value;
-      variant.append(value);
+      variant = value;
+      break;
     }
-    break;
-  }
-  case CVariant::VariantTypeObject:
-  {
-    unsigned int size;
-    *this >> size;
-    for (; size > 0; size--)
+    case CVariant::VariantTypeUnsignedInteger:
     {
-      std::string name;
-      CVariant value;
-      *this >> name;
+      uint64_t value;
       *this >> value;
-      variant[name] = value;
+      variant = value;
+      break;
     }
-    break;
-  }
-  case CVariant::VariantTypeNull:
-  case CVariant::VariantTypeConstNull:
-  default:
-    break;
+    case CVariant::VariantTypeBoolean:
+    {
+      bool value;
+      *this >> value;
+      variant = value;
+      break;
+    }
+    case CVariant::VariantTypeString:
+    {
+      std::string value;
+      *this >> value;
+      variant = value;
+      break;
+    }
+    case CVariant::VariantTypeWideString:
+    {
+      std::wstring value;
+      *this >> value;
+      variant = value;
+      break;
+    }
+    case CVariant::VariantTypeDouble:
+    {
+      double value;
+      *this >> value;
+      variant = value;
+      break;
+    }
+    case CVariant::VariantTypeArray:
+    {
+      unsigned int size;
+      *this >> size;
+      for (; size > 0; size--)
+      {
+        CVariant value;
+        *this >> value;
+        variant.append(value);
+      }
+      break;
+    }
+    case CVariant::VariantTypeObject:
+    {
+      unsigned int size;
+      *this >> size;
+      for (; size > 0; size--)
+      {
+        std::string name;
+        CVariant value;
+        *this >> name;
+        *this >> value;
+        variant[name] = value;
+      }
+      break;
+    }
+    case CVariant::VariantTypeNull:
+    case CVariant::VariantTypeConstNull:
+    default:
+      break;
   }
 
   return *this;
@@ -408,7 +409,8 @@ void CArchive::FlushBuffer()
 {
   if (m_iMode == store && m_BufferPos != m_pBuffer.get())
   {
-    if (m_pFile->Write(m_pBuffer.get(), m_BufferPos - m_pBuffer.get()) != m_BufferPos - m_pBuffer.get())
+    if (m_pFile->Write(m_pBuffer.get(), m_BufferPos - m_pBuffer.get()) !=
+        m_BufferPos - m_pBuffer.get())
       CLog::Log(LOGERROR, "%s: Error flushing buffer", __FUNCTION__);
     else
     {
@@ -418,7 +420,7 @@ void CArchive::FlushBuffer()
   }
 }
 
-CArchive &CArchive::streamout_bufferwrap(const uint8_t *ptr, size_t size)
+CArchive& CArchive::streamout_bufferwrap(const uint8_t* ptr, size_t size)
 {
   do
   {
@@ -446,9 +448,9 @@ void CArchive::FillBuffer()
   }
 }
 
-CArchive &CArchive::streamin_bufferwrap(uint8_t *ptr, size_t size)
+CArchive& CArchive::streamin_bufferwrap(uint8_t* ptr, size_t size)
 {
-  uint8_t *orig_ptr = ptr;
+  uint8_t* orig_ptr = ptr;
   size_t orig_size = size;
   do
   {
@@ -457,8 +459,9 @@ CArchive &CArchive::streamin_bufferwrap(uint8_t *ptr, size_t size)
       FillBuffer();
       if (m_BufferRemain < CARCHIVE_BUFFER_MAX && m_BufferRemain < size)
       {
-        CLog::Log(LOGERROR, "%s: can't stream in: requested %lu bytes, was read %lu bytes", __FUNCTION__,
-            static_cast<unsigned long>(orig_size), static_cast<unsigned long>(ptr - orig_ptr + m_BufferRemain));
+        CLog::Log(LOGERROR, "%s: can't stream in: requested %lu bytes, was read %lu bytes",
+                  __FUNCTION__, static_cast<unsigned long>(orig_size),
+                  static_cast<unsigned long>(ptr - orig_ptr + m_BufferRemain));
 
         memset(orig_ptr, 0, orig_size);
         return *this;

@@ -22,7 +22,8 @@
 
 #include <boost/move/unique_ptr.hpp>
 
-namespace ADDON {
+namespace ADDON
+{
 class CAddonMgr;
 }
 
@@ -33,7 +34,7 @@ class CAnnouncementManager;
 
 namespace PLAYLIST
 {
-  class CPlayListPlayer;
+class CPlayListPlayer;
 }
 
 class CContextMenuManager;
@@ -59,7 +60,7 @@ public:
 protected:
   struct delete_contextMenuManager
   {
-    void operator()(CContextMenuManager *p) const;
+    void operator()(CContextMenuManager* p) const;
   };
 
   boost::movelib::unique_ptr<ADDON::CAddonMgr> m_addonMgr;

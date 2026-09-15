@@ -28,14 +28,17 @@
 namespace ADDON
 {
 
-boost::movelib::unique_ptr<CImageResource> CImageResource::FromExtension(AddonProps props, const cp_extension_t* ext)
+boost::movelib::unique_ptr<CImageResource> CImageResource::FromExtension(AddonProps props,
+                                                                         const cp_extension_t* ext)
 {
   std::string type = CServiceBroker::GetAddonMgr().GetExtValue(ext->configuration, "@type");
-  return boost::movelib::unique_ptr<CImageResource>(new CImageResource(boost::move(props), boost::move(type)));
+  return boost::movelib::unique_ptr<CImageResource>(
+      new CImageResource(boost::move(props), boost::move(type)));
 }
 
 CImageResource::CImageResource(AddonProps props, std::string type)
-    : CResource(boost::move(props)), m_type(boost::move(type))
+  : CResource(boost::move(props)),
+    m_type(boost::move(type))
 {
 }
 
@@ -50,19 +53,18 @@ void CImageResource::OnPreUnInstall()
   //XFILE::CXbtManager::GetInstance().Release(xbtUrl);
 }
 
-bool CImageResource::IsAllowed(const std::string &file) const
+bool CImageResource::IsAllowed(const std::string& file) const
 {
   // check if the file path points to a directory
   if (URIUtils::HasSlashAtEnd(file, true))
     return true;
 
   std::string ext = URIUtils::GetExtension(file);
-  return file.empty() ||
-         StringUtils::EqualsNoCase(ext, ".png") ||
+  return file.empty() || StringUtils::EqualsNoCase(ext, ".png") ||
          StringUtils::EqualsNoCase(ext, ".jpg");
 }
 
-std::string CImageResource::GetFullPath(const std::string &filePath) const
+std::string CImageResource::GetFullPath(const std::string& filePath) const
 {
   // check if there's an XBT file which might contain the file. if not just return the usual full path
   CURL xbtUrl;

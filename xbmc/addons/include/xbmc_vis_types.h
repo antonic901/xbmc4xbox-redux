@@ -36,20 +36,20 @@ extern "C"
 
   struct VIS_PROPS
   {
-    void *device;
+    void* device;
     int x;
     int y;
     int width;
     int height;
     float pixelRatio;
-    const char *name;
-    const char *presets;
-    const char *profile;
-    const char *submodule;
+    const char* name;
+    const char* presets;
+    const char* profile;
+    const char* submodule;
   };
 
   enum VIS_ACTION
-  { 
+  {
     VIS_ACTION_NONE = 0,
     VIS_ACTION_NEXT_PRESET,
     VIS_ACTION_PREV_PRESET,
@@ -74,37 +74,43 @@ extern "C"
       reserved3 = reserved4 = 0;
     }
 
-    const char *title;
-    const char *artist;
-    const char *album;
-    const char *albumArtist;
-    const char *genre;
-    const char *comment;
-    const char *lyrics;
-    const char *reserved1;
-    const char *reserved2;
+    const char* title;
+    const char* artist;
+    const char* album;
+    const char* albumArtist;
+    const char* genre;
+    const char* comment;
+    const char* lyrics;
+    const char* reserved1;
+    const char* reserved2;
 
-    int        trackNumber;
-    int        discNumber;
-    int        duration;
-    int        year;
-    char       rating;
-    int        reserved3;
-    int        reserved4;
+    int trackNumber;
+    int discNumber;
+    int duration;
+    int year;
+    char rating;
+    int reserved3;
+    int reserved4;
   };
 
   struct Visualisation
   {
-    void (__cdecl* Start)(int iChannels, int iSamplesPerSec, int iBitsPerSample, const char* szSongName);
-    void (__cdecl* AudioData)(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength);
-    void (__cdecl* Render) ();
-    void (__cdecl* GetInfo)(VIS_INFO *info);
-    bool (__cdecl* OnAction)(long flags, const void *param);
-    int (__cdecl* HasPresets)();
-    unsigned int (__cdecl *GetPresets)(char ***presets);
-    unsigned int (__cdecl *GetPreset)();
-    unsigned int (__cdecl *GetSubModules)(char ***modules);
-    bool (__cdecl* IsLocked)();
+    void(__cdecl* Start)(int iChannels,
+                         int iSamplesPerSec,
+                         int iBitsPerSample,
+                         const char* szSongName);
+    void(__cdecl* AudioData)(const float* pAudioData,
+                             int iAudioDataLength,
+                             float* pFreqData,
+                             int iFreqDataLength);
+    void(__cdecl* Render)();
+    void(__cdecl* GetInfo)(VIS_INFO* info);
+    bool(__cdecl* OnAction)(long flags, const void* param);
+    int(__cdecl* HasPresets)();
+    unsigned int(__cdecl* GetPresets)(char*** presets);
+    unsigned int(__cdecl* GetPreset)();
+    unsigned int(__cdecl* GetSubModules)(char*** modules);
+    bool(__cdecl* IsLocked)();
   };
 }
 

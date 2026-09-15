@@ -34,19 +34,18 @@ class CVariant;
 
 namespace InfoTagType
 {
-  enum TagType
-  {
-    VIDEO,
-    AUDIO,
-    PICTURE,
-    PROGRAM
-  };
-}
+enum TagType
+{
+  VIDEO,
+  AUDIO,
+  PICTURE,
+  PROGRAM
+};
+} // namespace InfoTagType
 
-class CDirectoryProvider :
-  public IListProvider,
-  public IJobCallback,
-  public ANNOUNCEMENT::IAnnouncer
+class CDirectoryProvider : public IListProvider,
+                           public IJobCallback,
+                           public ANNOUNCEMENT::IAnnouncer
 {
 public:
   typedef enum
@@ -56,33 +55,37 @@ public:
     DONE
   } UpdateState;
 
-  CDirectoryProvider(const TiXmlElement *element, int parentID);
+  CDirectoryProvider(const TiXmlElement* element, int parentID);
   virtual ~CDirectoryProvider();
 
   virtual bool Update(bool forceRefresh);
-  virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data);
-  virtual void Fetch(std::vector<CGUIListItemPtr> &items) const;
+  virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag,
+                        const char* sender,
+                        const char* message,
+                        const CVariant& data);
+  virtual void Fetch(std::vector<CGUIListItemPtr>& items) const;
   virtual void Reset();
-  virtual bool OnClick(const CGUIListItemPtr &item);
-  bool OnInfo(const CGUIListItemPtr &item);
-  bool OnContextMenu(const CGUIListItemPtr &item);
+  virtual bool OnClick(const CGUIListItemPtr& item);
+  bool OnInfo(const CGUIListItemPtr& item);
+  bool OnContextMenu(const CGUIListItemPtr& item);
   virtual bool IsUpdating() const;
 
   // callback from directory job
-  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob* job);
+
 private:
-  UpdateState      m_updateState;
-  bool             m_isAnnounced;
-  unsigned int     m_jobID;
-  CGUIInfoLabel    m_url;
-  CGUIInfoLabel    m_target;
-  CGUIInfoLabel    m_sortMethod;
-  CGUIInfoLabel    m_sortOrder;
-  CGUIInfoLabel    m_limit;
-  std::string      m_currentUrl;
-  std::string      m_currentTarget;   ///< \brief node.target property on the list as a whole
-  SortDescription  m_currentSort;
-  unsigned int     m_currentLimit;
+  UpdateState m_updateState;
+  bool m_isAnnounced;
+  unsigned int m_jobID;
+  CGUIInfoLabel m_url;
+  CGUIInfoLabel m_target;
+  CGUIInfoLabel m_sortMethod;
+  CGUIInfoLabel m_sortOrder;
+  CGUIInfoLabel m_limit;
+  std::string m_currentUrl;
+  std::string m_currentTarget; ///< \brief node.target property on the list as a whole
+  SortDescription m_currentSort;
+  unsigned int m_currentLimit;
   std::vector<CGUIStaticItemPtr> m_items;
   std::vector<InfoTagType::TagType> m_itemTypes;
   CCriticalSection m_section;

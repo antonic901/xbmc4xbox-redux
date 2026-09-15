@@ -28,8 +28,7 @@
 class CFileItemList;
 class CMediaSource;
 
-class CGUIDialogMediaSource :
-      public CGUIDialog
+class CGUIDialogMediaSource : public CGUIDialog
 {
 public:
   CGUIDialogMediaSource(void);
@@ -37,14 +36,15 @@ public:
   virtual bool OnMessage(CGUIMessage& message);
   virtual void OnDeinitWindow(int nextWindowID);
   virtual bool OnBack(int actionID);
-  static bool ShowAndAddMediaSource(const std::string &type);
-  static bool ShowAndEditMediaSource(const std::string &type, const CMediaSource &share);
-  static bool ShowAndEditMediaSource(const std::string &type, const std::string &share);
+  static bool ShowAndAddMediaSource(const std::string& type);
+  static bool ShowAndEditMediaSource(const std::string& type, const CMediaSource& share);
+  static bool ShowAndEditMediaSource(const std::string& type, const std::string& share);
 
   bool IsConfirmed() const { return m_confirmed; };
 
-  void SetShare(const CMediaSource &share);
-  void SetTypeOfMedia(const std::string &type, bool editNotAdd = false);
+  void SetShare(const CMediaSource& share);
+  void SetTypeOfMedia(const std::string& type, bool editNotAdd = false);
+
 protected:
   void OnPathBrowse(int item);
   void OnPath(int item);

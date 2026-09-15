@@ -24,15 +24,15 @@
 
 namespace XbmcCommons
 {
-  class BufferException
-  {
-    std::string message;
+class BufferException
+{
+  std::string message;
 
-  public:
-    BufferException(const char* message_) : message(message_) {}
-  };
+public:
+  BufferException(const char* message_) : message(message_) {}
+};
 
-  /**
+/**
    * This class is based on the java java.nio.Buffer class however, it 
    *  does not implement the 'mark' functionality. 
    *
@@ -86,27 +86,27 @@ namespace XbmcCommons
    * This would also produce erroneous results as they get's will be evaluated
    *   from right to left in the parameter list of printf.
    */
-  class Buffer
+class Buffer
+{
+  boost::shared_array<unsigned char> bufferRef;
+  unsigned char* buffer;
+  size_t mposition;
+  size_t mcapacity;
+  size_t mlimit;
+
+  inline void check(int count) const throw(BufferException)
   {
-    boost::shared_array<unsigned char> bufferRef;
-    unsigned char* buffer;
-    size_t mposition;
-    size_t mcapacity;
-    size_t mlimit;
+    if ((mposition + count) > mlimit)
+      throw BufferException("Buffer buffer overflow: Cannot add more data to the Buffer's buffer.");
+  }
 
-    inline void check(int count) const throw(BufferException)
-    { 
-      if ((mposition + count) > mlimit) 
-        throw BufferException("Buffer buffer overflow: Cannot add more data to the Buffer's buffer.");
-    }
-
-  public:
-    /**
+public:
+  /**
      * Construct an uninitialized buffer instance, perhaps as an lvalue.
      */
-    inline Buffer() : buffer(NULL), mposition(0), mcapacity(0), mlimit(0) { clear(); }
+  inline Buffer() : buffer(NULL), mposition(0), mcapacity(0), mlimit(0) { clear(); }
 
-    /**
+  /**
      * Construct a buffer given an externally managed memory buffer.
      * The ownership of the buffer is assumed to be the code that called
      * this constructor, therefore the Buffer descrutor will not free it.
@@ -118,61 +118,71 @@ namespace XbmcCommons
      *
      * Buffer b = Buffer(buf,bufSize).forward(bufSize).flip();
      */
-    inline Buffer(void* buffer_, size_t bufferSize) : buffer((unsigned char*)buffer_), mcapacity(bufferSize) 
-    {
-      clear();
-    }
+  inline Buffer(void* buffer_, size_t bufferSize)
+    : buffer((unsigned char*)buffer_),
+      mcapacity(bufferSize)
+  {
+    clear();
+  }
 
-    /**
+  /**
      * Construct a buffer buffer using the size buffer provided. The
      * buffer will be internally managed and potentiall shared with 
      * other Buffer instances. It will be freed upon destruction of
      * the last Buffer that references it.
      */
-    inline Buffer(size_t bufferSize) : buffer(bufferSize ? new unsigned char[bufferSize] : NULL), mcapacity(bufferSize)
-    { 
-      clear(); 
-      bufferRef.reset(buffer);
-    }
+  inline Buffer(size_t bufferSize)
+    : buffer(bufferSize ? new unsigned char[bufferSize] : NULL),
+      mcapacity(bufferSize)
+  {
+    clear();
+    bufferRef.reset(buffer);
+  }
 
-    /**
+  /**
      * Copy another buffer. This is a "shallow copy" and therefore
      * shares the underlying data buffer with the Buffer it is a copy
      * of. Changes made to the data through this buffer will be seen
      * in the source buffer and vice/vrs. However, each buffer maintains
      * it's own indexing.
      */
-    inline Buffer(const Buffer& buf) : bufferRef(buf.bufferRef), buffer(buf.buffer), 
-      mposition(buf.mposition), mcapacity(buf.mcapacity), mlimit(buf.mlimit) { }
+  inline Buffer(const Buffer& buf)
+    : bufferRef(buf.bufferRef),
+      buffer(buf.buffer),
+      mposition(buf.mposition),
+      mcapacity(buf.mcapacity),
+      mlimit(buf.mlimit)
+  {
+  }
 
-    inline ~Buffer() { }
+  inline ~Buffer() {}
 
-    /**
+  /**
      * Copy another buffer. This is a "shallow copy" and therefore
      * shares the underlying data buffer with the Buffer it is a copy
      * of. Changes made to the data through this buffer will be seen
      * in the source buffer and vice/vrs. However, each buffer maintains
      * it's own indexing.
      */
-    inline Buffer& operator=(const Buffer& buf)
-    {
-      buffer = buf.buffer;
-      bufferRef = buf.bufferRef;
-      mcapacity = buf.mcapacity;
-      mlimit = buf.mlimit;
-      return *this;
-    }
+  inline Buffer& operator=(const Buffer& buf)
+  {
+    buffer = buf.buffer;
+    bufferRef = buf.bufferRef;
+    mcapacity = buf.mcapacity;
+    mlimit = buf.mlimit;
+    return *this;
+  }
 
-    inline Buffer& allocate(size_t bufferSize)
-    {
-      buffer = bufferSize ? new unsigned char[bufferSize] : NULL;
-      bufferRef.reset(buffer);
-      mcapacity = bufferSize;
-      clear();
-      return *this;
-    }
+  inline Buffer& allocate(size_t bufferSize)
+  {
+    buffer = bufferSize ? new unsigned char[bufferSize] : NULL;
+    bufferRef.reset(buffer);
+    mcapacity = bufferSize;
+    clear();
+    return *this;
+  }
 
-    /**
+  /**
      * Flips this buffer. The limit is set to the current position 
      *   and then the position is set to zero. 
      *
@@ -188,9 +198,14 @@ namespace XbmcCommons
      * This is used to prepare the Buffer for reading from after
      *  it has been written to.
      */
-    inline Buffer& flip() { mlimit = mposition; mposition = 0; return *this; }
+  inline Buffer& flip()
+  {
+    mlimit = mposition;
+    mposition = 0;
+    return *this;
+  }
 
-    /**
+  /**
      *Clears this buffer. The position is set to zero, the limit 
      *  is set to the capacity.
      *
@@ -204,64 +219,123 @@ namespace XbmcCommons
      *  but it is named as if it did because it will most often be used 
      *  in situations in which that might as well be the case. 
      */
-    inline Buffer& clear() { mlimit = mcapacity; mposition = 0; return *this; }
+  inline Buffer& clear()
+  {
+    mlimit = mcapacity;
+    mposition = 0;
+    return *this;
+  }
 
-    /**
+  /**
      * This method resets the position to the beginning of the buffer
      *  so that it can be either reread or written to all over again.
      */
-    inline Buffer& rewind() { mposition = 0; return *this; }
+  inline Buffer& rewind()
+  {
+    mposition = 0;
+    return *this;
+  }
 
-    /**
+  /**
      * This method provides for the remaining number of bytes
      *  that can be read out of the buffer or written into the
      *  buffer before it's finished.
      */
-    inline size_t remaining() { return mlimit - mposition; }
+  inline size_t remaining() { return mlimit - mposition; }
 
-    inline Buffer& put(const void* src, size_t bytes) throw(BufferException)
-    { check(bytes); memcpy( buffer + mposition, src, bytes); mposition += bytes; return *this; }
-    inline Buffer& get(void* dest, size_t bytes) throw(BufferException) 
-    { check(bytes); memcpy( dest, buffer + mposition, bytes); mposition += bytes; return *this; }
+  inline Buffer& put(const void* src, size_t bytes) throw(BufferException)
+  {
+    check(bytes);
+    memcpy(buffer + mposition, src, bytes);
+    mposition += bytes;
+    return *this;
+  }
+  inline Buffer& get(void* dest, size_t bytes) throw(BufferException)
+  {
+    check(bytes);
+    memcpy(dest, buffer + mposition, bytes);
+    mposition += bytes;
+    return *this;
+  }
 
-    inline unsigned char* array() { return buffer; }
-    inline unsigned char* curPosition() { return buffer + mposition; }
-    inline Buffer& setPosition(size_t position) { mposition = position; return *this; }
-    inline Buffer& forward(size_t positionIncrement) throw(BufferException)
-    { check(positionIncrement); mposition += positionIncrement; return *this; }
+  inline unsigned char* array() { return buffer; }
+  inline unsigned char* curPosition() { return buffer + mposition; }
+  inline Buffer& setPosition(size_t position)
+  {
+    mposition = position;
+    return *this;
+  }
+  inline Buffer& forward(size_t positionIncrement) throw(BufferException)
+  {
+    check(positionIncrement);
+    mposition += positionIncrement;
+    return *this;
+  }
 
-    inline size_t limit() const { return mlimit; }
-    inline size_t capacity() const { return mcapacity; }
-    inline size_t position() const { return mposition; }
+  inline size_t limit() const { return mlimit; }
+  inline size_t capacity() const { return mcapacity; }
+  inline size_t position() const { return mposition; }
 
-#define DEFAULTBUFFERRELATIVERW(name,type) \
-    inline Buffer& put##name(const type & val) throw(BufferException) { return put(&val, sizeof(type)); } \
-    inline type get##name() throw(BufferException) { type ret; get(&ret, sizeof(type)); return ret; }
+#define DEFAULTBUFFERRELATIVERW(name, type) \
+  inline Buffer& put##name(const type& val) throw(BufferException) \
+  { \
+    return put(&val, sizeof(type)); \
+  } \
+  inline type get##name() throw(BufferException) \
+  { \
+    type ret; \
+    get(&ret, sizeof(type)); \
+    return ret; \
+  }
 
-    DEFAULTBUFFERRELATIVERW(Bool,bool);
-    DEFAULTBUFFERRELATIVERW(Int,int);
-    DEFAULTBUFFERRELATIVERW(Char,char);
-    DEFAULTBUFFERRELATIVERW(Long,long);
-    DEFAULTBUFFERRELATIVERW(Float,float);
-    DEFAULTBUFFERRELATIVERW(Double,double);
-    DEFAULTBUFFERRELATIVERW(Pointer,void*);
-    DEFAULTBUFFERRELATIVERW(LongLong,long long);
+  DEFAULTBUFFERRELATIVERW(Bool, bool);
+  DEFAULTBUFFERRELATIVERW(Int, int);
+  DEFAULTBUFFERRELATIVERW(Char, char);
+  DEFAULTBUFFERRELATIVERW(Long, long);
+  DEFAULTBUFFERRELATIVERW(Float, float);
+  DEFAULTBUFFERRELATIVERW(Double, double);
+  DEFAULTBUFFERRELATIVERW(Pointer, void*);
+  DEFAULTBUFFERRELATIVERW(LongLong, long long);
 #undef DEFAULTBUFFERRELATIVERW
 
-    inline Buffer& putString(const char* str) throw (BufferException) { size_t len = strlen(str) + 1; check(len); put(str, len); return (*this); }
-    inline Buffer& putString(const std::string& str) throw (BufferException) { size_t len = str.length() + 1; check(len); put(str.c_str(), len); return (*this); }
+  inline Buffer& putString(const char* str) throw(BufferException)
+  {
+    size_t len = strlen(str) + 1;
+    check(len);
+    put(str, len);
+    return (*this);
+  }
+  inline Buffer& putString(const std::string& str) throw(BufferException)
+  {
+    size_t len = str.length() + 1;
+    check(len);
+    put(str.c_str(), len);
+    return (*this);
+  }
 
-    inline std::string getString() throw (BufferException) { std::string ret((const char*)(buffer + mposition)); size_t len = ret.length() + 1; check(len); mposition += len; return ret; }
-    inline std::string getString(size_t length) throw (BufferException) 
-    { 
-      check(length); 
-      std::string ret((const char*)(buffer + mposition),length);
-      mposition += length;
-      return ret;
-    }
-    inline char* getCharPointerDirect() throw (BufferException) { char* ret = (char*)(buffer + mposition); size_t len = strlen(ret) + 1; check(len); mposition += len; return ret; }
+  inline std::string getString() throw(BufferException)
+  {
+    std::string ret((const char*)(buffer + mposition));
+    size_t len = ret.length() + 1;
+    check(len);
+    mposition += len;
+    return ret;
+  }
+  inline std::string getString(size_t length) throw(BufferException)
+  {
+    check(length);
+    std::string ret((const char*)(buffer + mposition), length);
+    mposition += length;
+    return ret;
+  }
+  inline char* getCharPointerDirect() throw(BufferException)
+  {
+    char* ret = (char*)(buffer + mposition);
+    size_t len = strlen(ret) + 1;
+    check(len);
+    mposition += len;
+    return ret;
+  }
+};
 
-  };
-
-}
-
+} // namespace XbmcCommons

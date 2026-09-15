@@ -40,8 +40,7 @@ CCDDADirectory::~CCDDADirectory(void)
 {
 }
 
-
-bool CCDDADirectory::GetDirectory(const CURL& url, CFileItemList &items)
+bool CCDDADirectory::GetDirectory(const CURL& url, CFileItemList& items)
 {
   // Reads the tracks from an audio cd
   std::string strPath = url.Get();
@@ -64,7 +63,7 @@ bool CCDDADirectory::GetDirectory(const CURL& url, CFileItemList &items)
     return false;
 
   // Generate fileitems
-  for (int i = 1;i <= nTracks;++i)
+  for (int i = 1; i <= nTracks; ++i)
   {
     // Skip Datatracks for display,
     // but needed to query cddb

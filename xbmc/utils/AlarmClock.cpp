@@ -38,7 +38,11 @@ CAlarmClock::~CAlarmClock()
 {
 }
 
-void CAlarmClock::Start(const CStdString& strName, float n_secs, const CStdString& strCommand, bool bSilent /* false */, bool bLoop /* false */)
+void CAlarmClock::Start(const CStdString& strName,
+                        float n_secs,
+                        const CStdString& strCommand,
+                        bool bSilent /* false */,
+                        bool bLoop /* false */)
 {
   // make lower case so that lookups are case-insensitive
   CStdString lowerName(strName);
@@ -70,15 +74,16 @@ void CAlarmClock::Start(const CStdString& strName, float n_secs, const CStdStrin
 
   CStdString strMessage;
 
-  strMessage.Format(strStarted.c_str(),static_cast<int>(event.m_fSecs)/60,static_cast<int>(event.m_fSecs)%60);
+  strMessage.Format(strStarted.c_str(), static_cast<int>(event.m_fSecs) / 60,
+                    static_cast<int>(event.m_fSecs) % 60);
 
-  if(!bSilent)
-     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, strAlarmClock, strMessage);
+  if (!bSilent)
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, strAlarmClock, strMessage);
 
   event.watch.StartZero();
   CSingleLock lock(m_events);
-  m_event.insert(make_pair(lowerName,event));
-  CLog::Log(LOGDEBUG,"started alarm with name: %s",lowerName.c_str());
+  m_event.insert(make_pair(lowerName, event));
+  CLog::Log(LOGDEBUG, "started alarm with name: %s", lowerName.c_str());
 }
 
 void CAlarmClock::Stop(const CStdString& strName, bool bSilent /* false */)
@@ -86,14 +91,14 @@ void CAlarmClock::Stop(const CStdString& strName, bool bSilent /* false */)
   CSingleLock lock(m_events);
 
   CStdString lowerName(strName);
-  lowerName.ToLower();          // lookup as lowercase only
-  map<CStdString,SAlarmClockEvent>::iterator iter = m_event.find(lowerName);
+  lowerName.ToLower(); // lookup as lowercase only
+  map<CStdString, SAlarmClockEvent>::iterator iter = m_event.find(lowerName);
 
   if (iter == m_event.end())
     return;
 
   SAlarmClockEvent& event = iter->second;
-  
+
   CStdString strAlarmClock;
   if (event.m_strCommand.Equals("xbmc.shutdown") || event.m_strCommand.Equals("xbmc.shutdown()"))
     strAlarmClock = g_localizeStrings.Get(20144);
@@ -101,22 +106,26 @@ void CAlarmClock::Stop(const CStdString& strName, bool bSilent /* false */)
     strAlarmClock = g_localizeStrings.Get(13208);
 
   CStdString strMessage;
-  if( iter->second.watch.GetElapsedSeconds() > iter->second.m_fSecs )
+  if (iter->second.watch.GetElapsedSeconds() > iter->second.m_fSecs)
     strMessage = g_localizeStrings.Get(13211);
-  else 
+  else
   {
-    float remaining = static_cast<float>(iter->second.m_fSecs-iter->second.watch.GetElapsedSeconds());
+    float remaining =
+        static_cast<float>(iter->second.m_fSecs - iter->second.watch.GetElapsedSeconds());
     CStdString strStarted = g_localizeStrings.Get(13212);
-    strMessage.Format(strStarted.c_str(),static_cast<int>(remaining)/60,static_cast<int>(remaining)%60);
+    strMessage.Format(strStarted.c_str(), static_cast<int>(remaining) / 60,
+                      static_cast<int>(remaining) % 60);
   }
-  if (iter->second.m_strCommand.IsEmpty() || iter->second.m_fSecs > iter->second.watch.GetElapsedSeconds())
+  if (iter->second.m_strCommand.IsEmpty() ||
+      iter->second.m_fSecs > iter->second.watch.GetElapsedSeconds())
   {
-    if(!bSilent)
+    if (!bSilent)
       CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, strAlarmClock, strMessage);
   }
   else
   {
-    CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, iter->second.m_strCommand);
+    CApplicationMessenger::Get().SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL,
+                                         iter->second.m_strCommand);
     if (iter->second.m_loop)
     {
       iter->second.watch.Reset();
@@ -130,12 +139,13 @@ void CAlarmClock::Stop(const CStdString& strName, bool bSilent /* false */)
 
 void CAlarmClock::Process()
 {
-  while( !m_bStop)
+  while (!m_bStop)
   {
     CStdString strLast = "";
     {
       CSingleLock lock(m_events);
-      for (map<CStdString,SAlarmClockEvent>::iterator iter=m_event.begin();iter != m_event.end(); ++iter)
+      for (map<CStdString, SAlarmClockEvent>::iterator iter = m_event.begin();
+           iter != m_event.end(); ++iter)
         if (iter->second.watch.GetElapsedSeconds() >= iter->second.m_fSecs)
         {
           Stop(iter->first);

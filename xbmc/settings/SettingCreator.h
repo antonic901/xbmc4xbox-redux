@@ -24,9 +24,11 @@
 class CSettingCreator : public ISettingCreator
 {
 public:
-  CSettingCreator() { }
-  virtual ~CSettingCreator() { }
+  CSettingCreator() {}
+  virtual ~CSettingCreator() {}
 
   // implementation of ISettingCreator
-  virtual CSetting* CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = NULL) const;
+  virtual CSetting* CreateSetting(const std::string& settingType,
+                                  const std::string& settingId,
+                                  CSettingsManager* settingsManager = NULL) const;
 };

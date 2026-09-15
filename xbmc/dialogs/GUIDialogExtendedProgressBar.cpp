@@ -26,11 +26,11 @@
 
 #include <boost/math/special_functions.hpp>
 
-#define CONTROL_LABELHEADER       30
-#define CONTROL_LABELTITLE        31
-#define CONTROL_PROGRESS          32
+#define CONTROL_LABELHEADER 30
+#define CONTROL_LABELTITLE 31
+#define CONTROL_PROGRESS 32
 
-#define ITEM_SWITCH_TIME_MS       2000
+#define ITEM_SWITCH_TIME_MS 2000
 
 std::string CGUIDialogProgressBarHandle::Text(void) const
 {
@@ -39,13 +39,13 @@ std::string CGUIDialogProgressBarHandle::Text(void) const
   return retVal;
 }
 
-void CGUIDialogProgressBarHandle::SetText(const std::string &strText)
+void CGUIDialogProgressBarHandle::SetText(const std::string& strText)
 {
   CSingleLock lock(m_critSection);
   m_strText = strText;
 }
 
-void CGUIDialogProgressBarHandle::SetTitle(const std::string &strTitle)
+void CGUIDialogProgressBarHandle::SetTitle(const std::string& strTitle)
 {
   CSingleLock lock(m_critSection);
   m_strTitle = strTitle;
@@ -53,7 +53,7 @@ void CGUIDialogProgressBarHandle::SetTitle(const std::string &strTitle)
 
 void CGUIDialogProgressBarHandle::SetProgress(int currentItem, int itemCount)
 {
-  float fPercentage = (currentItem*100.0f)/itemCount;
+  float fPercentage = (currentItem * 100.0f) / itemCount;
   if (!boost::math::isnan(fPercentage))
     m_fPercentage = std::min(100.0f, fPercentage);
 }
@@ -61,14 +61,14 @@ void CGUIDialogProgressBarHandle::SetProgress(int currentItem, int itemCount)
 CGUIDialogExtendedProgressBar::CGUIDialogExtendedProgressBar(void)
   : CGUIDialog(WINDOW_DIALOG_EXT_PROGRESS, "DialogExtendedProgressBar.xml", MODELESS)
 {
-  m_loadType        = LOAD_ON_GUI_INIT;
+  m_loadType = LOAD_ON_GUI_INIT;
   m_iLastSwitchTime = 0;
-  m_iCurrentItem    = 0;
+  m_iCurrentItem = 0;
 }
 
-CGUIDialogProgressBarHandle *CGUIDialogExtendedProgressBar::GetHandle(const std::string &strTitle)
+CGUIDialogProgressBarHandle* CGUIDialogExtendedProgressBar::GetHandle(const std::string& strTitle)
 {
-  CGUIDialogProgressBarHandle *handle = new CGUIDialogProgressBarHandle(strTitle);
+  CGUIDialogProgressBarHandle* handle = new CGUIDialogProgressBarHandle(strTitle);
   {
     CSingleLock lock(m_critSection);
     m_handles.push_back(handle);
@@ -83,7 +83,7 @@ bool CGUIDialogExtendedProgressBar::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_INIT:
     {
       m_iLastSwitchTime = XbmcThreads::SystemClockMillis();
       m_iCurrentItem = 0;
@@ -98,7 +98,8 @@ bool CGUIDialogExtendedProgressBar::OnMessage(CGUIMessage& message)
   return CGUIDialog::OnMessage(message);
 }
 
-void CGUIDialogExtendedProgressBar::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIDialogExtendedProgressBar::Process(unsigned int currentTime,
+                                            CDirtyRegionList& dirtyregions)
 {
   if (m_active)
     UpdateState(currentTime);
@@ -110,7 +111,7 @@ void CGUIDialogExtendedProgressBar::UpdateState(unsigned int currentTime)
 {
   std::string strHeader;
   std::string strTitle;
-  float  fProgress(-1.0f);
+  float fProgress(-1.0f);
 
   {
     CSingleLock lock(m_critSection);
@@ -136,8 +137,7 @@ void CGUIDialogExtendedProgressBar::UpdateState(unsigned int currentTime)
       m_iCurrentItem = m_handles.size() - 1;
 
     // update the current item ptr
-    if (currentTime > m_iLastSwitchTime &&
-        currentTime - m_iLastSwitchTime >= ITEM_SWITCH_TIME_MS)
+    if (currentTime > m_iLastSwitchTime && currentTime - m_iLastSwitchTime >= ITEM_SWITCH_TIME_MS)
     {
       m_iLastSwitchTime = currentTime;
 
@@ -146,10 +146,10 @@ void CGUIDialogExtendedProgressBar::UpdateState(unsigned int currentTime)
         m_iCurrentItem = 0;
     }
 
-    CGUIDialogProgressBarHandle *handle = m_handles.at(m_iCurrentItem);
+    CGUIDialogProgressBarHandle* handle = m_handles.at(m_iCurrentItem);
     if (handle)
     {
-      strTitle  = handle->Text();
+      strTitle = handle->Text();
       strHeader = handle->Title();
       fProgress = handle->Percentage();
     }

@@ -25,20 +25,20 @@
 
 namespace XFILE
 {
-  class CDAVFile : public CCurlFile
-  {
-  public:
-    CDAVFile(void);
-    virtual ~CDAVFile(void);
+class CDAVFile : public CCurlFile
+{
+public:
+  CDAVFile(void);
+  virtual ~CDAVFile(void);
 
-    virtual bool Execute(const CURL& url);
+  virtual bool Execute(const CURL& url);
 
-    virtual bool Delete(const CURL& url);
-    virtual bool Rename(const CURL& url, const CURL& urlnew);
+  virtual bool Delete(const CURL& url);
+  virtual bool Rename(const CURL& url, const CURL& urlnew);
 
-    virtual int GetLastResponseCode() { return lastResponseCode; }
+  virtual int GetLastResponseCode() { return lastResponseCode; }
 
-  private:
-    int lastResponseCode;
-  };
-}
+private:
+  int lastResponseCode;
+};
+} // namespace XFILE

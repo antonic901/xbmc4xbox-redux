@@ -43,17 +43,17 @@ public:
    \param parentID id of parent window for context.
    \return the list provider, NULL if none.
    */
-  static IListProvider *Create(const TiXmlNode *node, int parentID);
+  static IListProvider* Create(const TiXmlNode* node, int parentID);
 
   /*! \brief Update the list content
    \return true if the content has changed, false otherwise.
    */
-  virtual bool Update(bool forceRefresh)=0;
+  virtual bool Update(bool forceRefresh) = 0;
 
   /*! \brief Fetch the current list of items.
    \param items [out] the list to be filled.
    */
-  virtual void Fetch(std::vector<CGUIListItemPtr> &items) const=0;
+  virtual void Fetch(std::vector<CGUIListItemPtr>& items) const = 0;
 
   /*! \brief Check whether the list provider is updating content.
    \return true if in the processing of updating, false otherwise.
@@ -69,19 +69,19 @@ public:
    \param item the item that was clicked.
    \return true if the click was handled, false otherwise.
    */
-  virtual bool OnClick(const CGUIListItemPtr &item)=0;
+  virtual bool OnClick(const CGUIListItemPtr& item) = 0;
 
   /*! \brief Open the info dialog for an item provided by this IListProvider.
    \param item the item that was clicked.
    \return true if the dialog was shown, false otherwise.
    */
-  virtual bool OnInfo(const CGUIListItemPtr &item)=0;
+  virtual bool OnInfo(const CGUIListItemPtr& item) = 0;
 
   /*! \brief Open the context menu for an item provided by this IListProvider.
    \param item the item that was clicked.
    \return true if the click was handled, false otherwise.
    */
-  virtual bool OnContextMenu(const CGUIListItemPtr &item)=0;
+  virtual bool OnContextMenu(const CGUIListItemPtr& item) = 0;
 
   /*! \brief Set the default item to focus. For backwards compatibility.
    \param item the item to focus.
@@ -101,6 +101,7 @@ public:
    \sa GetDefaultItem, SetDefaultItem
    */
   virtual bool AlwaysFocusDefaultItem() const { return false; }
+
 protected:
   int m_parentID;
 };

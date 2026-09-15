@@ -36,7 +36,7 @@ CSpecialProtocolDirectory::~CSpecialProtocolDirectory(void)
 {
 }
 
-bool CSpecialProtocolDirectory::GetDirectory(const CURL& url, CFileItemList &items)
+bool CSpecialProtocolDirectory::GetDirectory(const CURL& url, CFileItemList& items)
 {
   const std::string pathToUrl(url.Get());
   std::string translatedPath = CSpecialProtocol::TranslatePath(url);
@@ -47,14 +47,15 @@ bool CSpecialProtocolDirectory::GetDirectory(const CURL& url, CFileItemList &ite
     {
       CFileItemPtr item = items[i];
       if (URIUtils::PathHasParent(item->GetPath(), translatedPath))
-        item->SetPath(URIUtils::AddFileToFolder(pathToUrl, item->GetPath().substr(translatedPath.size())));
+        item->SetPath(
+            URIUtils::AddFileToFolder(pathToUrl, item->GetPath().substr(translatedPath.size())));
     }
     return true;
   }
   return false;
 }
 
-std::string CSpecialProtocolDirectory::TranslatePath(const CURL &url)
+std::string CSpecialProtocolDirectory::TranslatePath(const CURL& url)
 {
   return CSpecialProtocol::TranslatePath(url);
 }

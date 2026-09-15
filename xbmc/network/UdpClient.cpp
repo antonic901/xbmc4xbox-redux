@@ -27,7 +27,8 @@
 #define UDPCLIENT_DEBUG_LEVEL LOGDEBUG
 
 CUdpClient::CUdpClient(void) : CThread("CUdpClient")
-{}
+{
+}
 
 CUdpClient::~CUdpClient(void)
 {
@@ -50,7 +51,8 @@ bool CUdpClient::Create(void)
   CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT: Setting broadcast socket option...");
 
   unsigned int value = 1;
-  if ( setsockopt( client_socket, SOL_SOCKET, SO_BROADCAST, (char*) &value, sizeof( unsigned int ) ) == SOCKET_ERROR)
+  if (setsockopt(client_socket, SOL_SOCKET, SO_BROADCAST, (char*)&value, sizeof(unsigned int)) ==
+      SOCKET_ERROR)
   {
     CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT: Unable to set socket option.");
     return false;
@@ -77,7 +79,7 @@ void CUdpClient::Destroy()
 
 void CUdpClient::OnStartup()
 {
-  SetPriority( THREAD_PRIORITY_LOWEST );
+  SetPriority(THREAD_PRIORITY_LOWEST);
 }
 
 bool CUdpClient::Broadcast(int aPort, CStdString& aMessage)
@@ -95,7 +97,6 @@ bool CUdpClient::Broadcast(int aPort, CStdString& aMessage)
 
   return true;
 }
-
 
 bool CUdpClient::Send(CStdString aIpAddress, int aPort, CStdString& aMessage)
 {
@@ -133,7 +134,6 @@ bool CUdpClient::Send(SOCKADDR_IN aAddress, LPBYTE pMessage, DWORD dwSize)
   return true;
 }
 
-
 void CUdpClient::Process()
 {
   Sleep(2000);
@@ -144,7 +144,7 @@ void CUdpClient::Process()
   char messageBuffer[1024];
   DWORD dataAvailable;
 
-  while ( !m_bStop )
+  while (!m_bStop)
   {
     // is there any data to read
     dataAvailable = 0;
@@ -154,10 +154,11 @@ void CUdpClient::Process()
     while (dataAvailable > 0)
     {
       // read data
-      int messageLength = sizeof(messageBuffer) - 1 ;
+      int messageLength = sizeof(messageBuffer) - 1;
       int remoteAddressSize = sizeof(remoteAddress);
 
-      int ret = recvfrom(client_socket, messageBuffer, messageLength, 0, (struct sockaddr *) & remoteAddress, &remoteAddressSize);
+      int ret = recvfrom(client_socket, messageBuffer, messageLength, 0,
+                         (struct sockaddr*)&remoteAddress, &remoteAddressSize);
       if (ret != SOCKET_ERROR)
       {
         // Packet received
@@ -167,7 +168,7 @@ void CUdpClient::Process()
         CStdString message = messageBuffer;
 
         CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT RX: %u\t\t<- '%s'",
-                  XbmcThreads::SystemClockMillis(), message.c_str() );
+                  XbmcThreads::SystemClockMillis(), message.c_str());
 
         // NOTE: You should consider locking access to the screen device
         // or at least wait until after vertical refresh before firing off events
@@ -196,7 +197,6 @@ void CUdpClient::Process()
   CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT: Stopped listening.");
 }
 
-
 bool CUdpClient::DispatchNextCommand()
 {
   UdpCommand command;
@@ -219,15 +219,16 @@ bool CUdpClient::DispatchNextCommand()
   if (command.binarySize > 0)
   {
     // only perform the following if logging level at debug
-    CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT TX: %u\t\t-> "
-                                     "<binary payload %u bytes>",
-              XbmcThreads::SystemClockMillis(), command.binarySize );
+    CLog::Log(UDPCLIENT_DEBUG_LEVEL,
+              "UDPCLIENT TX: %u\t\t-> "
+              "<binary payload %u bytes>",
+              XbmcThreads::SystemClockMillis(), command.binarySize);
 
     do
     {
-      ret = sendto(client_socket, (LPCSTR) command.binary, command.binarySize, 0, (struct sockaddr *) & command.address, sizeof(command.address));
-    }
-    while (ret == -1);
+      ret = sendto(client_socket, (LPCSTR)command.binary, command.binarySize, 0,
+                   (struct sockaddr*)&command.address, sizeof(command.address));
+    } while (ret == -1);
 
     delete[] command.binary;
   }
@@ -235,13 +236,13 @@ bool CUdpClient::DispatchNextCommand()
   {
     // only perform the following if logging level at debug
     CLog::Log(UDPCLIENT_DEBUG_LEVEL, "UDPCLIENT TX: %u\t\t-> '%s'",
-              XbmcThreads::SystemClockMillis(), command.message.c_str() );
+              XbmcThreads::SystemClockMillis(), command.message.c_str());
 
     do
     {
-      ret = sendto(client_socket, command.message, command.message.GetLength(), 0, (struct sockaddr *) & command.address, sizeof(command.address));
-    }
-    while (ret == -1 && !m_bStop);
+      ret = sendto(client_socket, command.message, command.message.GetLength(), 0,
+                   (struct sockaddr*)&command.address, sizeof(command.address));
+    } while (ret == -1 && !m_bStop);
   }
   return true;
 }

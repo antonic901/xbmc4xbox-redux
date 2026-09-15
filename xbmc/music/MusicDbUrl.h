@@ -33,5 +33,5 @@ public:
 
 protected:
   bool parse();
-  bool validateOption(const std::string &key, const CVariant &value);
+  bool validateOption(const std::string& key, const CVariant& value);
 };

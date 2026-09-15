@@ -31,8 +31,8 @@ public:
 
   virtual void OnSettingsUnloaded();
 
-  bool Load(const std::string &file);
-  bool Save(const std::string &file) const;
+  bool Load(const std::string& file);
+  bool Save(const std::string& file) const;
   void Clear();
 
   const std::string& GetServerUUID() const { return m_serverUUID; }
@@ -41,10 +41,13 @@ public:
   const std::string& GetRendererUUID() const { return m_rendererUUID; }
   int GetRendererPort() const { return m_rendererPort; }
 
-  void SetServerUUID(const std::string &uuid) { m_serverUUID = uuid; }
+  void SetServerUUID(const std::string& uuid) { m_serverUUID = uuid; }
   void SetServerPort(int port) { m_serverPort = port; }
-  void SetMaximumReturnedItems(int maximumReturnedItems) { m_maxReturnedItems = maximumReturnedItems; }
-  void SetRendererUUID(const std::string &uuid) { m_rendererUUID = uuid; }
+  void SetMaximumReturnedItems(int maximumReturnedItems)
+  {
+    m_maxReturnedItems = maximumReturnedItems;
+  }
+  void SetRendererUUID(const std::string& uuid) { m_rendererUUID = uuid; }
   void SetRendererPort(int port) { m_rendererPort = port; }
 
 protected:

@@ -73,21 +73,18 @@ class CueReader
 {
 public:
   virtual bool ready() const = 0;
-  virtual bool ReadLine(std::string &line) = 0;
+  virtual bool ReadLine(std::string& line) = 0;
   virtual ~CueReader() {}
+
 private:
   std::string m_sourcePath;
 };
 
-class FileReader
-  : public CueReader
+class FileReader : public CueReader
 {
 public:
-  FileReader(const std::string &strFile)
-  {
-    m_opened = m_file.Open(strFile);
-  }
-  virtual bool ReadLine(std::string &line)
+  FileReader(const std::string& strFile) { m_opened = m_file.Open(strFile); }
+  virtual bool ReadLine(std::string& line)
   {
     // Read the next line.
     while (m_file.ReadString(m_szBuffer, 1023)) // Bigger than MAX_PATH_SIZE, for usage with relax!
@@ -101,32 +98,24 @@ public:
     }
     return false;
   }
-  virtual bool ready() const
-  {
-    return m_opened;
-  }
+  virtual bool ready() const { return m_opened; }
   virtual ~FileReader()
   {
     if (m_opened)
       m_file.Close();
-
   }
+
 private:
   CFile m_file;
   bool m_opened;
   char m_szBuffer[1024];
 };
 
-class BufferReader
-  : public CueReader
+class BufferReader : public CueReader
 {
 public:
-  BufferReader(const std::string &strContent)
-    : m_data(strContent)
-    , m_pos(0)
-  {
-  }
-  virtual bool ReadLine(std::string &line)
+  BufferReader(const std::string& strContent) : m_data(strContent), m_pos(0) {}
+  virtual bool ReadLine(std::string& line)
   {
     // Read the next line.
     line.clear();
@@ -134,7 +123,8 @@ public:
     {
       // Remove the white space at the beginning of the line.
       char ch = m_data.at(m_pos++);
-      if (ch == '\r' || ch == '\n') {
+      if (ch == '\r' || ch == '\n')
+      {
         StringUtils::Trim(line);
         if (!line.empty())
           return true;
@@ -146,31 +136,26 @@ public:
     }
     return false;
   }
-  virtual bool ready() const
-  {
-    return m_data.size() > 0;
-  }
+  virtual bool ready() const { return m_data.size() > 0; }
+
 private:
   std::string m_data;
   size_t m_pos;
 };
 
-CCueDocument::CCueDocument()
-  : m_iYear(0)
-  , m_iTrack(0)
-  , m_iDiscNumber(0)
-  , m_bOneFilePerTrack(false)
+CCueDocument::CCueDocument() : m_iYear(0), m_iTrack(0), m_iDiscNumber(0), m_bOneFilePerTrack(false)
 {
 }
 
 CCueDocument::~CCueDocument()
-{}
+{
+}
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Function: ParseFile()
 // Opens the CUE file for reading, and constructs the track database information
 ////////////////////////////////////////////////////////////////////////////////////
-bool CCueDocument::ParseFile(const std::string &strFilePath)
+bool CCueDocument::ParseFile(const std::string& strFilePath)
 {
   FileReader reader(strFilePath);
   return Parse(reader, strFilePath);
@@ -180,7 +165,7 @@ bool CCueDocument::ParseFile(const std::string &strFilePath)
 // Function: ParseTag()
 // Reads CUE data from string buffer, and constructs the track database information
 ////////////////////////////////////////////////////////////////////////////////////
-bool CCueDocument::ParseTag(const std::string &strContent)
+bool CCueDocument::ParseTag(const std::string& strContent)
 {
   BufferReader reader(strContent);
   return Parse(reader);
@@ -190,7 +175,7 @@ bool CCueDocument::ParseTag(const std::string &strContent)
 // Function:GetSongs()
 // Store track information into songs list.
 //////////////////////////////////////////////////////////////////////////////////
-void CCueDocument::GetSongs(VECSONGS &songs)
+void CCueDocument::GetSongs(VECSONGS& songs)
 {
   for (size_t i = 0; i < m_tracks.size(); ++i)
   {
@@ -324,7 +309,8 @@ bool CCueDocument::Parse(CueReader& reader, const std::string& strFile)
         CLog::Log(LOGERROR, "Mangled Time in INDEX 0x tag in CUE file!");
         return false;
       }
-      if (totalTracks > 0 && m_tracks[totalTracks - 1].strFile == strCurrentFile) // Set the end time of the last track
+      if (totalTracks > 0 &&
+          m_tracks[totalTracks - 1].strFile == strCurrentFile) // Set the end time of the last track
         m_tracks[totalTracks - 1].iEndTime = time;
 
       if (totalTracks >= 0) // start time of the next track
@@ -393,9 +379,11 @@ bool CCueDocument::Parse(CueReader& reader, const std::string& strFile)
       m_albumReplayGain.SetGain(strLine.substr(26));
     else if (StringUtils::StartsWithNoCase(strLine, "REM REPLAYGAIN_ALBUM_PEAK"))
       m_albumReplayGain.SetPeak(strLine.substr(26));
-    else if (StringUtils::StartsWithNoCase(strLine, "REM REPLAYGAIN_TRACK_GAIN") && totalTracks >= 0)
+    else if (StringUtils::StartsWithNoCase(strLine, "REM REPLAYGAIN_TRACK_GAIN") &&
+             totalTracks >= 0)
       m_tracks[totalTracks].replayGain.SetGain(strLine.substr(26));
-    else if (StringUtils::StartsWithNoCase(strLine, "REM REPLAYGAIN_TRACK_PEAK") && totalTracks >= 0)
+    else if (StringUtils::StartsWithNoCase(strLine, "REM REPLAYGAIN_TRACK_PEAK") &&
+             totalTracks >= 0)
       m_tracks[totalTracks].replayGain.SetPeak(strLine.substr(26));
   }
 
@@ -406,7 +394,7 @@ bool CCueDocument::Parse(CueReader& reader, const std::string& strFile)
   else
     CLog::Log(LOGERROR, "No INDEX 01 tags in CUE file!");
 
-  if ( totalTracks == numberFiles )
+  if (totalTracks == numberFiles)
     m_bOneFilePerTrack = true;
 
   return (totalTracks >= 0);
@@ -416,7 +404,7 @@ bool CCueDocument::Parse(CueReader& reader, const std::string& strFile)
 // Function: ExtractInfo()
 // Extracts the information in quotes from the string line, returning it in quote
 ////////////////////////////////////////////////////////////////////////////////////
-std::string CCueDocument::ExtractInfo(const std::string &line)
+std::string CCueDocument::ExtractInfo(const std::string& line)
 {
   size_t left = line.find('\"');
   if (left != std::string::npos)
@@ -442,7 +430,7 @@ std::string CCueDocument::ExtractInfo(const std::string &line)
 // Assumed format is:
 // MM:SS:FF where MM is minutes, SS seconds, and FF frames (75 frames in a second)
 ////////////////////////////////////////////////////////////////////////////////////
-int CCueDocument::ExtractTimeFromIndex(const std::string &index)
+int CCueDocument::ExtractTimeFromIndex(const std::string& index)
 {
   // Get rid of the index number and any whitespace
   std::string numberTime = index.substr(5);
@@ -463,14 +451,14 @@ int CCueDocument::ExtractTimeFromIndex(const std::string &index)
   int secs = atoi(time[1].c_str());
   int frames = atoi(time[2].c_str());
 
-  return (mins*60 + secs)*75 + frames;
+  return (mins * 60 + secs) * 75 + frames;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Function: ExtractNumericInfo()
 // Extracts the numeric info from the string info, returning it as an integer value
 ////////////////////////////////////////////////////////////////////////////////////
-int CCueDocument::ExtractNumericInfo(const std::string &info)
+int CCueDocument::ExtractNumericInfo(const std::string& info)
 {
   std::string number(info);
   StringUtils::TrimLeft(number);
@@ -484,7 +472,7 @@ int CCueDocument::ExtractNumericInfo(const std::string &info)
 // Determines whether strPath is a relative path or not, and if so, converts it to an
 // absolute path using the path information in strBase
 ////////////////////////////////////////////////////////////////////////////////////
-bool CCueDocument::ResolvePath(std::string &strPath, const std::string &strBase)
+bool CCueDocument::ResolvePath(std::string& strPath, const std::string& strBase)
 {
   std::string strDirectory = URIUtils::GetDirectory(strBase);
   std::string strFilename = URIUtils::GetFileName(strPath);
@@ -496,7 +484,7 @@ bool CCueDocument::ResolvePath(std::string &strPath, const std::string &strBase)
   {
     CFileItemList items;
     CDirectory::GetDirectory(strDirectory, items, "", DIR_FLAG_DEFAULTS);
-    for (int i=0;i<items.Size();++i)
+    for (int i = 0; i < items.Size(); ++i)
     {
       if (items[i]->IsPath(strPath))
       {
@@ -504,10 +492,10 @@ bool CCueDocument::ResolvePath(std::string &strPath, const std::string &strBase)
         return true;
       }
     }
-    CLog::Log(LOGERROR,"Could not find '%s' referenced in cue, case sensitivity issue?", strPath.c_str());
+    CLog::Log(LOGERROR, "Could not find '%s' referenced in cue, case sensitivity issue?",
+              strPath.c_str());
     return false;
   }
 
   return true;
 }
-

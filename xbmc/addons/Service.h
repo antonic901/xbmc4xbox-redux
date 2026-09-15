@@ -23,37 +23,42 @@
 namespace ADDON
 {
 
-  class CService: public CAddon
+class CService : public CAddon
+{
+public:
+  enum TYPE
   {
-  public:
-
-    enum TYPE
-    {
-      UNKNOWN,
-      PYTHON
-    };
-
-    enum START_OPTION
-    {
-      STARTUP,
-      LOGIN
-    };
-
-    static boost::movelib::unique_ptr<CService> FromExtension(AddonProps props, const cp_extension_t* ext);
-
-    explicit CService(AddonProps props) : CAddon(boost::move(props)), m_type(UNKNOWN), m_startOption(LOGIN) {}
-    CService(AddonProps props, TYPE type, START_OPTION startOption);
-
-    bool Start();
-    bool Stop();
-    TYPE GetServiceType() { return m_type; }
-    START_OPTION GetStartOption() { return m_startOption; }
-
-  protected:
-    void BuildServiceType();
-
-  private:
-    TYPE m_type;
-    START_OPTION m_startOption;
+    UNKNOWN,
+    PYTHON
   };
-}
+
+  enum START_OPTION
+  {
+    STARTUP,
+    LOGIN
+  };
+
+  static boost::movelib::unique_ptr<CService> FromExtension(AddonProps props,
+                                                            const cp_extension_t* ext);
+
+  explicit CService(AddonProps props)
+    : CAddon(boost::move(props)),
+      m_type(UNKNOWN),
+      m_startOption(LOGIN)
+  {
+  }
+  CService(AddonProps props, TYPE type, START_OPTION startOption);
+
+  bool Start();
+  bool Stop();
+  TYPE GetServiceType() { return m_type; }
+  START_OPTION GetStartOption() { return m_startOption; }
+
+protected:
+  void BuildServiceType();
+
+private:
+  TYPE m_type;
+  START_OPTION m_startOption;
+};
+} // namespace ADDON

@@ -13,16 +13,20 @@
 #include <string>
 #include <vector>
 
-ILanguageInvoker::ILanguageInvoker(ILanguageInvocationHandler *invocationHandler)
+ILanguageInvoker::ILanguageInvoker(ILanguageInvocationHandler* invocationHandler)
   : m_id(-1),
     m_state(InvokerStateUninitialized),
     m_invocationHandler(invocationHandler)
-{ }
+{
+}
 
 ILanguageInvoker::~ILanguageInvoker()
-{ }
+{
+}
 
-bool ILanguageInvoker::Execute(const std::string &script, const std::vector<std::string> &arguments /* = std::vector<std::string>() */)
+bool ILanguageInvoker::Execute(
+    const std::string& script,
+    const std::vector<std::string>& arguments /* = std::vector<std::string>() */)
 {
   if (m_invocationHandler)
     m_invocationHandler->OnScriptStarted(this);

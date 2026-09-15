@@ -39,8 +39,8 @@ public:
   virtual bool OnBack(int actionID);
 
   void Reset();
-  int  Add(const std::string& strLabel);
-  int  Add(const CFileItem& item);
+  int Add(const std::string& strLabel);
+  int Add(const CFileItem& item);
   void SetItems(const CFileItemList& items);
   const CFileItemPtr GetSelectedFileItem() const;
   int GetSelectedItem() const;
@@ -49,15 +49,15 @@ public:
   bool IsButtonPressed();
   void Sort(bool bSortOrder = true);
   void SetSelected(int iSelected);
-  void SetSelected(const std::string &strSelectedLabel);
+  void SetSelected(const std::string& strSelectedLabel);
   void SetSelected(std::vector<int> selectedIndexes);
-  void SetSelected(const std::vector<std::string> &selectedLabels);
+  void SetSelected(const std::vector<std::string>& selectedLabels);
   void SetUseDetails(bool useDetails);
   void SetMultiSelection(bool multiSelection);
 
 protected:
   CGUIDialogSelect(int windowid);
-  virtual CGUIControl *GetFirstFocusableControl(int id);
+  virtual CGUIControl* GetFirstFocusableControl(int id);
   virtual void OnWindowLoaded();
   virtual void OnInitWindow();
   virtual void OnDeinitWindow(int nextWindowID);

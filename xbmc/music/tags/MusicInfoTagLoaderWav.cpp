@@ -26,12 +26,16 @@
 using namespace MUSIC_INFO;
 
 CMusicInfoTagLoaderWAV::CMusicInfoTagLoaderWAV(void)
-{}
+{
+}
 
 CMusicInfoTagLoaderWAV::~CMusicInfoTagLoaderWAV()
-{}
+{
+}
 
-bool CMusicInfoTagLoaderWAV::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderWAV::Load(const CStdString& strFileName,
+                                  CMusicInfoTag& tag,
+                                  EmbeddedArt* art)
 {
   try
   {
@@ -42,7 +46,7 @@ bool CMusicInfoTagLoaderWAV::Load(const CStdString& strFileName, CMusicInfoTag& 
     if (codec.Init(strFileName, 4096))
     {
       tag.SetURL(strFileName);
-      tag.SetDuration((int)(codec.m_TotalTime/1000));
+      tag.SetDuration((int)(codec.m_TotalTime / 1000));
       tag.SetLoaded(false);
       codec.DeInit();
       return true;
@@ -55,4 +59,3 @@ bool CMusicInfoTagLoaderWAV::Load(const CStdString& strFileName, CMusicInfoTag& 
 
   return false;
 }
-

@@ -21,12 +21,12 @@
 #include "ServiceBroker.h"
 #include "Application.h"
 
-ADDON::CAddonMgr &CServiceBroker::GetAddonMgr()
+ADDON::CAddonMgr& CServiceBroker::GetAddonMgr()
 {
   return g_application.m_ServiceManager->GetAddonMgr();
 }
 
-ANNOUNCEMENT::CAnnouncementManager &CServiceBroker::GetAnnouncementManager()
+ANNOUNCEMENT::CAnnouncementManager& CServiceBroker::GetAnnouncementManager()
 {
   return g_application.m_ServiceManager->GetAnnouncementManager();
 }
@@ -41,7 +41,7 @@ CContextMenuManager& CServiceBroker::GetContextMenuManager()
   return g_application.m_ServiceManager->GetContextMenuManager();
 }
 
-PLAYLIST::CPlayListPlayer &CServiceBroker::GetPlaylistPlayer()
+PLAYLIST::CPlayListPlayer& CServiceBroker::GetPlaylistPlayer()
 {
   return g_application.m_ServiceManager->GetPlaylistPlayer();
 }

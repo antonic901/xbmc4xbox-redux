@@ -92,4 +92,3 @@ void* auto_buffer::detach(void)
   s = 0;
   return returnPtr;
 }
-

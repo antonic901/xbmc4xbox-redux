@@ -34,13 +34,21 @@
 class CGUIPanelContainer : public CGUIBaseContainer
 {
 public:
-  CGUIPanelContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, const CScroller& scroller, int preloadItems);
+  CGUIPanelContainer(int parentID,
+                     int controlID,
+                     float posX,
+                     float posY,
+                     float width,
+                     float height,
+                     ORIENTATION orientation,
+                     const CScroller& scroller,
+                     int preloadItems);
   virtual ~CGUIPanelContainer(void);
-  virtual CGUIPanelContainer *Clone() const { return new CGUIPanelContainer(*this); };
+  virtual CGUIPanelContainer* Clone() const { return new CGUIPanelContainer(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual bool OnMessage(CGUIMessage& message);
   virtual void OnLeft();
   virtual void OnRight();
@@ -48,6 +56,7 @@ public:
   virtual void OnDown();
   virtual bool GetCondition(int condition, int data) const;
   virtual std::string GetLabel(int info) const;
+
 protected:
   virtual bool MoveUp(bool wrapAround);
   virtual bool MoveDown(bool wrapAround);
@@ -58,9 +67,9 @@ protected:
   virtual void ValidateOffset();
   virtual void CalculateLayout();
   unsigned int GetRows() const;
-  virtual int  CorrectOffset(int offset, int cursor) const;
-  virtual bool SelectItemFromPoint(const CPoint &point);
-  virtual int GetCursorFromPoint(const CPoint &point, CPoint *itemPoint = NULL) const;
+  virtual int CorrectOffset(int offset, int cursor) const;
+  virtual bool SelectItemFromPoint(const CPoint& point);
+  virtual int GetCursorFromPoint(const CPoint& point, CPoint* itemPoint = NULL) const;
   void SetCursor(int cursor);
   virtual void SelectItem(int item);
   virtual bool HasPreviousPage() const;
@@ -71,4 +80,3 @@ protected:
 
   int m_itemsPerRow;
 };
-

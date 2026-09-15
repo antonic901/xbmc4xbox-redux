@@ -40,9 +40,13 @@ public:
   CBackgroundPicLoader();
   ~CBackgroundPicLoader();
 
-  void Create(CGUIWindowSlideShow *pCallback);
-  void LoadPic(int iPic, int iSlideNumber, const std::string &strFileName, const int maxWidth, const int maxHeight);
-  bool IsLoading() { return m_isLoading;};
+  void Create(CGUIWindowSlideShow* pCallback);
+  void LoadPic(int iPic,
+               int iSlideNumber,
+               const std::string& strFileName,
+               const int maxWidth,
+               const int maxHeight);
+  bool IsLoading() { return m_isLoading; };
   int SlideNumber() const { return m_iSlideNumber; }
   int Pic() const { return m_iPic; }
 
@@ -57,7 +61,7 @@ private:
   CEvent m_loadPic;
   bool m_isLoading;
 
-  CGUIWindowSlideShow *m_pCallback;
+  CGUIWindowSlideShow* m_pCallback;
 };
 
 class CGUIWindowSlideShow : public CGUIDialog
@@ -67,32 +71,40 @@ public:
   virtual ~CGUIWindowSlideShow() {};
 
   bool OnMessage(CGUIMessage& message);
-  bool OnAction(const CAction &action);
+  bool OnAction(const CAction& action);
   void Render();
-  void Process(unsigned int currentTime, CDirtyRegionList &regions);
+  void Process(unsigned int currentTime, CDirtyRegionList& regions);
   void OnDeinitWindow(int nextWindowID);
 
   void Reset();
-  void Add(const CFileItem *picture);
+  void Add(const CFileItem* picture);
   bool IsPlaying() const;
   void Select(const std::string& strPicture);
-  void GetSlideShowContents(CFileItemList &list);
+  void GetSlideShowContents(CFileItemList& list);
   boost::shared_ptr<const CFileItem> GetCurrentSlide();
-  void RunSlideShow(const std::string &strPath, bool bRecursive = false,
-                    bool bRandom = false, bool bNotRandom = false,
-                    const std::string &beginSlidePath="", bool startSlideShow = true,
+  void RunSlideShow(const std::string& strPath,
+                    bool bRecursive = false,
+                    bool bRandom = false,
+                    bool bNotRandom = false,
+                    const std::string& beginSlidePath = "",
+                    bool startSlideShow = true,
                     SortBy method = SortByLabel,
                     SortOrder order = SortOrderAscending,
                     SortAttribute sortAttributes = SortAttributeNone,
-                    const std::string &strExtensions="");
-  void AddFromPath(const std::string &strPath, bool bRecursive,
+                    const std::string& strExtensions = "");
+  void AddFromPath(const std::string& strPath,
+                   bool bRecursive,
                    SortBy method = SortByLabel,
                    SortOrder order = SortOrderAscending,
                    SortAttribute sortAttributes = SortAttributeNone,
-                   const std::string &strExtensions="");
-  void StartSlideShow(bool screensaver=false);
+                   const std::string& strExtensions = "");
+  void StartSlideShow(bool screensaver = false);
   bool InSlideShow() const;
-  void OnLoadPic(int iPic, int iSlideNumber, const std::string &strFileName, CBaseTexture* pTexture, bool bFullSize);
+  void OnLoadPic(int iPic,
+                 int iSlideNumber,
+                 const std::string& strFileName,
+                 CBaseTexture* pTexture,
+                 bool bFullSize);
   int NumSlides() const;
   int CurrentSlide() const;
   void Shuffle();
@@ -100,15 +112,16 @@ public:
   bool IsShuffled() const { return m_bShuffled; }
   int GetDirection() const { return m_iDirection; }
 
-  static void RunSlideShow(std::vector<std::string> paths, int start=0);
+  static void RunSlideShow(std::vector<std::string> paths, int start = 0);
 
 private:
   void ShowNext();
   void ShowPrevious();
   void SetDirection(int direction); // -1: rewind, 1: forward
 
-  typedef std::set<std::string> path_set;  // set to track which paths we're adding
-  void AddItems(const std::string &strPath, path_set *recursivePaths,
+  typedef std::set<std::string> path_set; // set to track which paths we're adding
+  void AddItems(const std::string& strPath,
+                path_set* recursivePaths,
                 SortBy method = SortByLabel,
                 SortOrder order = SortOrderAscending,
                 SortAttribute sortAttributes = SortAttributeNone);
@@ -120,16 +133,16 @@ private:
   void Zoom(int iZoom);
   void ZoomRelative(float fZoom, bool immediate = false);
   void Move(float fX, float fY);
-  void GetCheckedSize(float width, float height, int &maxWidth, int &maxHeight);
-  std::string GetPicturePath(CFileItem *item);
-  int  GetNextSlide();
+  void GetCheckedSize(float width, float height, int& maxWidth, int& maxHeight);
+  std::string GetPicturePath(CFileItem* item);
+  int GetNextSlide();
 
   void AnnouncePlayerPlay(const CFileItemPtr& item);
   void AnnouncePlayerPause(const CFileItemPtr& item);
   void AnnouncePlayerStop(const CFileItemPtr& item);
   void AnnouncePlaylistClear();
   void AnnouncePlaylistAdd(const CFileItemPtr& item, int pos);
-  void AnnouncePropertyChanged(const std::string &strProperty, const CVariant &value);
+  void AnnouncePropertyChanged(const std::string& strProperty, const CVariant& value);
 
   int m_iCurrentSlide;
   int m_iNextSlide;

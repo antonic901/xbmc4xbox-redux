@@ -16,10 +16,15 @@ class CTrainer;
 typedef struct SProgramSettings
 {
   SProgramSettings() { Reset(); }
-  std::string strExecutable;  /* which executable to launch */
+  std::string strExecutable; /* which executable to launch */
   std::string strEmulator; /* path to emulator */
   int iForceRegion; /* force game region */
-  void Reset() { strExecutable.clear(); strExecutable.clear(); iForceRegion = 0; }
+  void Reset()
+  {
+    strExecutable.clear();
+    strExecutable.clear();
+    iForceRegion = 0;
+  }
 } SProgramSettings;
 
 class CGUIDialogProgramSettings : public CGUIDialogSettingsManualBase
@@ -27,7 +32,7 @@ class CGUIDialogProgramSettings : public CGUIDialogSettingsManualBase
 public:
   CGUIDialogProgramSettings();
   virtual ~CGUIDialogProgramSettings();
-  virtual bool OnMessage(CGUIMessage &message);
+  virtual bool OnMessage(CGUIMessage& message);
 
   /*! \brief retrieve settings of a given executable
    \param strExecutable the absolute path to program executable
@@ -50,12 +55,18 @@ public:
   static void ShowForTitle(const CFileItemPtr pItem);
 
 protected:
-  static void IntegerOptionsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data);
-  static void StringOptionsFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data);
+  static void IntegerOptionsFiller(const CSetting* setting,
+                                   std::vector<std::pair<std::string, int> >& list,
+                                   int& current,
+                                   void* data);
+  static void StringOptionsFiller(const CSetting* setting,
+                                  std::vector<std::pair<std::string, std::string> >& list,
+                                  std::string& current,
+                                  void* data);
 
   // implementations of ISettingCallback
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingChanged(const CSetting* setting);
+  virtual void OnSettingAction(const CSetting* setting);
 
   // specialization of CGUIDialogSettingsManualBase
   virtual void SetupView();
@@ -85,4 +96,3 @@ private:
   std::string m_strExecutable;
   SProgramSettings m_settings;
 };
-

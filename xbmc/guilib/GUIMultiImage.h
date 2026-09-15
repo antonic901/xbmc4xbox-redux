@@ -42,17 +42,28 @@
 class CGUIMultiImage : public CGUIControl, public IJobCallback
 {
 public:
-  CGUIMultiImage(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& texture, unsigned int timePerImage, unsigned int fadeTime, bool randomized, bool loop, unsigned int timeToPauseAtEnd);
-  CGUIMultiImage(const CGUIMultiImage &from);
+  CGUIMultiImage(int parentID,
+                 int controlID,
+                 float posX,
+                 float posY,
+                 float width,
+                 float height,
+                 const CTextureInfo& texture,
+                 unsigned int timePerImage,
+                 unsigned int fadeTime,
+                 bool randomized,
+                 bool loop,
+                 unsigned int timeToPauseAtEnd);
+  CGUIMultiImage(const CGUIMultiImage& from);
   virtual ~CGUIMultiImage(void);
-  virtual CGUIMultiImage *Clone() const { return new CGUIMultiImage(*this); };
+  virtual CGUIMultiImage* Clone() const { return new CGUIMultiImage(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual void UpdateVisibility(const CGUIListItem *item = NULL);
-  virtual void UpdateInfo(const CGUIListItem *item = NULL);
-  virtual bool OnAction(const CAction &action);
-  virtual bool OnMessage(CGUIMessage &message);
+  virtual void UpdateVisibility(const CGUIListItem* item = NULL);
+  virtual void UpdateInfo(const CGUIListItem* item = NULL);
+  virtual bool OnAction(const CAction& action);
+  virtual bool OnMessage(CGUIMessage& message);
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
   virtual void DynamicResourceAlloc(bool bOnOff);
@@ -61,26 +72,32 @@ public:
   virtual bool CanFocus() const;
   virtual std::string GetDescription() const;
 
-  void SetInfo(const CGUIInfoLabel &info);
-  void SetAspectRatio(const CAspectRatio &ratio);
+  void SetInfo(const CGUIInfoLabel& info);
+  void SetAspectRatio(const CAspectRatio& ratio);
 
 protected:
   void LoadDirectory();
   void OnDirectoryLoaded();
   void CancelLoading();
 
-  enum DIRECTORY_STATUS { UNLOADED = 0, LOADING, LOADED, READY };
-  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+  enum DIRECTORY_STATUS
+  {
+    UNLOADED = 0,
+    LOADING,
+    LOADED,
+    READY
+  };
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob* job);
 
   class CMultiImageJob : public CJob
   {
   public:
-    CMultiImageJob(const std::string &path);
+    CMultiImageJob(const std::string& path);
     virtual bool DoWork();
-    virtual const char *GetType() const { return "multiimage"; };
+    virtual const char* GetType() const { return "multiimage"; };
 
     std::vector<std::string> m_files;
-    std::string              m_path;
+    std::string m_path;
   };
 
   CGUIInfoLabel m_texturePath;

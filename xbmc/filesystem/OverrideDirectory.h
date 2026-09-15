@@ -34,6 +34,6 @@ public:
   virtual bool Remove(const CURL& url);
 
 protected:
-  virtual std::string TranslatePath(const CURL &url) = 0;
+  virtual std::string TranslatePath(const CURL& url) = 0;
 };
-}
+} // namespace XFILE

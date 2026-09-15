@@ -35,12 +35,15 @@ CGUIAction::CGUIAction(int controlID)
   SetNavigation(controlID);
 }
 
-bool CGUIAction::ExecuteActions(int controlID, int parentID, const CGUIListItemPtr &item /* = NULL */) const
+bool CGUIAction::ExecuteActions(int controlID,
+                                int parentID,
+                                const CGUIListItemPtr& item /* = NULL */) const
 {
-  if (m_actions.empty()) return false;
+  if (m_actions.empty())
+    return false;
   // take a copy of actions that satisfy our conditions
   std::vector<std::string> actions;
-  for (ciActions it = m_actions.begin() ; it != m_actions.end() ; ++it)
+  for (ciActions it = m_actions.begin(); it != m_actions.end(); ++it)
   {
     if (it->condition.empty() || g_infoManager.EvaluateBool(it->condition, 0, item))
     {
@@ -65,7 +68,7 @@ bool CGUIAction::ExecuteActions(int controlID, int parentID, const CGUIListItemP
 
 int CGUIAction::GetNavigation() const
 {
-  for (ciActions it = m_actions.begin() ; it != m_actions.end() ; ++it)
+  for (ciActions it = m_actions.begin(); it != m_actions.end(); ++it)
   {
     if (StringUtils::IsInteger(it->action))
     {
@@ -78,9 +81,10 @@ int CGUIAction::GetNavigation() const
 
 void CGUIAction::SetNavigation(int id)
 {
-  if (id == 0) return;
+  if (id == 0)
+    return;
   std::string strId = StringUtils::Format("%i", id);
-  for (iActions it = m_actions.begin() ; it != m_actions.end() ; ++it)
+  for (iActions it = m_actions.begin(); it != m_actions.end(); ++it)
   {
     if (StringUtils::IsInteger(it->action) && it->condition.empty())
     {
@@ -95,7 +99,7 @@ void CGUIAction::SetNavigation(int id)
 
 bool CGUIAction::HasActionsMeetingCondition() const
 {
-  for (ciActions it = m_actions.begin() ; it != m_actions.end() ; ++it)
+  for (ciActions it = m_actions.begin(); it != m_actions.end(); ++it)
   {
     if (it->condition.empty() || g_infoManager.EvaluateBool(it->condition))
       return true;

@@ -25,13 +25,15 @@ public:
 
   // implementation of CJob
   virtual bool DoWork();
-  virtual const char *GetType() const { return "AutoUpdater"; }
+  virtual const char* GetType() const { return "AutoUpdater"; }
   virtual bool operator==(const CJob* job) const;
 
   virtual bool ShouldCancel(unsigned int progress, unsigned int total) const { return false; }
 
 private:
-  virtual void DoInstall(const std::string& strCurrentVersion, const std::string& strCurrentRevision, const std::string& strUpdateChannel);
+  virtual void DoInstall(const std::string& strCurrentVersion,
+                         const std::string& strCurrentRevision,
+                         const std::string& strUpdateChannel);
 
   bool m_notify;
   bool m_install;

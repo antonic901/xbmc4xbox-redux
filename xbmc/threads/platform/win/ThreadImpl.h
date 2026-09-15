@@ -37,6 +37,8 @@ typedef DWORD THREADFUNC;
 
 namespace XbmcThreads
 {
-  inline static void ThreadSleep(unsigned int millis) { Sleep(millis); }
+inline static void ThreadSleep(unsigned int millis)
+{
+  Sleep(millis);
 }
-
+} // namespace XbmcThreads

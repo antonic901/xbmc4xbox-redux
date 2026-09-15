@@ -19,7 +19,7 @@
 using namespace XFILE;
 using namespace std;
 
-bool CFileUtils::DeleteItem(const CStdString &strPath, bool force)
+bool CFileUtils::DeleteItem(const CStdString& strPath, bool force)
 {
   CFileItemPtr item(new CFileItem(strPath));
   item->SetPath(strPath);
@@ -28,7 +28,7 @@ bool CFileUtils::DeleteItem(const CStdString &strPath, bool force)
   return DeleteItem(item, force);
 }
 
-bool CFileUtils::DeleteItem(const CFileItemPtr &item, bool force)
+bool CFileUtils::DeleteItem(const CFileItemPtr& item, bool force)
 {
   if (!item)
     return false;
@@ -41,7 +41,8 @@ bool CFileUtils::DeleteItem(const CFileItemPtr &item, bool force)
     pDialog->SetLine(1, URIUtils::GetFileName(item->GetPath()));
     pDialog->SetLine(2, "");
     pDialog->Open();
-    if (!pDialog->IsConfirmed()) return false;
+    if (!pDialog->IsConfirmed())
+      return false;
   }
 
   // Create a temporary item list containing the file/folder for deletion
@@ -57,7 +58,7 @@ bool CFileUtils::DeleteItem(const CFileItemPtr &item, bool force)
   return op.DoWork();
 }
 
-bool CFileUtils::RenameFile(const CStdString &strFile)
+bool CFileUtils::RenameFile(const CStdString& strFile)
 {
   CStdString strFileAndPath(strFile);
   URIUtils::RemoveSlashAtEnd(strFileAndPath);
@@ -66,7 +67,7 @@ bool CFileUtils::RenameFile(const CStdString &strFile)
   if (CGUIKeyboardFactory::ShowAndGetInput(strFileName, g_localizeStrings.Get(16013), false))
   {
     strPath += strFileName;
-    CLog::Log(LOGINFO,"FileUtils: rename %s->%s\n", strFileAndPath.c_str(), strPath.c_str());
+    CLog::Log(LOGINFO, "FileUtils: rename %s->%s\n", strFileAndPath.c_str(), strPath.c_str());
     if (URIUtils::IsMultiPath(strFileAndPath))
     { // special case for multipath renames - rename all the paths.
       std::vector<std::string> paths;
@@ -88,10 +89,10 @@ bool CFileUtils::RenameFile(const CStdString &strFile)
   return false;
 }
 
-bool CFileUtils::RemoteAccessAllowed(const CStdString &strPath)
+bool CFileUtils::RemoteAccessAllowed(const CStdString& strPath)
 {
   const unsigned int SourcesSize = 5;
-  CStdString SourceNames[] = { "programs", "files", "video", "music", "pictures" };
+  CStdString SourceNames[] = {"programs", "files", "video", "music", "pictures"};
 
   string realPath = URIUtils::GetRealPath(strPath);
   // for rar:// and zip:// paths we need to extract the path to the archive
@@ -129,7 +130,7 @@ bool CFileUtils::RemoteAccessAllowed(const CStdString &strPath)
   {
     std::string strPlaylistsPath = CSettings::GetInstance().GetString("system.playlistspath");
     URIUtils::RemoveSlashAtEnd(strPlaylistsPath);
-    if (StringUtils::StartsWithNoCase(realPath, strPlaylistsPath)) 
+    if (StringUtils::StartsWithNoCase(realPath, strPlaylistsPath))
       return true;
   }
   bool isSource;
@@ -137,13 +138,15 @@ bool CFileUtils::RemoteAccessAllowed(const CStdString &strPath)
   {
     VECSOURCES* sources = CMediaSourceSettings::Get().GetSources(SourceNames[index]);
     int sourceIndex = CUtil::GetMatchingSource(realPath, *sources, isSource);
-    if (sourceIndex >= 0 && sourceIndex < (int)sources->size() && sources->at(sourceIndex).m_iHasLock != 2 && sources->at(sourceIndex).m_allowSharing)
+    if (sourceIndex >= 0 && sourceIndex < (int)sources->size() &&
+        sources->at(sourceIndex).m_iHasLock != 2 && sources->at(sourceIndex).m_allowSharing)
       return true;
   }
   return false;
 }
 
-CDateTime CFileUtils::GetModificationDate(const std::string& strFileNameAndPath, const bool& bUseLatestDate)
+CDateTime CFileUtils::GetModificationDate(const std::string& strFileNameAndPath,
+                                          const bool& bUseLatestDate)
 {
   CDateTime dateAdded;
   if (strFileNameAndPath.empty())
@@ -187,7 +190,7 @@ CDateTime CFileUtils::GetModificationDate(const std::string& strFileNameAndPath,
       // make sure the datetime does is not in the future
       if (addedTime <= now)
       {
-        struct tm *time;
+        struct tm* time;
 #ifdef HAVE_LOCALTIME_R
         struct tm result = {};
         time = localtime_r(&addedTime, &result);
@@ -201,7 +204,8 @@ CDateTime CFileUtils::GetModificationDate(const std::string& strFileNameAndPath,
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "%s unable to extract modification date for file (%s)", __FUNCTION__, strFileNameAndPath.c_str());
+    CLog::Log(LOGERROR, "%s unable to extract modification date for file (%s)", __FUNCTION__,
+              strFileNameAndPath.c_str());
   }
   return dateAdded;
 }

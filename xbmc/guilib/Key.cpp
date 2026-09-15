@@ -36,9 +36,17 @@ CKey::CKey(void)
 }
 
 CKey::~CKey(void)
-{}
+{
+}
 
-CKey::CKey(uint32_t buttonCode, uint8_t leftTrigger, uint8_t rightTrigger, float leftThumbX, float leftThumbY, float rightThumbX, float rightThumbY, float repeat)
+CKey::CKey(uint32_t buttonCode,
+           uint8_t leftTrigger,
+           uint8_t rightTrigger,
+           float leftThumbX,
+           float leftThumbY,
+           float rightThumbX,
+           float rightThumbY,
+           float repeat)
 {
   m_leftTrigger = leftTrigger;
   m_rightTrigger = rightTrigger;
@@ -64,7 +72,8 @@ uint32_t CKey::GetButtonCode() const // for backwards compatibility only
 
 wchar_t CKey::GetUnicode() const
 {
-  if (m_buttonCode>=KEY_ASCII && m_buttonCode < KEY_UNICODE) // will need to change when Unicode is fully implemented
+  if (m_buttonCode >= KEY_ASCII &&
+      m_buttonCode < KEY_UNICODE) // will need to change when Unicode is fully implemented
     return (wchar_t)(m_buttonCode - KEY_ASCII);
   else
     return 0;
@@ -72,7 +81,8 @@ wchar_t CKey::GetUnicode() const
 
 const CKey& CKey::operator=(const CKey& key)
 {
-  if (&key == this) return * this;
+  if (&key == this)
+    return *this;
   m_leftTrigger = key.m_leftTrigger;
   m_rightTrigger = key.m_rightTrigger;
   m_buttonCode = key.m_buttonCode;
@@ -106,7 +116,6 @@ float CKey::GetLeftThumbY() const
   return m_leftThumbY;
 }
 
-
 float CKey::GetRightThumbX() const
 {
   return m_rightThumbX;
@@ -124,7 +133,8 @@ bool CKey::FromKeyboard() const
 
 bool CKey::IsAnalogButton() const
 {
-  if ((GetButtonCode() > 261 && GetButtonCode() < 270) || (GetButtonCode() > 279 && GetButtonCode() < 284))
+  if ((GetButtonCode() > 261 && GetButtonCode() < 270) ||
+      (GetButtonCode() > 279 && GetButtonCode() < 284))
     return true;
 
   return false;
@@ -162,13 +172,17 @@ unsigned int CKey::GetHeld() const
   return m_held;
 }
 
-CAction::CAction(int actionID, float amount1 /* = 1.0f */, float amount2 /* = 0.0f */, const CStdString &name /* = "" */, unsigned int holdTime /*= 0*/)
+CAction::CAction(int actionID,
+                 float amount1 /* = 1.0f */,
+                 float amount2 /* = 0.0f */,
+                 const CStdString& name /* = "" */,
+                 unsigned int holdTime /*= 0*/)
 {
   m_id = actionID;
   m_amount[0] = amount1;
   m_amount[1] = amount2;
   for (unsigned int i = 2; i < max_amounts; i++)
-    m_amount[i] = 0;  
+    m_amount[i] = 0;
   m_name = name;
   m_repeat = 0;
   m_buttonCode = 0;
@@ -176,7 +190,13 @@ CAction::CAction(int actionID, float amount1 /* = 1.0f */, float amount2 /* = 0.
   m_holdTime = holdTime;
 }
 
-CAction::CAction(int actionID, unsigned int state, float posX, float posY, float offsetX, float offsetY, const CStdString &name)
+CAction::CAction(int actionID,
+                 unsigned int state,
+                 float posX,
+                 float posY,
+                 float offsetX,
+                 float offsetY,
+                 const CStdString& name)
 {
   m_id = actionID;
   m_amount[0] = posX;
@@ -184,7 +204,7 @@ CAction::CAction(int actionID, unsigned int state, float posX, float posY, float
   m_amount[2] = offsetX;
   m_amount[3] = offsetY;
   for (unsigned int i = 4; i < max_amounts; i++)
-    m_amount[i] = 0;  
+    m_amount[i] = 0;
   m_name = name;
   m_repeat = 0;
   m_buttonCode = 0;
@@ -196,14 +216,14 @@ CAction::CAction(int actionID, wchar_t unicode)
 {
   m_id = actionID;
   for (unsigned int i = 0; i < max_amounts; i++)
-    m_amount[i] = 0;  
+    m_amount[i] = 0;
   m_repeat = 0;
   m_buttonCode = 0;
   m_unicode = unicode;
   m_holdTime = 0;
 }
 
-CAction::CAction(int actionID, const CStdString &name, const CKey &key)
+CAction::CAction(int actionID, const CStdString& name, const CKey& key)
 {
   m_id = actionID;
   m_name = name;
@@ -247,7 +267,7 @@ CAction::CAction(int actionID, const CStdString &name, const CKey &key)
     m_amount[0] = key.GetRightThumbX();
 }
 
-CAction::CAction(int actionID, const std::string &name)
+CAction::CAction(int actionID, const std::string& name)
 {
   m_id = actionID;
   m_name = name;

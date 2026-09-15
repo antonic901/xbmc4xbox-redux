@@ -24,14 +24,15 @@
 #include "guilib/LocalizeStrings.h"
 #include "utils/StringUtils.h"
 
-#define CONTROL_HEADING         1
+#define CONTROL_HEADING 1
 #define CONTROL_NUMBER_OF_ITEMS 2
-#define CONTROL_SIMPLE_LIST     3
-#define CONTROL_DETAILED_LIST   6
-#define CONTROL_EXTRA_BUTTON    5
-#define CONTROL_CANCEL_BUTTON   7
+#define CONTROL_SIMPLE_LIST 3
+#define CONTROL_DETAILED_LIST 6
+#define CONTROL_EXTRA_BUTTON 5
+#define CONTROL_CANCEL_BUTTON 7
 
-CGUIDialogSelect::CGUIDialogSelect() : CGUIDialogBoxBase(WINDOW_DIALOG_SELECT, "DialogSelect.xml"),
+CGUIDialogSelect::CGUIDialogSelect()
+  : CGUIDialogBoxBase(WINDOW_DIALOG_SELECT, "DialogSelect.xml"),
     m_bButtonEnabled(false),
     m_bButtonPressed(false),
     m_buttonLabel(-1),
@@ -46,7 +47,7 @@ CGUIDialogSelect::CGUIDialogSelect() : CGUIDialogBoxBase(WINDOW_DIALOG_SELECT, "
 }
 
 CGUIDialogSelect::CGUIDialogSelect(int windowId)
-    : CGUIDialogBoxBase(windowId, "DialogSelect.xml"),
+  : CGUIDialogBoxBase(windowId, "DialogSelect.xml"),
     m_bButtonEnabled(false),
     m_bButtonPressed(false),
     m_buttonLabel(-1),
@@ -68,7 +69,7 @@ bool CGUIDialogSelect::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_DEINIT:
+    case GUI_MSG_WINDOW_DEINIT:
     {
       CGUIDialogBoxBase::OnMessage(message);
 
@@ -79,7 +80,7 @@ bool CGUIDialogSelect::OnMessage(CGUIMessage& message)
       // construct selected items list
       m_selectedItems.clear();
       m_selectedItem = boost::shared_ptr<CFileItem>();
-      for (int i = 0 ; i < m_vecList->Size() ; i++)
+      for (int i = 0; i < m_vecList->Size(); i++)
       {
         CFileItemPtr item = m_vecList->Get(i);
         if (item->IsSelected())
@@ -94,7 +95,7 @@ bool CGUIDialogSelect::OnMessage(CGUIMessage& message)
     }
     break;
 
-  case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_INIT:
     {
       m_bButtonPressed = false;
       m_bConfirmed = false;
@@ -103,8 +104,7 @@ bool CGUIDialogSelect::OnMessage(CGUIMessage& message)
     }
     break;
 
-
-  case GUI_MSG_CLICKED:
+    case GUI_MSG_CLICKED:
     {
       int iControl = message.GetSenderId();
       if (m_viewControl.HasControl(CONTROL_SIMPLE_LIST))
@@ -120,7 +120,7 @@ bool CGUIDialogSelect::OnMessage(CGUIMessage& message)
               item->Select(!item->IsSelected());
             else
             {
-              for (int i = 0 ; i < m_vecList->Size() ; i++)
+              for (int i = 0; i < m_vecList->Size(); i++)
                 m_vecList->Get(i)->Select(false);
               item->Select(true);
               OnSelect(iSelected);
@@ -144,7 +144,7 @@ bool CGUIDialogSelect::OnMessage(CGUIMessage& message)
       }
     }
     break;
-  case GUI_MSG_SETFOCUS:
+    case GUI_MSG_SETFOCUS:
     {
       if (m_viewControl.HasControl(message.GetControlId()))
       {
@@ -264,7 +264,7 @@ void CGUIDialogSelect::SetSelected(int iSelected)
   m_selectedItems.push_back(iSelected);
 }
 
-void CGUIDialogSelect::SetSelected(const std::string &strSelectedLabel)
+void CGUIDialogSelect::SetSelected(const std::string& strSelectedLabel)
 {
   for (int index = 0; index < m_vecList->Size(); index++)
   {
@@ -282,9 +282,10 @@ void CGUIDialogSelect::SetSelected(std::vector<int> selectedIndexes)
     SetSelected(*it);
 }
 
-void CGUIDialogSelect::SetSelected(const std::vector<std::string> &selectedLabels)
+void CGUIDialogSelect::SetSelected(const std::vector<std::string>& selectedLabels)
 {
-  for (std::vector<std::string>::const_iterator it = selectedLabels.begin(); it < selectedLabels.end(); ++it)
+  for (std::vector<std::string>::const_iterator it = selectedLabels.begin();
+       it < selectedLabels.end(); ++it)
     SetSelected(*it);
 }
 
@@ -298,7 +299,7 @@ void CGUIDialogSelect::SetMultiSelection(bool multiSelection)
   m_multiSelection = multiSelection;
 }
 
-CGUIControl *CGUIDialogSelect::GetFirstFocusableControl(int id)
+CGUIControl* CGUIDialogSelect::GetFirstFocusableControl(int id)
 {
   if (m_viewControl.HasControl(id))
     id = m_viewControl.GetCurrentControl();
@@ -318,7 +319,7 @@ void CGUIDialogSelect::OnInitWindow()
 {
   m_viewControl.SetItems(*m_vecList);
   m_selectedItems.clear();
-  for(int i = 0 ; i < m_vecList->Size(); i++)
+  for (int i = 0; i < m_vecList->Size(); i++)
   {
     CFileItemPtr item = m_vecList->Get(i);
     if (item->IsSelected())
@@ -330,8 +331,9 @@ void CGUIDialogSelect::OnInitWindow()
   }
   m_viewControl.SetCurrentView(m_useDetails ? CONTROL_DETAILED_LIST : CONTROL_SIMPLE_LIST);
 
-  SET_CONTROL_LABEL(CONTROL_NUMBER_OF_ITEMS, StringUtils::Format("%i %s",
-      m_vecList->Size(), g_localizeStrings.Get(127).c_str()));
+  SET_CONTROL_LABEL(
+      CONTROL_NUMBER_OF_ITEMS,
+      StringUtils::Format("%i %s", m_vecList->Size(), g_localizeStrings.Get(127).c_str()));
 
   if (m_multiSelection)
     EnableButton(true, 186);

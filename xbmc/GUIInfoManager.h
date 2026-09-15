@@ -38,21 +38,21 @@
 
 // NOTE: Version string MUST NOT contain spaces.  It is used in the HTTP request user agent.
 #ifdef SVN_REV
-#define VERSION_STRING "4.0-"SVN_REV
+#define VERSION_STRING "4.0-" SVN_REV
 #else
 #define VERSION_STRING "4.0-dev-py2"
 #endif
 
 namespace MUSIC_INFO
 {
-  class CMusicInfoTag;
+class CMusicInfoTag;
 }
 #ifndef _XBOX
 namespace PVR
 {
-  class CPVRRadioRDSInfoTag;
-  typedef std::shared_ptr<PVR::CPVRRadioRDSInfoTag> CPVRRadioRDSInfoTagPtr;
-}
+class CPVRRadioRDSInfoTag;
+typedef std::shared_ptr<PVR::CPVRRadioRDSInfoTag> CPVRRadioRDSInfoTagPtr;
+} // namespace PVR
 #endif
 class CVideoInfoTag;
 class CFileItem;
@@ -60,7 +60,7 @@ class CGUIListItem;
 class CDateTime;
 namespace INFO
 {
-  class InfoSingle;
+class InfoSingle;
 }
 
 // forward
@@ -68,11 +68,10 @@ class CGUIWindow;
 #ifndef _XBOX
 namespace EPG
 {
-  class CEpgInfoTag;
-  typedef std::shared_ptr<EPG::CEpgInfoTag> CEpgInfoTagPtr;
-}
+class CEpgInfoTag;
+typedef std::shared_ptr<EPG::CEpgInfoTag> CEpgInfoTagPtr;
+} // namespace EPG
 #endif
-
 
 // structure to hold multiple integer data
 // for storage referenced from a single integer
@@ -87,7 +86,7 @@ public:
     if (flag)
       SetInfoFlag(flag);
   }
-  bool operator ==(const GUIInfo &right) const
+  bool operator==(const GUIInfo& right) const
   {
     return (m_info == right.m_info && m_data1 == right.m_data1 && m_data2 == right.m_data2);
   };
@@ -95,6 +94,7 @@ public:
   uint32_t GetData1() const;
   int GetData2() const;
   int m_info;
+
 private:
   void SetInfoFlag(uint32_t flag);
   uint32_t m_data1;
@@ -105,7 +105,8 @@ private:
  \ingroup strings
  \brief
  */
-class CGUIInfoManager : public IMsgTargetCallback, public Observable,
+class CGUIInfoManager : public IMsgTargetCallback,
+                        public Observable,
                         public KODI::MESSAGING::IMessageTarget
 {
 public:
@@ -113,7 +114,7 @@ public:
   virtual ~CGUIInfoManager(void);
 
   void Clear();
-  virtual bool OnMessage(CGUIMessage &message);
+  virtual bool OnMessage(CGUIMessage& message);
 
   virtual int GetMessageMask();
   virtual void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
@@ -128,7 +129,7 @@ public:
    \param context the context window
    \return an identifier used to reference this expression
    */
-  INFO::InfoPtr Register(const std::string &expression, int context = 0);
+  INFO::InfoPtr Register(const std::string& expression, int context = 0);
 
   /*! \brief Evaluate a boolean expression
    \param expression the expression to evaluate
@@ -136,9 +137,11 @@ public:
    \return the value of the evaluated expression.
    \sa Register
    */
-  bool EvaluateBool(const std::string &expression, int context = 0, const CGUIListItemPtr &item = CGUIListItemPtr());
+  bool EvaluateBool(const std::string& expression,
+                    int context = 0,
+                    const CGUIListItemPtr& item = CGUIListItemPtr());
 
-  int TranslateString(const std::string &strCondition);
+  int TranslateString(const std::string& strCondition);
 
   /*! \brief Get integer value of info.
    \param value int reference to pass value of given info
@@ -148,10 +151,10 @@ public:
    \return true if given info was handled
    \sa GetItemInt, GetMultiInfoInt
    */
-  bool GetInt(int &value, int info, int contextWindow = 0, const CGUIListItem *item = NULL) const;
-  std::string GetLabel(int info, int contextWindow = 0, std::string *fallback = NULL);
+  bool GetInt(int& value, int info, int contextWindow = 0, const CGUIListItem* item = NULL) const;
+  std::string GetLabel(int info, int contextWindow = 0, std::string* fallback = NULL);
 
-  std::string GetImage(int info, int contextWindow, std::string *fallback = NULL);
+  std::string GetImage(int info, int contextWindow, std::string* fallback = NULL);
 
   std::string GetTime(TIME_FORMAT format = TIME_FORMAT_GUESS) const;
 #ifdef HAS_XBOX_HARDWARE
@@ -163,20 +166,20 @@ public:
   /*! \brief Set currently playing file item
    \param blocking whether to run in current thread (true) or background thread (false)
    */
-  void SetCurrentItem(const CFileItem &item);
+  void SetCurrentItem(const CFileItem& item);
   void ResetCurrentItem();
   // Current song stuff
   /// \brief Retrieves tag info (if necessary) and fills in our current song path.
-  void SetCurrentSong(CFileItem &item);
-  void SetCurrentAlbumThumb(const std::string &thumbFileName);
-  void SetCurrentMovie(CFileItem &item);
-  void SetCurrentSlide(CFileItem &item);
-  const CFileItem &GetCurrentSlide() const;
+  void SetCurrentSong(CFileItem& item);
+  void SetCurrentAlbumThumb(const std::string& thumbFileName);
+  void SetCurrentMovie(CFileItem& item);
+  void SetCurrentSlide(CFileItem& item);
+  const CFileItem& GetCurrentSlide() const;
   void ResetCurrentSlide();
-  void SetCurrentSongTag(const MUSIC_INFO::CMusicInfoTag &tag);
-  void SetCurrentVideoTag(const CVideoInfoTag &tag);
+  void SetCurrentSongTag(const MUSIC_INFO::CMusicInfoTag& tag);
+  void SetCurrentVideoTag(const CVideoInfoTag& tag);
 
-  const MUSIC_INFO::CMusicInfoTag *GetCurrentSongTag() const;
+  const MUSIC_INFO::CMusicInfoTag* GetCurrentSongTag() const;
 #ifndef _XBOX
   const PVR::CPVRRadioRDSInfoTagPtr GetCurrentRadioRDSInfoTag() const;
 #endif
@@ -184,14 +187,14 @@ public:
 
   std::string GetRadioRDSLabel(int item);
   std::string GetMusicLabel(int item);
-  std::string GetMusicTagLabel(int info, const CFileItem *item);
+  std::string GetMusicTagLabel(int info, const CFileItem* item);
   std::string GetVideoLabel(int item);
   std::string GetPlaylistLabel(int item, int playlistid = -1 /* PLAYLIST_NONE */) const;
   std::string GetMusicPartyModeLabel(int item);
   const std::string GetMusicPlaylistInfo(const GUIInfo& info);
   std::string GetPictureLabel(int item);
 
-  int64_t GetPlayTime() const;  // in ms
+  int64_t GetPlayTime() const; // in ms
   std::string GetCurrentPlayTime(TIME_FORMAT format = TIME_FORMAT_GUESS) const;
   std::string GetCurrentSeekTime(TIME_FORMAT format = TIME_FORMAT_GUESS) const;
   int GetPlayTimeRemaining() const;
@@ -220,11 +223,11 @@ public:
   void SetPreviousWindow(int windowID) { m_prevWindowID = windowID; };
 
   void ResetCache();
-  bool GetItemInt(int &value, const CGUIListItem *item, int info) const;
-  std::string GetItemLabel(const CFileItem *item, int info, std::string *fallback = NULL);
-  std::string GetItemImage(const CFileItem *item, int info, std::string *fallback = NULL);
+  bool GetItemInt(int& value, const CGUIListItem* item, int info) const;
+  std::string GetItemLabel(const CFileItem* item, int info, std::string* fallback = NULL);
+  std::string GetItemImage(const CFileItem* item, int info, std::string* fallback = NULL);
 
-  void SetLaunchingXBEName(const std::string &name) { m_launchingXBE = name; };
+  void SetLaunchingXBEName(const std::string& name) { m_launchingXBE = name; };
 
   /*! \brief containers call here to specify that the focus is changing
    \param id control id
@@ -240,13 +243,15 @@ public:
   void SetLibraryBool(int condition, bool value);
   bool GetLibraryBool(int condition);
   void ResetLibraryBools();
-  std::string LocalizeTime(const CDateTime &time, TIME_FORMAT format) const;
+  std::string LocalizeTime(const CDateTime& time, TIME_FORMAT format) const;
 
-  int TranslateSingleString(const std::string &strCondition);
+  int TranslateSingleString(const std::string& strCondition);
 
   int RegisterSkinVariableString(const INFO::CSkinVariableString* info);
   int TranslateSkinVariableString(const std::string& name, int context);
-  std::string GetSkinVariableString(int info, bool preferImage = false, const CGUIListItem *item=NULL);
+  std::string GetSkinVariableString(int info,
+                                    bool preferImage = false,
+                                    const CGUIListItem* item = NULL);
 
   /// \brief iterates through boolean conditions and compares their stored values to current values. Returns true if any condition changed value.
   bool ConditionsChangedValues(const std::map<INFO::InfoPtr, bool>& map);
@@ -254,35 +259,40 @@ public:
 protected:
   friend class INFO::InfoSingle;
   friend class CGUIWindowFullScreen;
-  bool GetBool(int condition, int contextWindow = 0, const CGUIListItem *item=NULL);
-  int TranslateSingleString(const std::string &strCondition, bool &listItemDependent);
+  bool GetBool(int condition, int contextWindow = 0, const CGUIListItem* item = NULL);
+  int TranslateSingleString(const std::string& strCondition, bool& listItemDependent);
 
   // routines for window retrieval
-  bool CheckWindowCondition(CGUIWindow *window, int condition) const;
-  CGUIWindow *GetWindowWithCondition(int contextWindow, int condition) const;
+  bool CheckWindowCondition(CGUIWindow* window, int condition) const;
+  CGUIWindow* GetWindowWithCondition(int contextWindow, int condition) const;
 
   /*! \brief class for holding information on properties
    */
   class Property
   {
   public:
-    Property(const std::string &property, const std::string &parameters);
+    Property(const std::string& property, const std::string& parameters);
 
-    const std::string &param(unsigned int n = 0) const;
+    const std::string& param(unsigned int n = 0) const;
     unsigned int num_params() const;
 
     std::string name;
+
   private:
     std::vector<std::string> params;
   };
 
-  bool GetMultiInfoBool(const GUIInfo &info, int contextWindow = 0, const CGUIListItem *item = NULL);
-  bool GetMultiInfoInt(int &value, const GUIInfo &info, int contextWindow = 0) const;
-  std::string GetMultiInfoLabel(const GUIInfo &info, int contextWindow = 0, std::string *fallback = NULL);
-  int TranslateListItem(const Property &info);
-  int TranslateMusicPlayerString(const std::string &info) const;
-  TIME_FORMAT TranslateTimeFormat(const std::string &format);
-  bool GetItemBool(const CGUIListItem *item, int condition) const;
+  bool GetMultiInfoBool(const GUIInfo& info,
+                        int contextWindow = 0,
+                        const CGUIListItem* item = NULL);
+  bool GetMultiInfoInt(int& value, const GUIInfo& info, int contextWindow = 0) const;
+  std::string GetMultiInfoLabel(const GUIInfo& info,
+                                int contextWindow = 0,
+                                std::string* fallback = NULL);
+  int TranslateListItem(const Property& info);
+  int TranslateMusicPlayerString(const std::string& info) const;
+  TIME_FORMAT TranslateTimeFormat(const std::string& format);
+  bool GetItemBool(const CGUIListItem* item, int condition) const;
 
   /*! \brief Split an info string into it's constituent parts and parameters
    Format is:
@@ -294,13 +304,13 @@ protected:
    \param infoString the original string
    \param info the resulting pairs of info and parameters.
    */
-  void SplitInfoString(const std::string &infoString, std::vector<Property> &info);
+  void SplitInfoString(const std::string& infoString, std::vector<Property>& info);
 
   // Conditional string parameters for testing are stored in a vector for later retrieval.
   // The offset into the string parameters array is returned.
-  int ConditionalStringParameter(const std::string &strParameter, bool caseSensitive = false);
-  int AddMultiInfo(const GUIInfo &info);
-  int AddListItemProp(const std::string &str, int offset=0);
+  int ConditionalStringParameter(const std::string& strParameter, bool caseSensitive = false);
+  int AddMultiInfo(const GUIInfo& info);
+  int AddListItemProp(const std::string& str, int offset = 0);
 
 #ifndef _XBOX
   /*!
@@ -346,7 +356,7 @@ protected:
 
   std::string m_launchingXBE;
 
-  std::map<int, int> m_containerMoves;  // direction of list moving
+  std::map<int, int> m_containerMoves; // direction of list moving
   int m_nextWindowID;
   int m_prevWindowID;
 
@@ -379,4 +389,3 @@ private:
  \brief
  */
 extern CGUIInfoManager g_infoManager;
-

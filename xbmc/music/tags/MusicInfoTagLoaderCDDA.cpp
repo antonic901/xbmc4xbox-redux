@@ -38,7 +38,9 @@ CMusicInfoTagLoaderCDDA::~CMusicInfoTagLoaderCDDA()
 {
 }
 
-bool CMusicInfoTagLoaderCDDA::Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art)
+bool CMusicInfoTagLoaderCDDA::Load(const CStdString& strFileName,
+                                   CMusicInfoTag& tag,
+                                   EmbeddedArt* art)
 {
   try
   {
@@ -57,8 +59,8 @@ bool CMusicInfoTagLoaderCDDA::Load(const CStdString& strFileName, CMusicInfoTag&
     int iTrack = atoi(strFileName.substr(13, strFileName.size() - 13 - 5).c_str());
 
     // duration is always available
-    tag.SetDuration( ( pCdInfo->GetTrackInformation(iTrack).nMins * 60 )
-                     + pCdInfo->GetTrackInformation(iTrack).nSecs );
+    tag.SetDuration((pCdInfo->GetTrackInformation(iTrack).nMins * 60) +
+                    pCdInfo->GetTrackInformation(iTrack).nSecs);
 
     // Only load cached cddb info in this tag loader, the internet database query is made in CCDDADirectory
     if (pCdInfo->HasCDDBInfo() && cddb.isCDCached(pCdInfo))
@@ -84,7 +86,7 @@ bool CMusicInfoTagLoaderCDDA::Load(const CStdString& strFileName, CMusicInfoTag&
 
           // Album
           CStdString strAlbum;
-          cddb.getDiskTitle( strAlbum );
+          cddb.getDiskTitle(strAlbum);
           tag.SetAlbum(strAlbum);
 
           // Album Artist
@@ -95,10 +97,10 @@ bool CMusicInfoTagLoaderCDDA::Load(const CStdString& strFileName, CMusicInfoTag&
           // Year
           SYSTEMTIME dateTime;
           dateTime.wYear = atoi(cddb.getYear().c_str());
-          tag.SetReleaseDate( dateTime );
+          tag.SetReleaseDate(dateTime);
 
           // Genre
-          tag.SetGenre( cddb.getGenre() );
+          tag.SetGenre(cddb.getGenre());
 
           tag.SetLoaded(true);
           bResult = true;
@@ -136,7 +138,7 @@ bool CMusicInfoTagLoaderCDDA::Load(const CStdString& strFileName, CMusicInfoTag&
 
         // Genre
         CStdString strGenre = ti.cdtext[CDTEXT_GENRE];
-        tag.SetGenre( strGenre );
+        tag.SetGenre(strGenre);
 
         tag.SetLoaded(true);
         bResult = true;

@@ -34,16 +34,15 @@ public:
   // update the memory units (plug, unplug)
   bool Update();
 
-  bool IsDriveValid(char Drive);    // for backward compatibility
-                                    // with fatx drives in filezilla
+  bool IsDriveValid(char Drive); // for backward compatibility
+  // with fatx drives in filezilla
 
-  IDevice *GetDevice(unsigned char unit) const;
-  IFileSystem *GetFileSystem(unsigned char unit);
+  IDevice* GetDevice(unsigned char unit) const;
+  IFileSystem* GetFileSystem(unsigned char unit);
 
-  bool IsDriveWriteable(const CStdString &path) const;
+  bool IsDriveWriteable(const CStdString& path) const;
 
-  void GetMemoryUnitSources(VECSOURCES &shares);
-
+  void GetMemoryUnitSources(VECSOURCES& shares);
 
 private:
   void Notify(unsigned long port, unsigned long slot, bool success);
@@ -51,15 +50,15 @@ private:
   bool HasDevice(unsigned long port, unsigned long slot);
   bool MountDevice(unsigned long port, unsigned long slot);
   bool UnMountDevice(unsigned long port, unsigned long slot);
-  
+
   void MountUnits(unsigned long device, bool notify);
   void UnMountUnits(unsigned long device);
 
   char DriveLetterFromPort(unsigned long port, unsigned long slot);
 
-  void DumpImage(const CStdString &path, unsigned char unit, unsigned long sectors);
+  void DumpImage(const CStdString& path, unsigned char unit, unsigned long sectors);
 
-  std::vector<IDevice *> m_memUnits;
+  std::vector<IDevice*> m_memUnits;
 
   bool m_initialized;
 };

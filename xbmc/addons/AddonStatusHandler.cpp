@@ -47,7 +47,10 @@ namespace ADDON
 
 CCriticalSection CAddonStatusHandler::m_critSection;
 
-CAddonStatusHandler::CAddonStatusHandler(const std::string &addonID, ADDON_STATUS status, std::string message, bool sameThread)
+CAddonStatusHandler::CAddonStatusHandler(const std::string& addonID,
+                                         ADDON_STATUS status,
+                                         std::string message,
+                                         bool sameThread)
   : CThread(("AddonStatus " + addonID).c_str()),
     m_status(ADDON_STATUS_UNKNOWN)
 {
@@ -56,9 +59,11 @@ CAddonStatusHandler::CAddonStatusHandler(const std::string &addonID, ADDON_STATU
   if (!CServiceBroker::GetAddonMgr().GetAddon(addonID, m_addon))
     return;
 
-  CLog::Log(LOGINFO, "Called Add-on status handler for '%u' of clientName:%s, clientID:%s (same Thread=%s)", status, m_addon->Name().c_str(), m_addon->ID().c_str(), sameThread ? "yes" : "no");
+  CLog::Log(LOGINFO,
+            "Called Add-on status handler for '%u' of clientName:%s, clientID:%s (same Thread=%s)",
+            status, m_addon->Name().c_str(), m_addon->ID().c_str(), sameThread ? "yes" : "no");
 
-  m_status  = status;
+  m_status = status;
   m_message = message;
 
   if (sameThread)
@@ -89,25 +94,32 @@ void CAddonStatusHandler::Process()
 {
   CSingleLock lock(m_critSection);
 
-  std::string heading = StringUtils::Format("%s: %s", TranslateType(m_addon->Type(), true).c_str(), m_addon->Name().c_str());
+  std::string heading = StringUtils::Format("%s: %s", TranslateType(m_addon->Type(), true).c_str(),
+                                            m_addon->Name().c_str());
 
   /* Request to restart the AddOn and data structures need updated */
   if (m_status == ADDON_STATUS_NEED_RESTART)
   {
     CGUIDialogOK* pDialog = (CGUIDialogOK*)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
-    if (!pDialog) return;
+    if (!pDialog)
+      return;
 
     pDialog->SetHeading(heading);
     pDialog->SetLine(1, 24074);
     pDialog->Open();
 
-    CServiceBroker::GetAddonMgr().GetCallbackForType(m_addon->Type())->RequestRestart(m_addon, true);
+    CServiceBroker::GetAddonMgr()
+        .GetCallbackForType(m_addon->Type())
+        ->RequestRestart(m_addon, true);
   }
   /* Some required settings are missing/invalid */
-  else if ((m_status == ADDON_STATUS_NEED_SETTINGS) || (m_status == ADDON_STATUS_NEED_SAVEDSETTINGS))
+  else if ((m_status == ADDON_STATUS_NEED_SETTINGS) ||
+           (m_status == ADDON_STATUS_NEED_SAVEDSETTINGS))
   {
-    CGUIDialogYesNo* pDialogYesNo = (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
-    if (!pDialogYesNo) return;
+    CGUIDialogYesNo* pDialogYesNo =
+        (CGUIDialogYesNo*)g_windowManager.GetWindow(WINDOW_DIALOG_YES_NO);
+    if (!pDialogYesNo)
+      return;
 
     pDialogYesNo->SetHeading(heading);
     pDialogYesNo->SetLine(1, 24070);
@@ -115,7 +127,8 @@ void CAddonStatusHandler::Process()
     pDialogYesNo->SetLine(3, m_message);
     pDialogYesNo->Open();
 
-    if (!pDialogYesNo->IsConfirmed()) return;
+    if (!pDialogYesNo->IsConfirmed())
+      return;
 
     if (!m_addon->HasSettings())
       return;
@@ -124,11 +137,11 @@ void CAddonStatusHandler::Process()
     {
       //! @todo Doesn't dialogaddonsettings save these automatically? It should do this.
       m_addon->SaveSettings();
-      CServiceBroker::GetAddonMgr().GetCallbackForType(m_addon->Type())->RequestRestart(m_addon, true);
+      CServiceBroker::GetAddonMgr()
+          .GetCallbackForType(m_addon->Type())
+          ->RequestRestart(m_addon, true);
     }
   }
 }
 
-
 } /*namespace ADDON*/
-

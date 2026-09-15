@@ -26,13 +26,14 @@ class CBaseTexture;
 class CPicture
 {
 public:
-  static bool CreateThumbnailFromSurface(const unsigned char* buffer, int width, int height, int stride, const CStdString &thumbFile);
+  static bool CreateThumbnailFromSurface(
+      const unsigned char* buffer, int width, int height, int stride, const CStdString& thumbFile);
 
   /*! \brief Create a tiled thumb of the given files
    \param files the files to create the thumb from
    \param thumb the filename of the thumb
    */
-  static bool CreateTiledThumb(const std::vector<std::string> &files, const std::string &thumb);
+  static bool CreateTiledThumb(const std::vector<std::string>& files, const std::string& thumb);
 
   /*! \brief Cache a texture, resizing, rotating and flipping as needed, and saving as a JPG or PNG
    \param texture a pointer to a CBaseTexture
@@ -41,22 +42,44 @@ public:
    \param dest the output cache file
    \return true if successful, false otherwise
    */
-  static bool CacheTexture(CBaseTexture *texture, uint32_t &dest_width, uint32_t &dest_height, const std::string &dest);
-  static bool CacheTexture(uint8_t *pixels, uint32_t width, uint32_t height, uint32_t pitch, int orientation, uint32_t &dest_width, uint32_t &dest_height, const std::string &dest);
+  static bool CacheTexture(CBaseTexture* texture,
+                           uint32_t& dest_width,
+                           uint32_t& dest_height,
+                           const std::string& dest);
+  static bool CacheTexture(uint8_t* pixels,
+                           uint32_t width,
+                           uint32_t height,
+                           uint32_t pitch,
+                           int orientation,
+                           uint32_t& dest_width,
+                           uint32_t& dest_height,
+                           const std::string& dest);
 
 private:
-  static void GetScale(unsigned int width, unsigned int height, unsigned int &out_width, unsigned int &out_height);
-  static bool ScaleImage(uint8_t *in_pixels, unsigned int in_width, unsigned int in_height, unsigned int in_pitch,
-                         uint8_t *out_pixels, unsigned int out_width, unsigned int out_height, unsigned int out_pitch);
-  static bool OrientateImage(uint32_t *&pixels, unsigned int &width, unsigned int &height, int orientation);
+  static void GetScale(unsigned int width,
+                       unsigned int height,
+                       unsigned int& out_width,
+                       unsigned int& out_height);
+  static bool ScaleImage(uint8_t* in_pixels,
+                         unsigned int in_width,
+                         unsigned int in_height,
+                         unsigned int in_pitch,
+                         uint8_t* out_pixels,
+                         unsigned int out_width,
+                         unsigned int out_height,
+                         unsigned int out_pitch);
+  static bool OrientateImage(uint32_t*& pixels,
+                             unsigned int& width,
+                             unsigned int& height,
+                             int orientation);
 
-  static bool FlipHorizontal(uint32_t *&pixels, unsigned int &width, unsigned int &height);
-  static bool FlipVertical(uint32_t *&pixels, unsigned int &width, unsigned int &height);
-  static bool Rotate90CCW(uint32_t *&pixels, unsigned int &width, unsigned int &height);
-  static bool Rotate270CCW(uint32_t *&pixels, unsigned int &width, unsigned int &height);
-  static bool Rotate180CCW(uint32_t *&pixels, unsigned int &width, unsigned int &height);
-  static bool Transpose(uint32_t *&pixels, unsigned int &width, unsigned int &height);
-  static bool TransposeOffAxis(uint32_t *&pixels, unsigned int &width, unsigned int &height);
+  static bool FlipHorizontal(uint32_t*& pixels, unsigned int& width, unsigned int& height);
+  static bool FlipVertical(uint32_t*& pixels, unsigned int& width, unsigned int& height);
+  static bool Rotate90CCW(uint32_t*& pixels, unsigned int& width, unsigned int& height);
+  static bool Rotate270CCW(uint32_t*& pixels, unsigned int& width, unsigned int& height);
+  static bool Rotate180CCW(uint32_t*& pixels, unsigned int& width, unsigned int& height);
+  static bool Transpose(uint32_t*& pixels, unsigned int& width, unsigned int& height);
+  static bool TransposeOffAxis(uint32_t*& pixels, unsigned int& width, unsigned int& height);
 
   struct VERTEX
   {

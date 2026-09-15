@@ -39,10 +39,11 @@ public:
    \param saveToDisk whether the changes should be saved to disk or just made local to the addon.  Defaults to true
    \return true if settings were changed and the dialog confirmed, false otherwise.
    */
-  static bool ShowAndGetInput(const ADDON::AddonPtr &addon, bool saveToDisk = true);
-  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  static bool ShowAndGetInput(const ADDON::AddonPtr& addon, bool saveToDisk = true);
+  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions);
 
   std::string GetCurrentID() const;
+
 protected:
   virtual void OnInitWindow();
   virtual int GetDefaultLabelID(int controlId) const;
@@ -53,7 +54,7 @@ private:
    \param subsetting whether the character string should be prefixed by "- ", defaults to false
    \return the localized addon string
    */
-  std::string GetString(const char *value, bool subSetting = false) const;
+  std::string GetString(const char* value, bool subSetting = false) const;
 
   /*! \brief return a the values for a fileenum setting
    \param path the path to use for files
@@ -61,7 +62,9 @@ private:
    \param options any options, such as "hideext" to hide extensions
    \return the filenames in the path that match the mask
    */
-  std::vector<std::string> GetFileEnumValues(const std::string &path, const std::string &mask, const std::string &options) const;
+  std::vector<std::string> GetFileEnumValues(const std::string& path,
+                                             const std::string& mask,
+                                             const std::string& options) const;
 
   /*! \brief Translate list of addon IDs to list of addon names
    \param addonIDslist comma seperated list of addon IDs
@@ -76,21 +79,21 @@ private:
   void UpdateFromControls();
   void EnableControls();
   void SetDefaultSettings();
-  bool GetCondition(const std::string &condition, const int controlId);
+  bool GetCondition(const std::string& condition, const int controlId);
 
   void SaveSettings(void);
   bool ShowVirtualKeyboard(int iControl);
-  bool TranslateSingleString(const std::string &strCondition, std::vector<std::string> &enableVec);
+  bool TranslateSingleString(const std::string& strCondition, std::vector<std::string>& enableVec);
 
-  const TiXmlElement *GetFirstSetting() const;
+  const TiXmlElement* GetFirstSetting() const;
 
   ADDON::AddonPtr m_addon;
-  std::map<std::string,std::string> m_buttonValues;
-  bool m_saveToDisk; // whether the addon settings should be saved to disk or just stored locally in the addon
+  std::map<std::string, std::string> m_buttonValues;
+  bool
+      m_saveToDisk; // whether the addon settings should be saved to disk or just stored locally in the addon
 
   unsigned int m_currentSection;
   unsigned int m_totalSections;
 
-  std::map<std::string,std::string> m_settings; // local storage of values
+  std::map<std::string, std::string> m_settings; // local storage of values
 };
-

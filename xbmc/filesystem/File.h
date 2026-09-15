@@ -57,8 +57,8 @@ public:
   CFile();
   ~CFile();
 
-  bool CURLCreate(const std::string &url);
-  bool CURLAddOption(XFILE::CURLOPTIONTYPE type, const char* name, const char * value);
+  bool CURLCreate(const std::string& url);
+  bool CURLAddOption(XFILE::CURLOPTIONTYPE type, const char* name, const char* value);
   bool CURLOpen(unsigned int flags);
 
   /**
@@ -78,7 +78,7 @@ public:
   bool OpenForWrite(const CURL& file, bool bOverWrite = false);
   bool OpenForWrite(const std::string& strFileName, bool bOverWrite = false);
 
-  ssize_t LoadFile(const CURL &file, auto_buffer& outputBuffer);
+  ssize_t LoadFile(const CURL& file, auto_buffer& outputBuffer);
 
   /**
    * Attempt to read bufSize bytes from currently opened file into buffer bufPtr.
@@ -89,7 +89,7 @@ public:
    *         or undetectable error occur, -1 in case of any explicit error
    */
   ssize_t Read(void* bufPtr, size_t bufSize);
-  bool ReadString(char *szLine, int iLineLength);
+  bool ReadString(char* szLine, int iLineLength);
   /**
    * Attempt to write bufSize bytes from buffer bufPtr into currently opened file.
    * @param bufPtr  pointer to buffer
@@ -108,14 +108,13 @@ public:
   int GetChunkSize();
   std::string GetContentMimeType(void);
   std::string GetContentCharset(void);
-  ssize_t LoadFile(const std::string &filename, auto_buffer& outputBuffer);
-
+  ssize_t LoadFile(const std::string& filename, auto_buffer& outputBuffer);
 
   // will return a size, that is aligned to chunk size
   // but always greater or equal to the file's chunk size
   static int GetChunkSize(int chunk, int minimum)
   {
-    if(chunk)
+    if (chunk)
       return chunk * ((minimum + chunk - 1) / chunk);
     else
       return minimum;
@@ -126,7 +125,7 @@ public:
 
   int IoControl(EIoControl request, void* param);
 
-  IFile *GetImplemenation() { return m_pFile; }
+  IFile* GetImplemenation() { return m_pFile; }
 
   // CURL interface
   static bool Exists(const CURL& file, bool bUseCache = true);
@@ -143,9 +142,12 @@ public:
   * @param buffer      pointer to __stat64 buffer to receive information about file
   * @return zero of success, -1 otherwise.
   */
-  static int  Stat(const CURL& file, struct __stat64* buffer);
+  static int Stat(const CURL& file, struct __stat64* buffer);
   static bool Rename(const CURL& file, const CURL& urlNew);
-  static bool Copy(const CURL& file, const CURL& dest, XFILE::IFileCallback* pCallback = NULL, void* pContext = NULL);
+  static bool Copy(const CURL& file,
+                   const CURL& dest,
+                   XFILE::IFileCallback* pCallback = NULL,
+                   void* pContext = NULL);
   static bool SetHidden(const CURL& file, bool hidden);
 
   // string interface
@@ -162,7 +164,7 @@ public:
   * @param buffer      pointer to __stat64 buffer to receive information about file
   * @return zero of success, -1 otherwise.
   */
-  static int  Stat(const std::string& strFileName, struct __stat64* buffer);
+  static int Stat(const std::string& strFileName, struct __stat64* buffer);
   /**
   * Fills struct __stat64 with information about currently open file
   * For st_mode function will set correctly _S_IFDIR (directory) flag and may set
@@ -174,47 +176,51 @@ public:
   * @param buffer      pointer to __stat64 buffer to receive information about file
   * @return zero of success, -1 otherwise.
   */
-  int Stat(struct __stat64 *buffer);
+  int Stat(struct __stat64* buffer);
   static bool Delete(const std::string& strFileName);
   static bool Rename(const std::string& strFileName, const std::string& strNewFileName);
-  static bool Copy(const std::string& strFileName, const std::string& strDest, XFILE::IFileCallback* pCallback = NULL, void* pContext = NULL);
+  static bool Copy(const std::string& strFileName,
+                   const std::string& strDest,
+                   XFILE::IFileCallback* pCallback = NULL,
+                   void* pContext = NULL);
   static bool SetHidden(const std::string& fileName, bool hidden);
   double GetDownloadSpeed();
 
 private:
-  unsigned int        m_flags;
-  CURL                m_curl;
-  IFile*              m_pFile;
-  CFileStreamBuffer*  m_pBuffer;
-  BitstreamStats*     m_bitStreamStats;
+  unsigned int m_flags;
+  CURL m_curl;
+  IFile* m_pFile;
+  CFileStreamBuffer* m_pBuffer;
+  BitstreamStats* m_bitStreamStats;
 };
 
 // streambuf for file io, only supports buffered input currently
-class CFileStreamBuffer
-  : public std::streambuf
+class CFileStreamBuffer : public std::streambuf
 {
 public:
   ~CFileStreamBuffer();
   CFileStreamBuffer(int backsize = 0);
 
-  void Attach(IFile *file);
+  void Attach(IFile* file);
   void Detach();
 
 private:
   virtual int_type underflow();
   virtual std::streamsize showmanyc();
-  virtual pos_type seekoff(off_type, std::ios_base::seekdir,std::ios_base::openmode = std::ios_base::in | std::ios_base::out);
-  virtual pos_type seekpos(pos_type, std::ios_base::openmode = std::ios_base::in | std::ios_base::out);
+  virtual pos_type seekoff(off_type,
+                           std::ios_base::seekdir,
+                           std::ios_base::openmode = std::ios_base::in | std::ios_base::out);
+  virtual pos_type seekpos(pos_type,
+                           std::ios_base::openmode = std::ios_base::in | std::ios_base::out);
 
   IFile* m_file;
-  char*  m_buffer;
-  int    m_backsize;
-  int    m_frontsize;
+  char* m_buffer;
+  int m_backsize;
+  int m_frontsize;
 };
 
 // very basic file input stream
-class CFileStream
-  : public std::istream
+class CFileStream : public std::istream
 {
 public:
   CFileStream(int backsize = 0);
@@ -225,9 +231,10 @@ public:
   void Close();
 
   int64_t GetLength();
+
 private:
   CFileStreamBuffer m_buffer;
-  IFile*            m_file;
+  IFile* m_file;
 };
 
-}
+} // namespace XFILE

@@ -28,7 +28,6 @@ class CFileItemList;
 class CGUIWindowMusicNav : public CGUIWindowMusicBase
 {
 public:
-
   CGUIWindowMusicNav(void);
   virtual ~CGUIWindowMusicNav(void);
 
@@ -39,17 +38,17 @@ public:
 protected:
   virtual void OnItemLoaded(CFileItem* pItem) {};
   // override base class methods
-  virtual bool Update(const std::string &strDirectory, bool updateFilterPath = true);
-  virtual bool GetDirectory(const std::string &strDirectory, CFileItemList &items);
+  virtual bool Update(const std::string& strDirectory, bool updateFilterPath = true);
+  virtual bool GetDirectory(const std::string& strDirectory, CFileItemList& items);
   virtual void UpdateButtons();
   virtual void PlayItem(int iItem);
   virtual void OnWindowLoaded();
-  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  virtual void GetContextButtons(int itemNumber, CContextButtons& buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
-  virtual bool OnClick(int iItem, const std::string &player = "");
-  virtual std::string GetStartFolder(const std::string &url);
+  virtual bool OnClick(int iItem, const std::string& player = "");
+  virtual std::string GetStartFolder(const std::string& url);
 
-  bool GetSongsFromPlayList(const std::string& strPlayList, CFileItemList &items);
+  bool GetSongsFromPlayList(const std::string& strPlayList, CFileItemList& items);
   std::string GetQuickpathName(const std::string& strPath) const;
   bool ManageInfoProvider(const CFileItemPtr item);
 
@@ -59,5 +58,5 @@ protected:
   void OnSearchUpdate();
   void AddSearchFolder();
   CStopWatch m_searchTimer; ///< Timer to delay a search while more characters are entered
-  bool m_searchWithEdit;    ///< Whether the skin supports the new edit control searching
+  bool m_searchWithEdit; ///< Whether the skin supports the new edit control searching
 };

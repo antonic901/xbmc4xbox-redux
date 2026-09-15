@@ -30,8 +30,7 @@
 
 using namespace ADDON;
 
-CGUIWindowScreensaver::CGUIWindowScreensaver(void)
-    : CGUIWindow(WINDOW_SCREENSAVER, "")
+CGUIWindowScreensaver::CGUIWindowScreensaver(void) : CGUIWindow(WINDOW_SCREENSAVER, "")
 {
 }
 
@@ -41,7 +40,7 @@ CGUIWindowScreensaver::~CGUIWindowScreensaver(void)
 
 void CGUIWindowScreensaver::Render()
 {
-  CSingleLock lock (m_critSection);
+  CSingleLock lock(m_critSection);
 
 #ifdef HAS_SCREENSAVER
   if (m_addon)
@@ -52,7 +51,8 @@ void CGUIWindowScreensaver::Render()
       {
         //some screensavers seem to be depending on xbmc clearing the screen
         //       g_graphicsContext.Get3DDevice()->Clear( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, 0x00010001, 1.0f, 0L );
-        if (m_addon->ID() == "screensaver.cpblobs" || m_addon->ID() == "screensaver.pmblobs" || m_addon->ID() == "screensaver.drempels")
+        if (m_addon->ID() == "screensaver.cpblobs" || m_addon->ID() == "screensaver.pmblobs" ||
+            m_addon->ID() == "screensaver.drempels")
           g_graphicsContext.ApplyStateBlock();
         else
           g_graphicsContext.CaptureStateBlock();
@@ -63,7 +63,7 @@ void CGUIWindowScreensaver::Render()
       {
         CLog::Log(LOGERROR, "SCREENSAVER: - Exception in Render() - %s", m_addon->Name().c_str());
       }
-      return ;
+      return;
     }
     else
     {
@@ -76,14 +76,14 @@ void CGUIWindowScreensaver::Render()
       {
         CLog::Log(LOGERROR, "SCREENSAVER: - Exception in Start() - %s", m_addon->Name().c_str());
       }
-      return ;
+      return;
     }
   }
 #endif
   CGUIWindow::Render();
 }
 
-bool CGUIWindowScreensaver::OnAction(const CAction &action)
+bool CGUIWindowScreensaver::OnAction(const CAction& action)
 {
   // We're just a screen saver, nothing to do here
   return false;
@@ -91,11 +91,11 @@ bool CGUIWindowScreensaver::OnAction(const CAction &action)
 
 bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_DEINIT:
+    case GUI_MSG_WINDOW_DEINIT:
     {
-      CSingleLock lock (m_critSection);
+      CSingleLock lock(m_critSection);
 #ifdef HAS_SCREENSAVER
       if (m_addon)
       {
@@ -108,16 +108,15 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
       m_bInitialized = false;
 
       // remove z-buffer
-//      RESOLUTION res = g_graphicsContext.GetVideoResolution();
- //     g_graphicsContext.SetVideoResolution(res, FALSE);
-
+      //      RESOLUTION res = g_graphicsContext.GetVideoResolution();
+      //     g_graphicsContext.SetVideoResolution(res, FALSE);
     }
     break;
 
-  case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_INIT:
     {
       CGUIWindow::OnMessage(message);
-      CSingleLock lock (m_critSection);
+      CSingleLock lock(m_critSection);
 
 #ifdef HAS_SCREENSAVER
       assert(!m_addon);
@@ -126,7 +125,8 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
       m_addon.reset();
       // Setup new screensaver instance
       AddonPtr addon;
-      if (!CServiceBroker::GetAddonMgr().GetAddon(CSettings::GetInstance().GetString("screensaver.mode"), addon, ADDON_SCREENSAVER))
+      if (!CServiceBroker::GetAddonMgr().GetAddon(
+              CSettings::GetInstance().GetString("screensaver.mode"), addon, ADDON_SCREENSAVER))
         return false;
 
       m_addon = boost::dynamic_pointer_cast<CScreenSaver>(addon);
@@ -134,27 +134,27 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
       if (!m_addon)
         return false;
 
-      if (m_addon->ID() == "screensaver.cpblobs" || m_addon->ID() == "screensaver.pmblobs" || m_addon->ID() == "screensaver.drempels")
+      if (m_addon->ID() == "screensaver.cpblobs" || m_addon->ID() == "screensaver.pmblobs" ||
+          m_addon->ID() == "screensaver.drempels")
         g_graphicsContext.ApplyStateBlock();
       else
         g_graphicsContext.CaptureStateBlock();
       m_addon->CreateScreenSaver();
 #endif
       // setup a z-buffer
-//      RESOLUTION res = g_graphicsContext.GetVideoResolution();
-//      g_graphicsContext.SetVideoResolution(res, TRUE);
+      //      RESOLUTION res = g_graphicsContext.GetVideoResolution();
+      //      g_graphicsContext.SetVideoResolution(res, TRUE);
 
       return true;
     }
-  case GUI_MSG_CHECK_LOCK:
-    if (!g_passwordManager.IsProfileLockUnlocked())
-    {
-      g_application.m_iScreenSaveLock = -1;
-      return false;
-    }
-    g_application.m_iScreenSaveLock = 1;
-    return true;
+    case GUI_MSG_CHECK_LOCK:
+      if (!g_passwordManager.IsProfileLockUnlocked())
+      {
+        g_application.m_iScreenSaveLock = -1;
+        return false;
+      }
+      g_application.m_iScreenSaveLock = 1;
+      return true;
   }
   return CGUIWindow::OnMessage(message);
 }
-

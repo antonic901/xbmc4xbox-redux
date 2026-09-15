@@ -38,7 +38,8 @@ CEncoder::~CEncoder()
 
 bool CEncoder::Init(const char* strFile, int iInChannels, int iInRate, int iInBits)
 {
-  if (strFile == NULL) return false;
+  if (strFile == NULL)
+    return false;
 
   m_dwWriteBufferPointer = 0;
   m_strFile = strFile;
@@ -110,7 +111,8 @@ int CEncoder::WriteStream(LPCVOID pBuffer, DWORD iBytes)
 
     DWORD dwBytesRemaining = iBytes - (WRITEBUFFER_SIZE - m_dwWriteBufferPointer);
     // fill up our write buffer and write it to disk
-    memcpy(m_btWriteBuffer + m_dwWriteBufferPointer, pBuffer, (WRITEBUFFER_SIZE - m_dwWriteBufferPointer));
+    memcpy(m_btWriteBuffer + m_dwWriteBufferPointer, pBuffer,
+           (WRITEBUFFER_SIZE - m_dwWriteBufferPointer));
     FileWrite(m_btWriteBuffer, WRITEBUFFER_SIZE);
     m_dwWriteBufferPointer = 0;
 
@@ -119,7 +121,8 @@ int CEncoder::WriteStream(LPCVOID pBuffer, DWORD iBytes)
     if (dwBytesRemaining > WRITEBUFFER_SIZE)
     {
       // data is not going to fit in our buffer, just write it to disk
-      if (FileWrite(pbtRemaining, dwBytesRemaining) == -1) return -1;
+      if (FileWrite(pbtRemaining, dwBytesRemaining) == -1)
+        return -1;
       return iBytes;
     }
     else
@@ -136,7 +139,8 @@ int CEncoder::WriteStream(LPCVOID pBuffer, DWORD iBytes)
 int CEncoder::FlushStream()
 {
   int iResult;
-  if (m_dwWriteBufferPointer == 0) return 0;
+  if (m_dwWriteBufferPointer == 0)
+    return 0;
 
   iResult = FileWrite(m_btWriteBuffer, m_dwWriteBufferPointer);
   m_dwWriteBufferPointer = 0;

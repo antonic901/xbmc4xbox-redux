@@ -24,12 +24,11 @@
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CDirectoryNodeAlbumCompilationsSongs::CDirectoryNodeAlbumCompilationsSongs(const std::string& strName, CDirectoryNode* pParent)
+CDirectoryNodeAlbumCompilationsSongs::CDirectoryNodeAlbumCompilationsSongs(
+    const std::string& strName, CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_ALBUM_COMPILATIONS_SONGS, strName, pParent)
 {
-
 }
-
 
 bool CDirectoryNodeAlbumCompilationsSongs::GetContent(CFileItemList& items) const
 {
@@ -40,7 +39,7 @@ bool CDirectoryNodeAlbumCompilationsSongs::GetContent(CFileItemList& items) cons
   CQueryParams params;
   CollectQueryParams(params);
 
-  bool bSuccess=musicdatabase.GetCompilationSongs(BuildPath(), items);
+  bool bSuccess = musicdatabase.GetCompilationSongs(BuildPath(), items);
 
   musicdatabase.Close();
 

@@ -41,20 +41,25 @@ public:
   virtual int64_t GetPosition();
   virtual int64_t GetLength();
   virtual bool Open(const CURL& url);
-  virtual bool Exists(const CURL& url) { return true;};
-  virtual int Stat(const CURL& url, struct __stat64* buffer) { errno = ENOENT; return -1; };
+  virtual bool Exists(const CURL& url) { return true; };
+  virtual int Stat(const CURL& url, struct __stat64* buffer)
+  {
+    errno = ENOENT;
+    return -1;
+  };
   virtual ssize_t Read(void* lpBuf, size_t uiBufSize);
   virtual ssize_t Write(const void* lpBuf, size_t uiBufSize);
   virtual int64_t Seek(int64_t iFilePosition, int iWhence = SEEK_SET);
   virtual void Close();
 
   bool OpenForWrite(const char* strFileName);
-  unsigned int Write(void *lpBuf, int64_t uiBufSize);
+  unsigned int Write(void* lpBuf, int64_t uiBufSize);
+
 protected:
   AUTOPTR::CAutoPtrHandle m_hFile;
   int64_t m_i64FileLength;
   int64_t m_i64FilePos;
 };
 
-};
+}; // namespace XFILE
 #endif // !defined(AFX_FileSndtrk_H__DD2B0A9E_4971_4A29_B525_78CEFCDAF4A1__INCLUDED_)

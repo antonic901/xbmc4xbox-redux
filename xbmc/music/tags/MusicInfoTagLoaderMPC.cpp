@@ -24,12 +24,14 @@
 using namespace MUSIC_INFO;
 
 CMusicInfoTagLoaderMPC::CMusicInfoTagLoaderMPC(void)
-{}
+{
+}
 
 CMusicInfoTagLoaderMPC::~CMusicInfoTagLoaderMPC()
-{}
+{
+}
 
-int CMusicInfoTagLoaderMPC::ReadDuration(const CStdString &strFileName)
+int CMusicInfoTagLoaderMPC::ReadDuration(const CStdString& strFileName)
 {
   DVDPlayerCodec codec;
   if (codec.Init(strFileName, 4096))
@@ -38,4 +40,3 @@ int CMusicInfoTagLoaderMPC::ReadDuration(const CStdString &strFileName)
   }
   return 0;
 }
-

@@ -30,7 +30,7 @@ CEncoderFlac::CEncoderFlac() : m_encoder(0), m_samplesBuf(new FLAC__int32[SAMPLE
 
 CEncoderFlac::~CEncoderFlac()
 {
-  delete [] m_samplesBuf;
+  delete[] m_samplesBuf;
 }
 
 bool CEncoderFlac::Init(const char* strFile, int iInChannels, int iInRate, int iInBits)
@@ -62,29 +62,36 @@ bool CEncoderFlac::Init(const char* strFile, int iInChannels, int iInRate, int i
   ok &= m_dll.FLAC__stream_encoder_set_bits_per_sample(m_encoder, 16);
   ok &= m_dll.FLAC__stream_encoder_set_sample_rate(m_encoder, 44100);
   ok &= m_dll.FLAC__stream_encoder_set_total_samples_estimate(m_encoder, m_iTrackLength / 4);
-  ok &= m_dll.FLAC__stream_encoder_set_compression_level(m_encoder, CSettings::GetInstance().GetInt("audiocds.compressionlevel"));
+  ok &= m_dll.FLAC__stream_encoder_set_compression_level(
+      m_encoder, CSettings::GetInstance().GetInt("audiocds.compressionlevel"));
 
   // now add some metadata
   FLAC__StreamMetadata_VorbisComment_Entry entry;
   if (ok)
   {
-    if (
-      (m_metadata[0] = m_dll.FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT)) == NULL ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "ARTIST", m_strArtist.c_str()) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "ALBUM", m_strAlbum.c_str()) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "TITLE", m_strTitle.c_str()) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "GENRE", m_strGenre.c_str()) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "TRACKNUMBER", m_strTrack.c_str()) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "DATE", m_strYear.c_str()) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "COMMENT", m_strComment.c_str()) ||
-      !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false)
-      ) 
+    if ((m_metadata[0] = m_dll.FLAC__metadata_object_new(FLAC__METADATA_TYPE_VORBIS_COMMENT)) ==
+            NULL ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(
+            &entry, "ARTIST", m_strArtist.c_str()) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "ALBUM",
+                                                                              m_strAlbum.c_str()) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "TITLE",
+                                                                              m_strTitle.c_str()) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "GENRE",
+                                                                              m_strGenre.c_str()) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "TRACKNUMBER",
+                                                                              m_strTrack.c_str()) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(&entry, "DATE",
+                                                                              m_strYear.c_str()) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_entry_from_name_value_pair(
+            &entry, "COMMENT", m_strComment.c_str()) ||
+        !m_dll.FLAC__metadata_object_vorbiscomment_append_comment(m_metadata[0], entry, false))
     {
       CLog::Log(LOGERROR, "ERROR: FLAC out of memory or tag error\n");
       ok = false;
@@ -99,9 +106,10 @@ bool CEncoderFlac::Init(const char* strFile, int iInChannels, int iInRate, int i
   if (ok)
   {
     FLAC__StreamEncoderInitStatus init_status;
-    init_status = m_dll.FLAC__stream_encoder_init_stream(m_encoder, write_callback, seek_callback, tell_callback, 0, this);
+    init_status = m_dll.FLAC__stream_encoder_init_stream(m_encoder, write_callback, seek_callback,
+                                                         tell_callback, 0, this);
     if (init_status != FLAC__STREAM_ENCODER_INIT_STATUS_OK)
-	  {
+    {
       CLog::Log(LOGERROR, "FLAC encoder initializing error");
       ok = false;
     }
@@ -126,7 +134,8 @@ int CEncoderFlac::Encode(int nNumBytesRead, BYTE* pbtStream)
     // convert the packed little-endian 16-bit PCM samples into an interleaved FLAC__int32 buffer for libFLAC
     for (int i = 0; i < nSamples; i++)
     { // inefficient but simple and works on big- or little-endian machines.
-      m_samplesBuf[i] = (FLAC__int32)(((FLAC__int16)(FLAC__int8)pbtStream[2*i+1] << 8) | (FLAC__int16)pbtStream[2*i]);
+      m_samplesBuf[i] = (FLAC__int32)(((FLAC__int16)(FLAC__int8)pbtStream[2 * i + 1] << 8) |
+                                      (FLAC__int16)pbtStream[2 * i]);
     }
 
     // feed samples to encoder
@@ -167,25 +176,34 @@ bool CEncoderFlac::Close()
   return ok ? true : false;
 }
 
-FLAC__StreamEncoderWriteStatus CEncoderFlac::write_callback(const FLAC__StreamEncoder *encoder, const FLAC__byte buffer[], size_t bytes, unsigned samples, unsigned current_frame, void *client_data)
+FLAC__StreamEncoderWriteStatus CEncoderFlac::write_callback(const FLAC__StreamEncoder* encoder,
+                                                            const FLAC__byte buffer[],
+                                                            size_t bytes,
+                                                            unsigned samples,
+                                                            unsigned current_frame,
+                                                            void* client_data)
 {
-  CEncoderFlac *pThis = (CEncoderFlac *)client_data;
+  CEncoderFlac* pThis = (CEncoderFlac*)client_data;
   if (pThis->FileWrite(buffer, bytes) != bytes)
     return FLAC__STREAM_ENCODER_WRITE_STATUS_FATAL_ERROR;
   return FLAC__STREAM_ENCODER_WRITE_STATUS_OK;
 }
 
-FLAC__StreamEncoderSeekStatus CEncoderFlac::seek_callback(const FLAC__StreamEncoder *encoder, FLAC__uint64 absolute_byte_offset, void *client_data)
+FLAC__StreamEncoderSeekStatus CEncoderFlac::seek_callback(const FLAC__StreamEncoder* encoder,
+                                                          FLAC__uint64 absolute_byte_offset,
+                                                          void* client_data)
 {
-  CEncoderFlac *pThis = (CEncoderFlac *)client_data;
+  CEncoderFlac* pThis = (CEncoderFlac*)client_data;
   if (pThis->m_file->Seek(absolute_byte_offset, FILE_BEGIN) < 0)
     return FLAC__STREAM_ENCODER_SEEK_STATUS_ERROR;
   return FLAC__STREAM_ENCODER_SEEK_STATUS_OK;
 }
 
-FLAC__StreamEncoderTellStatus CEncoderFlac::tell_callback(const FLAC__StreamEncoder *encoder, FLAC__uint64 *absolute_byte_offset, void *client_data)
+FLAC__StreamEncoderTellStatus CEncoderFlac::tell_callback(const FLAC__StreamEncoder* encoder,
+                                                          FLAC__uint64* absolute_byte_offset,
+                                                          void* client_data)
 {
-  CEncoderFlac *pThis = (CEncoderFlac *)client_data;
+  CEncoderFlac* pThis = (CEncoderFlac*)client_data;
   int64_t off = pThis->m_file->GetLength();
   if (off < 0)
     return FLAC__STREAM_ENCODER_TELL_STATUS_ERROR;

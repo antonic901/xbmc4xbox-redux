@@ -26,7 +26,8 @@
 class CJSONVariantWriter
 {
 public:
-  static std::string Write(const CVariant &value, bool compact);
+  static std::string Write(const CVariant& value, bool compact);
+
 private:
-  static bool InternalWrite(Json::Value &jsonValue, const CVariant &value);
+  static bool InternalWrite(Json::Value& jsonValue, const CVariant& value);
 };

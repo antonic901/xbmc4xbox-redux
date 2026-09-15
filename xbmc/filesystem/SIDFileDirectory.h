@@ -19,19 +19,19 @@
  *
  */
 
-
 #include "MusicFileDirectory.h"
 #include "cores/paplayer/DllSidplay2.h"
 
 namespace XFILE
 {
-  class CSIDFileDirectory : public CMusicFileDirectory
-  {
-  public:
-    CSIDFileDirectory(void);
-    virtual ~CSIDFileDirectory(void);
-  private:
-    DllSidplay2 m_dll;
-    virtual int GetTrackCount(const std::string& strPath); 
-  };
-}
+class CSIDFileDirectory : public CMusicFileDirectory
+{
+public:
+  CSIDFileDirectory(void);
+  virtual ~CSIDFileDirectory(void);
+
+private:
+  DllSidplay2 m_dll;
+  virtual int GetTrackCount(const std::string& strPath);
+};
+} // namespace XFILE

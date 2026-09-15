@@ -40,10 +40,9 @@ public:
   virtual void Close();
 
   virtual bool OpenForWrite(const CURL& url, bool bOverWrite = false);
-  protected:
+
+protected:
   CFile m_reader;
 };
 
-}
-
-
+} // namespace XFILE

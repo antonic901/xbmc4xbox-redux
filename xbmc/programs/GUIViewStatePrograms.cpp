@@ -32,28 +32,38 @@
 
 using namespace XFILE;
 
-CGUIViewStateWindowPrograms::CGUIViewStateWindowPrograms(const CFileItemList& items) : CGUIViewState(items)
+CGUIViewStateWindowPrograms::CGUIViewStateWindowPrograms(const CFileItemList& items)
+  : CGUIViewState(items)
 {
   if (items.GetURL().IsProtocol("gamesaves"))
   {
-    AddSortMethod(SortByLabel, 551, LABEL_MASKS("%K", "%I", "%L", ""), SortAttributeIgnoreFolders); // Title, Size | Foldername, empty
+    AddSortMethod(SortByLabel, 551, LABEL_MASKS("%K", "%I", "%L", ""),
+                  SortAttributeIgnoreFolders); // Title, Size | Foldername, empty
   }
   else if (items.GetPath() == "programdb://games/recentlyplayed/")
   {
-    AddSortMethod(SortByNone, 551, LABEL_MASKS("%K", "%I", "%L", ""), SortAttributeNone); // Title, Size | Foldername, empty
+    AddSortMethod(SortByNone, 551, LABEL_MASKS("%K", "%I", "%L", ""),
+                  SortAttributeNone); // Title, Size | Foldername, empty
     SetSortMethod(SortByNone);
     SetSortOrder(SortOrderNone);
   }
   else
   {
-    AddSortMethod(SortByLabel, 551, LABEL_MASKS("%K", "%I", "%L", ""),  // Titel, Size | Foldername, empty
-      CSettings::GetInstance().GetBool("filelists.ignorethewhensorting") ? SortAttributeIgnoreArticle : SortAttributeNone);
-    AddSortMethod(SortByDate, 552, LABEL_MASKS("%K", "%J", "%L", "%J"));  // Titel, Date | Foldername, Date
-    AddSortMethod(SortByProgramCount, 565, LABEL_MASKS("%K", "%C", "%L", ""));  // Titel, Count | Foldername, empty
-    AddSortMethod(SortBySize, 553, LABEL_MASKS("%K", "%I", "%K", "%I"));  // Filename, Size | Foldername, Size
-    AddSortMethod(SortByFile, 561, LABEL_MASKS("%L", "%I", "%L", ""));  // Filename, Size | FolderName, empty
+    AddSortMethod(SortByLabel, 551,
+                  LABEL_MASKS("%K", "%I", "%L", ""), // Titel, Size | Foldername, empty
+                  CSettings::GetInstance().GetBool("filelists.ignorethewhensorting")
+                      ? SortAttributeIgnoreArticle
+                      : SortAttributeNone);
+    AddSortMethod(SortByDate, 552,
+                  LABEL_MASKS("%K", "%J", "%L", "%J")); // Titel, Date | Foldername, Date
+    AddSortMethod(SortByProgramCount, 565,
+                  LABEL_MASKS("%K", "%C", "%L", "")); // Titel, Count | Foldername, empty
+    AddSortMethod(SortBySize, 553,
+                  LABEL_MASKS("%K", "%I", "%K", "%I")); // Filename, Size | Foldername, Size
+    AddSortMethod(SortByFile, 561,
+                  LABEL_MASKS("%L", "%I", "%L", "")); // Filename, Size | FolderName, empty
 
-    const CViewState *viewState = CViewStateSettings::Get().Get("programs");
+    const CViewState* viewState = CViewStateSettings::Get().Get("programs");
     SetSortMethod(viewState->m_sortDescription);
     SetViewAsControl(viewState->m_viewMode);
     SetSortOrder(viewState->m_sortDescription.sortOrder);
@@ -81,8 +91,7 @@ VECSOURCES& CGUIViewStateWindowPrograms::GetSources()
 {
   AddAddonsSource("executable", g_localizeStrings.Get(1043), "DefaultAddonProgram.png");
 
-  VECSOURCES *programSources = CMediaSourceSettings::Get().GetSources("programs");
+  VECSOURCES* programSources = CMediaSourceSettings::Get().GetSources("programs");
   AddOrReplace(*programSources, CGUIViewState::GetSources());
   return *programSources;
 }
-

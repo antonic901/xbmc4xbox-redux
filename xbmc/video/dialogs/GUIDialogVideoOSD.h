@@ -25,11 +25,10 @@
 class CGUIDialogVideoOSD : public CGUIDialog
 {
 public:
-
   CGUIDialogVideoOSD(void);
   virtual ~CGUIDialogVideoOSD(void);
 
   virtual void FrameMove();
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
 };

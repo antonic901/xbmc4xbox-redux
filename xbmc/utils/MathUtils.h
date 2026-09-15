@@ -28,18 +28,15 @@
 // avoid including system.h or other magic includes.
 // use 'gcc -dM -E - < /dev/null' or similar to find them.
 
-#if defined(__ppc__) || \
-    defined(__powerpc__) || \
-   (defined(__APPLE__) && defined(__arm__) && defined(__llvm__)) || \
-   (defined(__ANDROID__) && defined(__arm__))
-  #define DISABLE_MATHUTILS_ASM_ROUND_INT
+#if defined(__ppc__) || defined(__powerpc__) || \
+    (defined(__APPLE__) && defined(__arm__) && defined(__llvm__)) || \
+    (defined(__ANDROID__) && defined(__arm__))
+#define DISABLE_MATHUTILS_ASM_ROUND_INT
 #endif
 
-#if defined(__ppc__) || \
-    defined(__powerpc__) || \
-   (defined(__APPLE__) && defined(__llvm__)) || \
-   (defined(__ANDROID__) && defined(__arm__))
-  #define DISABLE_MATHUTILS_ASM_TRUNCATE_INT
+#if defined(__ppc__) || defined(__powerpc__) || (defined(__APPLE__) && defined(__llvm__)) || \
+    (defined(__ANDROID__) && defined(__arm__))
+#define DISABLE_MATHUTILS_ASM_TRUNCATE_INT
 #endif
 
 /*! \brief Math utility class.
@@ -50,10 +47,10 @@
  */
 namespace MathUtils
 {
-  // GCC does something stupid with optimization on release builds if we try
-  // to assert in these functions
+// GCC does something stupid with optimization on release builds if we try
+// to assert in these functions
 
-  /*! \brief Round to nearest integer.
+/*! \brief Round to nearest integer.
    This routine does fast rounding to the nearest integer.
    In the case (k + 0.5 for any integer k) we round up to k+1, and in all other
    instances we should return the nearest integer.
@@ -63,23 +60,23 @@ namespace MathUtils
    Make sure MathUtils::test() returns true for each implementation.
    \sa truncate_int, test
   */
-  inline int round_int(double x)
-  {
-    assert(x > static_cast<double>(INT_MIN / 2) - 1.0);
-    assert(x < static_cast<double>(INT_MAX / 2) + 1.0);
-    const float round_to_nearest = 0.5f;
-    int i;
+inline int round_int(double x)
+{
+  assert(x > static_cast<double>(INT_MIN / 2) - 1.0);
+  assert(x < static_cast<double>(INT_MAX / 2) + 1.0);
+  const float round_to_nearest = 0.5f;
+  int i;
 
 #if defined(DISABLE_MATHUTILS_ASM_ROUND_INT)
-    i = floor(x + round_to_nearest);
+  i = floor(x + round_to_nearest);
 
 #elif defined(__arm__)
-    // From 'ARM-v7-M Architecture Reference Manual' page A7-569:
-    //  "The floating-point to integer operation (vcvt) [normally] uses the Round towards Zero rounding mode"
-    // Because of this...we must use some less-than-straightforward logic to perform this operation without
-    //  changing the rounding mode flags
+  // From 'ARM-v7-M Architecture Reference Manual' page A7-569:
+  //  "The floating-point to integer operation (vcvt) [normally] uses the Round towards Zero rounding mode"
+  // Because of this...we must use some less-than-straightforward logic to perform this operation without
+  //  changing the rounding mode flags
 
-    /* The assembly below implements the following logic:
+  /* The assembly below implements the following logic:
      if (x < 0)
        inc = -0.5f
      else
@@ -91,7 +88,7 @@ namespace MathUtils
      return int_val;
     */
 
-    __asm__ __volatile__ (
+  __asm__ __volatile__(
 #if defined(__ARM_PCS_VFP)
       "fconstd d1,#%G[rnd_val]     \n\t" // Copy round_to_nearest into a working register (d1 = 0.5)
 #else
@@ -115,112 +112,113 @@ namespace MathUtils
       "fmstat                      \n\t" // Copy the floating-point status flags into the general-purpose status flags
       "it eq                       \n\t"
       "addeq %[result],#1          \n\t" // (if (d1 == d2) result++;)
-      : [result] "=r"(i)                                  // Outputs
-      : [rnd_val] "Dv" (round_to_nearest), [value] "w"(x) // Inputs
-      : "d1", "d2", "s3"                                  // Clobbers
-    );
+      : [result] "=r"(i) // Outputs
+      : [rnd_val] "Dv"(round_to_nearest), [value] "w"(x) // Inputs
+      : "d1", "d2", "s3" // Clobbers
+  );
 
 #elif defined(__SSE2__)
-    const float round_dn_to_nearest = 0.4999999f;
-    i = (x > 0) ? _mm_cvttsd_si32(_mm_set_sd(x + round_to_nearest)) : _mm_cvttsd_si32(_mm_set_sd(x - round_dn_to_nearest));
+  const float round_dn_to_nearest = 0.4999999f;
+  i = (x > 0) ? _mm_cvttsd_si32(_mm_set_sd(x + round_to_nearest))
+              : _mm_cvttsd_si32(_mm_set_sd(x - round_dn_to_nearest));
 
 #elif defined(_WIN32)
-    __asm
-    {
+  __asm
+      {
       fld x
       fadd st, st (0)
       fadd round_to_nearest
       fistp i
       sar i, 1
-    }
+      }
 
 #else
-    __asm__ __volatile__ (
-      "fadd %%st\n\t"
-      "fadd %%st(1)\n\t"
-      "fistpl %0\n\t"
-      "sarl $1, %0\n"
-      : "=m"(i) : "u"(round_to_nearest), "t"(x) : "st"
-    );
+  __asm__ __volatile__("fadd %%st\n\t"
+                       "fadd %%st(1)\n\t"
+                       "fistpl %0\n\t"
+                       "sarl $1, %0\n"
+                       : "=m"(i)
+                       : "u"(round_to_nearest), "t"(x)
+                       : "st");
 
 #endif
 
-    return i;
-  }
+  return i;
+}
 
-  /*! \brief Truncate to nearest integer.
+/*! \brief Truncate to nearest integer.
    This routine does fast truncation to an integer.
    It should simply drop the fractional portion of the floating point number.
 
    Make sure MathUtils::test() returns true for each implementation.
    \sa round_int, test
   */
-  inline int truncate_int(double x)
-  {
-    assert(x > static_cast<double>(INT_MIN / 2) - 1.0);
-    assert(x < static_cast<double>(INT_MAX / 2) + 1.0);
-    int i;
+inline int truncate_int(double x)
+{
+  assert(x > static_cast<double>(INT_MIN / 2) - 1.0);
+  assert(x < static_cast<double>(INT_MAX / 2) + 1.0);
+  int i;
 
 #if defined(DISABLE_MATHUTILS_ASM_TRUNCATE_INT)
-    return i = (int)x;
+  return i = (int)x;
 
 #elif defined(__arm__)
-    __asm__ __volatile__ (
+  __asm__ __volatile__(
       "vcvt.S32.F64 %[result],%P[value]   \n\t" // Truncate(round towards zero) and store the result
-      : [result] "=w"(i)                        // Outputs
-      : [value] "w"(x)                          // Inputs
-    );
-    return i;
+      : [result] "=w"(i) // Outputs
+      : [value] "w"(x) // Inputs
+  );
+  return i;
 
 #elif defined(_WIN32)
-    const float round_towards_m_i = -0.5f;
-    __asm
-    {
+  const float round_towards_m_i = -0.5f;
+  __asm
+      {
       fld x
       fadd st, st (0)
       fabs
       fadd round_towards_m_i
       fistp i
       sar i, 1
-    }
+      }
 
 #else
-    const float round_towards_m_i = -0.5f;
-    __asm__ __volatile__ (
-      "fadd %%st\n\t"
-      "fabs\n\t"
-      "fadd %%st(1)\n\t"
-      "fistpl %0\n\t"
-      "sarl $1, %0\n"
-      : "=m"(i) : "u"(round_towards_m_i), "t"(x) : "st"
-    );
+  const float round_towards_m_i = -0.5f;
+  __asm__ __volatile__("fadd %%st\n\t"
+                       "fabs\n\t"
+                       "fadd %%st(1)\n\t"
+                       "fistpl %0\n\t"
+                       "sarl $1, %0\n"
+                       : "=m"(i)
+                       : "u"(round_towards_m_i), "t"(x)
+                       : "st");
 #endif
-    if (x < 0)
-      i = -i;
-    return (i);
-  }
+  if (x < 0)
+    i = -i;
+  return (i);
+}
 
-  inline int64_t abs(int64_t a)
-  {
-    return (a < 0) ? -a : a;
-  }
+inline int64_t abs(int64_t a)
+{
+  return (a < 0) ? -a : a;
+}
 
-  inline unsigned bitcount(unsigned v)
-  {
-    unsigned c = 0;
-    for (c = 0; v; c++)
-      v &= v - 1; // clear the least significant bit set
-    return c;
-  }
+inline unsigned bitcount(unsigned v)
+{
+  unsigned c = 0;
+  for (c = 0; v; c++)
+    v &= v - 1; // clear the least significant bit set
+  return c;
+}
 
-  inline void hack()
-  {
-    // stupid hack to keep compiler from dropping these
-    // functions as unused
-    MathUtils::round_int(0.0);
-    MathUtils::truncate_int(0.0);
-    MathUtils::abs(0);
-  }
+inline void hack()
+{
+  // stupid hack to keep compiler from dropping these
+  // functions as unused
+  MathUtils::round_int(0.0);
+  MathUtils::truncate_int(0.0);
+  MathUtils::abs(0);
+}
 
 #if 0
   /*! \brief test routine for round_int and truncate_int
@@ -240,4 +238,3 @@ namespace MathUtils
   }
 #endif
 } // namespace MathUtils
-

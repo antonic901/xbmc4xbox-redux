@@ -52,60 +52,59 @@
 
 #include <stdio.h>
 
+#define BLUE_BAR 0
+#define LABEL_ROW1 10
+#define LABEL_ROW2 11
+#define LABEL_ROW3 12
 
-#define BLUE_BAR                          0
-#define LABEL_ROW1                       10
-#define LABEL_ROW2                       11
-#define LABEL_ROW3                       12
+#define BTN_OSD_VIDEO 13
+#define BTN_OSD_AUDIO 14
+#define BTN_OSD_SUBTITLE 15
 
-#define BTN_OSD_VIDEO                    13
-#define BTN_OSD_AUDIO                    14
-#define BTN_OSD_SUBTITLE                 15
+#define MENU_ACTION_AVDELAY 1
+#define MENU_ACTION_SEEK 2
+#define MENU_ACTION_SUBTITLEDELAY 3
+#define MENU_ACTION_SUBTITLEONOFF 4
+#define MENU_ACTION_SUBTITLELANGUAGE 5
+#define MENU_ACTION_INTERLEAVED 6
+#define MENU_ACTION_FRAMERATECONVERSIONS 7
+#define MENU_ACTION_AUDIO_STREAM 8
 
-#define MENU_ACTION_AVDELAY               1
-#define MENU_ACTION_SEEK                  2
-#define MENU_ACTION_SUBTITLEDELAY         3
-#define MENU_ACTION_SUBTITLEONOFF         4
-#define MENU_ACTION_SUBTITLELANGUAGE      5
-#define MENU_ACTION_INTERLEAVED           6
-#define MENU_ACTION_FRAMERATECONVERSIONS  7
-#define MENU_ACTION_AUDIO_STREAM          8
+#define MENU_ACTION_NEW_BOOKMARK 9
+#define MENU_ACTION_NEXT_BOOKMARK 10
+#define MENU_ACTION_CLEAR_BOOKMARK 11
 
-#define MENU_ACTION_NEW_BOOKMARK          9
-#define MENU_ACTION_NEXT_BOOKMARK        10
-#define MENU_ACTION_CLEAR_BOOKMARK       11
+#define MENU_ACTION_NOCACHE 12
 
-#define MENU_ACTION_NOCACHE              12
+#define IMG_PAUSE 16
+#define IMG_2X 17
+#define IMG_4X 18
+#define IMG_8X 19
+#define IMG_16X 20
+#define IMG_32X 21
 
-#define IMG_PAUSE                        16
-#define IMG_2X                           17
-#define IMG_4X                           18
-#define IMG_8X                           19
-#define IMG_16X                          20
-#define IMG_32X                          21
-
-#define IMG_2Xr                         117
-#define IMG_4Xr                         118
-#define IMG_8Xr                         119
-#define IMG_16Xr                        120
-#define IMG_32Xr                        121
+#define IMG_2Xr 117
+#define IMG_4Xr 118
+#define IMG_8Xr 119
+#define IMG_16Xr 120
+#define IMG_32Xr 121
 
 //Displays current position, visible after seek or when forced
 //Alt, use conditional visibility Player.DisplayAfterSeek
-#define LABEL_CURRENT_TIME               22
+#define LABEL_CURRENT_TIME 22
 
 //Displays when video is rebuffering
 //Alt, use conditional visibility Player.IsCaching
-#define LABEL_BUFFERING                  24
+#define LABEL_BUFFERING 24
 
 //Progressbar used for buffering status and after seeking
-#define CONTROL_PROGRESS                 23
+#define CONTROL_PROGRESS 23
 
-
-static color_t color[8] = { 0xFFFFFF00, 0xFFFFFFFF, 0xFF0099FF, 0xFF00FF00, 0xFFCCFF00, 0xFF00FFFF, 0xFFE5E5E5, 0xFFC0C0C0 };
+static color_t color[8] = {0xFFFFFF00, 0xFFFFFFFF, 0xFF0099FF, 0xFF00FF00,
+                           0xFFCCFF00, 0xFF00FFFF, 0xFFE5E5E5, 0xFFC0C0C0};
 
 CGUIWindowFullScreen::CGUIWindowFullScreen(void)
-    : CGUIWindow(WINDOW_FULLSCREEN_VIDEO, "VideoFullScreen.xml")
+  : CGUIWindow(WINDOW_FULLSCREEN_VIDEO, "VideoFullScreen.xml")
 {
   m_timeCodeStamp[0] = 0;
   m_timeCodePosition = 0;
@@ -133,13 +132,13 @@ CGUIWindowFullScreen::CGUIWindowFullScreen(void)
   // subtitles
   //  - delay
   //  - language
-
 }
 
 CGUIWindowFullScreen::~CGUIWindowFullScreen(void)
-{}
+{
+}
 
-bool CGUIWindowFullScreen::OnAction(const CAction &action)
+bool CGUIWindowFullScreen::OnAction(const CAction& action)
 {
   if (g_application.m_pPlayer->OnAction(action))
     return true;
@@ -157,11 +156,11 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
 
   switch (action.GetID())
   {
-  case ACTION_SHOW_OSD:
-    ToggleOSD();
-    return true;
+    case ACTION_SHOW_OSD:
+      ToggleOSD();
+      return true;
 
-  case ACTION_SHOW_GUI:
+    case ACTION_SHOW_GUI:
     {
       // switch back to the menu
       OutputDebugString("Switching to GUI\n");
@@ -171,62 +170,67 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
     }
     break;
 
-  case ACTION_PLAYER_PLAY:
-  case ACTION_PAUSE:
-    if (m_timeCodePosition > 0)
-    {
-      SeekToTimeCodeStamp(SEEK_ABSOLUTE);
-      return true;
-    }
-    break;
+    case ACTION_PLAYER_PLAY:
+    case ACTION_PAUSE:
+      if (m_timeCodePosition > 0)
+      {
+        SeekToTimeCodeStamp(SEEK_ABSOLUTE);
+        return true;
+      }
+      break;
 
-  case ACTION_SMALL_STEP_BACK:
-  case ACTION_STEP_BACK:
-  case ACTION_BIG_STEP_BACK:
-  case ACTION_CHAPTER_OR_BIG_STEP_BACK:
-    if (m_timeCodePosition > 0)
-    {
-      SeekToTimeCodeStamp(SEEK_RELATIVE, SEEK_BACKWARD);
-      return true;
-    }
-    break;
-  case ACTION_STEP_FORWARD:
-  case ACTION_BIG_STEP_FORWARD:
-  case ACTION_CHAPTER_OR_BIG_STEP_FORWARD:
-    if (m_timeCodePosition > 0)
-    {
-      SeekToTimeCodeStamp(SEEK_RELATIVE, SEEK_FORWARD);
-      return true;
-    }
-    break;
+    case ACTION_SMALL_STEP_BACK:
+    case ACTION_STEP_BACK:
+    case ACTION_BIG_STEP_BACK:
+    case ACTION_CHAPTER_OR_BIG_STEP_BACK:
+      if (m_timeCodePosition > 0)
+      {
+        SeekToTimeCodeStamp(SEEK_RELATIVE, SEEK_BACKWARD);
+        return true;
+      }
+      break;
+    case ACTION_STEP_FORWARD:
+    case ACTION_BIG_STEP_FORWARD:
+    case ACTION_CHAPTER_OR_BIG_STEP_FORWARD:
+      if (m_timeCodePosition > 0)
+      {
+        SeekToTimeCodeStamp(SEEK_RELATIVE, SEEK_FORWARD);
+        return true;
+      }
+      break;
 
-  case ACTION_SHOW_OSD_TIME:
-    m_bShowCurrentTime = !m_bShowCurrentTime;
-    if(!m_bShowCurrentTime)
-      g_infoManager.SetDisplayAfterSeek(0); //Force display off
-    g_infoManager.SetShowTime(m_bShowCurrentTime);
-    return true;
-    break;
+    case ACTION_SHOW_OSD_TIME:
+      m_bShowCurrentTime = !m_bShowCurrentTime;
+      if (!m_bShowCurrentTime)
+        g_infoManager.SetDisplayAfterSeek(0); //Force display off
+      g_infoManager.SetShowTime(m_bShowCurrentTime);
+      return true;
+      break;
 
-  case ACTION_SHOW_SUBTITLES:
+    case ACTION_SHOW_SUBTITLES:
     {
-      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn = !CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn;
-      g_application.m_pPlayer->SetSubtitleVisible(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn);
-      int label = CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn?305:1223;
+      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn =
+          !CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn;
+      g_application.m_pPlayer->SetSubtitleVisible(
+          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn);
+      int label = CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn ? 305 : 1223;
       CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(287),
-                                                          g_localizeStrings.Get(label));
-      if (g_application.GetCurrentPlayer() == EPC_MPLAYER && !CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleCached && CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn) 
-      { 
-        g_application.Restart(true); // cache subtitles 
-        Close(); 
+                                            g_localizeStrings.Get(label));
+      if (g_application.GetCurrentPlayer() == EPC_MPLAYER &&
+          !CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleCached &&
+          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn)
+      {
+        g_application.Restart(true); // cache subtitles
+        Close();
       }
     }
-    return true;
-    break;
-  
-  case ACTION_SHOW_INFO:
+      return true;
+      break;
+
+    case ACTION_SHOW_INFO:
     {
-      CGUIDialogFullScreenInfo* pDialog = (CGUIDialogFullScreenInfo*)g_windowManager.GetWindow(WINDOW_DIALOG_FULLSCREEN_INFO);
+      CGUIDialogFullScreenInfo* pDialog =
+          (CGUIDialogFullScreenInfo*)g_windowManager.GetWindow(WINDOW_DIALOG_FULLSCREEN_INFO);
       if (pDialog)
       {
         pDialog->Open();
@@ -235,7 +239,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
       break;
     }
 
-  case ACTION_NEXT_SUBTITLE:
+    case ACTION_NEXT_SUBTITLE:
     {
       if (g_application.m_pPlayer->GetSubtitleCount() == 0)
         return true;
@@ -243,13 +247,15 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
       if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn)
       {
         CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream++;
-        if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream >= g_application.m_pPlayer->GetSubtitleCount())
+        if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream >=
+            g_application.m_pPlayer->GetSubtitleCount())
         {
           CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream = 0;
           CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn = false;
           g_application.m_pPlayer->SetSubtitleVisible(false);
         }
-        g_application.m_pPlayer->SetSubtitle(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream);
+        g_application.m_pPlayer->SetSubtitle(
+            CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream);
       }
       else
       {
@@ -259,95 +265,116 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
 
       SPlayerSubtitleStreamInfo info;
       if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleOn)
-        g_application.m_pPlayer->GetSubtitleStreamInfo(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream,info);
+        g_application.m_pPlayer->GetSubtitleStreamInfo(
+            CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleStream, info);
       else
         info.name = g_localizeStrings.Get(1223);
-      CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(287),info.name);
+      CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(287), info.name);
     }
-    return true;
-    break;
+      return true;
+      break;
 
-  case ACTION_SUBTITLE_DELAY_MIN:
-    CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay -= 0.1f;
-    if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay < -g_advancedSettings.m_videoSubsDelayRange)
-      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = -g_advancedSettings.m_videoSubsDelayRange;
-    g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
+    case ACTION_SUBTITLE_DELAY_MIN:
+      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay -= 0.1f;
+      if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay <
+          -g_advancedSettings.m_videoSubsDelayRange)
+        CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay =
+            -g_advancedSettings.m_videoSubsDelayRange;
+      g_application.m_pPlayer->SetSubTitleDelay(
+          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
 
-    ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
-                                      -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
-                                       g_advancedSettings.m_videoSubsDelayRange);
-    return true;
-    break;
-  case ACTION_SUBTITLE_DELAY_PLUS:
-    CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay += 0.1f;
-    if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay > g_advancedSettings.m_videoSubsDelayRange)
-      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = g_advancedSettings.m_videoSubsDelayRange;
-    g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
+      ShowSlider(action.GetID(), 22006,
+                 CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
+                 -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
+                 g_advancedSettings.m_videoSubsDelayRange);
+      return true;
+      break;
+    case ACTION_SUBTITLE_DELAY_PLUS:
+      CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay += 0.1f;
+      if (CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay >
+          g_advancedSettings.m_videoSubsDelayRange)
+        CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay =
+            g_advancedSettings.m_videoSubsDelayRange;
+      g_application.m_pPlayer->SetSubTitleDelay(
+          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
 
-    ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
-                                      -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
-                                       g_advancedSettings.m_videoSubsDelayRange);
-    return true;
-    break;
-  case ACTION_SUBTITLE_DELAY:
-    ShowSlider(action.GetID(), 22006, CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
-                                      -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
-                                       g_advancedSettings.m_videoSubsDelayRange, true);
-    return true;
-    break;
-  case ACTION_AUDIO_DELAY:
-    ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
-                                    -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
-                                     g_advancedSettings.m_videoAudioDelayRange, true);
-    return true;
-    break;
-  case ACTION_AUDIO_DELAY_MIN:
-    CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay -= 0.025f;
-    if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay < -g_advancedSettings.m_videoAudioDelayRange)
-      CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = -g_advancedSettings.m_videoAudioDelayRange;
-    g_application.m_pPlayer->SetAVDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
+      ShowSlider(action.GetID(), 22006,
+                 CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
+                 -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
+                 g_advancedSettings.m_videoSubsDelayRange);
+      return true;
+      break;
+    case ACTION_SUBTITLE_DELAY:
+      ShowSlider(action.GetID(), 22006,
+                 CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay,
+                 -g_advancedSettings.m_videoSubsDelayRange, 0.1f,
+                 g_advancedSettings.m_videoSubsDelayRange, true);
+      return true;
+      break;
+    case ACTION_AUDIO_DELAY:
+      ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
+                 -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
+                 g_advancedSettings.m_videoAudioDelayRange, true);
+      return true;
+      break;
+    case ACTION_AUDIO_DELAY_MIN:
+      CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay -= 0.025f;
+      if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay <
+          -g_advancedSettings.m_videoAudioDelayRange)
+        CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay =
+            -g_advancedSettings.m_videoAudioDelayRange;
+      g_application.m_pPlayer->SetAVDelay(
+          CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
 
-    ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
-                                    -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
-                                     g_advancedSettings.m_videoAudioDelayRange);
-    return true;
-    break;
-  case ACTION_AUDIO_DELAY_PLUS:
-    CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay += 0.025f;
-    if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay > g_advancedSettings.m_videoAudioDelayRange)
-      CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = g_advancedSettings.m_videoAudioDelayRange;
-    g_application.m_pPlayer->SetAVDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
+      ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
+                 -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
+                 g_advancedSettings.m_videoAudioDelayRange);
+      return true;
+      break;
+    case ACTION_AUDIO_DELAY_PLUS:
+      CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay += 0.025f;
+      if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay >
+          g_advancedSettings.m_videoAudioDelayRange)
+        CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay =
+            g_advancedSettings.m_videoAudioDelayRange;
+      g_application.m_pPlayer->SetAVDelay(
+          CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
 
-    ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
-                                    -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
-                                     g_advancedSettings.m_videoAudioDelayRange);
-    return true;
-    break;
-  case ACTION_AUDIO_NEXT_LANGUAGE:
+      ShowSlider(action.GetID(), 297, CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay,
+                 -g_advancedSettings.m_videoAudioDelayRange, 0.025f,
+                 g_advancedSettings.m_videoAudioDelayRange);
+      return true;
+      break;
+    case ACTION_AUDIO_NEXT_LANGUAGE:
     {
       if (g_application.m_pPlayer->GetAudioStreamCount() == 1)
         return true;
 
       CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream++;
-      if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream >= g_application.m_pPlayer->GetAudioStreamCount())
+      if (CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream >=
+          g_application.m_pPlayer->GetAudioStreamCount())
         CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream = 0;
-      g_application.m_pPlayer->SetAudioStream(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream);    // Set the audio stream to the one selected
+      g_application.m_pPlayer->SetAudioStream(
+          CMediaSettings::Get()
+              .GetCurrentVideoSettings()
+              .m_AudioStream); // Set the audio stream to the one selected
       SPlayerAudioStreamInfo info;
-      g_application.m_pPlayer->GetAudioStreamInfo(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream,info);
-      CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(460),info.name);
+      g_application.m_pPlayer->GetAudioStreamInfo(
+          CMediaSettings::Get().GetCurrentVideoSettings().m_AudioStream, info);
+      CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(460), info.name);
       return true;
     }
     break;
-  case REMOTE_0:
-  case REMOTE_1:
-  case REMOTE_2:
-  case REMOTE_3:
-  case REMOTE_4:
-  case REMOTE_5:
-  case REMOTE_6:
-  case REMOTE_7:
-  case REMOTE_8:
-  case REMOTE_9:
+    case REMOTE_0:
+    case REMOTE_1:
+    case REMOTE_2:
+    case REMOTE_3:
+    case REMOTE_4:
+    case REMOTE_5:
+    case REMOTE_6:
+    case REMOTE_7:
+    case REMOTE_8:
+    case REMOTE_9:
     {
       if (g_application.CurrentFileItem().IsLiveTV())
       {
@@ -369,7 +396,7 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
     }
     break;
 
-  case ACTION_ASPECT_RATIO:
+    case ACTION_ASPECT_RATIO:
     { // toggle the aspect ratio mode (only if the info is onscreen)
       if (m_bShowViewModeInfo)
       {
@@ -380,53 +407,61 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
       m_bShowViewModeInfo = true;
       m_dwShowViewModeTimeout = XbmcThreads::SystemClockMillis();
     }
-    return true;
-    break;
-  case ACTION_ZOOM_IN:
+      return true;
+      break;
+    case ACTION_ZOOM_IN:
     {
       CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount += 0.01f;
       if (CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount > 2.f)
         CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount = 2.f;
       CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
       g_renderManager.SetViewMode(ViewModeCustom);
-      ShowSlider(action.GetID(), 216, CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount, 0.5f, 0.1f, 2.0f);
+      ShowSlider(action.GetID(), 216,
+                 CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount, 0.5f, 0.1f,
+                 2.0f);
     }
-    return true;
-    break;
-  case ACTION_ZOOM_OUT:
+      return true;
+      break;
+    case ACTION_ZOOM_OUT:
     {
       CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount -= 0.01f;
       if (CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount < 0.5f)
         CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount = 0.5f;
       CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
       g_renderManager.SetViewMode(ViewModeCustom);
-      ShowSlider(action.GetID(), 216, CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount, 0.5f, 0.1f, 2.0f);
+      ShowSlider(action.GetID(), 216,
+                 CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount, 0.5f, 0.1f,
+                 2.0f);
     }
-    return true;
-    break;
-  case ACTION_INCREASE_PAR:
+      return true;
+      break;
+    case ACTION_INCREASE_PAR:
     {
       CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio += 0.01f;
       if (CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio > 2.f)
         CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount = 2.f;
       CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
       g_renderManager.SetViewMode(ViewModeCustom);
-      ShowSlider(action.GetID(), 217, CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio, 0.5f, 0.1f, 2.0f);
+      ShowSlider(action.GetID(), 217,
+                 CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio, 0.5f, 0.1f,
+                 2.0f);
     }
-    return true;
-    break;
-  case ACTION_DECREASE_PAR:
+      return true;
+      break;
+    case ACTION_DECREASE_PAR:
     {
       CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio -= 0.01f;
       if (CMediaSettings::Get().GetCurrentVideoSettings().m_CustomZoomAmount < 0.5f)
         CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio = 0.5f;
       CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode = ViewModeCustom;
       g_renderManager.SetViewMode(ViewModeCustom);
-      ShowSlider(action.GetID(), 217, CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio, 0.5f, 0.1f, 2.0f);
+      ShowSlider(action.GetID(), 217,
+                 CMediaSettings::Get().GetCurrentVideoSettings().m_CustomPixelRatio, 0.5f, 0.1f,
+                 2.0f);
     }
-    return true;
-    break;
-  default:
+      return true;
+      break;
+    default:
       break;
   }
   return CGUIWindow::OnAction(action);
@@ -439,9 +474,9 @@ void CGUIWindowFullScreen::OnWindowLoaded()
   m_clearBackground = 0;
 
   CGUIProgressControl* pProgress = dynamic_cast<CGUIProgressControl*>(GetControl(CONTROL_PROGRESS));
-  if(pProgress)
+  if (pProgress)
   {
-    if( pProgress->GetInfo() == 0 || !pProgress->HasVisibleCondition())
+    if (pProgress->GetInfo() == 0 || !pProgress->HasVisibleCondition())
     {
       pProgress->SetInfo(PLAYER_PROGRESS);
       pProgress->SetVisibleCondition("player.displayafterseek");
@@ -450,14 +485,14 @@ void CGUIWindowFullScreen::OnWindowLoaded()
   }
 
   CGUILabelControl* pLabel = dynamic_cast<CGUILabelControl*>(GetControl(LABEL_BUFFERING));
-  if(pLabel && !pLabel->HasVisibleCondition())
+  if (pLabel && !pLabel->HasVisibleCondition())
   {
     pLabel->SetVisibleCondition("player.caching");
     pLabel->SetVisible(true);
   }
 
   pLabel = dynamic_cast<CGUILabelControl*>(GetControl(LABEL_CURRENT_TIME));
-  if(pLabel && !pLabel->HasVisibleCondition())
+  if (pLabel && !pLabel->HasVisibleCondition())
   {
     pLabel->SetVisibleCondition("player.displayafterseek");
     pLabel->SetVisible(true);
@@ -470,7 +505,7 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_INIT:
     {
       // check whether we've come back here from a window during which time we've actually
       // stopped playing videos
@@ -487,19 +522,21 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
 
       //  Disable nav sounds if spindown is active as they are loaded
       //  from HDD all the time.
-      if (
-        !g_application.CurrentFileItem().IsHD() &&
-        (CSettings::GetInstance().GetInt("harddisk.remoteplayspindown") || CSettings::GetInstance().GetInt("harddisk.spindowntime"))
-      )
+      if (!g_application.CurrentFileItem().IsHD() &&
+          (CSettings::GetInstance().GetInt("harddisk.remoteplayspindown") ||
+           CSettings::GetInstance().GetInt("harddisk.spindowntime")))
       {
         g_audioManager.Enable(false);
       }
 
       // setup the brightness, contrast and resolution
-      CUtil::SetBrightnessContrastGammaPercent(CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness, CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast, CMediaSettings::Get().GetCurrentVideoSettings().m_Gamma, false);
+      CUtil::SetBrightnessContrastGammaPercent(
+          CMediaSettings::Get().GetCurrentVideoSettings().m_Brightness,
+          CMediaSettings::Get().GetCurrentVideoSettings().m_Contrast,
+          CMediaSettings::Get().GetCurrentVideoSettings().m_Gamma, false);
 
       // switch resolution
-      CSingleLock lock (g_graphicsContext);
+      CSingleLock lock(g_graphicsContext);
       g_graphicsContext.SetFullScreenVideo(true);
 #ifdef HAS_VIDEO_PLAYBACK
       RESOLUTION res = g_renderManager.GetResolution();
@@ -518,17 +555,24 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
 
       if (CUtil::IsUsingTTFSubtitles())
       {
-        CSingleLock lock (m_fontLock);
+        CSingleLock lock(m_fontLock);
 
         CStdString fontPath = "special://xbmc/media/Fonts/";
         fontPath += CSettings::GetInstance().GetString("subtitles.font");
 
         // We scale based on PAL4x3 - this at least ensures all sizing is constant across resolutions.
         RESOLUTION_INFO pal(720, 576, 0);
-        CGUIFont *subFont = g_fontManager.LoadTTF("__subtitle__", fontPath, color[CSettings::GetInstance().GetInt("subtitles.color")], 0, CSettings::GetInstance().GetInt("subtitles.height"), CSettings::GetInstance().GetInt("subtitles.style"), false, 1.0f, 1.0f, &pal, true);
-        CGUIFont *borderFont = g_fontManager.LoadTTF("__subtitleborder__", fontPath, 0xFF000000, 0, CSettings::GetInstance().GetInt("subtitles.height"), CSettings::GetInstance().GetInt("subtitles.style"), true, 1.0f, 1.0f, &pal, true);
+        CGUIFont* subFont = g_fontManager.LoadTTF(
+            "__subtitle__", fontPath, color[CSettings::GetInstance().GetInt("subtitles.color")], 0,
+            CSettings::GetInstance().GetInt("subtitles.height"),
+            CSettings::GetInstance().GetInt("subtitles.style"), false, 1.0f, 1.0f, &pal, true);
+        CGUIFont* borderFont = g_fontManager.LoadTTF(
+            "__subtitleborder__", fontPath, 0xFF000000, 0,
+            CSettings::GetInstance().GetInt("subtitles.height"),
+            CSettings::GetInstance().GetInt("subtitles.style"), true, 1.0f, 1.0f, &pal, true);
         if (!subFont || !borderFont)
-          CLog::Log(LOGERROR, "CGUIWindowFullScreen::OnMessage(WINDOW_INIT) - Unable to load subtitle font");
+          CLog::Log(LOGERROR,
+                    "CGUIWindowFullScreen::OnMessage(WINDOW_INIT) - Unable to load subtitle font");
         else
           m_subsLayout = new CGUITextLayout(subFont, true, 0, borderFont);
       }
@@ -537,7 +581,7 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
 
       return true;
     }
-  case GUI_MSG_WINDOW_DEINIT:
+    case GUI_MSG_WINDOW_DEINIT:
     {
       // close all active modal dialogs
       g_windowManager.CloseInternalModalDialogs(true);
@@ -546,7 +590,7 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
 
       CSettings::GetInstance().Save();
 
-      CSingleLock lock (g_graphicsContext);
+      CSingleLock lock(g_graphicsContext);
       CUtil::RestoreBrightnessContrastGamma();
       g_graphicsContext.SetFullScreenVideo(false);
       g_graphicsContext.SetVideoResolution(CDisplaySettings::Get().GetCurrentResolution(), TRUE);
@@ -568,22 +612,24 @@ bool CGUIWindowFullScreen::OnMessage(CGUIMessage& message)
 
       return true;
     }
-  case GUI_MSG_SETFOCUS:
-  case GUI_MSG_LOSTFOCUS:
-    if (message.GetSenderId() != WINDOW_FULLSCREEN_VIDEO) return true;
-    break;
+    case GUI_MSG_SETFOCUS:
+    case GUI_MSG_LOSTFOCUS:
+      if (message.GetSenderId() != WINDOW_FULLSCREEN_VIDEO)
+        return true;
+      break;
   }
 
   return CGUIWindow::OnMessage(message);
 }
 
-void CGUIWindowFullScreen::Process(unsigned int currentTime, CDirtyRegionList &dirtyregion)
+void CGUIWindowFullScreen::Process(unsigned int currentTime, CDirtyRegionList& dirtyregion)
 {
   // TODO: This isn't quite optimal - ideally we'd only be dirtying up the actual video render rect
   //       which is probably the job of the renderer as it can more easily track resizing etc.
   MarkDirtyRegion();
   CGUIWindow::Process(currentTime, dirtyregion);
-  m_renderRegion.SetRect(0, 0, (float)g_graphicsContext.GetWidth(), (float)g_graphicsContext.GetHeight());
+  m_renderRegion.SetRect(0, 0, (float)g_graphicsContext.GetWidth(),
+                         (float)g_graphicsContext.GetHeight());
 }
 
 // Override of Render() - RenderFullScreen() is where the action takes place
@@ -604,22 +650,34 @@ void CGUIWindowFullScreen::Render()
 
 bool CGUIWindowFullScreen::NeedRenderFullScreen()
 {
-  CSingleLock lock (g_graphicsContext);
+  CSingleLock lock(g_graphicsContext);
   if (g_application.m_pPlayer->HasPlayer())
   {
-    if (g_application.m_pPlayer->IsPaused() ) return true;
-    if (g_application.m_pPlayer->IsCaching() ) return true;
-    if (!g_application.m_pPlayer->IsPlaying() ) return true;
+    if (g_application.m_pPlayer->IsPaused())
+      return true;
+    if (g_application.m_pPlayer->IsCaching())
+      return true;
+    if (!g_application.m_pPlayer->IsPlaying())
+      return true;
   }
-  if (g_application.m_pPlayer->GetPlaySpeed() != 1) return true;
-  if (m_timeCodeShow) return true;
-  if (m_showCodec) return true;
-  if (g_infoManager.GetBool(PLAYER_SHOWINFO)) return true;
-  if (IsAnimating(ANIM_TYPE_HIDDEN)) return true; // for the above info conditions
-  if (m_bShowViewModeInfo) return true;
-  if (m_bShowCurrentTime) return true;
-  if (g_infoManager.GetDisplayAfterSeek()) return true;
-  if (g_infoManager.GetBool(PLAYER_SEEKBAR, GetID())) return true;
+  if (g_application.m_pPlayer->GetPlaySpeed() != 1)
+    return true;
+  if (m_timeCodeShow)
+    return true;
+  if (m_showCodec)
+    return true;
+  if (g_infoManager.GetBool(PLAYER_SHOWINFO))
+    return true;
+  if (IsAnimating(ANIM_TYPE_HIDDEN))
+    return true; // for the above info conditions
+  if (m_bShowViewModeInfo)
+    return true;
+  if (m_bShowCurrentTime)
+    return true;
+  if (g_infoManager.GetDisplayAfterSeek())
+    return true;
+  if (g_infoManager.GetBool(PLAYER_SEEKBAR, GetID()))
+    return true;
   if (CUtil::IsUsingTTFSubtitles() && g_application.m_pPlayer->GetSubtitleVisible() && m_subsLayout)
     return true;
   if (m_bLastRender)
@@ -638,9 +696,10 @@ void CGUIWindowFullScreen::RenderFullScreen()
     g_infoManager.SetDisplayAfterSeek();
 
   m_bLastRender = true;
-  if (!g_application.m_pPlayer->HasPlayer()) return ;
+  if (!g_application.m_pPlayer->HasPlayer())
+    return;
 
-  if( g_application.m_pPlayer->IsCaching() )
+  if (g_application.m_pPlayer->IsCaching())
   {
     g_infoManager.SetDisplayAfterSeek(0); //Make sure these stuff aren't visible now
   }
@@ -670,7 +729,8 @@ void CGUIWindowFullScreen::RenderFullScreen()
       CStdString strGeneralFPS;
       float fCpuUsage = CUtil::CurrentCpuUsage();
 
-      strGeneralFPS.Format("%s\nW( fps:%02.2f cpu:%02.2f )", strGeneral.c_str(), g_infoManager.GetFPS(), fCpuUsage);
+      strGeneralFPS.Format("%s\nW( fps:%02.2f cpu:%02.2f )", strGeneral.c_str(),
+                           g_infoManager.GetFPS(), fCpuUsage);
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW3);
       msg.SetLabel(strGeneralFPS);
       OnMessage(msg);
@@ -688,7 +748,8 @@ void CGUIWindowFullScreen::RenderFullScreen()
     {
       // get the "View Mode" string
       CStdString strTitle = g_localizeStrings.Get(629);
-      CStdString strMode = g_localizeStrings.Get(630 + CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
+      CStdString strMode =
+          g_localizeStrings.Get(630 + CMediaSettings::Get().GetCurrentVideoSettings().m_ViewMode);
       CStdString strInfo;
       strInfo.Format("%s : %s", strTitle.c_str(), strMode.c_str());
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW1);
@@ -701,8 +762,10 @@ void CGUIWindowFullScreen::RenderFullScreen()
     {
       CStdString strSizing;
       strSizing.Format("Sizing: (%i,%i)->(%i,%i) (Zoom x%2.2f) AR:%2.2f:1 (Pixels: %2.2f:1)",
-                       info.SrcRect.Width(), info.SrcRect.Height(),
-                       info.DestRect.Width(), info.DestRect.Height(), CDisplaySettings::Get().GetZoomAmount(), info.videoAspectRatio*CDisplaySettings::Get().GetPixelRatio(), CDisplaySettings::Get().GetPixelRatio());
+                       info.SrcRect.Width(), info.SrcRect.Height(), info.DestRect.Width(),
+                       info.DestRect.Height(), CDisplaySettings::Get().GetZoomAmount(),
+                       info.videoAspectRatio * CDisplaySettings::Get().GetPixelRatio(),
+                       CDisplaySettings::Get().GetPixelRatio());
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW2);
       msg.SetLabel(strSizing);
       OnMessage(msg);
@@ -711,14 +774,17 @@ void CGUIWindowFullScreen::RenderFullScreen()
     int iResolution = g_graphicsContext.GetVideoResolution();
     {
       CStdString strStatus;
-      strStatus.Format("%ix%i %s", CDisplaySettings::Get().GetResolutionInfo(iResolution).iWidth, CDisplaySettings::Get().GetResolutionInfo(iResolution).iHeight, CDisplaySettings::Get().GetResolutionInfo(iResolution).strMode.c_str());
+      strStatus.Format("%ix%i %s", CDisplaySettings::Get().GetResolutionInfo(iResolution).iWidth,
+                       CDisplaySettings::Get().GetResolutionInfo(iResolution).iHeight,
+                       CDisplaySettings::Get().GetResolutionInfo(iResolution).strMode.c_str());
       if (CSettings::GetInstance().GetBool("videoplayer.soften"))
         strStatus += "  |  Soften";
       else
         strStatus += "  |  No Soften";
 
       CStdString strFilter;
-      strFilter.Format("  |  Flicker Filter: %i", CSettings::GetInstance().GetInt("videoplayer.flicker"));
+      strFilter.Format("  |  Flicker Filter: %i",
+                       CSettings::GetInstance().GetInt("videoplayer.flicker"));
       strStatus += strFilter;
       CGUIMessage msg(GUI_MSG_LABEL_SET, GetID(), LABEL_ROW3);
       msg.SetLabel(strStatus);
@@ -730,7 +796,7 @@ void CGUIWindowFullScreen::RenderFullScreen()
 
   if (m_timeCodeShow && m_timeCodePosition != 0)
   {
-    if ( (XbmcThreads::SystemClockMillis() - m_timeCodeTimeout) >= 2500)
+    if ((XbmcThreads::SystemClockMillis() - m_timeCodeTimeout) >= 2500)
     {
       m_timeCodeShow = false;
       m_timeCodePosition = 0;
@@ -748,7 +814,9 @@ void CGUIWindowFullScreen::RenderFullScreen()
       }
     }
 
-    strDispTime += "/" + g_infoManager.GetDuration(TIME_FORMAT_HH_MM_SS) + " [" + g_infoManager.GetCurrentPlayTime(TIME_FORMAT_HH_MM_SS) + "]"; // duration [ time ]
+    strDispTime += "/" + g_infoManager.GetDuration(TIME_FORMAT_HH_MM_SS) + " [" +
+                   g_infoManager.GetCurrentPlayTime(TIME_FORMAT_HH_MM_SS) +
+                   "]"; // duration [ time ]
     msg.SetLabel(strDispTime);
     OnMessage(msg);
   }
@@ -780,12 +848,13 @@ void CGUIWindowFullScreen::RenderFullScreen()
 void CGUIWindowFullScreen::RenderTTFSubtitles()
 {
   //if ( g_application.GetCurrentPlayer() == EPC_MPLAYER && CUtil::IsUsingTTFSubtitles() && g_application.m_pPlayer->GetSubtitleVisible() && m_subsLayout)
-  if ((g_application.GetCurrentPlayer() == EPC_MPLAYER || g_application.GetCurrentPlayer() == EPC_DVDPLAYER) &&
+  if ((g_application.GetCurrentPlayer() == EPC_MPLAYER ||
+       g_application.GetCurrentPlayer() == EPC_DVDPLAYER) &&
       CUtil::IsUsingTTFSubtitles() && g_application.m_pPlayer->GetSubtitleVisible())
   {
-    CSingleLock lock (m_fontLock);
+    CSingleLock lock(m_fontLock);
 
-    if(!m_subsLayout)
+    if (!m_subsLayout)
       return;
 
     CStdString subtitleText = "How now brown cow";
@@ -814,9 +883,12 @@ void CGUIWindowFullScreen::RenderTTFSubtitles()
       RESOLUTION res = g_graphicsContext.GetVideoResolution();
       g_graphicsContext.SetRenderingResolution(g_graphicsContext.GetResInfo(), false);
 
-      float maxWidth = (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right - CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
-      m_subsLayout->Update(subtitleText, maxWidth * 0.9f, false, true); // true to force LTR reading order (most Hebrew subs are this format)
-      
+      float maxWidth = (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right -
+                       CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
+      m_subsLayout->Update(
+          subtitleText, maxWidth * 0.9f, false,
+          true); // true to force LTR reading order (most Hebrew subs are this format)
+
       float textWidth, textHeight;
       m_subsLayout->GetTextExtent(textWidth, textHeight);
       float x = maxWidth * 0.5f + CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left;
@@ -839,7 +911,7 @@ void CGUIWindowFullScreen::ChangetheTimeCode(int remote)
     {
       // rotate around
       for (int i = 0; i < 5; i++)
-        m_timeCodeStamp[i] = m_timeCodeStamp[i+1];
+        m_timeCodeStamp[i] = m_timeCodeStamp[i + 1];
       m_timeCodeStamp[5] = remote - REMOTE_0;
     }
   }
@@ -866,8 +938,10 @@ double CGUIWindowFullScreen::GetTimeCodeStamp()
     tot = tot * 10 + m_timeCodeStamp[i];
 
   // Interpret result as HHMMSS
-  int s = tot % 100; tot /= 100;
-  int m = tot % 100; tot /= 100;
+  int s = tot % 100;
+  tot /= 100;
+  int m = tot % 100;
+  tot /= 100;
   int h = tot % 100;
   return h * 3600 + m * 60 + s;
 }
@@ -880,7 +954,8 @@ void CGUIWindowFullScreen::SeekChapter(int iChapter)
   g_infoManager.SetDisplayAfterSeek();
 }
 
-void CGUIWindowFullScreen::ShowSlider(int action, int label, float value, float min, float delta, float max, bool modal)
+void CGUIWindowFullScreen::ShowSlider(
+    int action, int label, float value, float min, float delta, float max, bool modal)
 {
   m_sliderAction = action;
   if (modal)
@@ -889,7 +964,7 @@ void CGUIWindowFullScreen::ShowSlider(int action, int label, float value, float 
     CGUIDialogSlider::Display(label, value, min, delta, max, this);
 }
 
-void CGUIWindowFullScreen::OnSliderChange(void *data, CGUISliderControl *slider)
+void CGUIWindowFullScreen::OnSliderChange(void* data, CGUISliderControl* slider)
 {
   if (!slider)
     return;
@@ -898,30 +973,34 @@ void CGUIWindowFullScreen::OnSliderChange(void *data, CGUISliderControl *slider)
       m_sliderAction == ACTION_INCREASE_PAR || m_sliderAction == ACTION_DECREASE_PAR)
   {
     CStdString strValue;
-    strValue.Format("%1.2f",slider->GetFloatValue());
+    strValue.Format("%1.2f", slider->GetFloatValue());
     slider->SetTextValue(strValue);
   }
   else
-    slider->SetTextValue(CGUIDialogAudioSubtitleSettings::FormatDelay(slider->GetFloatValue(), 0.025f));
+    slider->SetTextValue(
+        CGUIDialogAudioSubtitleSettings::FormatDelay(slider->GetFloatValue(), 0.025f));
 
   if (g_application.m_pPlayer->HasPlayer())
   {
     if (m_sliderAction == ACTION_AUDIO_DELAY)
     {
       CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay = slider->GetFloatValue();
-      g_application.m_pPlayer->SetAVDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
+      g_application.m_pPlayer->SetAVDelay(
+          CMediaSettings::Get().GetCurrentVideoSettings().m_AudioDelay);
     }
     else if (m_sliderAction == ACTION_SUBTITLE_DELAY)
     {
       CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay = slider->GetFloatValue();
-      g_application.m_pPlayer->SetSubTitleDelay(CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
+      g_application.m_pPlayer->SetSubTitleDelay(
+          CMediaSettings::Get().GetCurrentVideoSettings().m_SubtitleDelay);
     }
   }
 }
 
 void CGUIWindowFullScreen::ToggleOSD()
 {
-  CGUIDialogVideoOSD *pOSD = (CGUIDialogVideoOSD *)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_OSD);
+  CGUIDialogVideoOSD* pOSD =
+      (CGUIDialogVideoOSD*)g_windowManager.GetWindow(WINDOW_DIALOG_VIDEO_OSD);
   if (pOSD)
   {
     if (pOSD->IsDialogRunning())

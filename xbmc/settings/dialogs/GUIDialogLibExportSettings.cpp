@@ -48,12 +48,14 @@ using namespace KODI::MESSAGING;
 
 CGUIDialogLibExportSettings::CGUIDialogLibExportSettings()
   : CGUIDialogSettingsManualBase(WINDOW_DIALOG_LIBEXPORT_SETTINGS, "DialogSettings.xml"),
-  m_destinationChecked(false)
-{ }
+    m_destinationChecked(false)
+{
+}
 
 bool CGUIDialogLibExportSettings::Show(CLibExportSettings& settings)
 {
-  CGUIDialogLibExportSettings *dialog = static_cast<CGUIDialogLibExportSettings*>(g_windowManager.GetWindow(WINDOW_DIALOG_LIBEXPORT_SETTINGS));
+  CGUIDialogLibExportSettings* dialog = static_cast<CGUIDialogLibExportSettings*>(
+      g_windowManager.GetWindow(WINDOW_DIALOG_LIBEXPORT_SETTINGS));
   if (!dialog)
     return false;
 
@@ -83,14 +85,14 @@ void CGUIDialogLibExportSettings::OnInitWindow()
   CGUIDialogSettingsManualBase::OnInitWindow();
 }
 
-void CGUIDialogLibExportSettings::OnSettingChanged(const CSetting *setting)
+void CGUIDialogLibExportSettings::OnSettingChanged(const CSetting* setting)
 {
   if (!setting)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingChanged(setting);
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
 
   if (settingId == "musiclibrary.exportfiletype")
   {
@@ -118,14 +120,14 @@ void CGUIDialogLibExportSettings::OnSettingChanged(const CSetting *setting)
     m_settings.m_skipnfo = ((CSettingBool*)setting)->GetValue();
 }
 
-void CGUIDialogLibExportSettings::OnSettingAction(const CSetting *setting)
+void CGUIDialogLibExportSettings::OnSettingAction(const CSetting* setting)
 {
   if (setting == NULL)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingAction(setting);
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
 
   if (settingId == "musiclibrary.exportfolder")
   {
@@ -140,7 +142,8 @@ void CGUIDialogLibExportSettings::OnSettingAction(const CSetting *setting)
     {
       URIUtils::AddSlashAtEnd(strDirectory);
       bool bIsSource;
-      if (CUtil::GetMatchingSource(strDirectory, shares, bIsSource) < 0) // path is outside shares - add it as a separate one
+      if (CUtil::GetMatchingSource(strDirectory, shares, bIsSource) <
+          0) // path is outside shares - add it as a separate one
       {
         CMediaSource share;
         share.strName = g_localizeStrings.Get(13278);
@@ -151,7 +154,8 @@ void CGUIDialogLibExportSettings::OnSettingAction(const CSetting *setting)
     else
       strDirectory = "default location";
 
-    if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(661), strDirectory, true))
+    if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(661), strDirectory,
+                                                   true))
     {
       if (!strDirectory.empty())
       {
@@ -209,7 +213,7 @@ void CGUIDialogLibExportSettings::OnOK()
     // Check that destination folder exists
     if (!XFILE::CDirectory::Exists(m_settings.m_strPath))
     {
-      CGUIDialogOK::ShowAndGetInput( 38300, 38318 );
+      CGUIDialogOK::ShowAndGetInput(38300, 38318);
       return;
     }
   }
@@ -270,8 +274,7 @@ void CGUIDialogLibExportSettings::UpdateButtons()
 {
   // Enable Export button when destination folder has a path (but may not exist)
   bool enableExport(true);
-  if (m_settings.IsSingleFile() ||
-      m_settings.IsSeparateFiles())
+  if (m_settings.IsSingleFile() || m_settings.IsSeparateFiles())
     enableExport = !m_settings.m_strPath.empty();
 
   CONTROL_ENABLE_ON_CONDITION(CONTROL_SETTINGS_OKAY_BUTTON, enableExport);
@@ -283,14 +286,14 @@ void CGUIDialogLibExportSettings::InitializeSettings()
 {
   CGUIDialogSettingsManualBase::InitializeSettings();
 
-  CSettingCategory *category = AddCategory("exportsettings", -1);
+  CSettingCategory* category = AddCategory("exportsettings", -1);
   if (!category)
   {
     CLog::Log(LOGERROR, "CGUIDialogLibExportSettings: unable to setup settings");
     return;
   }
 
-  CSettingGroup *groupDetails = AddGroup(category);
+  CSettingGroup* groupDetails = AddGroup(category);
   if (!groupDetails)
   {
     CLog::Log(LOGERROR, "CGUIDialogLibExportSettings: unable to setup settings");
@@ -302,15 +305,17 @@ void CGUIDialogLibExportSettings::InitializeSettings()
   entries.push_back(std::make_pair(38301, ELIBEXPORT_SINGLEFILE));
   entries.push_back(std::make_pair(38302, ELIBEXPORT_SEPARATEFILES));
   entries.push_back(std::make_pair(38303, ELIBEXPORT_TOLIBRARYFOLDER));
-  AddList(groupDetails, "musiclibrary.exportfiletype", 38304, 0, m_settings.GetExportType(), entries, 38304); // "Choose kind of export output"
+  AddList(groupDetails, "musiclibrary.exportfiletype", 38304, 0, m_settings.GetExportType(),
+          entries, 38304); // "Choose kind of export output"
   AddButton(groupDetails, "musiclibrary.exportfolder", 38305, 0);
 
   entries.clear();
-  entries.push_back(std::make_pair(132, ELIBEXPORT_ALBUMS));  //ablums
+  entries.push_back(std::make_pair(132, ELIBEXPORT_ALBUMS)); //ablums
   entries.push_back(std::make_pair(38043, ELIBEXPORT_ALBUMARTISTS)); //album artists
   entries.push_back(std::make_pair(38312, ELIBEXPORT_SONGARTISTS)); //song artists
   entries.push_back(std::make_pair(38313, ELIBEXPORT_OTHERARTISTS)); //other artists
-  AddList(groupDetails, "musiclibrary.exportitems", 38306, 0, m_settings.GetExportItems(), entries, 133, 1);
+  AddList(groupDetails, "musiclibrary.exportitems", 38306, 0, m_settings.GetExportItems(), entries,
+          133, 1);
 
   AddToggle(groupDetails, "musiclibrary.exportunscraped", 38308, 0, m_settings.m_unscraped);
   AddToggle(groupDetails, "musiclibrary.exportartwork", 38307, 0, m_settings.m_artwork);
@@ -318,15 +323,14 @@ void CGUIDialogLibExportSettings::InitializeSettings()
   AddToggle(groupDetails, "musiclibrary.exportoverwrite", 38310, 0, m_settings.m_overwrite);
 }
 
-void CGUIDialogLibExportSettings::SetLabel2(const std::string &settingid, const std::string &label)
+void CGUIDialogLibExportSettings::SetLabel2(const std::string& settingid, const std::string& label)
 {
   BaseSettingControlPtr settingControl = GetSettingControl(settingid);
   if (settingControl != NULL && settingControl->GetControl() != NULL)
     SET_CONTROL_LABEL2(settingControl->GetID(), label);
 }
 
-
-void CGUIDialogLibExportSettings::ToggleState(const std::string & settingid, bool enabled)
+void CGUIDialogLibExportSettings::ToggleState(const std::string& settingid, bool enabled)
 {
   BaseSettingControlPtr settingControl = GetSettingControl(settingid);
   if (settingControl != NULL && settingControl->GetControl() != NULL)
@@ -338,16 +342,16 @@ void CGUIDialogLibExportSettings::ToggleState(const std::string & settingid, boo
   }
 }
 
-void CGUIDialogLibExportSettings::SetFocus(const std::string &settingid)
+void CGUIDialogLibExportSettings::SetFocus(const std::string& settingid)
 {
   BaseSettingControlPtr settingControl = GetSettingControl(settingid);
   if (settingControl != NULL && settingControl->GetControl() != NULL)
     SET_CONTROL_FOCUS(settingControl->GetID(), 0);
 }
 
-int CGUIDialogLibExportSettings::GetExportItemsFromSetting(const CSetting *setting)
+int CGUIDialogLibExportSettings::GetExportItemsFromSetting(const CSetting* setting)
 {
-  const CSettingList *settingList = static_cast<const CSettingList*>(setting);
+  const CSettingList* settingList = static_cast<const CSettingList*>(setting);
   if (settingList->GetElementType() != SettingTypeInteger)
   {
     CLog::Log(LOGERROR, "CGUIDialogLibExportSettings::%s - wrong items element type", __FUNCTION__);
@@ -357,7 +361,7 @@ int CGUIDialogLibExportSettings::GetExportItemsFromSetting(const CSetting *setti
   std::vector<CVariant> list = CSettingUtils::GetList(settingList);
   for (std::vector<CVariant>::const_iterator it = list.begin(); it != list.end(); ++it)
   {
-    const CVariant &value = *it;
+    const CVariant& value = *it;
     if (!value.isInteger())
     {
       CLog::Log(LOGERROR, "CGUIDialogLibExportSettings::%s - wrong items value type", __FUNCTION__);

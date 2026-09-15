@@ -22,15 +22,15 @@
 #include "utils/XMLUtils.h"
 #include "utils/TimeUtils.h"
 
-CStaticListProvider::CStaticListProvider(const TiXmlElement *element, int parentID)
-: IListProvider(parentID),
-  m_defaultItem(-1),
-  m_defaultAlways(false),
-  m_updateTime(0)
+CStaticListProvider::CStaticListProvider(const TiXmlElement* element, int parentID)
+  : IListProvider(parentID),
+    m_defaultItem(-1),
+    m_defaultAlways(false),
+    m_updateTime(0)
 {
   assert(element);
 
-  const TiXmlElement *item = element->FirstChildElement("item");
+  const TiXmlElement* item = element->FirstChildElement("item");
   while (item)
   {
     if (item->FirstChild())
@@ -43,18 +43,18 @@ CStaticListProvider::CStaticListProvider(const TiXmlElement *element, int parent
 
   if (XMLUtils::GetInt(element, "default", m_defaultItem))
   {
-    const char *always = element->FirstChildElement("default")->Attribute("always");
+    const char* always = element->FirstChildElement("default")->Attribute("always");
     if (always && strnicmp(always, "true", 4) == 0)
       m_defaultAlways = true;
   }
 }
 
-CStaticListProvider::CStaticListProvider(const std::vector<CGUIStaticItemPtr> &items)
-: IListProvider(0),
-  m_defaultItem(-1),
-  m_defaultAlways(false),
-  m_updateTime(0),
-  m_items(items)
+CStaticListProvider::CStaticListProvider(const std::vector<CGUIStaticItemPtr>& items)
+  : IListProvider(0),
+    m_defaultItem(-1),
+    m_defaultAlways(false),
+    m_updateTime(0),
+    m_items(items)
 {
 }
 
@@ -78,7 +78,7 @@ bool CStaticListProvider::Update(bool forceRefresh)
   return changed; //! @todo Also returned changed if properties are changed (if so, need to update scroll to letter).
 }
 
-void CStaticListProvider::Fetch(std::vector<CGUIListItemPtr> &items) const
+void CStaticListProvider::Fetch(std::vector<CGUIListItemPtr>& items) const
 {
   items.clear();
   for (std::vector<CGUIStaticItemPtr>::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
@@ -99,7 +99,8 @@ int CStaticListProvider::GetDefaultItem() const
   if (m_defaultItem >= 0)
   {
     unsigned int offset = 0;
-    for (std::vector<CGUIStaticItemPtr>::const_iterator i = m_items.begin(); i != m_items.end(); ++i)
+    for (std::vector<CGUIStaticItemPtr>::const_iterator i = m_items.begin(); i != m_items.end();
+         ++i)
     {
       if ((*i)->IsVisible())
       {
@@ -117,7 +118,7 @@ bool CStaticListProvider::AlwaysFocusDefaultItem() const
   return m_defaultAlways;
 }
 
-bool CStaticListProvider::OnClick(const CGUIListItemPtr &item)
+bool CStaticListProvider::OnClick(const CGUIListItemPtr& item)
 {
   CGUIStaticItemPtr staticItem = boost::static_pointer_cast<CGUIStaticItem>(item);
   return staticItem->GetClickActions().ExecuteActions(0, m_parentID);

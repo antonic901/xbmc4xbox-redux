@@ -53,9 +53,9 @@
 
 using namespace KODI::MESSAGING;
 
-#define CONTROL_BIG_LIST               52
-#define CONTROL_LABEL_HEADER            2
-#define CONTROL_LABEL_SELECTED_PROFILE  3
+#define CONTROL_BIG_LIST 52
+#define CONTROL_LABEL_HEADER 2
+#define CONTROL_LABEL_SELECTED_PROFILE 3
 
 CGUIWindowLoginScreen::CGUIWindowLoginScreen(void)
   : CGUIWindow(WINDOW_LOGIN_SCREEN, "LoginScreen.xml")
@@ -73,15 +73,15 @@ CGUIWindowLoginScreen::~CGUIWindowLoginScreen(void)
 
 bool CGUIWindowLoginScreen::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_DEINIT:
+    case GUI_MSG_WINDOW_DEINIT:
     {
       m_vecItems->Clear();
     }
     break;
 
-  case GUI_MSG_CLICKED:
+    case GUI_MSG_CLICKED:
     {
       int iControl = message.GetSenderId();
       if (iControl == CONTROL_BIG_LIST)
@@ -96,7 +96,7 @@ bool CGUIWindowLoginScreen::OnMessage(CGUIMessage& message)
           if (bResult)
           {
             Update();
-            CGUIMessage msg(GUI_MSG_ITEM_SELECT,GetID(),CONTROL_BIG_LIST,iItem);
+            CGUIMessage msg(GUI_MSG_ITEM_SELECT, GetID(), CONTROL_BIG_LIST, iItem);
             OnMessage(msg);
           }
 
@@ -124,26 +124,26 @@ bool CGUIWindowLoginScreen::OnMessage(CGUIMessage& message)
     break;
     case GUI_MSG_SETFOCUS:
     {
-      if (m_viewControl.HasControl(message.GetControlId()) && m_viewControl.GetCurrentControl() != message.GetControlId())
+      if (m_viewControl.HasControl(message.GetControlId()) &&
+          m_viewControl.GetCurrentControl() != message.GetControlId())
       {
         m_viewControl.SetFocused();
         return true;
       }
     }
     default:
-    break;
-
+      break;
   }
 
   return CGUIWindow::OnMessage(message);
 }
 
-bool CGUIWindowLoginScreen::OnAction(const CAction &action)
+bool CGUIWindowLoginScreen::OnAction(const CAction& action)
 {
   // don't allow any built in actions to act here.
   // this forces only navigation type actions to be performed.
   if (action.GetID() == ACTION_BUILT_IN_FUNCTION)
-    return true;  // pretend we handled it
+    return true; // pretend we handled it
   return CGUIWindow::OnAction(action);
 }
 
@@ -155,11 +155,14 @@ bool CGUIWindowLoginScreen::OnBack(int actionID)
 
 void CGUIWindowLoginScreen::FrameMove()
 {
-  if (GetFocusedControlID() == CONTROL_BIG_LIST && g_windowManager.GetTopMostModalDialogID() == WINDOW_INVALID)
+  if (GetFocusedControlID() == CONTROL_BIG_LIST &&
+      g_windowManager.GetTopMostModalDialogID() == WINDOW_INVALID)
     if (m_viewControl.HasControl(CONTROL_BIG_LIST))
       m_iSelectedItem = m_viewControl.GetSelectedItem();
-  std::string strLabel = StringUtils::Format(g_localizeStrings.Get(20114).c_str(), m_iSelectedItem+1, CProfilesManager::Get().GetNumberOfProfiles());
-  SET_CONTROL_LABEL(CONTROL_LABEL_SELECTED_PROFILE,strLabel);
+  std::string strLabel =
+      StringUtils::Format(g_localizeStrings.Get(20114).c_str(), m_iSelectedItem + 1,
+                          CProfilesManager::Get().GetNumberOfProfiles());
+  SET_CONTROL_LABEL(CONTROL_LABEL_SELECTED_PROFILE, strLabel);
   CGUIWindow::FrameMove();
 }
 
@@ -170,7 +173,7 @@ void CGUIWindowLoginScreen::OnInitWindow()
   m_viewControl.SetCurrentView(DEFAULT_VIEW_LIST);
   Update();
   m_viewControl.SetFocused();
-  SET_CONTROL_LABEL(CONTROL_LABEL_HEADER,g_localizeStrings.Get(20115));
+  SET_CONTROL_LABEL(CONTROL_LABEL_HEADER, g_localizeStrings.Get(20115));
   SET_CONTROL_VISIBLE(CONTROL_BIG_LIST);
 
   CGUIWindow::OnInitWindow();
@@ -193,15 +196,16 @@ void CGUIWindowLoginScreen::OnWindowUnload()
 void CGUIWindowLoginScreen::Update()
 {
   m_vecItems->Clear();
-  for (unsigned int i=0;i<CProfilesManager::Get().GetNumberOfProfiles(); ++i)
+  for (unsigned int i = 0; i < CProfilesManager::Get().GetNumberOfProfiles(); ++i)
   {
-    const CProfile *profile = CProfilesManager::Get().GetProfile(i);
+    const CProfile* profile = CProfilesManager::Get().GetProfile(i);
     CFileItemPtr item(new CFileItem(profile->getName()));
     std::string strLabel;
     if (profile->getDate().empty())
       strLabel = g_localizeStrings.Get(20113);
     else
-      strLabel = StringUtils::Format(g_localizeStrings.Get(20112).c_str(), profile->getDate().c_str());
+      strLabel =
+          StringUtils::Format(g_localizeStrings.Get(20112).c_str(), profile->getDate().c_str());
     item->SetLabel2(strLabel);
     item->SetArt("thumb", profile->getThumb());
     if (profile->getThumb().empty() || profile->getThumb() == "-")
@@ -215,7 +219,8 @@ void CGUIWindowLoginScreen::Update()
 
 bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
 {
-  if ( iItem < 0 || iItem >= m_vecItems->Size() ) return false;
+  if (iItem < 0 || iItem >= m_vecItems->Size())
+    return false;
 
   CFileItemPtr pItem = m_vecItems->Get(iItem);
   bool bSelect = pItem->IsSelected();
@@ -231,8 +236,11 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
   int choice = CGUIDialogContextMenu::ShowAndGetChoice(choices);
   if (choice == 2)
   {
-    if (g_passwordManager.CheckLock(CProfilesManager::Get().GetMasterProfile().getLockMode(),CProfilesManager::Get().GetMasterProfile().getLockCode(),20075))
-      g_passwordManager.iMasterLockRetriesLeft = CSettings::GetInstance().GetInt("masterlock.maxretries");
+    if (g_passwordManager.CheckLock(CProfilesManager::Get().GetMasterProfile().getLockMode(),
+                                    CProfilesManager::Get().GetMasterProfile().getLockCode(),
+                                    20075))
+      g_passwordManager.iMasterLockRetriesLeft =
+          CSettings::GetInstance().GetInt("masterlock.maxretries");
     else // be inconvenient
       CApplicationMessenger::Get().PostMsg(TMSG_SHUTDOWN);
 
@@ -253,10 +261,12 @@ bool CGUIWindowLoginScreen::OnPopupMenu(int iItem)
 CFileItemPtr CGUIWindowLoginScreen::GetCurrentListItem(int offset)
 {
   int item = m_viewControl.GetSelectedItem();
-  if (item < 0 || !m_vecItems->Size()) return CFileItemPtr();
+  if (item < 0 || !m_vecItems->Size())
+    return CFileItemPtr();
 
   item = (item + offset) % m_vecItems->Size();
-  if (item < 0) item += m_vecItems->Size();
+  if (item < 0)
+    item += m_vecItems->Size();
   return m_vecItems->Get(item);
 }
 
@@ -267,7 +277,7 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
 
   if (profile != 0 || !CProfilesManager::Get().IsMasterProfile())
   {
-    g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN,1);
+    g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_DOWN, 1);
 #ifdef HAS_XBOX_HARDWARE
     CLog::Log(LOGNOTICE, "stop fancontroller");
     CFanController::Instance()->Stop();
@@ -280,7 +290,7 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
     if (pWindow)
       pWindow->ResetControlStates();
   }
-  g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_UP,1);
+  g_application.getNetwork().NetworkMessage(CNetwork::SERVICES_UP, 1);
 
   CProfilesManager::Get().UpdateCurrentProfileDate();
   CProfilesManager::Get().Save();
@@ -300,7 +310,8 @@ void CGUIWindowLoginScreen::LoadProfile(unsigned int profile)
 
   if (!g_application.LoadLanguage(true))
   {
-    CLog::Log(LOGFATAL, "CGUIWindowLoginScreen: unable to load language for profile \"%s\"", CProfilesManager::Get().GetCurrentProfile().getName().c_str());
+    CLog::Log(LOGFATAL, "CGUIWindowLoginScreen: unable to load language for profile \"%s\"",
+              CProfilesManager::Get().GetCurrentProfile().getName().c_str());
     return;
   }
 

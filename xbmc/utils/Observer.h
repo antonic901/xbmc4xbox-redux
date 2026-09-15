@@ -58,30 +58,30 @@ public:
    * @param obs The observable to check.
    * @return True if this observer is observing the given observable, false otherwise.
    */
-  virtual bool IsObserving(const Observable &obs) const;
+  virtual bool IsObserving(const Observable& obs) const;
 
   /*!
    * @brief Process a message from an observable.
    * @param obs The observable that sends the message.
    * @param msg The message.
    */
-  virtual void Notify(const Observable &obs, const ObservableMessage msg) = 0;
+  virtual void Notify(const Observable& obs, const ObservableMessage msg) = 0;
 
 protected:
   /*!
    * @brief Callback to register an observable.
    * @param obs The observable to register.
    */
-  virtual void RegisterObservable(Observable *obs);
+  virtual void RegisterObservable(Observable* obs);
 
   /*!
    * @brief Callback to unregister an observable.
    * @param obs The observable to unregister.
    */
-  virtual void UnregisterObservable(Observable *obs);
+  virtual void UnregisterObservable(Observable* obs);
 
-  std::vector<Observable *> m_observables;     /*!< all observables that are watched */
-  CCriticalSection          m_obsCritSection;  /*!< mutex */
+  std::vector<Observable*> m_observables; /*!< all observables that are watched */
+  CCriticalSection m_obsCritSection; /*!< mutex */
 };
 
 class Observable
@@ -91,7 +91,7 @@ class Observable
 public:
   Observable();
   virtual ~Observable();
-  virtual Observable &operator=(const Observable &observable);
+  virtual Observable& operator=(const Observable& observable);
 
   /*!
    * @brief Remove this observable from all observers.
@@ -102,13 +102,13 @@ public:
    * @brief Register an observer.
    * @param obs The observer to register.
    */
-  virtual void RegisterObserver(Observer *obs);
+  virtual void RegisterObserver(Observer* obs);
 
   /*!
    * @brief Unregister an observer.
    * @param obs The observer to unregister.
    */
-  virtual void UnregisterObserver(Observer *obs);
+  virtual void UnregisterObserver(Observer* obs);
 
   /*!
    * @brief Send a message to all observers when m_bObservableChanged is true.
@@ -127,7 +127,7 @@ public:
    * @param obs The observer to check.
    * @return True if this observable is being observed by the given observer, false otherwise.
    */
-  virtual bool IsObserving(const Observer &obs) const;
+  virtual bool IsObserving(const Observer& obs) const;
 
 protected:
   /*!
@@ -137,7 +137,7 @@ protected:
    */
   static void SendMessage(const Observable& obs, const ObservableMessage message);
 
-  bool                    m_bObservableChanged; /*!< true when the observable is marked as changed, false otherwise */
-  std::vector<Observer *> m_observers;          /*!< all observers */
-  CCriticalSection        m_obsCritSection;     /*!< mutex */
+  bool m_bObservableChanged; /*!< true when the observable is marked as changed, false otherwise */
+  std::vector<Observer*> m_observers; /*!< all observers */
+  CCriticalSection m_obsCritSection; /*!< mutex */
 };

@@ -42,7 +42,8 @@ protected:
   vorbis_block m_sVorbisBlock; /* local working space for packet->PCM decode */
   vorbis_comment m_sVorbisComment;
 
-  ogg_stream_state m_sOggStreamState; /* take physical pages, weld into a logical stream of packets */
+  ogg_stream_state
+      m_sOggStreamState; /* take physical pages, weld into a logical stream of packets */
   ogg_page m_sOggPage; /* one Ogg bitstream page.  Vorbis packets are inside */
   ogg_packet m_sOggPacket; /* one raw packet of data for decode */
 

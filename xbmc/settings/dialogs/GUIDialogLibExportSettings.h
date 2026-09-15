@@ -38,8 +38,8 @@ protected:
   void OnInitWindow();
 
   // implementations of ISettingCallback
-  void OnSettingChanged(const CSetting *setting);
-  void OnSettingAction(const CSetting *setting);
+  void OnSettingChanged(const CSetting* setting);
+  void OnSettingAction(const CSetting* setting);
 
   // specialization of CGUIDialogSettingsBase
   bool OnMessage(CGUIMessage& message);
@@ -54,12 +54,12 @@ protected:
   void UpdateButtons();
 
 private:
-  void SetLabel2(const std::string &settingid, const std::string &label);
-  void ToggleState(const std::string &settingid, bool enabled);
+  void SetLabel2(const std::string& settingid, const std::string& label);
+  void ToggleState(const std::string& settingid, bool enabled);
 
   using CGUIDialogSettingsManualBase::SetFocus;
-  void SetFocus(const std::string &settingid);
-  static int GetExportItemsFromSetting(const CSetting *setting);
+  void SetFocus(const std::string& settingid);
+  static int GetExportItemsFromSetting(const CSetting* setting);
 
   CLibExportSettings m_settings;
   bool m_destinationChecked;

@@ -26,7 +26,7 @@
 
 enum SubtitleAlign
 {
-  SUBTITLE_ALIGN_MANUAL         = 0,
+  SUBTITLE_ALIGN_MANUAL = 0,
   SUBTITLE_ALIGN_BOTTOM_INSIDE,
   SUBTITLE_ALIGN_BOTTOM_OUTSIDE,
   SUBTITLE_ALIGN_TOP_INSIDE,
@@ -35,22 +35,22 @@ enum SubtitleAlign
 
 class CGUITextLayout; // forward
 
-class CGUIWindowFullScreen :
-      public CGUIWindow, public ISliderCallback
+class CGUIWindowFullScreen : public CGUIWindow, public ISliderCallback
 {
 public:
   CGUIWindowFullScreen(void);
   virtual ~CGUIWindowFullScreen(void);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregion);
+  virtual bool OnAction(const CAction& action);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregion);
   virtual void Render();
   virtual void OnWindowLoaded();
   void RenderFullScreen();
   bool NeedRenderFullScreen();
   void ChangetheTimeCode(int remote);
 
-  virtual void OnSliderChange(void *data, CGUISliderControl *slider);
+  virtual void OnSliderChange(void* data, CGUISliderControl* slider);
+
 protected:
   virtual void OnDeinitWindow(int nextWindow) {}; // no out window animation for fullscreen video
 
@@ -59,8 +59,16 @@ private:
   void SeekChapter(int iChapter);
   void ToggleOSD();
 
-  enum SEEK_TYPE { SEEK_ABSOLUTE, SEEK_RELATIVE };
-  enum SEEK_DIRECTION { SEEK_FORWARD, SEEK_BACKWARD };
+  enum SEEK_TYPE
+  {
+    SEEK_ABSOLUTE,
+    SEEK_RELATIVE
+  };
+  enum SEEK_DIRECTION
+  {
+    SEEK_FORWARD,
+    SEEK_BACKWARD
+  };
 
   /*! \brief Seek to the current time code stamp, either relative or absolute
    \param type - whether the seek is absolute or relative
@@ -81,7 +89,8 @@ private:
    \param max maximal value the slider may take
    \param modal true if we should wait for the slider to finish. Defaults to false
    */
-  void ShowSlider(int action, int label, float value, float min, float delta, float max, bool modal = false);
+  void ShowSlider(
+      int action, int label, float value, float min, float delta, float max, bool modal = false);
 
   bool m_bShowViewModeInfo;
   unsigned int m_dwShowViewModeTimeout;
@@ -94,7 +103,7 @@ private:
   unsigned int m_timeCodeTimeout;
   int m_timeCodeStamp[6];
   int m_timeCodePosition;
-  
+
   int m_sliderAction; ///< \brief set to the action id for a slider being displayed \sa ShowSlider
 
   CCriticalSection m_fontLock;

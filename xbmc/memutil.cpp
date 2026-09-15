@@ -37,7 +37,7 @@ void fast_memcpy(void* d, const void* s, unsigned n)
     prefetchnta [esi + 32]
     mov edi, d
 
-    // pre align
+        // pre align
     mov eax, edi
     mov ecx, 16
     and eax, 15
@@ -64,7 +64,7 @@ void fast_memcpy(void* d, const void* s, unsigned n)
     and eax, 15
     jnz fmc_notaligned
 
-    // main copy, aligned
+         // main copy, aligned
     mov ecx, edx
     shr ecx, 4
   fmc_start_main_a:
@@ -80,7 +80,7 @@ void fast_memcpy(void* d, const void* s, unsigned n)
         jmp fmc_start_main_a
 
   fmc_notaligned:
-        // main copy, unaligned
+    // main copy, unaligned
         mov ecx, edx
         shr ecx, 4
   fmc_start_main_u:
@@ -97,7 +97,7 @@ void fast_memcpy(void* d, const void* s, unsigned n)
 
   fmc_exit_main:
 
-            // post align
+    // post align
             mov ecx, edx
             and ecx, 15
   fmc_start_post:
@@ -112,7 +112,7 @@ void fast_memcpy(void* d, const void* s, unsigned n)
             jmp fmc_start_post
 
   fmc_exit_post:
-          }
+  }
 }
 
 void fast_memset(void* d, int c, unsigned n)
@@ -123,7 +123,7 @@ void fast_memset(void* d, int c, unsigned n)
     mov edx, n
     mov edi, d
 
-    // pre align
+        // pre align
     mov eax, edi
     mov ecx, 16
     and eax, 15
@@ -148,7 +148,7 @@ void fast_memset(void* d, int c, unsigned n)
     test al, al
     jz fms_initzero
 
-    // duplicate the value 16 times
+         // duplicate the value 16 times
     lea esi, buf
     mov [esi], al
     mov [esi + 1], al
@@ -180,7 +180,7 @@ void fast_memset(void* d, int c, unsigned n)
 
   fms_exit_main:
 
-      // post align
+    // post align
       mov ecx, edx
       and ecx, 15
   fms_start_post:
@@ -193,7 +193,7 @@ void fast_memset(void* d, int c, unsigned n)
       jmp fms_start_post
 
   fms_exit_post:
-    }
+  }
 }
 
 #ifdef _XBOX

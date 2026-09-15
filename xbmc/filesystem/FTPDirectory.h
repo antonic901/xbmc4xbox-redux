@@ -23,14 +23,14 @@
 
 namespace XFILE
 {
-  class CFTPDirectory : public IDirectory
-  {
-    public:
-      CFTPDirectory(void);
-      virtual ~CFTPDirectory(void);
-      virtual bool GetDirectory(const CURL& url, CFileItemList &items);
-      virtual bool Exists(const CURL& url);
-    private:
-  };
-}
+class CFTPDirectory : public IDirectory
+{
+public:
+  CFTPDirectory(void);
+  virtual ~CFTPDirectory(void);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool Exists(const CURL& url);
 
+private:
+};
+} // namespace XFILE

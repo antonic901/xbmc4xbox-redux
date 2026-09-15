@@ -27,7 +27,8 @@
 #include <vector>
 #include <boost/shared_ptr.hpp>
 
-class CFileItem; typedef boost::shared_ptr<CFileItem> CFileItemPtr;
+class CFileItem;
+typedef boost::shared_ptr<CFileItem> CFileItemPtr;
 class CFileItemList;
 
 class IBackgroundLoaderObserver
@@ -53,21 +54,21 @@ public:
   virtual bool LoadItemLookup(CFileItem* pItem) { return false; };
 
   void StopThread(); // will actually stop the loader thread.
-  void StopAsync();  // will ask loader to stop as soon as possible, but not block
+  void StopAsync(); // will ask loader to stop as soon as possible, but not block
 
 protected:
   virtual void OnLoaderStart() {};
   virtual void OnLoaderFinish() {};
 
-  CFileItemList *m_pVecItems;
-  std::vector<CFileItemPtr> m_vecItems; // FileItemList would delete the items and we only want to keep a reference.
+  CFileItemList* m_pVecItems;
+  std::vector<CFileItemPtr>
+      m_vecItems; // FileItemList would delete the items and we only want to keep a reference.
   CCriticalSection m_lock;
 
   volatile bool m_bIsLoading;
   volatile bool m_bStop;
-  CThread *m_thread;
+  CThread* m_thread;
 
   IBackgroundLoaderObserver* m_pObserver;
   IProgressCallback* m_pProgressCallback;
 };
-

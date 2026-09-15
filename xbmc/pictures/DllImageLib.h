@@ -23,49 +23,50 @@
 #include "DynamicDll.h"
 
 #ifndef _XBOX
- #ifdef LoadImage
-  #undef LoadImage
- #endif
+#ifdef LoadImage
+#undef LoadImage
+#endif
 #endif
 
 #define EXIF_MAX_COMMENT 1000
 
-typedef struct tag_ExifInfo {
-	char  Version      [5];
-  char  CameraMake   [32];
-  char  CameraModel  [40];
-  char  DateTime     [20];
-  int   Height, Width;
-  int   Orientation;
-  int   IsColor;
-  int   Process;
-  int   FlashUsed;
+typedef struct tag_ExifInfo
+{
+  char Version[5];
+  char CameraMake[32];
+  char CameraModel[40];
+  char DateTime[20];
+  int Height, Width;
+  int Orientation;
+  int IsColor;
+  int Process;
+  int FlashUsed;
   float FocalLength;
   float ExposureTime;
   float ApertureFNumber;
   float Distance;
   float CCDWidth;
   float ExposureBias;
-  int   Whitebalance;
-  int   MeteringMode;
-  int   ExposureProgram;
-  int   ISOequivalent;
-  int   CompressionLevel;
-	float FocalplaneXRes;
-	float FocalplaneYRes;
-	float FocalplaneUnits;
-	float Xresolution;
-	float Yresolution;
-	float ResolutionUnit;
-	float Brightness;
-  char  Comments[EXIF_MAX_COMMENT];
+  int Whitebalance;
+  int MeteringMode;
+  int ExposureProgram;
+  int ISOequivalent;
+  int CompressionLevel;
+  float FocalplaneXRes;
+  float FocalplaneYRes;
+  float FocalplaneUnits;
+  float Xresolution;
+  float Yresolution;
+  float ResolutionUnit;
+  float Brightness;
+  char Comments[EXIF_MAX_COMMENT];
 
-  unsigned char * ThumbnailPointer;  /* Pointer at the thumbnail */
-  unsigned ThumbnailSize;     /* Size of thumbnail. */
+  unsigned char* ThumbnailPointer; /* Pointer at the thumbnail */
+  unsigned ThumbnailSize; /* Size of thumbnail. */
 
-	bool  IsExif;
+  bool IsExif;
 } EXIFINFO;
-  
+
 struct ImageInfo
 {
   unsigned int width;
@@ -81,24 +82,35 @@ struct ImageInfo
 class DllImageLibInterface
 {
 public:
-    virtual ~DllImageLibInterface() {}
-    virtual bool ReleaseImage(ImageInfo *)=0;
-    virtual bool LoadImage(const char *, unsigned int, unsigned int, ImageInfo *)=0;
-    virtual bool LoadImageFromMemory(const uint8_t*, unsigned int, const char *, unsigned int, unsigned int, ImageInfo *)=0;
-    virtual bool CreateThumbnailFromSurface(BYTE *, unsigned int, unsigned int, unsigned int, const char *)=0;
+  virtual ~DllImageLibInterface() {}
+  virtual bool ReleaseImage(ImageInfo*) = 0;
+  virtual bool LoadImage(const char*, unsigned int, unsigned int, ImageInfo*) = 0;
+  virtual bool LoadImageFromMemory(
+      const uint8_t*, unsigned int, const char*, unsigned int, unsigned int, ImageInfo*) = 0;
+  virtual bool CreateThumbnailFromSurface(
+      BYTE*, unsigned int, unsigned int, unsigned int, const char*) = 0;
 };
 
 class DllImageLib : public DllDynamic, DllImageLibInterface
 {
-  DECLARE_DLL_WRAPPER(DllImageLib, Q:\\system\\ImageLib.dll)
-  DEFINE_METHOD1(bool, ReleaseImage, (ImageInfo *p1))
-  DEFINE_METHOD4(bool, LoadImage, (const char * p1, unsigned int p2, unsigned int p3, ImageInfo * p4))
-  DEFINE_METHOD6(bool, LoadImageFromMemory, (const uint8_t * p1, unsigned int p2, const char *p3, unsigned int p4, unsigned int p5, ImageInfo * p6))
-  DEFINE_METHOD5(bool, CreateThumbnailFromSurface, (BYTE * p1, unsigned int p2, unsigned int p3, unsigned int p4, const char * p5))
+  DECLARE_DLL_WRAPPER(DllImageLib, Q :\\system\\ImageLib.dll)
+  DEFINE_METHOD1(bool, ReleaseImage, (ImageInfo * p1))
+  DEFINE_METHOD4(bool, LoadImage, (const char* p1, unsigned int p2, unsigned int p3, ImageInfo* p4))
+  DEFINE_METHOD6(bool,
+                 LoadImageFromMemory,
+                 (const uint8_t* p1,
+                  unsigned int p2,
+                  const char* p3,
+                  unsigned int p4,
+                  unsigned int p5,
+                  ImageInfo* p6))
+  DEFINE_METHOD5(bool,
+                 CreateThumbnailFromSurface,
+                 (BYTE * p1, unsigned int p2, unsigned int p3, unsigned int p4, const char* p5))
   BEGIN_METHOD_RESOLVE()
-    RESOLVE_METHOD(ReleaseImage)
-    RESOLVE_METHOD(LoadImage)
-    RESOLVE_METHOD(LoadImageFromMemory)
-    RESOLVE_METHOD(CreateThumbnailFromSurface)
+  RESOLVE_METHOD(ReleaseImage)
+  RESOLVE_METHOD(LoadImage)
+  RESOLVE_METHOD(LoadImageFromMemory)
+  RESOLVE_METHOD(CreateThumbnailFromSurface)
   END_METHOD_RESOLVE()
 };

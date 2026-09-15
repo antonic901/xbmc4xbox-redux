@@ -35,12 +35,12 @@ class CViewStateSettings : public ISubSettings
 public:
   static CViewStateSettings& Get();
 
-  virtual bool Load(const TiXmlNode *settings);
-  virtual bool Save(TiXmlNode *settings) const;
+  virtual bool Load(const TiXmlNode* settings);
+  virtual bool Save(TiXmlNode* settings) const;
   virtual void Clear();
 
-  const CViewState* Get(const std::string &viewState) const;
-  CViewState* Get(const std::string &viewState);
+  const CViewState* Get(const std::string& viewState) const;
+  CViewState* Get(const std::string& viewState);
 
   SettingLevel GetSettingLevel() const { return m_settingLevel; }
   void SetSettingLevel(SettingLevel settingLevel);
@@ -58,5 +58,7 @@ private:
   SettingLevel m_settingLevel;
   CCriticalSection m_critical;
 
-  void AddViewState(const std::string& strTagName, int defaultView = DEFAULT_VIEW_LIST, SortBy defaultSort = SortByLabel);
+  void AddViewState(const std::string& strTagName,
+                    int defaultView = DEFAULT_VIEW_LIST,
+                    SortBy defaultSort = SortByLabel);
 };

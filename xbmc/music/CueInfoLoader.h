@@ -27,8 +27,8 @@ class CueInfoLoader
 {
 public:
   void Load(const std::string& aStrCuesheet, CFileItemPtr aFileItem);
+
 private:
   typedef boost::unordered_map<std::string, CCueDocument> CueCache;
   CueCache m_cache;
 };
-

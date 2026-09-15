@@ -21,35 +21,38 @@
 
 #include "Addon.h"
 
-#define WEBINTERFACE_DEFAULT_ENTRY_POINT  "index.html"
+#define WEBINTERFACE_DEFAULT_ENTRY_POINT "index.html"
 
 namespace ADDON
 {
-  typedef enum WebinterfaceType
+typedef enum WebinterfaceType
+{
+  WebinterfaceTypeStatic = 0,
+  WebinterfaceTypeWsgi
+} WebinterfaceType;
+
+class CWebinterface : public CAddon
+{
+public:
+  static boost::movelib::unique_ptr<CWebinterface> FromExtension(AddonProps props,
+                                                                 const cp_extension_t* ext);
+
+  explicit CWebinterface(AddonProps props)
+    : CAddon(boost::move(props)),
+      m_type(WebinterfaceTypeStatic),
+      m_entryPoint(WEBINTERFACE_DEFAULT_ENTRY_POINT)
   {
-    WebinterfaceTypeStatic = 0,
-    WebinterfaceTypeWsgi
-  } WebinterfaceType;
+  }
+  CWebinterface(ADDON::AddonProps props, WebinterfaceType type, const std::string& entryPoint);
 
-  class CWebinterface : public CAddon
-  {
-  public:
-    static boost::movelib::unique_ptr<CWebinterface> FromExtension(AddonProps props, const cp_extension_t* ext);
+  WebinterfaceType GetType() const { return m_type; }
+  const std::string& EntryPoint() const { return m_entryPoint; }
 
-    explicit CWebinterface(AddonProps props)
-        : CAddon(boost::move(props)),
-          m_type(WebinterfaceTypeStatic),
-          m_entryPoint(WEBINTERFACE_DEFAULT_ENTRY_POINT) {}
-    CWebinterface(ADDON::AddonProps props, WebinterfaceType type, const std::string &entryPoint);
+  std::string GetEntryPoint(const std::string& path) const;
+  std::string GetBaseLocation() const;
 
-    WebinterfaceType GetType() const { return m_type; }
-    const std::string& EntryPoint() const { return m_entryPoint; }
-
-    std::string GetEntryPoint(const std::string &path) const;
-    std::string GetBaseLocation() const;
-
-  private:
-    WebinterfaceType m_type;
-    std::string m_entryPoint;
-  };
-}
+private:
+  WebinterfaceType m_type;
+  std::string m_entryPoint;
+};
+} // namespace ADDON

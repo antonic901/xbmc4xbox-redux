@@ -155,8 +155,7 @@ int CApplicationPlayer::GetChapterCount()
     return 0;
 }
 
-void CApplicationPlayer::GetChapterName(std::string& strChapterName,
-                                        int chapterIdx)
+void CApplicationPlayer::GetChapterName(std::string& strChapterName, int chapterIdx)
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
@@ -478,13 +477,13 @@ std::string CApplicationPlayer::GetPlayerState()
     return "";
 }
 
-bool CApplicationPlayer::QueueNextFile(const CFileItem &file)
+bool CApplicationPlayer::QueueNextFile(const CFileItem& file)
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   return (player && player->QueueNextFile(file));
 }
 
-bool CApplicationPlayer::GetStreamDetails(CStreamDetails &details)
+bool CApplicationPlayer::GetStreamDetails(CStreamDetails& details)
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   return (player && player->GetStreamDetails(details));
@@ -503,7 +502,7 @@ void CApplicationPlayer::OnNothingToQueueNotify()
     player->OnNothingToQueueNotify();
 }
 
-void CApplicationPlayer::GetVideoStreamInfo(int streamId, SPlayerVideoStreamInfo &info)
+void CApplicationPlayer::GetVideoStreamInfo(int streamId, SPlayerVideoStreamInfo& info)
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
@@ -517,12 +516,14 @@ void CApplicationPlayer::GetVideoStreamInfo(int streamId, SPlayerVideoStreamInfo
     info.height = player->GetPictureHeight();
     player->GetVideoAspectRatio(info.videoAspectRatio);
     info.stereoMode = "";
-    info.SrcRect = CRect(static_cast<float>(SrcRect.left), static_cast<float>(SrcRect.top), static_cast<float>(SrcRect.right), static_cast<float>(SrcRect.bottom));
-    info.DestRect = CRect(static_cast<float>(DestRect.left), static_cast<float>(DestRect.top), static_cast<float>(DestRect.right), static_cast<float>(DestRect.bottom));
+    info.SrcRect = CRect(static_cast<float>(SrcRect.left), static_cast<float>(SrcRect.top),
+                         static_cast<float>(SrcRect.right), static_cast<float>(SrcRect.bottom));
+    info.DestRect = CRect(static_cast<float>(DestRect.left), static_cast<float>(DestRect.top),
+                          static_cast<float>(DestRect.right), static_cast<float>(DestRect.bottom));
   }
 }
 
-void CApplicationPlayer::GetAudioStreamInfo(int index, SPlayerAudioStreamInfo &info)
+void CApplicationPlayer::GetAudioStreamInfo(int index, SPlayerAudioStreamInfo& info)
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
@@ -541,7 +542,7 @@ void CApplicationPlayer::GetAudioStreamInfo(int index, SPlayerAudioStreamInfo &i
   }
 }
 
-bool CApplicationPlayer::OnAction(const CAction &action)
+bool CApplicationPlayer::OnAction(const CAction& action)
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   return (player && player->OnAction(action));
@@ -553,7 +554,7 @@ bool CApplicationPlayer::Record(bool bOnOff)
   return (player && player->Record(bOnOff));
 }
 
-int  CApplicationPlayer::GetAudioStreamCount()
+int CApplicationPlayer::GetAudioStreamCount()
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
@@ -574,7 +575,7 @@ void CApplicationPlayer::SetAudioStream(int iStream)
   }
 }
 
-void CApplicationPlayer::GetSubtitleStreamInfo(int index, SPlayerSubtitleStreamInfo &info)
+void CApplicationPlayer::GetSubtitleStreamInfo(int index, SPlayerSubtitleStreamInfo& info)
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
@@ -668,7 +669,7 @@ bool CApplicationPlayer::GetCurrentSubtitle(CStdString& strSubtitle)
   return (player && player->GetCurrentSubtitle(strSubtitle));
 }
 
-int  CApplicationPlayer::SeekChapter(int iChapter)
+int CApplicationPlayer::SeekChapter(int iChapter)
 {
   boost::shared_ptr<IPlayer> player = GetInternal();
   if (player)
@@ -684,17 +685,15 @@ void CApplicationPlayer::SetPlaySpeed(int iSpeed, bool bApplicationMuted)
     return;
 
   if (!IsPlayingAudio() && !IsPlayingVideo())
-    return ;
+    return;
   if (m_iPlaySpeed == iSpeed)
-    return ;
+    return;
   if (!CanSeek())
     return;
   if (IsPaused())
   {
-    if (
-      ((m_iPlaySpeed > 1) && (iSpeed > m_iPlaySpeed)) ||
-      ((m_iPlaySpeed < -1) && (iSpeed < m_iPlaySpeed))
-    )
+    if (((m_iPlaySpeed > 1) && (iSpeed > m_iPlaySpeed)) ||
+        ((m_iPlaySpeed < -1) && (iSpeed < m_iPlaySpeed)))
     {
       iSpeed = m_iPlaySpeed; // from pause to ff/rw, do previous ff/rw speed
     }

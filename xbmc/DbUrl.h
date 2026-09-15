@@ -34,23 +34,23 @@ public:
   void Reset();
 
   std::string ToString() const;
-  bool FromString(const std::string &dbUrl);
+  bool FromString(const std::string& dbUrl);
 
   const std::string& GetType() const { return m_type; }
-  void AppendPath(const std::string &subPath);
+  void AppendPath(const std::string& subPath);
 
-  virtual void AddOption(const std::string &key, const char *value);
-  virtual void AddOption(const std::string &key, const std::string &value);
-  virtual void AddOption(const std::string &key, int value);
-  virtual void AddOption(const std::string &key, float value);
-  virtual void AddOption(const std::string &key, double value);
-  virtual void AddOption(const std::string &key, bool value);
-  virtual void AddOptions(const std::string &options);
-  virtual void RemoveOption(const std::string &key);
+  virtual void AddOption(const std::string& key, const char* value);
+  virtual void AddOption(const std::string& key, const std::string& value);
+  virtual void AddOption(const std::string& key, int value);
+  virtual void AddOption(const std::string& key, float value);
+  virtual void AddOption(const std::string& key, double value);
+  virtual void AddOption(const std::string& key, bool value);
+  virtual void AddOptions(const std::string& options);
+  virtual void RemoveOption(const std::string& key);
 
 protected:
   virtual bool parse() = 0;
-  virtual bool validateOption(const std::string &key, const CVariant &value);
+  virtual bool validateOption(const std::string& key, const CVariant& value);
 
   CURL m_url;
   std::string m_type;

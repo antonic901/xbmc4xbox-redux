@@ -26,12 +26,12 @@
 namespace MUSIC_INFO
 {
 
-class CMusicInfoTagLoaderApe: public IMusicInfoTagLoader
+class CMusicInfoTagLoaderApe : public IMusicInfoTagLoader
 {
 public:
   CMusicInfoTagLoaderApe(void);
   virtual ~CMusicInfoTagLoaderApe();
 
-  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt *art = NULL);
+  virtual bool Load(const CStdString& strFileName, CMusicInfoTag& tag, EmbeddedArt* art = NULL);
 };
-}
+} // namespace MUSIC_INFO

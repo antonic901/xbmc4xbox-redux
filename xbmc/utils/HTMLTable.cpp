@@ -21,14 +21,15 @@
 #include "HTMLTable.h"
 #include "HTMLUtil.h"
 
-
 using namespace HTML;
 
 CHTMLRow::CHTMLRow(void)
-{}
+{
+}
 
 CHTMLRow::~CHTMLRow(void)
-{}
+{
+}
 
 int CHTMLRow::GetColumns() const
 {
@@ -59,17 +60,17 @@ void CHTMLRow::Parse(const std::string& strTable)
       m_vecColums.push_back(strRow);
 
       iTableRowStart = iTableRowEnd + 1;
-
     }
-  }
-  while (iTableRowStart >= 0);
+  } while (iTableRowStart >= 0);
 }
 //------------------------------------------------------------------------------
 CHTMLTable::CHTMLTable(void)
-{}
+{
+}
 
 CHTMLTable::~CHTMLTable(void)
-{}
+{
+}
 
 int CHTMLTable::GetRows() const
 {
@@ -114,8 +115,6 @@ void CHTMLTable::Parse(const std::string& strHTML)
         m_vecRows.push_back(row);
         iTableRowStart = iTableRowEnd + 1;
       }
-    }
-    while (iTableRowStart >= 0);
+    } while (iTableRowStart >= 0);
   }
 }
-

@@ -22,29 +22,30 @@
  */
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-enum ADDON_STATUS
-{
-  ADDON_STATUS_OK,
-  ADDON_STATUS_LOST_CONNECTION,
-  ADDON_STATUS_NEED_RESTART,
-  ADDON_STATUS_NEED_SETTINGS,
-  ADDON_STATUS_UNKNOWN,
-  ADDON_STATUS_NEED_SAVEDSETTINGS,
-  ADDON_STATUS_PERMANENT_FAILURE   /**< permanent failure, like failing to resolve methods */
-};
+  enum ADDON_STATUS
+  {
+    ADDON_STATUS_OK,
+    ADDON_STATUS_LOST_CONNECTION,
+    ADDON_STATUS_NEED_RESTART,
+    ADDON_STATUS_NEED_SETTINGS,
+    ADDON_STATUS_UNKNOWN,
+    ADDON_STATUS_NEED_SAVEDSETTINGS,
+    ADDON_STATUS_PERMANENT_FAILURE /**< permanent failure, like failing to resolve methods */
+  };
 
-typedef struct
-{
-  int           type;
-  char*         id;
-  char*         label;
-  int           current;
-  char**        entry;
-  unsigned int  entry_elements;
-} ADDON_StructSetting;
+  typedef struct
+  {
+    int type;
+    char* id;
+    char* label;
+    int current;
+    char** entry;
+    unsigned int entry_elements;
+  } ADDON_StructSetting;
 
 #ifdef __cplusplus
 };

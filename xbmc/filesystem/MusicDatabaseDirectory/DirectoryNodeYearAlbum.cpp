@@ -24,15 +24,15 @@
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CDirectoryNodeYearAlbum::CDirectoryNodeYearAlbum(const std::string& strName, CDirectoryNode* pParent)
+CDirectoryNodeYearAlbum::CDirectoryNodeYearAlbum(const std::string& strName,
+                                                 CDirectoryNode* pParent)
   : CDirectoryNode(NODE_TYPE_YEAR_ALBUM, strName, pParent)
 {
-
 }
 
 NODE_TYPE CDirectoryNodeYearAlbum::GetChildType() const
 {
-  if (GetName()=="-1")
+  if (GetName() == "-1")
     return NODE_TYPE_YEAR_SONG;
 
   return NODE_TYPE_SONG;
@@ -57,7 +57,7 @@ bool CDirectoryNodeYearAlbum::GetContent(CFileItemList& items) const
   CQueryParams params;
   CollectQueryParams(params);
 
-  bool bSuccess=musicdatabase.GetAlbumsByYear(BuildPath(), items, params.GetYear());
+  bool bSuccess = musicdatabase.GetAlbumsByYear(BuildPath(), items, params.GetYear());
 
   musicdatabase.Close();
 

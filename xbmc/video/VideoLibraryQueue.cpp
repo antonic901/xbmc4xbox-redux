@@ -37,7 +37,8 @@ CVideoLibraryQueue::CVideoLibraryQueue()
     m_jobs(),
     m_modal(false),
     m_cleaning(false)
-{ }
+{
+}
 
 CVideoLibraryQueue::~CVideoLibraryQueue()
 {
@@ -51,7 +52,9 @@ CVideoLibraryQueue& CVideoLibraryQueue::GetInstance()
   return s_instance;
 }
 
-void CVideoLibraryQueue::ScanLibrary(const std::string& directory, bool scanAll /* = false */ , bool showProgress /* = true */)
+void CVideoLibraryQueue::ScanLibrary(const std::string& directory,
+                                     bool scanAll /* = false */,
+                                     bool showProgress /* = true */)
 {
   AddJob(new CVideoLibraryScanningJob(directory, scanAll, showProgress));
 }
@@ -86,12 +89,15 @@ void CVideoLibraryQueue::StopLibraryScanning()
   VideoLibraryJobs tmpScanningJobs(scanningJobs->second.begin(), scanningJobs->second.end());
 
   // cancel all scanning jobs
-  for (VideoLibraryJobs::const_iterator job = tmpScanningJobs.begin(); job != tmpScanningJobs.end(); ++job)
+  for (VideoLibraryJobs::const_iterator job = tmpScanningJobs.begin(); job != tmpScanningJobs.end();
+       ++job)
     CancelJob(*job);
   Refresh();
 }
 
-void CVideoLibraryQueue::CleanLibrary(const std::set<int>& paths /* = std::set<int>() */, bool asynchronous /* = true */, CGUIDialogProgressBarHandle* progressBar /* = NULL */)
+void CVideoLibraryQueue::CleanLibrary(const std::set<int>& paths /* = std::set<int>() */,
+                                      bool asynchronous /* = true */,
+                                      CGUIDialogProgressBarHandle* progressBar /* = NULL */)
 {
   CVideoLibraryCleaningJob* cleaningJob = new CVideoLibraryCleaningJob(paths, progressBar);
 
@@ -125,12 +131,18 @@ void CVideoLibraryQueue::CleanLibraryModal(const std::set<int>& paths /* = std::
   Refresh();
 }
 
-void CVideoLibraryQueue::RefreshItem(CFileItemPtr item, bool ignoreNfo /* = false */, bool forceRefresh /* = true */, bool refreshAll /* = false */, const std::string& searchTitle /* = "" */)
+void CVideoLibraryQueue::RefreshItem(CFileItemPtr item,
+                                     bool ignoreNfo /* = false */,
+                                     bool forceRefresh /* = true */,
+                                     bool refreshAll /* = false */,
+                                     const std::string& searchTitle /* = "" */)
 {
   AddJob(new CVideoLibraryRefreshingJob(item, forceRefresh, refreshAll, ignoreNfo, searchTitle));
 }
 
-bool CVideoLibraryQueue::RefreshItemModal(CFileItemPtr item, bool forceRefresh /* = true */, bool refreshAll /* = false */)
+bool CVideoLibraryQueue::RefreshItemModal(CFileItemPtr item,
+                                          bool forceRefresh /* = true */,
+                                          bool refreshAll /* = false */)
 {
   // we can't perform a modal library cleaning if other jobs are running
   if (IsRunning())
@@ -145,7 +157,7 @@ bool CVideoLibraryQueue::RefreshItemModal(CFileItemPtr item, bool forceRefresh /
   return result;
 }
 
-void CVideoLibraryQueue::MarkAsWatched(const CFileItemPtr &item, bool watched)
+void CVideoLibraryQueue::MarkAsWatched(const CFileItemPtr& item, bool watched)
 {
   if (item == NULL)
     return;
@@ -153,7 +165,7 @@ void CVideoLibraryQueue::MarkAsWatched(const CFileItemPtr &item, bool watched)
   AddJob(new CVideoLibraryMarkWatchedJob(item, watched));
 }
 
-void CVideoLibraryQueue::AddJob(CVideoLibraryJob *job)
+void CVideoLibraryQueue::AddJob(CVideoLibraryJob* job)
 {
   if (job == NULL)
     return;
@@ -175,7 +187,7 @@ void CVideoLibraryQueue::AddJob(CVideoLibraryJob *job)
     jobsIt->second.insert(job);
 }
 
-void CVideoLibraryQueue::CancelJob(CVideoLibraryJob *job)
+void CVideoLibraryQueue::CancelJob(CVideoLibraryJob* job)
 {
   if (job == NULL)
     return;
@@ -221,7 +233,7 @@ void CVideoLibraryQueue::Refresh()
   g_windowManager.SendThreadMessage(msg);
 }
 
-void CVideoLibraryQueue::OnJobComplete(unsigned int jobID, bool success, CJob *job)
+void CVideoLibraryQueue::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 {
   if (success)
   {

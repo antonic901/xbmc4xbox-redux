@@ -42,13 +42,17 @@ public:
   {
     if (strMusicBrainzArtistID.empty() && a.strMusicBrainzArtistID.empty())
     {
-      if (strArtist < a.strArtist) return true;
-      if (strArtist > a.strArtist) return false;
+      if (strArtist < a.strArtist)
+        return true;
+      if (strArtist > a.strArtist)
+        return false;
       return false;
     }
 
-    if (strMusicBrainzArtistID < a.strMusicBrainzArtistID) return true;
-    if (strMusicBrainzArtistID > a.strMusicBrainzArtistID) return false;
+    if (strMusicBrainzArtistID < a.strMusicBrainzArtistID)
+      return true;
+    if (strMusicBrainzArtistID > a.strMusicBrainzArtistID)
+      return false;
     return false;
   }
 
@@ -85,8 +89,8 @@ public:
    \param prioritise if appending, whether additive tags should be prioritised (i.e. replace or prepend) over existing values. Defaults to false.
    \sa CVideoInfoTag::Load
    */
-  bool Load(const TiXmlElement *element, bool append = false, bool prioritise = false);
-  bool Save(TiXmlNode *node, const std::string &tag, const std::string& strPath);
+  bool Load(const TiXmlElement* element, bool append = false, bool prioritise = false);
+  bool Save(TiXmlNode* node, const std::string& tag, const std::string& strPath);
 
   void SetDateAdded(const std::string& strDateAdded);
 
@@ -105,9 +109,9 @@ public:
   std::vector<std::string> yearsActive;
   std::string strPath;
   CScraperUrl thumbURL; // Data for available thumbs
-  CFanart fanart;  // Data for available fanart, urls etc.
-  std::map<std::string, std::string> art;  // Current artwork - thumb, fanart etc.
-  std::vector<std::pair<std::string,std::string> > discography;
+  CFanart fanart; // Data for available fanart, urls etc.
+  std::map<std::string, std::string> art; // Current artwork - thumb, fanart etc.
+  std::vector<std::pair<std::string, std::string> > discography;
   CDateTime dateAdded;
   bool bScrapedMBID;
   std::string strLastScraped;
@@ -119,36 +123,50 @@ class CArtistCredit
   friend class CMusicDatabase;
 
 public:
-  CArtistCredit() : idArtist(-1), m_bScrapedMBID(false) { }
-  CArtistCredit(std::string strArtist) : m_strArtist(strArtist) { }
+  CArtistCredit() : idArtist(-1), m_bScrapedMBID(false) {}
+  CArtistCredit(std::string strArtist) : m_strArtist(strArtist) {}
   CArtistCredit(std::string strArtist, std::string strMusicBrainzArtistID)
-    : m_strArtist(strArtist), m_strMusicBrainzArtistID(strMusicBrainzArtistID) {  }
+    : m_strArtist(strArtist),
+      m_strMusicBrainzArtistID(strMusicBrainzArtistID)
+  {
+  }
   CArtistCredit(std::string strArtist, std::string strSortName, std::string strMusicBrainzArtistID)
-    : m_strArtist(strArtist), m_strSortName(strSortName), m_strMusicBrainzArtistID(strMusicBrainzArtistID) {  }
+    : m_strArtist(strArtist),
+      m_strSortName(strSortName),
+      m_strMusicBrainzArtistID(strMusicBrainzArtistID)
+  {
+  }
 
   bool operator<(const CArtistCredit& a) const
   {
     if (m_strMusicBrainzArtistID.empty() && a.m_strMusicBrainzArtistID.empty())
     {
-      if (m_strArtist < a.m_strArtist) return true;
-      if (m_strArtist > a.m_strArtist) return false;
+      if (m_strArtist < a.m_strArtist)
+        return true;
+      if (m_strArtist > a.m_strArtist)
+        return false;
       return false;
     }
 
-    if (m_strMusicBrainzArtistID < a.m_strMusicBrainzArtistID) return true;
-    if (m_strMusicBrainzArtistID > a.m_strMusicBrainzArtistID) return false;
+    if (m_strMusicBrainzArtistID < a.m_strMusicBrainzArtistID)
+      return true;
+    if (m_strMusicBrainzArtistID > a.m_strMusicBrainzArtistID)
+      return false;
     return false;
   }
 
-  std::string GetArtist() const                { return m_strArtist; }
-  std::string GetSortName() const              { return m_strSortName; }
-  std::string GetMusicBrainzArtistID() const   { return m_strMusicBrainzArtistID; }
-  int         GetArtistId() const              { return idArtist; }
+  std::string GetArtist() const { return m_strArtist; }
+  std::string GetSortName() const { return m_strSortName; }
+  std::string GetMusicBrainzArtistID() const { return m_strMusicBrainzArtistID; }
+  int GetArtistId() const { return idArtist; }
   bool HasScrapedMBID() const { return m_bScrapedMBID; }
-  void SetArtist(const std::string &strArtist) { m_strArtist = strArtist; }
-  void SetSortName(const std::string &strSortName) { m_strSortName = strSortName; }
-  void SetMusicBrainzArtistID(const std::string &strMusicBrainzArtistID) { m_strMusicBrainzArtistID = strMusicBrainzArtistID; }
-  void SetArtistId(int idArtist)               { this->idArtist = idArtist; }
+  void SetArtist(const std::string& strArtist) { m_strArtist = strArtist; }
+  void SetSortName(const std::string& strSortName) { m_strSortName = strSortName; }
+  void SetMusicBrainzArtistID(const std::string& strMusicBrainzArtistID)
+  {
+    m_strMusicBrainzArtistID = strMusicBrainzArtistID;
+  }
+  void SetArtistId(int idArtist) { this->idArtist = idArtist; }
   void SetScrapedMBID(bool scrapedMBID) { this->m_bScrapedMBID = scrapedMBID; }
 
 private:
@@ -156,7 +174,8 @@ private:
   std::string m_strArtist;
   std::string m_strSortName;
   std::string m_strMusicBrainzArtistID;
-  bool m_bScrapedMBID; // Flag that mbid is from album merge of scarper results not derived from tags
+  bool
+      m_bScrapedMBID; // Flag that mbid is from album merge of scarper results not derived from tags
 };
 
 typedef std::vector<CArtist> VECARTISTS;
@@ -166,19 +185,31 @@ const std::string BLANKARTIST_FAKEMUSICBRAINZID = "Artist Tag Missing";
 const std::string BLANKARTIST_NAME = "[Missing Tag]";
 const long BLANKARTIST_ID = 1;
 
-#define ROLE_ARTIST 1  //Default role
+#define ROLE_ARTIST 1 //Default role
 
 class CMusicRole
 {
 public:
-  CMusicRole() { }
-  CMusicRole(std::string strRole, std::string strArtist) : idRole(-1), m_strRole(strRole), m_strArtist(strArtist), idArtist(-1) { }
-  CMusicRole(int role, std::string strRole, std::string strArtist, long ArtistId) : idRole(role), m_strRole(strRole), m_strArtist(strArtist), idArtist(ArtistId) { }
+  CMusicRole() {}
+  CMusicRole(std::string strRole, std::string strArtist)
+    : idRole(-1),
+      m_strRole(strRole),
+      m_strArtist(strArtist),
+      idArtist(-1)
+  {
+  }
+  CMusicRole(int role, std::string strRole, std::string strArtist, long ArtistId)
+    : idRole(role),
+      m_strRole(strRole),
+      m_strArtist(strArtist),
+      idArtist(ArtistId)
+  {
+  }
   std::string GetArtist() const { return m_strArtist; }
   std::string GetRoleDesc() const { return m_strRole; }
   int GetRoleId() const { return idRole; }
   long GetArtistId() const { return idArtist; }
-  void SetArtistId(long iArtistId) { idArtist = iArtistId;  }
+  void SetArtistId(long iArtistId) { idArtist = iArtistId; }
 
   bool operator==(const CMusicRole& a) const
   {
@@ -187,6 +218,7 @@ public:
     else
       return false;
   }
+
 private:
   int idRole;
   std::string m_strRole;
@@ -195,6 +227,3 @@ private:
 };
 
 typedef std::vector<CMusicRole> VECMUSICROLES;
-
-
-

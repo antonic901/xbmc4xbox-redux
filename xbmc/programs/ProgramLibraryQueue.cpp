@@ -33,7 +33,8 @@ CProgramLibraryQueue::CProgramLibraryQueue()
     m_jobs(),
     m_modal(false),
     m_cleaning(false)
-{ }
+{
+}
 
 CProgramLibraryQueue::~CProgramLibraryQueue()
 {
@@ -52,12 +53,13 @@ void CProgramLibraryQueue::ScanLibrary(const std::string& directory, bool showPr
   AddJob(new CProgramLibraryScanningJob(directory, showProgress));
 }
 
-void CProgramLibraryQueue::CleanLibrary(const std::string& directory, bool showProgress /* = true */)
+void CProgramLibraryQueue::CleanLibrary(const std::string& directory,
+                                        bool showProgress /* = true */)
 {
   AddJob(new CProgramLibraryCleaningJob(directory, showProgress));
 }
 
-void CProgramLibraryQueue::AddJob(CProgramLibraryJob *job)
+void CProgramLibraryQueue::AddJob(CProgramLibraryJob* job)
 {
   if (job == NULL)
     return;
@@ -86,7 +88,7 @@ void CProgramLibraryQueue::Refresh()
   g_windowManager.SendThreadMessage(msg);
 }
 
-void CProgramLibraryQueue::OnJobComplete(unsigned int jobID, bool success, CJob *job)
+void CProgramLibraryQueue::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 {
   if (success)
   {

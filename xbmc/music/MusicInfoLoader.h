@@ -43,6 +43,7 @@ protected:
   virtual void OnLoaderFinish();
   void LoadCache(const std::string& strFileName, CFileItemList& items);
   void SaveCache(const std::string& strFileName, CFileItemList& items);
+
 protected:
   std::string m_strCacheFileName;
   CFileItemList* m_mapFileItems;
@@ -51,6 +52,6 @@ protected:
   CMusicDatabase m_musicDatabase;
   unsigned int m_databaseHits;
   unsigned int m_tagReads;
-  CMusicThumbLoader *m_thumbLoader;
+  CMusicThumbLoader* m_thumbLoader;
 };
-}
+} // namespace MUSIC_INFO

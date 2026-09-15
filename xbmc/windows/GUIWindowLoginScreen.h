@@ -32,7 +32,7 @@ public:
   CGUIWindowLoginScreen(void);
   virtual ~CGUIWindowLoginScreen(void);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual bool OnBack(int actionID);
   virtual void FrameMove();
   virtual bool HasListItems() const { return true; };

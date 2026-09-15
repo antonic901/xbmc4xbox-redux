@@ -23,8 +23,7 @@
 namespace PLAYLIST
 {
 
-class CPlayListB4S :
-      public CPlayList
+class CPlayListB4S : public CPlayList
 {
 public:
   CPlayListB4S(void);
@@ -32,4 +31,4 @@ public:
   virtual bool LoadData(std::istream& stream);
   virtual void Save(const std::string& strFileName) const;
 };
-}
+} // namespace PLAYLIST

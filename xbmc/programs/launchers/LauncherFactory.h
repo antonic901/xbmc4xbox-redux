@@ -33,4 +33,4 @@ class CLauncherFactory
 public:
   static IProgramLauncher* Create(const CURL& url);
 };
-}
+} // namespace LAUNCHERS

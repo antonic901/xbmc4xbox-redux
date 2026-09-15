@@ -37,7 +37,8 @@ const size_t CCharsetDetection::m_HtmlCharsetEndSearchPos = 1024;
 
 /* According to http://www.w3.org/TR/2013/CR-html5-20130806/single-page.html#space-character
  * tab, LF, FF, CR or space can be used as whitespace */
-const std::string CCharsetDetection::m_HtmlWhitespaceChars("\x09\x0A\x0C\x0D\x20");    // tab, LF, FF, CR and space
+const std::string CCharsetDetection::m_HtmlWhitespaceChars(
+    "\x09\x0A\x0C\x0D\x20"); // tab, LF, FF, CR and space
 
 std::string CCharsetDetection::GetBomEncoding(const char* const content, const size_t contentLength)
 {
@@ -45,28 +46,35 @@ std::string CCharsetDetection::GetBomEncoding(const char* const content, const s
     return "";
   if (content[0] == (char)0xFE && content[1] == (char)0xFF)
     return "UTF-16BE";
-  if (contentLength >= 4 && content[0] == (char)0xFF && content[1] == (char)0xFE && content[2] == (char)0x00 && content[3] == (char)0x00)
-    return "UTF-32LE";  /* first two bytes are same for UTF-16LE and UTF-32LE, so first check for full UTF-32LE mark */
+  if (contentLength >= 4 && content[0] == (char)0xFF && content[1] == (char)0xFE &&
+      content[2] == (char)0x00 && content[3] == (char)0x00)
+    return "UTF-32LE"; /* first two bytes are same for UTF-16LE and UTF-32LE, so first check for full UTF-32LE mark */
   if (content[0] == (char)0xFF && content[1] == (char)0xFE)
-   return "UTF-16LE";
+    return "UTF-16LE";
   if (contentLength < 3)
     return "";
   if (content[0] == (char)0xEF && content[1] == (char)0xBB && content[2] == (char)0xBF)
     return "UTF-8";
   if (contentLength < 4)
     return "";
-  if (content[0] == (char)0x00 && content[1] == (char)0x00 && content[2] == (char)0xFE && content[3] == (char)0xFF)
+  if (content[0] == (char)0x00 && content[1] == (char)0x00 && content[2] == (char)0xFE &&
+      content[3] == (char)0xFF)
     return "UTF-32BE";
-  if (contentLength >= 5 && content[0] == (char)0x2B && content[1] == (char)0x2F && content[2] == (char)0x76 &&
-            (content[4] == (char)0x32 || content[4] == (char)0x39 || content[4] == (char)0x2B || content[4] == (char)0x2F))
+  if (contentLength >= 5 && content[0] == (char)0x2B && content[1] == (char)0x2F &&
+      content[2] == (char)0x76 &&
+      (content[4] == (char)0x32 || content[4] == (char)0x39 || content[4] == (char)0x2B ||
+       content[4] == (char)0x2F))
     return "UTF-7";
-  if (content[0] == (char)0x84 && content[1] == (char)0x31 && content[2] == (char)0x95 && content[3] == (char)0x33)
+  if (content[0] == (char)0x84 && content[1] == (char)0x31 && content[2] == (char)0x95 &&
+      content[3] == (char)0x33)
     return "GB18030";
 
   return "";
 }
 
-bool CCharsetDetection::DetectXmlEncoding(const char* const xmlContent, const size_t contentLength, std::string& detectedEncoding)
+bool CCharsetDetection::DetectXmlEncoding(const char* const xmlContent,
+                                          const size_t contentLength,
+                                          std::string& detectedEncoding)
 {
   detectedEncoding.clear();
 
@@ -87,7 +95,8 @@ bool CCharsetDetection::DetectXmlEncoding(const char* const xmlContent, const si
     if (detectedEncoding == "UTF-8")
       return true; // fast track for most common case
 
-    if (StringUtils::StartsWith(detectedEncoding, "UCS-") || StringUtils::StartsWith(detectedEncoding, "UTF-"))
+    if (StringUtils::StartsWith(detectedEncoding, "UCS-") ||
+        StringUtils::StartsWith(detectedEncoding, "UTF-"))
     {
       if (detectedEncoding == "UTF-7")
         return true;
@@ -108,9 +117,12 @@ bool CCharsetDetection::DetectXmlEncoding(const char* const xmlContent, const si
   /* have some guessed encoding, try to use it */
   std::string convertedXml;
   /* use 'm_XmlDeclarationMaxLength * 4' below for UTF-32-like encodings */
-  if (!g_charsetConverter.ToUtf8(guessedEncoding, std::string(xmlContent, std::min(contentLength, m_XmlDeclarationMaxLength * 4)), convertedXml)
-      || convertedXml.empty())
-    return false;  /* can't convert, guessed encoding is wrong */
+  if (!g_charsetConverter.ToUtf8(
+          guessedEncoding,
+          std::string(xmlContent, std::min(contentLength, m_XmlDeclarationMaxLength * 4)),
+          convertedXml) ||
+      convertedXml.empty())
+    return false; /* can't convert, guessed encoding is wrong */
 
   /* text converted, hopefully at least XML declaration is in UTF-8 now */
   std::string declaredEncoding;
@@ -129,8 +141,8 @@ bool CCharsetDetection::DetectXmlEncoding(const char* const xmlContent, const si
 
   if (StringUtils::StartsWith(guessedEncoding, "UCS-4"))
   {
-    if (declaredEncoding.length() < 5 ||
-        (!StringUtils::StartsWith(declaredEncoding, "UTF-32") && !StringUtils::StartsWith(declaredEncoding, "UCS-4")))
+    if (declaredEncoding.length() < 5 || (!StringUtils::StartsWith(declaredEncoding, "UTF-32") &&
+                                          !StringUtils::StartsWith(declaredEncoding, "UCS-4")))
     { /* Guessed encoding was correct because we can convert and read XML declaration, but declaration itself is wrong (not 4-bytes encoding) */
       detectedEncoding = guessedEncoding;
       return true;
@@ -138,24 +150,28 @@ bool CCharsetDetection::DetectXmlEncoding(const char* const xmlContent, const si
   }
   else if (StringUtils::StartsWith(guessedEncoding, "UTF-16"))
   {
-    if (declaredEncoding.length() < 5 ||
-        (!StringUtils::StartsWith(declaredEncoding, "UTF-16") && !StringUtils::StartsWith(declaredEncoding, "UCS-2")))
+    if (declaredEncoding.length() < 5 || (!StringUtils::StartsWith(declaredEncoding, "UTF-16") &&
+                                          !StringUtils::StartsWith(declaredEncoding, "UCS-2")))
     { /* Guessed encoding was correct because we can read XML declaration, but declaration is wrong (not 2-bytes encoding) */
       detectedEncoding = guessedEncoding;
       return true;
     }
   }
 
-  if (StringUtils::StartsWith(guessedEncoding, "UCS-4") || StringUtils::StartsWith(guessedEncoding, "UTF-16"))
+  if (StringUtils::StartsWith(guessedEncoding, "UCS-4") ||
+      StringUtils::StartsWith(guessedEncoding, "UTF-16"))
   {
     /* Check endianness in declared encoding. We already know correct endianness as XML declaration was detected after conversion. */
     /* Guessed UTF/UCS encoding always ends with endianness */
     std::string guessedEndianness(guessedEncoding, guessedEncoding.length() - 2);
 
-    if (!StringUtils::EndsWith(declaredEncoding, "BE") && !StringUtils::EndsWith(declaredEncoding, "LE")) /* Declared encoding without endianness */
+    if (!StringUtils::EndsWith(declaredEncoding, "BE") &&
+        !StringUtils::EndsWith(declaredEncoding, "LE")) /* Declared encoding without endianness */
       detectedEncoding = declaredEncoding + guessedEndianness; /* add guessed endianness */
-    else if (!StringUtils::EndsWith(declaredEncoding, guessedEndianness)) /* Wrong endianness in declared encoding */
-      detectedEncoding = declaredEncoding.substr(0, declaredEncoding.length() - 2) + guessedEndianness; /* replace endianness by guessed endianness */
+    else if (!StringUtils::EndsWith(declaredEncoding,
+                                    guessedEndianness)) /* Wrong endianness in declared encoding */
+      detectedEncoding = declaredEncoding.substr(0, declaredEncoding.length() - 2) +
+                         guessedEndianness; /* replace endianness by guessed endianness */
     else
       detectedEncoding = declaredEncoding; /* declared encoding with correct endianness */
 
@@ -175,7 +191,9 @@ bool CCharsetDetection::DetectXmlEncoding(const char* const xmlContent, const si
   return false;
 }
 
-bool CCharsetDetection::GetXmlEncodingFromDeclaration(const char* const xmlContent, const size_t contentLength, std::string& declaredEncoding)
+bool CCharsetDetection::GetXmlEncodingFromDeclaration(const char* const xmlContent,
+                                                      const size_t contentLength,
+                                                      std::string& declaredEncoding)
 {
   // following code is std::string-processing analog of regular expression-processing
   // regular expression: "<\\?xml([ \n\r\t]+[^ \n\t\r>]+)*[ \n\r\t]+encoding[ \n\r\t]*=[ \n\r\t]*('[^ \n\t\r>']+'|\"[^ \n\t\r>\"]+\")"
@@ -193,11 +211,14 @@ bool CCharsetDetection::GetXmlEncodingFromDeclaration(const char* const xmlConte
 
   pos += 5; // 5 is length of "<?xml"
 
-  const size_t declLength = std::min(std::min(m_XmlDeclarationMaxLength, contentLength - pos), strXml.find('>', pos) - pos);
+  const size_t declLength = std::min(std::min(m_XmlDeclarationMaxLength, contentLength - pos),
+                                     strXml.find('>', pos) - pos);
   const std::string xmlDecl(xmlContent + pos, declLength);
-  const char* const xmlDeclC = xmlDecl.c_str(); // for faster processing of [] and for null-termination
+  const char* const xmlDeclC =
+      xmlDecl.c_str(); // for faster processing of [] and for null-termination
 
-  static const char* const whiteSpaceChars = " \n\r\t"; // according to W3C Recommendation for XML, any of them can be used as separator
+  static const char* const whiteSpaceChars =
+      " \n\r\t"; // according to W3C Recommendation for XML, any of them can be used as separator
   pos = 0;
 
   while (pos + 12 <= declLength) // 12 is minimal length of "encoding='x'"
@@ -214,7 +235,8 @@ bool CCharsetDetection::GetXmlEncodingFromDeclaration(const char* const xmlConte
       continue; // not "encoding" parameter
     pos += 8; // length of "encoding"
 
-    if (xmlDeclC[pos] == ' ' || xmlDeclC[pos] == '\n' || xmlDeclC[pos] == '\r' || xmlDeclC[pos] == '\t') // no buffer overrun as string is null-terminated
+    if (xmlDeclC[pos] == ' ' || xmlDeclC[pos] == '\n' || xmlDeclC[pos] == '\r' ||
+        xmlDeclC[pos] == '\t') // no buffer overrun as string is null-terminated
     {
       pos = xmlDecl.find_first_not_of(whiteSpaceChars, pos);
       if (pos == std::string::npos)
@@ -227,7 +249,8 @@ bool CCharsetDetection::GetXmlEncodingFromDeclaration(const char* const xmlConte
     }
 
     pos++; // skip '='
-    if (xmlDeclC[pos] == ' ' || xmlDeclC[pos] == '\n' || xmlDeclC[pos] == '\r' || xmlDeclC[pos] == '\t') // no buffer overrun as string is null-terminated
+    if (xmlDeclC[pos] == ' ' || xmlDeclC[pos] == '\n' || xmlDeclC[pos] == '\r' ||
+        xmlDeclC[pos] == '\t') // no buffer overrun as string is null-terminated
     {
       pos = xmlDecl.find_first_not_of(whiteSpaceChars, pos);
       if (pos == std::string::npos)
@@ -252,21 +275,29 @@ bool CCharsetDetection::GetXmlEncodingFromDeclaration(const char* const xmlConte
   return false;
 }
 
-bool CCharsetDetection::GuessXmlEncoding(const char* const xmlContent, const size_t contentLength, std::string& supposedEncoding)
+bool CCharsetDetection::GuessXmlEncoding(const char* const xmlContent,
+                                         const size_t contentLength,
+                                         std::string& supposedEncoding)
 {
   supposedEncoding.clear();
   if (contentLength < 4)
     return false; // too little data to guess
 
-  if (xmlContent[0] == 0 && xmlContent[1] == 0 && xmlContent[2] == 0 && xmlContent[3] == (char)0x3C) // '<' == '00 00 00 3C' in UCS-4 (UTF-32) big-endian
+  if (xmlContent[0] == 0 && xmlContent[1] == 0 && xmlContent[2] == 0 &&
+      xmlContent[3] == (char)0x3C) // '<' == '00 00 00 3C' in UCS-4 (UTF-32) big-endian
     supposedEncoding = "UCS-4BE"; // use UCS-4 according to W3C recommendation
-  else if (xmlContent[0] == (char)0x3C && xmlContent[1] == 0 && xmlContent[2] == 0 && xmlContent[3] == 0) // '<' == '3C 00 00 00' in UCS-4 (UTF-32) little-endian
+  else if (xmlContent[0] == (char)0x3C && xmlContent[1] == 0 && xmlContent[2] == 0 &&
+           xmlContent[3] == 0) // '<' == '3C 00 00 00' in UCS-4 (UTF-32) little-endian
     supposedEncoding = "UCS-4LE"; // use UCS-4 according to W3C recommendation
-  else if (xmlContent[0] == 0 && xmlContent[1] == (char)0x3C && xmlContent[2] == 0 && xmlContent[3] == (char)0x3F) // "<?" == "00 3C 00 3F" in UTF-16 (UCS-2) big-endian
+  else if (xmlContent[0] == 0 && xmlContent[1] == (char)0x3C && xmlContent[2] == 0 &&
+           xmlContent[3] == (char)0x3F) // "<?" == "00 3C 00 3F" in UTF-16 (UCS-2) big-endian
     supposedEncoding = "UTF-16BE";
-  else if (xmlContent[0] == (char)0x3C && xmlContent[1] == 0 && xmlContent[2] == (char)0x3F && xmlContent[3] == 0) // "<?" == "3C 00 3F 00" in UTF-16 (UCS-2) little-endian
+  else if (xmlContent[0] == (char)0x3C && xmlContent[1] == 0 && xmlContent[2] == (char)0x3F &&
+           xmlContent[3] == 0) // "<?" == "3C 00 3F 00" in UTF-16 (UCS-2) little-endian
     supposedEncoding = "UTF-16LE";
-  else if (xmlContent[0] == (char)0x4C && xmlContent[1] == (char)0x6F && xmlContent[2] == (char)0xA7 && xmlContent[3] == (char)0x94) // "<?xm" == "4C 6F A7 94" in most EBCDIC encodings
+  else if (xmlContent[0] == (char)0x4C && xmlContent[1] == (char)0x6F &&
+           xmlContent[2] == (char)0xA7 &&
+           xmlContent[3] == (char)0x94) // "<?xm" == "4C 6F A7 94" in most EBCDIC encodings
     supposedEncoding = "EBCDIC-CP-US"; // guessed value, real value must be read from declaration
   else
     return false;
@@ -274,7 +305,10 @@ bool CCharsetDetection::GuessXmlEncoding(const char* const xmlContent, const siz
   return true;
 }
 
-bool CCharsetDetection::ConvertHtmlToUtf8(const std::string& htmlContent, std::string& converted, const std::string& serverReportedCharset, std::string& usedHtmlCharset)
+bool CCharsetDetection::ConvertHtmlToUtf8(const std::string& htmlContent,
+                                          std::string& converted,
+                                          const std::string& serverReportedCharset,
+                                          std::string& usedHtmlCharset)
 {
   converted.clear();
   usedHtmlCharset.clear();
@@ -306,7 +340,8 @@ bool CCharsetDetection::ConvertHtmlToUtf8(const std::string& htmlContent, std::s
   if (!declaredCharset.empty())
   {
     if (declaredCharset.compare(0, 3, "UTF", 3) == 0)
-      declaredCharset = "UTF-8"; // charset string was found in singlebyte mode, charset can't be multibyte encoding
+      declaredCharset =
+          "UTF-8"; // charset string was found in singlebyte mode, charset can't be multibyte encoding
     if (checkConversion(declaredCharset, htmlContent, converted))
     {
       usedHtmlCharset = declaredCharset;
@@ -315,7 +350,8 @@ bool CCharsetDetection::ConvertHtmlToUtf8(const std::string& htmlContent, std::s
   }
 
   // try UTF-8 if not tried before
-  if (bomCharset != "UTF-8" && serverReportedCharset != "UTF-8" && declaredCharset != "UTF-8" && checkConversion("UTF-8", htmlContent, converted))
+  if (bomCharset != "UTF-8" && serverReportedCharset != "UTF-8" && declaredCharset != "UTF-8" &&
+      checkConversion("UTF-8", htmlContent, converted))
   {
     usedHtmlCharset = "UTF-8";
     return false; // only guessed value
@@ -349,13 +385,17 @@ bool CCharsetDetection::ConvertHtmlToUtf8(const std::string& htmlContent, std::s
   else
     usedHtmlCharset = "WINDOWS-1252";
 
-  CLog::Log(LOGWARNING, "%s: Can't correctly convert to UTF-8 charset, converting as \"%s\"", __FUNCTION__, usedHtmlCharset.c_str());
+  CLog::Log(LOGWARNING, "%s: Can't correctly convert to UTF-8 charset, converting as \"%s\"",
+            __FUNCTION__, usedHtmlCharset.c_str());
   g_charsetConverter.ToUtf8(usedHtmlCharset, htmlContent, converted, false);
 
   return false;
 }
 
-bool CCharsetDetection::ConvertPlainTextToUtf8(const std::string& textContent, std::string& converted, const std::string& serverReportedCharset, std::string& usedCharset)
+bool CCharsetDetection::ConvertPlainTextToUtf8(const std::string& textContent,
+                                               std::string& converted,
+                                               const std::string& serverReportedCharset,
+                                               std::string& usedCharset)
 {
   converted.clear();
   usedCharset.clear();
@@ -381,7 +421,8 @@ bool CCharsetDetection::ConvertPlainTextToUtf8(const std::string& textContent, s
   }
 
   // try UTF-8 if not tried before
-  if (bomCharset != "UTF-8" && serverReportedCharset != "UTF-8" && checkConversion("UTF-8", textContent, converted))
+  if (bomCharset != "UTF-8" && serverReportedCharset != "UTF-8" &&
+      checkConversion("UTF-8", textContent, converted))
   {
     usedCharset = "UTF-8";
     return true;
@@ -420,14 +461,16 @@ bool CCharsetDetection::ConvertPlainTextToUtf8(const std::string& textContent, s
   else
     usedCharset = "WINDOWS-1252";
 
-  CLog::Log(LOGWARNING, "%s: Can't correctly convert to UTF-8 charset, converting as \"%s\"", __FUNCTION__, usedCharset.c_str());
+  CLog::Log(LOGWARNING, "%s: Can't correctly convert to UTF-8 charset, converting as \"%s\"",
+            __FUNCTION__, usedCharset.c_str());
   g_charsetConverter.ToUtf8(usedCharset, textContent, converted, false);
 
   return false;
 }
 
-
-bool CCharsetDetection::checkConversion(const std::string& srcCharset, const std::string& src, std::string& dst)
+bool CCharsetDetection::checkConversion(const std::string& srcCharset,
+                                        const std::string& src,
+                                        std::string& dst)
 {
   if (srcCharset.empty())
     return false;
@@ -450,9 +493,12 @@ std::string CCharsetDetection::GetHtmlEncodingFromHead(const std::string& htmlCo
 {
   std::string smallerHtmlContent;
   if (htmlContent.length() > 2 * m_HtmlCharsetEndSearchPos)
-    smallerHtmlContent.assign(htmlContent, 0, 2 * m_HtmlCharsetEndSearchPos); // use twice more bytes to search for charset for safety
+    smallerHtmlContent.assign(
+        htmlContent, 0,
+        2 * m_HtmlCharsetEndSearchPos); // use twice more bytes to search for charset for safety
 
-  const std::string& html = smallerHtmlContent.empty() ? htmlContent : smallerHtmlContent; // limit search
+  const std::string& html =
+      smallerHtmlContent.empty() ? htmlContent : smallerHtmlContent; // limit search
   const char* const htmlC = html.c_str(); // for null-termination
   const size_t len = html.length();
 
@@ -469,9 +515,12 @@ std::string CCharsetDetection::GetHtmlEncodingFromHead(const std::string& htmlCo
         return "";
       pos += 2;
     }
-    else if (htmlC[pos] == '<' && (htmlC[pos + 1] == 'm' || htmlC[pos + 1] == 'M') && (htmlC[pos + 2] == 'e' || htmlC[pos + 2] == 'E')
-             && (htmlC[pos + 3] == 't' || htmlC[pos + 3] == 'T') && (htmlC[pos + 4] == 'a' || htmlC[pos + 4] == 'A')
-             && (htmlC[pos + 5] == 0x09 || htmlC[pos + 5] == 0x0A || htmlC[pos + 5] == 0x0C || htmlC[pos + 5] == 0x0D || htmlC[pos + 5] == 0x20 || htmlC[pos + 5] == 0x2F))
+    else if (htmlC[pos] == '<' && (htmlC[pos + 1] == 'm' || htmlC[pos + 1] == 'M') &&
+             (htmlC[pos + 2] == 'e' || htmlC[pos + 2] == 'E') &&
+             (htmlC[pos + 3] == 't' || htmlC[pos + 3] == 'T') &&
+             (htmlC[pos + 4] == 'a' || htmlC[pos + 4] == 'A') &&
+             (htmlC[pos + 5] == 0x09 || htmlC[pos + 5] == 0x0A || htmlC[pos + 5] == 0x0C ||
+              htmlC[pos + 5] == 0x0D || htmlC[pos + 5] == 0x20 || htmlC[pos + 5] == 0x2F))
     { // this is case insensitive "<meta" and one of tab, LF, FF, CR, space or slash
       pos += 5; // "pos" points to symbol after "<meta"
       std::string attrName, attrValue;
@@ -496,7 +545,8 @@ std::string CCharsetDetection::GetHtmlEncodingFromHead(const std::string& htmlCo
       if (gotPragma && !contentCharset.empty())
         return contentCharset;
     }
-    else if (htmlC[pos] == '<' && ((htmlC[pos + 1] >= 'A' && htmlC[pos + 1] <= 'Z') || (htmlC[pos + 1] >= 'a' && htmlC[pos + 1] <= 'z')))
+    else if (htmlC[pos] == '<' && ((htmlC[pos + 1] >= 'A' && htmlC[pos + 1] <= 'Z') ||
+                                   (htmlC[pos + 1] >= 'a' && htmlC[pos + 1] <= 'z')))
     {
       pos = html.find_first_of("\x09\x0A\x0C\x0D >", pos); // tab, LF, FF, CR, space or '>'
       std::string attrName, attrValue;
@@ -505,7 +555,8 @@ std::string CCharsetDetection::GetHtmlEncodingFromHead(const std::string& htmlCo
         pos = GetHtmlAttribute(html, pos, attrName, attrValue);
       } while (pos < len && !attrName.empty());
     }
-    else if (html.compare(pos, 2, "<!", 2) == 0 || html.compare(pos, 2, "</", 2) == 0 || html.compare(pos, 2, "<?", 2) == 0)
+    else if (html.compare(pos, 2, "<!", 2) == 0 || html.compare(pos, 2, "</", 2) == 0 ||
+             html.compare(pos, 2, "<?", 2) == 0)
       pos = html.find('>', pos);
 
     if (pos == std::string::npos)
@@ -518,11 +569,15 @@ std::string CCharsetDetection::GetHtmlEncodingFromHead(const std::string& htmlCo
   return ""; // no charset was found
 }
 
-size_t CCharsetDetection::GetHtmlAttribute(const std::string& htmlContent, size_t pos, std::string& attrName, std::string& attrValue)
+size_t CCharsetDetection::GetHtmlAttribute(const std::string& htmlContent,
+                                           size_t pos,
+                                           std::string& attrName,
+                                           std::string& attrValue)
 {
   attrName.clear();
   attrValue.clear();
-  static const char* const htmlWhitespaceSlash = "\x09\x0A\x0C\x0D\x20\x2F"; // tab, LF, FF, CR, space or slash
+  static const char* const htmlWhitespaceSlash =
+      "\x09\x0A\x0C\x0D\x20\x2F"; // tab, LF, FF, CR, space or slash
   const char* const htmlC = htmlContent.c_str();
   const size_t len = htmlContent.length();
 
@@ -594,7 +649,8 @@ size_t CCharsetDetection::GetHtmlAttribute(const std::string& htmlContent, size_
   return std::string::npos; // rest of htmlContent was attribute value
 }
 
-std::string CCharsetDetection::ExtractEncodingFromHtmlMeta(std::string metaContent, size_t pos /*= 0*/)
+std::string CCharsetDetection::ExtractEncodingFromHtmlMeta(std::string metaContent,
+                                                           size_t pos /*= 0*/)
 {
   size_t len = metaContent.length();
   if (pos >= len)
@@ -613,7 +669,8 @@ std::string CCharsetDetection::ExtractEncodingFromHtmlMeta(std::string metaConte
     if (pos == std::string::npos)
       return "";
 
-    pos = metaContent.find_first_not_of(m_HtmlWhitespaceChars, pos + 7); // '7' is the length of 'CHARSET'
+    pos = metaContent.find_first_not_of(m_HtmlWhitespaceChars,
+                                        pos + 7); // '7' is the length of 'CHARSET'
     if (pos != std::string::npos && metaContentC[pos] == '=')
     {
       pos = metaContent.find_first_not_of(m_HtmlWhitespaceChars, pos + 1);
@@ -628,7 +685,10 @@ std::string CCharsetDetection::ExtractEncodingFromHtmlMeta(std::string metaConte
             charset.assign(metaContent, pos, closeQpos - pos);
         }
         else
-          charset.assign(metaContent, pos, metaContent.find("\x09\x0A\x0C\x0D ;", pos) - pos); // assign content up to the next tab, LF, FF, CR, space, semicolon or end of string
+          charset.assign(
+              metaContent, pos,
+              metaContent.find("\x09\x0A\x0C\x0D ;", pos) -
+                  pos); // assign content up to the next tab, LF, FF, CR, space, semicolon or end of string
       }
       break;
     }

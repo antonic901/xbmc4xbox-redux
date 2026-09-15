@@ -18,7 +18,6 @@
  *
  */
 
-
 // FileShoutcast.cpp: implementation of the CShoutcastFile class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -54,7 +53,7 @@ CShoutcastFile::~CShoutcastFile()
 
 int64_t CShoutcastFile::GetPosition()
 {
-  return m_file.GetPosition()-m_discarded;
+  return m_file.GetPosition() - m_discarded;
 }
 
 int64_t CShoutcastFile::GetLength()
@@ -82,7 +81,7 @@ bool CShoutcastFile::Open(const CURL& url)
   m_metaint = atoi(m_file.GetHttpHeader().GetValue("icy-metaint").c_str());
   if (!m_metaint)
     m_metaint = -1;
-  m_buffer = new char[16*255];
+  m_buffer = new char[16 * 255];
 
   return result;
 }
@@ -95,10 +94,10 @@ ssize_t CShoutcastFile::Read(void* lpBuf, size_t uiBufSize)
   if (m_currint >= m_metaint && m_metaint > 0)
   {
     unsigned char header;
-    m_file.Read(&header,1);
-    ReadTruncated(m_buffer, header*16);
+    m_file.Read(&header, 1);
+    ReadTruncated(m_buffer, header * 16);
     ExtractTagInfo(m_buffer);
-    m_discarded += header*16+1;
+    m_discarded += header * 16 + 1;
     m_currint = 0;
   }
   if (XbmcThreads::SystemClockMillis() - m_lastTime > 500)
@@ -109,10 +108,10 @@ ssize_t CShoutcastFile::Read(void* lpBuf, size_t uiBufSize)
 
   ssize_t toRead;
   if (m_metaint > 0)
-    toRead = std::min<size_t>(uiBufSize,m_metaint-m_currint);
+    toRead = std::min<size_t>(uiBufSize, m_metaint - m_currint);
   else
-    toRead = std::min<size_t>(uiBufSize,16*255);
-  toRead = m_file.Read(lpBuf,toRead);
+    toRead = std::min<size_t>(uiBufSize, 16 * 255);
+  toRead = m_file.Read(lpBuf, toRead);
   if (toRead > 0)
     m_currint += toRead;
   return toRead;
@@ -133,7 +132,7 @@ void CShoutcastFile::Close()
 void CShoutcastFile::ExtractTagInfo(const char* buf)
 {
   char temp[1024];
-  if (sscanf(buf,"StreamTitle='%[^']",temp) > 0)
+  if (sscanf(buf, "StreamTitle='%[^']", temp) > 0)
     m_tag.SetTitle(temp);
 }
 
@@ -142,7 +141,7 @@ void CShoutcastFile::ReadTruncated(char* buf2, int size)
   char* buf = buf2;
   while (size > 0)
   {
-    int read = m_file.Read(buf,size);
+    int read = m_file.Read(buf, size);
     size -= read;
     buf += read;
   }

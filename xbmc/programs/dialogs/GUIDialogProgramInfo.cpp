@@ -24,16 +24,16 @@
 using namespace XFILE;
 using namespace KODI::MESSAGING;
 
-#define CONTROL_IMAGE                3
-#define CONTROL_TEXTAREA             4
-#define CONTROL_BTN_PLAY             8
-#define CONTROL_BTN_PLAY_TRAILER    11
-#define CONTROL_BTN_SETTINGS        12
+#define CONTROL_IMAGE 3
+#define CONTROL_TEXTAREA 4
+#define CONTROL_BTN_PLAY 8
+#define CONTROL_BTN_PLAY_TRAILER 11
+#define CONTROL_BTN_SETTINGS 12
 
-#define CONTROL_LIST                50
+#define CONTROL_LIST 50
 
 CGUIDialogProgramInfo::CGUIDialogProgramInfo(void)
-    : CGUIDialog(WINDOW_DIALOG_PROGRAM_INFO, "DialogProgramInfo.xml"),
+  : CGUIDialog(WINDOW_DIALOG_PROGRAM_INFO, "DialogProgramInfo.xml"),
     m_programItem(new CFileItem),
     m_screenshotList(new CFileItemList)
 {
@@ -47,15 +47,15 @@ CGUIDialogProgramInfo::~CGUIDialogProgramInfo(void)
 
 bool CGUIDialogProgramInfo::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_DEINIT:
+    case GUI_MSG_WINDOW_DEINIT:
     {
       ClearScreenshotList();
     }
     break;
 
-  case GUI_MSG_CLICKED:
+    case GUI_MSG_CLICKED:
     {
       int iControl = message.GetSenderId();
       if (iControl == CONTROL_BTN_PLAY)
@@ -85,7 +85,7 @@ void CGUIDialogProgramInfo::OnInitWindow()
   CGUIDialog::OnInitWindow();
 }
 
-void CGUIDialogProgramInfo::SetProgram(const CFileItem *item)
+void CGUIDialogProgramInfo::SetProgram(const CFileItem* item)
 {
   *m_programItem = *item;
 
@@ -93,8 +93,10 @@ void CGUIDialogProgramInfo::SetProgram(const CFileItem *item)
   ClearScreenshotList();
 
   CFileItemList items;
-  std::string strScreenshots = URIUtils::AddFileToFolder(URIUtils::GetParentPath(item->GetPath()), "_resources", "screenshots");
-  CDirectory::GetDirectory(strScreenshots, items, g_advancedSettings.m_pictureExtensions, DIR_FLAG_DEFAULTS);
+  std::string strScreenshots = URIUtils::AddFileToFolder(URIUtils::GetParentPath(item->GetPath()),
+                                                         "_resources", "screenshots");
+  CDirectory::GetDirectory(strScreenshots, items, g_advancedSettings.m_pictureExtensions,
+                           DIR_FLAG_DEFAULTS);
   for (int i = 0; i < items.Size(); i++)
   {
     std::string strLabel = URIUtils::GetFileName(items[i]->GetPath());
@@ -142,20 +144,22 @@ void CGUIDialogProgramInfo::PlayTrailer()
   if (!strTrailer.empty())
   {
     CFileItem item(strTrailer, false);
-    item.SetLabel(StringUtils::Format("%s (%s)", m_programItem->GetLabel().c_str(), g_localizeStrings.Get(20410).c_str()));
+    item.SetLabel(StringUtils::Format("%s (%s)", m_programItem->GetLabel().c_str(),
+                                      g_localizeStrings.Get(20410).c_str()));
 
     // Close the dialog.
     Close(true);
 
-    CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, 0, 0, static_cast<void*>(new CFileItem(item)));
+    CApplicationMessenger::Get().PostMsg(TMSG_MEDIA_PLAY, 0, 0,
+                                         static_cast<void*>(new CFileItem(item)));
   }
 }
 
-void CGUIDialogProgramInfo::SetLabel(int iControl, const std::string &strLabel)
+void CGUIDialogProgramInfo::SetLabel(int iControl, const std::string& strLabel)
 {
   if (strLabel.empty())
   {
-    SET_CONTROL_LABEL(iControl, 416);  // "Not available"
+    SET_CONTROL_LABEL(iControl, 416); // "Not available"
   }
   else
   {

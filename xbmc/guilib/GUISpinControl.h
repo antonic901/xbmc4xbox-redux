@@ -34,10 +34,10 @@
 #include "GUITexture.h"
 #include "GUILabel.h"
 
-#define SPIN_CONTROL_TYPE_INT    1
-#define SPIN_CONTROL_TYPE_FLOAT  2
-#define SPIN_CONTROL_TYPE_TEXT   3
-#define SPIN_CONTROL_TYPE_PAGE   4
+#define SPIN_CONTROL_TYPE_INT 1
+#define SPIN_CONTROL_TYPE_FLOAT 2
+#define SPIN_CONTROL_TYPE_TEXT 3
+#define SPIN_CONTROL_TYPE_PAGE 4
 
 /*!
  \ingroup controls
@@ -46,16 +46,29 @@
 class CGUISpinControl : public CGUIControl
 {
 public:
-  CGUISpinControl(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& textureUp, const CTextureInfo& textureDown, const CTextureInfo& textureUpFocus, const CTextureInfo& textureDownFocus, const CTextureInfo& textureUpDisabled, const CTextureInfo& textureDownDisabled, const CLabelInfo& labelInfo, int iType);
+  CGUISpinControl(int parentID,
+                  int controlID,
+                  float posX,
+                  float posY,
+                  float width,
+                  float height,
+                  const CTextureInfo& textureUp,
+                  const CTextureInfo& textureDown,
+                  const CTextureInfo& textureUpFocus,
+                  const CTextureInfo& textureDownFocus,
+                  const CTextureInfo& textureUpDisabled,
+                  const CTextureInfo& textureDownDisabled,
+                  const CLabelInfo& labelInfo,
+                  int iType);
   virtual ~CGUISpinControl(void);
-  virtual CGUISpinControl *Clone() const { return new CGUISpinControl(*this); };
+  virtual CGUISpinControl* Clone() const { return new CGUISpinControl(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual void OnLeft();
   virtual void OnRight();
-  virtual bool HitTest(const CPoint &point) const;
+  virtual bool HitTest(const CPoint& point) const;
   virtual bool OnMessage(CGUIMessage& message);
   virtual void PreAllocResources();
   virtual void AllocResources();
@@ -67,7 +80,7 @@ public:
   void SetRange(int iStart, int iEnd);
   void SetFloatRange(float fStart, float fEnd);
   void SetValue(int iValue);
-  void SetValueFromLabel(const std::string &label);
+  void SetValueFromLabel(const std::string& label);
   void SetFloatValue(float fValue);
   void SetStringValue(const std::string& strValue);
   int GetValue() const;
@@ -79,12 +92,16 @@ public:
   void SetReverse(bool bOnOff);
   int GetMaximum() const;
   int GetMinimum() const;
-  void SetSpinAlign(uint32_t align, float offsetX) { m_label.GetLabelInfo().align = align; m_label.GetLabelInfo().offsetX = offsetX; };
+  void SetSpinAlign(uint32_t align, float offsetX)
+  {
+    m_label.GetLabelInfo().align = align;
+    m_label.GetLabelInfo().offsetX = offsetX;
+  };
   void SetType(int iType) { m_iType = iType; };
   float GetSpinWidth() const { return m_imgspinUp.GetWidth(); };
   float GetSpinHeight() const { return m_imgspinUp.GetHeight(); };
   void SetFloatInterval(float fInterval);
-  void SetShowRange(bool bOnoff) ;
+  void SetShowRange(bool bOnoff);
   void SetShowOnePage(bool showOnePage) { m_showOnePage = showOnePage; };
   void Clear();
   virtual std::string GetDescription() const;
@@ -128,7 +145,7 @@ protected:
   CGUITexture m_imgspinDownFocus;
   CGUITexture m_imgspinUpDisabled;
   CGUITexture m_imgspinDownDisabled;
-  CGUILabel   m_label;
+  CGUILabel m_label;
   bool m_bShowRange;
   char m_szTyped[10];
   int m_iTypedPos;

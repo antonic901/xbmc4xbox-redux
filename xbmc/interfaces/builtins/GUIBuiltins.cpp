@@ -52,8 +52,10 @@ static int Action(const std::vector<std::string>& params)
   int actionID;
   if (CButtonTranslator::TranslateActionString(params[0].c_str(), actionID))
   {
-    int windowID = params.size() == 2 ? CButtonTranslator::TranslateWindow(params[1]) : WINDOW_INVALID;
-    CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTION, windowID, -1, static_cast<void*>(new CAction(actionID)));
+    int windowID =
+        params.size() == 2 ? CButtonTranslator::TranslateWindow(params[1]) : WINDOW_INVALID;
+    CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTION, windowID, -1,
+                                         static_cast<void*>(new CAction(actionID)));
   }
 
   return 0;
@@ -67,7 +69,7 @@ static int Action(const std::vector<std::string>& params)
  *           Set the Replace template parameter to true to replace current
  *           window in history.
  */
-  template<bool Replace>
+template<bool Replace>
 static int ActivateWindow(const std::vector<std::string>& params2)
 {
   std::vector<std::string> params(params2);
@@ -87,9 +89,9 @@ static int ActivateWindow(const std::vector<std::string>& params2)
     bool bIsSameStartFolder = true;
     if (!params.empty())
     {
-      CGUIWindow *activeWindow = g_windowManager.GetWindow(g_windowManager.GetActiveWindow());
+      CGUIWindow* activeWindow = g_windowManager.GetWindow(g_windowManager.GetActiveWindow());
       if (activeWindow && activeWindow->IsMediaWindow())
-        bIsSameStartFolder = ((CGUIMediaWindow*) activeWindow)->IsSameStartFolder(params[0]);
+        bIsSameStartFolder = ((CGUIMediaWindow*)activeWindow)->IsSameStartFolder(params[0]);
     }
 
     // activate window only if window and path differ from the current active window
@@ -102,7 +104,8 @@ static int ActivateWindow(const std::vector<std::string>& params2)
   }
   else
   {
-    CLog::Log(LOGERROR, "Activate/ReplaceWindow called with invalid destination window: %s", strWindow.c_str());
+    CLog::Log(LOGERROR, "Activate/ReplaceWindow called with invalid destination window: %s",
+              strWindow.c_str());
     return false;
   }
 
@@ -117,7 +120,7 @@ static int ActivateWindow(const std::vector<std::string>& params2)
  *           Set the Replace template parameter to true to replace current
  *           window in history.
  */
-  template<bool Replace>
+template<bool Replace>
 static int ActivateAndFocus(const std::vector<std::string>& params)
 {
   std::string strWindow = params[0];
@@ -137,16 +140,16 @@ static int ActivateAndFocus(const std::vector<std::string>& params)
       {
         CGUIMessage msg(GUI_MSG_SETFOCUS, g_windowManager.GetFocusedWindow(),
                         atol(params[iPtr].c_str()),
-                        (params.size() >= iPtr + 2) ? atol(params[iPtr + 1].c_str())+1 : 0);
+                        (params.size() >= iPtr + 2) ? atol(params[iPtr + 1].c_str()) + 1 : 0);
         g_windowManager.SendMessage(msg);
         iPtr += 2;
       }
       return 0;
     }
-
   }
   else
-    CLog::Log(LOGERROR, "Replace/ActivateWindowAndFocus called with invalid destination window: %s", strWindow.c_str());
+    CLog::Log(LOGERROR, "Replace/ActivateWindowAndFocus called with invalid destination window: %s",
+              strWindow.c_str());
 
   return 1;
 }
@@ -166,7 +169,7 @@ static int AlarmClock(const std::vector<std::string>& params)
   if (params.size() > 2)
   {
     if (params[2].find(':') == std::string::npos)
-      seconds = static_cast<float>(atoi(params[2].c_str())*60);
+      seconds = static_cast<float>(atoi(params[2].c_str()) * 60);
     else
       seconds = (float)StringUtils::TimeStringToSeconds(params[2]);
   }
@@ -178,24 +181,25 @@ static int AlarmClock(const std::vector<std::string>& params)
     else
       strHeading = g_localizeStrings.Get(13209);
     std::string strTime;
-    if( CGUIDialogNumeric::ShowAndGetNumber(strTime, strHeading) )
-      seconds = static_cast<float>(atoi(strTime.c_str())*60);
+    if (CGUIDialogNumeric::ShowAndGetNumber(strTime, strHeading))
+      seconds = static_cast<float>(atoi(strTime.c_str()) * 60);
     else
       return false;
   }
   bool silent = false;
   bool loop = false;
-  for (unsigned int i = 3; i < params.size() ; i++)
+  for (unsigned int i = 3; i < params.size(); i++)
   {
     // check "true" for backward comp
-    if (StringUtils::EqualsNoCase(params[i], "true") || StringUtils::EqualsNoCase(params[i], "silent"))
+    if (StringUtils::EqualsNoCase(params[i], "true") ||
+        StringUtils::EqualsNoCase(params[i], "silent"))
       silent = true;
     else if (StringUtils::EqualsNoCase(params[i], "loop"))
       loop = true;
   }
 
-  if( g_alarmClock.IsRunning() )
-    g_alarmClock.Stop(params[0],silent);
+  if (g_alarmClock.IsRunning())
+    g_alarmClock.Stop(params[0], silent);
   // no negative times not allowed, loop must have a positive time
   if (seconds < 0 || (seconds == 0 && loop))
     return false;
@@ -210,10 +214,9 @@ static int AlarmClock(const std::vector<std::string>& params)
  */
 static int CancelAlarm(const std::vector<std::string>& params)
 {
-  bool silent = (params.size() > 1 &&
-      (StringUtils::EqualsNoCase(params[1], "true") ||
-       StringUtils::EqualsNoCase(params[1], "silent")));
-  g_alarmClock.Stop(params[0],silent);
+  bool silent = (params.size() > 1 && (StringUtils::EqualsNoCase(params[1], "true") ||
+                                       StringUtils::EqualsNoCase(params[1], "silent")));
+  g_alarmClock.Stop(params[0], silent);
 
   return 0;
 }
@@ -225,9 +228,11 @@ static int CancelAlarm(const std::vector<std::string>& params)
  */
 static int ClearProperty(const std::vector<std::string>& params)
 {
-  CGUIWindow *window = g_windowManager.GetWindow(params.size() > 1 ? CButtonTranslator::TranslateWindow(params[1]) : g_windowManager.GetFocusedWindow());
+  CGUIWindow* window =
+      g_windowManager.GetWindow(params.size() > 1 ? CButtonTranslator::TranslateWindow(params[1])
+                                                  : g_windowManager.GetFocusedWindow());
   if (window)
-    window->SetProperty(params[0],"");
+    window->SetProperty(params[0], "");
 
   return 0;
 }
@@ -249,9 +254,9 @@ static int CloseDialog(const std::vector<std::string>& params)
   else
   {
     int id = CButtonTranslator::TranslateWindow(params[0]);
-    CGUIWindow *window = (CGUIWindow *)g_windowManager.GetWindow(id);
+    CGUIWindow* window = (CGUIWindow*)g_windowManager.GetWindow(id);
     if (window && window->IsDialog())
-      ((CGUIDialog *)window)->Close(bForce);
+      ((CGUIDialog*)window)->Close(bForce);
   }
 
   return 0;
@@ -269,11 +274,11 @@ static int Notification(const std::vector<std::string>& params)
   if (params.size() < 2)
     return -1;
   if (params.size() == 4)
-    CGUIDialogKaiToast::QueueNotification(params[3],params[0],params[1],atoi(params[2].c_str()));
+    CGUIDialogKaiToast::QueueNotification(params[3], params[0], params[1], atoi(params[2].c_str()));
   else if (params.size() == 3)
-    CGUIDialogKaiToast::QueueNotification("",params[0],params[1],atoi(params[2].c_str()));
+    CGUIDialogKaiToast::QueueNotification("", params[0], params[1], atoi(params[2].c_str()));
   else
-    CGUIDialogKaiToast::QueueNotification(params[0],params[1]);
+    CGUIDialogKaiToast::QueueNotification(params[0], params[1]);
 
   return 0;
 }
@@ -307,7 +312,8 @@ static int Screenshot(const std::vector<std::string>& params)
     {
       if (XFILE::CDirectory::Exists(strSaveToPath))
       {
-        std::string file = CUtil::GetNextFilename(URIUtils::AddFileToFolder(strSaveToPath, "screenshot%03d.bmp"), 999);
+        std::string file = CUtil::GetNextFilename(
+            URIUtils::AddFileToFolder(strSaveToPath, "screenshot%03d.bmp"), 999);
 
         if (!file.empty())
         {
@@ -315,7 +321,8 @@ static int Screenshot(const std::vector<std::string>& params)
         }
         else
         {
-          CLog::Log(LOGWARNING, "Too many screen shots or invalid folder %s", strSaveToPath.c_str());
+          CLog::Log(LOGWARNING, "Too many screen shots or invalid folder %s",
+                    strSaveToPath.c_str());
         }
       }
       else
@@ -348,12 +355,18 @@ static int SetResolution(const std::vector<std::string>& params)
   RESOLUTION res = RES_PAL_4x3;
   std::string paramlow(params[0]);
   StringUtils::ToLower(paramlow);
-  if (paramlow == "pal") res = RES_PAL_4x3;
-  else if (paramlow == "pal16x9") res = RES_PAL_16x9;
-  else if (paramlow == "ntsc") res = RES_NTSC_4x3;
-  else if (paramlow == "ntsc16x9") res = RES_NTSC_16x9;
-  else if (paramlow == "720p") res = RES_HDTV_720p;
-  else if (paramlow == "1080i") res = RES_HDTV_1080i;
+  if (paramlow == "pal")
+    res = RES_PAL_4x3;
+  else if (paramlow == "pal16x9")
+    res = RES_PAL_16x9;
+  else if (paramlow == "ntsc")
+    res = RES_NTSC_4x3;
+  else if (paramlow == "ntsc16x9")
+    res = RES_NTSC_16x9;
+  else if (paramlow == "720p")
+    res = RES_HDTV_720p;
+  else if (paramlow == "1080i")
+    res = RES_HDTV_1080i;
   if (g_graphicsContext.IsValidResolution(res))
   {
     CDisplaySettings::Get().SetCurrentResolution(res, true);
@@ -371,9 +384,11 @@ static int SetResolution(const std::vector<std::string>& params)
  */
 static int SetProperty(const std::vector<std::string>& params)
 {
-  CGUIWindow *window = g_windowManager.GetWindow(params.size() > 2 ? CButtonTranslator::TranslateWindow(params[2]) : g_windowManager.GetFocusedWindow());
+  CGUIWindow* window =
+      g_windowManager.GetWindow(params.size() > 2 ? CButtonTranslator::TranslateWindow(params[2])
+                                                  : g_windowManager.GetFocusedWindow());
   if (window)
-    window->SetProperty(params[0],params[1]);
+    window->SetProperty(params[0], params[1]);
 
   return 0;
 }
@@ -385,12 +400,15 @@ static int SetProperty(const std::vector<std::string>& params)
  */
 static int SetStereoMode(const std::vector<std::string>& params)
 {
-  CAction action = CStereoscopicsManager::GetInstance().ConvertActionCommandToAction("SetStereoMode", params[0]);
+  CAction action =
+      CStereoscopicsManager::GetInstance().ConvertActionCommandToAction("SetStereoMode", params[0]);
   if (action.GetID() != ACTION_NONE)
-    CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1, static_cast<void*>(new CAction(action)));
+    CApplicationMessenger::Get().SendMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1,
+                                         static_cast<void*>(new CAction(action)));
   else
   {
-    CLog::Log(LOGERROR,"Builtin 'SetStereoMode' called with unknown parameter: %s", params[0].c_str());
+    CLog::Log(LOGERROR, "Builtin 'SetStereoMode' called with unknown parameter: %s",
+              params[0].c_str());
     return -2;
   }
 
@@ -583,37 +601,48 @@ CBuiltins::CommandMap CGUIBuiltins::GetOperations() const
 {
   CBuiltins::CommandMap commands;
 
-  CBuiltins::BUILT_IN builtin1 = {"Executes an action for the active window (same as in keymap)", 1, Action};
+  CBuiltins::BUILT_IN builtin1 = {"Executes an action for the active window (same as in keymap)", 1,
+                                  Action};
   commands.insert(std::make_pair("action", builtin1));
 
   CBuiltins::BUILT_IN builtin2 = {"Cancels an alarm", 1, CancelAlarm};
   commands.insert(std::make_pair("cancelalarm", builtin2));
 
-  CBuiltins::BUILT_IN builtin3 = {"Prompt for a length of time and start an alarm clock", 2, AlarmClock};
+  CBuiltins::BUILT_IN builtin3 = {"Prompt for a length of time and start an alarm clock", 2,
+                                  AlarmClock};
   commands.insert(std::make_pair("alarmclock", builtin3));
 
   CBuiltins::BUILT_IN builtin4 = {"Activate the specified window", 1, ActivateWindow<false>};
   commands.insert(std::make_pair("activatewindow", builtin4));
 
-  CBuiltins::BUILT_IN builtin5 = {"Activate the specified window and sets focus to the specified id", 1, ActivateAndFocus<false>};
+  CBuiltins::BUILT_IN builtin5 = {
+      "Activate the specified window and sets focus to the specified id", 1,
+      ActivateAndFocus<false>};
   commands.insert(std::make_pair("activatewindowandfocus", builtin5));
 
-  CBuiltins::BUILT_IN builtin6 = {"Clears a window property for the current focused window/dialog (key,value)", 1, ClearProperty};
+  CBuiltins::BUILT_IN builtin6 = {
+      "Clears a window property for the current focused window/dialog (key,value)", 1,
+      ClearProperty};
   commands.insert(std::make_pair("clearproperty", builtin6));
 
   CBuiltins::BUILT_IN builtin7 = {"Close a dialog", 1, CloseDialog};
   commands.insert(std::make_pair("dialog.close", builtin7));
 
-  CBuiltins::BUILT_IN builtin8 = {"Shows a notification on screen, specify header, then message, and optionally time in milliseconds and a icon.", 2, Notification};
+  CBuiltins::BUILT_IN builtin8 = {"Shows a notification on screen, specify header, then message, "
+                                  "and optionally time in milliseconds and a icon.",
+                                  2, Notification};
   commands.insert(std::make_pair("notification", builtin8));
 
   CBuiltins::BUILT_IN builtin9 = {"Reload RSS feeds from RSSFeeds.xml", 0, RefreshRSS};
   commands.insert(std::make_pair("refreshrss", builtin9));
 
-  CBuiltins::BUILT_IN builtin10 = {"Replaces the current window with the new one", 1, ActivateWindow<true>};
+  CBuiltins::BUILT_IN builtin10 = {"Replaces the current window with the new one", 1,
+                                   ActivateWindow<true>};
   commands.insert(std::make_pair("replacewindow", builtin10));
 
-  CBuiltins::BUILT_IN builtin11 = {"Replaces the current window with the new one and sets focus to the specified id", 1, ActivateAndFocus<true>};
+  CBuiltins::BUILT_IN builtin11 = {
+      "Replaces the current window with the new one and sets focus to the specified id", 1,
+      ActivateAndFocus<true>};
   commands.insert(std::make_pair("replacewindowandfocus", builtin11));
 
   CBuiltins::BUILT_IN builtin12 = {"Change Kodi's Resolution", 1, SetResolution};
@@ -622,11 +651,17 @@ CBuiltins::CommandMap CGUIBuiltins::GetOperations() const
   CBuiltins::BUILT_IN builtin13 = {"Set GUI Language", 1, SetLanguage};
   commands.insert(std::make_pair("setguilanguage", builtin13));
 
-  CBuiltins::BUILT_IN builtin14 = {"Sets a window property for the current focused window/dialog (key,value)", 2, SetProperty};
+  CBuiltins::BUILT_IN builtin14 = {
+      "Sets a window property for the current focused window/dialog (key,value)", 2, SetProperty};
   commands.insert(std::make_pair("setproperty", builtin14));
 
 #ifndef _XBOX
-  CBuiltins::BUILT_IN builtin15 = {"Changes the stereo mode of the GUI. Params can be: toggle, next, previous, select, tomono or any of the supported stereomodes (off, split_vertical, split_horizontal, row_interleaved, hardware_based, anaglyph_cyan_red, anaglyph_green_magenta, anaglyph_yellow_blue, monoscopic)", 1, SetStereoMode};
+  CBuiltins::BUILT_IN builtin15 = {
+      "Changes the stereo mode of the GUI. Params can be: toggle, next, previous, select, tomono "
+      "or any of the supported stereomodes (off, split_vertical, split_horizontal, "
+      "row_interleaved, hardware_based, anaglyph_cyan_red, anaglyph_green_magenta, "
+      "anaglyph_yellow_blue, monoscopic)",
+      1, SetStereoMode};
   commands.insert(std::make_pair("setstereomode", builtin15));
 #endif
 
@@ -638,4 +673,3 @@ CBuiltins::CommandMap CGUIBuiltins::GetOperations() const
 
   return commands;
 }
-

@@ -26,12 +26,13 @@
 
 using namespace XFILE;
 
-CVideoDbUrl::CVideoDbUrl()
-  : CDbUrl()
-{ }
+CVideoDbUrl::CVideoDbUrl() : CDbUrl()
+{
+}
 
 CVideoDbUrl::~CVideoDbUrl()
-{ }
+{
+}
 
 bool CVideoDbUrl::parse()
 {
@@ -41,7 +42,8 @@ bool CVideoDbUrl::parse()
 
   std::string path = m_url.Get();
   VIDEODATABASEDIRECTORY::NODE_TYPE dirType = CVideoDatabaseDirectory::GetDirectoryType(path);
-  VIDEODATABASEDIRECTORY::NODE_TYPE childType = CVideoDatabaseDirectory::GetDirectoryChildType(path);
+  VIDEODATABASEDIRECTORY::NODE_TYPE childType =
+      CVideoDatabaseDirectory::GetDirectoryChildType(path);
 
   switch (dirType)
   {
@@ -60,7 +62,6 @@ bool CVideoDbUrl::parse()
     case VIDEODATABASEDIRECTORY::NODE_TYPE_INPROGRESS_TVSHOWS:
       m_type = "tvshows";
       break;
-
 
     case VIDEODATABASEDIRECTORY::NODE_TYPE_MUSICVIDEOS_OVERVIEW:
     case VIDEODATABASEDIRECTORY::NODE_TYPE_RECENTLY_ADDED_MUSICVIDEOS:
@@ -197,7 +198,7 @@ bool CVideoDbUrl::parse()
   return true;
 }
 
-bool CVideoDbUrl::validateOption(const std::string &key, const CVariant &value)
+bool CVideoDbUrl::validateOption(const std::string& key, const CVariant& value)
 {
   if (!CDbUrl::validateOption(key, value))
     return false;
@@ -216,5 +217,5 @@ bool CVideoDbUrl::validateOption(const std::string &key, const CVariant &value)
 
   // check if the filter playlist matches the item type
   return (xspFilter.GetType() == m_itemType ||
-         (xspFilter.GetType() == "movies" && m_itemType == "sets"));
+          (xspFilter.GetType() == "movies" && m_itemType == "sets"));
 }

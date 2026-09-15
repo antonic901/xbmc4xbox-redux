@@ -25,23 +25,19 @@
  *
  */
 
-
 #include <math.h>
 
 #include "fft.h"
 
 #ifndef M_PI
-#define M_PI  3.1415926535897932384626433832795
+#define M_PI 3.1415926535897932384626433832795
 #endif
 
 #ifndef M_SQRT2
 #define M_SQRT2 1.4142135623730950488016887242097
 #endif
 
-
-
-
-void fft( float data[], int nn, int isign )
+void fft(float data[], int nn, int isign)
 {
   int n = nn << 1;
   int i, j, m;
@@ -49,15 +45,15 @@ void fft( float data[], int nn, int isign )
   /* bit reversal section */
 
   j = 1;
-  for ( i = 1; i < n; i += 2 )
+  for (i = 1; i < n; i += 2)
   {
-    if ( j > i )
+    if (j > i)
     {
-      swap( data[j], data[i] );
-      swap( data[j + 1], data[i + 1] );
+      swap(data[j], data[i]);
+      swap(data[j + 1], data[i + 1]);
     }
     m = nn;
-    while ( m >= 2 && j > m )
+    while (m >= 2 && j > m)
     {
       j -= m;
       m >>= 1;
@@ -73,21 +69,21 @@ void fft( float data[], int nn, int isign )
   while (n > mmax)
   {
     int istep = mmax << 1;
-    theta = isign * ( 2.0 * M_PI / mmax );
+    theta = isign * (2.0 * M_PI / mmax);
     wtemp = sin(0.5 * theta);
     wpr = -2.0 * wtemp * wtemp;
-    wpi = sin( theta );
+    wpi = sin(theta);
     wr = 1.0;
     wi = 0.0;
-    for ( m = 1; m < mmax; m += 2 )
+    for (m = 1; m < mmax; m += 2)
     {
-      for ( i = m; i <= n; i += istep )
+      for (i = m; i <= n; i += istep)
       {
         j = i + mmax;
         if (j >= n || i >= n)
           break;
-        tempr = (float) (wr * data[j] - wi * data[j + 1]);
-        tempi = (float) (wr * data[j + 1] + wi * data[j]);
+        tempr = (float)(wr * data[j] - wi * data[j + 1]);
+        tempi = (float)(wr * data[j + 1] + wi * data[j]);
         data[j] = data[i] - tempr;
         data[j + 1] = data[i + 1] - tempi;
         data[i] += tempr;
@@ -109,7 +105,7 @@ void twochannelrfft(float data[], int n)
   int nn = n + n;
   int nn1 = nn + 1;
   // data is already packed - do the transform
-  fft( data - 1, n , + 1 );
+  fft(data - 1, n, +1);
 
   // now repack the array as needed
   data[0] = data[0] * data[0]; // only need the amplitude squared
@@ -132,7 +128,7 @@ void twochannelrfft(float data[], int n)
     fft2[j]=aip;
     fft2[j+1]=-rem;
     fft2[nn-j]=aip;
-    fft2[nn1-j]=rem; */ 
+    fft2[nn1-j]=rem; */
     // we just need the amplitudes
     data[j] = (float)(2 * (sqr(rep) + sqr(aim))); // was sqrt'd
     data[j + 1] = (float)(2 * (sqr(rem) + sqr(aip)));
@@ -153,7 +149,7 @@ void twochanwithwindow(float data[], int n)
     data[i + 1] *= wn;
   }
   // data is already packed - do the transform
-  fft( data - 1, n , + 1 );
+  fft(data - 1, n, +1);
 
   // now repack the array as needed
   data[0] = data[0] * data[0]; // only need the amplitude squared
@@ -172,4 +168,3 @@ void twochanwithwindow(float data[], int n)
     data[j + 1] = (float)(0.5 * (sqr(rem) + sqr(aip)));
   }
 }
-

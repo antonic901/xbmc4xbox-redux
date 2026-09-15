@@ -53,7 +53,7 @@ CCdgLoader::~CCdgLoader()
 
 void CCdgLoader::StreamFile(CStdString strfilename)
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   m_strFileName = strfilename;
   URIUtils::RemoveExtension(m_strFileName);
   m_strFileName += ".cdg";
@@ -62,7 +62,7 @@ void CCdgLoader::StreamFile(CStdString strfilename)
 
 void CCdgLoader::StopStream()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   CThread::StopThread();
   m_uiLoadedBytes = 0;
   m_CdgFileState = FILE_NOT_LOADED;
@@ -72,60 +72,65 @@ void CCdgLoader::StopStream()
 
 SubCode* CCdgLoader::GetCurSubCode()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   SubCode* pFirst = GetFirstLoaded();
   SubCode* pLast = GetLastLoaded();
-  if (!pFirst || !pLast || !m_pSubCode) return NULL;
-  if (m_pSubCode < pFirst || m_pSubCode > pLast) return NULL;
+  if (!pFirst || !pLast || !m_pSubCode)
+    return NULL;
+  if (m_pSubCode < pFirst || m_pSubCode > pLast)
+    return NULL;
   return m_pSubCode;
 }
 bool CCdgLoader::SetNextSubCode()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   SubCode* pFirst = GetFirstLoaded();
   SubCode* pLast = GetLastLoaded();
-  if (!pFirst || !pLast || !m_pSubCode) return false;
-  if (m_pSubCode < pFirst || m_pSubCode >= pLast) return false;
+  if (!pFirst || !pLast || !m_pSubCode)
+    return false;
+  if (m_pSubCode < pFirst || m_pSubCode >= pLast)
+    return false;
   m_pSubCode++;
   return true;
 }
 errCode CCdgLoader::GetFileState()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   return m_CdgFileState;
 }
 CStdString CCdgLoader::GetFileName()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   return m_strFileName;
 }
 SubCode* CCdgLoader::GetFirstLoaded()
 {
   if (!m_uiLoadedBytes)
     return NULL;
-  return (SubCode*) m_pBuffer;
+  return (SubCode*)m_pBuffer;
 }
 SubCode* CCdgLoader::GetLastLoaded()
 {
-  if (m_uiLoadedBytes < sizeof(SubCode) || m_uiLoadedBytes > m_uiFileLength )
+  if (m_uiLoadedBytes < sizeof(SubCode) || m_uiLoadedBytes > m_uiFileLength)
     return NULL;
-  return ((SubCode*) (m_pBuffer)) + m_uiLoadedBytes / sizeof(SubCode) - 1;
+  return ((SubCode*)(m_pBuffer)) + m_uiLoadedBytes / sizeof(SubCode) - 1;
 }
 void CCdgLoader::OnStartup()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (!CFile::Exists(m_strFileName))
   {
     m_CdgFileState = FILE_ERR_NOT_FOUND;
-    return ;
+    return;
   }
   if (!m_File.Open(m_strFileName, TRUE))
   {
     m_CdgFileState = FILE_ERR_OPENING;
-    return ;
+    return;
   }
   m_uiFileLength = (int)m_File.GetLength(); // ASSUMES FILELENGTH IS LESS THAN 2^32 bytes!!!
-  if (!m_uiFileLength) return ;
+  if (!m_uiFileLength)
+    return;
   m_File.Seek(0, SEEK_SET);
   if (m_pBuffer)
     SAFE_DELETE_ARRAY(m_pBuffer);
@@ -133,16 +138,17 @@ void CCdgLoader::OnStartup()
   if (!m_pBuffer)
   {
     m_CdgFileState = FILE_ERR_NO_MEM;
-    return ;
+    return;
   }
   m_uiLoadedBytes = 0;
-  m_pSubCode = (SubCode*) m_pBuffer;
+  m_pSubCode = (SubCode*)m_pBuffer;
   m_CdgFileState = FILE_LOADING;
 }
 
 void CCdgLoader::Process()
 {
-  if (m_CdgFileState != FILE_LOADING && m_CdgFileState != FILE_SKIP) return ;
+  if (m_CdgFileState != FILE_LOADING && m_CdgFileState != FILE_SKIP)
+    return;
 
   if (m_uiFileLength < m_uiStreamChunk)
     m_uiLoadedBytes = m_File.Read(m_pBuffer, m_uiFileLength);
@@ -181,25 +187,26 @@ CCdgReader::~CCdgReader()
   StopThread();
 }
 
-
 bool CCdgReader::Attach(CCdgLoader* pLoader)
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (!m_pLoader)
     m_pLoader = pLoader;
-  if (!m_pLoader) return false;
+  if (!m_pLoader)
+    return false;
   return true;
 }
 void CCdgReader::DetachLoader()
 {
   StopThread();
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   m_pLoader = NULL;
 }
 bool CCdgReader::Start(float fStartTime)
 {
-  CSingleLock lock (m_CritSection);
-  if (!m_pLoader) return false;
+  CSingleLock lock(m_CritSection);
+  if (!m_pLoader)
+    return false;
   m_fStartingTime = fStartTime;
   SetAVDelay(g_advancedSettings.m_karaokeSyncDelay);
   m_uiNumReadSubCodes = 0;
@@ -222,33 +229,37 @@ float CCdgReader::GetAVDelay()
 }
 errCode CCdgReader::GetFileState()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
 
   if (m_FileState == FILE_SKIP)
     return m_FileState;
 
-  if (!m_pLoader) return FILE_NOT_LOADED;
+  if (!m_pLoader)
+    return FILE_NOT_LOADED;
   return m_pLoader->GetFileState();
 }
 CCdg* CCdgReader::GetCdg()
 {
-  return (CCdg*) &m_Cdg;
+  return (CCdg*)&m_Cdg;
 }
 
 CStdString CCdgReader::GetFileName()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pLoader)
     return m_pLoader->GetFileName();
   return "";
 }
 void CCdgReader::ReadUpToTime(float secs)
 {
-  if (secs < 0) return ;
-  if (!(m_pLoader->GetCurSubCode())) return ;
+  if (secs < 0)
+    return;
+  if (!(m_pLoader->GetCurSubCode()))
+    return;
 
-  UINT uiFinalOffset = (UINT) (secs * PARSING_FREQ);
-  if ( m_uiNumReadSubCodes >= uiFinalOffset) return ;
+  UINT uiFinalOffset = (UINT)(secs * PARSING_FREQ);
+  if (m_uiNumReadSubCodes >= uiFinalOffset)
+    return;
   UINT i;
   for (i = m_uiNumReadSubCodes; i <= uiFinalOffset; i++)
   {
@@ -260,12 +271,14 @@ void CCdgReader::ReadUpToTime(float secs)
 
 void CCdgReader::SkipUpToTime(float secs)
 {
-  if (secs < 0) return ;
-  m_FileState= FILE_SKIP;
+  if (secs < 0)
+    return;
+  m_FileState = FILE_SKIP;
 
-  UINT uiFinalOffset = (UINT) (secs * PARSING_FREQ);
+  UINT uiFinalOffset = (UINT)(secs * PARSING_FREQ);
   // is this needed?
-  if ( m_uiNumReadSubCodes > uiFinalOffset) return ;
+  if (m_uiNumReadSubCodes > uiFinalOffset)
+    return;
   for (UINT i = m_uiNumReadSubCodes; i <= uiFinalOffset; i++)
   {
     //m_Cdg.ReadSubCode(m_pLoader->GetCurSubCode());
@@ -276,50 +289,53 @@ void CCdgReader::SkipUpToTime(float secs)
 }
 
 void CCdgReader::OnStartup()
-{}
+{
+}
 
 void CCdgReader::Process()
 {
   double fCurTime = 0.0f;
   bool bIsFirstPass = true;
-  double fNewTime=0.f;
+  double fNewTime = 0.f;
   CStdString strExt = URIUtils::GetExtension(m_pLoader->GetFileName());
-  strExt = m_pLoader->GetFileName().substr(0,m_pLoader->GetFileName().size()-strExt.size());
+  strExt = m_pLoader->GetFileName().substr(0, m_pLoader->GetFileName().size() - strExt.size());
 
   while (!CThread::m_bStop)
   {
-    CSingleLock lock (m_CritSection);
+    CSingleLock lock(m_CritSection);
     double fDiff;
     const CMusicInfoTag* tag = g_infoManager.GetCurrentSongTag();
-    if (!tag || tag->GetURL().substr(0,strExt.size()) != strExt)
+    if (!tag || tag->GetURL().substr(0, strExt.size()) != strExt)
     {
       Sleep(15);
       if (CThread::m_bStop)
         return;
 
       strExt = URIUtils::GetExtension(m_pLoader->GetFileName());
-      strExt = m_pLoader->GetFileName().substr(0,m_pLoader->GetFileName().size()-strExt.size());
+      strExt = m_pLoader->GetFileName().substr(0, m_pLoader->GetFileName().size() - strExt.size());
 
       fDiff = 0.f;
     }
     else
     {
-      fNewTime=g_application.GetTime();
-      fDiff = fNewTime-fCurTime-m_fAVDelay;
+      fNewTime = g_application.GetTime();
+      fDiff = fNewTime - fCurTime - m_fAVDelay;
     }
     if (fDiff < -0.3f)
     {
       CStdString strFile = m_pLoader->GetFileName();
       m_pLoader->StopStream();
-      while (m_pLoader->GetCurSubCode()) {}
+      while (m_pLoader->GetCurSubCode())
+      {
+      }
       m_pLoader->StreamFile(strFile);
       m_uiNumReadSubCodes = 0;
       m_Cdg.ClearDisplay();
       fNewTime = g_application.GetTime();
-      SkipUpToTime((float)fNewTime-m_fAVDelay);
+      SkipUpToTime((float)fNewTime - m_fAVDelay);
     }
     else
-      ReadUpToTime((float)fNewTime-m_fAVDelay);
+      ReadUpToTime((float)fNewTime - m_fAVDelay);
 
     fCurTime = fNewTime;
     lock.Leave();
@@ -328,8 +344,8 @@ void CCdgReader::Process()
 }
 
 void CCdgReader::OnExit()
-{}
-
+{
+}
 
 //CdgRenderer
 CCdgRenderer::CCdgRenderer()
@@ -343,7 +359,6 @@ CCdgRenderer::CCdgRenderer()
   m_fgAlpha = 0xFF000000;
 }
 
-
 CCdgRenderer::~CCdgRenderer()
 {
   ReleaseGraphics();
@@ -351,34 +366,39 @@ CCdgRenderer::~CCdgRenderer()
 
 bool CCdgRenderer::Attach(CCdgReader* pReader)
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (!m_pReader)
     m_pReader = pReader;
-  if (!m_pReader) return false;
+  if (!m_pReader)
+    return false;
   if (!m_pCdg)
     m_pCdg = m_pReader->GetCdg();
-  if (!m_pCdg) return false;
+  if (!m_pCdg)
+    return false;
   return true;
 }
 void CCdgRenderer::DetachReader()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   m_pReader = NULL;
   m_pCdg = NULL;
 }
 
 void CCdgRenderer::Render()
 {
-  CSingleLock lock (m_CritSection);
-  if (!m_pReader) return ;
+  CSingleLock lock(m_CritSection);
+  if (!m_pReader)
+    return;
   m_FileState = m_pReader->GetFileState();
-  if (m_FileState == FILE_NOT_LOADED || m_FileState == FILE_SKIP) return ;
-  if (m_FileState == FILE_LOADED || m_FileState == FILE_LOADING )
+  if (m_FileState == FILE_NOT_LOADED || m_FileState == FILE_SKIP)
+    return;
+  if (m_FileState == FILE_LOADED || m_FileState == FILE_LOADING)
   {
-    if (!m_bRender) return ;
+    if (!m_bRender)
+      return;
     UpdateTexture();
     DrawTexture();
-    return ;
+    return;
   }
   else
   {
@@ -386,18 +406,18 @@ void CCdgRenderer::Render()
     strFileName = URIUtils::GetFileName(m_pReader->GetFileName());
     switch (m_FileState)
     {
-    case FILE_ERR_NOT_FOUND:
-      strMessage.Format("%s not found", strFileName.c_str());
-      break;
-    case FILE_ERR_OPENING:
-      strMessage.Format("Error opening %s", strFileName.c_str());
-      break;
-    case FILE_ERR_LOADING:
-      strMessage.Format("Error loading %s", strFileName.c_str());
-      break;
-    case FILE_ERR_NO_MEM:
-      strMessage = "Out of memory";
-      break;
+      case FILE_ERR_NOT_FOUND:
+        strMessage.Format("%s not found", strFileName.c_str());
+        break;
+      case FILE_ERR_OPENING:
+        strMessage.Format("Error opening %s", strFileName.c_str());
+        break;
+      case FILE_ERR_LOADING:
+        strMessage.Format("Error loading %s", strFileName.c_str());
+        break;
+      case FILE_ERR_NO_MEM:
+        strMessage = "Out of memory";
+        break;
     }
     // don't render the message to the screen, just log it
     // Hmmm.  Can't seem to be able to log
@@ -410,10 +430,11 @@ void CCdgRenderer::Render()
 
 bool CCdgRenderer::InitGraphics()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (!m_pd3dDevice)
     m_pd3dDevice = g_graphicsContext.Get3DDevice();
-  if (!m_pd3dDevice) return false;
+  if (!m_pd3dDevice)
+    return false;
 
   // set the colours
   m_bgAlpha = 0;
@@ -422,50 +443,63 @@ bool CCdgRenderer::InitGraphics()
   m_fgAlpha = 0xff000000;
 
   if (!m_pCdgTexture)
-    m_pd3dDevice->CreateTexture(WIDTH, HEIGHT, 0, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED, &m_pCdgTexture);
-  if (!m_pCdgTexture) return false;
+    m_pd3dDevice->CreateTexture(WIDTH, HEIGHT, 0, 0, D3DFMT_LIN_A8R8G8B8, D3DPOOL_MANAGED,
+                                &m_pCdgTexture);
+  if (!m_pCdgTexture)
+    return false;
   m_bRender = true;
   return true;
 }
 
 void CCdgRenderer::ReleaseGraphics()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   SAFE_RELEASE(m_pCdgTexture);
   m_bRender = false;
 }
 
 void CCdgRenderer::DrawTexture()
 {
-  m_pd3dDevice->SetVertexShader( D3DFVF_CUSTOMVERTEX );
+  m_pd3dDevice->SetVertexShader(D3DFVF_CUSTOMVERTEX);
   m_pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
   m_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE);
   m_pd3dDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
   m_pd3dDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
-  m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP );
-  m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP );
-  m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLOROP, D3DTOP_MODULATE );
-  m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG1, D3DTA_TEXTURE );
-  m_pd3dDevice->SetTextureStageState( 0, D3DTSS_COLORARG2, D3DTA_DIFFUSE );
-  m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAOP, D3DTOP_MODULATE );
-  m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE );
-  m_pd3dDevice->SetTextureStageState( 0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE );
+  m_pd3dDevice->SetTextureStageState(0, D3DTSS_ADDRESSU, D3DTADDRESS_CLAMP);
+  m_pd3dDevice->SetTextureStageState(0, D3DTSS_ADDRESSV, D3DTADDRESS_CLAMP);
+  m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+  m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+  m_pd3dDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+  m_pd3dDevice->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+  m_pd3dDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
+  m_pd3dDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_DIFFUSE);
   m_pd3dDevice->SetTexture(0, m_pCdgTexture);
 
   m_pd3dDevice->Begin(D3DPT_QUADLIST);
 
   RESOLUTION res = g_graphicsContext.GetVideoResolution();
-  m_pd3dDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, (float)BORDERWIDTH, (float) BORDERHEIGHT);
-  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left, (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top, 0, 0 );
+  m_pd3dDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, (float)BORDERWIDTH, (float)BORDERHEIGHT);
+  m_pd3dDevice->SetVertexData4f(
+      D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left,
+      (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top, 0, 0);
 
-  m_pd3dDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, (float)(WIDTH - BORDERWIDTH), (float) BORDERHEIGHT);
-  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right, (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top, 0, 0 );
+  m_pd3dDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, (float)(WIDTH - BORDERWIDTH),
+                                (float)BORDERHEIGHT);
+  m_pd3dDevice->SetVertexData4f(
+      D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right,
+      (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.top, 0, 0);
 
-  m_pd3dDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, (float)(WIDTH - BORDERWIDTH), (float)(HEIGHT - BORDERHEIGHT));
-  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right, (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom, 0, 0);
+  m_pd3dDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, (float)(WIDTH - BORDERWIDTH),
+                                (float)(HEIGHT - BORDERHEIGHT));
+  m_pd3dDevice->SetVertexData4f(
+      D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.right,
+      (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom, 0, 0);
 
-  m_pd3dDevice->SetVertexData2f( D3DVSDE_TEXCOORD0, (float)BORDERWIDTH, (float)(HEIGHT - BORDERHEIGHT));
-  m_pd3dDevice->SetVertexData4f( D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left, (float) CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom, 0, 0 );
+  m_pd3dDevice->SetVertexData2f(D3DVSDE_TEXCOORD0, (float)BORDERWIDTH,
+                                (float)(HEIGHT - BORDERHEIGHT));
+  m_pd3dDevice->SetVertexData4f(
+      D3DVSDE_VERTEX, (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.left,
+      (float)CDisplaySettings::Get().GetResolutionInfo(res).Overscan.bottom, 0, 0);
 
   m_pd3dDevice->End();
 }
@@ -474,12 +508,12 @@ void CCdgRenderer::UpdateTexture()
 {
   D3DLOCKED_RECT LockedRect;
   m_pCdgTexture->LockRect(0, &LockedRect, NULL, 0L);
-  for (UINT j = 0; j < HEIGHT; j++ )
+  for (UINT j = 0; j < HEIGHT; j++)
   {
-    DWORD *texel = (DWORD *)((BYTE *)LockedRect.pBits + j * LockedRect.Pitch);
-    for (UINT i = 0; i < WIDTH; i++ )
+    DWORD* texel = (DWORD*)((BYTE*)LockedRect.pBits + j * LockedRect.Pitch);
+    for (UINT i = 0; i < WIDTH; i++)
     {
-      BYTE ClutOffset = m_pCdg->GetClutOffset(j + m_pCdg->GetVOffset() , i + m_pCdg->GetHOffset());
+      BYTE ClutOffset = m_pCdg->GetClutOffset(j + m_pCdg->GetVOffset(), i + m_pCdg->GetHOffset());
       TEX_COLOR TexColor = ConvertColor(m_pCdg->GetColor(ClutOffset));
       if (TexColor >> 24) //Only override transp. for opaque alpha
       {
@@ -527,8 +561,9 @@ CCdgParser::~CCdgParser()
 
 bool CCdgParser::AllocGraphics()
 {
-  CSingleLock lock (m_CritSection);
-  if (!AllocRenderer()) return false;
+  CSingleLock lock(m_CritSection);
+  if (!AllocRenderer())
+    return false;
   m_pRenderer->InitGraphics();
   if (m_pReader)
     m_pRenderer->Attach(m_pReader);
@@ -537,15 +572,17 @@ bool CCdgParser::AllocGraphics()
 
 void CCdgParser::FreeGraphics()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pRenderer)
     SAFE_DELETE(m_pRenderer);
 }
 
 bool CCdgParser::Start(CStdString strSongPath)
 {
-  if (!StartLoader(strSongPath)) return false;
-  if (!StartReader()) return false;
+  if (!StartLoader(strSongPath))
+    return false;
+  if (!StartReader())
+    return false;
 
   /* make sure we have fullscreen viz */
   /* hmm won't this switch to fullscreen after each track?? */
@@ -553,10 +590,10 @@ bool CCdgParser::Start(CStdString strSongPath)
     g_windowManager.ActivateWindow(WINDOW_VISUALISATION);
 
   // Karaoke patch (114097) ...
-  if ( CSettings::GetInstance().GetBool("karaoke.voiceenabled") )
+  if (CSettings::GetInstance().GetBool("karaoke.voiceenabled"))
   {
     CDG_VOICE_MANAGER_CONFIG VoiceConfig;
-    VoiceConfig.dwVoicePacketTime = 20;       // 20ms (can't be lower than this)
+    VoiceConfig.dwVoicePacketTime = 20; // 20ms (can't be lower than this)
     VoiceConfig.dwMaxStoredPackets = 2;
     VoiceConfig.pDSound = g_audioContext.GetDirectSoundDevice();
     VoiceConfig.pCallbackContext = this;
@@ -585,7 +622,7 @@ void CCdgParser::Free()
 
 void CCdgParser::SetAVDelay(float fDelay)
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pReader)
     m_pReader->SetAVDelay(fDelay);
 }
@@ -603,7 +640,7 @@ void CCdgParser::SetBGTransparent(bool bTransparent /* = true */)
 
 float CCdgParser::GetAVDelay()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pReader)
     return m_pReader->GetAVDelay();
   return g_advancedSettings.m_karaokeSyncDelay;
@@ -611,7 +648,7 @@ float CCdgParser::GetAVDelay()
 
 void CCdgParser::Render()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pRenderer)
     m_pRenderer->Render();
 }
@@ -620,27 +657,31 @@ bool CCdgParser::AllocLoader()
 {
   if (!m_pLoader)
     m_pLoader = new CCdgLoader;
-  if (!m_pLoader) return false;
+  if (!m_pLoader)
+    return false;
   return true;
 }
 bool CCdgParser::AllocReader()
 {
   if (!m_pReader)
     m_pReader = new CCdgReader;
-  if (!m_pReader) return false;
+  if (!m_pReader)
+    return false;
   return true;
 }
 bool CCdgParser::AllocRenderer()
 {
   if (!m_pRenderer)
     m_pRenderer = new CCdgRenderer;
-  if (!m_pRenderer) return false;
+  if (!m_pRenderer)
+    return false;
   return true;
 }
 bool CCdgParser::StartLoader(CStdString strSongPath)
 {
-  CSingleLock lock (m_CritSection);
-  if (!AllocLoader()) return false;
+  CSingleLock lock(m_CritSection);
+  if (!AllocLoader())
+    return false;
 
   URIUtils::RemoveExtension(strSongPath);
   strSongPath += ".cdg";
@@ -654,13 +695,13 @@ bool CCdgParser::StartLoader(CStdString strSongPath)
 }
 void CCdgParser::StopLoader()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pLoader)
     m_pLoader->StopStream();
 }
 void CCdgParser::FreeLoader()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pReader)
     m_pReader->DetachLoader();
   if (m_pLoader)
@@ -668,8 +709,9 @@ void CCdgParser::FreeLoader()
 }
 bool CCdgParser::StartReader()
 {
-  CSingleLock lock (m_CritSection);
-  if (!AllocReader()) return false;
+  CSingleLock lock(m_CritSection);
+  if (!AllocReader())
+    return false;
   if (m_pLoader)
     m_pReader->Attach(m_pLoader);
   m_pReader->Start((float)g_application.GetTime());
@@ -677,13 +719,13 @@ bool CCdgParser::StartReader()
 }
 void CCdgParser::StopReader()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pReader)
     m_pReader->StopThread();
 }
 void CCdgParser::FreeReader()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pRenderer)
     m_pRenderer->DetachReader();
   if (m_pReader)
@@ -694,38 +736,44 @@ bool CCdgParser::AllocVoice()
 {
   if (!m_pVoiceManager)
     m_pVoiceManager = new CCdgVoiceManager;
-  if (!m_pVoiceManager) return false;
+  if (!m_pVoiceManager)
+    return false;
   return true;
 }
 bool CCdgParser::StartVoice(CDG_VOICE_MANAGER_CONFIG* pConfig)
 {
-  CSingleLock lock (m_CritSection);
-  if (!AllocVoice()) return false;
+  CSingleLock lock(m_CritSection);
+  if (!AllocVoice())
+    return false;
   if (m_pVoiceManager)
     m_pVoiceManager->Initialize(pConfig);
   return true;
 }
 void CCdgParser::StopVoice()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pVoiceManager)
     m_pVoiceManager->Shutdown();
 }
 void CCdgParser::FreeVoice()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pVoiceManager)
     SAFE_DELETE(m_pVoiceManager);
 }
 void CCdgParser::ProcessVoice()
 {
-  CSingleLock lock (m_CritSection);
+  CSingleLock lock(m_CritSection);
   if (m_pVoiceManager)
     m_pVoiceManager->ProcessVoice();
 }
 // ... Karaoke patch (114097)
 
-void CCdgParser::SettingOptionsVoiceMasksFiller(const CSetting *setting, std::vector< std::pair<std::string, std::string> > &list, std::string &current, void *data)
+void CCdgParser::SettingOptionsVoiceMasksFiller(
+    const CSetting* setting,
+    std::vector<std::pair<std::string, std::string> >& list,
+    std::string& current,
+    void* data)
 {
   std::string strDefaultMask = "None";
   std::vector<std::string> vecMask;
@@ -733,13 +781,15 @@ void CCdgParser::SettingOptionsVoiceMasksFiller(const CSetting *setting, std::ve
   // find masks in xml...
   CXBMCTinyXML xmlDoc;
   std::string fileName = "special://xbmc/system/voicemasks.xml";
-  if ( !xmlDoc.LoadFile(fileName) ) return ;
+  if (!xmlDoc.LoadFile(fileName))
+    return;
   TiXmlElement* pRootElement = xmlDoc.RootElement();
   std::string strValue = pRootElement->Value();
-  if ( strValue != "VoiceMasks") return ;
+  if (strValue != "VoiceMasks")
+    return;
   if (pRootElement)
   {
-    const TiXmlNode *pChild = pRootElement->FirstChild("Name");
+    const TiXmlNode* pChild = pRootElement->FirstChild("Name");
     while (pChild)
     {
       if (pChild->FirstChild())
@@ -756,10 +806,11 @@ void CCdgParser::SettingOptionsVoiceMasksFiller(const CSetting *setting, std::ve
   vecMask.insert(vecMask.begin(), strDefaultMask);
 
   bool found = false;
-  for (int i = 0; i < (int) vecMask.size(); ++i)
+  for (int i = 0; i < (int)vecMask.size(); ++i)
   {
     std::string strMask = vecMask[i];
-    list.push_back(make_pair(StringUtils::Format("(%i/%i) %s", i + 1, vecMask.size(), strMask.c_str()), vecMask[i]));
+    list.push_back(make_pair(
+        StringUtils::Format("(%i/%i) %s", i + 1, vecMask.size(), strMask.c_str()), vecMask[i]));
     if (strcmpi(strMask.c_str(), current.c_str()) == 0)
       found = true;
   }
@@ -770,82 +821,84 @@ void CCdgParser::SettingOptionsVoiceMasksFiller(const CSetting *setting, std::ve
 
 void CCdgParser::FillInVoiceMaskValues(unsigned int port, CStdString strCurMask)
 {
-    if (strCurMask.CompareNoCase("None") == 0 || strCurMask.CompareNoCase("Custom") == 0 )
-    {
-  #ifndef HAS_XBOX_AUDIO
-  #define XVOICE_MASK_PARAM_DISABLED (-1.0f)
-  #endif
-      VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
-      karaokeVoiceMask.energy = XVOICE_MASK_PARAM_DISABLED;
-      karaokeVoiceMask.pitch = XVOICE_MASK_PARAM_DISABLED;
-      karaokeVoiceMask.whisper = XVOICE_MASK_PARAM_DISABLED;
-      karaokeVoiceMask.robotic = XVOICE_MASK_PARAM_DISABLED;
-      return;
-    }
+  if (strCurMask.CompareNoCase("None") == 0 || strCurMask.CompareNoCase("Custom") == 0)
+  {
+#ifndef HAS_XBOX_AUDIO
+#define XVOICE_MASK_PARAM_DISABLED (-1.0f)
+#endif
+    VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+    karaokeVoiceMask.energy = XVOICE_MASK_PARAM_DISABLED;
+    karaokeVoiceMask.pitch = XVOICE_MASK_PARAM_DISABLED;
+    karaokeVoiceMask.whisper = XVOICE_MASK_PARAM_DISABLED;
+    karaokeVoiceMask.robotic = XVOICE_MASK_PARAM_DISABLED;
+    return;
+  }
 
-    //find mask values in xml...
-    CXBMCTinyXML xmlDoc;
-    CStdString fileName = "special://xbmc/system/voicemasks.xml";
-    if ( !xmlDoc.LoadFile( fileName ) ) return ;
-    TiXmlElement* pRootElement = xmlDoc.RootElement();
-    CStdString strValue = pRootElement->Value();
-    if ( strValue != "VoiceMasks") return ;
-    if (pRootElement)
+  //find mask values in xml...
+  CXBMCTinyXML xmlDoc;
+  CStdString fileName = "special://xbmc/system/voicemasks.xml";
+  if (!xmlDoc.LoadFile(fileName))
+    return;
+  TiXmlElement* pRootElement = xmlDoc.RootElement();
+  CStdString strValue = pRootElement->Value();
+  if (strValue != "VoiceMasks")
+    return;
+  if (pRootElement)
+  {
+    const TiXmlNode* pChild = pRootElement->FirstChild("Name");
+    while (pChild)
     {
-      const TiXmlNode *pChild = pRootElement->FirstChild("Name");
-      while (pChild)
+      CStdString strMask = pChild->FirstChild()->Value();
+      if (strMask.CompareNoCase(strCurMask) == 0)
       {
-        CStdString strMask = pChild->FirstChild()->Value();
-        if (strMask.CompareNoCase(strCurMask) == 0)
+        for (int i = 0; i < 4; i++)
         {
-          for (int i = 0; i < 4;i++)
+          pChild = pChild->NextSibling();
+          if (pChild)
           {
-            pChild = pChild->NextSibling();
-            if (pChild)
+            CStdString strValue = pChild->Value();
+            if (strValue.CompareNoCase("fSpecEnergyWeight") == 0)
             {
-              CStdString strValue = pChild->Value();
-              if (strValue.CompareNoCase("fSpecEnergyWeight") == 0)
+              if (pChild->FirstChild())
               {
-                if (pChild->FirstChild())
-                {
-                  CStdString strName = pChild->FirstChild()->Value();
-                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
-                  karaokeVoiceMask.energy = (float) atof(strName.c_str());
-                }
+                CStdString strName = pChild->FirstChild()->Value();
+                VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                karaokeVoiceMask.energy = (float)atof(strName.c_str());
               }
-              else if (strValue.CompareNoCase("fPitchScale") == 0)
+            }
+            else if (strValue.CompareNoCase("fPitchScale") == 0)
+            {
+              if (pChild->FirstChild())
               {
-                if (pChild->FirstChild())
-                {
-                  CStdString strName = pChild->FirstChild()->Value();
-                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
-                  karaokeVoiceMask.pitch = (float) atof(strName.c_str());
-                }
+                CStdString strName = pChild->FirstChild()->Value();
+                VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                karaokeVoiceMask.pitch = (float)atof(strName.c_str());
               }
-              else if (strValue.CompareNoCase("fWhisperValue") == 0)
+            }
+            else if (strValue.CompareNoCase("fWhisperValue") == 0)
+            {
+              if (pChild->FirstChild())
               {
-                if (pChild->FirstChild())
-                {
-                  CStdString strName = pChild->FirstChild()->Value();
-                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
-                  karaokeVoiceMask.whisper = (float) atof(strName.c_str());
-                }
+                CStdString strName = pChild->FirstChild()->Value();
+                VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                karaokeVoiceMask.whisper = (float)atof(strName.c_str());
               }
-              else if (strValue.CompareNoCase("fRoboticValue") == 0)
+            }
+            else if (strValue.CompareNoCase("fRoboticValue") == 0)
+            {
+              if (pChild->FirstChild())
               {
-                if (pChild->FirstChild())
-                {
-                  CStdString strName = pChild->FirstChild()->Value();
-                  VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
-                  karaokeVoiceMask.robotic = (float) atof(strName.c_str());
-                }
+                CStdString strName = pChild->FirstChild()->Value();
+                VOICE_MASK karaokeVoiceMask = g_application.GetKaraokeVoiceMask(port);
+                karaokeVoiceMask.robotic = (float)atof(strName.c_str());
               }
             }
           }
-          break;
         }
-        pChild = pChild->NextSibling("Name");
+        break;
       }
+      pChild = pChild->NextSibling("Name");
     }
-    xmlDoc.Clear();
+  }
+  xmlDoc.Clear();
 }

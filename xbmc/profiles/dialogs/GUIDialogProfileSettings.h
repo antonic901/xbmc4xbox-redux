@@ -38,12 +38,12 @@ protected:
   virtual void OnWindowLoaded();
 
   // implementations of ISettingCallback
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingAction(const CSetting *setting);
+  virtual void OnSettingChanged(const CSetting* setting);
+  virtual void OnSettingAction(const CSetting* setting);
 
   // specialization of CGUIDialogSettingsBase
   virtual bool AllowResettingSettings() const { return false; }
-  virtual void Save() { }
+  virtual void Save() {}
   virtual void OnCancel();
   virtual void SetupView();
 
@@ -55,7 +55,7 @@ protected:
    \param isDefault whether this is the default profile or not
    \return true if the profile path has been changed, false otherwise.
    */
-  static bool GetProfilePath(std::string &directory, bool isDefault);
+  static bool GetProfilePath(std::string& directory, bool isDefault);
 
   void UpdateProfileImage();
   void updateProfileDirectory();

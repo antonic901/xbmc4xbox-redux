@@ -41,78 +41,82 @@
 
 namespace ADDON
 {
-  template<class TheDll, typename TheStruct, typename TheProps>
-  class CAddonDll : public CAddon
+template<class TheDll, typename TheStruct, typename TheProps>
+class CAddonDll : public CAddon
+{
+public:
+  CAddonDll(AddonProps props);
+
+  //FIXME: does shallow pointer copy. no copy assignment op
+  CAddonDll(const CAddonDll<TheDll, TheStruct, TheProps>& rhs);
+  virtual ~CAddonDll();
+  virtual ADDON_STATUS GetStatus();
+
+  // addon settings
+  virtual void SaveSettings();
+  virtual std::string GetSetting(const std::string& key);
+
+  ADDON_STATUS Create();
+  virtual void Stop();
+  virtual bool CheckAPIVersion(void) { return true; }
+  void Destroy();
+
+  bool DllLoaded(void) const;
+
+protected:
+  void HandleException(std::exception& e, const char* context);
+  bool Initialized() { return m_initialized; }
+  virtual bool LoadSettings();
+  static uint32_t GetChildCount()
   {
-  public:
-    CAddonDll(AddonProps props);
+    static uint32_t childCounter = 0;
+    return childCounter++;
+  }
+  TheStruct* m_pStruct;
+  TheProps* m_pInfo;
+  CAddonInterfaces* m_pHelpers;
+  bool m_bIsChild;
+  std::string m_parentLib;
 
-    //FIXME: does shallow pointer copy. no copy assignment op
-    CAddonDll(const CAddonDll<TheDll, TheStruct, TheProps> &rhs);
-    virtual ~CAddonDll();
-    virtual ADDON_STATUS GetStatus();
+private:
+  TheDll* m_pDll;
+  bool m_initialized;
+  bool LoadDll();
+  bool m_needsavedsettings;
 
-    // addon settings
-    virtual void SaveSettings();
-    virtual std::string GetSetting(const std::string& key);
+  virtual ADDON_STATUS TransferSettings();
+  TiXmlElement MakeSetting(DllSetting& setting) const;
 
-    ADDON_STATUS Create();
-    virtual void Stop();
-    virtual bool CheckAPIVersion(void) { return true; }
-    void Destroy();
-
-    bool DllLoaded(void) const;
-
-  protected:
-    void HandleException(std::exception &e, const char* context);
-    bool Initialized() { return m_initialized; }
-    virtual bool LoadSettings();
-    static uint32_t GetChildCount() { static uint32_t childCounter = 0; return childCounter++; }
-    TheStruct* m_pStruct;
-    TheProps*     m_pInfo;
-    CAddonInterfaces* m_pHelpers;
-    bool m_bIsChild;
-    std::string m_parentLib;
-
-  private:
-    TheDll* m_pDll;
-    bool m_initialized;
-    bool LoadDll();
-    bool m_needsavedsettings;
-
-    virtual ADDON_STATUS TransferSettings();
-    TiXmlElement MakeSetting(DllSetting& setting) const;
-
-    static void AddOnStatusCallback(void *userData, const ADDON_STATUS status, const char* msg);
-    static bool AddOnGetSetting(void *userData, const char *settingName, void *settingValue);
-    static void AddOnOpenSettings(const char *url, bool bReload);
-    static void AddOnOpenOwnSettings(void *userData, bool bReload);
-  };
+  static void AddOnStatusCallback(void* userData, const ADDON_STATUS status, const char* msg);
+  static bool AddOnGetSetting(void* userData, const char* settingName, void* settingValue);
+  static void AddOnOpenSettings(const char* url, bool bReload);
+  static void AddOnOpenOwnSettings(void* userData, bool bReload);
+};
 
 template<class TheDll, typename TheStruct, typename TheProps>
 CAddonDll<TheDll, TheStruct, TheProps>::CAddonDll(AddonProps props)
   : CAddon(boost::move(props)),
     m_bIsChild(false)
 {
-  m_pStruct     = NULL;
+  m_pStruct = NULL;
   m_initialized = false;
-  m_pDll        = NULL;
-  m_pInfo       = NULL;
-  m_pHelpers    = NULL;
+  m_pDll = NULL;
+  m_pInfo = NULL;
+  m_pHelpers = NULL;
   m_needsavedsettings = false;
   m_parentLib.clear();
 }
 
 template<class TheDll, typename TheStruct, typename TheProps>
-CAddonDll<TheDll, TheStruct, TheProps>::CAddonDll(const CAddonDll<TheDll, TheStruct, TheProps> &rhs)
+CAddonDll<TheDll, TheStruct, TheProps>::CAddonDll(const CAddonDll<TheDll, TheStruct, TheProps>& rhs)
   : CAddon(rhs),
     m_bIsChild(true)
 {
-  m_pStruct           = rhs.m_pStruct;
-  m_initialized       = rhs.m_initialized;
-  m_pDll              = rhs.m_pDll;
-  m_pInfo             = rhs.m_pInfo;
-  m_pHelpers          = rhs.m_pHelpers;
+  m_pStruct = rhs.m_pStruct;
+  m_initialized = rhs.m_initialized;
+  m_pDll = rhs.m_pDll;
+  m_pInfo = rhs.m_pInfo;
+  m_pHelpers = rhs.m_pHelpers;
   m_needsavedsettings = rhs.m_needsavedsettings;
   m_parentLib = rhs.m_parentLib;
 }
@@ -217,7 +221,8 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadDll()
     CGUIDialogOK* pDialog = (CGUIDialogOK*)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
     if (pDialog)
     {
-      std::string heading = StringUtils::Format("%s: %s", TranslateType(Type(), true).c_str(), Name().c_str());
+      std::string heading =
+          StringUtils::Format("%s: %s", TranslateType(Type(), true).c_str(), Name().c_str());
       pDialog->SetHeading(heading);
       pDialog->SetLine(1, 24070);
       pDialog->SetLine(2, 24071);
@@ -275,12 +280,15 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::Create()
     }
     else
     { // Addon failed initialization
-      CLog::Log(LOGERROR, "ADDON: Dll %s - Client returned bad status (%i) from Create and is not usable", Name().c_str(), status);
+      CLog::Log(LOGERROR,
+                "ADDON: Dll %s - Client returned bad status (%i) from Create and is not usable",
+                Name().c_str(), status);
 
       CGUIDialogOK* pDialog = (CGUIDialogOK*)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
       if (pDialog)
       {
-        std::string heading = StringUtils::Format("%s: %s", TranslateType(Type(), true).c_str(), Name().c_str());
+        std::string heading =
+            StringUtils::Format("%s: %s", TranslateType(Type(), true).c_str(), Name().c_str());
         pDialog->SetHeading(heading);
         pDialog->SetLine(1, 24070);
         pDialog->SetLine(2, 24071);
@@ -288,7 +296,7 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::Create()
       }
     }
   }
-  catch (std::exception &e)
+  catch (std::exception& e)
   {
     HandleException(e, "m_pDll->Create");
   }
@@ -302,21 +310,22 @@ void CAddonDll<TheDll, TheStruct, TheProps>::Stop()
   /* Inform dll to stop all activities */
   try
   {
-    if (m_needsavedsettings)  // If the addon supports it we save some settings to settings.xml before stop
+    if (m_needsavedsettings) // If the addon supports it we save some settings to settings.xml before stop
     {
-      char   str_id[64] = "";
-      char   str_value[1024];
+      char str_id[64] = "";
+      char str_value[1024];
       CAddon::LoadUserSettings();
-      for (unsigned int i=0; (strcmp(str_id,"###End") != 0); i++)
+      for (unsigned int i = 0; (strcmp(str_id, "###End") != 0); i++)
       {
         strcpy(str_id, "###GetSavedSettings");
-        sprintf (str_value, "%i", i);
+        sprintf(str_value, "%i", i);
         ADDON_STATUS status = m_pDll->SetSetting((const char*)&str_id, (void*)&str_value);
 
         if (status == ADDON_STATUS_UNKNOWN)
           break;
 
-        if (strcmp(str_id,"###End") != 0) UpdateSetting(str_id, str_value);
+        if (strcmp(str_id, "###End") != 0)
+          UpdateSetting(str_id, str_value);
       }
       CAddon::SaveSettings();
     }
@@ -326,7 +335,7 @@ void CAddonDll<TheDll, TheStruct, TheProps>::Stop()
       CLog::Log(LOGINFO, "ADDON: Dll Stopped - %s", Name().c_str());
     }
   }
-  catch (std::exception &e)
+  catch (std::exception& e)
   {
     HandleException(e, "m_pDll->Stop");
   }
@@ -344,7 +353,7 @@ void CAddonDll<TheDll, TheStruct, TheProps>::Destroy()
       m_pDll->Unload();
     }
   }
-  catch (std::exception &e)
+  catch (std::exception& e)
   {
     HandleException(e, "m_pDll->Unload");
   }
@@ -376,7 +385,7 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::GetStatus()
   {
     return m_pDll->GetStatus();
   }
-  catch (std::exception &e)
+  catch (std::exception& e)
   {
     HandleException(e, "m_pDll->GetStatus()");
   }
@@ -401,7 +410,7 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadSettings()
     DllUtils::StructToVec(entries, &sSet, &vSet);
     m_pDll->FreeSettings();
   }
-  catch (std::exception &e)
+  catch (std::exception& e)
   {
     HandleException(e, "m_pDll->GetSettings()");
     return false;
@@ -414,10 +423,10 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadSettings()
     TiXmlElement node("settings");
     m_addonXmlDoc.InsertEndChild(node);
 
-    for (unsigned i=0; i < entries; i++)
+    for (unsigned i = 0; i < entries; i++)
     {
-       DllSetting& setting = vSet[i];
-       m_addonXmlDoc.RootElement()->InsertEndChild(MakeSetting(setting));
+      DllSetting& setting = vSet[i];
+      m_addonXmlDoc.RootElement()->InsertEndChild(MakeSetting(setting));
     }
     CAddon::SettingsFromXML(m_addonXmlDoc, true);
   }
@@ -457,8 +466,8 @@ TiXmlElement CAddonDll<TheDll, TheStruct, TheProps>::MakeSetting(DllSetting& set
       node.SetAttribute("values", values.c_str());
       break;
     }
-  default:
-    break;
+    default:
+      break;
   }
 
   return node;
@@ -489,19 +498,21 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::TransferSettings()
 
   LoadSettings();
 
-  const TiXmlElement *category = m_addonXmlDoc.RootElement() ? m_addonXmlDoc.RootElement()->FirstChildElement("category") : NULL;
+  const TiXmlElement* category = m_addonXmlDoc.RootElement()
+                                     ? m_addonXmlDoc.RootElement()->FirstChildElement("category")
+                                     : NULL;
   if (!category)
     category = m_addonXmlDoc.RootElement(); // no categories
 
   while (category)
   {
-    const TiXmlElement *setting = category->FirstChildElement("setting");
+    const TiXmlElement* setting = category->FirstChildElement("setting");
     while (setting)
     {
       ADDON_STATUS status = ADDON_STATUS_OK;
-      const char *id = setting->Attribute("id");
+      const char* id = setting->Attribute("id");
       const std::string type = XMLUtils::GetAttribute(setting, "type");
-      const char *option = setting->Attribute("option");
+      const char* option = setting->Attribute("option");
 
       if (id && !type.empty())
       {
@@ -509,49 +520,43 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::TransferSettings()
         {
           /* Don't propagate separators */
         }
-        else if (type == "text"       || type == "ipaddress" ||
-                 type == "video"      || type == "audio"     ||
-                 type == "image"      || type == "folder"    ||
-                 type == "executable" || type == "file"      ||
-                 type == "action"     || type == "date"      ||
-                 type == "time"       || type == "select"    ||
-                 type == "addon"      || type == "labelenum" ||
-                 type == "fileenum" )
+        else if (type == "text" || type == "ipaddress" || type == "video" || type == "audio" ||
+                 type == "image" || type == "folder" || type == "executable" || type == "file" ||
+                 type == "action" || type == "date" || type == "time" || type == "select" ||
+                 type == "addon" || type == "labelenum" || type == "fileenum")
         {
-          status = m_pDll->SetSetting(id, (const char*) GetSetting(id).c_str());
+          status = m_pDll->SetSetting(id, (const char*)GetSetting(id).c_str());
         }
-        else if (type == "enum"      || type =="integer" ||
-                 type == "labelenum" || type == "rangeofnum")
+        else if (type == "enum" || type == "integer" || type == "labelenum" || type == "rangeofnum")
         {
           int tmp = atoi(GetSetting(id).c_str());
-          status = m_pDll->SetSetting(id, (int*) &tmp);
+          status = m_pDll->SetSetting(id, (int*)&tmp);
         }
         else if (type == "bool")
         {
           bool tmp = (GetSetting(id) == "true") ? true : false;
-          status = m_pDll->SetSetting(id, (bool*) &tmp);
+          status = m_pDll->SetSetting(id, (bool*)&tmp);
         }
-        else if (type == "rangeofnum" || type == "slider" ||
-                 type == "number")
+        else if (type == "rangeofnum" || type == "slider" || type == "number")
         {
           float tmpf = (float)atof(GetSetting(id).c_str());
-          int   tmpi;
+          int tmpi;
 
-          if (option && strcmpi(option,"int") == 0)
+          if (option && strcmpi(option, "int") == 0)
           {
             tmpi = (int)floor(tmpf);
-            status = m_pDll->SetSetting(id, (int*) &tmpi);
+            status = m_pDll->SetSetting(id, (int*)&tmpi);
           }
           else
           {
-            status = m_pDll->SetSetting(id, (float*) &tmpf);
+            status = m_pDll->SetSetting(id, (float*)&tmpf);
           }
         }
         else
         {
           /* Log unknowns as an error, but go ahead and transfer the string */
           CLog::Log(LOGERROR, "Unknown setting type '%s' for %s", type.c_str(), Name().c_str());
-          status = m_pDll->SetSetting(id, (const char*) GetSetting(id).c_str());
+          status = m_pDll->SetSetting(id, (const char*)GetSetting(id).c_str());
         }
 
         if (status == ADDON_STATUS_NEED_RESTART)
@@ -573,12 +578,14 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::TransferSettings()
 }
 
 template<class TheDll, typename TheStruct, typename TheProps>
-void CAddonDll<TheDll, TheStruct, TheProps>::HandleException(std::exception &e, const char* context)
+void CAddonDll<TheDll, TheStruct, TheProps>::HandleException(std::exception& e, const char* context)
 {
   m_initialized = false;
   m_pDll->Unload();
-  CLog::Log(LOGERROR, "ADDON: Dll %s, throws an exception '%s' during %s. Contact developer '%s' with bug reports", Name().c_str(), e.what(), context, Author().c_str());
+  CLog::Log(
+      LOGERROR,
+      "ADDON: Dll %s, throws an exception '%s' during %s. Contact developer '%s' with bug reports",
+      Name().c_str(), e.what(), context, Author().c_str());
 }
 
 }; /* namespace ADDON */
-

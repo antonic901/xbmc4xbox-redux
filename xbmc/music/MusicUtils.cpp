@@ -39,287 +39,299 @@ using namespace PLAYLIST;
 
 namespace MUSIC_UTILS
 {
-  class CSetArtJob : public CJob
-  {
-    CFileItemPtr pItem;
-    std::string m_artType;
-    std::string m_newArt;
-  public:
-    CSetArtJob(const CFileItemPtr item, const std::string& type, const std::string& newArt) :
-      pItem(item),
+class CSetArtJob : public CJob
+{
+  CFileItemPtr pItem;
+  std::string m_artType;
+  std::string m_newArt;
+
+public:
+  CSetArtJob(const CFileItemPtr item, const std::string& type, const std::string& newArt)
+    : pItem(item),
       m_artType(type),
       m_newArt(newArt)
-    { }
+  {
+  }
 
-    ~CSetArtJob(void) { };
+  ~CSetArtJob(void) {};
 
-    bool HasSongExtraArtChanged(const CFileItemPtr pSongItem, const std::string& type, const int itemID, CMusicDatabase& db)
+  bool HasSongExtraArtChanged(const CFileItemPtr pSongItem,
+                              const std::string& type,
+                              const int itemID,
+                              CMusicDatabase& db)
+  {
+    if (!pSongItem->HasMusicInfoTag())
+      return false;
+    int idSong = pSongItem->GetMusicInfoTag()->GetDatabaseId();
+    if (idSong <= 0)
+      return false;
+    bool result = false;
+    if (type == MediaTypeAlbum)
+      // Update art when song is from album
+      result = (itemID == pSongItem->GetMusicInfoTag()->GetAlbumId());
+    else if (type == MediaTypeArtist)
     {
-      if (!pSongItem->HasMusicInfoTag())
-        return false;
-      int idSong = pSongItem->GetMusicInfoTag()->GetDatabaseId();
-      if (idSong <= 0)
-        return false;
-      bool result = false;
-      if (type == MediaTypeAlbum)
-        // Update art when song is from album
-        result = (itemID == pSongItem->GetMusicInfoTag()->GetAlbumId());
-      else if (type == MediaTypeArtist)
+      // Update art when artist is song or album artist of the song
+      if (pSongItem->HasProperty("artistid"))
       {
-        // Update art when artist is song or album artist of the song
-        if (pSongItem->HasProperty("artistid"))
+        // Check artistid property when we have it
+        for (CVariant::const_iterator_array varid =
+                 pSongItem->GetProperty("artistid").begin_array();
+             varid != pSongItem->GetProperty("artistid").end_array(); varid++)
         {
-          // Check artistid property when we have it
-          for (CVariant::const_iterator_array varid = pSongItem->GetProperty("artistid").begin_array();
-            varid != pSongItem->GetProperty("artistid").end_array(); varid++)
-          {
-            int idArtist = varid->asInteger();
-            result = (itemID == idArtist);
-            if (result)
-              break;
-          }
-        }
-        else
-        { // Check song artists in database
-          result = db.IsSongArtist(idSong, itemID);
-        }
-        if (!result)
-        {
-          // Check song album artists
-          result = db.IsSongAlbumArtist(idSong, itemID);
+          int idArtist = varid->asInteger();
+          result = (itemID == idArtist);
+          if (result)
+            break;
         }
       }
-      return result;
-    }
-
-    // Asynchronously update song, album or artist art in library
-    // and trigger update to album & artist art of the currently playing song
-    // and songs queued in the current playlist
-    bool DoWork(void)
-    {
-      int itemID = pItem->GetMusicInfoTag()->GetDatabaseId();
-      if (itemID <= 0)
-        return false;
-      std::string type = pItem->GetMusicInfoTag()->GetType();
-      CMusicDatabase db;
-      if (!db.Open())
-        return false;
-      if (!m_newArt.empty())
-        db.SetArtForItem(itemID, type, m_artType, m_newArt);
       else
-        db.RemoveArtForItem(itemID, type, m_artType);
+      { // Check song artists in database
+        result = db.IsSongArtist(idSong, itemID);
+      }
+      if (!result)
+      {
+        // Check song album artists
+        result = db.IsSongAlbumArtist(idSong, itemID);
+      }
+    }
+    return result;
+  }
 
-      /* Update the art of the songs of the current music playlist.
+  // Asynchronously update song, album or artist art in library
+  // and trigger update to album & artist art of the currently playing song
+  // and songs queued in the current playlist
+  bool DoWork(void)
+  {
+    int itemID = pItem->GetMusicInfoTag()->GetDatabaseId();
+    if (itemID <= 0)
+      return false;
+    std::string type = pItem->GetMusicInfoTag()->GetType();
+    CMusicDatabase db;
+    if (!db.Open())
+      return false;
+    if (!m_newArt.empty())
+      db.SetArtForItem(itemID, type, m_artType, m_newArt);
+    else
+      db.RemoveArtForItem(itemID, type, m_artType);
+
+    /* Update the art of the songs of the current music playlist.
       Song thumb is often a fallback from the album and fanart is from the artist(s).
       Clear the art if it is a song from the album or by the artist
       (as song or album artist) that has modified artwork. The new artwork gets
       loaded when the playlist is shown.
       */
-      bool clearcache(false);
-      CPlayList& playlist = CServiceBroker::GetPlaylistPlayer().GetPlaylist(PLAYLIST_MUSIC);
-      for (int i = 0; i < playlist.size(); ++i)
+    bool clearcache(false);
+    CPlayList& playlist = CServiceBroker::GetPlaylistPlayer().GetPlaylist(PLAYLIST_MUSIC);
+    for (int i = 0; i < playlist.size(); ++i)
+    {
+      CFileItemPtr songitem = playlist[i];
+      if (HasSongExtraArtChanged(songitem, type, itemID, db))
       {
-        CFileItemPtr songitem = playlist[i];
-        if (HasSongExtraArtChanged(songitem, type, itemID, db))
-        {
-          songitem->ClearArt(); // Art gets reloaded when the current playist is shown
-          clearcache = true;
-        }
+        songitem->ClearArt(); // Art gets reloaded when the current playist is shown
+        clearcache = true;
       }
-      if (clearcache)
-      {
-        // Clear the music playlist from cache
-        CFileItemList items("playlistmusic://");
-        items.RemoveDiscCache(WINDOW_MUSIC_PLAYLIST);
-      }
-
-      // Similarly update the art of the currently playing song so it shows on OSD
-      if (g_application.m_pPlayer->IsPlayingAudio() && g_application.CurrentFileItem().HasMusicInfoTag())
-      {
-        CFileItemPtr songitem = CFileItemPtr(new CFileItem(g_application.CurrentFileItem()));
-        if (HasSongExtraArtChanged(songitem, type, itemID, db))
-          g_application.UpdateCurrentPlayArt();
-      }
-
-      db.Close();
-      return true;
     }
-  };
+    if (clearcache)
+    {
+      // Clear the music playlist from cache
+      CFileItemList items("playlistmusic://");
+      items.RemoveDiscCache(WINDOW_MUSIC_PLAYLIST);
+    }
 
-  class CSetSongRatingJob : public CJob
-  {
-    std::string strPath;
-    int idSong;
-    int iUserrating;
-  public:
-    CSetSongRatingJob(const std::string& filePath, int userrating) :
-      strPath(filePath),
+    // Similarly update the art of the currently playing song so it shows on OSD
+    if (g_application.m_pPlayer->IsPlayingAudio() &&
+        g_application.CurrentFileItem().HasMusicInfoTag())
+    {
+      CFileItemPtr songitem = CFileItemPtr(new CFileItem(g_application.CurrentFileItem()));
+      if (HasSongExtraArtChanged(songitem, type, itemID, db))
+        g_application.UpdateCurrentPlayArt();
+    }
+
+    db.Close();
+    return true;
+  }
+};
+
+class CSetSongRatingJob : public CJob
+{
+  std::string strPath;
+  int idSong;
+  int iUserrating;
+
+public:
+  CSetSongRatingJob(const std::string& filePath, int userrating)
+    : strPath(filePath),
       idSong(-1),
       iUserrating(userrating)
-    { }
-
-    CSetSongRatingJob(int songId, int userrating) :
-      strPath(),
-      idSong(songId),
-      iUserrating(userrating)
-    { }
-
-    ~CSetSongRatingJob(void) { };
-
-    bool DoWork(void)
-    {
-      // Asynchronously update song userrating in library
-      CMusicDatabase db;
-      if (db.Open())
-      {
-        if (idSong > 0)
-          db.SetSongUserrating(idSong, iUserrating);
-        else
-          db.SetSongUserrating(strPath, iUserrating);
-        db.Close();
-      }
-
-      return true;
-    }
-  };
-
-  void UpdateArtJob(const CFileItemPtr pItem, const std::string& strType, const std::string& strArt)
   {
-    // Asynchronously update that type of art in the database
-    CSetArtJob *job = new CSetArtJob(pItem, strType, strArt);
-    CJobManager::GetInstance().AddJob(job, NULL);
   }
 
-  bool FillArtTypesList(CFileItem& musicitem, CFileItemList& artlist)
+  CSetSongRatingJob(int songId, int userrating) : strPath(), idSong(songId), iUserrating(userrating)
   {
-    CMusicInfoTag &tag = *musicitem.GetMusicInfoTag();
-    if (tag.GetDatabaseId() < 1 || tag.GetType().empty())
-      return false;
-    if (tag.GetType() != MediaTypeArtist && tag.GetType() != MediaTypeAlbum && tag.GetType() != MediaTypeSong)
-      return false;
+  }
 
-    artlist.Clear();
-    // Songs, albums and artists all  have thumbs by default
-    std::vector<std::string> artTypes;
-    artTypes.push_back("thumb");
-    if (tag.GetType() == MediaTypeArtist)
-    {
-      artTypes.push_back("fanart");
-    }
+  ~CSetSongRatingJob(void) {};
 
+  bool DoWork(void)
+  {
+    // Asynchronously update song userrating in library
     CMusicDatabase db;
-    db.Open();
-
-    // Add in any stored art for this item that is non-empty.
-    std::map<std::string, std::string> currentArt;
-    db.GetArtForItem(tag.GetDatabaseId(), tag.GetType(), currentArt);
-    for (std::map<std::string, std::string>::const_iterator it = currentArt.begin(); it != currentArt.end(); ++it)
+    if (db.Open())
     {
-      const std::pair<const std::string, std::string> art = *it;
-      if (!art.second.empty() && find(artTypes.begin(), artTypes.end(), art.first) == artTypes.end())
-        artTypes.push_back(art.first);
-    }
-
-    // Add any art types that exist for other media items of the same type
-    std::vector<std::string> dbArtTypes;
-    db.GetArtTypes(tag.GetType(), dbArtTypes);
-    for (std::vector<std::string>::const_iterator it2 = dbArtTypes.begin(); it2 != dbArtTypes.end(); ++it2)
-    {
-      const std::string it = *it2;
-      if (find(artTypes.begin(), artTypes.end(), it) == artTypes.end())
-        artTypes.push_back(it);
-    }
-    db.Close();
-
-    for (std::vector<std::string>::const_iterator it = artTypes.begin(); it != artTypes.end(); ++it)
-    {
-      const std::string type = *it;
-      CFileItemPtr artitem(new CFileItem(type, false));
-      // Localise the names of common types of art
-      if (type == "banner")
-        artitem->SetLabel(g_localizeStrings.Get(20020));
-      else if (type == "fanart")
-        artitem->SetLabel(g_localizeStrings.Get(20445));
-      else if (type == "poster")
-        artitem->SetLabel(g_localizeStrings.Get(20021));
-      else if (type == "thumb")
-        artitem->SetLabel(g_localizeStrings.Get(21371));
+      if (idSong > 0)
+        db.SetSongUserrating(idSong, iUserrating);
       else
-        artitem->SetLabel(type);
-      // Set art type as art item property
-      artitem->SetProperty("arttype", type);
-      // Set current art as art item thumb
-      if (musicitem.HasArt(type))
-        artitem->SetArt("thumb", musicitem.GetArt(type));
-      artlist.Add(artitem);
+        db.SetSongUserrating(strPath, iUserrating);
+      db.Close();
     }
 
-    return !artlist.IsEmpty();
+    return true;
+  }
+};
+
+void UpdateArtJob(const CFileItemPtr pItem, const std::string& strType, const std::string& strArt)
+{
+  // Asynchronously update that type of art in the database
+  CSetArtJob* job = new CSetArtJob(pItem, strType, strArt);
+  CJobManager::GetInstance().AddJob(job, NULL);
+}
+
+bool FillArtTypesList(CFileItem& musicitem, CFileItemList& artlist)
+{
+  CMusicInfoTag& tag = *musicitem.GetMusicInfoTag();
+  if (tag.GetDatabaseId() < 1 || tag.GetType().empty())
+    return false;
+  if (tag.GetType() != MediaTypeArtist && tag.GetType() != MediaTypeAlbum &&
+      tag.GetType() != MediaTypeSong)
+    return false;
+
+  artlist.Clear();
+  // Songs, albums and artists all  have thumbs by default
+  std::vector<std::string> artTypes;
+  artTypes.push_back("thumb");
+  if (tag.GetType() == MediaTypeArtist)
+  {
+    artTypes.push_back("fanart");
   }
 
-  std::string ShowSelectArtTypeDialog(CFileItemList& artitems)
+  CMusicDatabase db;
+  db.Open();
+
+  // Add in any stored art for this item that is non-empty.
+  std::map<std::string, std::string> currentArt;
+  db.GetArtForItem(tag.GetDatabaseId(), tag.GetType(), currentArt);
+  for (std::map<std::string, std::string>::const_iterator it = currentArt.begin();
+       it != currentArt.end(); ++it)
   {
-    // Prompt for choice
-    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
-    if (!dialog)
+    const std::pair<const std::string, std::string> art = *it;
+    if (!art.second.empty() && find(artTypes.begin(), artTypes.end(), art.first) == artTypes.end())
+      artTypes.push_back(art.first);
+  }
+
+  // Add any art types that exist for other media items of the same type
+  std::vector<std::string> dbArtTypes;
+  db.GetArtTypes(tag.GetType(), dbArtTypes);
+  for (std::vector<std::string>::const_iterator it2 = dbArtTypes.begin(); it2 != dbArtTypes.end();
+       ++it2)
+  {
+    const std::string it = *it2;
+    if (find(artTypes.begin(), artTypes.end(), it) == artTypes.end())
+      artTypes.push_back(it);
+  }
+  db.Close();
+
+  for (std::vector<std::string>::const_iterator it = artTypes.begin(); it != artTypes.end(); ++it)
+  {
+    const std::string type = *it;
+    CFileItemPtr artitem(new CFileItem(type, false));
+    // Localise the names of common types of art
+    if (type == "banner")
+      artitem->SetLabel(g_localizeStrings.Get(20020));
+    else if (type == "fanart")
+      artitem->SetLabel(g_localizeStrings.Get(20445));
+    else if (type == "poster")
+      artitem->SetLabel(g_localizeStrings.Get(20021));
+    else if (type == "thumb")
+      artitem->SetLabel(g_localizeStrings.Get(21371));
+    else
+      artitem->SetLabel(type);
+    // Set art type as art item property
+    artitem->SetProperty("arttype", type);
+    // Set current art as art item thumb
+    if (musicitem.HasArt(type))
+      artitem->SetArt("thumb", musicitem.GetArt(type));
+    artlist.Add(artitem);
+  }
+
+  return !artlist.IsEmpty();
+}
+
+std::string ShowSelectArtTypeDialog(CFileItemList& artitems)
+{
+  // Prompt for choice
+  CGUIDialogSelect* dialog =
+      static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+  if (!dialog)
+    return "";
+
+  dialog->SetHeading(13521);
+  dialog->Reset();
+  dialog->SetUseDetails(true);
+  dialog->EnableButton(true, 13516);
+
+  dialog->SetItems(artitems);
+  dialog->Open();
+
+  if (dialog->IsButtonPressed())
+  {
+    // Get the new art type name
+    std::string strArtTypeName;
+    if (!CGUIKeyboardFactory::ShowAndGetInput(strArtTypeName, g_localizeStrings.Get(13516), false))
       return "";
+    // Add new type to the list of art types
+    CFileItemPtr artitem(new CFileItem(strArtTypeName, false));
+    artitem->SetLabel(strArtTypeName);
+    artitem->SetProperty("arttype", strArtTypeName);
+    artitems.Add(artitem);
 
-    dialog->SetHeading( 13521 );
-    dialog->Reset();
-    dialog->SetUseDetails(true);
-    dialog->EnableButton(true, 13516);
+    return strArtTypeName;
+  }
 
-    dialog->SetItems(artitems);
+  return dialog->GetSelectedFileItem()->GetProperty("arttype").asString();
+}
+
+int ShowSelectRatingDialog(int iSelected)
+{
+  CGUIDialogSelect* dialog =
+      static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+  if (dialog)
+  {
+    dialog->SetHeading(38023);
+    dialog->Add(g_localizeStrings.Get(38022));
+    for (int i = 1; i <= 10; i++)
+      dialog->Add(StringUtils::Format("%s: %i", g_localizeStrings.Get(563).c_str(), i));
+    dialog->SetSelected(iSelected);
     dialog->Open();
 
-    if (dialog->IsButtonPressed())
-    {
-      // Get the new art type name
-      std::string strArtTypeName;
-      if (!CGUIKeyboardFactory::ShowAndGetInput(strArtTypeName,  g_localizeStrings.Get(13516) , false))
-        return "";
-      // Add new type to the list of art types
-      CFileItemPtr artitem(new CFileItem(strArtTypeName, false));
-      artitem->SetLabel(strArtTypeName);
-      artitem->SetProperty("arttype", strArtTypeName);
-      artitems.Add(artitem);
-
-      return strArtTypeName;
-    }
-
-    return dialog->GetSelectedFileItem()->GetProperty("arttype").asString();
+    int userrating = dialog->GetSelectedItem();
+    userrating = std::max(userrating, -1);
+    userrating = std::min(userrating, 10);
+    return userrating;
   }
-
-  int ShowSelectRatingDialog(int iSelected)
-  {
-    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
-    if (dialog)
-    {
-      dialog->SetHeading( 38023 );
-      dialog->Add(g_localizeStrings.Get(38022));
-      for (int i = 1; i <= 10; i++)
-        dialog->Add(StringUtils::Format("%s: %i", g_localizeStrings.Get(563).c_str(), i));
-      dialog->SetSelected(iSelected);
-      dialog->Open();
-
-      int userrating = dialog->GetSelectedItem();
-      userrating = std::max(userrating, -1);
-      userrating = std::min(userrating, 10);
-      return userrating;
-    }
-    return -1;
-  }
-
-  void UpdateSongRatingJob(const CFileItemPtr pItem, int userrating)
-  {
-    // Asynchronously update the song user rating in music library
-    const CMusicInfoTag *tag = pItem->GetMusicInfoTag();
-    CSetSongRatingJob *job;
-    if (tag && tag->GetType() == MediaTypeSong && tag->GetDatabaseId() > 0)
-      // Use song ID when known
-      job = new CSetSongRatingJob(tag->GetDatabaseId(), userrating);
-    else
-      job = new CSetSongRatingJob(pItem->GetPath(), userrating);
-    CJobManager::GetInstance().AddJob(job, NULL);
-  }
+  return -1;
 }
+
+void UpdateSongRatingJob(const CFileItemPtr pItem, int userrating)
+{
+  // Asynchronously update the song user rating in music library
+  const CMusicInfoTag* tag = pItem->GetMusicInfoTag();
+  CSetSongRatingJob* job;
+  if (tag && tag->GetType() == MediaTypeSong && tag->GetDatabaseId() > 0)
+    // Use song ID when known
+    job = new CSetSongRatingJob(tag->GetDatabaseId(), userrating);
+  else
+    job = new CSetSongRatingJob(pItem->GetPath(), userrating);
+  CJobManager::GetInstance().AddJob(job, NULL);
+}
+} // namespace MUSIC_UTILS

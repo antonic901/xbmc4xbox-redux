@@ -22,10 +22,24 @@
 #include <limits>
 #include "addons/Skin.h"
 
-CGUIListLabel::CGUIListLabel(int parentID, int controlID, float posX, float posY, float width, float height, const CLabelInfo& labelInfo, const CGUIInfoLabel &info, CGUIControl::GUISCROLLVALUE scroll)
-    : CGUIControl(parentID, controlID, posX, posY, width, height)
-    , m_label(posX, posY, width, height, labelInfo, (scroll == CGUIControl::ALWAYS) ? CGUILabel::OVER_FLOW_SCROLL : CGUILabel::OVER_FLOW_TRUNCATE)
-    , m_info(info)
+CGUIListLabel::CGUIListLabel(int parentID,
+                             int controlID,
+                             float posX,
+                             float posY,
+                             float width,
+                             float height,
+                             const CLabelInfo& labelInfo,
+                             const CGUIInfoLabel& info,
+                             CGUIControl::GUISCROLLVALUE scroll)
+  : CGUIControl(parentID, controlID, posX, posY, width, height),
+    m_label(posX,
+            posY,
+            width,
+            height,
+            labelInfo,
+            (scroll == CGUIControl::ALWAYS) ? CGUILabel::OVER_FLOW_SCROLL
+                                            : CGUILabel::OVER_FLOW_TRUNCATE),
+    m_info(info)
 {
   m_scroll = scroll;
   if (m_info.IsConstant())
@@ -47,7 +61,7 @@ void CGUIListLabel::SetScrolling(bool scrolling)
 
 void CGUIListLabel::SetSelected(bool selected)
 {
-  if(m_label.SetColor(selected ? CGUILabel::COLOR_SELECTED : CGUILabel::COLOR_TEXT))
+  if (m_label.SetColor(selected ? CGUILabel::COLOR_SELECTED : CGUILabel::COLOR_TEXT))
     SetInvalid();
 }
 
@@ -71,7 +85,7 @@ bool CGUIListLabel::UpdateColors()
   return changed;
 }
 
-void CGUIListLabel::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIListLabel::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   if (m_label.Process(currentTime))
     MarkDirtyRegion();
@@ -85,7 +99,7 @@ void CGUIListLabel::Render()
   CGUIControl::Render();
 }
 
-void CGUIListLabel::UpdateInfo(const CGUIListItem *item)
+void CGUIListLabel::UpdateInfo(const CGUIListItem* item)
 {
   if (m_info.IsConstant() && !m_bInvalidated)
     return; // nothing to do
@@ -108,13 +122,13 @@ void CGUIListLabel::SetWidth(float width)
   if (m_label.GetLabelInfo().align & XBFONT_RIGHT)
     m_label.SetMaxRect(m_posX - m_width, m_posY, m_width, m_height);
   else if (m_label.GetLabelInfo().align & XBFONT_CENTER_X)
-    m_label.SetMaxRect(m_posX - m_width*0.5f, m_posY, m_width, m_height);
+    m_label.SetMaxRect(m_posX - m_width * 0.5f, m_posY, m_width, m_height);
   else
     m_label.SetMaxRect(m_posX, m_posY, m_width, m_height);
   CGUIControl::SetWidth(m_width);
 }
 
-void CGUIListLabel::SetLabel(const std::string &label)
+void CGUIListLabel::SetLabel(const std::string& label)
 {
   m_label.SetText(label);
 }

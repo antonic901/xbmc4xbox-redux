@@ -30,10 +30,7 @@ struct CAddonInfo : CStaticContextMenuAction
 {
   CAddonInfo() : CStaticContextMenuAction(19033) {}
   bool IsVisible(const CFileItem& item) const { return item.HasAddonInfo(); }
-  bool Execute(const CFileItemPtr& item) const
-  {
-    return CGUIDialogAddonInfo::ShowForItem(item);
-  }
+  bool Execute(const CFileItemPtr& item) const { return CGUIDialogAddonInfo::ShowForItem(item); }
 };
 
 struct CAddonSettings : CStaticContextMenuAction
@@ -49,4 +46,4 @@ struct CCheckForUpdates : CStaticContextMenuAction
   bool IsVisible(const CFileItem& item) const;
   bool Execute(const CFileItemPtr& item) const;
 };
-}
+} // namespace CONTEXTMENU

@@ -88,12 +88,11 @@
 #include "defs_from_settings.h"
 
 #define SETTINGS_XML_FOLDER "special://xbmc/system/settings/"
-#define SETTINGS_XML_ROOT   "settings"
+#define SETTINGS_XML_ROOT "settings"
 
 using namespace XFILE;
 
-CSettings::CSettings()
-  : m_initialized(false)
+CSettings::CSettings() : m_initialized(false)
 {
   m_settingsManager = new CSettingsManager();
 }
@@ -147,14 +146,15 @@ bool CSettings::Load()
   return Load(CProfilesManager::Get().GetSettingsFile());
 }
 
-bool CSettings::Load(const std::string &file)
+bool CSettings::Load(const std::string& file)
 {
   CXBMCTinyXML xmlDoc;
   bool updated = false;
   if (!XFILE::CFile::Exists(file) || !xmlDoc.LoadFile(file) ||
       !m_settingsManager->Load(xmlDoc.RootElement(), updated))
   {
-    CLog::Log(LOGERROR, "CSettings: unable to load settings from %s, creating new default settings", file.c_str());
+    CLog::Log(LOGERROR, "CSettings: unable to load settings from %s, creating new default settings",
+              file.c_str());
     if (!Reset())
       return false;
 
@@ -168,12 +168,12 @@ bool CSettings::Load(const std::string &file)
   return true;
 }
 
-bool CSettings::Load(const TiXmlElement *root, bool hide /* = false */)
+bool CSettings::Load(const TiXmlElement* root, bool hide /* = false */)
 {
   if (root == NULL)
     return false;
 
-  std::map<std::string, CSetting*> *loadedSettings = NULL;
+  std::map<std::string, CSetting*>* loadedSettings = NULL;
   if (hide)
     loadedSettings = new std::map<std::string, CSetting*>();
 
@@ -183,7 +183,8 @@ bool CSettings::Load(const TiXmlElement *root, bool hide /* = false */)
   // if necessary hide all the loaded settings
   if (success && hide && loadedSettings != NULL)
   {
-    for(std::map<std::string, CSetting*>::const_iterator setting = loadedSettings->begin(); setting != loadedSettings->end(); ++setting)
+    for (std::map<std::string, CSetting*>::const_iterator setting = loadedSettings->begin();
+         setting != loadedSettings->end(); ++setting)
       setting->second->SetVisible(false);
   }
   delete loadedSettings;
@@ -201,11 +202,11 @@ bool CSettings::Save()
   return Save(CProfilesManager::Get().GetSettingsFile());
 }
 
-bool CSettings::Save(const std::string &file)
+bool CSettings::Save(const std::string& file)
 {
   CXBMCTinyXML xmlDoc;
   TiXmlElement rootElement(SETTINGS_XML_ROOT);
-  TiXmlNode *root = xmlDoc.InsertEndChild(rootElement);
+  TiXmlNode* root = xmlDoc.InsertEndChild(rootElement);
   if (root == NULL)
     return false;
 
@@ -313,17 +314,18 @@ void CSettings::Uninitialize()
   m_initialized = false;
 }
 
-void CSettings::RegisterCallback(ISettingCallback *callback, const std::set<std::string> &settingList)
+void CSettings::RegisterCallback(ISettingCallback* callback,
+                                 const std::set<std::string>& settingList)
 {
   m_settingsManager->RegisterCallback(callback, settingList);
 }
 
-void CSettings::UnregisterCallback(ISettingCallback *callback)
+void CSettings::UnregisterCallback(ISettingCallback* callback)
 {
   m_settingsManager->UnregisterCallback(callback);
 }
 
-CSetting* CSettings::GetSetting(const std::string &id) const
+CSetting* CSettings::GetSetting(const std::string& id) const
 {
   CSingleLock lock(m_critical);
   if (id.empty())
@@ -338,7 +340,7 @@ std::vector<CSettingSection*> CSettings::GetSections() const
   return m_settingsManager->GetSections();
 }
 
-CSettingSection* CSettings::GetSection(const std::string &section) const
+CSettingSection* CSettings::GetSection(const std::string& section) const
 {
   CSingleLock lock(m_critical);
   if (section.empty())
@@ -347,86 +349,87 @@ CSettingSection* CSettings::GetSection(const std::string &section) const
   return m_settingsManager->GetSection(section);
 }
 
-bool CSettings::GetBool(const std::string &id) const
+bool CSettings::GetBool(const std::string& id) const
 {
   return m_settingsManager->GetBool(id);
 }
 
-bool CSettings::SetBool(const std::string &id, bool value)
+bool CSettings::SetBool(const std::string& id, bool value)
 {
   return m_settingsManager->SetBool(id, value);
 }
 
-bool CSettings::ToggleBool(const std::string &id)
+bool CSettings::ToggleBool(const std::string& id)
 {
   return m_settingsManager->ToggleBool(id);
 }
 
-int CSettings::GetInt(const std::string &id) const
+int CSettings::GetInt(const std::string& id) const
 {
   return m_settingsManager->GetInt(id);
 }
 
-bool CSettings::SetInt(const std::string &id, int value)
+bool CSettings::SetInt(const std::string& id, int value)
 {
   return m_settingsManager->SetInt(id, value);
 }
 
-double CSettings::GetNumber(const std::string &id) const
+double CSettings::GetNumber(const std::string& id) const
 {
   return m_settingsManager->GetNumber(id);
 }
 
-bool CSettings::SetNumber(const std::string &id, double value)
+bool CSettings::SetNumber(const std::string& id, double value)
 {
   return m_settingsManager->SetNumber(id, value);
 }
 
-std::string CSettings::GetString(const std::string &id) const
+std::string CSettings::GetString(const std::string& id) const
 {
   return m_settingsManager->GetString(id);
 }
 
-bool CSettings::SetString(const std::string &id, const std::string &value)
+bool CSettings::SetString(const std::string& id, const std::string& value)
 {
   return m_settingsManager->SetString(id, value);
 }
 
-std::vector<CVariant> CSettings::GetList(const std::string &id) const
+std::vector<CVariant> CSettings::GetList(const std::string& id) const
 {
-  CSetting *setting = m_settingsManager->GetSetting(id);
+  CSetting* setting = m_settingsManager->GetSetting(id);
   if (setting == NULL || setting->GetType() != SettingTypeList)
     return std::vector<CVariant>();
 
   return CSettingUtils::GetList(static_cast<CSettingList*>(setting));
 }
 
-bool CSettings::SetList(const std::string &id, const std::vector<CVariant> &value)
+bool CSettings::SetList(const std::string& id, const std::vector<CVariant>& value)
 {
-  CSetting *setting = m_settingsManager->GetSetting(id);
+  CSetting* setting = m_settingsManager->GetSetting(id);
   if (setting == NULL || setting->GetType() != SettingTypeList)
     return false;
 
   return CSettingUtils::SetList(static_cast<CSettingList*>(setting), value);
 }
 
-bool CSettings::LoadSetting(const TiXmlNode *node, const std::string &settingId)
+bool CSettings::LoadSetting(const TiXmlNode* node, const std::string& settingId)
 {
   return m_settingsManager->LoadSetting(node, settingId);
 }
 
-bool CSettings::Initialize(const std::string &file)
+bool CSettings::Initialize(const std::string& file)
 {
   CXBMCTinyXML xmlDoc;
   if (!xmlDoc.LoadFile(file.c_str()))
   {
-    CLog::Log(LOGERROR, "CSettings: error loading settings definition from %s, Line %d\n%s", file.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
+    CLog::Log(LOGERROR, "CSettings: error loading settings definition from %s, Line %d\n%s",
+              file.c_str(), xmlDoc.ErrorRow(), xmlDoc.ErrorDesc());
     return false;
   }
 
   CLog::Log(LOGDEBUG, "CSettings: loaded settings definition from %s", file.c_str());
 
-  TiXmlElement *root = xmlDoc.RootElement();
+  TiXmlElement* root = xmlDoc.RootElement();
   if (root == NULL)
     return false;
 
@@ -441,41 +444,51 @@ bool CSettings::InitializeDefinitions()
     return false;
   }
 #if defined(TARGET_WINDOWS)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "win32.xml") && !Initialize(SETTINGS_XML_FOLDER "win32.xml"))
+  if (CFile::Exists(SETTINGS_XML_FOLDER "win32.xml") &&
+      !Initialize(SETTINGS_XML_FOLDER "win32.xml"))
     CLog::Log(LOGFATAL, "Unable to load win32-specific settings definitions");
 #elif defined(TARGET_ANDROID)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "android.xml") && !Initialize(SETTINGS_XML_FOLDER "android.xml"))
+  if (CFile::Exists(SETTINGS_XML_FOLDER "android.xml") &&
+      !Initialize(SETTINGS_XML_FOLDER "android.xml"))
     CLog::Log(LOGFATAL, "Unable to load android-specific settings definitions");
 #if defined(HAS_LIBAMCODEC)
-  if (aml_present() && CFile::Exists(SETTINGS_XML_FOLDER "aml-android.xml") && !Initialize(SETTINGS_XML_FOLDER "aml-android.xml"))
+  if (aml_present() && CFile::Exists(SETTINGS_XML_FOLDER "aml-android.xml") &&
+      !Initialize(SETTINGS_XML_FOLDER "aml-android.xml"))
     CLog::Log(LOGFATAL, "Unable to load aml-android-specific settings definitions");
 #endif // defined(HAS_LIBAMCODEC)
 #elif defined(TARGET_RASPBERRY_PI)
   if (CFile::Exists(SETTINGS_XML_FOLDER "rbp.xml") && !Initialize(SETTINGS_XML_FOLDER "rbp.xml"))
     CLog::Log(LOGFATAL, "Unable to load rbp-specific settings definitions");
-  if (g_RBP.RasberryPiVersion() > 1 && CFile::Exists(SETTINGS_XML_FOLDER "rbp2.xml") && !Initialize(SETTINGS_XML_FOLDER "rbp2.xml"))
+  if (g_RBP.RasberryPiVersion() > 1 && CFile::Exists(SETTINGS_XML_FOLDER "rbp2.xml") &&
+      !Initialize(SETTINGS_XML_FOLDER "rbp2.xml"))
     CLog::Log(LOGFATAL, "Unable to load rbp2-specific settings definitions");
 #elif defined(TARGET_FREEBSD)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "freebsd.xml") && !Initialize(SETTINGS_XML_FOLDER "freebsd.xml"))
+  if (CFile::Exists(SETTINGS_XML_FOLDER "freebsd.xml") &&
+      !Initialize(SETTINGS_XML_FOLDER "freebsd.xml"))
     CLog::Log(LOGFATAL, "Unable to load freebsd-specific settings definitions");
 #elif defined(HAS_IMXVPU)
   if (CFile::Exists(SETTINGS_XML_FOLDER "imx6.xml") && !Initialize(SETTINGS_XML_FOLDER "imx6.xml"))
     CLog::Log(LOGFATAL, "Unable to load imx6-specific settings definitions");
 #elif defined(TARGET_LINUX)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "linux.xml") && !Initialize(SETTINGS_XML_FOLDER "linux.xml"))
+  if (CFile::Exists(SETTINGS_XML_FOLDER "linux.xml") &&
+      !Initialize(SETTINGS_XML_FOLDER "linux.xml"))
     CLog::Log(LOGFATAL, "Unable to load linux-specific settings definitions");
 #if defined(HAS_LIBAMCODEC)
-  if (aml_present() && CFile::Exists(SETTINGS_XML_FOLDER "aml-linux.xml") && !Initialize(SETTINGS_XML_FOLDER "aml-linux.xml"))
+  if (aml_present() && CFile::Exists(SETTINGS_XML_FOLDER "aml-linux.xml") &&
+      !Initialize(SETTINGS_XML_FOLDER "aml-linux.xml"))
     CLog::Log(LOGFATAL, "Unable to load aml-linux-specific settings definitions");
 #endif // defined(HAS_LIBAMCODEC)
 #elif defined(TARGET_DARWIN)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin.xml"))
+  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin.xml") &&
+      !Initialize(SETTINGS_XML_FOLDER "darwin.xml"))
     CLog::Log(LOGFATAL, "Unable to load darwin-specific settings definitions");
 #if defined(TARGET_DARWIN_OSX)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_osx.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin_osx.xml"))
+  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_osx.xml") &&
+      !Initialize(SETTINGS_XML_FOLDER "darwin_osx.xml"))
     CLog::Log(LOGFATAL, "Unable to load osx-specific settings definitions");
 #elif defined(TARGET_DARWIN_IOS)
-  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_ios.xml") && !Initialize(SETTINGS_XML_FOLDER "darwin_ios.xml"))
+  if (CFile::Exists(SETTINGS_XML_FOLDER "darwin_ios.xml") &&
+      !Initialize(SETTINGS_XML_FOLDER "darwin_ios.xml"))
     CLog::Log(LOGFATAL, "Unable to load ios-specific settings definitions");
 #endif
 #elif defined(_XBOX)
@@ -488,7 +501,8 @@ bool CSettings::InitializeDefinitions()
   InitializeVisibility();
   InitializeDefaults();
 
-  if (CFile::Exists(SETTINGS_XML_FOLDER "appliance.xml") && !Initialize(SETTINGS_XML_FOLDER "appliance.xml"))
+  if (CFile::Exists(SETTINGS_XML_FOLDER "appliance.xml") &&
+      !Initialize(SETTINGS_XML_FOLDER "appliance.xml"))
     CLog::Log(LOGFATAL, "Unable to load appliance-specific settings definitions");
 
   return true;
@@ -517,8 +531,10 @@ void CSettings::InitializeVisibility()
 {
   // hide some settings if necessary
 #if defined(TARGET_DARWIN)
-  CSettingString* timezonecountry = (CSettingString*)m_settingsManager->GetSetting(CSettings::SETTING_LOCALE_TIMEZONECOUNTRY);
-  CSettingString* timezone = (CSettingString*)m_settingsManager->GetSetting(CSettings::SETTING_LOCALE_TIMEZONE);
+  CSettingString* timezonecountry =
+      (CSettingString*)m_settingsManager->GetSetting(CSettings::SETTING_LOCALE_TIMEZONECOUNTRY);
+  CSettingString* timezone =
+      (CSettingString*)m_settingsManager->GetSetting(CSettings::SETTING_LOCALE_TIMEZONE);
 
   if (CDarwinUtils::GetIOSVersion() >= 4.3)
   {
@@ -536,28 +552,31 @@ void CSettings::InitializeDefaults()
 #endif
 
 #if defined(_LINUX)
-  CSettingString* timezonecountry = (CSettingString*)m_settingsManager->GetSetting("locale.timezonecountry");
+  CSettingString* timezonecountry =
+      (CSettingString*)m_settingsManager->GetSetting("locale.timezonecountry");
   CSettingString* timezone = (CSettingString*)m_settingsManager->GetSetting("locale.timezone");
 
   if (timezonecountry->IsVisible())
-    timezonecountry->SetDefault(g_timezone.GetCountryByTimezone(g_timezone.GetOSConfiguredTimezone()));
+    timezonecountry->SetDefault(
+        g_timezone.GetCountryByTimezone(g_timezone.GetOSConfiguredTimezone()));
   if (timezone->IsVisible())
     timezone->SetDefault(g_timezone.GetOSConfiguredTimezone());
 #endif // defined(_LINUX)
 
 #if defined(TARGET_WINDOWS)
-  #if defined(HAS_DX) || defined(HAS_XBOX_D3D)
-  ((CSettingString*)m_settingsManager->GetSetting("musicplayer.visualisation"))->SetDefault("visualization.milkdrop");
-  #endif
+#if defined(HAS_DX) || defined(HAS_XBOX_D3D)
+  ((CSettingString*)m_settingsManager->GetSetting("musicplayer.visualisation"))
+      ->SetDefault("visualization.milkdrop");
+#endif
 
-  #if !defined(HAS_GL) && !defined(HAS_XBOX_D3D)
+#if !defined(HAS_GL) && !defined(HAS_XBOX_D3D)
   // We prefer a fake fullscreen mode (window covering the screen rather than dedicated fullscreen)
   // as it works nicer with switching to other applications. However on some systems vsync is broken
   // when we do this (eg non-Aero on ATI in particular) and on others (AppleTV) we can't get XBMC to
   // the front
   if (g_sysinfo.IsAeroDisabled())
     ((CSettingBool*)m_settingsManager->GetSetting("videoscreen.fakefullscreen"))->SetDefault(false);
-  #endif
+#endif
 #endif
 
 #if defined(HAS_WEB_SERVER)
@@ -568,22 +587,32 @@ void CSettings::InitializeDefaults()
 #if defined(_XBOX)
   // actual values are set inside OnSettingsLoaded() callback
   CLog::Log(LOGNOTICE, "Getting hardware information now...");
-  if (((CSettingInt*)m_settingsManager->GetSetting("audiooutput.mode"))->GetValue() == AUDIO_DIGITAL && !g_audioConfig.HasDigitalOutput())
+  if (((CSettingInt*)m_settingsManager->GetSetting("audiooutput.mode"))->GetValue() ==
+          AUDIO_DIGITAL &&
+      !g_audioConfig.HasDigitalOutput())
     ((CSettingInt*)m_settingsManager->GetSetting("audiooutput.mode"))->SetDefault(AUDIO_ANALOG);
-  ((CSettingBool*)m_settingsManager->GetSetting("audiooutput.ac3passthrough"))->SetDefault(g_audioConfig.GetAC3Enabled());
-  ((CSettingBool*)m_settingsManager->GetSetting("audiooutput.dtspassthrough"))->SetDefault(g_audioConfig.GetDTSEnabled());
+  ((CSettingBool*)m_settingsManager->GetSetting("audiooutput.ac3passthrough"))
+      ->SetDefault(g_audioConfig.GetAC3Enabled());
+  ((CSettingBool*)m_settingsManager->GetSetting("audiooutput.dtspassthrough"))
+      ->SetDefault(g_audioConfig.GetDTSEnabled());
 
   if (g_videoConfig.HasLetterbox())
-    ((CSettingInt*)m_settingsManager->GetSetting("videooutput.aspect"))->SetDefault(VIDEO_LETTERBOX);
+    ((CSettingInt*)m_settingsManager->GetSetting("videooutput.aspect"))
+        ->SetDefault(VIDEO_LETTERBOX);
   else if (g_videoConfig.HasWidescreen())
-    ((CSettingInt*)m_settingsManager->GetSetting("videooutput.aspect"))->SetDefault(VIDEO_WIDESCREEN);
+    ((CSettingInt*)m_settingsManager->GetSetting("videooutput.aspect"))
+        ->SetDefault(VIDEO_WIDESCREEN);
   else
     ((CSettingInt*)m_settingsManager->GetSetting("videooutput.aspect"))->SetDefault(VIDEO_NORMAL);
-  ((CSettingBool*)m_settingsManager->GetSetting("videooutput.hd480p"))->SetDefault(g_videoConfig.Has480p());
-  ((CSettingBool*)m_settingsManager->GetSetting("videooutput.hd720p"))->SetDefault(g_videoConfig.Has720p());
-  ((CSettingBool*)m_settingsManager->GetSetting("videooutput.hd1080i"))->SetDefault(g_videoConfig.Has1080i());
+  ((CSettingBool*)m_settingsManager->GetSetting("videooutput.hd480p"))
+      ->SetDefault(g_videoConfig.Has480p());
+  ((CSettingBool*)m_settingsManager->GetSetting("videooutput.hd720p"))
+      ->SetDefault(g_videoConfig.Has720p());
+  ((CSettingBool*)m_settingsManager->GetSetting("videooutput.hd1080i"))
+      ->SetDefault(g_videoConfig.Has1080i());
 
-  ((CSettingInt*)m_settingsManager->GetSetting("locale.timezone"))->SetDefault(g_timezone.GetTimeZoneIndex());
+  ((CSettingInt*)m_settingsManager->GetSetting("locale.timezone"))
+      ->SetDefault(g_timezone.GetTimeZoneIndex());
   ((CSettingBool*)m_settingsManager->GetSetting("locale.usedst"))->SetDefault(g_timezone.GetDST());
 #endif
 }
@@ -592,42 +621,73 @@ void CSettings::InitializeOptionFillers()
 {
   // register setting option fillers
 #ifdef HAS_DVD_DRIVE
-  m_settingsManager->RegisterSettingOptionsFiller("audiocdactions", MEDIA_DETECT::CAutorun::SettingOptionAudioCdActionsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("audiocdencoders", MEDIA_DETECT::CAutorun::SettingOptionAudioCdEncodersFiller);
+  m_settingsManager->RegisterSettingOptionsFiller(
+      "audiocdactions", MEDIA_DETECT::CAutorun::SettingOptionAudioCdActionsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller(
+      "audiocdencoders", MEDIA_DETECT::CAutorun::SettingOptionAudioCdEncodersFiller);
 #endif
-  m_settingsManager->RegisterSettingOptionsFiller("charsets", CCharsetConverter::SettingOptionsCharsetsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("fanspeeds", CFanController::SettingOptionsSpeedsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("fonts", GUIFontManager::SettingOptionsFontsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("languagenames", CLangInfo::SettingOptionsLanguageNamesFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("fontheights", GUIFontManager::SettingOptionsSubtitleHeightsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("framerateconversions", CDisplaySettings::SettingOptionsFramerateconversionsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("regions", CLangInfo::SettingOptionsRegionsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("shortdateformats", CLangInfo::SettingOptionsShortDateFormatsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("longdateformats", CLangInfo::SettingOptionsLongDateFormatsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("timeformats", CLangInfo::SettingOptionsTimeFormatsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("24hourclockformats", CLangInfo::SettingOptions24HourClockFormatsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("speedunits", CLangInfo::SettingOptionsSpeedUnitsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("temperatureunits", CLangInfo::SettingOptionsTemperatureUnitsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("charsets",
+                                                  CCharsetConverter::SettingOptionsCharsetsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("fanspeeds",
+                                                  CFanController::SettingOptionsSpeedsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("fonts",
+                                                  GUIFontManager::SettingOptionsFontsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("languagenames",
+                                                  CLangInfo::SettingOptionsLanguageNamesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller(
+      "fontheights", GUIFontManager::SettingOptionsSubtitleHeightsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller(
+      "framerateconversions", CDisplaySettings::SettingOptionsFramerateconversionsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("regions",
+                                                  CLangInfo::SettingOptionsRegionsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("shortdateformats",
+                                                  CLangInfo::SettingOptionsShortDateFormatsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("longdateformats",
+                                                  CLangInfo::SettingOptionsLongDateFormatsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("timeformats",
+                                                  CLangInfo::SettingOptionsTimeFormatsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller(
+      "24hourclockformats", CLangInfo::SettingOptions24HourClockFormatsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("speedunits",
+                                                  CLangInfo::SettingOptionsSpeedUnitsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("temperatureunits",
+                                                  CLangInfo::SettingOptionsTemperatureUnitsFiller);
 #ifdef HAS_XBOX_D3D
-  m_settingsManager->RegisterSettingOptionsFiller("rendermethods", CXBoxRenderer::SettingOptionsRenderMethodsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("rendermethods",
+                                                  CXBoxRenderer::SettingOptionsRenderMethodsFiller);
 #else
-  m_settingsManager->RegisterSettingOptionsFiller("rendermethods", CBaseRenderer::SettingOptionsRenderMethodsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("rendermethods",
+                                                  CBaseRenderer::SettingOptionsRenderMethodsFiller);
 #endif
-  m_settingsManager->RegisterSettingOptionsFiller("resolutions", CDisplaySettings::SettingOptionsResolutionsFiller);
-//   m_settingsManager->RegisterSettingOptionsFiller("shutdownstates", CPowerManager::SettingOptionsShutdownStatesFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("videoseeksteps", CSeekHandler::SettingOptionsSeekStepsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("startupwindows", ADDON::CSkinInfo::SettingOptionsStartupWindowsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("audiostreamlanguages", CLangInfo::SettingOptionsAudioStreamLanguagesFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("subtitlestreamlanguages", CLangInfo::SettingOptionsSubtitleStreamLanguagesFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("subtitledownloadlanguages", CLangInfo::SettingOptionsSubtitleDownloadlanguagesFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("iso6391languages", CLangInfo::SettingOptionsISO6391LanguagesFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("skincolors", ADDON::CSkinInfo::SettingOptionsSkinColorsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("skinfonts", ADDON::CSkinInfo::SettingOptionsSkinFontsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("skinthemes", ADDON::CSkinInfo::SettingOptionsSkinThemesFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("targettemperatures", CFanController::SettingOptionsTemperaturesFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("timezones", XBTimeZone::SettingOptionsTimezonesFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("keyboardlayouts", CKeyboardLayoutManager::SettingOptionsKeyboardLayoutsFiller);
-  m_settingsManager->RegisterSettingOptionsFiller("voicemasks", CCdgParser::SettingOptionsVoiceMasksFiller);
+  m_settingsManager->RegisterSettingOptionsFiller(
+      "resolutions", CDisplaySettings::SettingOptionsResolutionsFiller);
+  //   m_settingsManager->RegisterSettingOptionsFiller("shutdownstates", CPowerManager::SettingOptionsShutdownStatesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("videoseeksteps",
+                                                  CSeekHandler::SettingOptionsSeekStepsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller(
+      "startupwindows", ADDON::CSkinInfo::SettingOptionsStartupWindowsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller(
+      "audiostreamlanguages", CLangInfo::SettingOptionsAudioStreamLanguagesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller(
+      "subtitlestreamlanguages", CLangInfo::SettingOptionsSubtitleStreamLanguagesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller(
+      "subtitledownloadlanguages", CLangInfo::SettingOptionsSubtitleDownloadlanguagesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("iso6391languages",
+                                                  CLangInfo::SettingOptionsISO6391LanguagesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("skincolors",
+                                                  ADDON::CSkinInfo::SettingOptionsSkinColorsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("skinfonts",
+                                                  ADDON::CSkinInfo::SettingOptionsSkinFontsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("skinthemes",
+                                                  ADDON::CSkinInfo::SettingOptionsSkinThemesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("targettemperatures",
+                                                  CFanController::SettingOptionsTemperaturesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("timezones",
+                                                  XBTimeZone::SettingOptionsTimezonesFiller);
+  m_settingsManager->RegisterSettingOptionsFiller(
+      "keyboardlayouts", CKeyboardLayoutManager::SettingOptionsKeyboardLayoutsFiller);
+  m_settingsManager->RegisterSettingOptionsFiller("voicemasks",
+                                                  CCdgParser::SettingOptionsVoiceMasksFiller);
 }
 
 void CSettings::InitializeConditions()
@@ -635,13 +695,17 @@ void CSettings::InitializeConditions()
   CSettingConditions::Initialize();
 
   // add basic conditions
-  const std::set<std::string> &simpleConditions = CSettingConditions::GetSimpleConditions();
-  for (std::set<std::string>::const_iterator itCondition = simpleConditions.begin(); itCondition != simpleConditions.end(); ++itCondition)
+  const std::set<std::string>& simpleConditions = CSettingConditions::GetSimpleConditions();
+  for (std::set<std::string>::const_iterator itCondition = simpleConditions.begin();
+       itCondition != simpleConditions.end(); ++itCondition)
     m_settingsManager->AddCondition(*itCondition);
 
   // add more complex conditions
-  const std::map<std::string, SettingConditionCheck> &complexConditions = CSettingConditions::GetComplexConditions();
-  for (std::map<std::string, SettingConditionCheck>::const_iterator itCondition = complexConditions.begin(); itCondition != complexConditions.end(); ++itCondition)
+  const std::map<std::string, SettingConditionCheck>& complexConditions =
+      CSettingConditions::GetComplexConditions();
+  for (std::map<std::string, SettingConditionCheck>::const_iterator itCondition =
+           complexConditions.begin();
+       itCondition != complexConditions.end(); ++itCondition)
     m_settingsManager->AddCondition(itCondition->first, itCondition->second);
 }
 
@@ -1002,7 +1066,7 @@ bool CSettings::SaveNewAvpackXML() const
 }
 
 // Save avpack settings in the provided xml node
-bool CSettings::SaveAvpackSettings(TiXmlNode *io_pRoot) const
+bool CSettings::SaveAvpackSettings(TiXmlNode* io_pRoot) const
 {
   // TODO: move this to separate setting class and save it at the end
   // TiXmlElement programsNode("myprograms");

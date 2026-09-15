@@ -33,6 +33,7 @@ public:
 
   virtual bool GetWordListPage(const std::string& strCode, bool isFirstPage);
   virtual std::vector<std::wstring> GetResponse(int);
+
 private:
   std::vector<std::wstring> m_words;
 };

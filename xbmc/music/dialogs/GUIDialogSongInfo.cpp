@@ -44,26 +44,25 @@
 
 using namespace XFILE;
 
-#define CONTROL_BTN_REFRESH       6
-#define CONTROL_USERRATING        7
-#define CONTROL_BTN_GET_THUMB     10
-#define CONTROL_ALBUMINFO         12
+#define CONTROL_BTN_REFRESH 6
+#define CONTROL_USERRATING 7
+#define CONTROL_BTN_GET_THUMB 10
+#define CONTROL_ALBUMINFO 12
 
-#define CONTROL_LIST              50
+#define CONTROL_LIST 50
 
 #define TIME_TO_BUSY_DIALOG 500
-
-
 
 class CGetSongInfoJob : public CJob
 {
 public:
-  ~CGetSongInfoJob(void) { };
+  ~CGetSongInfoJob(void) {};
 
   // Fetch full song information including art types list
   bool DoWork()
   {
-    CGUIDialogSongInfo *dialog = static_cast<CGUIDialogSongInfo*>(g_windowManager.GetWindow(WINDOW_DIALOG_SONG_INFO));
+    CGUIDialogSongInfo* dialog =
+        static_cast<CGUIDialogSongInfo*>(g_windowManager.GetWindow(WINDOW_DIALOG_SONG_INFO));
     if (!dialog)
       return false;
     if (dialog->IsCancelled())
@@ -113,7 +112,8 @@ public:
       return false;
 
     // Fetch artist art for non db songs when artist can be found uniquely by name
-    if (!m_song->IsMusicDb() && m_song->HasMusicInfoTag() && !m_song->GetMusicInfoTag()->GetArtist().empty())
+    if (!m_song->IsMusicDb() && m_song->HasMusicInfoTag() &&
+        !m_song->GetMusicInfoTag()->GetArtist().empty())
     {
       CMusicDatabase db;
       db.Open();
@@ -135,9 +135,9 @@ public:
 };
 
 CGUIDialogSongInfo::CGUIDialogSongInfo(void)
-    : CGUIDialog(WINDOW_DIALOG_SONG_INFO, "DialogMusicInfo.xml")
-    , m_song(new CFileItem)
-    , m_albumId(-1)
+  : CGUIDialog(WINDOW_DIALOG_SONG_INFO, "DialogMusicInfo.xml"),
+    m_song(new CFileItem),
+    m_albumId(-1)
 {
   m_cancelled = false;
   m_hasUpdatedUserrating = false;
@@ -154,7 +154,7 @@ bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_DEINIT:
+    case GUI_MSG_WINDOW_DEINIT:
     {
       m_artTypeList.Clear();
       if (m_startUserrating != m_song->GetMusicInfoTag()->GetUserrating())
@@ -175,13 +175,13 @@ bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
       OnMessage(msg);
       break;
     }
-  case GUI_MSG_WINDOW_INIT:
-    CGUIDialog::OnMessage(message);
-    Update();
-    m_cancelled = false;
-    break;
+    case GUI_MSG_WINDOW_INIT:
+      CGUIDialog::OnMessage(message);
+      Update();
+      m_cancelled = false;
+      break;
 
-  case GUI_MSG_CLICKED:
+    case GUI_MSG_CLICKED:
     {
       int iControl = message.GetSenderId();
       if (iControl == CONTROL_USERRATING)
@@ -206,7 +206,8 @@ bool CGUIDialogSongInfo::OnMessage(CGUIMessage& message)
           CGUIMessage msg(GUI_MSG_ITEM_SELECTED, GetID(), iControl);
           g_windowManager.SendMessage(msg);
           int iItem = msg.GetParam1();
-          if (iItem < 0 || iItem >= static_cast<int>(m_song->GetMusicInfoTag()->GetContributors().size()))
+          if (iItem < 0 ||
+              iItem >= static_cast<int>(m_song->GetMusicInfoTag()->GetContributors().size()))
             break;
           int idArtist = m_song->GetMusicInfoTag()->GetContributors()[iItem].GetArtistId();
           if (idArtist > 0)
@@ -268,9 +269,10 @@ void CGUIDialogSongInfo::OnInitWindow()
     CONTROL_ENABLE(CONTROL_USERRATING);
 
   // Disable the Choose Art button if the user isn't allowed it
-  const CProfilesManager &profileManager = CProfilesManager::Get();
+  const CProfilesManager& profileManager = CProfilesManager::Get();
   CONTROL_ENABLE_ON_CONDITION(CONTROL_BTN_GET_THUMB,
-    profileManager.GetCurrentProfile().canWriteDatabases() || g_passwordManager.bMasterUser);
+                              profileManager.GetCurrentProfile().canWriteDatabases() ||
+                                  g_passwordManager.bMasterUser);
 
   SET_CONTROL_HIDDEN(CONTROL_BTN_REFRESH);
   SET_CONTROL_LABEL(CONTROL_USERRATING, 38023);
@@ -283,9 +285,10 @@ void CGUIDialogSongInfo::OnInitWindow()
 void CGUIDialogSongInfo::Update()
 {
   CFileItemList items;
-  for (VECMUSICROLES::const_iterator it =  m_song->GetMusicInfoTag()->GetContributors().begin(); it !=  m_song->GetMusicInfoTag()->GetContributors().end(); ++it)
+  for (VECMUSICROLES::const_iterator it = m_song->GetMusicInfoTag()->GetContributors().begin();
+       it != m_song->GetMusicInfoTag()->GetContributors().end(); ++it)
   {
-    const CMusicRole &contributor = *it;
+    const CMusicRole& contributor = *it;
     CFileItemPtr item = boost::make_shared<CFileItem>(contributor.GetRoleDesc());
     item->SetLabel2(contributor.GetArtist());
     item->GetMusicInfoTag()->SetDatabaseId(contributor.GetArtistId(), "artist");
@@ -309,7 +312,7 @@ bool CGUIDialogSongInfo::SetSong(CFileItem* item)
 {
   *m_song = *item;
   m_event.Reset();
-  m_cancelled = false;  // SetSong happens before win_init
+  m_cancelled = false; // SetSong happens before win_init
   // In a separate job fetch song info and fill list of art types.
   int jobid = CJobManager::GetInstance().AddJob(new CGetSongInfoJob(), nullptr, CJob::PRIORITY_LOW);
 
@@ -359,7 +362,6 @@ void CGUIDialogSongInfo::OnGetArt()
   if (type.empty())
     return; // Cancelled
 
-
   CFileItemList items;
   CGUIListItem::ArtMap primeArt = m_song->GetArt(); // Song art without fallbacks
   bool bHasArt = m_song->HasArt(type);
@@ -378,7 +380,7 @@ void CGUIDialogSongInfo::OnGetArt()
     CFileItemPtr item(new CFileItem("thumb://Current", false));
     item->SetArt("thumb", m_song->GetArt(type));
     item->SetIconImage("DefaultPicture.png");
-    item->SetLabel(g_localizeStrings.Get(13512));  //! @todo: label fallback art so user knows?
+    item->SetLabel(g_localizeStrings.Get(13512)); //! @todo: label fallback art so user knows?
     items.Add(item);
   }
   else if (m_song->HasArt("thumb"))
@@ -416,7 +418,7 @@ void CGUIDialogSongInfo::OnGetArt()
   // local file changes immediately
   for (int i = 0; items.Size(); ++i)
   {
-    CFileItemPtr &item = items[i];
+    CFileItemPtr& item = items[i];
     std::string thumb(item->GetArt("thumb"));
     if (thumb.empty())
       continue;
@@ -447,11 +449,12 @@ void CGUIDialogSongInfo::OnGetArt()
     CFileItem pathItem(albumpath, true);
     CGUIDialogMusicInfo::AddItemPathToFileBrowserSources(sources, pathItem);
   }
-  else  // Add parent folder of song
+  else // Add parent folder of song
     CGUIDialogMusicInfo::AddItemPathToFileBrowserSources(sources, *m_song);
   g_mediaManager.GetLocalDrives(sources);
-  if (CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(13511), result) &&
-    result != "thumb://Current")
+  if (CGUIDialogFileBrowser::ShowAndGetImage(items, sources, g_localizeStrings.Get(13511),
+                                             result) &&
+      result != "thumb://Current")
   {
     // User didn't choose the one they have, or the fallback image.
     // Overwrite with the new art or clear it
@@ -460,8 +463,8 @@ void CGUIDialogSongInfo::OnGetArt()
       newArt = m_song->GetArt("thumb");
     else if (result == "thumb://Local")
       newArt = localThumb;
-//    else if (result == "thumb://Embedded")
-//      newArt = embeddedArt;
+    //    else if (result == "thumb://Embedded")
+    //      newArt = embeddedArt;
     else if (CFile::Exists(result))
       newArt = result;
     else // none
@@ -499,7 +502,6 @@ void CGUIDialogSongInfo::OnGetArt()
     // current playlist and player OSD.
     CGUIMessage msg(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_ITEM, 0, m_song);
     g_windowManager.SendMessage(msg);
-
   }
 
   // Re-open the art type selection dialog as we come back from
@@ -525,16 +527,17 @@ void CGUIDialogSongInfo::ShowFor(CFileItem* pItem)
   if (!pItem->HasMusicInfoTag())
     return;
 
-  CGUIDialogSongInfo *dialog = static_cast<CGUIDialogSongInfo*>(g_windowManager.
-    GetWindow(WINDOW_DIALOG_SONG_INFO));
+  CGUIDialogSongInfo* dialog =
+      static_cast<CGUIDialogSongInfo*>(g_windowManager.GetWindow(WINDOW_DIALOG_SONG_INFO));
   if (dialog)
   {
-    if (dialog->SetSong(pItem))  // Fetch full song info asynchronously
+    if (dialog->SetSong(pItem)) // Fetch full song info asynchronously
     {
       dialog->Open();
       if (dialog->HasUpdatedUserrating())
       {
-        CGUIWindowMusicBase *window = static_cast<CGUIWindowMusicBase*>(g_windowManager.GetWindow(WINDOW_MUSIC_NAV));
+        CGUIWindowMusicBase* window =
+            static_cast<CGUIWindowMusicBase*>(g_windowManager.GetWindow(WINDOW_MUSIC_NAV));
         if (window)
           window->RefreshContent("songs");
       }

@@ -30,8 +30,14 @@ public:
   virtual ~CViewDatabase();
   virtual bool Open();
 
-  bool GetViewState(const std::string &path, int windowID, CViewState &state, const std::string &skin);
-  bool SetViewState(const std::string &path, int windowID, const CViewState &state, const std::string &skin);
+  bool GetViewState(const std::string& path,
+                    int windowID,
+                    CViewState& state,
+                    const std::string& skin);
+  bool SetViewState(const std::string& path,
+                    int windowID,
+                    const CViewState& state,
+                    const std::string& skin);
   bool ClearViewStates(int windowID);
 
 protected:
@@ -39,5 +45,5 @@ protected:
   virtual void CreateAnalytics();
   virtual void UpdateTables(int version);
   virtual int GetSchemaVersion() const { return 6; }
-  const char *GetBaseDBName() const { return "ViewModes"; }
+  const char* GetBaseDBName() const { return "ViewModes"; }
 };

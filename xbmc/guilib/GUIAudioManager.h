@@ -30,7 +30,11 @@ class CAction;
 class TiXmlNode;
 class CGUISound;
 
-enum WINDOW_SOUND { SOUND_INIT = 0, SOUND_DEINIT };
+enum WINDOW_SOUND
+{
+  SOUND_INIT = 0,
+  SOUND_DEINIT
+};
 
 class CGUIAudioManager : public ISettingCallback
 {
@@ -43,10 +47,12 @@ class CGUIAudioManager : public ISettingCallback
 
 public:
   CGUIAudioManager();
-          ~CGUIAudioManager();
+  ~CGUIAudioManager();
 
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
+  virtual void OnSettingChanged(const CSetting* setting);
+  virtual bool OnSettingUpdate(CSetting*& setting,
+                               const char* oldSettingId,
+                               const TiXmlNode* oldSettingNode);
 
   void Initialize(int iDevice);
   void DeInitialize(int iDevice);
@@ -62,8 +68,11 @@ public:
   void Enable(bool bEnable);
   void SetVolume(int iLevel);
   void Stop();
+
 private:
-  bool LoadWindowSound(TiXmlNode* pWindowNode, const CStdString& strIdentifier, CStdString& strFile);
+  bool LoadWindowSound(TiXmlNode* pWindowNode,
+                       const CStdString& strIdentifier,
+                       CStdString& strFile);
 
   typedef std::map<int, CStdString> actionSoundMap;
   typedef std::map<int, CWindowSounds> windowSoundMap;
@@ -71,17 +80,17 @@ private:
   typedef std::map<CStdString, CGUISound*> pythonSoundsMap;
   typedef std::map<int, CGUISound*> windowSoundsMap;
 
-  actionSoundMap      m_actionSoundMap;
-  windowSoundMap      m_windowSoundMap;
+  actionSoundMap m_actionSoundMap;
+  windowSoundMap m_windowSoundMap;
 
-  CGUISound*          m_actionSound;
-  windowSoundsMap     m_windowSounds;
-  pythonSoundsMap     m_pythonSounds;
+  CGUISound* m_actionSound;
+  windowSoundsMap m_windowSounds;
+  pythonSoundsMap m_pythonSounds;
 
-  CStdString          m_strMediaDir;
-  bool                m_bEnabled;
+  CStdString m_strMediaDir;
+  bool m_bEnabled;
 
-  CCriticalSection    m_cs;
+  CCriticalSection m_cs;
 };
 
 extern CGUIAudioManager g_audioManager;

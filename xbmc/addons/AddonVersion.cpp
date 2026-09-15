@@ -28,131 +28,135 @@
 
 namespace ADDON
 {
-  AddonVersion::AddonVersion(const std::string& version)
-  : mEpoch(0), mUpstream(version.empty() ? "0.0.0" : version)
+AddonVersion::AddonVersion(const std::string& version)
+  : mEpoch(0),
+    mUpstream(version.empty() ? "0.0.0" : version)
+{
+  size_t pos = mUpstream.find(':');
+  if (pos != std::string::npos)
   {
-    size_t pos = mUpstream.find(':');
-    if (pos != std::string::npos)
-    {
-      mEpoch = strtol(mUpstream.c_str(), NULL, 10);
-      mUpstream.erase(0, pos+1);
-    }
-
-    pos = mUpstream.find('-');
-    if (pos != std::string::npos)
-    {
-      mRevision = mUpstream.substr(pos+1);
-      mUpstream.erase(pos);
-    }
+    mEpoch = strtol(mUpstream.c_str(), NULL, 10);
+    mUpstream.erase(0, pos + 1);
   }
 
-  /**Compare two components of a Debian-style version.  Return -1, 0, or 1
-   * if a is less than, equal to, or greater than b, respectively.
-   */
-  int AddonVersion::CompareComponent(const char *a, const char *b)
+  pos = mUpstream.find('-');
+  if (pos != std::string::npos)
   {
-    while (*a && *b)
-    {
-      while (*a && *b && !isdigit(*a) && !isdigit(*b))
-      {
-        if (*a != *b)
-        {
-          if (*a == '~') return -1;
-          if (*b == '~') return 1;
-          return *a < *b ? -1 : 1;
-        }
-        a++;
-        b++;
-      }
-      if (*a && *b && (!isdigit(*a) || !isdigit(*b)))
-      {
-        if (*a == '~') return -1;
-        if (*b == '~') return 1;
-        return isdigit(*a) ? -1 : 1;
-      }
-
-      char *next_a, *next_b;
-      long int num_a = strtol(a, &next_a, 10);
-      long int num_b = strtol(b, &next_b, 10);
-      if (num_a != num_b)
-        return num_a < num_b ? -1 : 1;
-
-      a = next_a;
-      b = next_b;
-    }
-    if (!*a && !*b)
-      return 0;
-    if (*a)
-      return *a == '~' ? -1 : 1;
-    else
-      return *b == '~' ? 1 : -1;
-  }
-
-  bool AddonVersion::operator<(const AddonVersion& other) const
-  {
-    if (mEpoch != other.mEpoch)
-      return mEpoch < other.mEpoch;
-
-    int result = CompareComponent(mUpstream.c_str(), other.mUpstream.c_str());
-    if (result)
-      return (result < 0);
-
-    return (CompareComponent(mRevision.c_str(), other.mRevision.c_str()) < 0);
-  }
-
-  bool AddonVersion::operator>(const AddonVersion & other) const
-  {
-    return !(*this <= other);
-  }
-
-  bool AddonVersion::operator==(const AddonVersion& other) const
-  {
-    return mEpoch == other.mEpoch
-      && CompareComponent(mUpstream.c_str(), other.mUpstream.c_str()) == 0
-      && CompareComponent(mRevision.c_str(), other.mRevision.c_str()) == 0;
-  }
-
-  bool AddonVersion::operator!=(const AddonVersion & other) const
-  {
-    return !(*this == other);
-  }
-
-  bool AddonVersion::operator<=(const AddonVersion& other) const
-  {
-    return *this < other || *this == other;
-  }
-
-  bool AddonVersion::operator>=(const AddonVersion & other) const
-  {
-    return !(*this < other);
-  }
-
-  bool AddonVersion::empty() const
-  {
-    return mEpoch == 0 && mUpstream == "0.0.0" && mRevision.empty();
-  }
-
-  std::string AddonVersion::asString() const
-  {
-    std::string out;
-    if (mEpoch)
-      out = StringUtils::Format("%i:", mEpoch);
-    out += mUpstream;
-    if (!mRevision.empty())
-      out += "-" + mRevision;
-    return out;
-  }
-
-  bool AddonVersion::SplitFileName(std::string& ID, std::string& version,
-                                   const std::string& filename)
-  {
-    size_t dpos = filename.rfind("-");
-    if (dpos == std::string::npos)
-      return false;
-    ID = filename.substr(0, dpos);
-    version = filename.substr(dpos + 1);
-    version = version.substr(0, version.size() - 4);
-
-    return true;
+    mRevision = mUpstream.substr(pos + 1);
+    mUpstream.erase(pos);
   }
 }
+
+/**Compare two components of a Debian-style version.  Return -1, 0, or 1
+   * if a is less than, equal to, or greater than b, respectively.
+   */
+int AddonVersion::CompareComponent(const char* a, const char* b)
+{
+  while (*a && *b)
+  {
+    while (*a && *b && !isdigit(*a) && !isdigit(*b))
+    {
+      if (*a != *b)
+      {
+        if (*a == '~')
+          return -1;
+        if (*b == '~')
+          return 1;
+        return *a < *b ? -1 : 1;
+      }
+      a++;
+      b++;
+    }
+    if (*a && *b && (!isdigit(*a) || !isdigit(*b)))
+    {
+      if (*a == '~')
+        return -1;
+      if (*b == '~')
+        return 1;
+      return isdigit(*a) ? -1 : 1;
+    }
+
+    char *next_a, *next_b;
+    long int num_a = strtol(a, &next_a, 10);
+    long int num_b = strtol(b, &next_b, 10);
+    if (num_a != num_b)
+      return num_a < num_b ? -1 : 1;
+
+    a = next_a;
+    b = next_b;
+  }
+  if (!*a && !*b)
+    return 0;
+  if (*a)
+    return *a == '~' ? -1 : 1;
+  else
+    return *b == '~' ? 1 : -1;
+}
+
+bool AddonVersion::operator<(const AddonVersion& other) const
+{
+  if (mEpoch != other.mEpoch)
+    return mEpoch < other.mEpoch;
+
+  int result = CompareComponent(mUpstream.c_str(), other.mUpstream.c_str());
+  if (result)
+    return (result < 0);
+
+  return (CompareComponent(mRevision.c_str(), other.mRevision.c_str()) < 0);
+}
+
+bool AddonVersion::operator>(const AddonVersion& other) const
+{
+  return !(*this <= other);
+}
+
+bool AddonVersion::operator==(const AddonVersion& other) const
+{
+  return mEpoch == other.mEpoch &&
+         CompareComponent(mUpstream.c_str(), other.mUpstream.c_str()) == 0 &&
+         CompareComponent(mRevision.c_str(), other.mRevision.c_str()) == 0;
+}
+
+bool AddonVersion::operator!=(const AddonVersion& other) const
+{
+  return !(*this == other);
+}
+
+bool AddonVersion::operator<=(const AddonVersion& other) const
+{
+  return *this < other || *this == other;
+}
+
+bool AddonVersion::operator>=(const AddonVersion& other) const
+{
+  return !(*this < other);
+}
+
+bool AddonVersion::empty() const
+{
+  return mEpoch == 0 && mUpstream == "0.0.0" && mRevision.empty();
+}
+
+std::string AddonVersion::asString() const
+{
+  std::string out;
+  if (mEpoch)
+    out = StringUtils::Format("%i:", mEpoch);
+  out += mUpstream;
+  if (!mRevision.empty())
+    out += "-" + mRevision;
+  return out;
+}
+
+bool AddonVersion::SplitFileName(std::string& ID, std::string& version, const std::string& filename)
+{
+  size_t dpos = filename.rfind("-");
+  if (dpos == std::string::npos)
+    return false;
+  ID = filename.substr(0, dpos);
+  version = filename.substr(dpos + 1);
+  version = version.substr(0, version.size() - 4);
+
+  return true;
+}
+} // namespace ADDON

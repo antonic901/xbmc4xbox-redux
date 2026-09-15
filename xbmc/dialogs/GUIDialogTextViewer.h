@@ -22,16 +22,16 @@
 
 #include "guilib/GUIDialog.h"
 
-class CGUIDialogTextViewer :
-      public CGUIDialog
+class CGUIDialogTextViewer : public CGUIDialog
 {
 public:
   CGUIDialogTextViewer(void);
   virtual ~CGUIDialogTextViewer(void);
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   void SetText(const std::string& strText) { m_strText = strText; }
   void SetHeading(const std::string& strHeading) { m_strHeading = strHeading; }
+
 protected:
   virtual void OnDeinitWindow(int nextWindowID);
 
@@ -41,4 +41,3 @@ protected:
   void SetText();
   void SetHeading();
 };
-

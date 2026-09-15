@@ -35,15 +35,15 @@ typedef struct cp_extension_t cp_extension_t;
 
 namespace ADDON
 {
-  typedef std::vector<AddonPtr> VECADDONS;
-  typedef std::vector<AddonPtr>::iterator IVECADDONS;
+typedef std::vector<AddonPtr> VECADDONS;
+typedef std::vector<AddonPtr>::iterator IVECADDONS;
 
-  const char* const ORIGIN_SYSTEM = "b6a50484-93a0-4afb-a01c-8d17e059feda";
+const char* const ORIGIN_SYSTEM = "b6a50484-93a0-4afb-a01c-8d17e059feda";
 
 // utils
-std::string TranslateType(TYPE type, bool pretty=false);
+std::string TranslateType(TYPE type, bool pretty = false);
 std::string GetIcon(TYPE type);
-TYPE TranslateType(const std::string &string);
+TYPE TranslateType(const std::string& string);
 
 void OnEnabled(const std::string& id);
 void OnDisabled(const std::string& id);
@@ -52,12 +52,18 @@ void OnPostInstall(const AddonPtr& addon, bool update, bool modal);
 void OnPreUnInstall(const AddonPtr& addon);
 void OnPostUnInstall(const AddonPtr& addon);
 
-
 class AddonProps
 {
 public:
   AddonProps() : type(ADDON_UNKNOWN), packageSize(0), version("0.0.0"), minversion("0.0.0") {};
-  AddonProps(std::string id, TYPE type) : id(boost::move(id)), type(type), packageSize(0), version("0.0.0"), minversion("0.0.0") {}
+  AddonProps(std::string id, TYPE type)
+    : id(boost::move(id)),
+      type(type),
+      packageSize(0),
+      version("0.0.0"),
+      minversion("0.0.0")
+  {
+  }
 
   std::string id;
   TYPE type;
@@ -86,7 +92,6 @@ public:
   uint64_t packageSize;
 };
 
-
 class CAddon : public IAddon
 {
 public:
@@ -96,9 +101,9 @@ public:
   TYPE Type() const { return m_props.type; }
   TYPE FullType() const { return Type(); }
   bool IsType(TYPE type) const { return type == m_props.type; }
-  std::string ID() const{ return m_props.id; }
+  std::string ID() const { return m_props.id; }
   std::string Name() const { return m_props.name; }
-  bool IsInUse() const{ return false; };
+  bool IsInUse() const { return false; };
   AddonVersion Version() const { return m_props.version; }
   AddonVersion MinVersion() const { return m_props.minversion; }
   std::string Summary() const { return m_props.summary; }
@@ -165,13 +170,13 @@ public:
    \param dependencyID the addon ID of the dependency.
    \return the version this addon requires.
    */
-  AddonVersion GetDependencyVersion(const std::string &dependencyID) const;
+  AddonVersion GetDependencyVersion(const std::string& dependencyID) const;
 
   /*! \brief return whether or not this addon satisfies the given version requirements
    \param version the version to meet.
    \return true if  min_version <= version <= current_version, false otherwise.
    */
-  bool MeetsVersion(const AddonVersion &version) const;
+  bool MeetsVersion(const AddonVersion& version) const;
   bool ReloadSettings();
 
   /*! \brief callback for when this add-on is disabled.
@@ -218,18 +223,18 @@ protected:
    \return true if settings are loaded, false otherwise
    \sa SettingsToXML
    */
-  virtual bool SettingsFromXML(const CXBMCTinyXML &doc, bool loadDefaults = false);
+  virtual bool SettingsFromXML(const CXBMCTinyXML& doc, bool loadDefaults = false);
 
   /*! \brief Write settings into an XML document
    \param doc XML document to receive the settings
    \sa SettingsFromXML
    */
-  virtual void SettingsToXML(CXBMCTinyXML &doc) const;
+  virtual void SettingsToXML(CXBMCTinyXML& doc) const;
 
   const AddonProps m_props;
-  CXBMCTinyXML      m_addonXmlDoc;
-  bool              m_settingsLoaded;
-  bool              m_userSettingsLoaded;
+  CXBMCTinyXML m_addonXmlDoc;
+  bool m_settingsLoaded;
+  bool m_userSettingsLoaded;
 
 private:
   bool m_hasSettings;
@@ -240,4 +245,3 @@ private:
 };
 
 }; /* namespace ADDON */
-

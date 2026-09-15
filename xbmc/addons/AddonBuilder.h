@@ -41,7 +41,10 @@ public:
   void SetIcon(std::string icon) { m_props.icon = boost::move(icon); }
   void SetArt(std::string type, std::string value) { m_props.art[type] = value; }
   void SetArt(std::map<std::string, std::string> art) { m_props.art = boost::move(art); }
-  void SetScreenshots(std::vector<std::string> screenshots) { m_props.screenshots = boost::move(screenshots); }
+  void SetScreenshots(std::vector<std::string> screenshots)
+  {
+    m_props.screenshots = boost::move(screenshots);
+  }
   void SetChangelog(std::string changelog) { m_props.changelog = boost::move(changelog); }
   void SetBroken(std::string broken) { m_props.broken = boost::move(broken); }
   void SetPath(std::string path) { m_props.path = boost::move(path); }
@@ -69,4 +72,4 @@ private:
   cp_extension_t* m_extPoint;
 };
 
-};
+}; // namespace ADDON

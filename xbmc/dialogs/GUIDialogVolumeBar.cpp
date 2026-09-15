@@ -31,11 +31,13 @@ CGUIDialogVolumeBar::CGUIDialogVolumeBar(void)
 }
 
 CGUIDialogVolumeBar::~CGUIDialogVolumeBar(void)
-{}
-
-bool CGUIDialogVolumeBar::OnAction(const CAction &action)
 {
-  if (action.GetID() == ACTION_VOLUME_UP || action.GetID() == ACTION_VOLUME_DOWN || action.GetID() == ACTION_VOLUME_SET || action.GetID() == ACTION_MUTE)
+}
+
+bool CGUIDialogVolumeBar::OnAction(const CAction& action)
+{
+  if (action.GetID() == ACTION_VOLUME_UP || action.GetID() == ACTION_VOLUME_DOWN ||
+      action.GetID() == ACTION_VOLUME_SET || action.GetID() == ACTION_MUTE)
   {
     if (g_application.IsMuted() || g_application.GetVolume(false) <= VOLUME_MINIMUM)
     { // cancel the timer, dialog needs to stay visible
@@ -53,11 +55,11 @@ bool CGUIDialogVolumeBar::OnAction(const CAction &action)
 
 bool CGUIDialogVolumeBar::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_INIT:
-  case GUI_MSG_WINDOW_DEINIT:
-    return CGUIDialog::OnMessage(message);
+    case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_DEINIT:
+      return CGUIDialog::OnMessage(message);
   }
   return false; // don't process anything other than what we need!
 }

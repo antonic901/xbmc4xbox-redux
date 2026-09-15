@@ -16,58 +16,61 @@ using namespace KODI::MESSAGING;
 
 namespace XBMCAddon
 {
-  namespace xbmcgui
-  {
-    void WindowDialogMixin::show()
-    {
-      XBMC_TRACE;
-      CApplicationMessenger::Get().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_OPENING, 0, static_cast<void*>(w->window->get()));
-    }
-
-    void WindowDialogMixin::close()
-    {
-      XBMC_TRACE;
-      w->bModal = false;
-      w->PulseActionEvent();
-
-      CApplicationMessenger::Get().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_CLOSING, 0, static_cast<void*>(w->window->get()));
-
-      w->iOldWindowId = 0;
-    }
-
-    bool WindowDialogMixin::IsDialogRunning() const { XBMC_TRACE; return w->window->isActive(); }
-
-    bool WindowDialogMixin::OnAction(const CAction &action)
-    {
-      XBMC_TRACE;
-      switch (action.GetID())
-      {
-      case HACK_CUSTOM_ACTION_OPENING:
-        {
-          // This is from the CGUIPythonWindowXMLDialog::Show_Internal
-          g_windowManager.RegisterDialog(w->window->get());
-          // active this dialog...
-          CGUIMessage msg(GUI_MSG_WINDOW_INIT,0,0);
-          w->OnMessage(msg);
-          w->window->setActive(true);
-          //! @todo Figure out how to clean up the CAction
-          return true;
-        }
-        break;
-
-      case HACK_CUSTOM_ACTION_CLOSING:
-        {
-          // This is from the CGUIPythonWindowXMLDialog::Show_Internal
-          w->window->get()->Close();
-          return true;
-        }
-        break;
-      }
-
-      return false;
-    }
-  }
+namespace xbmcgui
+{
+void WindowDialogMixin::show()
+{
+  XBMC_TRACE;
+  CApplicationMessenger::Get().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_OPENING, 0,
+                                       static_cast<void*>(w->window->get()));
 }
 
+void WindowDialogMixin::close()
+{
+  XBMC_TRACE;
+  w->bModal = false;
+  w->PulseActionEvent();
 
+  CApplicationMessenger::Get().SendMsg(TMSG_GUI_PYTHON_DIALOG, HACK_CUSTOM_ACTION_CLOSING, 0,
+                                       static_cast<void*>(w->window->get()));
 
+  w->iOldWindowId = 0;
+}
+
+bool WindowDialogMixin::IsDialogRunning() const
+{
+  XBMC_TRACE;
+  return w->window->isActive();
+}
+
+bool WindowDialogMixin::OnAction(const CAction& action)
+{
+  XBMC_TRACE;
+  switch (action.GetID())
+  {
+    case HACK_CUSTOM_ACTION_OPENING:
+    {
+      // This is from the CGUIPythonWindowXMLDialog::Show_Internal
+      g_windowManager.RegisterDialog(w->window->get());
+      // active this dialog...
+      CGUIMessage msg(GUI_MSG_WINDOW_INIT, 0, 0);
+      w->OnMessage(msg);
+      w->window->setActive(true);
+      //! @todo Figure out how to clean up the CAction
+      return true;
+    }
+    break;
+
+    case HACK_CUSTOM_ACTION_CLOSING:
+    {
+      // This is from the CGUIPythonWindowXMLDialog::Show_Internal
+      w->window->get()->Close();
+      return true;
+    }
+    break;
+  }
+
+  return false;
+}
+} // namespace xbmcgui
+} // namespace XBMCAddon

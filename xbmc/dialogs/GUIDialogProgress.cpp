@@ -29,14 +29,13 @@
 #include "utils/Variant.h"
 
 CGUIDialogProgress::CGUIDialogProgress(void)
-    : CGUIDialogBoxBase(WINDOW_DIALOG_PROGRESS, "DialogConfirm.xml")
+  : CGUIDialogBoxBase(WINDOW_DIALOG_PROGRESS, "DialogConfirm.xml")
 {
   Reset();
 }
 
 CGUIDialogProgress::~CGUIDialogProgress(void)
 {
-
 }
 
 void CGUIDialogProgress::Reset()
@@ -58,7 +57,7 @@ void CGUIDialogProgress::SetCanCancel(bool bCanCancel)
   SetInvalid();
 }
 
-void CGUIDialogProgress::Open(const std::string &param /* = "" */)
+void CGUIDialogProgress::Open(const std::string& param /* = "" */)
 {
   CLog::Log(LOGDEBUG, "DialogProgress::Open called %s", m_active ? "(already running)!" : "");
 
@@ -91,14 +90,14 @@ void CGUIDialogProgress::Progress()
 
 bool CGUIDialogProgress::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
 
-  case GUI_MSG_WINDOW_DEINIT:
-    Reset();
-    break;
+    case GUI_MSG_WINDOW_DEINIT:
+      Reset();
+      break;
 
-  case GUI_MSG_CLICKED:
+    case GUI_MSG_CLICKED:
     {
       int iControl = message.GetSenderId();
       if (iControl == CONTROL_NO_BUTTON && m_bCanCancel && !m_bCanceled)
@@ -129,11 +128,11 @@ bool CGUIDialogProgress::OnBack(int actionID)
 void CGUIDialogProgress::OnWindowLoaded()
 {
   CGUIDialog::OnWindowLoaded();
-  const CGUIControl *control = GetControl(CONTROL_PROGRESS_BAR);
+  const CGUIControl* control = GetControl(CONTROL_PROGRESS_BAR);
   if (control && control->GetControlType() == CGUIControl::GUICONTROL_PROGRESS)
   {
     // make sure we have the appropriate info set
-    CGUIProgressControl *progress = (CGUIProgressControl *)control;
+    CGUIProgressControl* progress = (CGUIProgressControl*)control;
     if (!progress->GetInfo())
       progress->SetInfo(SYSTEM_PROGRESS_BAR);
   }
@@ -141,27 +140,29 @@ void CGUIDialogProgress::OnWindowLoaded()
 
 void CGUIDialogProgress::SetPercentage(int iPercentage)
 {
-  if (iPercentage < 0) iPercentage = 0;
-  if (iPercentage > 100) iPercentage = 100;
+  if (iPercentage < 0)
+    iPercentage = 0;
+  if (iPercentage > 100)
+    iPercentage = 100;
 
   m_percentage = iPercentage;
 }
 
 void CGUIDialogProgress::SetProgressMax(int iMax)
 {
-  m_iMax=iMax;
-  m_iCurrent=0;
+  m_iMax = iMax;
+  m_iCurrent = 0;
 }
 
-void CGUIDialogProgress::SetProgressAdvance(int nSteps/*=1*/)
+void CGUIDialogProgress::SetProgressAdvance(int nSteps /*=1*/)
 {
-  m_iCurrent+=nSteps;
+  m_iCurrent += nSteps;
 
-  if (m_iCurrent>m_iMax)
-    m_iCurrent=0;
+  if (m_iCurrent > m_iMax)
+    m_iCurrent = 0;
 
   if (m_iMax > 0)
-    SetPercentage((m_iCurrent*100)/m_iMax);
+    SetPercentage((m_iCurrent * 100) / m_iMax);
 }
 
 bool CGUIDialogProgress::Abort()
@@ -198,7 +199,7 @@ bool CGUIDialogProgress::WaitOnEvent(CEvent& event)
   return !m_bCanceled;
 }
 
-void CGUIDialogProgress::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
+void CGUIDialogProgress::Process(unsigned int currentTime, CDirtyRegionList& dirtyregions)
 {
   if (m_bInvalidated)
   { // take a copy to save holding the lock for too long
@@ -206,7 +207,7 @@ void CGUIDialogProgress::Process(unsigned int currentTime, CDirtyRegionList &dir
     {
       CSingleLock lock(m_section);
       showProgress = m_showProgress;
-      showCancel   = m_bCanCancel;
+      showCancel = m_bCanCancel;
     }
     if (showProgress)
       SET_CONTROL_VISIBLE(CONTROL_PROGRESS_BAR);

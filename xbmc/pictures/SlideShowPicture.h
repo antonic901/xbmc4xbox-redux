@@ -31,8 +31,23 @@ class CBaseTexture;
 class CSlideShowPic
 {
 public:
-  enum DISPLAY_EFFECT { EFFECT_NONE = 0, EFFECT_FLOAT, EFFECT_ZOOM, EFFECT_RANDOM, EFFECT_PANORAMA, EFFECT_NO_TIMEOUT };
-  enum TRANSISTION_EFFECT { TRANSISTION_NONE = 0, FADEIN_FADEOUT, CROSSFADE, TRANSISTION_ZOOM, TRANSISTION_ROTATE };
+  enum DISPLAY_EFFECT
+  {
+    EFFECT_NONE = 0,
+    EFFECT_FLOAT,
+    EFFECT_ZOOM,
+    EFFECT_RANDOM,
+    EFFECT_PANORAMA,
+    EFFECT_NO_TIMEOUT
+  };
+  enum TRANSISTION_EFFECT
+  {
+    TRANSISTION_NONE = 0,
+    FADEIN_FADEOUT,
+    CROSSFADE,
+    TRANSISTION_ZOOM,
+    TRANSISTION_ROTATE
+  };
 
   struct TRANSISTION
   {
@@ -44,51 +59,67 @@ public:
   CSlideShowPic();
   ~CSlideShowPic();
 
-  void SetTexture(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
+  void SetTexture(int iSlideNumber,
+                  CBaseTexture* pTexture,
+                  DISPLAY_EFFECT dispEffect = EFFECT_RANDOM,
+                  TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
   void UpdateTexture(CBaseTexture* pTexture);
 
-  bool IsLoaded() const { return m_bIsLoaded;};
-  void UnLoad() {m_bIsLoaded = false;};
-  void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  bool IsLoaded() const { return m_bIsLoaded; };
+  void UnLoad() { m_bIsLoaded = false; };
+  void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   void Render();
   void Close();
-  void Reset(DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
+  void Reset(DISPLAY_EFFECT dispEffect = EFFECT_RANDOM,
+             TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
   DISPLAY_EFFECT DisplayEffect() const { return m_displayEffect; }
   bool DisplayEffectNeedChange(DISPLAY_EFFECT newDispEffect) const;
   bool IsStarted() const { return m_iCounter > 0; }
-  bool IsFinished() const { return m_bIsFinished;};
-  bool DrawNextImage() const { return m_bDrawNextImage;};
+  bool IsFinished() const { return m_bIsFinished; };
+  bool DrawNextImage() const { return m_bDrawNextImage; };
 
-  int GetWidth() const { return (int)m_fWidth;};
-  int GetHeight() const { return (int)m_fHeight;};
+  int GetWidth() const { return (int)m_fWidth; };
+  int GetHeight() const { return (int)m_fHeight; };
 
   void Keep();
   bool StartTransistion();
   int GetTransistionTime(int iType) const;
   void SetTransistionTime(int iType, int iTime);
 
-  int SlideNumber() const { return m_iSlideNumber;};
+  int SlideNumber() const { return m_iSlideNumber; };
 
   void Zoom(float fZoomAmount, bool immediate = false);
   void Rotate(float fRotateAngle, bool immediate = false);
   void Pause(bool bPause);
   void SetInSlideshow(bool slideshow);
   void SetOriginalSize(int iOriginalWidth, int iOriginalHeight, bool bFullSize);
-  bool FullSize() const { return m_bFullSize;};
+  bool FullSize() const { return m_bFullSize; };
   int GetOriginalWidth();
   int GetOriginalHeight();
 
   void Move(float dX, float dY);
-  float GetZoom() const { return m_fZoomAmount;};
+  float GetZoom() const { return m_fZoomAmount; };
 
   bool m_bIsComic;
   bool m_bCanMoveHorizontally;
   bool m_bCanMoveVertically;
+
 private:
-  void SetTexture_Internal(int iSlideNumber, CBaseTexture* pTexture, DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
-  void UpdateVertices(float cur_x[4], float cur_y[4], const float new_x[4], const float new_y[4], CDirtyRegionList &dirtyregions);
-  void Render(float *x, float *y, CBaseTexture* pTexture, color_t color, _D3DFILLMODE fillmode = D3DFILL_SOLID );
-  CBaseTexture *m_pImage;
+  void SetTexture_Internal(int iSlideNumber,
+                           CBaseTexture* pTexture,
+                           DISPLAY_EFFECT dispEffect = EFFECT_RANDOM,
+                           TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
+  void UpdateVertices(float cur_x[4],
+                      float cur_y[4],
+                      const float new_x[4],
+                      const float new_y[4],
+                      CDirtyRegionList& dirtyregions);
+  void Render(float* x,
+              float* y,
+              CBaseTexture* pTexture,
+              color_t color,
+              _D3DFILLMODE fillmode = D3DFILL_SOLID);
+  CBaseTexture* m_pImage;
 
   int m_iOriginalWidth;
   int m_iOriginalHeight;

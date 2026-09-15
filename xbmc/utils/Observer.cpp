@@ -38,29 +38,28 @@ void Observer::StopObserving(void)
   m_observables.clear();
 }
 
-bool Observer::IsObserving(const Observable &obs) const
+bool Observer::IsObserving(const Observable& obs) const
 {
   CSingleLock lock(m_obsCritSection);
   return find(m_observables.begin(), m_observables.end(), &obs) != m_observables.end();
 }
 
-void Observer::RegisterObservable(Observable *obs)
+void Observer::RegisterObservable(Observable* obs)
 {
   CSingleLock lock(m_obsCritSection);
   if (!IsObserving(*obs))
     m_observables.push_back(obs);
 }
 
-void Observer::UnregisterObservable(Observable *obs)
+void Observer::UnregisterObservable(Observable* obs)
 {
   CSingleLock lock(m_obsCritSection);
-  vector<Observable *>::iterator it = find(m_observables.begin(), m_observables.end(), obs);
+  vector<Observable*>::iterator it = find(m_observables.begin(), m_observables.end(), obs);
   if (it != m_observables.end())
     m_observables.erase(it);
 }
 
-Observable::Observable() :
-    m_bObservableChanged(false)
+Observable::Observable() : m_bObservableChanged(false)
 {
 }
 
@@ -69,7 +68,7 @@ Observable::~Observable()
   StopObserver();
 }
 
-Observable &Observable::operator=(const Observable &observable)
+Observable& Observable::operator=(const Observable& observable)
 {
   CSingleLock lock(m_obsCritSection);
 
@@ -89,13 +88,13 @@ void Observable::StopObserver(void)
   m_observers.clear();
 }
 
-bool Observable::IsObserving(const Observer &obs) const
+bool Observable::IsObserving(const Observer& obs) const
 {
   CSingleLock lock(m_obsCritSection);
   return find(m_observers.begin(), m_observers.end(), &obs) != m_observers.end();
 }
 
-void Observable::RegisterObserver(Observer *obs)
+void Observable::RegisterObserver(Observer* obs)
 {
   CSingleLock lock(m_obsCritSection);
   if (!IsObserving(*obs))
@@ -105,10 +104,10 @@ void Observable::RegisterObserver(Observer *obs)
   }
 }
 
-void Observable::UnregisterObserver(Observer *obs)
+void Observable::UnregisterObserver(Observer* obs)
 {
   CSingleLock lock(m_obsCritSection);
-  vector<Observer *>::iterator it = find(m_observers.begin(), m_observers.end(), obs);
+  vector<Observer*>::iterator it = find(m_observers.begin(), m_observers.end(), obs);
   if (it != m_observers.end())
   {
     obs->UnregisterObservable(this);
@@ -139,11 +138,11 @@ void Observable::SetChanged(bool SetTo)
 void Observable::SendMessage(const Observable& obs, const ObservableMessage message)
 {
   CSingleLock lock(obs.m_obsCritSection);
-  for(int ptr = obs.m_observers.size() - 1; ptr >= 0; ptr--)
+  for (int ptr = obs.m_observers.size() - 1; ptr >= 0; ptr--)
   {
     if (ptr < (int)obs.m_observers.size())
     {
-      Observer *observer = obs.m_observers.at(ptr);
+      Observer* observer = obs.m_observers.at(ptr);
       if (observer)
       {
         lock.Leave();

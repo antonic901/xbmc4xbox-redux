@@ -33,9 +33,7 @@
 using namespace XFILE;
 using namespace XCURL;
 
-CDAVFile::CDAVFile(void)
-  : CCurlFile()
-  , lastResponseCode(0)
+CDAVFile::CDAVFile(void) : CCurlFile(), lastResponseCode(0)
 {
 }
 
@@ -51,22 +49,22 @@ bool CDAVFile::Execute(const CURL& url)
   CLog::Log(LOGDEBUG, "CDAVFile::Execute(%p) %s", (void*)this, m_url.c_str());
 
   ASSERT(!(!m_state->m_easyHandle ^ !m_state->m_multiHandle));
-  if( m_state->m_easyHandle == NULL )
-    g_curlInterface.easy_aquire(url2.GetProtocol().c_str(),
-                                url2.GetHostName().c_str(),
-                                &m_state->m_easyHandle,
-                                &m_state->m_multiHandle);
+  if (m_state->m_easyHandle == NULL)
+    g_curlInterface.easy_aquire(url2.GetProtocol().c_str(), url2.GetHostName().c_str(),
+                                &m_state->m_easyHandle, &m_state->m_multiHandle);
 
   // setup common curl options
   SetCommonOptions(m_state);
   SetRequestHeaders(m_state);
 
   lastResponseCode = m_state->Connect(m_bufferSize);
-  if( lastResponseCode < 0 || lastResponseCode >= 400)
+  if (lastResponseCode < 0 || lastResponseCode >= 400)
     return false;
 
   char* efurl;
-  if (CURLE_OK == g_curlInterface.easy_getinfo(m_state->m_easyHandle, CURLINFO_EFFECTIVE_URL,&efurl) && efurl)
+  if (CURLE_OK ==
+          g_curlInterface.easy_getinfo(m_state->m_easyHandle, CURLINFO_EFFECTIVE_URL, &efurl) &&
+      efurl)
     m_url = efurl;
 
   if (lastResponseCode == 207)
@@ -84,25 +82,25 @@ bool CDAVFile::Execute(const CURL& url)
       return false;
     }
 
-    TiXmlNode *pChild;
+    TiXmlNode* pChild;
     // Iterate over all responses
-    for (pChild = davResponse.RootElement()->FirstChild(); pChild != 0; pChild = pChild->NextSibling())
+    for (pChild = davResponse.RootElement()->FirstChild(); pChild != 0;
+         pChild = pChild->NextSibling())
     {
       if (CDAVCommon::ValueWithoutNamespace(pChild, "response"))
       {
         CStdString sRetCode = CDAVCommon::GetStatusTag(pChild->ToElement());
         CRegExp rxCode;
-        rxCode.RegComp("HTTP/1\\.1\\s(\\d+)\\s.*"); 
+        rxCode.RegComp("HTTP/1\\.1\\s(\\d+)\\s.*");
         if (rxCode.RegFind(sRetCode) >= 0)
         {
           if (rxCode.GetSubCount())
           {
             lastResponseCode = atoi(rxCode.GetMatch(1).c_str());
-            if( lastResponseCode < 0 || lastResponseCode >= 400)
+            if (lastResponseCode < 0 || lastResponseCode >= 400)
               return false;
           }
         }
-
       }
     }
   }
@@ -119,7 +117,7 @@ bool CDAVFile::Delete(const CURL& url)
   CStdString strRequest = "DELETE";
 
   dav.SetCustomRequest(strRequest);
- 
+
   if (!dav.Execute(url))
   {
     CLog::Log(LOGERROR, "%s - Unable to delete dav resource (%s)", __FUNCTION__, url.Get().c_str());

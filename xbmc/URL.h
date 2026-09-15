@@ -30,104 +30,53 @@
 class CURL
 {
 public:
-  explicit CURL(const std::string& strURL)
-  {
-    Parse(strURL);
-  }
+  explicit CURL(const std::string& strURL) { Parse(strURL); }
 
-  CURL():m_iPort(0) {}
+  CURL() : m_iPort(0) {}
   virtual ~CURL(void);
 
   // explicit equals operator for std::string comparison
-  bool operator==(const std::string &url) const { return Get() == url; }
+  bool operator==(const std::string& url) const { return Get() == url; }
 
   void Reset();
   void Parse(const std::string& strURL);
   void SetFileName(const std::string& strFileName);
-  void SetHostName(const std::string& strHostName)
-  {
-    m_strHostName = strHostName;
-  }
+  void SetHostName(const std::string& strHostName) { m_strHostName = strHostName; }
 
-  void SetUserName(const std::string& strUserName)
-  {
-    m_strUserName = strUserName;
-  }
+  void SetUserName(const std::string& strUserName) { m_strUserName = strUserName; }
 
-  void SetPassword(const std::string& strPassword)
-  {
-    m_strPassword = strPassword;
-  }
+  void SetPassword(const std::string& strPassword) { m_strPassword = strPassword; }
 
   void SetProtocol(const std::string& strProtocol);
   void SetOptions(const std::string& strOptions);
   void SetProtocolOptions(const std::string& strOptions);
-  void SetPort(int port)
-  {
-    m_iPort = port;
-  }
+  void SetPort(int port) { m_iPort = port; }
 
-  bool HasPort() const
-  {
-    return (m_iPort != 0);
-  }
+  bool HasPort() const { return (m_iPort != 0); }
 
-  int GetPort() const
-  {
-    return m_iPort;
-  }
+  int GetPort() const { return m_iPort; }
 
-  const std::string& GetHostName() const
-  {
-    return m_strHostName;
-  }
+  const std::string& GetHostName() const { return m_strHostName; }
 
-  const std::string& GetDomain() const
-  {
-    return m_strDomain;
-  }
+  const std::string& GetDomain() const { return m_strDomain; }
 
-  const std::string& GetUserName() const
-  {
-    return m_strUserName;
-  }
+  const std::string& GetUserName() const { return m_strUserName; }
 
-  const std::string& GetPassWord() const
-  {
-    return m_strPassword;
-  }
+  const std::string& GetPassWord() const { return m_strPassword; }
 
-  const std::string& GetFileName() const
-  {
-    return m_strFileName;
-  }
+  const std::string& GetFileName() const { return m_strFileName; }
 
-  const std::string& GetProtocol() const
-  {
-    return m_strProtocol;
-  }
+  const std::string& GetProtocol() const { return m_strProtocol; }
 
   const std::string GetTranslatedProtocol() const;
 
-  const std::string& GetFileType() const
-  {
-    return m_strFileType;
-  }
+  const std::string& GetFileType() const { return m_strFileType; }
 
-  const std::string& GetShareName() const
-  {
-      return m_strShareName;
-  }
+  const std::string& GetShareName() const { return m_strShareName; }
 
-  const std::string& GetOptions() const
-  {
-    return m_strOptions;
-  }
+  const std::string& GetOptions() const { return m_strOptions; }
 
-  const std::string& GetProtocolOptions() const
-  {
-    return m_strProtocolOptions;
-  }
+  const std::string& GetProtocolOptions() const { return m_strProtocolOptions; }
 
   const std::string GetFileNameWithoutPath() const; /* return the filename excluding path */
 
@@ -141,8 +90,9 @@ public:
   static std::string GetRedacted(const std::string& path);
   bool IsLocal() const;
   bool IsLocalHost() const;
-  static bool IsFileOnly(const std::string &url); ///< return true if there are no directories in the url.
-  static bool IsFullPath(const std::string &url); ///< return true if the url includes the full path
+  static bool IsFileOnly(
+      const std::string& url); ///< return true if there are no directories in the url.
+  static bool IsFullPath(const std::string& url); ///< return true if the url includes the full path
   static std::string Decode(const std::string& strURLData);
   static std::string Encode(const std::string& strURLData);
 
@@ -151,10 +101,7 @@ public:
    \param type a lower-case scheme name, e.g. "smb".
    \return true if the url is of the given scheme, false otherwise.
    */
-  bool IsProtocol(const char *type) const
-  {
-    return IsProtocolEqual(m_strProtocol, type);
-  }
+  bool IsProtocol(const char* type) const { return IsProtocolEqual(m_strProtocol, type); }
 
   /*! \brief Check whether a URL protocol is a given URL scheme.
    Both parameters MUST be lower-case.  Typically this would be called using
@@ -163,7 +110,7 @@ public:
    \param type a lower-case scheme name, e.g. "smb".
    \return true if the url is of the given scheme, false otherwise.
    */
-  static bool IsProtocolEqual(const std::string& protocol, const char *type);
+  static bool IsProtocolEqual(const std::string& protocol, const char* type);
 
   /*! \brief Check whether a URL is a given filetype.
    Comparison is effectively case-insensitive as both the parameter
@@ -171,24 +118,21 @@ public:
    \param type a lower-case filetype, e.g. "mp3".
    \return true if the url is of the given filetype, false otherwise.
    */
-  bool IsFileType(const char *type) const
-  {
-    return m_strFileType == type;
-  }
+  bool IsFileType(const char* type) const { return m_strFileType == type; }
 
-  void GetOptions(std::map<std::string, std::string> &options) const;
-  bool HasOption(const std::string &key) const;
-  bool GetOption(const std::string &key, std::string &value) const;
-  std::string GetOption(const std::string &key) const;
-  void SetOption(const std::string &key, const std::string &value);
-  void RemoveOption(const std::string &key);
+  void GetOptions(std::map<std::string, std::string>& options) const;
+  bool HasOption(const std::string& key) const;
+  bool GetOption(const std::string& key, std::string& value) const;
+  std::string GetOption(const std::string& key) const;
+  void SetOption(const std::string& key, const std::string& value);
+  void RemoveOption(const std::string& key);
 
-  void GetProtocolOptions(std::map<std::string, std::string> &options) const;
-  bool HasProtocolOption(const std::string &key) const;
-  bool GetProtocolOption(const std::string &key, std::string &value) const;
-  std::string GetProtocolOption(const std::string &key) const;
-  void SetProtocolOption(const std::string &key, const std::string &value);
-  void RemoveProtocolOption(const std::string &key);
+  void GetProtocolOptions(std::map<std::string, std::string>& options) const;
+  bool HasProtocolOption(const std::string& key) const;
+  bool GetProtocolOption(const std::string& key, std::string& value) const;
+  std::string GetProtocolOption(const std::string& key) const;
+  void SetProtocolOption(const std::string& key, const std::string& value);
+  void RemoveProtocolOption(const std::string& key);
 
 protected:
   int m_iPort;

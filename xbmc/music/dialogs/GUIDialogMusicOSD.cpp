@@ -25,11 +25,10 @@
 #include "guilib/Key.h"
 #include "settings/Settings.h"
 
-#define CONTROL_VIS_BUTTON       500
-#define CONTROL_LOCK_BUTTON      501
+#define CONTROL_VIS_BUTTON 500
+#define CONTROL_LOCK_BUTTON 501
 
-CGUIDialogMusicOSD::CGUIDialogMusicOSD(void)
-    : CGUIDialog(WINDOW_DIALOG_MUSIC_OSD, "MusicOSD.xml")
+CGUIDialogMusicOSD::CGUIDialogMusicOSD(void) : CGUIDialog(WINDOW_DIALOG_MUSIC_OSD, "MusicOSD.xml")
 {
   m_loadType = KEEP_IN_MEMORY;
 }
@@ -38,11 +37,11 @@ CGUIDialogMusicOSD::~CGUIDialogMusicOSD(void)
 {
 }
 
-bool CGUIDialogMusicOSD::OnMessage(CGUIMessage &message)
+bool CGUIDialogMusicOSD::OnMessage(CGUIMessage& message)
 {
   switch (message.GetMessage())
   {
-  case GUI_MSG_CLICKED:
+    case GUI_MSG_CLICKED:
     {
       unsigned int iControl = message.GetSenderId();
       if (iControl == CONTROL_VIS_BUTTON)
@@ -67,7 +66,7 @@ bool CGUIDialogMusicOSD::OnMessage(CGUIMessage &message)
   return CGUIDialog::OnMessage(message);
 }
 
-bool CGUIDialogMusicOSD::OnAction(const CAction &action)
+bool CGUIDialogMusicOSD::OnAction(const CAction& action)
 {
   switch (action.GetID())
   {

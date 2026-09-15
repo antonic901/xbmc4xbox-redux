@@ -25,4 +25,3 @@
 #include "PlatformDefs.h"
 
 #endif
-

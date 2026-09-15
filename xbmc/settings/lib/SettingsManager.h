@@ -45,9 +45,11 @@ class TiXmlNode;
  \brief Settings manager responsible for initializing, loading and handling
  all settings.
  */
-class CSettingsManager : public ISettingCreator, public ISettingControlCreator,
+class CSettingsManager : public ISettingCreator,
+                         public ISettingControlCreator,
                          private ISettingCallback,
-                         private ISettingsHandler, private ISubSettings
+                         private ISettingsHandler,
+                         private ISubSettings
 {
 public:
   /*!
@@ -57,10 +59,12 @@ public:
   virtual ~CSettingsManager();
 
   // implementation of ISettingCreator
-  virtual CSetting* CreateSetting(const std::string &settingType, const std::string &settingId, CSettingsManager *settingsManager = NULL) const;
+  virtual CSetting* CreateSetting(const std::string& settingType,
+                                  const std::string& settingId,
+                                  CSettingsManager* settingsManager = NULL) const;
 
   // implementation of ISettingControlCreator
-  virtual ISettingControl* CreateControl(const std::string &controlType) const;
+  virtual ISettingControl* CreateControl(const std::string& controlType) const;
 
   /*!
    \brief Initializes the settings manager using the setting definitions
@@ -69,7 +73,7 @@ public:
    \param root XML element representing setting definitions
    \return True if the XML element was successfully deserialized into setting definitions, false otherwise
    */
-  bool Initialize(const TiXmlElement *root);
+  bool Initialize(const TiXmlElement* root);
   /*!
    \brief Loads setting values from the given XML element.
 
@@ -79,14 +83,17 @@ public:
    \param loadedSettings A list to fill with all the successfully loaded settings
    \return True if the setting values were successfully loaded, false otherwise
    */
-  bool Load(const TiXmlElement *root, bool &updated, bool triggerEvents = true, std::map<std::string, CSetting*> *loadedSettings = NULL);
+  bool Load(const TiXmlElement* root,
+            bool& updated,
+            bool triggerEvents = true,
+            std::map<std::string, CSetting*>* loadedSettings = NULL);
   /*!
    \brief Saves the setting values to the given XML node.
 
    \param root XML node
    \return True if the setting values were successfully saved, false otherwise
    */
-  virtual bool Save(TiXmlNode *root) const;
+  virtual bool Save(TiXmlNode* root) const;
   /*!
    \brief Unloads the previously loaded setting values.
 
@@ -110,7 +117,7 @@ public:
   \param settingId Setting identifier
   \return True if the setting was successfully loaded from the given XML node, false otherwise
   */
-  bool LoadSetting(const TiXmlNode *node, const std::string &settingId);
+  bool LoadSetting(const TiXmlNode* node, const std::string& settingId);
 
   /*!
    \brief Loads the setting being represented by the given XML node with the
@@ -121,7 +128,7 @@ public:
    \param updated Set to true if the setting's value was updated
    \return True if the setting was successfully loaded from the given XML node, false otherwise
    */
-  bool LoadSetting(const TiXmlNode *node, const std::string &settingId, bool &updated);
+  bool LoadSetting(const TiXmlNode* node, const std::string& settingId, bool& updated);
 
   /*!
    \brief Tells the settings system that the initialization is complete.
@@ -139,7 +146,7 @@ public:
    */
   void SetLoaded() { m_loaded = true; }
 
-  void AddSection(CSettingSection *section);
+  void AddSection(CSettingSection* section);
 
   /*!
    \brief Registers the given ISettingCallback implementation to be triggered
@@ -148,13 +155,13 @@ public:
    \param settingsHandler ISettingsHandler implementation
    \param settingList List of settings to trigger the given ISettingCallback implementation
    */
-  void RegisterCallback(ISettingCallback *callback, const std::set<std::string> &settingList);
+  void RegisterCallback(ISettingCallback* callback, const std::set<std::string>& settingList);
   /*!
    \brief Unregisters the given ISettingCallback implementation.
 
    \param callback ISettingCallback implementation
    */
-  void UnregisterCallback(ISettingCallback *callback);
+  void UnregisterCallback(ISettingCallback* callback);
 
   /*!
    \brief Registers a custom setting type and its ISettingCreator
@@ -167,7 +174,7 @@ public:
    \param settingType String representation of the custom setting type
    \param settingCreator ISettingCreator implementation
    */
-  void RegisterSettingType(const std::string &settingType, ISettingCreator *settingCreator);
+  void RegisterSettingType(const std::string& settingType, ISettingCreator* settingCreator);
 
   /*!
    \brief Registers a custom setting control type and its
@@ -180,33 +187,34 @@ public:
    \param controlType String representation of the custom setting control type
    \param settingControlCreator ISettingControlCreator implementation
    */
-  void RegisterSettingControl(const std::string &controlType, ISettingControlCreator *settingControlCreator);
+  void RegisterSettingControl(const std::string& controlType,
+                              ISettingControlCreator* settingControlCreator);
 
   /*!
    \brief Registers the given ISettingsHandler implementation.
 
    \param settingsHandler ISettingsHandler implementation
    */
-  void RegisterSettingsHandler(ISettingsHandler *settingsHandler);
+  void RegisterSettingsHandler(ISettingsHandler* settingsHandler);
   /*!
    \brief Unregisters the given ISettingsHandler implementation.
 
    \param settingsHandler ISettingsHandler implementation
    */
-  void UnregisterSettingsHandler(ISettingsHandler *settingsHandler);
+  void UnregisterSettingsHandler(ISettingsHandler* settingsHandler);
 
   /*!
    \brief Registers the given ISubSettings implementation.
 
    \param subSettings ISubSettings implementation
    */
-  void RegisterSubSettings(ISubSettings *subSettings);
+  void RegisterSubSettings(ISubSettings* subSettings);
   /*!
    \brief Unregisters the given ISubSettings implementation.
 
    \param subSettings ISubSettings implementation
    */
-  void UnregisterSubSettings(ISubSettings *subSettings);
+  void UnregisterSubSettings(ISubSettings* subSettings);
 
   /*!
    \brief Registers the given integer setting options filler under the given identifier.
@@ -214,20 +222,22 @@ public:
    \param identifier Setting options filler identifier
    \param optionsFiller Integer setting options filler implementation
    */
-  void RegisterSettingOptionsFiller(const std::string &identifier, IntegerSettingOptionsFiller optionsFiller);
+  void RegisterSettingOptionsFiller(const std::string& identifier,
+                                    IntegerSettingOptionsFiller optionsFiller);
   /*!
    \brief Registers the given string setting options filler under the given identifier.
 
    \param identifier Setting options filler identifier
    \param optionsFiller String setting options filler implementation
    */
-  void RegisterSettingOptionsFiller(const std::string &identifier, StringSettingOptionsFiller optionsFiller);
+  void RegisterSettingOptionsFiller(const std::string& identifier,
+                                    StringSettingOptionsFiller optionsFiller);
   /*!
    \brief Unregisters the setting options filler registered under the given identifier.
 
    \param identifier Setting options filler identifier
    */
-  void UnregisterSettingOptionsFiller(const std::string &identifier);
+  void UnregisterSettingOptionsFiller(const std::string& identifier);
   /*!
    \brief Gets the implementation of the setting options filler used by the
    given setting.
@@ -235,7 +245,7 @@ public:
    \param setting Setting object
    \return Implementation of the setting options filler (either IntegerSettingOptionsFiller or StringSettingOptionsFiller)
    */
-  void* GetSettingOptionsFiller(const CSetting *setting);
+  void* GetSettingOptionsFiller(const CSetting* setting);
 
   /*!
    \brief Gets the setting with the given identifier.
@@ -243,7 +253,7 @@ public:
    \param id Setting identifier
    \return Setting object with the given identifier or NULL if the identifier is unknown
    */
-  CSetting* GetSetting(const std::string &id) const;
+  CSetting* GetSetting(const std::string& id) const;
   /*!
    \brief Gets the full list of setting sections.
 
@@ -256,7 +266,7 @@ public:
    \param section Setting section identifier
    \return Setting section with the given identifier or NULL if the identifier is unknown
    */
-  CSettingSection* GetSection(const std::string &section) const;
+  CSettingSection* GetSection(const std::string& section) const;
   /*!
    \brief Gets a map of settings (and their dependencies) which depend on
    the setting with the given identifier.
@@ -269,7 +279,7 @@ public:
    \param id Setting identifier
    \return Map of settings (and their dependencies) which depend on the setting with the given identifier
    */
-  SettingDependencyMap GetDependencies(const std::string &id) const;
+  SettingDependencyMap GetDependencies(const std::string& id) const;
   /*!
    \brief Gets a map of settings (and their dependencies) which depend on
    the given setting.
@@ -281,7 +291,7 @@ public:
    \param setting Setting object
    \return Map of settings (and their dependencies) which depend on the given setting
    */
-  SettingDependencyMap GetDependencies(const CSetting *setting) const;
+  SettingDependencyMap GetDependencies(const CSetting* setting) const;
 
   /*!
    \brief Gets the boolean value of the setting with the given identifier.
@@ -289,35 +299,35 @@ public:
    \param id Setting identifier
    \return Boolean value of the setting with the given identifier
    */
-  bool GetBool(const std::string &id) const;
+  bool GetBool(const std::string& id) const;
   /*!
    \brief Gets the integer value of the setting with the given identifier.
 
    \param id Setting identifier
    \return Integer value of the setting with the given identifier
    */
-  int GetInt(const std::string &id) const;
+  int GetInt(const std::string& id) const;
   /*!
    \brief Gets the real number value of the setting with the given identifier.
 
    \param id Setting identifier
    \return Real number value of the setting with the given identifier
    */
-  double GetNumber(const std::string &id) const;
+  double GetNumber(const std::string& id) const;
   /*!
    \brief Gets the string value of the setting with the given identifier.
 
    \param id Setting identifier
    \return String value of the setting with the given identifier
    */
-  std::string GetString(const std::string &id) const;
+  std::string GetString(const std::string& id) const;
   /*!
    \brief Gets the values of the list setting with the given identifier.
 
    \param id Setting identifier
    \return List of values of the setting with the given identifier
    */
-  std::vector< boost::shared_ptr<CSetting> > GetList(const std::string &id) const;
+  std::vector<boost::shared_ptr<CSetting> > GetList(const std::string& id) const;
 
   /*!
    \brief Sets the boolean value of the setting with the given identifier.
@@ -326,14 +336,14 @@ public:
    \param value Boolean value to set
    \return True if setting the value was successful, false otherwise
    */
-  bool SetBool(const std::string &id, bool value);
+  bool SetBool(const std::string& id, bool value);
   /*!
    \brief Toggles the boolean value of the setting with the given identifier.
 
    \param id Setting identifier
    \return True if toggling the boolean value was successful, false otherwise
    */
-  bool ToggleBool(const std::string &id);
+  bool ToggleBool(const std::string& id);
   /*!
    \brief Sets the integer value of the setting with the given identifier.
 
@@ -341,7 +351,7 @@ public:
    \param value Integer value to set
    \return True if setting the value was successful, false otherwise
    */
-  bool SetInt(const std::string &id, int value);
+  bool SetInt(const std::string& id, int value);
   /*!
    \brief Sets the real number value of the setting with the given identifier.
 
@@ -349,7 +359,7 @@ public:
    \param value Real number value to set
    \return True if setting the value was successful, false otherwise
    */
-  bool SetNumber(const std::string &id, double value);
+  bool SetNumber(const std::string& id, double value);
   /*!
    \brief Sets the string value of the setting with the given identifier.
 
@@ -357,7 +367,7 @@ public:
    \param value String value to set
    \return True if setting the value was successful, false otherwise
    */
-  bool SetString(const std::string &id, const std::string &value);
+  bool SetString(const std::string& id, const std::string& value);
   /*!
    \brief Sets the values of the list setting with the given identifier.
 
@@ -365,7 +375,7 @@ public:
    \param value Values to set
    \return True if setting the values was successful, false otherwise
    */
-  bool SetList(const std::string &id, const std::vector< boost::shared_ptr<CSetting> > &value);
+  bool SetList(const std::string& id, const std::vector<boost::shared_ptr<CSetting> >& value);
 
   /*!
    \brief Gets the setting conditions manager used by the settings manager.
@@ -381,7 +391,7 @@ public:
 
    \param condition Static condition string/value
    */
-  void AddCondition(const std::string &condition);
+  void AddCondition(const std::string& condition);
   /*!
    \brief Adds the given dynamic condition.
 
@@ -392,15 +402,19 @@ public:
    \param condition Implementation of the dynamic condition
    \param data Opaque data pointer, will be passed back to SettingConditionCheck function
    */
-  void AddCondition(const std::string &identifier, SettingConditionCheck condition, void *data = NULL);
+  void AddCondition(const std::string& identifier,
+                    SettingConditionCheck condition,
+                    void* data = NULL);
 
 private:
   // implementation of ISettingCallback
-  virtual bool OnSettingChanging(const CSetting *setting);
-  virtual void OnSettingChanged(const CSetting *setting);
-  virtual void OnSettingAction(const CSetting *setting);
-  virtual bool OnSettingUpdate(CSetting* &setting, const char *oldSettingId, const TiXmlNode *oldSettingNode);
-  virtual void OnSettingPropertyChanged(const CSetting *setting, const char *propertyName);
+  virtual bool OnSettingChanging(const CSetting* setting);
+  virtual void OnSettingChanged(const CSetting* setting);
+  virtual void OnSettingAction(const CSetting* setting);
+  virtual bool OnSettingUpdate(CSetting*& setting,
+                               const char* oldSettingId,
+                               const TiXmlNode* oldSettingNode);
+  virtual void OnSettingPropertyChanged(const CSetting* setting, const char* propertyName);
 
   // implementation of ISettingsHandler
   virtual bool OnSettingsLoading();
@@ -411,27 +425,35 @@ private:
   virtual void OnSettingsCleared();
 
   // implementation of ISubSettings
-  virtual bool Load(const TiXmlNode *settings);
+  virtual bool Load(const TiXmlNode* settings);
 
-  bool Serialize(TiXmlNode *parent) const;
-  bool Deserialize(const TiXmlNode *node, bool &updated, std::map<std::string, CSetting*> *loadedSettings = NULL);
+  bool Serialize(TiXmlNode* parent) const;
+  bool Deserialize(const TiXmlNode* node,
+                   bool& updated,
+                   std::map<std::string, CSetting*>* loadedSettings = NULL);
 
-  bool LoadSetting(const TiXmlNode *node, CSetting *setting, bool &updated);
-  bool UpdateSetting(const TiXmlNode *node, CSetting *setting, const CSettingUpdate& update);
-  void UpdateSettingByDependency(const std::string &settingId, const CSettingDependency &dependency);
-  void UpdateSettingByDependency(const std::string &settingId, SettingDependencyType dependencyType);
+  bool LoadSetting(const TiXmlNode* node, CSetting* setting, bool& updated);
+  bool UpdateSetting(const TiXmlNode* node, CSetting* setting, const CSettingUpdate& update);
+  void UpdateSettingByDependency(const std::string& settingId,
+                                 const CSettingDependency& dependency);
+  void UpdateSettingByDependency(const std::string& settingId,
+                                 SettingDependencyType dependencyType);
 
-  typedef enum {
+  typedef enum
+  {
     SettingOptionsFillerTypeNone = 0,
     SettingOptionsFillerTypeInteger,
     SettingOptionsFillerTypeString
   } SettingOptionsFillerType;
 
-  void RegisterSettingOptionsFiller(const std::string &identifier, void *filler, SettingOptionsFillerType type);
+  void RegisterSettingOptionsFiller(const std::string& identifier,
+                                    void* filler,
+                                    SettingOptionsFillerType type);
 
-  typedef std::set<ISettingCallback *> CallbackSet;
-  typedef struct {
-    CSetting *setting;
+  typedef std::set<ISettingCallback*> CallbackSet;
+  typedef struct
+  {
+    CSetting* setting;
     SettingDependencyMap dependencies;
     std::set<std::string> children;
     CallbackSet callbacks;
@@ -457,8 +479,9 @@ private:
 
   CSettingConditionsManager m_conditions;
 
-  typedef struct {
-    void *filler;
+  typedef struct
+  {
+    void* filler;
     SettingOptionsFillerType type;
   } SettingOptionsFiller;
   typedef std::map<std::string, SettingOptionsFiller> SettingOptionsFillerMap;

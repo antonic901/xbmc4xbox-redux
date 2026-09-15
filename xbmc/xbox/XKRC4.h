@@ -63,14 +63,14 @@ Reason: Prepared for Public Release
 
 */
 #pragma once
-#if defined (_WINDOWS)
- #pragma message ("Compiling for WINDOWS: " __FILE__)
+#if defined(_WINDOWS)
+#pragma message("Compiling for WINDOWS: " __FILE__)
 // #include <afxwin.h>         // MFC core and standard components
-#elif defined (_XBOX)
- #pragma message ("Compiling for XBOX: " __FILE__)
- #include <xtl.h>
+#elif defined(_XBOX)
+#pragma message("Compiling for XBOX: " __FILE__)
+#include <xtl.h>
 #else
- #error ERR: Have to Define _WINDOWS or _XBOX !!
+#error ERR: Have to Define _WINDOWS or _XBOX !!
 #endif
 
 class XKRC4
@@ -91,7 +91,4 @@ public:
 
   void InitRC4Key(UCHAR* pRC4KeyData, int KeyLen, RC4KEY* pRC4Key);
   void RC4EnDecrypt(UCHAR* pData, int DataLen, RC4KEY* pRC4key);
-
-
 };
-

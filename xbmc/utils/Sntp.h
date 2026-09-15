@@ -21,7 +21,7 @@ to maintain a single distribution point for the source code.
 #ifndef __SNTP_H__
 #define __SNTP_H__
 
-#include "threads/Thread.h" 
+#include "threads/Thread.h"
 ///////////////////////////////// Classes //////////////////////////////
 
 //Representation of an NTP timestamp
@@ -30,7 +30,6 @@ struct CNtpTimePacket
   DWORD m_dwInteger;
   DWORD m_dwFractional;
 };
-
 
 //Helper class to encapulate NTP time stamps
 class CNtpTime
@@ -68,7 +67,6 @@ protected:
   unsigned __int64 m_Time;
 };
 
-
 struct NtpServerResponse
 {
   int m_nLeapIndicator; //0: no warning
@@ -81,14 +79,13 @@ struct NtpServerResponse
   //2-15: secondary reference (via NTP or SNTP)
   //16-255: reserved
 
-  CNtpTime m_OriginateTime;    //Time when the request was sent from the client to the SNTP server
-  CNtpTime m_ReceiveTime;      //Time when the request was received by the server
-  CNtpTime m_TransmitTime;     //Time when the server sent the request back to the client
-  CNtpTime m_DestinationTime;  //Time when the reply was received by the client
-  double m_RoundTripDelay;   //Round trip time in seconds
+  CNtpTime m_OriginateTime; //Time when the request was sent from the client to the SNTP server
+  CNtpTime m_ReceiveTime; //Time when the request was received by the server
+  CNtpTime m_TransmitTime; //Time when the server sent the request back to the client
+  CNtpTime m_DestinationTime; //Time when the reply was received by the client
+  double m_RoundTripDelay; //Round trip time in seconds
   double m_LocalClockOffset; //Local clock offset relative to the server
 };
-
 
 //The actual SNTP class
 class CSNTPClient : private CThread
@@ -99,6 +96,7 @@ public:
   virtual ~CSNTPClient();
   void Update();
   bool UpdateNeeded();
+
 protected:
   virtual void Process();
 
@@ -106,7 +104,6 @@ protected:
   BOOL GetServerTime(LPCTSTR pszHostName, NtpServerResponse& response, int nPort = 123);
   void SetTimeout(DWORD dwTimeout) { m_dwTimeout = dwTimeout; };
   BOOL SetClientTime(const CNtpTime& NewTime);
-
 
   //AR 22-07-2000
 #ifndef _WIN32_WCE
@@ -124,6 +121,5 @@ protected:
   BOOL m_bTakenPriviledge;
 #endif
 };
-
 
 #endif //__SNTP_H__

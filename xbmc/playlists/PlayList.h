@@ -32,12 +32,12 @@ public:
   CPlayList(int id = -1);
   virtual ~CPlayList(void) {};
   virtual bool Load(const std::string& strFileName);
-  virtual bool LoadData(std::istream &stream);
+  virtual bool LoadData(std::istream& stream);
   virtual bool LoadData(const std::string& strData);
   virtual void Save(const std::string& strFileName) const {};
 
   void Add(CPlayList& playlist);
-  void Add(const CFileItemPtr &pItem);
+  void Add(const CFileItemPtr& pItem);
   void Add(CFileItemList& items);
 
   // for Party Mode
@@ -55,8 +55,8 @@ public:
   int size() const;
   int RemoveDVDItems();
 
-  const CFileItemPtr operator[] (int iItem) const;
-  CFileItemPtr operator[] (int iItem);
+  const CFileItemPtr operator[](int iItem) const;
+  CFileItemPtr operator[](int iItem);
 
   void Shuffle(int iPosition = 0);
   void UnShuffle();
@@ -68,9 +68,9 @@ public:
   void SetUnPlayable(int iItem);
   int GetPlayable() const { return m_iPlayableItems; };
 
-  void UpdateItem(const CFileItem *item);
+  void UpdateItem(const CFileItem* item);
 
-  const std::string& ResolveURL(const CFileItemPtr &item) const;
+  const std::string& ResolveURL(const CFileItemPtr& item) const;
 
 protected:
   int m_id;
@@ -80,9 +80,9 @@ protected:
   bool m_bShuffled;
   bool m_bWasPlayed;
 
-//  CFileItemList m_vecItems;
-  std::vector <CFileItemPtr> m_vecItems;
-  typedef std::vector <CFileItemPtr>::iterator ivecItems;
+  //  CFileItemList m_vecItems;
+  std::vector<CFileItemPtr> m_vecItems;
+  typedef std::vector<CFileItemPtr>::iterator ivecItems;
 
 private:
   void Add(const CFileItemPtr& item, int iPosition, int iOrderOffset);
@@ -95,4 +95,4 @@ private:
 };
 
 typedef boost::shared_ptr<CPlayList> CPlayListPtr;
-}
+} // namespace PLAYLIST

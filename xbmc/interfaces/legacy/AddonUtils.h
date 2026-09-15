@@ -38,53 +38,52 @@ class LanguageHook;
 
 namespace XBMCAddonUtils
 {
-  class GuiLock
-  {
-  public:
-    GuiLock(XBMCAddon::LanguageHook* languageHook, bool offScreen);
-    ~GuiLock();
+class GuiLock
+{
+public:
+  GuiLock(XBMCAddon::LanguageHook* languageHook, bool offScreen);
+  ~GuiLock();
 
-  protected:
-    XBMCAddon::LanguageHook* m_languageHook;
-    bool m_offScreen;
-  };
+protected:
+  XBMCAddon::LanguageHook* m_languageHook;
+  bool m_offScreen;
+};
 
-  class InvertSingleLockGuard
-  {
-    CSingleLock& lock;
-  public:
-    explicit InvertSingleLockGuard(CSingleLock& _lock) : lock(_lock) { lock.Leave(); }
-    ~InvertSingleLockGuard() { lock.Enter(); }
-  };
+class InvertSingleLockGuard
+{
+  CSingleLock& lock;
 
+public:
+  explicit InvertSingleLockGuard(CSingleLock& _lock) : lock(_lock) { lock.Leave(); }
+  ~InvertSingleLockGuard() { lock.Enter(); }
+};
 
-  /*
+/*
    * Looks in references.xml for image name
    * If none exist return default image name
    */
-  const char *getDefaultImage(const char* cControlType, const char* cTextureType);
+const char* getDefaultImage(const char* cControlType, const char* cTextureType);
 
 #ifdef ENABLE_XBMC_TRACE_API
-  class TraceGuard
-  {
-    const char* function;
-  public:
-    TraceGuard* parent;
-    int depth;
+class TraceGuard
+{
+  const char* function;
 
-    const char* getSpaces();
+public:
+  TraceGuard* parent;
+  int depth;
 
-    explicit TraceGuard(const char* _function);
-    TraceGuard();
-    ~TraceGuard();
-  };
+  const char* getSpaces();
+
+  explicit TraceGuard(const char* _function);
+  TraceGuard();
+  ~TraceGuard();
+};
 #endif
-}
+} // namespace XBMCAddonUtils
 
 #ifdef ENABLE_XBMC_TRACE_API
 #define XBMC_TRACE XBMCAddonUtils::TraceGuard _tg(__PRETTY_FUNCTION__)
 #else
 #define XBMC_TRACE
 #endif
-
-

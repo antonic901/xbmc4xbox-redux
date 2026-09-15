@@ -18,26 +18,26 @@
 
 namespace XBMCAddon
 {
-  namespace xbmcgui
-  {
-    class WindowDialogMixin
-    {
-    private:
-      Window* w;
+namespace xbmcgui
+{
+class WindowDialogMixin
+{
+private:
+  Window* w;
 
-    protected:
-      inline explicit WindowDialogMixin(Window* window) : w(window) {}
+protected:
+  inline explicit WindowDialogMixin(Window* window) : w(window) {}
 
-    public:
-      virtual ~WindowDialogMixin() {}
+public:
+  virtual ~WindowDialogMixin() {}
 
-      SWIGHIDDENVIRTUAL void show();
-      SWIGHIDDENVIRTUAL void close();
+  SWIGHIDDENVIRTUAL void show();
+  SWIGHIDDENVIRTUAL void close();
 
 #ifndef SWIG
-      SWIGHIDDENVIRTUAL bool IsDialogRunning() const;
-      SWIGHIDDENVIRTUAL bool OnAction(const CAction &action);
+  SWIGHIDDENVIRTUAL bool IsDialogRunning() const;
+  SWIGHIDDENVIRTUAL bool OnAction(const CAction& action);
 #endif
-    };
-  }
-}
+};
+} // namespace xbmcgui
+} // namespace XBMCAddon

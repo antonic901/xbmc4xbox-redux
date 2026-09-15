@@ -25,13 +25,13 @@
 class IRunnable;
 class CEvent;
 
-class CGUIDialogBusy: public CGUIDialog
+class CGUIDialogBusy : public CGUIDialog
 {
 public:
   CGUIDialogBusy(void);
   virtual ~CGUIDialogBusy(void);
   virtual bool OnBack(int actionID);
-  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
   /*! \brief set the current progress of the busy operation
    \param progress a percentage of progress
@@ -48,7 +48,7 @@ public:
    \param allowCancel whether the user can cancel the wait, defaults to true.
    \return true if the runnable completes, false if the user cancels early.
    */
-  static bool Wait(IRunnable *runnable, unsigned int displaytime, bool allowCancel);
+  static bool Wait(IRunnable* runnable, unsigned int displaytime, bool allowCancel);
 
   /*! \brief Wait on an event while displaying the busy dialog.
    Throws up the busy dialog after the given time.
@@ -57,9 +57,13 @@ public:
    \param allowCancel whether the user can cancel the wait, defaults to true.
    \return true if the event completed, false if cancelled.
    */
-  static bool WaitOnEvent(CEvent &event, unsigned int displaytime = 100, bool allowCancel = true, bool isFromDvdPlayer = false);
+  static bool WaitOnEvent(CEvent& event,
+                          unsigned int displaytime = 100,
+                          bool allowCancel = true,
+                          bool isFromDvdPlayer = false);
+
 protected:
-  virtual void Open_Internal(const std::string &param = "");
+  virtual void Open_Internal(const std::string& param = "");
   bool m_bCanceled;
   bool m_bLastVisible;
   float m_progress; ///< current progress

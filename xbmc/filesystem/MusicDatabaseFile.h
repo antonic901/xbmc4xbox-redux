@@ -40,7 +40,8 @@ public:
   virtual int64_t GetLength();
 
   static std::string TranslateUrl(const CURL& url);
+
 protected:
   CFile m_file;
 };
-}
+} // namespace XFILE

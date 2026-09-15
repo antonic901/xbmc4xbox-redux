@@ -39,12 +39,12 @@ public:
   \param action the action to perform.
   \return true if the action is considered handled, false if it should be handled elsewhere.
   */
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
 
   /*! \brief Callback from the slider dialog.
    \sa CGUIDialogSlider
    */
-  virtual void OnSliderChange(void *data, CGUISliderControl *slider);
+  virtual void OnSliderChange(void* data, CGUISliderControl* slider);
 
 protected:
   CPlayerController();
@@ -62,7 +62,8 @@ private:
    \param max maximal value the slider may take
    \param modal true if we should wait for the slider to finish. Defaults to false
    */
-  void ShowSlider(int action, int label, float value, float min, float delta, float max, bool modal = false);
+  void ShowSlider(
+      int action, int label, float value, float min, float delta, float max, bool modal = false);
 
   int m_sliderAction; ///< \brief set to the action id for a slider being displayed \sa ShowSlider
 };

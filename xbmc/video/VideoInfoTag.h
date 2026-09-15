@@ -36,23 +36,20 @@ class CVariant;
 struct SActorInfo
 {
   SActorInfo() : order(-1) {};
-  bool operator<(const SActorInfo &right) const
-  {
-    return order < right.order;
-  }
+  bool operator<(const SActorInfo& right) const { return order < right.order; }
   std::string strName;
   std::string strRole;
   CScraperUrl thumbUrl;
   std::string thumb;
-  int        order;
+  int order;
 };
 
 class CRating
 {
 public:
-  CRating(): rating(0.0f), votes(0) {}
-  CRating(float r): rating(r), votes(0) {}
-  CRating(float r, int v): rating(r), votes(v) {}
+  CRating() : rating(0.0f), votes(0) {}
+  CRating(float r) : rating(r), votes(0) {}
+  CRating(float r, int v) : rating(r), votes(v) {}
   float rating;
   int votes;
 };
@@ -78,8 +75,11 @@ public:
 
    \sa ParseNative
    */
-  bool Load(const TiXmlElement *element, bool append = false, bool prioritise = false);
-  bool Save(TiXmlNode *node, const std::string &tag, bool savePathInfo = true, const TiXmlElement *additionalNode = NULL);
+  bool Load(const TiXmlElement* element, bool append = false, bool prioritise = false);
+  bool Save(TiXmlNode* node,
+            const std::string& tag,
+            bool savePathInfo = true,
+            const TiXmlElement* additionalNode = NULL);
   virtual void Archive(CArchive& ar);
   virtual void Serialize(CVariant& value) const;
   virtual void ToSortable(SortItem& sortable, Field field) const;
@@ -124,7 +124,7 @@ public:
    \param runtime the runtime string from a scraper or similar
    \return the time in seconds, if decipherable.
    */
-  static unsigned int GetDurationFromMinuteString(const std::string &runtime);
+  static unsigned int GetDurationFromMinuteString(const std::string& runtime);
 
   void SetBasePath(std::string basePath);
   void SetDirector(std::vector<std::string> director);
@@ -137,7 +137,7 @@ public:
   void SetPlot(std::string plot);
   void SetTitle(std::string title);
   void SetSortTitle(std::string sortTitle);
-  void SetPictureURL(CScraperUrl &pictureURL);
+  void SetPictureURL(CScraperUrl& pictureURL);
   void SetRating(float rating, int votes, const std::string& type = "", bool def = false);
   void SetRating(CRating rating, const std::string& type = "", bool def = false);
   void SetRating(float rating, const std::string& type = "", bool def = false);
@@ -210,7 +210,7 @@ public:
    * @param resumePoint resume point.
    * @return True if resume point was set successfully, false otherwise.
    */
-  virtual bool SetResumePoint(const CBookmark &resumePoint);
+  virtual bool SetResumePoint(const CBookmark& resumePoint);
 
   /*!
    * @brief Set this videos's resume point.
@@ -219,10 +219,12 @@ public:
    * @param playerState the player state
    * @return True if resume point was set successfully, false otherwise.
    */
-  bool SetResumePoint(double timeInSeconds, double totalTimeInSeconds, const std::string &playerState = "");
+  bool SetResumePoint(double timeInSeconds,
+                      double totalTimeInSeconds,
+                      const std::string& playerState = "");
 
   std::string m_basePath; // the base path of the video, for folder-based lookups
-  int m_parentPathID;      // the parent path id where the base path of the video lies
+  int m_parentPathID; // the parent path id where the base path of the video lies
   std::vector<std::string> m_director;
   std::vector<std::string> m_writingCredits;
   std::vector<std::string> m_genre;
@@ -235,8 +237,8 @@ public:
   std::string m_strTitle;
   std::string m_strSortTitle;
   std::vector<std::string> m_artist;
-  std::vector< SActorInfo > m_cast;
-  typedef std::vector< SActorInfo >::const_iterator iCast;
+  std::vector<SActorInfo> m_cast;
+  typedef std::vector<SActorInfo>::const_iterator iCast;
   struct SetInfo //!< Struct holding information about a movie set
   {
     std::string title; //!< Title of the movie set
@@ -301,8 +303,8 @@ private:
   std::string m_strDefaultRating;
   std::string m_strDefaultUniqueID;
   std::map<std::string, std::string> m_uniqueIDs;
-  std::string Trim(std::string &value);
-  std::vector<std::string> Trim(std::vector<std::string> &items);
+  std::string Trim(std::string& value);
+  std::vector<std::string> Trim(std::vector<std::string>& items);
 
   static const int PLAYCOUNT_NOT_SET = -1;
 };

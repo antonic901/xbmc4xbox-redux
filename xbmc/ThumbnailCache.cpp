@@ -44,7 +44,8 @@ CThumbnailCache* CThumbnailCache::m_pCacheInstance = NULL;
 CCriticalSection CThumbnailCache::m_cs;
 
 CThumbnailCache::~CThumbnailCache()
-{}
+{
+}
 
 CThumbnailCache::CThumbnailCache()
 {
@@ -52,7 +53,7 @@ CThumbnailCache::CThumbnailCache()
 
 CThumbnailCache* CThumbnailCache::GetThumbnailCache()
 {
-  CSingleLock lock (m_cs);
+  CSingleLock lock(m_cs);
 
   if (m_pCacheInstance == NULL)
     m_pCacheInstance = new CThumbnailCache;

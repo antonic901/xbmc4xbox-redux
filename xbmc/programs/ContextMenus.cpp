@@ -28,12 +28,10 @@
 #include "utils/URIUtils.h"
 #include "utils/XMLUtils.h"
 
-
 namespace CONTEXTMENU
 {
 
-CProgramInfoBase::CProgramInfoBase()
-  : CStaticContextMenuAction(19033)
+CProgramInfoBase::CProgramInfoBase() : CStaticContextMenuAction(19033)
 {
 }
 
@@ -47,14 +45,14 @@ bool CProgramInfoBase::IsVisible(const CFileItem& item) const
 
 bool CProgramInfoBase::Execute(const boost::shared_ptr<CFileItem>& item) const
 {
-  CGUIDialogProgramInfo *dialog = static_cast<CGUIDialogProgramInfo*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_INFO));
+  CGUIDialogProgramInfo* dialog =
+      static_cast<CGUIDialogProgramInfo*>(g_windowManager.GetWindow(WINDOW_DIALOG_PROGRAM_INFO));
   dialog->SetProgram(item.get());
   dialog->Open();
   return true;
 }
 
-CProgramSettings::CProgramSettings()
-  : CStaticContextMenuAction(519)
+CProgramSettings::CProgramSettings() : CStaticContextMenuAction(519)
 {
 }
 
@@ -72,8 +70,7 @@ bool CProgramSettings::Execute(const boost::shared_ptr<CFileItem>& item) const
   return true;
 }
 
-CScriptLaunch::CScriptLaunch()
-  : CStaticContextMenuAction(247)
+CScriptLaunch::CScriptLaunch() : CStaticContextMenuAction(247)
 {
 }
 
@@ -90,14 +87,16 @@ bool CScriptLaunch::Execute(const boost::shared_ptr<CFileItem>& item) const
   ADDON::VECADDONS addons;
   if (XFILE::CAddonsDirectory::GetScriptsAndPlugins("executable", addons) && addons.size())
   {
-    CGUIDialogSelect *dialog = static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
+    CGUIDialogSelect* dialog =
+        static_cast<CGUIDialogSelect*>(g_windowManager.GetWindow(WINDOW_DIALOG_SELECT));
     if (dialog)
     {
       dialog->SetHeading(247);
       dialog->Reset();
       for (ADDON::VECADDONS::const_iterator it = addons.begin(); it != addons.end(); ++it)
       {
-        std::string strOption = StringUtils::Format("%s (%s)", (*it)->Name().c_str(), (*it)->Author().c_str());
+        std::string strOption =
+            StringUtils::Format("%s (%s)", (*it)->Name().c_str(), (*it)->Author().c_str());
         dialog->Add(strOption);
       }
       dialog->Open();
@@ -107,7 +106,8 @@ bool CScriptLaunch::Execute(const boost::shared_ptr<CFileItem>& item) const
         return true;
 
       std::string strPath = item->GetPath();
-      std::string strParentPath = item->m_bIsFolder ? item->GetPath() : URIUtils::GetParentPath(strPath);
+      std::string strParentPath =
+          item->m_bIsFolder ? item->GetPath() : URIUtils::GetParentPath(strPath);
 
       std::vector<std::string> argv;
       argv.push_back(strPath);
@@ -120,12 +120,13 @@ bool CScriptLaunch::Execute(const boost::shared_ptr<CFileItem>& item) const
     }
   }
 
-  CGUIDialogKaiToast::QueueNotification(StringUtils::Format(g_localizeStrings.Get(13328).c_str(), g_localizeStrings.Get(247).c_str()), g_localizeStrings.Get(161));
+  CGUIDialogKaiToast::QueueNotification(
+      StringUtils::Format(g_localizeStrings.Get(13328).c_str(), g_localizeStrings.Get(247).c_str()),
+      g_localizeStrings.Get(161));
   return false;
 };
 
-CScraperConfig::CScraperConfig()
-  : CStaticContextMenuAction(10132)
+CScraperConfig::CScraperConfig() : CStaticContextMenuAction(10132)
 {
 }
 
@@ -149,8 +150,9 @@ bool CScraperConfig::Execute(const boost::shared_ptr<CFileItem>& item) const
     currentScraperId = scraper->ID();
   std::string selectedAddonId = currentScraperId;
 
-  if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::ADDON_SCRAPER_PROGRAMS, selectedAddonId, false) == 1
-      && selectedAddonId != currentScraperId)
+  if (CGUIWindowAddonBrowser::SelectAddonID(ADDON::ADDON_SCRAPER_PROGRAMS, selectedAddonId,
+                                            false) == 1 &&
+      selectedAddonId != currentScraperId)
   {
     ADDON::AddonPtr scraperAddon;
     CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon);
@@ -161,8 +163,7 @@ bool CScraperConfig::Execute(const boost::shared_ptr<CFileItem>& item) const
   return true;
 };
 
-CContentScan::CContentScan()
-  : CStaticContextMenuAction(13349)
+CContentScan::CContentScan() : CStaticContextMenuAction(13349)
 {
 }
 
@@ -186,4 +187,4 @@ bool CContentScan::Execute(const boost::shared_ptr<CFileItem>& item) const
   CProgramLibraryQueue::GetInstance().ScanLibrary(item->GetPath());
   return true;
 };
-}
+} // namespace CONTEXTMENU

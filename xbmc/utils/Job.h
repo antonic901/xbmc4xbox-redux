@@ -23,8 +23,8 @@ class CJob;
 
 #include <stddef.h>
 
-#define kJobTypeMediaFlags  "mediaflags"
-#define kJobTypeCacheImage  "cacheimage"
+#define kJobTypeMediaFlags "mediaflags"
+#define kJobTypeCacheImage "cacheimage"
 #define kJobTypeDDSCompress "ddscompress"
 
 /*!
@@ -60,7 +60,7 @@ public:
    \param job the job that has been processed.  The job will be destroyed after this function returns
    \sa CJobManager and CJob
    */
-  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job)=0;
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob* job) = 0;
 
   /*!
    \brief An optional callback function that a job may call while processing.
@@ -74,7 +74,10 @@ public:
    \param job the job that has been processed.
    \sa CJobManager and CJob
    */
-  virtual void OnJobProgress(unsigned int jobID, unsigned int progress, unsigned int total, const CJob *job) {};
+  virtual void OnJobProgress(unsigned int jobID,
+                             unsigned int progress,
+                             unsigned int total,
+                             const CJob* job) {};
 };
 
 class CJobManager;
@@ -105,7 +108,8 @@ public:
    \brief Priority levels for jobs, specified by clients when adding jobs to the CJobManager.
    \sa CJobManager
    */
-  enum PRIORITY {
+  enum PRIORITY
+  {
     PRIORITY_LOW_PAUSABLE = 0,
     PRIORITY_LOW,
     PRIORITY_NORMAL,
@@ -133,7 +137,7 @@ public:
 
    \sa CJobManager, IJobCallback::OnJobComplete()
    */
-  virtual bool DoWork() = 0;  // function to do the work
+  virtual bool DoWork() = 0; // function to do the work
 
   /*!
    \brief Function that returns the type of job.
@@ -145,12 +149,9 @@ public:
    \return a unique character string describing the job.
    \sa CJobManager
    */
-  virtual const char *GetType() const { return ""; };
+  virtual const char* GetType() const { return ""; };
 
-  virtual bool operator==(const CJob* job) const
-  {
-    return false;
-  }
+  virtual bool operator==(const CJob* job) const { return false; }
 
   /*!
    \brief Function for longer jobs to report progress and check whether they have been cancelled.
@@ -165,7 +166,8 @@ public:
    \sa IJobCallback::OnJobProgress()
    */
   virtual bool ShouldCancel(unsigned int progress, unsigned int total) const;
+
 private:
   friend class CJobManager;
-  CJobManager *m_callback;
+  CJobManager* m_callback;
 };

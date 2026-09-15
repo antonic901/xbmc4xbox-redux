@@ -28,13 +28,13 @@
 #include "utils/StringUtils.h"
 #include "utils/log.h"
 
-#define PIC_ADDRESS      0x20
+#define PIC_ADDRESS 0x20
 #define XCALIBUR_ADDRESS 0xE0 // XCalibur/1.6 videochip
-#define FAN_MODE         0x05 // Enable/ disable the custom fan speeds (0/1)
-#define FAN_REGISTER     0x06 // Set custom fan speeds (0-50)
-#define FAN_READBACK     0x10 // Current fan speed (0-50)
-#define GPU_TEMP         0x0A // GPU Temperature
-#define CPU_TEMP         0x09 // CPU Temperature
+#define FAN_MODE 0x05 // Enable/ disable the custom fan speeds (0/1)
+#define FAN_REGISTER 0x06 // Set custom fan speeds (0-50)
+#define FAN_READBACK 0x10 // Current fan speed (0-50)
+#define GPU_TEMP 0x0A // GPU Temperature
+#define CPU_TEMP 0x09 // CPU Temperature
 
 CFanController* CFanController::_Instance = NULL;
 
@@ -53,7 +53,7 @@ void CFanController::RemoveInstance()
   {
     _Instance->Stop();
     delete _Instance;
-    _Instance=NULL;
+    _Instance = NULL;
   }
 }
 
@@ -69,21 +69,23 @@ CFanController::CFanController() : CThread("CFanController")
   m_minFanspeed = 1;
 }
 
-
 CFanController::~CFanController()
 {
   _Instance = NULL;
 }
 
 void CFanController::OnStartup()
-{}
+{
+}
 
 void CFanController::OnExit()
-{}
+{
+}
 
 void CFanController::Process()
 {
-  if (!CSettings::GetInstance().GetBool("system.autotemperature")) return ;
+  if (!CSettings::GetInstance().GetBool("system.autotemperature"))
+    return;
   int interval = 500;
   tooHotLoopCount = 0;
   tooColdLoopCount = 0;
@@ -127,11 +129,10 @@ void CFanController::SetMinFanSpeed(int minFanspeed)
 {
   m_minFanspeed = minFanspeed;
   if (m_minFanspeed < 1)
-    m_minFanspeed=1;
+    m_minFanspeed = 1;
   if (m_minFanspeed > 50)
-    m_minFanspeed=50; // Should not be possible
+    m_minFanspeed = 50; // Should not be possible
 }
-
 
 void CFanController::RestoreStartupSpeed()
 {
@@ -154,18 +155,19 @@ void CFanController::Start(int targetTemperature, int minFanspeed)
   Create();
 }
 
-void CFanController::OnSettingChanged(const CSetting *setting)
+void CFanController::OnSettingChanged(const CSetting* setting)
 {
   if (setting == NULL)
     return;
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
   if (settingId == "system.autotemperature")
   {
     if (((CSettingBool*)setting)->GetValue())
     {
       CSettings::GetInstance().SetBool("system.fanspeedcontrol", false);
-      CFanController::Instance()->Start(CSettings::GetInstance().GetInt("system.targettemperature"), CSettings::GetInstance().GetInt("system.minfanspeed") );
+      CFanController::Instance()->Start(CSettings::GetInstance().GetInt("system.targettemperature"),
+                                        CSettings::GetInstance().GetInt("system.minfanspeed"));
     }
     else
       CFanController::Instance()->Stop();
@@ -218,9 +220,12 @@ void CFanController::GetFanSpeedInternal()
 
 void CFanController::SetFanSpeed(const int fanspeed, const bool force)
 {
-  if (fanspeed < 0) return ;
-  if (fanspeed > 50) return ;
-  if ((currentFanSpeed == fanspeed) && (!force)) return ;
+  if (fanspeed < 0)
+    return;
+  if (fanspeed > 50)
+    return;
+  if ((currentFanSpeed == fanspeed) && (!force))
+    return;
   if (force)
   {
     //on boot or first time set it needs a kickstart in releasemode for some reason
@@ -258,7 +263,6 @@ void CFanController::GetGPUTempInternal()
   {
     gpuTemp *= 0.8f;
   }
-
 }
 
 const CTemperature& CFanController::GetCPUTemp()
@@ -275,40 +279,42 @@ void CFanController::GetCPUTempInternal()
   unsigned short cpu, cpudec;
   float temp1;
 
-  
   if (!bIs16Box)
   { //if it is an old xbox, then do as we have always done
     _outp(0xc004, (0x4c << 1) | 0x01);
     _outp(0xc008, 0x01);
     _outpw(0xc000, _inpw(0xc000));
     _outp(0xc002, (0) ? 0x0b : 0x0a);
-    while ((_inp(0xc000) & 8));
+    while ((_inp(0xc000) & 8))
+      ;
     cpu = _inpw(0xc006);
 
     _outp(0xc004, (0x4c << 1) | 0x01);
     _outp(0xc008, 0x10);
     _outpw(0xc000, _inpw(0xc000));
     _outp(0xc002, (0) ? 0x0b : 0x0a);
-    while ((_inp(0xc000) & 8));
+    while ((_inp(0xc000) & 8))
+      ;
     cpudec = _inpw(0xc006);
 
     cpuTemp = CTemperature::CreateFromCelsius((float)cpu + (float)cpudec / 256.0f);
   }
   else
   { // if its a 1.6 then we get the CPU temperature from the xcalibur
-    _outp(0xc004, (0x70 << 1) | 0x01);  // address
-    _outp(0xc008, 0xC1);                // command
-    _outpw(0xc000, _inpw(0xc000));      // clear errors
-    _outp(0xc002, 0x0d);                // start block transfer
-    while ((_inp(0xc000) & 8));         // wait for response
-   
+    _outp(0xc004, (0x70 << 1) | 0x01); // address
+    _outp(0xc008, 0xC1); // command
+    _outpw(0xc000, _inpw(0xc000)); // clear errors
+    _outp(0xc002, 0x0d); // start block transfer
+    while ((_inp(0xc000) & 8))
+      ; // wait for response
+
     if (!(_inp(0xc000) & 0x23)) // if there was a error then just skip this read..
     {
-      _inp(0xc004);                       // read out the data reg (no. bytes in block, will be 4)
-      cpudec = _inp(0xc009);              // first byte
-      cpu    = _inp(0xc009);              // second byte
-      _inp(0xc009);                       // read out the two last bytes, dont' think its neccesary
-      _inp(0xc009);                       // but done to be on the safe side
+      _inp(0xc004); // read out the data reg (no. bytes in block, will be 4)
+      cpudec = _inp(0xc009); // first byte
+      cpu = _inp(0xc009); // second byte
+      _inp(0xc009); // read out the two last bytes, dont' think its neccesary
+      _inp(0xc009); // but done to be on the safe side
 
       /* the temperature recieved from the xcalibur is very jumpy, so we try and smooth it
           out by taking the average over 10 samples */
@@ -324,7 +330,7 @@ void CFanController::GetCPUTempInternal()
       }
       else
       {
-        cpuTempCount++;     // increse sample count
+        cpuTempCount++; // increse sample count
       }
     }
 
@@ -333,7 +339,6 @@ void CFanController::GetCPUTempInternal()
       cpuTemp = CTemperature::CreateFromCelsius((float)cpu + (float)cpudec / 256);
   }
 }
-
 
 void CFanController::CalcSpeed(int targetTemp)
 {
@@ -408,22 +413,34 @@ void CFanController::CalcSpeed(int targetTemp)
     }
   }
 
-  if (calculatedFanSpeed < m_minFanspeed) 
+  if (calculatedFanSpeed < m_minFanspeed)
   {
     calculatedFanSpeed = m_minFanspeed;
-  } 
-  if (calculatedFanSpeed > 50) {calculatedFanSpeed = 50;}
+  }
+  if (calculatedFanSpeed > 50)
+  {
+    calculatedFanSpeed = 50;
+  }
 }
 
-void CFanController::SettingOptionsSpeedsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CFanController::SettingOptionsSpeedsFiller(const CSetting* setting,
+                                                std::vector<std::pair<std::string, int> >& list,
+                                                int& current,
+                                                void* data)
 {
-  for (int i=((CSettingInt*)setting)->GetMinimum(); i <= ((CSettingInt*)setting)->GetMaximum(); i += ((CSettingInt*)setting)->GetStep())
-    list.push_back(std::make_pair(StringUtils::Format(g_localizeStrings.Get(14047).c_str(), i * 2), i));
+  for (int i = ((CSettingInt*)setting)->GetMinimum(); i <= ((CSettingInt*)setting)->GetMaximum();
+       i += ((CSettingInt*)setting)->GetStep())
+    list.push_back(
+        std::make_pair(StringUtils::Format(g_localizeStrings.Get(14047).c_str(), i * 2), i));
   if (current < 1 || current > 50)
     current = Instance()->GetFanSpeed();
 }
 
-void CFanController::SettingOptionsTemperaturesFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CFanController::SettingOptionsTemperaturesFiller(
+    const CSetting* setting,
+    std::vector<std::pair<std::string, int> >& list,
+    int& current,
+    void* data)
 {
   for (int i = 40; i <= 68; ++i)
   {

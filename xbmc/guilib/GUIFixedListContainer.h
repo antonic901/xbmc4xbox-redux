@@ -34,20 +34,30 @@
 class CGUIFixedListContainer : public CGUIBaseContainer
 {
 public:
-  CGUIFixedListContainer(int parentID, int controlID, float posX, float posY, float width, float height, ORIENTATION orientation, const CScroller& scroller, int preloadItems, int fixedPosition, int cursorRange);
+  CGUIFixedListContainer(int parentID,
+                         int controlID,
+                         float posX,
+                         float posY,
+                         float width,
+                         float height,
+                         ORIENTATION orientation,
+                         const CScroller& scroller,
+                         int preloadItems,
+                         int fixedPosition,
+                         int cursorRange);
   virtual ~CGUIFixedListContainer(void);
-  virtual CGUIFixedListContainer *Clone() const { return new CGUIFixedListContainer(*this); };
+  virtual CGUIFixedListContainer* Clone() const { return new CGUIFixedListContainer(*this); };
 
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
 
 protected:
   virtual void Scroll(int amount);
   virtual bool MoveDown(bool wrapAround);
   virtual bool MoveUp(bool wrapAround);
-  virtual bool GetOffsetRange(int &minOffset, int &maxOffset) const;
+  virtual bool GetOffsetRange(int& minOffset, int& maxOffset) const;
   virtual void ValidateOffset();
-  virtual bool SelectItemFromPoint(const CPoint &point);
-  virtual int GetCursorFromPoint(const CPoint &point, CPoint *itemPoint = NULL) const;
+  virtual bool SelectItemFromPoint(const CPoint& point);
+  virtual int GetCursorFromPoint(const CPoint& point, CPoint* itemPoint = NULL) const;
   virtual void SelectItem(int item);
   virtual bool HasNextPage() const;
   virtual bool HasPreviousPage() const;
@@ -64,9 +74,8 @@ private:
    \param maxCursor the maximal cursor position
    \sa m_fixedCursor, m_cursorRange
    */
-  void GetCursorRange(int &minCursor, int &maxCursor) const;
+  void GetCursorRange(int& minCursor, int& maxCursor) const;
 
-  int m_fixedCursor;    ///< default position the skinner wishes to use for the focused item
-  int m_cursorRange;    ///< range that the focused item can vary when at the ends of the list
+  int m_fixedCursor; ///< default position the skinner wishes to use for the focused item
+  int m_cursorRange; ///< range that the focused item can vary when at the ends of the list
 };
-

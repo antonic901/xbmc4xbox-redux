@@ -21,17 +21,16 @@
 
 #include "ImusicInfoTagLoader.h"
 
-class CFileItem;  // forward
+class CFileItem; // forward
 
 namespace MUSIC_INFO
 {
-  class CMusicInfoTagLoaderFactory
-  {
-    public:
-      CMusicInfoTagLoaderFactory(void);
-      virtual ~CMusicInfoTagLoaderFactory();
+class CMusicInfoTagLoaderFactory
+{
+public:
+  CMusicInfoTagLoaderFactory(void);
+  virtual ~CMusicInfoTagLoaderFactory();
 
-      static IMusicInfoTagLoader* CreateLoader(const CFileItem& item);
-  };
-}
-
+  static IMusicInfoTagLoader* CreateLoader(const CFileItem& item);
+};
+} // namespace MUSIC_INFO

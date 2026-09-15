@@ -37,13 +37,12 @@ public:
   ~CMusicLibraryCleaningJob();
 
   // specialization of CJob
-  const char *GetType() const { return "MusicLibraryCleaningJob"; }
+  const char* GetType() const { return "MusicLibraryCleaningJob"; }
   bool operator==(const CJob* job) const;
 
 protected:
   // implementation of CMusicLibraryJob
-  bool Work(CMusicDatabase &db);
+  bool Work(CMusicDatabase& db);
 
 private:
-
 };

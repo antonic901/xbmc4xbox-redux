@@ -12,10 +12,7 @@
 
 namespace XBMCAddon
 {
-  typedef std::string String;
+typedef std::string String;
 
-  extern String emptyString;
-}
-
-
-
+extern String emptyString;
+} // namespace XBMCAddon

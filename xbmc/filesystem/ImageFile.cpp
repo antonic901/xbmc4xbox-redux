@@ -60,7 +60,7 @@ bool CImageFile::Exists(const CURL& url)
   if (!cachedFile.IsEmpty())
     return CFile::Exists(cachedFile);
 
-  // need to check if the original can be cached on demand and that the file exists 
+  // need to check if the original can be cached on demand and that the file exists
   if (!url.GetUserName().empty())
     return false; // not in the cache, and can't be cached on demand
 

@@ -13,14 +13,13 @@
 class CFileItem;
 class CFileItemList;
 
-class CGUIDialogProgramInfo :
-      public CGUIDialog
+class CGUIDialogProgramInfo : public CGUIDialog
 {
 public:
   CGUIDialogProgramInfo(void);
   virtual ~CGUIDialogProgramInfo(void);
   bool OnMessage(CGUIMessage& message);
-  void SetProgram(const CFileItem *item);
+  void SetProgram(const CFileItem* item);
 
 protected:
   void OnInitWindow();
@@ -33,5 +32,5 @@ protected:
   void PlayTrailer();
 
   boost::shared_ptr<CFileItem> m_programItem;
-  CFileItemList *m_screenshotList;
+  CFileItemList* m_screenshotList;
 };

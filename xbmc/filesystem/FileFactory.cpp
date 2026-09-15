@@ -64,40 +64,57 @@ IFile* CFileFactory::CreateLoader(const CStdString& strFileName)
 
 IFile* CFileFactory::CreateLoader(const CURL& url)
 {
-  if (url.IsProtocol("zip")) return new CZipFile();
-  else if (url.IsProtocol("rar")) return new CRarFile();
-  else if (url.IsProtocol("musicdb")) return new CMusicDatabaseFile();
-  else if (url.IsProtocol("videodb")) return NULL;
-  else if (url.IsProtocol("library")) return NULL;
-  else if (url.IsProtocol("special")) return new CSpecialProtocolFile();
-  else if (url.IsProtocol("multipath")) return new CMultiPathFile();
-  else if (url.IsProtocol("image")) return new CImageFile();
-  else if (url.IsProtocol("file") || url.GetProtocol().empty()) return new CHDFile();
-  else if (url.IsProtocol("filereader")) return new CFileFileReader();
+  if (url.IsProtocol("zip"))
+    return new CZipFile();
+  else if (url.IsProtocol("rar"))
+    return new CRarFile();
+  else if (url.IsProtocol("musicdb"))
+    return new CMusicDatabaseFile();
+  else if (url.IsProtocol("videodb"))
+    return NULL;
+  else if (url.IsProtocol("library"))
+    return NULL;
+  else if (url.IsProtocol("special"))
+    return new CSpecialProtocolFile();
+  else if (url.IsProtocol("multipath"))
+    return new CMultiPathFile();
+  else if (url.IsProtocol("image"))
+    return new CImageFile();
+  else if (url.IsProtocol("file") || url.GetProtocol().empty())
+    return new CHDFile();
+  else if (url.IsProtocol("filereader"))
+    return new CFileFileReader();
 #ifdef HAS_FILESYSTEM
-  else if (url.IsProtocol("iso9660")) return new CISOFile();
-  else if (url.IsProtocol("soundtrack")) return new CSndtrkFile();
-  else if (url.IsProtocol("cdda")) return new CFileCDDA();
-  else if (url.IsProtocol("mem")) return new CMemUnitFile();
+  else if (url.IsProtocol("iso9660"))
+    return new CISOFile();
+  else if (url.IsProtocol("soundtrack"))
+    return new CSndtrkFile();
+  else if (url.IsProtocol("cdda"))
+    return new CFileCDDA();
+  else if (url.IsProtocol("mem"))
+    return new CMemUnitFile();
 #endif
-  if (url.IsProtocol("resource")) return new CResourceFile();
+  if (url.IsProtocol("resource"))
+    return new CResourceFile();
 
-  if( g_application.getNetwork().IsAvailable() )
+  if (g_application.getNetwork().IsAvailable())
   {
-    if (url.IsProtocol("ftp")
-    ||  url.IsProtocol("ftpx")
-    ||  url.IsProtocol("ftps")
-    ||  url.IsProtocol("rss")
-    ||  url.IsProtocol("http")
-    ||  url.IsProtocol("https")) return new CCurlFile();
-    else if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVFile();
-    else if (url.IsProtocol("shout")) return new CShoutcastFile();
+    if (url.IsProtocol("ftp") || url.IsProtocol("ftpx") || url.IsProtocol("ftps") ||
+        url.IsProtocol("rss") || url.IsProtocol("http") || url.IsProtocol("https"))
+      return new CCurlFile();
+    else if (url.IsProtocol("dav") || url.IsProtocol("davs"))
+      return new CDAVFile();
+    else if (url.IsProtocol("shout"))
+      return new CShoutcastFile();
 #ifdef HAS_FILESYSTEM
-    else if (url.IsProtocol("smb")) return new CSmbFile();
-    else if (url.IsProtocol("upnp")) return new CUPnPFile();
+    else if (url.IsProtocol("smb"))
+      return new CSmbFile();
+    else if (url.IsProtocol("upnp"))
+      return new CUPnPFile();
 #endif
   }
 
-  CLog::Log(LOGWARNING, "%s - Unsupported protocol(%s) in %s", __FUNCTION__, url.GetProtocol().c_str(), url.Get().c_str() );
+  CLog::Log(LOGWARNING, "%s - Unsupported protocol(%s) in %s", __FUNCTION__,
+            url.GetProtocol().c_str(), url.Get().c_str());
   return NULL;
 }

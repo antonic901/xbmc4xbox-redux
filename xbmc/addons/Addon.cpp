@@ -65,55 +65,56 @@ namespace ADDON
 typedef struct
 {
   const char* name;
-  TYPE        type;
-  int         pretty;
+  TYPE type;
+  int pretty;
   const char* icon;
 } TypeMapping;
 
-static const TypeMapping types[] =
-  {{"unknown",                           ADDON_UNKNOWN,                 0, "" },
-   {"xbmc.metadata.scraper.albums",      ADDON_SCRAPER_ALBUMS,      24016, "DefaultAddonAlbumInfo.png" },
-   {"xbmc.metadata.scraper.artists",     ADDON_SCRAPER_ARTISTS,     24017, "DefaultAddonArtistInfo.png" },
-   {"xbmc.metadata.scraper.movies",      ADDON_SCRAPER_MOVIES,      24007, "DefaultAddonMovieInfo.png" },
-   {"xbmc.metadata.scraper.musicvideos", ADDON_SCRAPER_MUSICVIDEOS, 24015, "DefaultAddonMusicVideoInfo.png" },
-   {"xbmc.metadata.scraper.tvshows",     ADDON_SCRAPER_TVSHOWS,     24014, "DefaultAddonTvInfo.png" },
-   {"xbmc.metadata.scraper.library",     ADDON_SCRAPER_LIBRARY,     24083, "DefaultAddonInfoLibrary.png" },
-   {"xbmc.metadata.scraper.programs",    ADDON_SCRAPER_PROGRAMS,    20120, "DefaultAddonGame.png" },
-   {"xbmc.ui.screensaver",               ADDON_SCREENSAVER,         24008, "DefaultAddonScreensaver.png" },
-   {"xbmc.player.musicviz",              ADDON_VIZ,                 24010, "DefaultAddonVisualization.png" },
-   {"xbmc.python.pluginsource",          ADDON_PLUGIN,              24005, "" },
-   {"xbmc.python.script",                ADDON_SCRIPT,              24009, "" },
-   {"xbmc.python.weather",               ADDON_SCRIPT_WEATHER,      24027, "DefaultAddonWeather.png" },
-   {"xbmc.python.lyrics",                ADDON_SCRIPT_LYRICS,       24013, "DefaultAddonLyrics.png" },
-   {"xbmc.python.library",               ADDON_SCRIPT_LIBRARY,      24081, "DefaultAddonHelper.png" },
-   {"xbmc.python.module",                ADDON_SCRIPT_MODULE,       24082, "DefaultAddonLibrary.png" },
-   {"xbmc.subtitle.module",              ADDON_SUBTITLE_MODULE,     24012, "DefaultAddonSubtitles.png" },
-   {"kodi.context.item",                 ADDON_CONTEXT_ITEM,        24025, "DefaultAddonContextItem.png" },
-   {"kodi.game.controller",              ADDON_GAME_CONTROLLER,     35050, "DefaultAddonGame.png" },
-   {"xbmc.gui.skin",                     ADDON_SKIN,                  166, "DefaultAddonSkin.png" },
-   {"xbmc.webinterface",                 ADDON_WEB_INTERFACE,         199, "DefaultAddonWebSkin.png" },
-   {"xbmc.addon.repository",             ADDON_REPOSITORY,          24011, "DefaultAddonRepository.png" },
-   {"xbmc.pvrclient",                    ADDON_PVRDLL,              24019, "DefaultAddonPVRClient.png" },
-   {"kodi.peripheral",                   ADDON_PERIPHERALDLL,       35010, "DefaultAddonPeripheral.png" },
-   {"xbmc.addon.video",                  ADDON_VIDEO,                1037, "DefaultAddonVideo.png" },
-   {"xbmc.addon.audio",                  ADDON_AUDIO,                1038, "DefaultAddonMusic.png" },
-   {"xbmc.addon.image",                  ADDON_IMAGE,                1039, "DefaultAddonPicture.png" },
-   {"xbmc.addon.executable",             ADDON_EXECUTABLE,           1043, "DefaultAddonProgram.png" },
-   {"xbmc.audioencoder",                 ADDON_AUDIOENCODER,         200,  "DefaultAddonAudioEncoder.png" },
-   {"kodi.audiodecoder",                 ADDON_AUDIODECODER,         201,  "DefaultAddonAudioDecoder.png" },
-   {"xbmc.service",                      ADDON_SERVICE,             24018, "DefaultAddonService.png" },
-   {"kodi.resource.images",              ADDON_RESOURCE_IMAGES,     24035, "DefaultAddonImages.png" },
-   {"kodi.resource.language",            ADDON_RESOURCE_LANGUAGE,   24026, "DefaultAddonLanguage.png" },
-   {"kodi.resource.uisounds",            ADDON_RESOURCE_UISOUNDS,   24006, "DefaultAddonUISounds.png" },
-   {"kodi.adsp",                         ADDON_ADSPDLL,             24135, "DefaultAddonAudioDSP.png" },
-   {"kodi.inputstream",                  ADDON_INPUTSTREAM,         24048, "DefaultAddonInputstream.png" },
-  };
+static const TypeMapping types[] = {
+    {"unknown", ADDON_UNKNOWN, 0, ""},
+    {"xbmc.metadata.scraper.albums", ADDON_SCRAPER_ALBUMS, 24016, "DefaultAddonAlbumInfo.png"},
+    {"xbmc.metadata.scraper.artists", ADDON_SCRAPER_ARTISTS, 24017, "DefaultAddonArtistInfo.png"},
+    {"xbmc.metadata.scraper.movies", ADDON_SCRAPER_MOVIES, 24007, "DefaultAddonMovieInfo.png"},
+    {"xbmc.metadata.scraper.musicvideos", ADDON_SCRAPER_MUSICVIDEOS, 24015,
+     "DefaultAddonMusicVideoInfo.png"},
+    {"xbmc.metadata.scraper.tvshows", ADDON_SCRAPER_TVSHOWS, 24014, "DefaultAddonTvInfo.png"},
+    {"xbmc.metadata.scraper.library", ADDON_SCRAPER_LIBRARY, 24083, "DefaultAddonInfoLibrary.png"},
+    {"xbmc.metadata.scraper.programs", ADDON_SCRAPER_PROGRAMS, 20120, "DefaultAddonGame.png"},
+    {"xbmc.ui.screensaver", ADDON_SCREENSAVER, 24008, "DefaultAddonScreensaver.png"},
+    {"xbmc.player.musicviz", ADDON_VIZ, 24010, "DefaultAddonVisualization.png"},
+    {"xbmc.python.pluginsource", ADDON_PLUGIN, 24005, ""},
+    {"xbmc.python.script", ADDON_SCRIPT, 24009, ""},
+    {"xbmc.python.weather", ADDON_SCRIPT_WEATHER, 24027, "DefaultAddonWeather.png"},
+    {"xbmc.python.lyrics", ADDON_SCRIPT_LYRICS, 24013, "DefaultAddonLyrics.png"},
+    {"xbmc.python.library", ADDON_SCRIPT_LIBRARY, 24081, "DefaultAddonHelper.png"},
+    {"xbmc.python.module", ADDON_SCRIPT_MODULE, 24082, "DefaultAddonLibrary.png"},
+    {"xbmc.subtitle.module", ADDON_SUBTITLE_MODULE, 24012, "DefaultAddonSubtitles.png"},
+    {"kodi.context.item", ADDON_CONTEXT_ITEM, 24025, "DefaultAddonContextItem.png"},
+    {"kodi.game.controller", ADDON_GAME_CONTROLLER, 35050, "DefaultAddonGame.png"},
+    {"xbmc.gui.skin", ADDON_SKIN, 166, "DefaultAddonSkin.png"},
+    {"xbmc.webinterface", ADDON_WEB_INTERFACE, 199, "DefaultAddonWebSkin.png"},
+    {"xbmc.addon.repository", ADDON_REPOSITORY, 24011, "DefaultAddonRepository.png"},
+    {"xbmc.pvrclient", ADDON_PVRDLL, 24019, "DefaultAddonPVRClient.png"},
+    {"kodi.peripheral", ADDON_PERIPHERALDLL, 35010, "DefaultAddonPeripheral.png"},
+    {"xbmc.addon.video", ADDON_VIDEO, 1037, "DefaultAddonVideo.png"},
+    {"xbmc.addon.audio", ADDON_AUDIO, 1038, "DefaultAddonMusic.png"},
+    {"xbmc.addon.image", ADDON_IMAGE, 1039, "DefaultAddonPicture.png"},
+    {"xbmc.addon.executable", ADDON_EXECUTABLE, 1043, "DefaultAddonProgram.png"},
+    {"xbmc.audioencoder", ADDON_AUDIOENCODER, 200, "DefaultAddonAudioEncoder.png"},
+    {"kodi.audiodecoder", ADDON_AUDIODECODER, 201, "DefaultAddonAudioDecoder.png"},
+    {"xbmc.service", ADDON_SERVICE, 24018, "DefaultAddonService.png"},
+    {"kodi.resource.images", ADDON_RESOURCE_IMAGES, 24035, "DefaultAddonImages.png"},
+    {"kodi.resource.language", ADDON_RESOURCE_LANGUAGE, 24026, "DefaultAddonLanguage.png"},
+    {"kodi.resource.uisounds", ADDON_RESOURCE_UISOUNDS, 24006, "DefaultAddonUISounds.png"},
+    {"kodi.adsp", ADDON_ADSPDLL, 24135, "DefaultAddonAudioDSP.png"},
+    {"kodi.inputstream", ADDON_INPUTSTREAM, 24048, "DefaultAddonInputstream.png"},
+};
 
-std::string TranslateType(ADDON::TYPE type, bool pretty/*=false*/)
+std::string TranslateType(ADDON::TYPE type, bool pretty /*=false*/)
 {
-  for (unsigned int index=0; index < ARRAY_SIZE(types); ++index)
+  for (unsigned int index = 0; index < ARRAY_SIZE(types); ++index)
   {
-    const TypeMapping &map = types[index];
+    const TypeMapping& map = types[index];
     if (type == map.type)
     {
       if (pretty && map.pretty)
@@ -125,11 +126,11 @@ std::string TranslateType(ADDON::TYPE type, bool pretty/*=false*/)
   return "";
 }
 
-TYPE TranslateType(const std::string &string)
+TYPE TranslateType(const std::string& string)
 {
-  for (unsigned int index=0; index < ARRAY_SIZE(types); ++index)
+  for (unsigned int index = 0; index < ARRAY_SIZE(types); ++index)
   {
-    const TypeMapping &map = types[index];
+    const TypeMapping& map = types[index];
     if (string == map.name)
       return map.type;
   }
@@ -139,17 +140,16 @@ TYPE TranslateType(const std::string &string)
 
 std::string GetIcon(ADDON::TYPE type)
 {
-  for (unsigned int index=0; index < ARRAY_SIZE(types); ++index)
+  for (unsigned int index = 0; index < ARRAY_SIZE(types); ++index)
   {
-    const TypeMapping &map = types[index];
+    const TypeMapping& map = types[index];
     if (type == map.type)
       return map.icon;
   }
   return "";
 }
 
-CAddon::CAddon(AddonProps props)
-  : m_props(boost::move(props))
+CAddon::CAddon(AddonProps props) : m_props(boost::move(props))
 {
   m_profilePath = StringUtils::Format("special://profile/addon_data/%s/", ID().c_str());
   m_userSettingsPath = URIUtils::AddFileToFolder(m_profilePath, "settings.xml");
@@ -158,7 +158,7 @@ CAddon::CAddon(AddonProps props)
   m_userSettingsLoaded = false;
 }
 
-bool CAddon::MeetsVersion(const AddonVersion &version) const
+bool CAddon::MeetsVersion(const AddonVersion& version) const
 {
   return m_props.minversion <= version && version <= m_props.version;
 }
@@ -182,16 +182,18 @@ bool CAddon::LoadSettings(bool bForce /* = false*/)
   if (!m_addonXmlDoc.LoadFile(addonFileName))
   {
     if (CFile::Exists(addonFileName))
-      CLog::Log(LOGERROR, "Unable to load: %s, Line %d\n%s", addonFileName.c_str(), m_addonXmlDoc.ErrorRow(), m_addonXmlDoc.ErrorDesc());
+      CLog::Log(LOGERROR, "Unable to load: %s, Line %d\n%s", addonFileName.c_str(),
+                m_addonXmlDoc.ErrorRow(), m_addonXmlDoc.ErrorDesc());
     m_hasSettings = false;
     return false;
   }
 
   // Make sure that the addon XML has the settings element
-  TiXmlElement *setting = m_addonXmlDoc.RootElement();
+  TiXmlElement* setting = m_addonXmlDoc.RootElement();
   if (!setting || strcmpi(setting->Value(), "settings") != 0)
   {
-    CLog::Log(LOGERROR, "Error loading Settings %s: cannot find root element 'settings'", addonFileName.c_str());
+    CLog::Log(LOGERROR, "Error loading Settings %s: cannot find root element 'settings'",
+              addonFileName.c_str());
     return false;
   }
   SettingsFromXML(m_addonXmlDoc, true);
@@ -250,7 +252,8 @@ void CAddon::SaveSettings(void)
   doc.SaveFile(m_userSettingsPath);
   m_userSettingsLoaded = true;
 
-  CServiceBroker::GetAddonMgr().ReloadSettings(ID());//push the settings changes to the running addon instance
+  CServiceBroker::GetAddonMgr().ReloadSettings(
+      ID()); //push the settings changes to the running addon instance
 #ifdef HAS_PYTHON
   g_pythonParser.OnSettingsChanged(ID());
 #endif
@@ -270,11 +273,12 @@ std::string CAddon::GetSetting(const std::string& key)
 void CAddon::UpdateSetting(const std::string& key, const std::string& value)
 {
   LoadSettings();
-  if (key.empty()) return;
+  if (key.empty())
+    return;
   m_settings[key] = value;
 }
 
-bool CAddon::SettingsFromXML(const CXBMCTinyXML &doc, bool loadDefaults /*=false */)
+bool CAddon::SettingsFromXML(const CXBMCTinyXML& doc, bool loadDefaults /*=false */)
 {
   if (!doc.RootElement())
     return false;
@@ -289,11 +293,11 @@ bool CAddon::SettingsFromXML(const CXBMCTinyXML &doc, bool loadDefaults /*=false
   bool foundSetting = false;
   while (category)
   {
-    const TiXmlElement *setting = category->FirstChildElement("setting");
+    const TiXmlElement* setting = category->FirstChildElement("setting");
     while (setting)
     {
-      const char *id = setting->Attribute("id");
-      const char *value = setting->Attribute(loadDefaults ? "default" : "value");
+      const char* id = setting->Attribute("id");
+      const char* value = setting->Attribute(loadDefaults ? "default" : "value");
       if (id && value)
       {
         m_settings[id] = value;
@@ -306,11 +310,12 @@ bool CAddon::SettingsFromXML(const CXBMCTinyXML &doc, bool loadDefaults /*=false
   return foundSetting;
 }
 
-void CAddon::SettingsToXML(CXBMCTinyXML &doc) const
+void CAddon::SettingsToXML(CXBMCTinyXML& doc) const
 {
   TiXmlElement node("settings");
   doc.InsertEndChild(node);
-  for (std::map<std::string, std::string>::const_iterator i = m_settings.begin(); i != m_settings.end(); ++i)
+  for (std::map<std::string, std::string>::const_iterator i = m_settings.begin();
+       i != m_settings.end(); ++i)
   {
     TiXmlElement nodeSetting("setting");
     nodeSetting.SetAttribute("id", i->first.c_str());
@@ -332,9 +337,9 @@ std::string CAddon::LibPath() const
   return URIUtils::AddFileToFolder(m_props.path, m_props.libname);
 }
 
-AddonVersion CAddon::GetDependencyVersion(const std::string &dependencyID) const
+AddonVersion CAddon::GetDependencyVersion(const std::string& dependencyID) const
 {
-  const ADDON::ADDONDEPS &deps = GetDeps();
+  const ADDON::ADDONDEPS& deps = GetDeps();
   ADDONDEPS::const_iterator it = deps.find(dependencyID);
   if (it != deps.end())
     return it->second.first;
@@ -376,7 +381,8 @@ void OnDisabled(const std::string& id)
   }
 
   if (CServiceBroker::GetAddonMgr().GetAddon(id, addon, ADDON_CONTEXT_ITEM, false))
-    CContextMenuManager::GetInstance().Unload(*boost::static_pointer_cast<CContextMenuAddon>(addon));
+    CContextMenuManager::GetInstance().Unload(
+        *boost::static_pointer_cast<CContextMenuAddon>(addon));
 }
 
 void OnPreInstall(const AddonPtr& addon)
@@ -392,7 +398,8 @@ void OnPreInstall(const AddonPtr& addon)
   }
 
   if (CServiceBroker::GetAddonMgr().GetAddon(addon->ID(), localAddon, ADDON_CONTEXT_ITEM))
-    CContextMenuManager::GetInstance().Unload(*boost::static_pointer_cast<CContextMenuAddon>(localAddon));
+    CContextMenuManager::GetInstance().Unload(
+        *boost::static_pointer_cast<CContextMenuAddon>(localAddon));
 
   //Fallback to the pre-install callback in the addon.
   //! @bug If primary extension point have changed we're calling the wrong method.
@@ -409,7 +416,8 @@ void OnPostInstall(const AddonPtr& addon, bool update, bool modal)
   }
 
   if (CServiceBroker::GetAddonMgr().GetAddon(addon->ID(), localAddon, ADDON_REPOSITORY))
-    CRepositoryUpdater::GetInstance().ScheduleUpdate(); //notify updater there is a new addon or version
+    CRepositoryUpdater::GetInstance()
+        .ScheduleUpdate(); //notify updater there is a new addon or version
 
   addon->OnPostInstall(update, modal);
 }
@@ -425,7 +433,8 @@ void OnPreUnInstall(const AddonPtr& addon)
   }
 
   if (CServiceBroker::GetAddonMgr().GetAddon(addon->ID(), localAddon, ADDON_CONTEXT_ITEM))
-    CContextMenuManager::GetInstance().Unload(*boost::static_pointer_cast<CContextMenuAddon>(localAddon));
+    CContextMenuManager::GetInstance().Unload(
+        *boost::static_pointer_cast<CContextMenuAddon>(localAddon));
 
   addon->OnPreUnInstall();
 }
@@ -436,4 +445,3 @@ void OnPostUnInstall(const AddonPtr& addon)
 }
 
 } /* namespace ADDON */
-

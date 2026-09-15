@@ -53,15 +53,15 @@ Reason: Prepared for Public Release
  
 */
 
-
 #include "XKGeneral.h"
 
-
 XKGeneral::XKGeneral(void)
-{}
+{
+}
 
 XKGeneral::~XKGeneral(void)
-{}
+{
+}
 
 //This Funciton converts BYTES to a String representation of the HEX value of the Bytes
 void XKGeneral::BytesToHexStr(LPBYTE SrcBytes, DWORD byteCount, LPSTR DstString)
@@ -79,30 +79,29 @@ void XKGeneral::BytesToHexStr(LPBYTE SrcBytes, DWORD byteCount, LPSTR DstString,
   {
     BYTE nybble = (SrcBytes[i] >> 4) & 0x0f;
     if (nybble > 9)
-      nybble += ('A'-0x0A); // change for lowercase 'a' to make lowercase
+      nybble += ('A' - 0x0A); // change for lowercase 'a' to make lowercase
     else
       nybble += '0';
-    DstString[i*Inc] = nybble;
+    DstString[i * Inc] = nybble;
 
     nybble = (SrcBytes[i]) & 0x0f;
     if (nybble > 9)
-      nybble += ('A'-0x0A); // change for lowercase 'a' to make lowercase
+      nybble += ('A' - 0x0A); // change for lowercase 'a' to make lowercase
     else
       nybble += '0';
-    DstString[i*Inc + 1] = nybble;
+    DstString[i * Inc + 1] = nybble;
   }
 
   if (Inc == 3)
-    DstString[i*Inc - 1] = 0;
+    DstString[i * Inc - 1] = 0;
   else
-    DstString[i*Inc] = 0;
+    DstString[i * Inc] = 0;
 
   if (Seperator != 0x00)
   {
     for (ULONG i = 1; i < byteCount; i++)
-      *(DstString + i*Inc - 1) = Seperator;
+      *(DstString + i * Inc - 1) = Seperator;
   }
-
 }
 
 //This Function converts a String that Contains anyting to into
@@ -128,7 +127,7 @@ void XKGeneral::MixedStrToDecStr(LPSTR StringData, LPDWORD StrLen, CHAR Base, BO
 
   for (DWORD i = 0; i < dwSize; i++)
   {
-    LPCSTR ChrOffset = strchr((LPCSTR) & DecChars, *(sData + i));
+    LPCSTR ChrOffset = strchr((LPCSTR)&DecChars, *(sData + i));
     if ((ChrOffset != NULL) && ((ChrOffset - (LPSTR)&DecChars) <= Base - 1))
     {
       memcpy(StringData + currentOffset, ChrOffset, 1);
@@ -142,14 +141,15 @@ void XKGeneral::MixedStrToDecStr(LPSTR StringData, LPDWORD StrLen, CHAR Base, BO
 
   delete[] sData;
   *StrLen = (DWORD)strlen(StringData);
-
 }
 
-DWORD XKGeneral::HexStrToDWORD(LPBYTE StringData, LPDWORD pBufferLen, BOOL RemoveInvalid, BOOL FlipByteOrder)
+DWORD XKGeneral::HexStrToDWORD(LPBYTE StringData,
+                               LPDWORD pBufferLen,
+                               BOOL RemoveInvalid,
+                               BOOL FlipByteOrder)
 {
   DWORD retVal = 0;
   BYTE temp[4];
-
 
   HexStrToBytes(StringData, pBufferLen, RemoveInvalid);
 
@@ -162,7 +162,7 @@ DWORD XKGeneral::HexStrToDWORD(LPBYTE StringData, LPDWORD pBufferLen, BOOL Remov
     StringData[0] = temp[3];
   }
 
-  retVal = *((LPDWORD) StringData);
+  retVal = *((LPDWORD)StringData);
   return retVal;
 }
 
@@ -183,7 +183,7 @@ void XKGeneral::HexStrToBytes(LPBYTE StringData, LPDWORD pBufferLen, BOOL Remove
   {
     UCHAR tmpstr[3];
     ZeroMemory(tmpstr, 3);
-    memcpy(tmpstr, (LPCSTR)(sData + (i*2)), 2);
+    memcpy(tmpstr, (LPCSTR)(sData + (i * 2)), 2);
     memset(StringData + i, (UCHAR)strtol((LPCSTR)&tmpstr, NULL, 16), 1);
   }
 
@@ -198,12 +198,14 @@ void XKGeneral::HexStrToBytes(LPBYTE StringData, LPDWORD pBufferLen, BOOL Remove
 // [SECTION_MAIN]
 // Value1 = "My Value"
 //
-BOOL XKGeneral::ReadINIFileItem(LPCSTR INIFileName, LPCSTR INISection, LPCSTR INIItem, LPSTR ItemValue, LPDWORD ValueLen)
+BOOL XKGeneral::ReadINIFileItem(
+    LPCSTR INIFileName, LPCSTR INISection, LPCSTR INIItem, LPSTR ItemValue, LPDWORD ValueLen)
 {
   BOOL retVal = FALSE;
   LONG retSize = 0;
 
-  HANDLE iniFile = CreateFile(INIFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  HANDLE iniFile = CreateFile(INIFileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_ALWAYS,
+                              FILE_ATTRIBUTE_NORMAL, NULL);
 
   if (iniFile != INVALID_HANDLE_VALUE)
   {
@@ -216,27 +218,29 @@ BOOL XKGeneral::ReadINIFileItem(LPCSTR INIFileName, LPCSTR INISection, LPCSTR IN
 
     LPBYTE iniData = new BYTE[filesize + 2];
     ZeroMemory(iniData, filesize + 2);
-    memset(iniData, '\n', filesize + 2); //This is a cheezy trick to help not to search past end of the file..
+    memset(iniData, '\n',
+           filesize + 2); //This is a cheezy trick to help not to search past end of the file..
 
     ReadFile(iniFile, iniData, filesize, &filesize, NULL);
 
     do
     {
-      sTempSection = (char *)strchr((LPCSTR)iniData + sectionOffset, '[');
-      if ((sTempSection != NULL) && (strncmp(sTempSection + 1, INISection, strlen(INISection)) == 0))
+      sTempSection = (char*)strchr((LPCSTR)iniData + sectionOffset, '[');
+      if ((sTempSection != NULL) &&
+          (strncmp(sTempSection + 1, INISection, strlen(INISection)) == 0))
       {
-        sNextSection = (char *)strchr((LPCSTR)sTempSection + strlen(INISection), '[');
+        sNextSection = (char*)strchr((LPCSTR)sTempSection + strlen(INISection), '[');
         sNextSection = (sNextSection != NULL) ? sNextSection : (LPSTR)iniData + filesize;
 
         foundSection = TRUE;
         break;
       }
       sectionOffset = (ULONG)((LPBYTE)sTempSection - iniData) + 1;
-    }
-    while (sTempSection != NULL);
+    } while (sTempSection != NULL);
 
     if (foundSection)
-      for (LPCSTR finditem = sTempSection + strlen(INISection) + 2; finditem < sNextSection - 1; finditem = std::min((LPCSTR)strchr(finditem, '\n') + 1, sNextSection))
+      for (LPCSTR finditem = sTempSection + strlen(INISection) + 2; finditem < sNextSection - 1;
+           finditem = std::min((LPCSTR)strchr(finditem, '\n') + 1, sNextSection))
       {
         LPCSTR snextitem = std::min((LPCSTR)strchr(finditem, '\n') + 1, sNextSection);
         LPCSTR spossible = strchr(finditem, *INIItem);
@@ -270,10 +274,8 @@ BOOL XKGeneral::ReadINIFileItem(LPCSTR INIFileName, LPCSTR INISection, LPCSTR IN
             while ((*sTempItem + endpos == ' ') && (endpos > startpos))
               endpos--;
 
-
             ZeroMemory(ItemValue, sLen2 + 1);
             strncpy(ItemValue, sTempItem + startpos, sLen2 - startpos - (sLen2 - endpos));
-
           }
           else
           {

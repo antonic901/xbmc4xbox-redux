@@ -36,7 +36,7 @@ public:
   virtual ~CProgressJob();
 
   // implementation of CJob
-  virtual const char *GetType() const { return "ProgressJob"; }
+  virtual const char* GetType() const { return "ProgressJob"; }
   virtual bool operator==(const CJob* job) const { return false; }
   virtual bool ShouldCancel(unsigned int progress, unsigned int total) const;
 
@@ -57,7 +57,10 @@ public:
    \param updateProgress (optional) Whether to show progress updates.
    \param updateInformation (optional) Whether to show progress information.
    */
-  void SetProgressIndicators(CGUIDialogProgressBarHandle* progressBar, CGUIDialogProgress* progressDialog, bool updateProgress = true, bool updateInformation = true);
+  void SetProgressIndicators(CGUIDialogProgressBarHandle* progressBar,
+                             CGUIDialogProgress* progressDialog,
+                             bool updateProgress = true,
+                             bool updateInformation = true);
 
   bool HasProgressIndicator() const;
 
@@ -130,14 +133,14 @@ protected:
 
    \param[in] title Title to be set
    */
-  void SetTitle(const std::string &title);
+  void SetTitle(const std::string& title);
 
   /*!
    \brief Sets the given text as the description of the progress bar.
 
    \param[in] text Text to be set
   */
-  void SetText(const std::string &text);
+  void SetText(const std::string& text);
 
   /*!
    \brief Sets the progress of the progress bar to the given value in percentage.

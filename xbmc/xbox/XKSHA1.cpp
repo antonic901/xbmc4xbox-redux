@@ -71,15 +71,15 @@ Reason: Update for XBOX 1.6 Eeprom
 
 */
 
-
 #include "xksha1.h"
 
 XKSHA1::XKSHA1(void)
-{}
+{
+}
 
 XKSHA1::~XKSHA1(void)
-{}
-
+{
+}
 
 int XKSHA1::SHA1Reset(SHA1Context* context)
 {
@@ -104,8 +104,7 @@ int XKSHA1::SHA1Reset(SHA1Context* context)
   return shaSuccess;
 }
 
-
-int XKSHA1::SHA1Result( SHA1Context* context, UCHAR Message_Digest[SHA1HashSize])
+int XKSHA1::SHA1Result(SHA1Context* context, UCHAR Message_Digest[SHA1HashSize])
 {
   int i;
 
@@ -128,15 +127,15 @@ int XKSHA1::SHA1Result( SHA1Context* context, UCHAR Message_Digest[SHA1HashSize]
       context->Message_Block[i] = 0;
     }
 
-    context->Length_Low = 0;    /* and clear length */
+    context->Length_Low = 0; /* and clear length */
     context->Length_High = 0;
     context->Computed = 1;
-
   }
 
   for (i = 0; i < SHA1HashSize; ++i)
   {
-    Message_Digest[i] = (UCHAR) ((context->Intermediate_Hash[i >> 2] >> 8 * (3 - (i & 0x03))) & 0xff);
+    Message_Digest[i] =
+        (UCHAR)((context->Intermediate_Hash[i >> 2] >> 8 * (3 - (i & 0x03))) & 0xff);
   }
 
   return shaSuccess;
@@ -193,21 +192,14 @@ int XKSHA1::SHA1Input(SHA1Context* context, const UCHAR* message_array, unsigned
   return shaSuccess;
 }
 
-
-
 void XKSHA1::SHA1ProcessMessageBlock(SHA1Context* context)
 {
-  const UINT32 K[] =
-    {       /* Constants defined in SHA-1   */
-      0x5A827999,
-      0x6ED9EBA1,
-      0x8F1BBCDC,
-      0xCA62C1D6
-    };
-  int t;                 /* Loop counter                */
-  UINT32 temp;              /* Temporary word value        */
-  UINT32 W[80];             /* Word sequence               */
-  UINT32 A, B, C, D, E;     /* Word buffers                */
+  const UINT32 K[] = {/* Constants defined in SHA-1   */
+                      0x5A827999, 0x6ED9EBA1, 0x8F1BBCDC, 0xCA62C1D6};
+  int t; /* Loop counter                */
+  UINT32 temp; /* Temporary word value        */
+  UINT32 W[80]; /* Word sequence               */
+  UINT32 A, B, C, D, E; /* Word buffers                */
 
   /*
    *  Initialize the first 16 words in the array W
@@ -233,8 +225,7 @@ void XKSHA1::SHA1ProcessMessageBlock(SHA1Context* context)
 
   for (t = 0; t < 20; t++)
   {
-    temp = SHA1CircularShift(5, A) +
-           ((B & C) | ((~B) & D)) + E + W[t] + K[0];
+    temp = SHA1CircularShift(5, A) + ((B & C) | ((~B) & D)) + E + W[t] + K[0];
     E = D;
     D = C;
     C = SHA1CircularShift(30, B);
@@ -255,8 +246,7 @@ void XKSHA1::SHA1ProcessMessageBlock(SHA1Context* context)
 
   for (t = 40; t < 60; t++)
   {
-    temp = SHA1CircularShift(5, A) +
-           ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2];
+    temp = SHA1CircularShift(5, A) + ((B & C) | (B & D) | (C & D)) + E + W[t] + K[2];
     E = D;
     D = C;
     C = SHA1CircularShift(30, B);
@@ -282,7 +272,6 @@ void XKSHA1::SHA1ProcessMessageBlock(SHA1Context* context)
 
   context->Message_Block_Index = 0;
 }
-
 
 void XKSHA1::SHA1PadMessage(SHA1Context* context)
 {
@@ -320,20 +309,19 @@ void XKSHA1::SHA1PadMessage(SHA1Context* context)
   /*
    *  Store the message length as the last 8 octets
    */
-  context->Message_Block[56] = (UCHAR) (context->Length_High >> 24);
-  context->Message_Block[57] = (UCHAR) (context->Length_High >> 16);
-  context->Message_Block[58] = (UCHAR) (context->Length_High >> 8);
-  context->Message_Block[59] = (UCHAR) (context->Length_High & 0xff);
-  context->Message_Block[60] = (UCHAR) (context->Length_Low >> 24);
-  context->Message_Block[61] = (UCHAR) (context->Length_Low >> 16);
-  context->Message_Block[62] = (UCHAR) (context->Length_Low >> 8);
-  context->Message_Block[63] = (UCHAR) (context->Length_Low & 0xff);
+  context->Message_Block[56] = (UCHAR)(context->Length_High >> 24);
+  context->Message_Block[57] = (UCHAR)(context->Length_High >> 16);
+  context->Message_Block[58] = (UCHAR)(context->Length_High >> 8);
+  context->Message_Block[59] = (UCHAR)(context->Length_High & 0xff);
+  context->Message_Block[60] = (UCHAR)(context->Length_Low >> 24);
+  context->Message_Block[61] = (UCHAR)(context->Length_Low >> 16);
+  context->Message_Block[62] = (UCHAR)(context->Length_Low >> 8);
+  context->Message_Block[63] = (UCHAR)(context->Length_Low & 0xff);
 
   SHA1ProcessMessageBlock(context);
 }
 
-
-void XKSHA1::quick_SHA1( UCHAR* SHA1_result, ... )
+void XKSHA1::quick_SHA1(UCHAR* SHA1_result, ...)
 {
   va_list args;
   struct SHA1Context context;
@@ -344,10 +332,11 @@ void XKSHA1::quick_SHA1( UCHAR* SHA1_result, ... )
 
   while (1)
   {
-    UCHAR* buffer = va_arg(args, UCHAR* );
+    UCHAR* buffer = va_arg(args, UCHAR*);
     int length;
 
-    if (buffer == NULL) break;
+    if (buffer == NULL)
+      break;
 
     length = va_arg(args, int);
 
@@ -359,32 +348,34 @@ void XKSHA1::quick_SHA1( UCHAR* SHA1_result, ... )
   va_end(args);
 }
 
-
-void XKSHA1::HMAC_SHA1(UCHAR* result, UCHAR* key, int key_length, UCHAR* text1, int text1_length, UCHAR* text2, int text2_length)
+void XKSHA1::HMAC_SHA1(UCHAR* result,
+                       UCHAR* key,
+                       int key_length,
+                       UCHAR* text1,
+                       int text1_length,
+                       UCHAR* text2,
+                       int text2_length)
 {
   UCHAR state1[0x40];
   UCHAR state2[0x40 + 0x14];
   int i;
 
-  for (i = 0x40 - 1; i >= key_length;--i) state1[i] = 0x36;
-  for (;i >= 0;--i) state1[i] = key[i] ^ 0x36;
+  for (i = 0x40 - 1; i >= key_length; --i)
+    state1[i] = 0x36;
+  for (; i >= 0; --i)
+    state1[i] = key[i] ^ 0x36;
 
-  quick_SHA1 ( &state2[0x40],
-               state1, 0x40,
-               text1, text1_length,
-               text2, text2_length,
-               NULL );
+  quick_SHA1(&state2[0x40], state1, 0x40, text1, text1_length, text2, text2_length, NULL);
 
-  for (i = 0x40 - 1; i >= key_length;--i) state2[i] = 0x5C;
-  for (;i >= 0;--i) state2[i] = key[i] ^ 0x5C;
+  for (i = 0x40 - 1; i >= key_length; --i)
+    state2[i] = 0x5C;
+  for (; i >= 0; --i)
+    state2[i] = key[i] ^ 0x5C;
 
-  quick_SHA1 ( result,
-               state2, 0x40 + 0x14,
-               NULL );
+  quick_SHA1(result, state2, 0x40 + 0x14, NULL);
 }
 
-
-int XKSHA1::HMAC1Reset(int version,SHA1Context *context)
+int XKSHA1::HMAC1Reset(int version, SHA1Context* context)
 {
   SHA1Reset(context);
   switch (version)
@@ -395,7 +386,7 @@ int XKSHA1::HMAC1Reset(int version,SHA1Context *context)
       context->Intermediate_Hash[2] = 0x6D86A50C;
       context->Intermediate_Hash[3] = 0x77C32E3C;
       context->Intermediate_Hash[4] = 0x4BD717A4;
-        break;
+      break;
     case 10:
       context->Intermediate_Hash[0] = 0x72127625;
       context->Intermediate_Hash[1] = 0x336472B9;
@@ -424,7 +415,7 @@ int XKSHA1::HMAC1Reset(int version,SHA1Context *context)
   return shaSuccess;
 }
 
-int XKSHA1::HMAC2Reset(int version,SHA1Context *context)
+int XKSHA1::HMAC2Reset(int version, SHA1Context* context)
 {
   SHA1Reset(context);
   switch (version)
@@ -458,12 +449,11 @@ int XKSHA1::HMAC2Reset(int version,SHA1Context *context)
       context->Intermediate_Hash[4] = 0x168a5609;
       break;
   }
-  context->Length_Low  = 512;
+  context->Length_Low = 512;
   return shaSuccess;
 }
 
-
-void XKSHA1::XBOX_HMAC_SHA1(int version, UCHAR* result, ... )
+void XKSHA1::XBOX_HMAC_SHA1(int version, UCHAR* result, ...)
 {
   va_list args;
   struct SHA1Context context;
@@ -472,13 +462,13 @@ void XKSHA1::XBOX_HMAC_SHA1(int version, UCHAR* result, ... )
   HMAC1Reset(version, &context);
   while (1)
   {
-    unsigned char *buffer = va_arg(args, unsigned char *);
+    unsigned char* buffer = va_arg(args, unsigned char*);
     int length;
 
-    if (buffer == NULL) break;
+    if (buffer == NULL)
+      break;
     length = va_arg(args, int);
     SHA1Input(&context, buffer, length);
-
   }
   va_end(args);
 

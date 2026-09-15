@@ -62,11 +62,13 @@ CGUIDialogInfoProviderSettings::CGUIDialogInfoProviderSettings()
     m_showSingleScraper(false),
     m_singleScraperType(CONTENT_NONE),
     m_applyToItems(INFOPROVIDER_THISITEM)
-{ }
+{
+}
 
 bool CGUIDialogInfoProviderSettings::Show()
 {
-  CGUIDialogInfoProviderSettings *dialog = static_cast<CGUIDialogInfoProviderSettings*>(g_windowManager.GetWindow(WINDOW_DIALOG_INFOPROVIDER_SETTINGS));
+  CGUIDialogInfoProviderSettings* dialog = static_cast<CGUIDialogInfoProviderSettings*>(
+      g_windowManager.GetWindow(WINDOW_DIALOG_INFOPROVIDER_SETTINGS));
   if (!dialog)
     return false;
 
@@ -77,14 +79,16 @@ bool CGUIDialogInfoProviderSettings::Show()
 
   ADDON::AddonPtr defaultScraper;
   // Get default album scraper (when enabled - can default scraper be disabled??)
-  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::ADDON_SCRAPER_ALBUMS, defaultScraper))
+  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::ADDON_SCRAPER_ALBUMS,
+                                                           defaultScraper))
   {
     ADDON::ScraperPtr scraper = boost::dynamic_pointer_cast<ADDON::CScraper>(defaultScraper);
     dialog->SetAlbumScraper(scraper);
   }
 
   // Get default artist scraper
-  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::ADDON_SCRAPER_ARTISTS, defaultScraper))
+  if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON::ADDON_SCRAPER_ARTISTS,
+                                                           defaultScraper))
   {
     ADDON::ScraperPtr scraper = boost::dynamic_pointer_cast<ADDON::CScraper>(defaultScraper);
     dialog->SetArtistScraper(scraper);
@@ -100,7 +104,8 @@ bool CGUIDialogInfoProviderSettings::Show()
 
 int CGUIDialogInfoProviderSettings::Show(ADDON::ScraperPtr& scraper)
 {
-  CGUIDialogInfoProviderSettings *dialog = static_cast<CGUIDialogInfoProviderSettings*>(g_windowManager.GetWindow(WINDOW_DIALOG_INFOPROVIDER_SETTINGS));
+  CGUIDialogInfoProviderSettings* dialog = static_cast<CGUIDialogInfoProviderSettings*>(
+      g_windowManager.GetWindow(WINDOW_DIALOG_INFOPROVIDER_SETTINGS));
   if (!dialog || !scraper)
     return -1;
   if (scraper->Content() != CONTENT_ARTISTS && scraper->Content() != CONTENT_ALBUMS)
@@ -115,7 +120,8 @@ int CGUIDialogInfoProviderSettings::Show(ADDON::ScraperPtr& scraper)
     dialog->SetArtistScraper(scraper);
   // toast selected but disabled scrapers
   if (CServiceBroker::GetAddonMgr().IsAddonDisabled(scraper->ID()))
-    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(24024), scraper->Name(), 2000, true);
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(24024),
+                                          scraper->Name(), 2000, true);
 
   dialog->Open();
 
@@ -130,7 +136,8 @@ int CGUIDialogInfoProviderSettings::Show(ADDON::ScraperPtr& scraper)
       scraper = dialog->GetArtistScraper();
       // Save artist information folder (here not in the caller) when applying setting as default for all artists
       if (applyToItems == INFOPROVIDER_DEFAULT)
-        CSettings::GetInstance().SetString("musiclibrary.artistsfolder", dialog->m_strArtistInfoPath);
+        CSettings::GetInstance().SetString("musiclibrary.artistsfolder",
+                                           dialog->m_strArtistInfoPath);
     }
     if (scraper)
       scraper->SetPathSettings(dialog->m_singleScraperType, "");
@@ -149,14 +156,14 @@ void CGUIDialogInfoProviderSettings::OnInitWindow()
   CGUIDialogSettingsManualBase::OnInitWindow();
 }
 
-void CGUIDialogInfoProviderSettings::OnSettingChanged(const CSetting *setting)
+void CGUIDialogInfoProviderSettings::OnSettingChanged(const CSetting* setting)
 {
   if (setting == nullptr)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingChanged(setting);
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
 
   if (settingId == "musiclibrary.downloadinfo")
   {
@@ -174,14 +181,14 @@ void CGUIDialogInfoProviderSettings::OnSettingChanged(const CSetting *setting)
   }
 }
 
-void CGUIDialogInfoProviderSettings::OnSettingAction(const CSetting *setting)
+void CGUIDialogInfoProviderSettings::OnSettingAction(const CSetting* setting)
 {
   if (setting == nullptr)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingAction(setting);
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
 
   if (settingId == "musiclibrary.albumsscraper")
   {
@@ -190,8 +197,8 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const CSetting *setting)
       currentScraperId = m_albumscraper->ID();
     std::string selectedAddonId = currentScraperId;
 
-    if (CGUIWindowAddonBrowser::SelectAddonID(ADDON_SCRAPER_ALBUMS, selectedAddonId, false) == 1
-        && selectedAddonId != currentScraperId)
+    if (CGUIWindowAddonBrowser::SelectAddonID(ADDON_SCRAPER_ALBUMS, selectedAddonId, false) == 1 &&
+        selectedAddonId != currentScraperId)
     {
       AddonPtr scraperAddon;
       CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon);
@@ -207,8 +214,8 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const CSetting *setting)
       currentScraperId = m_artistscraper->ID();
     std::string selectedAddonId = currentScraperId;
 
-    if (CGUIWindowAddonBrowser::SelectAddonID(ADDON_SCRAPER_ARTISTS, selectedAddonId, false) == 1
-        && selectedAddonId != currentScraperId)
+    if (CGUIWindowAddonBrowser::SelectAddonID(ADDON_SCRAPER_ARTISTS, selectedAddonId, false) == 1 &&
+        selectedAddonId != currentScraperId)
     {
       AddonPtr scraperAddon;
       CServiceBroker::GetAddonMgr().GetAddon(selectedAddonId, scraperAddon);
@@ -234,7 +241,8 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const CSetting *setting)
     {
       URIUtils::AddSlashAtEnd(strDirectory);
       bool bIsSource;
-      if (CUtil::GetMatchingSource(strDirectory, shares, bIsSource) < 0) // path is outside shares - add it as a separate one
+      if (CUtil::GetMatchingSource(strDirectory, shares, bIsSource) <
+          0) // path is outside shares - add it as a separate one
       {
         CMediaSource share;
         share.strName = g_localizeStrings.Get(13278);
@@ -245,7 +253,8 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const CSetting *setting)
     else
       strDirectory = "default location";
 
-    if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(20223), strDirectory, true))
+    if (CGUIDialogFileBrowser::ShowAndGetDirectory(shares, g_localizeStrings.Get(20223),
+                                                   strDirectory, true))
     {
       if (!strDirectory.empty())
       {
@@ -260,7 +269,7 @@ void CGUIDialogInfoProviderSettings::OnSettingAction(const CSetting *setting)
 void CGUIDialogInfoProviderSettings::Save()
 {
   if (m_showSingleScraper)
-    return;  //Save done by caller of ::Show
+    return; //Save done by caller of ::Show
 
   // Save default settings for fetching additional information and art
   CLog::Log(LOGINFO, "%s called", __FUNCTION__);
@@ -298,7 +307,7 @@ void CGUIDialogInfoProviderSettings::SetupView()
       ToggleState("musiclibrary.artistsfolder", false);
     }
     else
-    {  // Album scraper
+    { // Album scraper
       ToggleState("musiclibrary.albumsscraper", true);
       if (m_albumscraper && !CServiceBroker::GetAddonMgr().IsAddonDisabled(m_albumscraper->ID()))
       {
@@ -378,13 +387,13 @@ void CGUIDialogInfoProviderSettings::InitializeSettings()
 {
   CGUIDialogSettingsManualBase::InitializeSettings();
 
-  CSettingCategory *category = AddCategory("infoprovidersettings", -1);
+  CSettingCategory* category = AddCategory("infoprovidersettings", -1);
   if (category == nullptr)
   {
     CLog::Log(LOGERROR, "%s: unable to setup settings", __FUNCTION__);
     return;
   }
-  CSettingGroup *group1 = AddGroup(category);
+  CSettingGroup* group1 = AddGroup(category);
   if (group1 == nullptr)
   {
     CLog::Log(LOGERROR, "%s: unable to setup settings", __FUNCTION__);
@@ -393,7 +402,8 @@ void CGUIDialogInfoProviderSettings::InitializeSettings()
 
   if (!m_showSingleScraper)
   {
-    AddToggle(group1, "musiclibrary.downloadinfo", 38333, 0, m_fetchInfo); // "Fetch additional information during scan"
+    AddToggle(group1, "musiclibrary.downloadinfo", 38333, 0,
+              m_fetchInfo); // "Fetch additional information during scan"
   }
   else
   {
@@ -410,16 +420,17 @@ void CGUIDialogInfoProviderSettings::InitializeSettings()
       entries.push_back(std::make_pair(38065, INFOPROVIDER_ALLVIEW));
     }
     entries.push_back(std::make_pair(38063, INFOPROVIDER_DEFAULT));
-    AddList(group1, SETTING_APPLYTOITEMS, 38338, 0, m_applyToItems, entries, 38339); // "Apply settings to"
+    AddList(group1, SETTING_APPLYTOITEMS, 38338, 0, m_applyToItems, entries,
+            38339); // "Apply settings to"
   }
 
-  CSettingGroup *group = AddGroup(category, 38337);
+  CSettingGroup* group = AddGroup(category, 38337);
   if (group == nullptr)
   {
     CLog::Log(LOGERROR, "%s: unable to setup settings", __FUNCTION__);
     return;
   }
-  CSettingAction *subsetting;
+  CSettingAction* subsetting;
   if (!m_showSingleScraper || m_singleScraperType == CONTENT_ALBUMS)
   {
     AddButton(group, "musiclibrary.albumsscraper", 38334, 0); //Provider for album information
@@ -438,14 +449,15 @@ void CGUIDialogInfoProviderSettings::InitializeSettings()
   }
 }
 
-void CGUIDialogInfoProviderSettings::SetLabel2(const std::string &settingid, const std::string &label)
+void CGUIDialogInfoProviderSettings::SetLabel2(const std::string& settingid,
+                                               const std::string& label)
 {
   BaseSettingControlPtr settingControl = GetSettingControl(settingid);
   if (settingControl != NULL && settingControl->GetControl() != NULL)
     SET_CONTROL_LABEL2(settingControl->GetID(), label);
 }
 
-void CGUIDialogInfoProviderSettings::ToggleState(const std::string &settingid, bool enabled)
+void CGUIDialogInfoProviderSettings::ToggleState(const std::string& settingid, bool enabled)
 {
   BaseSettingControlPtr settingControl = GetSettingControl(settingid);
   if (settingControl != NULL && settingControl->GetControl() != NULL)
@@ -457,7 +469,7 @@ void CGUIDialogInfoProviderSettings::ToggleState(const std::string &settingid, b
   }
 }
 
-void CGUIDialogInfoProviderSettings::SetFocus(const std::string &settingid)
+void CGUIDialogInfoProviderSettings::SetFocus(const std::string& settingid)
 {
   BaseSettingControlPtr settingControl = GetSettingControl(settingid);
   if (settingControl != NULL && settingControl->GetControl() != NULL)

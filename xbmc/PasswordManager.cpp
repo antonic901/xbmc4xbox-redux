@@ -29,7 +29,7 @@
 
 using namespace std;
 
-CPasswordManager &CPasswordManager::GetInstance()
+CPasswordManager& CPasswordManager::GetInstance()
 {
   static CPasswordManager sPasswordManager;
   return sPasswordManager;
@@ -40,7 +40,7 @@ CPasswordManager::CPasswordManager()
   m_loaded = false;
 }
 
-bool CPasswordManager::AuthenticateURL(CURL &url)
+bool CPasswordManager::AuthenticateURL(CURL& url)
 {
   CSingleLock lock(m_critSection);
 
@@ -62,7 +62,7 @@ bool CPasswordManager::AuthenticateURL(CURL &url)
   return false;
 }
 
-bool CPasswordManager::PromptToAuthenticateURL(CURL &url)
+bool CPasswordManager::PromptToAuthenticateURL(CURL& url)
 {
   CSingleLock lock(m_critSection);
 
@@ -70,7 +70,8 @@ bool CPasswordManager::PromptToAuthenticateURL(CURL &url)
   std::string username = url.GetUserName();
 
   bool saveDetails = false;
-  if (!CGUIDialogLockSettings::ShowAndGetUserAndPassword(username, passcode, url.GetWithoutUserDetails(), &saveDetails))
+  if (!CGUIDialogLockSettings::ShowAndGetUserAndPassword(username, passcode,
+                                                         url.GetWithoutUserDetails(), &saveDetails))
     return false;
 
   url.SetPassword(passcode);
@@ -81,7 +82,7 @@ bool CPasswordManager::PromptToAuthenticateURL(CURL &url)
   return true;
 }
 
-void CPasswordManager::SaveAuthenticatedURL(const CURL &url, bool saveToProfile)
+void CPasswordManager::SaveAuthenticatedURL(const CURL& url, bool saveToProfile)
 {
   // don't store/save authenticated url if it doesn't contain username
   if (url.GetUserName().empty())
@@ -106,11 +107,9 @@ void CPasswordManager::SaveAuthenticatedURL(const CURL &url, bool saveToProfile)
   m_temporaryCache[GetServerLookup(path)] = authenticatedPath;
 }
 
-bool CPasswordManager::IsURLSupported(const CURL &url)
+bool CPasswordManager::IsURLSupported(const CURL& url)
 {
-  if ( url.IsProtocol("smb")
-    || url.IsProtocol("nfs")
-    || url.IsProtocol("sftp"))
+  if (url.IsProtocol("smb") || url.IsProtocol("nfs") || url.IsProtocol("sftp"))
     return true;
 
   return false;
@@ -132,15 +131,15 @@ void CPasswordManager::Load()
     CXBMCTinyXML doc;
     if (!doc.LoadFile(passwordsFile))
     {
-      CLog::Log(LOGERROR, "%s - Unable to load: %s, Line %d\n%s", 
-        __FUNCTION__, passwordsFile.c_str(), doc.ErrorRow(), doc.ErrorDesc());
+      CLog::Log(LOGERROR, "%s - Unable to load: %s, Line %d\n%s", __FUNCTION__,
+                passwordsFile.c_str(), doc.ErrorRow(), doc.ErrorDesc());
       return;
     }
-    const TiXmlElement *root = doc.RootElement();
+    const TiXmlElement* root = doc.RootElement();
     if (root->ValueStr() != "passwords")
       return;
     // read in our passwords
-    const TiXmlElement *path = root->FirstChildElement("path");
+    const TiXmlElement* path = root->FirstChildElement("path");
     while (path)
     {
       CStdString from, to;
@@ -163,14 +162,15 @@ void CPasswordManager::Save() const
 
   CXBMCTinyXML doc;
   TiXmlElement rootElement("passwords");
-  TiXmlNode *root = doc.InsertEndChild(rootElement);
+  TiXmlNode* root = doc.InsertEndChild(rootElement);
   if (!root)
     return;
 
-  for (map<CStdString, CStdString>::const_iterator i = m_permanentCache.begin(); i != m_permanentCache.end(); ++i)
+  for (map<CStdString, CStdString>::const_iterator i = m_permanentCache.begin();
+       i != m_permanentCache.end(); ++i)
   {
     TiXmlElement pathElement("path");
-    TiXmlNode *path = root->InsertEndChild(pathElement);
+    TiXmlNode* path = root->InsertEndChild(pathElement);
     XMLUtils::SetPath(path, "from", i->first);
     XMLUtils::SetPath(path, "to", i->second);
   }
@@ -178,7 +178,7 @@ void CPasswordManager::Save() const
   doc.SaveFile(CProfilesManager::Get().GetUserDataItem("passwords.xml"));
 }
 
-CStdString CPasswordManager::GetLookupPath(const CURL &url) const
+CStdString CPasswordManager::GetLookupPath(const CURL& url) const
 {
   if (url.IsProtocol("sftp"))
     return GetServerLookup(url.Get());
@@ -186,7 +186,7 @@ CStdString CPasswordManager::GetLookupPath(const CURL &url) const
   return url.GetProtocol() + "://" + url.GetHostName() + "/" + url.GetShareName();
 }
 
-CStdString CPasswordManager::GetServerLookup(const CStdString &path) const
+CStdString CPasswordManager::GetServerLookup(const CStdString& path) const
 {
   CURL url(path);
   return url.GetProtocol() + "://" + url.GetHostName() + "/";

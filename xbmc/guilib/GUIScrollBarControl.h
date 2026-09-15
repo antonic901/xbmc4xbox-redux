@@ -35,22 +35,28 @@
  \ingroup controls
  \brief
  */
-class GUIScrollBarControl :
-      public CGUIControl
+class GUIScrollBarControl : public CGUIControl
 {
 public:
-  GUIScrollBarControl(int parentID, int controlID, float posX, float posY,
-                       float width, float height,
-                       const CTextureInfo& backGroundTexture,
-                       const CTextureInfo& barTexture, const CTextureInfo& barTextureFocus,
-                       const CTextureInfo& nibTexture, const CTextureInfo& nibTextureFocus,
-                       ORIENTATION orientation, bool showOnePage);
+  GUIScrollBarControl(int parentID,
+                      int controlID,
+                      float posX,
+                      float posY,
+                      float width,
+                      float height,
+                      const CTextureInfo& backGroundTexture,
+                      const CTextureInfo& barTexture,
+                      const CTextureInfo& barTextureFocus,
+                      const CTextureInfo& nibTexture,
+                      const CTextureInfo& nibTextureFocus,
+                      ORIENTATION orientation,
+                      bool showOnePage);
   virtual ~GUIScrollBarControl(void);
-  virtual GUIScrollBarControl *Clone() const { return new GUIScrollBarControl(*this); };
+  virtual GUIScrollBarControl* Clone() const { return new GUIScrollBarControl(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual void PreAllocResources();
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
@@ -62,11 +68,12 @@ public:
   int GetValue() const;
   virtual std::string GetDescription() const;
   virtual bool IsVisible() const;
+
 protected:
   virtual bool UpdateColors();
   bool UpdateBarSize();
   bool Move(int iNumSteps);
-  virtual void SetFromPosition(const CPoint &point);
+  virtual void SetFromPosition(const CPoint& point);
 
   CGUITexture m_guiBackground;
   CGUITexture m_guiBarNoFocus;

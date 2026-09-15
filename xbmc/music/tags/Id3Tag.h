@@ -47,15 +47,16 @@ protected:
   CStdString GetYear() const;
   CStdString GetGenre() const;
   CStdString GetComment() const;
-  char       GetRating() const;
-  bool       GetCompilation() const;
+  char GetRating() const;
+  bool GetCompilation() const;
   CStdString GetEncodedBy() const;
   CStdString GetLyrics() const;
 
   bool HasPicture(id3_picture_type pictype) const;
   CStdString GetPictureMimeType(id3_picture_type pictype) const;
   const BYTE* GetPictureData(id3_picture_type pictype, id3_length_t* length) const;
-  const BYTE* GetUniqueFileIdentifier(const CStdString& strOwnerIdentifier, id3_length_t* length) const;
+  const BYTE* GetUniqueFileIdentifier(const CStdString& strOwnerIdentifier,
+                                      id3_length_t* length) const;
   CStdString GetUserText(const CStdString& strDescription) const;
   bool GetFirstNonStandardPictype(id3_picture_type* pictype) const;
 
@@ -79,4 +80,4 @@ protected:
 
   id3_tag* m_tag;
 };
-}
+} // namespace MUSIC_INFO

@@ -29,15 +29,15 @@ public:
   virtual ~CGUIWindowVideoPlaylist(void);
 
   virtual bool OnMessage(CGUIMessage& message);
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual bool OnBack(int actionID);
 
 protected:
-  virtual bool OnPlayMedia(int iItem, const std::string &player = "");
+  virtual bool OnPlayMedia(int iItem, const std::string& player = "");
   virtual void UpdateButtons();
   void MarkPlaying();
 
-  virtual void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  virtual void GetContextButtons(int itemNumber, CContextButtons& buttons);
   virtual bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
 
   void OnMove(int iItem, int iAction);

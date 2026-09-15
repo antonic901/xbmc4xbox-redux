@@ -46,7 +46,8 @@ public:
   void Parse(const std::string& strHTML);
   int GetRows() const;
   const CHTMLRow& GetRow(int iRow) const;
+
 protected:
   std::vector<CHTMLRow> m_vecRows;
 };
-}
+} // namespace HTML

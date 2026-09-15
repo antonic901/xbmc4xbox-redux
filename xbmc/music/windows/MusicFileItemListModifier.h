@@ -25,12 +25,12 @@
 class CMusicFileItemListModifier : public IFileItemListModifier
 {
 public:
-  CMusicFileItemListModifier() { }
-  virtual ~CMusicFileItemListModifier() { }
+  CMusicFileItemListModifier() {}
+  virtual ~CMusicFileItemListModifier() {}
 
-  bool CanModify(const CFileItemList &items) const;
-  bool Modify(CFileItemList &items) const;
+  bool CanModify(const CFileItemList& items) const;
+  bool Modify(CFileItemList& items) const;
 
 private:
-  static void AddQueuingFolder(CFileItemList & items);
+  static void AddQueuingFolder(CFileItemList& items);
 };

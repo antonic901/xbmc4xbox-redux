@@ -45,6 +45,7 @@ public:
   virtual ~CAudioBuffer();
   const float* Get() const;
   void Set(const float* psBuffer, int iSize);
+
 private:
   CAudioBuffer();
   float* m_pBuffer;
@@ -53,59 +54,64 @@ private:
 
 namespace ADDON
 {
-  class CVisualisation : public CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>
-                       , public IAudioCallback
-                       , public IRenderingCallback
+class CVisualisation : public CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>,
+                       public IAudioCallback,
+                       public IRenderingCallback
+{
+public:
+  explicit CVisualisation(AddonProps props)
+    : CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>(boost::move(props))
   {
-  public:
-    explicit CVisualisation(AddonProps props)
-        : CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>(boost::move(props)) {}
+  }
 
-    virtual void OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPerSample);
-    virtual void OnAudioData(const float* pAudioData, int iAudioDataLength);
-    virtual bool IsInUse() const;
-    bool Create(int x, int y, int w, int h, void *device);
-    void Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const std::string &strSongName);
-    void AudioData(const float *pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength);
-    void Render();
-    void Stop();
-    void GetInfo(VIS_INFO *info);
-    bool OnAction(VIS_ACTION action, void *param = NULL);
-    bool UpdateTrack();
-    bool HasPresets() { return m_hasPresets; };
-    bool HasSubModules() { return !m_submodules.empty(); }
-    bool IsLocked();
-    unsigned GetPreset();
-    std::string GetPresetName();
-    bool GetPresetList(std::vector<std::string>& vecpresets);
-    bool GetSubModuleList(std::vector<std::string>& vecmodules);
-    static std::string GetFriendlyName(const std::string& vis, const std::string& module);
-    void Destroy();
+  virtual void OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPerSample);
+  virtual void OnAudioData(const float* pAudioData, int iAudioDataLength);
+  virtual bool IsInUse() const;
+  bool Create(int x, int y, int w, int h, void* device);
+  void Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const std::string& strSongName);
+  void AudioData(const float* pAudioData,
+                 int iAudioDataLength,
+                 float* pFreqData,
+                 int iFreqDataLength);
+  void Render();
+  void Stop();
+  void GetInfo(VIS_INFO* info);
+  bool OnAction(VIS_ACTION action, void* param = NULL);
+  bool UpdateTrack();
+  bool HasPresets() { return m_hasPresets; };
+  bool HasSubModules() { return !m_submodules.empty(); }
+  bool IsLocked();
+  unsigned GetPreset();
+  std::string GetPresetName();
+  bool GetPresetList(std::vector<std::string>& vecpresets);
+  bool GetSubModuleList(std::vector<std::string>& vecmodules);
+  static std::string GetFriendlyName(const std::string& vis, const std::string& module);
+  void Destroy();
 
-  private:
-    void CreateBuffers();
-    void ClearBuffers();
+private:
+  void CreateBuffers();
+  void ClearBuffers();
 
-    bool GetPresets();
-    bool GetSubModules();
+  bool GetPresets();
+  bool GetSubModules();
 
-    // cached preset list
-    std::vector<std::string> m_presets;
-    // cached submodule list
-    std::vector<std::string> m_submodules;
+  // cached preset list
+  std::vector<std::string> m_presets;
+  // cached submodule list
+  std::vector<std::string> m_submodules;
 
-    // audio properties
-    int m_iChannels;
-    int m_iSamplesPerSec;
-    int m_iBitsPerSample;
-    std::list<CAudioBuffer*> m_vecBuffers;
-    int m_iNumBuffers;        // Number of Audio buffers
-    bool m_bWantsFreq;
-    float m_fFreq[AUDIO_BUFFER_SIZE];         // Frequency data
-    bool m_hasPresets;
-    boost::movelib::unique_ptr<RFFT> m_transform;
+  // audio properties
+  int m_iChannels;
+  int m_iSamplesPerSec;
+  int m_iBitsPerSample;
+  std::list<CAudioBuffer*> m_vecBuffers;
+  int m_iNumBuffers; // Number of Audio buffers
+  bool m_bWantsFreq;
+  float m_fFreq[AUDIO_BUFFER_SIZE]; // Frequency data
+  bool m_hasPresets;
+  boost::movelib::unique_ptr<RFFT> m_transform;
 
-    // track information
-    std::string m_AlbumThumb;
-  };
-}
+  // track information
+  std::string m_AlbumThumb;
+};
+} // namespace ADDON

@@ -23,19 +23,19 @@
 
 #include "utils/StdString.h"
 
-#define ENC_ARTIST  11
-#define ENC_TITLE   12
-#define ENC_ALBUM   13
-#define ENC_YEAR    14
+#define ENC_ARTIST 11
+#define ENC_TITLE 12
+#define ENC_ALBUM 13
+#define ENC_YEAR 14
 #define ENC_COMMENT 15
-#define ENC_TRACK   16
-#define ENC_GENRE   17
+#define ENC_TRACK 16
+#define ENC_GENRE 17
 
 #define WRITEBUFFER_SIZE 131072 // 128k buffer
 
 enum CDDARipEncoder
 {
-  CDDARIP_ENCODER_LAME    = 0,
+  CDDARIP_ENCODER_LAME = 0,
   CDDARIP_ENCODER_VORBIS,
   CDDARIP_ENCODER_WAV,
   CDDARIP_ENCODER_FLAC
@@ -43,13 +43,16 @@ enum CDDARipEncoder
 
 enum CDDARipQuality
 {
-  CDDARIP_QUALITY_CBR      = 0,
+  CDDARIP_QUALITY_CBR = 0,
   CDDARIP_QUALITY_MEDIUM,
   CDDARIP_QUALITY_STANDARD,
   CDDARIP_QUALITY_EXTREME
 };
 
-namespace XFILE { class CFile; }
+namespace XFILE
+{
+class CFile;
+}
 
 class CEncoder
 {
@@ -91,7 +94,7 @@ protected:
 
   CStdString m_strFile;
 
-  XFILE::CFile *m_file;
+  XFILE::CFile* m_file;
   int m_iInChannels;
   int m_iInSampleRate;
   int m_iInBitsPerSample;
@@ -101,4 +104,3 @@ protected:
 };
 
 #endif // _ENCODER_H
-

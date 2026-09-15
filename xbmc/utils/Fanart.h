@@ -92,6 +92,7 @@ public:
   /// anytime this string is changed, the change should be followed up by a call to CFanart::UnPack().  This XML formaytted string is
   /// also the interface used to pass the fanart data from the scraper to CFanart.
   std::string m_xml;
+
 private:
   static const unsigned int max_fanart_colors;
   ///
@@ -105,7 +106,7 @@ private:
   /// \param colorsIn: std::string containing a string of colors in some format to be converted
   /// \param colorsOut: XBMC ARGB Hexadecimal string comma seperated "FFFFFFFF,DDDDDDDD,AAAAAAAA"
   /// \return boolean indicating success or failure.
-  bool ParseColors(const std::string &colorsIn, std::string &colorsOut);
+  bool ParseColors(const std::string& colorsIn, std::string& colorsOut);
 
   struct SFanartData
   {

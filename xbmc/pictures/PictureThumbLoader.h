@@ -32,7 +32,7 @@ public:
   virtual bool LoadItemCached(CFileItem* pItem);
   virtual bool LoadItemLookup(CFileItem* pItem);
   void SetRegenerateThumbs(bool regenerate) { m_regenerateThumbs = regenerate; };
-  static void ProcessFoldersAndArchives(CFileItem *pItem);
+  static void ProcessFoldersAndArchives(CFileItem* pItem);
 
   /*!
    \brief Callback from CThumbExtractor on completion of a generated image
@@ -41,7 +41,7 @@ public:
 
    \sa CImageLoader, IJobCallback
    */
-  virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+  virtual void OnJobComplete(unsigned int jobID, bool success, CJob* job);
 
 protected:
   virtual void OnLoaderFinish();

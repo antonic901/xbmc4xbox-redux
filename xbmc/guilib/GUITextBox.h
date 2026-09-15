@@ -42,14 +42,20 @@ class TiXmlNode;
 class CGUITextBox : public CGUIControl, public CGUITextLayout
 {
 public:
-  CGUITextBox(int parentID, int controlID, float posX, float posY, float width, float height,
-              const CLabelInfo &labelInfo, int scrollTime = 200);
-  CGUITextBox(const CGUITextBox &from);
+  CGUITextBox(int parentID,
+              int controlID,
+              float posX,
+              float posY,
+              float width,
+              float height,
+              const CLabelInfo& labelInfo,
+              int scrollTime = 200);
+  CGUITextBox(const CGUITextBox& from);
   virtual ~CGUITextBox(void);
-  virtual CGUITextBox *Clone() const { return new CGUITextBox(*this); };
+  virtual CGUITextBox* Clone() const { return new CGUITextBox(*this); };
 
-  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions);
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void DoProcess(unsigned int currentTime, CDirtyRegionList& dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
   virtual bool OnMessage(CGUIMessage& message);
   virtual float GetHeight() const;
@@ -58,9 +64,9 @@ public:
   void SetPageControl(int pageControl);
 
   virtual bool CanFocus() const;
-  void SetInfo(const CGUIInfoLabel &info);
-  void SetAutoScrolling(const TiXmlNode *node);
-  void SetAutoScrolling(int delay, int time, int repeatTime, const std::string &condition = "");
+  void SetInfo(const CGUIInfoLabel& info);
+  void SetAutoScrolling(const TiXmlNode* node);
+  void SetAutoScrolling(int delay, int time, int repeatTime, const std::string& condition = "");
   void ResetAutoScrolling();
 
   virtual bool GetCondition(int condition, int data) const;
@@ -70,9 +76,9 @@ public:
   void Scroll(unsigned int offset);
 
 protected:
-  virtual void UpdateVisibility(const CGUIListItem *item = NULL);
+  virtual void UpdateVisibility(const CGUIListItem* item = NULL);
   virtual bool UpdateColors();
-  virtual void UpdateInfo(const CGUIListItem *item = NULL);
+  virtual void UpdateInfo(const CGUIListItem* item = NULL);
   void UpdatePageControl();
   void ScrollToOffset(int offset, bool autoScroll = false);
   unsigned int GetRows() const;
@@ -87,7 +93,7 @@ protected:
   unsigned int m_offset;
   float m_scrollOffset;
   float m_scrollSpeed;
-  int   m_scrollTime;
+  int m_scrollTime;
   unsigned int m_itemsPerPage;
   float m_itemHeight;
   unsigned int m_lastRenderTime;
@@ -98,10 +104,10 @@ protected:
 
   // autoscrolling
   INFO::InfoPtr m_autoScrollCondition;
-  int          m_autoScrollTime;      // time to scroll 1 line (ms)
-  int          m_autoScrollDelay;     // delay before scroll (ms)
+  int m_autoScrollTime; // time to scroll 1 line (ms)
+  int m_autoScrollDelay; // delay before scroll (ms)
   unsigned int m_autoScrollDelayTime; // current offset into the delay
-  CAnimation *m_autoScrollRepeatAnim;
+  CAnimation* m_autoScrollRepeatAnim;
 
   int m_pageControl;
 

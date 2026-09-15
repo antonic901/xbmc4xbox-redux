@@ -37,13 +37,24 @@
 class CGUIToggleButtonControl : public CGUIButtonControl
 {
 public:
-  CGUIToggleButtonControl(int parentID, int controlID, float posX, float posY, float width, float height, const CTextureInfo& textureFocus, const CTextureInfo& textureNoFocus, const CTextureInfo& altTextureFocus, const CTextureInfo& altTextureNoFocus, const CLabelInfo &labelInfo, bool wrapMultiline = false);
+  CGUIToggleButtonControl(int parentID,
+                          int controlID,
+                          float posX,
+                          float posY,
+                          float width,
+                          float height,
+                          const CTextureInfo& textureFocus,
+                          const CTextureInfo& textureNoFocus,
+                          const CTextureInfo& altTextureFocus,
+                          const CTextureInfo& altTextureNoFocus,
+                          const CLabelInfo& labelInfo,
+                          bool wrapMultiline = false);
   virtual ~CGUIToggleButtonControl(void);
-  virtual CGUIToggleButtonControl *Clone() const { return new CGUIToggleButtonControl(*this); };
+  virtual CGUIToggleButtonControl* Clone() const { return new CGUIToggleButtonControl(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   virtual void PreAllocResources();
   virtual void AllocResources();
   virtual void FreeResources(bool immediately = false);
@@ -56,8 +67,8 @@ public:
   virtual void SetLabel(const std::string& label);
   void SetAltLabel(const std::string& label);
   virtual std::string GetDescription() const;
-  void SetToggleSelect(const std::string &toggleSelect);
-  void SetAltClickActions(const CGUIAction &clickActions);
+  void SetToggleSelect(const std::string& toggleSelect);
+  void SetAltClickActions(const CGUIAction& clickActions);
 
 protected:
   virtual bool UpdateColors();

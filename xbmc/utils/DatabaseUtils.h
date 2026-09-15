@@ -32,20 +32,21 @@ class CVariant;
 
 namespace dbiplus
 {
-  class Dataset;
-  class field_value;
-}
+class Dataset;
+class field_value;
+} // namespace dbiplus
 
-typedef enum {
+typedef enum
+{
   // special fields used during sorting
   FieldUnknown = -1,
   FieldNone = 0,
-  FieldSort,        // used to store the string to use for sorting
+  FieldSort, // used to store the string to use for sorting
   FieldSortSpecial, // whether the item needs special handling (0 = no, 1 = sort on top, 2 = sort on bottom)
   FieldLabel,
   FieldFolder,
   FieldMediaType,
-  FieldRow,         // the row number in a dataset
+  FieldRow, // the row number in a dataset
 
   // special fields not retrieved from the database
   FieldSize,
@@ -144,7 +145,8 @@ typedef enum {
 typedef std::set<Field> Fields;
 typedef std::vector<Field> FieldList;
 
-typedef enum {
+typedef enum
+{
   DatabaseQueryPartSelect,
   DatabaseQueryPartWhere,
   DatabaseQueryPartOrderBy,
@@ -158,16 +160,21 @@ class DatabaseUtils
 public:
   static MediaType MediaTypeFromVideoContentType(int videoContentType);
 
-  static std::string GetField(Field field, const MediaType &mediaType, DatabaseQueryPart queryPart);
-  static int GetField(Field field, const MediaType &mediaType);
-  static int GetFieldIndex(Field field, const MediaType &mediaType);
-  static bool GetSelectFields(const Fields &fields, const MediaType &mediaType, FieldList &selectFields);
+  static std::string GetField(Field field, const MediaType& mediaType, DatabaseQueryPart queryPart);
+  static int GetField(Field field, const MediaType& mediaType);
+  static int GetFieldIndex(Field field, const MediaType& mediaType);
+  static bool GetSelectFields(const Fields& fields,
+                              const MediaType& mediaType,
+                              FieldList& selectFields);
 
-  static bool GetFieldValue(const dbiplus::field_value &fieldValue, CVariant &variantValue);
-  static bool GetDatabaseResults(const MediaType &mediaType, const FieldList &fields, const boost::movelib::unique_ptr<dbiplus::Dataset> &dataset, DatabaseResults &results);
+  static bool GetFieldValue(const dbiplus::field_value& fieldValue, CVariant& variantValue);
+  static bool GetDatabaseResults(const MediaType& mediaType,
+                                 const FieldList& fields,
+                                 const boost::movelib::unique_ptr<dbiplus::Dataset>& dataset,
+                                 DatabaseResults& results);
 
   static std::string BuildLimitClause(int end, int start = 0);
 
 private:
-  static int GetField(Field field, const MediaType &mediaType, bool asIndex);
+  static int GetField(Field field, const MediaType& mediaType, bool asIndex);
 };

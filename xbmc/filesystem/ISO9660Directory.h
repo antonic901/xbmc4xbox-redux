@@ -23,13 +23,12 @@
 
 namespace XFILE
 {
-class CISO9660Directory :
-      public IDirectory
+class CISO9660Directory : public IDirectory
 {
 public:
   CISO9660Directory(void);
   virtual ~CISO9660Directory(void);
-  virtual bool GetDirectory(const CURL& url, CFileItemList &items);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
   virtual bool Exists(const CURL& url);
 };
-}
+} // namespace XFILE

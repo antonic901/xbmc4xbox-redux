@@ -23,9 +23,12 @@
 
 using namespace XFILE::MUSICDATABASEDIRECTORY;
 
-CDirectoryNodeGrouped::CDirectoryNodeGrouped(NODE_TYPE type, const std::string& strName, CDirectoryNode* pParent)
+CDirectoryNodeGrouped::CDirectoryNodeGrouped(NODE_TYPE type,
+                                             const std::string& strName,
+                                             CDirectoryNode* pParent)
   : CDirectoryNode(type, strName, pParent)
-{ }
+{
+}
 
 NODE_TYPE CDirectoryNodeGrouped::GetChildType() const
 {

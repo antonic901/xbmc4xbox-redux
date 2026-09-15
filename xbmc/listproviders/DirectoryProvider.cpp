@@ -52,18 +52,19 @@ using namespace KODI::MESSAGING;
 class CDirectoryJob : public CJob
 {
 public:
-  CDirectoryJob(const std::string &url, SortDescription sort, int limit, int parentID)
+  CDirectoryJob(const std::string& url, SortDescription sort, int limit, int parentID)
     : m_url(url),
       m_sort(sort),
       m_limit(limit),
       m_parentID(parentID)
-  { }
-  virtual ~CDirectoryJob() { }
+  {
+  }
+  virtual ~CDirectoryJob() {}
 
   virtual const char* GetType() const { return "directory"; }
-  virtual bool operator==(const CJob *job) const
+  virtual bool operator==(const CJob* job) const
   {
-    if (strcmp(job->GetType(),GetType()) == 0)
+    if (strcmp(job->GetType(), GetType()) == 0)
     {
       const CDirectoryJob* dirJob = dynamic_cast<const CDirectoryJob*>(job);
       if (dirJob && dirJob->m_url == m_url)
@@ -82,7 +83,7 @@ public:
         items.Sort(m_sort);
 
       // limit must not exceed the number of items
-      int limit = (m_limit == 0) ? items.Size() : std::min((int) m_limit, items.Size());
+      int limit = (m_limit == 0) ? items.Size() : std::min((int)m_limit, items.Size());
       // convert to CGUIStaticItem's and set visibility and targets
       m_items.reserve(limit);
       for (int i = 0; i < limit; i++)
@@ -100,7 +101,7 @@ public:
     return true;
   }
 
-  boost::shared_ptr<CThumbLoader> getThumbLoader(CGUIStaticItemPtr &item)
+  boost::shared_ptr<CThumbLoader> getThumbLoader(CGUIStaticItemPtr& item)
   {
     if (item->IsVideo())
     {
@@ -132,16 +133,18 @@ public:
     }
   }
 
-  const std::vector<CGUIStaticItemPtr> &GetItems() const { return m_items; }
-  const std::string &GetTarget() const { return m_target; }
-  std::vector<InfoTagType::TagType> GetItemTypes(std::vector<InfoTagType::TagType> &itemTypes) const
+  const std::vector<CGUIStaticItemPtr>& GetItems() const { return m_items; }
+  const std::string& GetTarget() const { return m_target; }
+  std::vector<InfoTagType::TagType> GetItemTypes(std::vector<InfoTagType::TagType>& itemTypes) const
   {
     itemTypes.clear();
-    for (std::map<InfoTagType::TagType, boost::shared_ptr<CThumbLoader> >::const_iterator
-         i = m_thumbloaders.begin(); i != m_thumbloaders.end(); ++i)
+    for (std::map<InfoTagType::TagType, boost::shared_ptr<CThumbLoader> >::const_iterator i =
+             m_thumbloaders.begin();
+         i != m_thumbloaders.end(); ++i)
       itemTypes.push_back(i->first);
     return itemTypes;
   }
+
 private:
   std::string m_url;
   std::string m_target;
@@ -152,29 +155,29 @@ private:
   std::map<InfoTagType::TagType, boost::shared_ptr<CThumbLoader> > m_thumbloaders;
 };
 
-CDirectoryProvider::CDirectoryProvider(const TiXmlElement *element, int parentID)
- : IListProvider(parentID),
-   m_updateState(OK),
-   m_isAnnounced(false),
-   m_jobID(0),
-   m_currentLimit(0)
+CDirectoryProvider::CDirectoryProvider(const TiXmlElement* element, int parentID)
+  : IListProvider(parentID),
+    m_updateState(OK),
+    m_isAnnounced(false),
+    m_jobID(0),
+    m_currentLimit(0)
 {
   assert(element);
   if (!element->NoChildren())
   {
-    const char *target = element->Attribute("target");
+    const char* target = element->Attribute("target");
     if (target)
       m_target.SetLabel(target, "", parentID);
 
-    const char *sortMethod = element->Attribute("sortby");
+    const char* sortMethod = element->Attribute("sortby");
     if (sortMethod)
       m_sortMethod.SetLabel(sortMethod, "", parentID);
 
-    const char *sortOrder = element->Attribute("sortorder");
+    const char* sortOrder = element->Attribute("sortorder");
     if (sortOrder)
       m_sortOrder.SetLabel(sortOrder, "", parentID);
 
-    const char *limit = element->Attribute("limit");
+    const char* limit = element->Attribute("limit");
     if (limit)
       m_limit.SetLabel(limit, "", parentID);
 
@@ -212,7 +215,8 @@ bool CDirectoryProvider::Update(bool forceRefresh)
     CLog::Log(LOGDEBUG, "CDirectoryProvider[%s]: refreshing..", m_currentUrl.c_str());
     if (m_jobID)
       CJobManager::GetInstance().CancelJob(m_jobID);
-    m_jobID = CJobManager::GetInstance().AddJob(new CDirectoryJob(m_currentUrl, m_currentSort, m_currentLimit, m_parentID), this);
+    m_jobID = CJobManager::GetInstance().AddJob(
+        new CDirectoryJob(m_currentUrl, m_currentSort, m_currentLimit, m_parentID), this);
   }
 
   if (!changed)
@@ -223,7 +227,10 @@ bool CDirectoryProvider::Update(bool forceRefresh)
   return changed; //! @todo Also returned changed if properties are changed (if so, need to update scroll to letter).
 }
 
-void CDirectoryProvider::Announce(AnnouncementFlag flag, const char *sender, const char *message, const CVariant &data)
+void CDirectoryProvider::Announce(AnnouncementFlag flag,
+                                  const char* sender,
+                                  const char* message,
+                                  const CVariant& data)
 {
   // we are only interested in library, player and GUI changes
   if ((flag & (VideoLibrary | AudioLibrary | Player | GUI)) == 0)
@@ -233,19 +240,17 @@ void CDirectoryProvider::Announce(AnnouncementFlag flag, const char *sender, con
     CSingleLock lock(m_section);
     // we don't need to refresh anything if there are no fitting
     // items in this list provider for the announcement flag
-    if (((flag & VideoLibrary) &&
-         (std::find(m_itemTypes.begin(), m_itemTypes.end(), InfoTagType::TagType::VIDEO) == m_itemTypes.end())) ||
-        ((flag & AudioLibrary) &&
-         (std::find(m_itemTypes.begin(), m_itemTypes.end(), InfoTagType::TagType::AUDIO) == m_itemTypes.end())))
+    if (((flag & VideoLibrary) && (std::find(m_itemTypes.begin(), m_itemTypes.end(),
+                                             InfoTagType::TagType::VIDEO) == m_itemTypes.end())) ||
+        ((flag & AudioLibrary) && (std::find(m_itemTypes.begin(), m_itemTypes.end(),
+                                             InfoTagType::TagType::AUDIO) == m_itemTypes.end())))
       return;
 
     if (flag & Player)
     {
-      if (strcmp(message, "OnPlay") == 0 ||
-          strcmp(message, "OnStop") == 0)
+      if (strcmp(message, "OnPlay") == 0 || strcmp(message, "OnStop") == 0)
       {
-        if (m_currentSort.sortBy == SortByLastPlayed ||
-            m_currentSort.sortBy == SortByPlaycount ||
+        if (m_currentSort.sortBy == SortByLastPlayed || m_currentSort.sortBy == SortByPlaycount ||
             m_currentSort.sortBy == SortByLastUsed)
           m_updateState = INVALIDATED;
       }
@@ -266,16 +271,14 @@ void CDirectoryProvider::Announce(AnnouncementFlag flag, const char *sender, con
 
       // if there was a database update, we set the update state
       // to PENDING to fire off a new job in the next update
-      if (strcmp(message, "OnScanFinished") == 0 ||
-          strcmp(message, "OnCleanFinished") == 0 ||
-          strcmp(message, "OnUpdate") == 0 ||
-          strcmp(message, "OnRemove") == 0)
+      if (strcmp(message, "OnScanFinished") == 0 || strcmp(message, "OnCleanFinished") == 0 ||
+          strcmp(message, "OnUpdate") == 0 || strcmp(message, "OnRemove") == 0)
         m_updateState = INVALIDATED;
     }
   }
 }
 
-void CDirectoryProvider::Fetch(std::vector<CGUIListItemPtr> &items) const
+void CDirectoryProvider::Fetch(std::vector<CGUIListItemPtr>& items) const
 {
   CSingleLock lock(m_section);
   items.clear();
@@ -322,7 +325,7 @@ void CDirectoryProvider::Reset()
   }
 }
 
-void CDirectoryProvider::OnJobComplete(unsigned int jobID, bool success, CJob *job)
+void CDirectoryProvider::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 {
   CSingleLock lock(m_section);
   if (success)
@@ -336,13 +339,13 @@ void CDirectoryProvider::OnJobComplete(unsigned int jobID, bool success, CJob *j
   m_jobID = 0;
 }
 
-bool CDirectoryProvider::OnClick(const CGUIListItemPtr &item)
+bool CDirectoryProvider::OnClick(const CGUIListItemPtr& item)
 {
   CFileItem fileItem(*boost::static_pointer_cast<CFileItem>(item));
 
-  if (fileItem.HasVideoInfoTag()
-      && CSettings::GetInstance().GetInt("myvideos.selectaction") == SELECT_ACTION_INFO
-      && OnInfo(item))
+  if (fileItem.HasVideoInfoTag() &&
+      CSettings::GetInstance().GetInt("myvideos.selectaction") == SELECT_ACTION_INFO &&
+      OnInfo(item))
     return true;
 
   std::string target = fileItem.GetProperty("node.target").asString();
@@ -376,10 +379,8 @@ bool CDirectoryProvider::OnInfo(const CGUIListItemPtr& item)
   else if (fileItem->HasVideoInfoTag())
   {
     MediaType mediaType = fileItem->GetVideoInfoTag()->m_type;
-    if (mediaType == MediaTypeMovie ||
-        mediaType == MediaTypeTvShow ||
-        mediaType == MediaTypeEpisode ||
-        mediaType == MediaTypeVideo ||
+    if (mediaType == MediaTypeMovie || mediaType == MediaTypeTvShow ||
+        mediaType == MediaTypeEpisode || mediaType == MediaTypeVideo ||
         mediaType == MediaTypeMusicVideo)
     {
       CGUIDialogVideoInfo::ShowFor(*fileItem.get());
@@ -452,7 +453,8 @@ bool CDirectoryProvider::UpdateSort()
   m_currentSort.sortAttributes = SortAttributeIgnoreFolders;
 
   if (CSettings::GetInstance().GetBool("filelists.ignorethewhensorting"))
-    m_currentSort.sortAttributes = static_cast<SortAttribute>(m_currentSort.sortAttributes | SortAttributeIgnoreArticle);
+    m_currentSort.sortAttributes =
+        static_cast<SortAttribute>(m_currentSort.sortAttributes | SortAttributeIgnoreArticle);
 
   return true;
 }

@@ -22,7 +22,7 @@
 #include "GUIInfoManager.h"
 #include "utils/XMLUtils.h"
 
-CProfile::CLock::CLock(LockType type, const CStdString &password)
+CProfile::CLock::CLock(LockType type, const CStdString& password)
 {
   programs = false;
   pictures = false;
@@ -39,12 +39,12 @@ void CProfile::CLock::Validate()
 {
   if (mode != LOCK_MODE_EVERYONE && (code == "-" || code.IsEmpty()))
     mode = LOCK_MODE_EVERYONE;
-  
+
   if (code.IsEmpty() || mode == LOCK_MODE_EVERYONE)
     code = "-";
 }
 
-CProfile::CProfile(const CStdString &directory, const CStdString &name, const int id)
+CProfile::CProfile(const CStdString& directory, const CStdString& name, const int id)
 {
   m_id = id;
   m_directory = directory;
@@ -58,7 +58,8 @@ CProfile::CProfile(const CStdString &directory, const CStdString &name, const in
 }
 
 CProfile::~CProfile(void)
-{}
+{
+}
 
 void CProfile::setDate()
 {
@@ -67,13 +68,13 @@ void CProfile::setDate()
   if (strDate.IsEmpty() || strTime.IsEmpty())
     setDate("-");
   else
-    setDate(strDate+" - "+strTime);
+    setDate(strDate + " - " + strTime);
 }
 
-void CProfile::Load(const TiXmlNode *node, int nextIdProfile)
+void CProfile::Load(const TiXmlNode* node, int nextIdProfile)
 {
   if (!XMLUtils::GetInt(node, "id", m_id))
-    m_id = nextIdProfile; 
+    m_id = nextIdProfile;
 
   XMLUtils::GetString(node, "name", m_name);
   XMLUtils::GetPath(node, "directory", m_directory);
@@ -89,21 +90,21 @@ void CProfile::Load(const TiXmlNode *node, int nextIdProfile)
   XMLUtils::GetBoolean(node, "lockvideo", m_locks.video);
   XMLUtils::GetBoolean(node, "lockpictures", m_locks.pictures);
   XMLUtils::GetBoolean(node, "lockprograms", m_locks.programs);
-  
+
   int lockMode = m_locks.mode;
   XMLUtils::GetInt(node, "lockmode", lockMode);
   m_locks.mode = (LockType)lockMode;
   if (m_locks.mode > LOCK_MODE_QWERTY || m_locks.mode < LOCK_MODE_EVERYONE)
     m_locks.mode = LOCK_MODE_EVERYONE;
-  
+
   XMLUtils::GetString(node, "lockcode", m_locks.code);
   XMLUtils::GetString(node, "lastdate", m_date);
 }
 
-void CProfile::Save(TiXmlNode *root) const
+void CProfile::Save(TiXmlNode* root) const
 {
   TiXmlElement profileNode("profile");
-  TiXmlNode *node = root->InsertEndChild(profileNode);
+  TiXmlNode* node = root->InsertEndChild(profileNode);
 
   XMLUtils::SetInt(node, "id", m_id);
   XMLUtils::SetString(node, "name", m_name);
@@ -123,11 +124,11 @@ void CProfile::Save(TiXmlNode *root) const
   XMLUtils::SetBoolean(node, "lockprograms", m_locks.programs);
 
   XMLUtils::SetInt(node, "lockmode", m_locks.mode);
-  XMLUtils::SetString(node,"lockcode", m_locks.code);
+  XMLUtils::SetString(node, "lockcode", m_locks.code);
   XMLUtils::SetString(node, "lastdate", m_date);
 }
 
-void CProfile::SetLocks(const CProfile::CLock &locks)
+void CProfile::SetLocks(const CProfile::CLock& locks)
 {
   m_locks = locks;
   m_locks.Validate();

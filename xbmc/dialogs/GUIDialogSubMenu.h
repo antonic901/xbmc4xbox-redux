@@ -22,11 +22,11 @@
 
 #include "guilib/GUIDialog.h"
 
-class CGUIDialogSubMenu :
-      public CGUIDialog
+class CGUIDialogSubMenu : public CGUIDialog
 {
 public:
-  CGUIDialogSubMenu(int id = WINDOW_DIALOG_SUB_MENU, const std::string &xmlFile = "DialogSubMenu.xml");
+  CGUIDialogSubMenu(int id = WINDOW_DIALOG_SUB_MENU,
+                    const std::string& xmlFile = "DialogSubMenu.xml");
   virtual ~CGUIDialogSubMenu(void);
-  virtual bool OnMessage(CGUIMessage &message);
+  virtual bool OnMessage(CGUIMessage& message);
 };

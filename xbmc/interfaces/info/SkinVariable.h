@@ -41,7 +41,8 @@ class CSkinVariableString
 public:
   const std::string& GetName() const;
   int GetContext() const;
-  std::string GetValue(bool preferImage = false, const CGUIListItem *item = NULL );
+  std::string GetValue(bool preferImage = false, const CGUIListItem* item = NULL);
+
 private:
   CSkinVariableString();
 
@@ -60,4 +61,4 @@ private:
   friend class CSkinVariable;
 };
 
-}
+} // namespace INFO

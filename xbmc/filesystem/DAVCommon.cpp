@@ -21,7 +21,7 @@
 
 #include "DAVCommon.h"
 #include "utils/StringUtils.h"
-#include "utils/log.h"   
+#include "utils/log.h"
 
 using namespace XFILE;
 
@@ -30,10 +30,10 @@ using namespace XFILE;
  *
  * if pElement is <DAV:foo> and value is foo then ValueWithoutNamespace is true
  */
-bool CDAVCommon::ValueWithoutNamespace(const TiXmlNode *pNode, const CStdString& value)
+bool CDAVCommon::ValueWithoutNamespace(const TiXmlNode* pNode, const CStdString& value)
 {
   CStdStringArray tag;
-  const TiXmlElement *pElement;
+  const TiXmlElement* pElement;
 
   if (!pNode)
   {
@@ -59,7 +59,8 @@ bool CDAVCommon::ValueWithoutNamespace(const TiXmlNode *pNode, const CStdString&
   }
   else if (tag.size() > 2)
   {
-    CLog::Log(LOGERROR, "%s - Splitting %s failed, size(): %lu, value: %s", __FUNCTION__, pElement->Value(), (unsigned long int)tag.size(), value.c_str());
+    CLog::Log(LOGERROR, "%s - Splitting %s failed, size(): %lu, value: %s", __FUNCTION__,
+              pElement->Value(), (unsigned long int)tag.size(), value.c_str());
   }
 
   return false;
@@ -68,11 +69,12 @@ bool CDAVCommon::ValueWithoutNamespace(const TiXmlNode *pNode, const CStdString&
 /*
  * Search for <status> and return its content
  */
-CStdString CDAVCommon::GetStatusTag(const TiXmlElement *pElement)
+CStdString CDAVCommon::GetStatusTag(const TiXmlElement* pElement)
 {
-  const TiXmlElement *pChild;
+  const TiXmlElement* pChild;
 
-  for (pChild = pElement->FirstChild()->ToElement(); pChild != 0; pChild = pChild->NextSibling()->ToElement())
+  for (pChild = pElement->FirstChild()->ToElement(); pChild != 0;
+       pChild = pChild->NextSibling()->ToElement())
   {
     if (ValueWithoutNamespace(pChild, "status"))
     {
@@ -82,4 +84,3 @@ CStdString CDAVCommon::GetStatusTag(const TiXmlElement *pElement)
 
   return "";
 }
-

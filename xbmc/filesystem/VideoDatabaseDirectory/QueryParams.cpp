@@ -44,65 +44,65 @@ CQueryParams::CQueryParams()
 
 void CQueryParams::SetQueryParam(NODE_TYPE NodeType, const std::string& strNodeName)
 {
-  long idDb=atol(strNodeName.c_str());
+  long idDb = atol(strNodeName.c_str());
 
   switch (NodeType)
   {
-  case NODE_TYPE_OVERVIEW:
-    if (strNodeName == "tvshows")
-      m_idContent = VIDEODB_CONTENT_TVSHOWS;
-    else if (strNodeName == "musicvideos")
-      m_idContent = VIDEODB_CONTENT_MUSICVIDEOS;
-    else
-      m_idContent = VIDEODB_CONTENT_MOVIES;
-    break;
-  case NODE_TYPE_GENRE:
-    m_idGenre = idDb;
-    break;
-  case NODE_TYPE_COUNTRY:
-    m_idCountry = idDb;
-    break;
-  case NODE_TYPE_YEAR:
-    m_idYear = idDb;
-    break;
-  case NODE_TYPE_ACTOR:
-    m_idActor = idDb;
-    break;
-  case NODE_TYPE_DIRECTOR:
-    m_idDirector = idDb;
-    break;
-  case NODE_TYPE_TITLE_MOVIES:
-  case NODE_TYPE_RECENTLY_ADDED_MOVIES:
-    m_idMovie = idDb;
-    break;
-  case NODE_TYPE_TITLE_TVSHOWS:
-  case NODE_TYPE_INPROGRESS_TVSHOWS:
-    m_idShow = idDb;
-    break;
-  case NODE_TYPE_SEASONS:
-    m_idSeason = idDb;
-    break;
-  case NODE_TYPE_EPISODES:
-  case NODE_TYPE_RECENTLY_ADDED_EPISODES:
-    m_idEpisode = idDb;
-    break;
-  case NODE_TYPE_STUDIO:
-    m_idStudio = idDb;
-    break;
-  case NODE_TYPE_TITLE_MUSICVIDEOS:
-  case NODE_TYPE_RECENTLY_ADDED_MUSICVIDEOS:
-    m_idMVideo = idDb;
-    break;
-  case NODE_TYPE_MUSICVIDEOS_ALBUM:
-    m_idAlbum = idDb;
-    break;
-  case NODE_TYPE_SETS:
-    m_idSet = idDb;
-    break;
-  case NODE_TYPE_TAGS:
-    m_idTag = idDb;
-    break;
-  default:
-    break;
+    case NODE_TYPE_OVERVIEW:
+      if (strNodeName == "tvshows")
+        m_idContent = VIDEODB_CONTENT_TVSHOWS;
+      else if (strNodeName == "musicvideos")
+        m_idContent = VIDEODB_CONTENT_MUSICVIDEOS;
+      else
+        m_idContent = VIDEODB_CONTENT_MOVIES;
+      break;
+    case NODE_TYPE_GENRE:
+      m_idGenre = idDb;
+      break;
+    case NODE_TYPE_COUNTRY:
+      m_idCountry = idDb;
+      break;
+    case NODE_TYPE_YEAR:
+      m_idYear = idDb;
+      break;
+    case NODE_TYPE_ACTOR:
+      m_idActor = idDb;
+      break;
+    case NODE_TYPE_DIRECTOR:
+      m_idDirector = idDb;
+      break;
+    case NODE_TYPE_TITLE_MOVIES:
+    case NODE_TYPE_RECENTLY_ADDED_MOVIES:
+      m_idMovie = idDb;
+      break;
+    case NODE_TYPE_TITLE_TVSHOWS:
+    case NODE_TYPE_INPROGRESS_TVSHOWS:
+      m_idShow = idDb;
+      break;
+    case NODE_TYPE_SEASONS:
+      m_idSeason = idDb;
+      break;
+    case NODE_TYPE_EPISODES:
+    case NODE_TYPE_RECENTLY_ADDED_EPISODES:
+      m_idEpisode = idDb;
+      break;
+    case NODE_TYPE_STUDIO:
+      m_idStudio = idDb;
+      break;
+    case NODE_TYPE_TITLE_MUSICVIDEOS:
+    case NODE_TYPE_RECENTLY_ADDED_MUSICVIDEOS:
+      m_idMVideo = idDb;
+      break;
+    case NODE_TYPE_MUSICVIDEOS_ALBUM:
+      m_idAlbum = idDb;
+      break;
+    case NODE_TYPE_SETS:
+      m_idSet = idDb;
+      break;
+    case NODE_TYPE_TAGS:
+      m_idTag = idDb;
+      break;
+    default:
+      break;
   }
 }

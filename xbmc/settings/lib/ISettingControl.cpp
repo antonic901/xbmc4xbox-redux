@@ -24,16 +24,16 @@
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 
-bool ISettingControl::Deserialize(const TiXmlNode *node, bool update /* = false */)
+bool ISettingControl::Deserialize(const TiXmlNode* node, bool update /* = false */)
 {
   if (node == NULL)
     return false;
 
-  const TiXmlElement *elem = node->ToElement();
+  const TiXmlElement* elem = node->ToElement();
   if (elem == NULL)
     return false;
 
-  const char *strTmp = elem->Attribute(SETTING_XML_ATTR_FORMAT);
+  const char* strTmp = elem->Attribute(SETTING_XML_ATTR_FORMAT);
   std::string format;
   if (strTmp != NULL)
     format = strTmp;

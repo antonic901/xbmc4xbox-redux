@@ -34,7 +34,7 @@ public:
   class CLock
   {
   public:
-    CLock(LockType type = LOCK_MODE_EVERYONE, const CStdString &password = "");
+    CLock(LockType type = LOCK_MODE_EVERYONE, const CStdString& password = "");
     void Validate();
 
     LockType mode;
@@ -48,18 +48,18 @@ public:
     bool programs;
   };
 
-  CProfile(const CStdString &directory = "", const CStdString &name = "", const int id = -1);
+  CProfile(const CStdString& directory = "", const CStdString& name = "", const int id = -1);
   ~CProfile(void);
-  
-  void Load(const TiXmlNode *node, int nextIdProfile);
-  void Save(TiXmlNode *root) const;
 
-  const CStdString& getDate() const { return m_date;}
+  void Load(const TiXmlNode* node, int nextIdProfile);
+  void Save(TiXmlNode* root) const;
+
+  const CStdString& getDate() const { return m_date; }
   const int getId() const { return m_id; }
-  const CStdString& getName() const { return m_name;}
-  const CStdString& getDirectory() const { return m_directory;}
-  const CStdString& getThumb() const { return m_thumb;}
-  const CStdString& getLockCode() const { return m_locks.code;}
+  const CStdString& getName() const { return m_name; }
+  const CStdString& getDirectory() const { return m_directory; }
+  const CStdString& getThumb() const { return m_thumb; }
+  const CStdString& getLockCode() const { return m_locks.code; }
   LockType getLockMode() const { return m_locks.mode; }
 
   bool hasDatabases() const { return m_bDatabases; }
@@ -79,19 +79,19 @@ public:
   bool picturesLocked() const { return m_locks.pictures; }
   bool filesLocked() const { return m_locks.files; }
   bool programsLocked() const { return m_locks.programs; }
-  const CLock &GetLocks() const { return m_locks; }
+  const CLock& GetLocks() const { return m_locks; }
 
-  void setName(const CStdString& name) {m_name = name;}
-  void setDirectory(const CStdString& directory) {m_directory = directory;}
-  void setDate(const CStdString& strDate) { m_date = strDate;}
+  void setName(const CStdString& name) { m_name = name; }
+  void setDirectory(const CStdString& directory) { m_directory = directory; }
+  void setDate(const CStdString& strDate) { m_date = strDate; }
   void setDate();
-  void setThumb(const CStdString& thumb) {m_thumb = thumb;}
+  void setThumb(const CStdString& thumb) { m_thumb = thumb; }
   void setDatabases(bool bHas) { m_bDatabases = bHas; }
   void setWriteDatabases(bool bCan) { m_bCanWrite = bCan; }
   void setSources(bool bHas) { m_bSources = bHas; }
   void setWriteSources(bool bCan) { m_bCanWriteSources = bCan; }
   void setUseAvpackSettings(bool bUse) { m_bUseAvpackSettings = bUse; }
-  void SetLocks(const CLock &locks);
+  void SetLocks(const CLock& locks);
 
 private:
   CStdString m_directory;

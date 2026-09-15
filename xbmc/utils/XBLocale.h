@@ -32,7 +32,10 @@ public:
   CLocale(const std::string& language);
   CLocale(const std::string& language, const std::string& territory);
   CLocale(const std::string& language, const std::string& territory, const std::string& codeset);
-  CLocale(const std::string& language, const std::string& territory, const std::string& codeset, const std::string& modifier);
+  CLocale(const std::string& language,
+          const std::string& territory,
+          const std::string& codeset,
+          const std::string& modifier);
   ~CLocale();
 
   /*!
@@ -142,8 +145,15 @@ public:
   std::string FindBestMatch(const std::set<std::string>& locales) const;
 
 private:
-  static bool CheckValidity(const std::string& language, const std::string& territory, const std::string& codeset, const std::string& modifier);
-  static bool ParseLocale(const std::string &locale, std::string &language, std::string &territory, std::string &codeset, std::string &modifier);
+  static bool CheckValidity(const std::string& language,
+                            const std::string& territory,
+                            const std::string& codeset,
+                            const std::string& modifier);
+  static bool ParseLocale(const std::string& locale,
+                          std::string& language,
+                          std::string& territory,
+                          std::string& codeset,
+                          std::string& modifier);
 
   void Initialize();
 
@@ -155,4 +165,3 @@ private:
   std::string m_codeset;
   std::string m_modifier;
 };
-

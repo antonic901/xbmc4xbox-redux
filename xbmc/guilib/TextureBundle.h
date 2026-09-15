@@ -61,12 +61,16 @@ public:
 
   void SetThemeBundle(bool themeBundle);
   bool HasFile(const std::string& Filename);
-  void GetTexturesFromPath(const std::string &path, std::vector<std::string> &textures);
+  void GetTexturesFromPath(const std::string& path, std::vector<std::string>& textures);
   bool PreloadFile(const CStdString& Filename);
-  static std::string Normalize(const std::string &name);
+  static std::string Normalize(const std::string& name);
 
-  bool LoadTexture(const std::string& Filename, CBaseTexture** ppTexture, int &width, int &height);
+  bool LoadTexture(const std::string& Filename, CBaseTexture** ppTexture, int& width, int& height);
 
-  int LoadAnim(const std::string& Filename, CBaseTexture*** ppTextures, int &width, int &height, int& nLoops, int** ppDelays);
+  int LoadAnim(const std::string& Filename,
+               CBaseTexture*** ppTextures,
+               int& width,
+               int& height,
+               int& nLoops,
+               int** ppDelays);
 };
-

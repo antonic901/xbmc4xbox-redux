@@ -18,7 +18,6 @@
  *
  */
 
-
 #include "IDirectory.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
@@ -37,7 +36,8 @@ IDirectory::IDirectory(void)
 }
 
 IDirectory::~IDirectory(void)
-{}
+{
+}
 
 /*!
  \brief Test if file have an allowed extension, as specified with SetMask()
@@ -62,13 +62,12 @@ bool IDirectory::IsAllowed(const CURL& url) const
     CStdString fileName = URIUtils::GetFileName(url);
 
     // Allow filenames of the form video_ts.ifo or vts_##_0.ifo
-    
+
     return StringUtils::EqualsNoCase(fileName, "video_ts.ifo") ||
-          (fileName.length() == 12 &&
-           StringUtils::StartsWithNoCase(fileName, "vts_") &&
-           StringUtils::EndsWithNoCase(fileName, "_0.ifo"));
+           (fileName.length() == 12 && StringUtils::StartsWithNoCase(fileName, "vts_") &&
+            StringUtils::EndsWithNoCase(fileName, "_0.ifo"));
   }
-  
+
   if (URIUtils::HasExtension(url, ".dat"))
   {
     CStdString fileName = URIUtils::GetFileName(url);
@@ -135,13 +134,14 @@ bool IDirectory::ProcessRequirements()
   }
   else if (type == "error")
   {
-    CGUIDialogOK::ShowAndGetInput(m_requirements["heading"], m_requirements["line1"], m_requirements["line2"], m_requirements["line3"]);
+    CGUIDialogOK::ShowAndGetInput(m_requirements["heading"], m_requirements["line1"],
+                                  m_requirements["line2"], m_requirements["line3"]);
   }
   m_requirements.clear();
   return false;
 }
 
-bool IDirectory::GetKeyboardInput(const CVariant &heading, std::string &input)
+bool IDirectory::GetKeyboardInput(const CVariant& heading, std::string& input)
 {
   if (!CStdString(m_requirements["input"].asString()).IsEmpty())
   {
@@ -154,7 +154,10 @@ bool IDirectory::GetKeyboardInput(const CVariant &heading, std::string &input)
   return false;
 }
 
-void IDirectory::SetErrorDialog(const CVariant &heading, const CVariant &line1, const CVariant &line2, const CVariant &line3)
+void IDirectory::SetErrorDialog(const CVariant& heading,
+                                const CVariant& line1,
+                                const CVariant& line2,
+                                const CVariant& line3)
 {
   m_requirements.clear();
   m_requirements["type"] = "error";
@@ -164,14 +167,14 @@ void IDirectory::SetErrorDialog(const CVariant &heading, const CVariant &line1, 
   m_requirements["line3"] = line3;
 }
 
-void IDirectory::RequireAuthentication(const CURL &url)
+void IDirectory::RequireAuthentication(const CURL& url)
 {
   m_requirements.clear();
   m_requirements["type"] = "authenticate";
   m_requirements["url"] = url.Get();
 }
 
-std::string IDirectory::GetLocalized(const CVariant &var) const
+std::string IDirectory::GetLocalized(const CVariant& var) const
 {
   if (var.isString())
     return var.asString();

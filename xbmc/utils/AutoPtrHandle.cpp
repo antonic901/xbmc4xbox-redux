@@ -23,9 +23,9 @@
 
 using namespace AUTOPTR;
 
-CAutoPtrHandle::CAutoPtrHandle(HANDLE hHandle)
-    : m_hHandle(hHandle)
-{}
+CAutoPtrHandle::CAutoPtrHandle(HANDLE hHandle) : m_hHandle(hHandle)
+{
+}
 
 CAutoPtrHandle::~CAutoPtrHandle(void)
 {
@@ -52,7 +52,7 @@ HANDLE CAutoPtrHandle::release()
 
 void CAutoPtrHandle::Cleanup()
 {
-  if ( isValid() )
+  if (isValid())
   {
     CloseHandle(m_hHandle);
     m_hHandle = INVALID_HANDLE_VALUE;
@@ -61,7 +61,7 @@ void CAutoPtrHandle::Cleanup()
 
 bool CAutoPtrHandle::isValid() const
 {
-  if ( INVALID_HANDLE_VALUE != m_hHandle)
+  if (INVALID_HANDLE_VALUE != m_hHandle)
     return true;
   return false;
 }
@@ -71,9 +71,9 @@ void CAutoPtrHandle::reset()
 }
 
 //-------------------------------------------------------------------------------
-CAutoPtrFind ::CAutoPtrFind(HANDLE hHandle)
-    : CAutoPtrHandle(hHandle)
-{}
+CAutoPtrFind::CAutoPtrFind(HANDLE hHandle) : CAutoPtrHandle(hHandle)
+{
+}
 CAutoPtrFind::~CAutoPtrFind(void)
 {
   Cleanup();
@@ -81,7 +81,7 @@ CAutoPtrFind::~CAutoPtrFind(void)
 
 void CAutoPtrFind::Cleanup()
 {
-  if ( isValid() )
+  if (isValid())
   {
     FindClose(m_hHandle);
     m_hHandle = INVALID_HANDLE_VALUE;
@@ -89,9 +89,9 @@ void CAutoPtrFind::Cleanup()
 }
 
 //-------------------------------------------------------------------------------
-CAutoPtrSocket::CAutoPtrSocket(SOCKET hSocket)
-    : m_hSocket(hSocket)
-{}
+CAutoPtrSocket::CAutoPtrSocket(SOCKET hSocket) : m_hSocket(hSocket)
+{
+}
 
 CAutoPtrSocket::~CAutoPtrSocket(void)
 {
@@ -118,7 +118,7 @@ SOCKET CAutoPtrSocket::release()
 
 void CAutoPtrSocket::Cleanup()
 {
-  if ( isValid() )
+  if (isValid())
   {
     closesocket(m_hSocket);
     m_hSocket = INVALID_SOCKET;
@@ -127,7 +127,7 @@ void CAutoPtrSocket::Cleanup()
 
 bool CAutoPtrSocket::isValid() const
 {
-  if ( INVALID_SOCKET != m_hSocket)
+  if (INVALID_SOCKET != m_hSocket)
     return true;
   return false;
 }

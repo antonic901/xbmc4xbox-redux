@@ -53,11 +53,12 @@ using namespace PLAYLIST;
 //Note: File is utf-8 encoded by default
 
 CPlayListWPL::CPlayListWPL(void)
-{}
+{
+}
 
 CPlayListWPL::~CPlayListWPL(void)
-{}
-
+{
+}
 
 bool CPlayListWPL::LoadData(std::istream& stream)
 {
@@ -71,25 +72,29 @@ bool CPlayListWPL::LoadData(std::istream& stream)
   }
 
   TiXmlElement* pRootElement = xmlDoc.RootElement();
-  if (!pRootElement ) return false;
+  if (!pRootElement)
+    return false;
 
   TiXmlElement* pHeadElement = pRootElement->FirstChildElement("head");
-  if (pHeadElement )
+  if (pHeadElement)
   {
     TiXmlElement* pTitelElement = pHeadElement->FirstChildElement("title");
-    if (pTitelElement )
+    if (pTitelElement)
       m_strPlayListName = pTitelElement->Value();
   }
 
   TiXmlElement* pBodyElement = pRootElement->FirstChildElement("body");
-  if (!pBodyElement ) return false;
+  if (!pBodyElement)
+    return false;
 
   TiXmlElement* pSeqElement = pBodyElement->FirstChildElement("seq");
-  if (!pSeqElement ) return false;
+  if (!pSeqElement)
+    return false;
 
   TiXmlElement* pMediaElement = pSeqElement->FirstChildElement("media");
 
-  if (!pMediaElement) return false;
+  if (!pMediaElement)
+    return false;
   while (pMediaElement)
   {
     std::string strFileName = XMLUtils::GetAttribute(pMediaElement, "src");
@@ -109,19 +114,22 @@ bool CPlayListWPL::LoadData(std::istream& stream)
 
 void CPlayListWPL::Save(const std::string& strFileName) const
 {
-  if (!m_vecItems.size()) return ;
+  if (!m_vecItems.size())
+    return;
   std::string strPlaylist = CUtil::MakeLegalPath(strFileName);
   CFile file;
   if (!file.OpenForWrite(strPlaylist, true))
   {
     CLog::Log(LOGERROR, "Could not save WPL playlist: [%s]", strPlaylist.c_str());
-    return ;
+    return;
   }
   std::string write;
   write += StringUtils::Format("<?wpl version=%c1.0%c>\n", 34, 34);
   write += StringUtils::Format("<smil>\n");
   write += StringUtils::Format("    <head>\n");
-  write += StringUtils::Format("        <meta name=%cGenerator%c content=%cMicrosoft Windows Media Player -- 10.0.0.3646%c/>\n", 34, 34, 34, 34);
+  write += StringUtils::Format("        <meta name=%cGenerator%c content=%cMicrosoft Windows Media "
+                               "Player -- 10.0.0.3646%c/>\n",
+                               34, 34, 34, 34);
   write += StringUtils::Format("        <author/>\n");
   write += StringUtils::Format("        <title>%s</title>\n", m_strPlayListName.c_str());
   write += StringUtils::Format("    </head>\n");
@@ -130,7 +138,8 @@ void CPlayListWPL::Save(const std::string& strFileName) const
   for (int i = 0; i < (int)m_vecItems.size(); ++i)
   {
     CFileItemPtr item = m_vecItems[i];
-    write += StringUtils::Format("            <media src=%c%s%c/>", 34, item->GetPath().c_str(), 34);
+    write +=
+        StringUtils::Format("            <media src=%c%s%c/>", 34, item->GetPath().c_str(), 34);
   }
   write += StringUtils::Format("        </seq>\n");
   write += StringUtils::Format("    </body>\n");

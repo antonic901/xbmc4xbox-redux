@@ -32,15 +32,16 @@ namespace ADDON
 class CImageResource : public CResource
 {
 public:
-  static boost::movelib::unique_ptr<CImageResource> FromExtension(AddonProps props, const cp_extension_t* ext);
+  static boost::movelib::unique_ptr<CImageResource> FromExtension(AddonProps props,
+                                                                  const cp_extension_t* ext);
 
   explicit CImageResource(AddonProps props) : CResource(boost::move(props)) {};
   CImageResource(AddonProps props, std::string type);
 
   virtual void OnPreUnInstall();
 
-  virtual bool IsAllowed(const std::string &file) const;
-  virtual std::string GetFullPath(const std::string &filePath) const;
+  virtual bool IsAllowed(const std::string& file) const;
+  virtual std::string GetFullPath(const std::string& filePath) const;
 
   //! \brief Returns type of image collection
   const std::string& GetType() const { return m_type; }

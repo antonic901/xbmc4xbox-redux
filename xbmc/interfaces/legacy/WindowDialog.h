@@ -13,76 +13,76 @@
 
 namespace XBMCAddon
 {
-  namespace xbmcgui
-  {
-    //
-    /// \defgroup python_xbmcgui_window_dialog Subclass - WindowDialog
-    /// \ingroup python_xbmcgui_window
-    /// @{
-    /// @brief __GUI window dialog class for Add-Ons.__
-    ///
-    /// \python_class{ xbmcgui.WindowDialog(int windowId): }
-    ///
-    /// Creates a new window from Add-On usable dialog class. This is to create
-    /// window for related controls by system calls.
-    ///
-    /// @param windowId                  [opt] Specify an id to use an existing
-    ///                                  window.
-    /// @throws ValueError               if supplied window Id does not exist.
-    /// @throws Exception                if more then 200 windows are created.
-    ///
-    /// Deleting this window will activate the old window that was active
-    /// and resets (not delete) all controls that are associated with this
-    /// window.
-    ///
-    ///
-    ///--------------------------------------------------------------------------
-    ///
-    /// **Example:**
-    /// ~~~~~~~~~~~~~{.py}
-    /// ..
-    /// dialog = xbmcgui.WindowDialog()
-    /// width = dialog.getWidth()
-    /// ..
-    /// ~~~~~~~~~~~~~
-    ///
-    ///
-    //
-    class WindowDialog : public Window, private WindowDialogMixin
-    {
-    public:
-      WindowDialog();
-      virtual ~WindowDialog();
+namespace xbmcgui
+{
+//
+/// \defgroup python_xbmcgui_window_dialog Subclass - WindowDialog
+/// \ingroup python_xbmcgui_window
+/// @{
+/// @brief __GUI window dialog class for Add-Ons.__
+///
+/// \python_class{ xbmcgui.WindowDialog(int windowId): }
+///
+/// Creates a new window from Add-On usable dialog class. This is to create
+/// window for related controls by system calls.
+///
+/// @param windowId                  [opt] Specify an id to use an existing
+///                                  window.
+/// @throws ValueError               if supplied window Id does not exist.
+/// @throws Exception                if more then 200 windows are created.
+///
+/// Deleting this window will activate the old window that was active
+/// and resets (not delete) all controls that are associated with this
+/// window.
+///
+///
+///--------------------------------------------------------------------------
+///
+/// **Example:**
+/// ~~~~~~~~~~~~~{.py}
+/// ..
+/// dialog = xbmcgui.WindowDialog()
+/// width = dialog.getWidth()
+/// ..
+/// ~~~~~~~~~~~~~
+///
+///
+//
+class WindowDialog : public Window, private WindowDialogMixin
+{
+public:
+  WindowDialog();
+  virtual ~WindowDialog();
 
 #ifndef SWIG
-      SWIGHIDDENVIRTUAL bool OnMessage(CGUIMessage& message);
-      SWIGHIDDENVIRTUAL bool OnAction(const CAction& action);
-      SWIGHIDDENVIRTUAL void OnDeinitWindow(int nextWindowID);
+  SWIGHIDDENVIRTUAL bool OnMessage(CGUIMessage& message);
+  SWIGHIDDENVIRTUAL bool OnAction(const CAction& action);
+  SWIGHIDDENVIRTUAL void OnDeinitWindow(int nextWindowID);
 
-      SWIGHIDDENVIRTUAL bool IsDialogRunning() const { return WindowDialogMixin::IsDialogRunning(); }
-      SWIGHIDDENVIRTUAL bool IsModalDialog() const
-      {
-        XBMC_TRACE;
-        return true;
-      };
-      SWIGHIDDENVIRTUAL bool IsDialog() const
-      {
-        XBMC_TRACE;
-        return true;
-      };
+  SWIGHIDDENVIRTUAL bool IsDialogRunning() const { return WindowDialogMixin::IsDialogRunning(); }
+  SWIGHIDDENVIRTUAL bool IsModalDialog() const
+  {
+    XBMC_TRACE;
+    return true;
+  };
+  SWIGHIDDENVIRTUAL bool IsDialog() const
+  {
+    XBMC_TRACE;
+    return true;
+  };
 
-      SWIGHIDDENVIRTUAL void show()
-      {
-        XBMC_TRACE;
-        WindowDialogMixin::show();
-      }
-      SWIGHIDDENVIRTUAL inline void close()
-      {
-        XBMC_TRACE;
-        WindowDialogMixin::close();
-      }
-#endif
-    };
-    ///@}
+  SWIGHIDDENVIRTUAL void show()
+  {
+    XBMC_TRACE;
+    WindowDialogMixin::show();
   }
-}
+  SWIGHIDDENVIRTUAL inline void close()
+  {
+    XBMC_TRACE;
+    WindowDialogMixin::close();
+  }
+#endif
+};
+///@}
+} // namespace xbmcgui
+} // namespace XBMCAddon

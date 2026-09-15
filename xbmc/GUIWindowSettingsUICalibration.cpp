@@ -29,14 +29,15 @@
 #define CONTROL_LABEL 3
 
 CGUIWindowSettingsUICalibration::CGUIWindowSettingsUICalibration(void)
-    : CGUIWindow(WINDOW_UI_CALIBRATION, "SettingsUICalibration.xml")
+  : CGUIWindow(WINDOW_UI_CALIBRATION, "SettingsUICalibration.xml")
 {
 }
 
 CGUIWindowSettingsUICalibration::~CGUIWindowSettingsUICalibration(void)
-{}
+{
+}
 
-bool CGUIWindowSettingsUICalibration::OnAction(const CAction &action)
+bool CGUIWindowSettingsUICalibration::OnAction(const CAction& action)
 {
   if (action.wID == ACTION_PREVIOUS_MENU)
   {
@@ -55,7 +56,8 @@ bool CGUIWindowSettingsUICalibration::OnAction(const CAction &action)
   }
   else if (action.wID == ACTION_CALIBRATE_RESET)
   {
-    g_graphicsContext.ResetOverscan(CDisplaySettings::Get().GetCurrentResolution(), CDisplaySettings::Get().GetCurrentResolutionInfo().GUIOverscan);
+    g_graphicsContext.ResetOverscan(CDisplaySettings::Get().GetCurrentResolution(),
+                                    CDisplaySettings::Get().GetCurrentResolutionInfo().GUIOverscan);
     ResetControls();
     return true;
   }
@@ -64,16 +66,16 @@ bool CGUIWindowSettingsUICalibration::OnAction(const CAction &action)
 
 bool CGUIWindowSettingsUICalibration::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_DEINIT:
+    case GUI_MSG_WINDOW_DEINIT:
     {
       // reset our dynamic allocation so the window is free'd
       DynamicResourceAlloc(true);
     }
     break;
 
-  case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_INIT:
     {
       CGUIWindow::OnMessage(message);
 
@@ -95,30 +97,32 @@ void CGUIWindowSettingsUICalibration::Render()
   // Get the information from the control
   CStdString strStatus;
   RESOLUTION res = CDisplaySettings::Get().GetCurrentResolution();
-  CGUIMoverControl *pControl = (CGUIMoverControl *)GetControl(m_control);
+  CGUIMoverControl* pControl = (CGUIMoverControl*)GetControl(m_control);
   if (pControl)
   {
     if (m_control == CONTROL_TOPLEFT)
     {
       CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.left = pControl->GetXLocation();
       CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.top = pControl->GetYLocation();
-      strStatus.Format("%s (%i,%i)", g_localizeStrings.Get(272).c_str(), pControl->GetXLocation(), pControl->GetYLocation());
+      strStatus.Format("%s (%i,%i)", g_localizeStrings.Get(272).c_str(), pControl->GetXLocation(),
+                       pControl->GetYLocation());
     }
     else //if (m_control == CONTROL_BOTTOMRIGHT)
     {
       CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.right = pControl->GetXLocation();
       CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.bottom = pControl->GetYLocation();
       int iXOff1 = CDisplaySettings::Get().GetResolutionInfo(res).iWidth - pControl->GetXLocation();
-      int iYOff1 = CDisplaySettings::Get().GetResolutionInfo(res).iHeight - pControl->GetYLocation();
+      int iYOff1 =
+          CDisplaySettings::Get().GetResolutionInfo(res).iHeight - pControl->GetYLocation();
       strStatus.Format("%s (%i,%i)", g_localizeStrings.Get(273).c_str(), iXOff1, iYOff1);
     }
   }
   // Set the label and hide our render controls
   SET_CONTROL_LABEL(CONTROL_LABEL, strStatus);
   // set all controls visible except for our movers
-  for (unsigned int i=0; i < m_vecControls.size(); i++)
+  for (unsigned int i = 0; i < m_vecControls.size(); i++)
   {
-    CGUIControl *pControl = m_vecControls[i];
+    CGUIControl* pControl = m_vecControls[i];
     bool hidden = pControl->GetID() == CONTROL_TOPLEFT || pControl->GetID() == CONTROL_BOTTOMRIGHT;
     pControl->SetVisible(!hidden);
   }
@@ -126,9 +130,9 @@ void CGUIWindowSettingsUICalibration::Render()
   m_needsScaling = true;
   CGUIWindow::Render();
   // set all controls hidden except for our movers
-  for (unsigned int i=0; i < m_vecControls.size(); i++)
+  for (unsigned int i = 0; i < m_vecControls.size(); i++)
   {
-    CGUIControl *pControl = m_vecControls[i];
+    CGUIControl* pControl = m_vecControls[i];
     bool hidden = pControl->GetID() == CONTROL_TOPLEFT || pControl->GetID() == CONTROL_BOTTOMRIGHT;
     pControl->SetVisible(hidden);
   }
@@ -139,7 +143,7 @@ void CGUIWindowSettingsUICalibration::Render()
 
 void CGUIWindowSettingsUICalibration::ResetControls()
 {
-  CGUIMoverControl *pControl = (CGUIMoverControl *)GetControl(CONTROL_TOPLEFT);
+  CGUIMoverControl* pControl = (CGUIMoverControl*)GetControl(CONTROL_TOPLEFT);
   RESOLUTION res = CDisplaySettings::Get().GetCurrentResolution();
   if (pControl)
   {
@@ -152,15 +156,17 @@ void CGUIWindowSettingsUICalibration::ResetControls()
     pControl->SetLocation(CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.left,
                           CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.top, false);
   }
-  pControl = (CGUIMoverControl *)GetControl(CONTROL_BOTTOMRIGHT);
+  pControl = (CGUIMoverControl*)GetControl(CONTROL_BOTTOMRIGHT);
   if (pControl)
   {
-    pControl->SetLimits(CDisplaySettings::Get().GetResolutionInfo(res).iWidth*3 / 4,
-                        CDisplaySettings::Get().GetResolutionInfo(res).iHeight*3 / 4,
-                        CDisplaySettings::Get().GetResolutionInfo(res).iWidth*5 / 4,
-                        CDisplaySettings::Get().GetResolutionInfo(res).iHeight*5 / 4);
-    pControl->SetPosition(CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.right - (int)pControl->GetWidth(),
-                          CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.bottom - (int)pControl->GetHeight());
+    pControl->SetLimits(CDisplaySettings::Get().GetResolutionInfo(res).iWidth * 3 / 4,
+                        CDisplaySettings::Get().GetResolutionInfo(res).iHeight * 3 / 4,
+                        CDisplaySettings::Get().GetResolutionInfo(res).iWidth * 5 / 4,
+                        CDisplaySettings::Get().GetResolutionInfo(res).iHeight * 5 / 4);
+    pControl->SetPosition(CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.right -
+                              (int)pControl->GetWidth(),
+                          CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.bottom -
+                              (int)pControl->GetHeight());
     pControl->SetLocation(CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.right,
                           CDisplaySettings::Get().GetResolutionInfo(res).GUIOverscan.bottom, false);
   }

@@ -18,15 +18,15 @@
  *
  */
 
-
 #include "Idle.h"
 
-
 CIdleThread::CIdleThread() : CThread("IdleThread")
-{}
+{
+}
 
 CIdleThread::~CIdleThread()
-{}
+{
+}
 
 void CIdleThread::OnStartup()
 {
@@ -34,7 +34,8 @@ void CIdleThread::OnStartup()
 }
 
 void CIdleThread::OnExit()
-{}
+{
+}
 
 void CIdleThread::Process()
 {

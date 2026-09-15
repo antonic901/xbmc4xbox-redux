@@ -51,11 +51,12 @@ using namespace PLAYLIST;
  </WinampXML>
 ------------------------ end of example b4s playlist file ---------------------------------*/
 CPlayListB4S::CPlayListB4S(void)
-{}
+{
+}
 
 CPlayListB4S::~CPlayListB4S(void)
-{}
-
+{
+}
 
 bool CPlayListB4S::LoadData(std::istream& stream)
 {
@@ -70,15 +71,18 @@ bool CPlayListB4S::LoadData(std::istream& stream)
   }
 
   TiXmlElement* pRootElement = xmlDoc.RootElement();
-  if (!pRootElement ) return false;
+  if (!pRootElement)
+    return false;
 
   TiXmlElement* pPlayListElement = pRootElement->FirstChildElement("playlist");
-  if (!pPlayListElement ) return false;
+  if (!pPlayListElement)
+    return false;
   m_strPlayListName = XMLUtils::GetAttribute(pPlayListElement, "label");
 
   TiXmlElement* pEntryElement = pPlayListElement->FirstChildElement("entry");
 
-  if (!pEntryElement) return false;
+  if (!pEntryElement)
+    return false;
   while (pEntryElement)
   {
     std::string strFileName = XMLUtils::GetAttribute(pEntryElement, "Playstring");
@@ -115,25 +119,30 @@ bool CPlayListB4S::LoadData(std::istream& stream)
 
 void CPlayListB4S::Save(const std::string& strFileName) const
 {
-  if (!m_vecItems.size()) return ;
+  if (!m_vecItems.size())
+    return;
   std::string strPlaylist = strFileName;
   strPlaylist = CUtil::MakeLegalPath(strPlaylist);
   CFile file;
   if (!file.OpenForWrite(strPlaylist, true))
   {
     CLog::Log(LOGERROR, "Could not save B4S playlist: [%s]", strPlaylist.c_str());
-    return ;
+    return;
   }
   std::string write;
-  write += StringUtils::Format("<?xml version=%c1.0%c encoding='UTF-8' standalone=%cyes%c?>\n", 34, 34, 34, 34);
+  write += StringUtils::Format("<?xml version=%c1.0%c encoding='UTF-8' standalone=%cyes%c?>\n", 34,
+                               34, 34, 34);
   write += StringUtils::Format("<WinampXML>\n");
-  write += StringUtils::Format("  <playlist num_entries=%c%" PRIuS"%c label=%c%s%c>\n", 34, m_vecItems.size(), 34, 34, m_strPlayListName.c_str(), 34);
+  write += StringUtils::Format("  <playlist num_entries=%c%" PRIuS "%c label=%c%s%c>\n", 34,
+                               m_vecItems.size(), 34, 34, m_strPlayListName.c_str(), 34);
   for (int i = 0; i < (int)m_vecItems.size(); ++i)
   {
     const CFileItemPtr item = m_vecItems[i];
-    write += StringUtils::Format("    <entry Playstring=%cfile:%s%c>\n", 34, item->GetPath().c_str(), 34 );
+    write += StringUtils::Format("    <entry Playstring=%cfile:%s%c>\n", 34,
+                                 item->GetPath().c_str(), 34);
     write += StringUtils::Format("      <Name>%s</Name>\n", item->GetLabel().c_str());
-    write += StringUtils::Format("      <Length>%u</Length>\n", item->GetMusicInfoTag()->GetDuration());
+    write +=
+        StringUtils::Format("      <Length>%u</Length>\n", item->GetMusicInfoTag()->GetDuration());
   }
   write += StringUtils::Format("  </playlist>\n");
   write += StringUtils::Format("</WinampXML>\n");

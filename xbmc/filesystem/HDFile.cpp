@@ -17,13 +17,12 @@
 #include <xtl.h>
 
 #ifndef INVALID_FILE_ATTRIBUTES
-#define INVALID_FILE_ATTRIBUTES ((DWORD) -1)
+#define INVALID_FILE_ATTRIBUTES ((DWORD) - 1)
 #endif
 
 using namespace XFILE;
 
-CHDFile::CHDFile()
-    : m_hFile(INVALID_HANDLE_VALUE)
+CHDFile::CHDFile() : m_hFile(INVALID_HANDLE_VALUE)
 {
 }
 
@@ -32,17 +31,18 @@ CHDFile::~CHDFile()
   Close();
 }
 
-std::string CHDFile::GetLocal(const CURL &url)
+std::string CHDFile::GetLocal(const CURL& url)
 {
-  std::string path( url.GetFileName() );
+  std::string path(url.GetFileName());
 
-  if(url.IsProtocol("file"))
+  if (url.IsProtocol("file"))
   {
     // file://drive[:]/path
     // file:///drive:/path
-    std::string host( url.GetHostName() );
+    std::string host(url.GetHostName());
 
-    if (!host.empty()) {
+    if (!host.empty())
+    {
       if (host.size() > 0 && host.substr(host.size() - 1) == ":")
         path = host + "/" + path;
       else
@@ -58,7 +58,8 @@ bool CHDFile::Open(const CURL& url)
 {
   std::string strFile = GetLocal(url);
 
-  m_hFile = CreateFile(strFile.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+  m_hFile =
+      CreateFile(strFile.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
   if (m_hFile == INVALID_HANDLE_VALUE)
     return false;
 
@@ -79,7 +80,6 @@ bool CHDFile::Exists(const CURL& url)
   return attrs != INVALID_FILE_ATTRIBUTES && (attrs & FILE_ATTRIBUTE_DIRECTORY) == 0;
 }
 
-
 int CHDFile::Stat(const CURL& url, struct __stat64* buffer)
 {
   std::string strFile = GetLocal(url);
@@ -99,8 +99,8 @@ int CHDFile::Stat(const CURL& url, struct __stat64* buffer)
   buffer->st_gid = 0;
   buffer->st_rdev = 0;
 
-  buffer->st_size = static_cast<_off_t>(
-      (static_cast<__int64>(findData.nFileSizeHigh) << 32) | findData.nFileSizeLow);
+  buffer->st_size = static_cast<_off_t>((static_cast<__int64>(findData.nFileSizeHigh) << 32) |
+                                        findData.nFileSizeLow);
 
   buffer->st_atime = static_cast<__time64_t>(findData.ftLastAccessTime.dwLowDateTime);
   buffer->st_mtime = static_cast<__time64_t>(findData.ftLastWriteTime.dwLowDateTime);
@@ -109,7 +109,7 @@ int CHDFile::Stat(const CURL& url, struct __stat64* buffer)
   return 0;
 }
 
-bool CHDFile::SetHidden(const CURL &url, bool hidden)
+bool CHDFile::SetHidden(const CURL& url, bool hidden)
 {
   std::string path = GetLocal(url);
 
@@ -128,9 +128,11 @@ bool CHDFile::OpenForWrite(const CURL& url, bool bOverWrite)
   std::string strPathOriginal = strPath;
   strPath = CUtil::GetFatXQualifiedPath(strPath);
   if (strPathOriginal != strPath)
-    CLog::Log(LOGINFO, "CHDFile::OpenForWrite - Truncated filename: %s -> %s", strPathOriginal.c_str(), strPath.c_str());
+    CLog::Log(LOGINFO, "CHDFile::OpenForWrite - Truncated filename: %s -> %s",
+              strPathOriginal.c_str(), strPath.c_str());
 
-  m_hFile = CreateFile(strPath.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL, bOverWrite ? CREATE_ALWAYS : OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+  m_hFile = CreateFile(strPath.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ, NULL,
+                       bOverWrite ? CREATE_ALWAYS : OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
   if (m_hFile == INVALID_HANDLE_VALUE)
     return false;
 
@@ -143,7 +145,7 @@ bool CHDFile::OpenForWrite(const CURL& url, bool bOverWrite)
   return true;
 }
 
-ssize_t CHDFile::Read(void *lpBuf, size_t uiBufSize)
+ssize_t CHDFile::Read(void* lpBuf, size_t uiBufSize)
 {
   assert(lpBuf != NULL);
   if (m_hFile == INVALID_HANDLE_VALUE)
@@ -153,7 +155,7 @@ ssize_t CHDFile::Read(void *lpBuf, size_t uiBufSize)
     uiBufSize = SSIZE_MAX;
 
   DWORD nBytesRead;
-  if ( ReadFile(m_hFile, lpBuf, (DWORD)uiBufSize, &nBytesRead, NULL) )
+  if (ReadFile(m_hFile, lpBuf, (DWORD)uiBufSize, &nBytesRead, NULL))
   {
     m_i64FilePos += nBytesRead;
     return nBytesRead;
@@ -167,7 +169,7 @@ ssize_t CHDFile::Write(const void* lpBuf, size_t uiBufSize)
     return 0;
 
   DWORD nBytesWriten;
-  if ( WriteFile(m_hFile, (void*) lpBuf, (DWORD)uiBufSize, &nBytesWriten, NULL) )
+  if (WriteFile(m_hFile, (void*)lpBuf, (DWORD)uiBufSize, &nBytesWriten, NULL))
     return nBytesWriten;
 
   return 0;
@@ -189,20 +191,20 @@ int64_t CHDFile::Seek(int64_t iFilePosition, int iWhence)
 
   switch (iWhence)
   {
-  case SEEK_SET:
-    bSuccess = SetFilePointerEx(m_hFile, lPos, &lNewPos, FILE_BEGIN);
-    break;
+    case SEEK_SET:
+      bSuccess = SetFilePointerEx(m_hFile, lPos, &lNewPos, FILE_BEGIN);
+      break;
 
-  case SEEK_CUR:
-    bSuccess = SetFilePointerEx(m_hFile, lPos, &lNewPos, FILE_CURRENT);
-    break;
+    case SEEK_CUR:
+      bSuccess = SetFilePointerEx(m_hFile, lPos, &lNewPos, FILE_CURRENT);
+      break;
 
-  case SEEK_END:
-    bSuccess = SetFilePointerEx(m_hFile, lPos, &lNewPos, FILE_END);
-    break;
+    case SEEK_END:
+      bSuccess = SetFilePointerEx(m_hFile, lPos, &lNewPos, FILE_END);
+      break;
 
-  default:
-    return -1;
+    default:
+      return -1;
   }
   if (bSuccess)
   {
@@ -215,13 +217,14 @@ int64_t CHDFile::Seek(int64_t iFilePosition, int iWhence)
 
 int64_t CHDFile::GetLength()
 {
-  if(m_i64FileLen <= m_i64FilePos || m_i64FileLen == 0)
+  if (m_i64FileLen <= m_i64FilePos || m_i64FileLen == 0)
   {
     LARGE_INTEGER i64Size;
-    if(GetFileSizeEx((HANDLE)m_hFile, &i64Size))
+    if (GetFileSizeEx((HANDLE)m_hFile, &i64Size))
       m_i64FileLen = i64Size.QuadPart;
     else
-      CLog::Log(LOGERROR, "CHDFile::GetLength - GetFileSizeEx failed with error %d", GetLastError());
+      CLog::Log(LOGERROR, "CHDFile::GetLength - GetFileSizeEx failed with error %d",
+                GetLastError());
   }
   return m_i64FileLen;
 }
@@ -241,7 +244,7 @@ bool CHDFile::Delete(const CURL& url)
 bool CHDFile::Rename(const CURL& url, const CURL& urlnew)
 {
   std::string strFile = GetLocal(url);
-  std::string  strNewFile = GetLocal(urlnew);
+  std::string strNewFile = GetLocal(urlnew);
 
   return ::MoveFile(strFile.c_str(), strNewFile.c_str()) ? true : false;
 }

@@ -24,13 +24,13 @@
 class StringValidation
 {
 public:
-  typedef bool (*Validator)(const std::string &input, void *data);
+  typedef bool (*Validator)(const std::string& input, void* data);
 
-  static bool NonEmpty(const std::string &input, void *data) { return !input.empty(); }
-  static bool IsInteger(const std::string &input, void *data);
-  static bool IsPositiveInteger(const std::string &input, void *data);
-  static bool IsTime(const std::string &input, void *data);
+  static bool NonEmpty(const std::string& input, void* data) { return !input.empty(); }
+  static bool IsInteger(const std::string& input, void* data);
+  static bool IsPositiveInteger(const std::string& input, void* data);
+  static bool IsTime(const std::string& input, void* data);
 
 private:
-  StringValidation() { }
+  StringValidation() {}
 };

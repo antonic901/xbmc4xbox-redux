@@ -19,7 +19,6 @@ Revision History:
 
 --*/
 
-
 //
 // Interface GUIDs
 //
@@ -28,7 +27,7 @@ Revision History:
 //   #include <initguid.h> in a single source file
 //   #include <ntddstor.h> in that source file a second time to instantiate the GUIDs
 //
-#ifdef DEFINE_GUID 
+#ifdef DEFINE_GUID
 //
 // Make sure FAR is defined...
 //
@@ -41,16 +40,76 @@ Revision History:
 #endif
 
 // begin_wioctlguids
-DEFINE_GUID(DiskClassGuid, 0x53f56307L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
-DEFINE_GUID(CdRomClassGuid, 0x53f56308L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
-DEFINE_GUID(PartitionClassGuid, 0x53f5630aL, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
-DEFINE_GUID(TapeClassGuid, 0x53f5630bL, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
-DEFINE_GUID(WriteOnceDiskClassGuid, 0x53f5630cL, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
-DEFINE_GUID(VolumeClassGuid, 0x53f5630dL, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
-DEFINE_GUID(MediumChangerClassGuid, 0x53f56310L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
-DEFINE_GUID(FloppyClassGuid, 0x53f56311L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
-DEFINE_GUID(CdChangerClassGuid, 0x53f56312L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
-DEFINE_GUID(StoragePortClassGuid, 0x2accfe60L, 0xc130, 0x11d2, 0xb0, 0x82, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+DEFINE_GUID(
+    DiskClassGuid, 0x53f56307L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+DEFINE_GUID(
+    CdRomClassGuid, 0x53f56308L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+DEFINE_GUID(PartitionClassGuid,
+            0x53f5630aL,
+            0xb6bf,
+            0x11d0,
+            0x94,
+            0xf2,
+            0x00,
+            0xa0,
+            0xc9,
+            0x1e,
+            0xfb,
+            0x8b);
+DEFINE_GUID(
+    TapeClassGuid, 0x53f5630bL, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+DEFINE_GUID(WriteOnceDiskClassGuid,
+            0x53f5630cL,
+            0xb6bf,
+            0x11d0,
+            0x94,
+            0xf2,
+            0x00,
+            0xa0,
+            0xc9,
+            0x1e,
+            0xfb,
+            0x8b);
+DEFINE_GUID(
+    VolumeClassGuid, 0x53f5630dL, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+DEFINE_GUID(MediumChangerClassGuid,
+            0x53f56310L,
+            0xb6bf,
+            0x11d0,
+            0x94,
+            0xf2,
+            0x00,
+            0xa0,
+            0xc9,
+            0x1e,
+            0xfb,
+            0x8b);
+DEFINE_GUID(
+    FloppyClassGuid, 0x53f56311L, 0xb6bf, 0x11d0, 0x94, 0xf2, 0x00, 0xa0, 0xc9, 0x1e, 0xfb, 0x8b);
+DEFINE_GUID(CdChangerClassGuid,
+            0x53f56312L,
+            0xb6bf,
+            0x11d0,
+            0x94,
+            0xf2,
+            0x00,
+            0xa0,
+            0xc9,
+            0x1e,
+            0xfb,
+            0x8b);
+DEFINE_GUID(StoragePortClassGuid,
+            0x2accfe60L,
+            0xc130,
+            0x11d2,
+            0xb0,
+            0x82,
+            0x00,
+            0xa0,
+            0xc9,
+            0x1e,
+            0xfb,
+            0x8b);
 // end_wioctlguids
 #endif
 
@@ -76,34 +135,50 @@ extern "C"
   // common codes
   //
 
-#define IOCTL_STORAGE_CHECK_VERIFY     CTL_CODE(IOCTL_STORAGE_BASE, 0x0200, METHOD_BUFFERED, FILE_READ_ACCESS)
-#define IOCTL_STORAGE_CHECK_VERIFY2    CTL_CODE(IOCTL_STORAGE_BASE, 0x0200, METHOD_BUFFERED, FILE_ANY_ACCESS)
-#define IOCTL_STORAGE_MEDIA_REMOVAL    CTL_CODE(IOCTL_STORAGE_BASE, 0x0201, METHOD_BUFFERED, FILE_READ_ACCESS)
-#define IOCTL_STORAGE_EJECT_MEDIA      CTL_CODE(IOCTL_STORAGE_BASE, 0x0202, METHOD_BUFFERED, FILE_READ_ACCESS)
-#define IOCTL_STORAGE_LOAD_MEDIA       CTL_CODE(IOCTL_STORAGE_BASE, 0x0203, METHOD_BUFFERED, FILE_READ_ACCESS)
-#define IOCTL_STORAGE_LOAD_MEDIA2      CTL_CODE(IOCTL_STORAGE_BASE, 0x0203, METHOD_BUFFERED, FILE_ANY_ACCESS)
-#define IOCTL_STORAGE_RESERVE          CTL_CODE(IOCTL_STORAGE_BASE, 0x0204, METHOD_BUFFERED, FILE_READ_ACCESS)
-#define IOCTL_STORAGE_RELEASE          CTL_CODE(IOCTL_STORAGE_BASE, 0x0205, METHOD_BUFFERED, FILE_READ_ACCESS)
-#define IOCTL_STORAGE_FIND_NEW_DEVICES CTL_CODE(IOCTL_STORAGE_BASE, 0x0206, METHOD_BUFFERED, FILE_READ_ACCESS)
+#define IOCTL_STORAGE_CHECK_VERIFY \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0200, METHOD_BUFFERED, FILE_READ_ACCESS)
+#define IOCTL_STORAGE_CHECK_VERIFY2 \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0200, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_STORAGE_MEDIA_REMOVAL \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0201, METHOD_BUFFERED, FILE_READ_ACCESS)
+#define IOCTL_STORAGE_EJECT_MEDIA \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0202, METHOD_BUFFERED, FILE_READ_ACCESS)
+#define IOCTL_STORAGE_LOAD_MEDIA \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0203, METHOD_BUFFERED, FILE_READ_ACCESS)
+#define IOCTL_STORAGE_LOAD_MEDIA2 \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0203, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_STORAGE_RESERVE \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0204, METHOD_BUFFERED, FILE_READ_ACCESS)
+#define IOCTL_STORAGE_RELEASE \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0205, METHOD_BUFFERED, FILE_READ_ACCESS)
+#define IOCTL_STORAGE_FIND_NEW_DEVICES \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0206, METHOD_BUFFERED, FILE_READ_ACCESS)
 
-#define IOCTL_STORAGE_EJECTION_CONTROL CTL_CODE(IOCTL_STORAGE_BASE, 0x0250, METHOD_BUFFERED, FILE_ANY_ACCESS)
-#define IOCTL_STORAGE_MCN_CONTROL      CTL_CODE(IOCTL_STORAGE_BASE, 0x0251, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_STORAGE_EJECTION_CONTROL \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0250, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_STORAGE_MCN_CONTROL \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0251, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
-#define IOCTL_STORAGE_GET_MEDIA_TYPES  CTL_CODE(IOCTL_STORAGE_BASE, 0x0300, METHOD_BUFFERED, FILE_ANY_ACCESS)
-#define IOCTL_STORAGE_GET_MEDIA_TYPES_EX CTL_CODE(IOCTL_STORAGE_BASE, 0x0301, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_STORAGE_GET_MEDIA_TYPES \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0300, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_STORAGE_GET_MEDIA_TYPES_EX \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0301, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
-#define IOCTL_STORAGE_RESET_BUS        CTL_CODE(IOCTL_STORAGE_BASE, 0x0400, METHOD_BUFFERED, FILE_READ_ACCESS)
-#define IOCTL_STORAGE_RESET_DEVICE     CTL_CODE(IOCTL_STORAGE_BASE, 0x0401, METHOD_BUFFERED, FILE_READ_ACCESS)
+#define IOCTL_STORAGE_RESET_BUS \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0400, METHOD_BUFFERED, FILE_READ_ACCESS)
+#define IOCTL_STORAGE_RESET_DEVICE \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0401, METHOD_BUFFERED, FILE_READ_ACCESS)
 
-#define IOCTL_STORAGE_GET_DEVICE_NUMBER CTL_CODE(IOCTL_STORAGE_BASE, 0x0420, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_STORAGE_GET_DEVICE_NUMBER \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0420, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
-#define IOCTL_STORAGE_PREDICT_FAILURE CTL_CODE(IOCTL_STORAGE_BASE, 0x0440, METHOD_BUFFERED, FILE_ANY_ACCESS)
+#define IOCTL_STORAGE_PREDICT_FAILURE \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0440, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
   // end_winioctl
 
-
-#define IOCTL_STORAGE_QUERY_PROPERTY   CTL_CODE(IOCTL_STORAGE_BASE, 0x0500, METHOD_BUFFERED, FILE_ANY_ACCESS)
-
+#define IOCTL_STORAGE_QUERY_PROPERTY \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0500, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
   // begin_winioctl
 
@@ -112,8 +187,10 @@ extern "C"
   // and to allow class drivers to respond to them more easily.
   //
 
-#define OBSOLETE_IOCTL_STORAGE_RESET_BUS        CTL_CODE(IOCTL_STORAGE_BASE, 0x0400, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
-#define OBSOLETE_IOCTL_STORAGE_RESET_DEVICE     CTL_CODE(IOCTL_STORAGE_BASE, 0x0401, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
+#define OBSOLETE_IOCTL_STORAGE_RESET_BUS \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0400, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
+#define OBSOLETE_IOCTL_STORAGE_RESET_DEVICE \
+  CTL_CODE(IOCTL_STORAGE_BASE, 0x0401, METHOD_BUFFERED, FILE_READ_ACCESS | FILE_WRITE_ACCESS)
 
   //
   // IOCTL_STORAGE_GET_DEVICE_NUMBER
@@ -147,8 +224,7 @@ extern "C"
     //
 
     ULONG PartitionNumber;
-  }
-  STORAGE_DEVICE_NUMBER, *PSTORAGE_DEVICE_NUMBER;
+  } STORAGE_DEVICE_NUMBER, *PSTORAGE_DEVICE_NUMBER;
 
   //
   // Define the structures for scsi resets
@@ -157,8 +233,7 @@ extern "C"
   typedef struct _STORAGE_BUS_RESET_REQUEST
   {
     UCHAR PathId;
-  }
-  STORAGE_BUS_RESET_REQUEST, *PSTORAGE_BUS_RESET_REQUEST;
+  } STORAGE_BUS_RESET_REQUEST, *PSTORAGE_BUS_RESET_REQUEST;
 
   //
   // IOCTL_STORAGE_MEDIA_REMOVAL disables the mechanism
@@ -173,11 +248,9 @@ extern "C"
   typedef struct _PREVENT_MEDIA_REMOVAL
   {
     BOOLEAN PreventMediaRemoval;
-  }
-  PREVENT_MEDIA_REMOVAL, *PPREVENT_MEDIA_REMOVAL;
+  } PREVENT_MEDIA_REMOVAL, *PPREVENT_MEDIA_REMOVAL;
 
   // begin_ntminitape
-
 
   typedef struct _TAPE_STATISTICS
   {
@@ -189,32 +262,31 @@ extern "C"
     LARGE_INTEGER UnrecoveredReads;
     UCHAR CompressionRatioReads;
     UCHAR CompressionRatioWrites;
-  }
-  TAPE_STATISTICS, *PTAPE_STATISTICS;
+  } TAPE_STATISTICS, *PTAPE_STATISTICS;
 
-#define RECOVERED_WRITES_VALID   0x00000001
+#define RECOVERED_WRITES_VALID 0x00000001
 #define UNRECOVERED_WRITES_VALID 0x00000002
-#define RECOVERED_READS_VALID    0x00000004
-#define UNRECOVERED_READS_VALID  0x00000008
-#define WRITE_COMPRESSION_INFO_VALID  0x00000010
-#define READ_COMPRESSION_INFO_VALID   0x00000020
+#define RECOVERED_READS_VALID 0x00000004
+#define UNRECOVERED_READS_VALID 0x00000008
+#define WRITE_COMPRESSION_INFO_VALID 0x00000010
+#define READ_COMPRESSION_INFO_VALID 0x00000020
 
   typedef struct _TAPE_GET_STATISTICS
   {
     ULONG Operation;
-  }
-  TAPE_GET_STATISTICS, *PTAPE_GET_STATISTICS;
+  } TAPE_GET_STATISTICS, *PTAPE_GET_STATISTICS;
 
 #define TAPE_RETURN_STATISTICS 0L
-#define TAPE_RETURN_ENV_INFO   1L
-#define TAPE_RESET_STATISTICS  2L
+#define TAPE_RETURN_ENV_INFO 1L
+#define TAPE_RESET_STATISTICS 2L
 
   //
   // IOCTL_STORAGE_GET_MEDIA_TYPES_EX will return an array of DEVICE_MEDIA_INFO
   // structures, one per supported type, embedded in the GET_MEDIA_TYPES struct.
   //
 
-  typedef enum _STORAGE_MEDIA_TYPE {
+  typedef enum _STORAGE_MEDIA_TYPE
+  {
     //
     // Following are defined in ntdddisk.h in the MEDIA_TYPE enum
     //
@@ -243,70 +315,71 @@ extern "C"
     // F8_256_128,             // 8",     256KB,  128 bytes/sector
     //
 
-    DDS_4mm = 0x20,             // Tape - DAT DDS1,2,... (all vendors)
-    MiniQic,                    // Tape - miniQIC Tape
-    Travan,                     // Tape - Travan TR-1,2,3,...
-    QIC,                        // Tape - QIC
-    MP_8mm,                     // Tape - 8mm Exabyte Metal Particle
-    AME_8mm,                    // Tape - 8mm Exabyte Advanced Metal Evap
-    AIT1_8mm,                   // Tape - 8mm Sony AIT1
-    DLT,                        // Tape - DLT Compact IIIxt, IV
-    NCTP,                       // Tape - Philips NCTP
-    IBM_3480,                   // Tape - IBM 3480
-    IBM_3490E,                  // Tape - IBM 3490E
-    IBM_Magstar_3590,           // Tape - IBM Magstar 3590
-    IBM_Magstar_MP,             // Tape - IBM Magstar MP
-    STK_DATA_D3,                // Tape - STK Data D3
-    SONY_DTF,                   // Tape - Sony DTF
-    DV_6mm,                     // Tape - 6mm Digital Video
-    DMI,                        // Tape - Exabyte DMI and compatibles
-    SONY_D2,                    // Tape - Sony D2S and D2L
-    CLEANER_CARTRIDGE,          // Cleaner - All Drive types that support Drive Cleaners
-    CD_ROM,                     // Opt_Disk - CD
-    CD_R,                       // Opt_Disk - CD-Recordable (Write Once)
-    CD_RW,                      // Opt_Disk - CD-Rewriteable
-    DVD_ROM,                    // Opt_Disk - DVD-ROM
-    DVD_R,                      // Opt_Disk - DVD-Recordable (Write Once)
-    DVD_RW,                     // Opt_Disk - DVD-Rewriteable
-    MO_3_RW,                    // Opt_Disk - 3.5" Rewriteable MO Disk
-    MO_5_WO,                    // Opt_Disk - MO 5.25" Write Once
-    MO_5_RW,                    // Opt_Disk - MO 5.25" Rewriteable (not LIMDOW)
-    MO_5_LIMDOW,                // Opt_Disk - MO 5.25" Rewriteable (LIMDOW)
-    PC_5_WO,                    // Opt_Disk - Phase Change 5.25" Write Once Optical
-    PC_5_RW,                    // Opt_Disk - Phase Change 5.25" Rewriteable
-    PD_5_RW,                    // Opt_Disk - PhaseChange Dual Rewriteable
-    ABL_5_WO,                   // Opt_Disk - Ablative 5.25" Write Once Optical
-    PINNACLE_APEX_5_RW,         // Opt_Disk - Pinnacle Apex 4.6GB Rewriteable Optical
-    SONY_12_WO,                 // Opt_Disk - Sony 12" Write Once
-    PHILIPS_12_WO,              // Opt_Disk - Philips/LMS 12" Write Once
-    HITACHI_12_WO,              // Opt_Disk - Hitachi 12" Write Once
-    CYGNET_12_WO,               // Opt_Disk - Cygnet/ATG 12" Write Once
-    KODAK_14_WO,                // Opt_Disk - Kodak 14" Write Once
-    MO_NFR_525,                 // Opt_Disk - Near Field Recording (Terastor)
-    NIKON_12_RW,                // Opt_Disk - Nikon 12" Rewriteable
-    IOMEGA_ZIP,                 // Mag_Disk - Iomega Zip
-    IOMEGA_JAZ,                 // Mag_Disk - Iomega Jaz
-    SYQUEST_EZ135,              // Mag_Disk - Syquest EZ135
-    SYQUEST_EZFLYER,            // Mag_Disk - Syquest EzFlyer
-    SYQUEST_SYJET,              // Mag_Disk - Syquest SyJet
-    AVATAR_F2,                  // Mag_Disk - 2.5" Floppy
-    MP2_8mm,                    // Tape - 8mm Hitachi
-    DST_S,                      // Ampex DST Small Tapes
-    DST_M,                      // Ampex DST Medium Tapes
-    DST_L,                      // Ampex DST Large Tapes
-    VXATape_1,                  // Ecrix 8mm Tape
-    VXATape_2,                  // Ecrix 8mm Tape
-    STK_EAGLE,                  // STK Eagle
-    LTO_Ultrium,                // IBM, HP, Seagate LTO Ultrium
-    LTO_Accelis                // IBM, HP, Seagate LTO Accelis
-  } STORAGE_MEDIA_TYPE, *PSTORAGE_MEDIA_TYPE;
+    DDS_4mm = 0x20, // Tape - DAT DDS1,2,... (all vendors)
+    MiniQic, // Tape - miniQIC Tape
+    Travan, // Tape - Travan TR-1,2,3,...
+    QIC, // Tape - QIC
+    MP_8mm, // Tape - 8mm Exabyte Metal Particle
+    AME_8mm, // Tape - 8mm Exabyte Advanced Metal Evap
+    AIT1_8mm, // Tape - 8mm Sony AIT1
+    DLT, // Tape - DLT Compact IIIxt, IV
+    NCTP, // Tape - Philips NCTP
+    IBM_3480, // Tape - IBM 3480
+    IBM_3490E, // Tape - IBM 3490E
+    IBM_Magstar_3590, // Tape - IBM Magstar 3590
+    IBM_Magstar_MP, // Tape - IBM Magstar MP
+    STK_DATA_D3, // Tape - STK Data D3
+    SONY_DTF, // Tape - Sony DTF
+    DV_6mm, // Tape - 6mm Digital Video
+    DMI, // Tape - Exabyte DMI and compatibles
+    SONY_D2, // Tape - Sony D2S and D2L
+    CLEANER_CARTRIDGE, // Cleaner - All Drive types that support Drive Cleaners
+    CD_ROM, // Opt_Disk - CD
+    CD_R, // Opt_Disk - CD-Recordable (Write Once)
+    CD_RW, // Opt_Disk - CD-Rewriteable
+    DVD_ROM, // Opt_Disk - DVD-ROM
+    DVD_R, // Opt_Disk - DVD-Recordable (Write Once)
+    DVD_RW, // Opt_Disk - DVD-Rewriteable
+    MO_3_RW, // Opt_Disk - 3.5" Rewriteable MO Disk
+    MO_5_WO, // Opt_Disk - MO 5.25" Write Once
+    MO_5_RW, // Opt_Disk - MO 5.25" Rewriteable (not LIMDOW)
+    MO_5_LIMDOW, // Opt_Disk - MO 5.25" Rewriteable (LIMDOW)
+    PC_5_WO, // Opt_Disk - Phase Change 5.25" Write Once Optical
+    PC_5_RW, // Opt_Disk - Phase Change 5.25" Rewriteable
+    PD_5_RW, // Opt_Disk - PhaseChange Dual Rewriteable
+    ABL_5_WO, // Opt_Disk - Ablative 5.25" Write Once Optical
+    PINNACLE_APEX_5_RW, // Opt_Disk - Pinnacle Apex 4.6GB Rewriteable Optical
+    SONY_12_WO, // Opt_Disk - Sony 12" Write Once
+    PHILIPS_12_WO, // Opt_Disk - Philips/LMS 12" Write Once
+    HITACHI_12_WO, // Opt_Disk - Hitachi 12" Write Once
+    CYGNET_12_WO, // Opt_Disk - Cygnet/ATG 12" Write Once
+    KODAK_14_WO, // Opt_Disk - Kodak 14" Write Once
+    MO_NFR_525, // Opt_Disk - Near Field Recording (Terastor)
+    NIKON_12_RW, // Opt_Disk - Nikon 12" Rewriteable
+    IOMEGA_ZIP, // Mag_Disk - Iomega Zip
+    IOMEGA_JAZ, // Mag_Disk - Iomega Jaz
+    SYQUEST_EZ135, // Mag_Disk - Syquest EZ135
+    SYQUEST_EZFLYER, // Mag_Disk - Syquest EzFlyer
+    SYQUEST_SYJET, // Mag_Disk - Syquest SyJet
+    AVATAR_F2, // Mag_Disk - 2.5" Floppy
+    MP2_8mm, // Tape - 8mm Hitachi
+    DST_S, // Ampex DST Small Tapes
+    DST_M, // Ampex DST Medium Tapes
+    DST_L, // Ampex DST Large Tapes
+    VXATape_1, // Ecrix 8mm Tape
+    VXATape_2, // Ecrix 8mm Tape
+    STK_EAGLE, // STK Eagle
+    LTO_Ultrium, // IBM, HP, Seagate LTO Ultrium
+    LTO_Accelis // IBM, HP, Seagate LTO Accelis
+  } STORAGE_MEDIA_TYPE,
+      *PSTORAGE_MEDIA_TYPE;
 
-#define MEDIA_ERASEABLE         0x00000001
-#define MEDIA_WRITE_ONCE        0x00000002
-#define MEDIA_READ_ONLY         0x00000004
-#define MEDIA_READ_WRITE        0x00000008
+#define MEDIA_ERASEABLE 0x00000001
+#define MEDIA_WRITE_ONCE 0x00000002
+#define MEDIA_READ_ONLY 0x00000004
+#define MEDIA_READ_WRITE 0x00000008
 
-#define MEDIA_WRITE_PROTECTED   0x00000100
+#define MEDIA_WRITE_PROTECTED 0x00000100
 #define MEDIA_CURRENTLY_MOUNTED 0x80000000
 
   //
@@ -314,7 +387,8 @@ extern "C"
   // Bus types below 128 (0x80) are reserved for Microsoft use
   //
 
-  typedef enum _STORAGE_BUS_TYPE {
+  typedef enum _STORAGE_BUS_TYPE
+  {
     BusTypeUnknown = 0x00,
     BusTypeScsi,
     BusTypeAtapi,
@@ -325,11 +399,13 @@ extern "C"
     BusTypeUsb,
     BusTypeRAID,
     BusTypeMaxReserved = 0x7F
-  } STORAGE_BUS_TYPE, *PSTORAGE_BUS_TYPE;
+  } STORAGE_BUS_TYPE,
+      *PSTORAGE_BUS_TYPE;
 
   typedef struct _DEVICE_MEDIA_INFO
   {
-    union {
+    union
+    {
       struct
       {
         LARGE_INTEGER Cylinders;
@@ -339,8 +415,7 @@ extern "C"
         ULONG BytesPerSector;
         ULONG NumberMediaSides;
         ULONG MediaCharacteristics; // Bitmask of MEDIA_XXX values.
-      }
-      DiskInfo;
+      } DiskInfo;
 
       struct
       {
@@ -351,8 +426,7 @@ extern "C"
         ULONG BytesPerSector;
         ULONG NumberMediaSides;
         ULONG MediaCharacteristics; // Bitmask of MEDIA_XXX values.
-      }
-      RemovableDiskInfo;
+      } RemovableDiskInfo;
 
       struct
       {
@@ -365,29 +439,25 @@ extern "C"
         // Bus specific information describing the medium supported.
         //
 
-        union {
+        union
+        {
           struct
           {
             UCHAR MediumType;
             UCHAR DensityCode;
-          }
-          ScsiInformation;
+          } ScsiInformation;
         } BusSpecificData;
 
-      }
-      TapeInfo;
+      } TapeInfo;
     } DeviceSpecific;
-  }
-  DEVICE_MEDIA_INFO, *PDEVICE_MEDIA_INFO;
+  } DEVICE_MEDIA_INFO, *PDEVICE_MEDIA_INFO;
 
   typedef struct _GET_MEDIA_TYPES
   {
-    ULONG DeviceType;              // FILE_DEVICE_XXX values
+    ULONG DeviceType; // FILE_DEVICE_XXX values
     ULONG MediaInfoCount;
     DEVICE_MEDIA_INFO MediaInfo[1];
-  }
-  GET_MEDIA_TYPES, *PGET_MEDIA_TYPES;
-
+  } GET_MEDIA_TYPES, *PGET_MEDIA_TYPES;
 
   //
   // IOCTL_STORAGE_PREDICT_FAILURE
@@ -405,8 +475,7 @@ extern "C"
   {
     ULONG PredictFailure;
     UCHAR VendorSpecific[512];
-  }
-  STORAGE_PREDICT_FAILURE, *PSTORAGE_PREDICT_FAILURE;
+  } STORAGE_PREDICT_FAILURE, *PSTORAGE_PREDICT_FAILURE;
 
   // end_ntminitape
   // end_winioctl
@@ -430,26 +499,29 @@ extern "C"
   //      a buffer as large as the header reports is necessary.
   //
 
-
   //
   // Types of queries
   //
 
-  typedef enum _STORAGE_QUERY_TYPE {
-    PropertyStandardQuery = 0,           // Retrieves the descriptor
-    PropertyExistsQuery,                 // Used to test whether the descriptor is supported
-    PropertyMaskQuery,                   // Used to retrieve a mask of writeable fields in the descriptor
-    PropertyQueryMaxDefined     // use to validate the value
-  } STORAGE_QUERY_TYPE, *PSTORAGE_QUERY_TYPE;
+  typedef enum _STORAGE_QUERY_TYPE
+  {
+    PropertyStandardQuery = 0, // Retrieves the descriptor
+    PropertyExistsQuery, // Used to test whether the descriptor is supported
+    PropertyMaskQuery, // Used to retrieve a mask of writeable fields in the descriptor
+    PropertyQueryMaxDefined // use to validate the value
+  } STORAGE_QUERY_TYPE,
+      *PSTORAGE_QUERY_TYPE;
 
   //
   // define some initial property id's
   //
 
-  typedef enum _STORAGE_PROPERTY_ID {
+  typedef enum _STORAGE_PROPERTY_ID
+  {
     StorageDeviceProperty = 0,
     StorageAdapterProperty
-  } STORAGE_PROPERTY_ID, *PSTORAGE_PROPERTY_ID;
+  } STORAGE_PROPERTY_ID,
+      *PSTORAGE_PROPERTY_ID;
 
   //
   // Query structure - additional parameters for specific queries can follow
@@ -477,8 +549,7 @@ extern "C"
 
     UCHAR AdditionalParameters[1];
 
-  }
-  STORAGE_PROPERTY_QUERY, *PSTORAGE_PROPERTY_QUERY;
+  } STORAGE_PROPERTY_QUERY, *PSTORAGE_PROPERTY_QUERY;
 
   //
   // Standard property descriptor header.  All property pages should use this
@@ -492,8 +563,7 @@ extern "C"
 
     ULONG Size;
 
-  }
-  STORAGE_DESCRIPTOR_HEADER, *PSTORAGE_DESCRIPTOR_HEADER;
+  } STORAGE_DESCRIPTOR_HEADER, *PSTORAGE_DESCRIPTOR_HEADER;
 
   //
   // Device property descriptor - this is really just a rehash of the inquiry
@@ -596,9 +666,7 @@ extern "C"
 
     UCHAR RawDeviceProperties[1];
 
-  }
-  STORAGE_DEVICE_DESCRIPTOR, *PSTORAGE_DEVICE_DESCRIPTOR;
-
+  } STORAGE_DEVICE_DESCRIPTOR, *PSTORAGE_DEVICE_DESCRIPTOR;
 
   //
   // Adapter properties
@@ -635,8 +703,7 @@ extern "C"
 
     USHORT BusMinorVersion;
 
-  }
-  STORAGE_ADAPTER_DESCRIPTOR, *PSTORAGE_ADAPTER_DESCRIPTOR;
+  } STORAGE_ADAPTER_DESCRIPTOR, *PSTORAGE_ADAPTER_DESCRIPTOR;
 
   // begin_winioctl
 
@@ -644,6 +711,5 @@ extern "C"
 }
 #endif
 
-#endif // _NTDDSTOR_H_ 
+#endif // _NTDDSTOR_H_
 // end_winioctl
-

@@ -30,7 +30,7 @@ class ISettingControl;
 class ISettingControlCreator
 {
 public:
-  virtual ~ISettingControlCreator() { }
+  virtual ~ISettingControlCreator() {}
 
   /*!
    \brief Creates a new setting control of the given custom setting control type.
@@ -38,5 +38,5 @@ public:
    \param controlType string representation of the setting control type
    \return A new setting control object of the given (custom) setting control type or NULL if the setting control type is unknown
    */
-  virtual ISettingControl* CreateControl(const std::string &controlType) const = 0;
+  virtual ISettingControl* CreateControl(const std::string& controlType) const = 0;
 };

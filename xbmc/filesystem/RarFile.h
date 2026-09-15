@@ -34,79 +34,78 @@ class CommandData;
 class Archive;
 
 namespace XFILE
-{	
-  class CRarFileExtractThread : public CThread
-  {
-  public:
-    CRarFileExtractThread();
-    ~CRarFileExtractThread();
-    
-    void Start(Archive* pArc, CommandData* pCmd, CmdExtract* pExtract, int iSize); 
-    
-    virtual void OnStartup();
-    virtual void OnExit();
-    virtual void Process();
+{
+class CRarFileExtractThread : public CThread
+{
+public:
+  CRarFileExtractThread();
+  ~CRarFileExtractThread();
 
-    CEvent hRunning;
-    CEvent hRestart;
-    CEvent hQuit;
+  void Start(Archive* pArc, CommandData* pCmd, CmdExtract* pExtract, int iSize);
 
-  protected:
-    Archive* m_pArc;
-    CommandData* m_pCmd;
-    CmdExtract* m_pExtract;
-    int m_iSize;
-  };
+  virtual void OnStartup();
+  virtual void OnExit();
+  virtual void Process();
 
-  class CRarFile : public IFile  
-	{
-	public:
-		CRarFile();
-    CRarFile(bool bSeekable); // used for caching files
-    virtual ~CRarFile();
-    virtual int64_t       GetPosition();
-    virtual int64_t       GetLength();
-    virtual bool          Open(const CURL& url);
-    virtual bool          Exists(const CURL& url);
-    virtual int           Stat(const CURL& url, struct __stat64* buffer);
-    virtual ssize_t       Read(void* lpBuf, size_t uiBufSize);
-    virtual ssize_t       Write(const void* lpBuf, size_t uiBufSize);
-    virtual int64_t       Seek(int64_t iFilePosition, int iWhence=SEEK_SET);
-    virtual void          Close();
-    virtual void          Flush();
+  CEvent hRunning;
+  CEvent hRestart;
+  CEvent hQuit;
 
-    virtual bool          OpenForWrite(const CURL& url);
-    unsigned int          Write(void *lpBuf, int64_t uiBufSize);
+protected:
+  Archive* m_pArc;
+  CommandData* m_pCmd;
+  CmdExtract* m_pExtract;
+  int m_iSize;
+};
 
-  protected:
-    CStdString m_strCacheDir;
-    CStdString m_strRarPath;
-    CStdString m_strPassword;
-    CStdString m_strPathInRar;
-    BYTE m_bFileOptions;
-    void Init();
-    void InitFromUrl(const CURL& url);
-    bool OpenInArchive();
-    void CleanUp();
-    
-    int64_t m_iFilePosition;
-    int64_t m_iFileSize;
-    // rar stuff
-    bool m_bUseFile;
-    bool m_bOpen;
-    bool m_bSeekable;
-    CFile m_File; // for packed source
-    Archive* m_pArc;
-    CommandData* m_pCmd;
-    CmdExtract* m_pExtract;
-    CRarFileExtractThread* m_pExtractThread;
-    byte* m_szBuffer;
-    byte* m_szStartOfBuffer;
-    int64_t m_iDataInBuffer;
-    int64_t m_iBufferStart;
-	};
+class CRarFile : public IFile
+{
+public:
+  CRarFile();
+  CRarFile(bool bSeekable); // used for caching files
+  virtual ~CRarFile();
+  virtual int64_t GetPosition();
+  virtual int64_t GetLength();
+  virtual bool Open(const CURL& url);
+  virtual bool Exists(const CURL& url);
+  virtual int Stat(const CURL& url, struct __stat64* buffer);
+  virtual ssize_t Read(void* lpBuf, size_t uiBufSize);
+  virtual ssize_t Write(const void* lpBuf, size_t uiBufSize);
+  virtual int64_t Seek(int64_t iFilePosition, int iWhence = SEEK_SET);
+  virtual void Close();
+  virtual void Flush();
 
-}
+  virtual bool OpenForWrite(const CURL& url);
+  unsigned int Write(void* lpBuf, int64_t uiBufSize);
 
-#endif  // FILERAR_H_
+protected:
+  CStdString m_strCacheDir;
+  CStdString m_strRarPath;
+  CStdString m_strPassword;
+  CStdString m_strPathInRar;
+  BYTE m_bFileOptions;
+  void Init();
+  void InitFromUrl(const CURL& url);
+  bool OpenInArchive();
+  void CleanUp();
 
+  int64_t m_iFilePosition;
+  int64_t m_iFileSize;
+  // rar stuff
+  bool m_bUseFile;
+  bool m_bOpen;
+  bool m_bSeekable;
+  CFile m_File; // for packed source
+  Archive* m_pArc;
+  CommandData* m_pCmd;
+  CmdExtract* m_pExtract;
+  CRarFileExtractThread* m_pExtractThread;
+  byte* m_szBuffer;
+  byte* m_szStartOfBuffer;
+  int64_t m_iDataInBuffer;
+  int64_t m_iBufferStart;
+};
+
+} // namespace XFILE
+
+#endif // FILERAR_H_

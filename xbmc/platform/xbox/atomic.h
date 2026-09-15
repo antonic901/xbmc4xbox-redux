@@ -20,20 +20,11 @@ template<>
 class atomic<bool>
 {
 public:
-  atomic()
-  {
-    m_value = 0;
-  }
+  atomic() { m_value = 0; }
 
-  void set(bool value)
-  {
-    InterlockedExchange(&m_value, value ? 1 : 0);
-  }
+  void set(bool value) { InterlockedExchange(&m_value, value ? 1 : 0); }
 
-  bool value()
-  {
-    return InterlockedCompareExchange(&m_value, 0, 0) != 0;
-  }
+  bool value() { return InterlockedCompareExchange(&m_value, 0, 0) != 0; }
 
 private:
   LONG m_value;
@@ -43,20 +34,11 @@ template<>
 class atomic<long>
 {
 public:
-  atomic()
-  {
-    m_value = 0;
-  }
+  atomic() { m_value = 0; }
 
-  void set(long value)
-  {
-    InterlockedExchange(&m_value, value);
-  }
+  void set(long value) { InterlockedExchange(&m_value, value); }
 
-  long value()
-  {
-    return InterlockedCompareExchange(&m_value, 0, 0);
-  }
+  long value() { return InterlockedCompareExchange(&m_value, 0, 0); }
 
 private:
   LONG m_value;

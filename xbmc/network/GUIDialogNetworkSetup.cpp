@@ -32,19 +32,19 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 
-#define CONTROL_OK              28
-#define CONTROL_CANCEL          29
+#define CONTROL_OK 28
+#define CONTROL_CANCEL 29
 
-#define SETTING_PROTOCOL        "protocol"
-#define SETTING_SERVER_ADDRESS  "serveraddress"
-#define SETTING_SERVER_BROWSE   "serverbrowse"
-#define SETTING_PORT_NUMBER     "portnumber"
-#define SETTING_USERNAME        "username"
-#define SETTING_PASSWORD        "password"
-#define SETTING_REMOTE_PATH     "remotepath"
+#define SETTING_PROTOCOL "protocol"
+#define SETTING_SERVER_ADDRESS "serveraddress"
+#define SETTING_SERVER_BROWSE "serverbrowse"
+#define SETTING_PORT_NUMBER "portnumber"
+#define SETTING_USERNAME "username"
+#define SETTING_PASSWORD "password"
+#define SETTING_REMOTE_PATH "remotepath"
 
 CGUIDialogNetworkSetup::CGUIDialogNetworkSetup(void)
-    : CGUIDialogSettingsManualBase(WINDOW_DIALOG_NETWORK_SETUP, "DialogSettings.xml")
+  : CGUIDialogSettingsManualBase(WINDOW_DIALOG_NETWORK_SETUP, "DialogSettings.xml")
 {
   m_protocol = NET_PROTOCOL_SMB;
   m_confirmed = false;
@@ -63,9 +63,9 @@ bool CGUIDialogNetworkSetup::OnBack(int actionID)
 
 bool CGUIDialogNetworkSetup::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_CLICKED:
+    case GUI_MSG_CLICKED:
     {
       int iControl = message.GetSenderId();
       if (iControl == CONTROL_OK)
@@ -84,14 +84,14 @@ bool CGUIDialogNetworkSetup::OnMessage(CGUIMessage& message)
   return CGUIDialogSettingsManualBase::OnMessage(message);
 }
 
-void CGUIDialogNetworkSetup::OnSettingChanged(const CSetting *setting)
+void CGUIDialogNetworkSetup::OnSettingChanged(const CSetting* setting)
 {
   if (setting == NULL)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingChanged(setting);
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
 
   if (settingId == SETTING_PROTOCOL)
   {
@@ -113,14 +113,14 @@ void CGUIDialogNetworkSetup::OnSettingChanged(const CSetting *setting)
     m_password = static_cast<const CSettingString*>(setting)->GetValue();
 }
 
-void CGUIDialogNetworkSetup::OnSettingAction(const CSetting *setting)
+void CGUIDialogNetworkSetup::OnSettingAction(const CSetting* setting)
 {
   if (setting == NULL)
     return;
 
   CGUIDialogSettingsManualBase::OnSettingAction(setting);
 
-  const std::string &settingId = setting->GetId();
+  const std::string& settingId = setting->GetId();
 
   if (settingId == SETTING_SERVER_BROWSE)
     OnServerBrowse();
@@ -128,10 +128,12 @@ void CGUIDialogNetworkSetup::OnSettingAction(const CSetting *setting)
 
 // \brief Show CGUIDialogNetworkSetup dialog and prompt for a new network address.
 // \return True if the network address is valid, false otherwise.
-bool CGUIDialogNetworkSetup::ShowAndGetNetworkAddress(std::string &path)
+bool CGUIDialogNetworkSetup::ShowAndGetNetworkAddress(std::string& path)
 {
-  CGUIDialogNetworkSetup *dialog = (CGUIDialogNetworkSetup *)g_windowManager.GetWindow(WINDOW_DIALOG_NETWORK_SETUP);
-  if (!dialog) return false;
+  CGUIDialogNetworkSetup* dialog =
+      (CGUIDialogNetworkSetup*)g_windowManager.GetWindow(WINDOW_DIALOG_NETWORK_SETUP);
+  if (!dialog)
+    return false;
   dialog->Initialize();
   dialog->SetPath(path);
   dialog->Open();
@@ -176,14 +178,14 @@ void CGUIDialogNetworkSetup::InitializeSettings()
 {
   CGUIDialogSettingsManualBase::InitializeSettings();
 
-  CSettingCategory *category = AddCategory("networksetupsettings", -1);
+  CSettingCategory* category = AddCategory("networksetupsettings", -1);
   if (category == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogNetworkSetup: unable to setup settings");
     return;
   }
 
-  CSettingGroup *group = AddGroup(category);
+  CSettingGroup* group = AddGroup(category);
   if (group == NULL)
   {
     CLog::Log(LOGERROR, "CGUIDialogNetworkSetup: unable to setup settings");
@@ -211,7 +213,7 @@ void CGUIDialogNetworkSetup::InitializeSettings()
 
   AddSpinner(group, SETTING_PROTOCOL, 1008, 0, m_protocol, labels);
   AddEdit(group, SETTING_SERVER_ADDRESS, 1010, 0, m_server, true);
-  CSettingAction *subsetting = AddButton(group, SETTING_SERVER_BROWSE, 1024, 0, false);
+  CSettingAction* subsetting = AddButton(group, SETTING_SERVER_BROWSE, 1024, 0, false);
   if (subsetting != NULL)
     subsetting->SetParent(SETTING_SERVER_ADDRESS);
 
@@ -268,9 +270,8 @@ void CGUIDialogNetworkSetup::OnProtocolChange()
     // set defaults for the port
     if (m_protocol == NET_PROTOCOL_FTP)
       m_port = "21";
-    else if (m_protocol == NET_PROTOCOL_HTTP ||
-       m_protocol == NET_PROTOCOL_RSS ||
-       m_protocol == NET_PROTOCOL_DAV)
+    else if (m_protocol == NET_PROTOCOL_HTTP || m_protocol == NET_PROTOCOL_RSS ||
+             m_protocol == NET_PROTOCOL_DAV)
       m_port = "80";
     else if (m_protocol == NET_PROTOCOL_HTTPS || m_protocol == NET_PROTOCOL_DAVS)
       m_port = "443";
@@ -293,11 +294,11 @@ void CGUIDialogNetworkSetup::UpdateButtons()
     SET_CONTROL_LABEL2(addressControlID, m_server);
     if (m_protocol == NET_PROTOCOL_SMB)
     {
-      SET_CONTROL_LABEL(addressControlID, 1010);  // Server name
+      SET_CONTROL_LABEL(addressControlID, 1010); // Server name
     }
     else
     {
-      SET_CONTROL_LABEL(addressControlID, 1009);  // Server Address
+      SET_CONTROL_LABEL(addressControlID, 1009); // Server Address
     }
     SendMessage(GUI_MSG_SET_TYPE, addressControlID, CGUIEditControl::INPUT_TYPE_TEXT, 1016);
   }
@@ -309,20 +310,16 @@ void CGUIDialogNetworkSetup::UpdateButtons()
     int pathControlID = pathControl->GetID();
     SET_CONTROL_LABEL2(pathControlID, m_path);
     CONTROL_ENABLE_ON_CONDITION(pathControlID, m_protocol != NET_PROTOCOL_UPNP);
-    if (m_protocol == NET_PROTOCOL_FTP ||
-        m_protocol == NET_PROTOCOL_HTTP ||
-        m_protocol == NET_PROTOCOL_HTTPS ||
-        m_protocol == NET_PROTOCOL_RSS ||
-        m_protocol == NET_PROTOCOL_DAV ||
-        m_protocol == NET_PROTOCOL_DAVS||
-        m_protocol == NET_PROTOCOL_SFTP||
-        m_protocol == NET_PROTOCOL_NFS)
+    if (m_protocol == NET_PROTOCOL_FTP || m_protocol == NET_PROTOCOL_HTTP ||
+        m_protocol == NET_PROTOCOL_HTTPS || m_protocol == NET_PROTOCOL_RSS ||
+        m_protocol == NET_PROTOCOL_DAV || m_protocol == NET_PROTOCOL_DAVS ||
+        m_protocol == NET_PROTOCOL_SFTP || m_protocol == NET_PROTOCOL_NFS)
     {
-      SET_CONTROL_LABEL(pathControlID, 1011);  // Remote Path
+      SET_CONTROL_LABEL(pathControlID, 1011); // Remote Path
     }
     else
     {
-      SET_CONTROL_LABEL(pathControlID, 1012);  // Shared Folder
+      SET_CONTROL_LABEL(pathControlID, 1012); // Shared Folder
     }
     SendMessage(GUI_MSG_SET_TYPE, pathControlID, CGUIEditControl::INPUT_TYPE_TEXT, 1017);
   }
@@ -333,8 +330,8 @@ void CGUIDialogNetworkSetup::UpdateButtons()
   {
     int userControlID = userControl->GetID();
     SET_CONTROL_LABEL2(userControlID, m_username);
-    CONTROL_ENABLE_ON_CONDITION(userControlID, m_protocol != NET_PROTOCOL_UPNP &&
-                                               m_protocol != NET_PROTOCOL_NFS);
+    CONTROL_ENABLE_ON_CONDITION(userControlID,
+                                m_protocol != NET_PROTOCOL_UPNP && m_protocol != NET_PROTOCOL_NFS);
 
     SendMessage(GUI_MSG_SET_TYPE, userControlID, CGUIEditControl::INPUT_TYPE_TEXT, 1019);
   }
@@ -345,13 +342,11 @@ void CGUIDialogNetworkSetup::UpdateButtons()
   {
     int portControlID = portControl->GetID();
     SET_CONTROL_LABEL2(portControlID, m_port);
-    CONTROL_ENABLE_ON_CONDITION(portControlID, m_protocol == NET_PROTOCOL_FTP ||
-                                               m_protocol == NET_PROTOCOL_HTTP ||
-                                               m_protocol == NET_PROTOCOL_HTTPS ||
-                                               m_protocol == NET_PROTOCOL_DAV ||
-                                               m_protocol == NET_PROTOCOL_DAVS ||
-                                               m_protocol == NET_PROTOCOL_RSS ||
-                                               m_protocol == NET_PROTOCOL_SFTP);
+    CONTROL_ENABLE_ON_CONDITION(
+        portControlID, m_protocol == NET_PROTOCOL_FTP || m_protocol == NET_PROTOCOL_HTTP ||
+                           m_protocol == NET_PROTOCOL_HTTPS || m_protocol == NET_PROTOCOL_DAV ||
+                           m_protocol == NET_PROTOCOL_DAVS || m_protocol == NET_PROTOCOL_RSS ||
+                           m_protocol == NET_PROTOCOL_SFTP);
 
     SendMessage(GUI_MSG_SET_TYPE, portControlID, CGUIEditControl::INPUT_TYPE_NUMBER, 1018);
   }
@@ -362,8 +357,8 @@ void CGUIDialogNetworkSetup::UpdateButtons()
   {
     int passControlID = passControl->GetID();
     SET_CONTROL_LABEL2(passControlID, m_password);
-    CONTROL_ENABLE_ON_CONDITION(passControlID, m_protocol != NET_PROTOCOL_UPNP &&
-                                                  m_protocol != NET_PROTOCOL_NFS);
+    CONTROL_ENABLE_ON_CONDITION(passControlID,
+                                m_protocol != NET_PROTOCOL_UPNP && m_protocol != NET_PROTOCOL_NFS);
 
     SendMessage(GUI_MSG_SET_TYPE, passControlID, CGUIEditControl::INPUT_TYPE_PASSWORD, 12326);
   }
@@ -373,13 +368,12 @@ void CGUIDialogNetworkSetup::UpdateButtons()
   if (browseControl != NULL && browseControl->GetControl() != NULL)
   {
     int browseControlID = browseControl->GetID();
-    CONTROL_ENABLE_ON_CONDITION(browseControlID, !m_server.empty() || !(m_protocol == NET_PROTOCOL_FTP ||
-                                                                        m_protocol == NET_PROTOCOL_HTTP ||
-                                                                        m_protocol == NET_PROTOCOL_HTTPS ||
-                                                                        m_protocol == NET_PROTOCOL_DAV ||
-                                                                        m_protocol == NET_PROTOCOL_DAVS ||
-                                                                        m_protocol == NET_PROTOCOL_RSS ||
-                                                                        m_protocol == NET_PROTOCOL_SFTP));
+    CONTROL_ENABLE_ON_CONDITION(
+        browseControlID,
+        !m_server.empty() || !(m_protocol == NET_PROTOCOL_FTP || m_protocol == NET_PROTOCOL_HTTP ||
+                               m_protocol == NET_PROTOCOL_HTTPS || m_protocol == NET_PROTOCOL_DAV ||
+                               m_protocol == NET_PROTOCOL_DAVS || m_protocol == NET_PROTOCOL_RSS ||
+                               m_protocol == NET_PROTOCOL_SFTP));
   }
 }
 
@@ -413,17 +407,13 @@ std::string CGUIDialogNetworkSetup::ConstructPath() const
     if (!m_password.empty())
       url.SetPassword(m_password);
   }
-  if(!m_server.empty())
+  if (!m_server.empty())
     url.SetHostName(m_server);
-  if (((m_protocol == NET_PROTOCOL_FTP) ||
-       (m_protocol == NET_PROTOCOL_HTTP) ||
-       (m_protocol == NET_PROTOCOL_HTTPS) ||
-       (m_protocol == NET_PROTOCOL_DAV) ||
-       (m_protocol == NET_PROTOCOL_DAVS) ||
-       (m_protocol == NET_PROTOCOL_RSS) ||
-       (m_protocol == NET_PROTOCOL_SFTP) ||
-       (m_protocol == NET_PROTOCOL_NFS))
-      && !m_port.empty() && atoi(m_port.c_str()) > 0)
+  if (((m_protocol == NET_PROTOCOL_FTP) || (m_protocol == NET_PROTOCOL_HTTP) ||
+       (m_protocol == NET_PROTOCOL_HTTPS) || (m_protocol == NET_PROTOCOL_DAV) ||
+       (m_protocol == NET_PROTOCOL_DAVS) || (m_protocol == NET_PROTOCOL_RSS) ||
+       (m_protocol == NET_PROTOCOL_SFTP) || (m_protocol == NET_PROTOCOL_NFS)) &&
+      !m_port.empty() && atoi(m_port.c_str()) > 0)
   {
     url.SetPort(atoi(m_port.c_str()));
   }
@@ -432,7 +422,7 @@ std::string CGUIDialogNetworkSetup::ConstructPath() const
   return url.Get();
 }
 
-void CGUIDialogNetworkSetup::SetPath(const std::string &path)
+void CGUIDialogNetworkSetup::SetPath(const std::string& path)
 {
   CURL url(path);
   if (url.IsProtocol("smb"))
@@ -456,7 +446,7 @@ void CGUIDialogNetworkSetup::SetPath(const std::string &path)
   else if (url.IsProtocol("sftp") || url.IsProtocol("ssh"))
     m_protocol = NET_PROTOCOL_SFTP;
   else
-    m_protocol = NET_PROTOCOL_SMB;  // default to smb
+    m_protocol = NET_PROTOCOL_SMB; // default to smb
   m_username = url.GetUserName();
   m_password = url.GetPassWord();
   m_port = StringUtils::Format("%i", url.GetPort());

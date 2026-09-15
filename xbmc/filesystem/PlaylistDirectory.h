@@ -19,17 +19,16 @@
  *
  */
 
-
 #include "IDirectory.h"
 
 namespace XFILE
 {
-  class CPlaylistDirectory : public IDirectory
-  {
-  public:
-    CPlaylistDirectory(void);
-    virtual ~CPlaylistDirectory(void);
-    virtual bool GetDirectory(const CURL& url, CFileItemList &items);
-    virtual bool AllowAll() const { return true; }
-  };
-}
+class CPlaylistDirectory : public IDirectory
+{
+public:
+  CPlaylistDirectory(void);
+  virtual ~CPlaylistDirectory(void);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool AllowAll() const { return true; }
+};
+} // namespace XFILE

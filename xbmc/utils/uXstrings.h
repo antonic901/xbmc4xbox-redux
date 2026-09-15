@@ -30,7 +30,7 @@
 #include "config.h"
 #endif // HAVE_CONFIG_H
 
-#if !defined(HAVE_STD__U16STRING) || !defined(HAVE_STD__U32STRING) 
+#if !defined(HAVE_STD__U16STRING) || !defined(HAVE_STD__U32STRING)
 #if defined(HAVE_STDINT_H) || defined(_XBOX)
 #include <stdint.h>
 #elif defined(HAVE_INTTYPES_H)
@@ -43,7 +43,7 @@ typedef uint_least16_t char16_t;
 #endif // HAVE_CHAR16_T
 namespace std
 {
-  typedef basic_string<char16_t> u16string;
+typedef basic_string<char16_t> u16string;
 }
 #endif // HAVE_STD__U16STRING
 
@@ -53,9 +53,9 @@ typedef uint_least32_t char32_t;
 #endif // HAVE_CHAR32_T
 namespace std
 {
-  typedef basic_string<char32_t> u32string;
+typedef basic_string<char32_t> u32string;
 }
 #endif // HAVE_STD__U32STRING
 
-#endif // !defined(HAVE_STD__U16STRING) || !defined(HAVE_STD__U32STRING) 
+#endif // !defined(HAVE_STD__U16STRING) || !defined(HAVE_STD__U32STRING)
 #endif // TARGET_WINDOWS

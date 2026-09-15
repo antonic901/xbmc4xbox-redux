@@ -28,21 +28,22 @@
 class CStaticListProvider : public IListProvider
 {
 public:
-  CStaticListProvider(const TiXmlElement *element, int parentID);
-  CStaticListProvider(const std::vector<CGUIStaticItemPtr> &items); // for python
+  CStaticListProvider(const TiXmlElement* element, int parentID);
+  CStaticListProvider(const std::vector<CGUIStaticItemPtr>& items); // for python
   virtual ~CStaticListProvider();
 
   virtual bool Update(bool forceRefresh);
-  virtual void Fetch(std::vector<CGUIListItemPtr> &items) const;
-  virtual bool OnClick(const CGUIListItemPtr &item);
-  bool OnInfo(const CGUIListItemPtr &item) { return false; }
-  bool OnContextMenu(const CGUIListItemPtr &item) { return false; }
+  virtual void Fetch(std::vector<CGUIListItemPtr>& items) const;
+  virtual bool OnClick(const CGUIListItemPtr& item);
+  bool OnInfo(const CGUIListItemPtr& item) { return false; }
+  bool OnContextMenu(const CGUIListItemPtr& item) { return false; }
   virtual void SetDefaultItem(int item, bool always);
-  virtual int  GetDefaultItem() const;
+  virtual int GetDefaultItem() const;
   virtual bool AlwaysFocusDefaultItem() const;
+
 private:
-  int                            m_defaultItem;
-  bool                           m_defaultAlways;
-  unsigned int                   m_updateTime;
+  int m_defaultItem;
+  bool m_defaultAlways;
+  unsigned int m_updateTime;
   std::vector<CGUIStaticItemPtr> m_items;
 };

@@ -44,7 +44,7 @@ bool CFileFileReader::Open(const CURL& url)
   // URL is of the form filereader://<foo>
   std::string strURL = url.Get();
   strURL = strURL.substr(13);
-  return m_reader.Open(strURL,READ_CACHED);
+  return m_reader.Open(strURL, READ_CACHED);
 }
 
 bool CFileFileReader::Exists(const CURL& url)
@@ -57,7 +57,6 @@ int CFileFileReader::Stat(const CURL& url, struct __stat64* buffer)
   return CFile::Stat(url.Get().substr(13), buffer);
 }
 
-
 //*********************************************************************************************
 bool CFileFileReader::OpenForWrite(const CURL& url, bool bOverWrite)
 {
@@ -65,13 +64,13 @@ bool CFileFileReader::OpenForWrite(const CURL& url, bool bOverWrite)
 }
 
 //*********************************************************************************************
-ssize_t CFileFileReader::Read(void *lpBuf, size_t uiBufSize)
+ssize_t CFileFileReader::Read(void* lpBuf, size_t uiBufSize)
 {
-  return m_reader.Read(lpBuf,uiBufSize);
+  return m_reader.Read(lpBuf, uiBufSize);
 }
 
 //*********************************************************************************************
-ssize_t CFileFileReader::Write(const void *lpBuf, size_t uiBufSize)
+ssize_t CFileFileReader::Write(const void* lpBuf, size_t uiBufSize)
 {
   return 0;
 }
@@ -85,7 +84,7 @@ void CFileFileReader::Close()
 //*********************************************************************************************
 int64_t CFileFileReader::Seek(int64_t iFilePosition, int iWhence)
 {
-  return m_reader.Seek(iFilePosition,iWhence);
+  return m_reader.Seek(iFilePosition, iWhence);
 }
 
 //*********************************************************************************************
@@ -99,5 +98,3 @@ int64_t CFileFileReader::GetPosition()
 {
   return m_reader.GetPosition();
 }
-
-

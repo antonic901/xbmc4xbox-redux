@@ -32,10 +32,12 @@ class CGUIWindowSplash : public CGUIWindow
 public:
   CGUIWindowSplash(void);
   virtual ~CGUIWindowSplash(void);
-  virtual bool OnAction(const CAction &action) { return false; };
+  virtual bool OnAction(const CAction& action) { return false; };
   virtual void Render();
+
 protected:
   virtual void OnInitWindow();
+
 private:
   boost::movelib::unique_ptr<CGUIImage> m_image;
 };

@@ -36,7 +36,7 @@ using namespace XFILE;
 namespace
 {
 
-bool renameOrRetry(const std::string & source, const std::string & dest, const char * description)
+bool renameOrRetry(const std::string& source, const std::string& dest, const char* description)
 {
   int count = 1;
   bool result = false;
@@ -46,7 +46,7 @@ bool renameOrRetry(const std::string & source, const std::string & dest, const c
     if (!result)
     {
       CLog::Log(LOGERROR, "Failed to move %s addon files from '%s' to '%s', retrying in 500ms",
-			          description, source.c_str(), dest.c_str());
+                description, source.c_str(), dest.c_str());
       Sleep(500);
     }
   } while (!result && count++ < 4);
@@ -54,7 +54,7 @@ bool renameOrRetry(const std::string & source, const std::string & dest, const c
   return result;
 }
 
-} // end namespace unnamed
+} // namespace
 
 CFilesystemInstaller::CFilesystemInstaller()
 {
@@ -62,7 +62,8 @@ CFilesystemInstaller::CFilesystemInstaller()
   m_tempFolder = CSpecialProtocol::TranslatePath("special://home/addons/temp/");
 }
 
-bool CFilesystemInstaller::InstallToFilesystem(const std::string& archive, const std::string& addonId)
+bool CFilesystemInstaller::InstallToFilesystem(const std::string& archive,
+                                               const std::string& addonId)
 {
   std::string addonFolder = URIUtils::AddFileToFolder(m_addonFolder, addonId);
   std::string newAddonData = URIUtils::AddFileToFolder(m_tempFolder, StringUtils::CreateUUID());
@@ -73,7 +74,8 @@ bool CFilesystemInstaller::InstallToFilesystem(const std::string& archive, const
 
   if (!UnpackArchive(archive, newAddonData))
   {
-    CLog::Log(LOGERROR, "Failed to unpack archive '%s' to '%s'", archive.c_str(), newAddonData.c_str());
+    CLog::Log(LOGERROR, "Failed to unpack archive '%s' to '%s'", archive.c_str(),
+              newAddonData.c_str());
     return false;
   }
 
@@ -102,7 +104,8 @@ bool CFilesystemInstaller::UnInstallFromFilesystem(const std::string& addonFolde
   std::string tempFolder = URIUtils::AddFileToFolder(m_tempFolder, StringUtils::CreateUUID());
   if (!CFile::Rename(addonFolder, tempFolder))
   {
-    CLog::Log(LOGERROR, "Failed to move old addon files from '%s' to '%s'", addonFolder.c_str(), tempFolder.c_str());
+    CLog::Log(LOGERROR, "Failed to move old addon files from '%s' to '%s'", addonFolder.c_str(),
+              tempFolder.c_str());
     return false;
   }
 

@@ -19,19 +19,18 @@
  *
  */
 
-
 #include "IFileDirectory.h"
 
 namespace XFILE
 {
-  class CPlaylistFileDirectory : public IFileDirectory
-  {
-  public:
-    CPlaylistFileDirectory();
-    ~CPlaylistFileDirectory();
-    virtual bool GetDirectory(const CURL& url, CFileItemList& items);
-    virtual bool ContainsFiles(const CURL& url);
-    virtual bool Remove(const CURL& url);
-    virtual bool AllowAll() const { return true; }
-  };
-}
+class CPlaylistFileDirectory : public IFileDirectory
+{
+public:
+  CPlaylistFileDirectory();
+  ~CPlaylistFileDirectory();
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool ContainsFiles(const CURL& url);
+  virtual bool Remove(const CURL& url);
+  virtual bool AllowAll() const { return true; }
+};
+} // namespace XFILE

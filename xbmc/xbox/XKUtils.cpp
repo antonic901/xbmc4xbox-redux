@@ -62,8 +62,8 @@ ExSaveNonVolatileSetting to improve speed and compatibility.
 #include "undocumented.h"
 #include "utils/log.h"
 
-CXBoxFlash  *mpFlash;
-fci_t *fci=NULL;
+CXBoxFlash* mpFlash;
+fci_t* fci = NULL;
 
 XKUtils::XKUtils()
 {
@@ -73,13 +73,13 @@ XKUtils::~XKUtils()
 }
 LONG XKUtils::MountDevice(LPSTR sSymbolicLinkName, LPSTR sDeviceName)
 {
-  UNICODE_STRING  deviceName;
-  deviceName.Buffer  = sDeviceName;
+  UNICODE_STRING deviceName;
+  deviceName.Buffer = sDeviceName;
   deviceName.Length = (USHORT)strlen(sDeviceName);
   deviceName.MaximumLength = (USHORT)strlen(sDeviceName) + 1;
 
-  UNICODE_STRING  symbolicLinkName;
-  symbolicLinkName.Buffer  = sSymbolicLinkName;
+  UNICODE_STRING symbolicLinkName;
+  symbolicLinkName.Buffer = sSymbolicLinkName;
   symbolicLinkName.Length = (USHORT)strlen(sSymbolicLinkName);
   symbolicLinkName.MaximumLength = (USHORT)strlen(sSymbolicLinkName) + 1;
 
@@ -87,8 +87,8 @@ LONG XKUtils::MountDevice(LPSTR sSymbolicLinkName, LPSTR sDeviceName)
 }
 LONG XKUtils::UnMountDevice(LPSTR sSymbolicLinkName)
 {
-  UNICODE_STRING  symbolicLinkName;
-  symbolicLinkName.Buffer  = sSymbolicLinkName;
+  UNICODE_STRING symbolicLinkName;
+  symbolicLinkName.Buffer = sSymbolicLinkName;
   symbolicLinkName.Length = (USHORT)strlen(sSymbolicLinkName);
   symbolicLinkName.MaximumLength = (USHORT)strlen(sSymbolicLinkName) + 1;
 
@@ -144,7 +144,7 @@ void XKUtils::UnMountAllDisks()
 
 void XKUtils::XBOXRebootToDash()
 {
-  XLaunchNewImage( NULL, NULL );
+  XLaunchNewImage(NULL, NULL);
 }
 // USE: CApplicationMessenger::Get().Restart() or .Reset();
 // To Restart or Reset the box !!!
@@ -181,13 +181,13 @@ void XKUtils::XBOXPowerCycle()
 void XKUtils::WriteEEPROMToXBOX(LPBYTE EEPROMDATA)
 {
   DWORD type = 3, size = 256;
-  OUTPUT_DEBUG_STRING( "XKUtils: Writing EEPROM to XBOX...\n" );
+  OUTPUT_DEBUG_STRING("XKUtils: Writing EEPROM to XBOX...\n");
   ExSaveNonVolatileSetting(0xFFFF, &type, &EEPROMDATA, size);
 }
 bool XKUtils::ReadEEPROMFromXBOX(LPBYTE EEPROMDATA)
 {
   DWORD type, size;
-  OUTPUT_DEBUG_STRING( "XKUtils: Reading EEPROM from XBOX...\n" );
+  OUTPUT_DEBUG_STRING("XKUtils: Reading EEPROM from XBOX...\n");
   return (ExQueryNonVolatileSetting(0xFFFF, &type, EEPROMDATA, 256, &size) >= 0);
 }
 void XKUtils::DVDDisableEjectReset()

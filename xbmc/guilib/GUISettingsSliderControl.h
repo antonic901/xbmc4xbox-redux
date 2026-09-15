@@ -35,17 +35,30 @@
  \ingroup controls
  \brief
  */
-class CGUISettingsSliderControl :
-      public CGUISliderControl
+class CGUISettingsSliderControl : public CGUISliderControl
 {
 public:
-  CGUISettingsSliderControl(int parentID, int controlID, float posX, float posY, float width, float height, float sliderWidth, float sliderHeight, const CTextureInfo &textureFocus, const CTextureInfo &textureNoFocus, const CTextureInfo& backGroundTexture, const CTextureInfo& nibTexture, const CTextureInfo& nibTextureFocus, const CLabelInfo &labelInfo, int iType);
+  CGUISettingsSliderControl(int parentID,
+                            int controlID,
+                            float posX,
+                            float posY,
+                            float width,
+                            float height,
+                            float sliderWidth,
+                            float sliderHeight,
+                            const CTextureInfo& textureFocus,
+                            const CTextureInfo& textureNoFocus,
+                            const CTextureInfo& backGroundTexture,
+                            const CTextureInfo& nibTexture,
+                            const CTextureInfo& nibTextureFocus,
+                            const CLabelInfo& labelInfo,
+                            int iType);
   virtual ~CGUISettingsSliderControl(void);
-  virtual CGUISettingsSliderControl *Clone() const { return new CGUISettingsSliderControl(*this); };
+  virtual CGUISettingsSliderControl* Clone() const { return new CGUISettingsSliderControl(*this); };
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
-  virtual bool OnAction(const CAction &action);
+  virtual bool OnAction(const CAction& action);
   void OnUnFocus();
   void SetActive();
   bool IsActive() const { return m_active; };
@@ -55,17 +68,17 @@ public:
   virtual void DynamicResourceAlloc(bool bOnOff);
   virtual void SetInvalid();
   virtual void SetPosition(float posX, float posY);
-  virtual float GetWidth() const { return m_buttonControl.GetWidth();};
+  virtual float GetWidth() const { return m_buttonControl.GetWidth(); };
   virtual void SetWidth(float width);
-  virtual float GetHeight() const { return m_buttonControl.GetHeight();};
+  virtual float GetHeight() const { return m_buttonControl.GetHeight(); };
   virtual void SetHeight(float height);
   virtual void SetEnabled(bool bEnable);
 
-  void SetText(const std::string &label) {m_buttonControl.SetLabel(label);};
-  virtual float GetXPosition() const { return m_buttonControl.GetXPosition();};
-  virtual float GetYPosition() const { return m_buttonControl.GetYPosition();};
+  void SetText(const std::string& label) { m_buttonControl.SetLabel(label); };
+  virtual float GetXPosition() const { return m_buttonControl.GetXPosition(); };
+  virtual float GetYPosition() const { return m_buttonControl.GetYPosition(); };
   virtual std::string GetDescription() const;
-  virtual bool HitTest(const CPoint &point) const { return m_buttonControl.HitTest(point); };
+  virtual bool HitTest(const CPoint& point) const { return m_buttonControl.HitTest(point); };
 
 protected:
   virtual bool UpdateColors();

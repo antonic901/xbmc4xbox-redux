@@ -21,15 +21,19 @@
 #include "VideoLibraryScanningJob.h"
 #include "video/VideoDatabase.h"
 
-CVideoLibraryScanningJob::CVideoLibraryScanningJob(const std::string& directory, bool scanAll /* = false */, bool showProgress /* = true */)
+CVideoLibraryScanningJob::CVideoLibraryScanningJob(const std::string& directory,
+                                                   bool scanAll /* = false */,
+                                                   bool showProgress /* = true */)
   : m_scanner(),
     m_directory(directory),
     m_showProgress(showProgress),
     m_scanAll(scanAll)
-{ }
+{
+}
 
 CVideoLibraryScanningJob::~CVideoLibraryScanningJob()
-{ }
+{
+}
 
 bool CVideoLibraryScanningJob::Cancel()
 {
@@ -49,11 +53,10 @@ bool CVideoLibraryScanningJob::operator==(const CJob* job) const
   if (scanningJob == NULL)
     return false;
 
-  return m_directory == scanningJob->m_directory &&
-         m_scanAll == scanningJob->m_scanAll;
+  return m_directory == scanningJob->m_directory && m_scanAll == scanningJob->m_scanAll;
 }
 
-bool CVideoLibraryScanningJob::Work(CVideoDatabase &db)
+bool CVideoLibraryScanningJob::Work(CVideoDatabase& db)
 {
   m_scanner.ShowDialog(m_showProgress);
   m_scanner.Start(m_directory, m_scanAll);

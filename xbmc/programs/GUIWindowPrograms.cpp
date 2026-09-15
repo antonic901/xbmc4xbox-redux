@@ -25,13 +25,11 @@
 #include "utils/Trainer.h"
 #include "utils/URIUtils.h"
 
-CGUIWindowPrograms::CGUIWindowPrograms(void)
-    : CGUIMediaWindow(WINDOW_PROGRAMS, "MyPrograms.xml")
+CGUIWindowPrograms::CGUIWindowPrograms(void) : CGUIMediaWindow(WINDOW_PROGRAMS, "MyPrograms.xml")
 {
   m_thumbLoader.SetObserver(this);
   m_rootDir.AllowNonLocalSources(false); // no nonlocal shares for this window please
 }
-
 
 CGUIWindowPrograms::~CGUIWindowPrograms(void)
 {
@@ -39,9 +37,9 @@ CGUIWindowPrograms::~CGUIWindowPrograms(void)
 
 bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
 {
-  switch ( message.GetMessage() )
+  switch (message.GetMessage())
   {
-  case GUI_MSG_WINDOW_DEINIT:
+    case GUI_MSG_WINDOW_DEINIT:
     {
       if (m_thumbLoader.IsLoading())
         m_thumbLoader.StopThread();
@@ -49,7 +47,7 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
     }
     break;
 
-  case GUI_MSG_WINDOW_INIT:
+    case GUI_MSG_WINDOW_INIT:
     {
       m_database.Open();
       return CGUIMediaWindow::OnMessage(message);
@@ -60,7 +58,7 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
   return CGUIMediaWindow::OnMessage(message);
 }
 
-bool CGUIWindowPrograms::OnClick(int iItem, const std::string &player)
+bool CGUIWindowPrograms::OnClick(int iItem, const std::string& player)
 {
   if (iItem < 0 || iItem >= m_vecItems->Size())
     return false;
@@ -76,7 +74,7 @@ bool CGUIWindowPrograms::OnClick(int iItem, const std::string &player)
   return CGUIMediaWindow::OnClick(iItem, player);
 }
 
-void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons &buttons)
+void CGUIWindowPrograms::GetContextButtons(int itemNumber, CContextButtons& buttons)
 {
   CFileItemPtr item;
   if (itemNumber >= 0 && itemNumber < m_vecItems->Size())
@@ -123,9 +121,11 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
 
   switch (button)
   {
-  case CONTEXT_BUTTON_DELETE:
+    case CONTEXT_BUTTON_DELETE:
     {
-      if (CGUIDialogYesNo::ShowAndGetInput(646, StringUtils::Format(g_localizeStrings.Get(433).c_str(), item->GetLabel().c_str())))
+      if (CGUIDialogYesNo::ShowAndGetInput(
+              646,
+              StringUtils::Format(g_localizeStrings.Get(433).c_str(), item->GetLabel().c_str())))
       {
         if (URIUtils::IsProtocol(item->GetPath(), "gamesaves"))
         {
@@ -145,14 +145,16 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
       }
       return true;
     }
-  case CONTEXT_BUTTON_GAMESAVES:
+    case CONTEXT_BUTTON_GAMESAVES:
     {
-      std::string strTitleId = LAUNCHERS::CXBELauncher::GetTitleID(item->GetPath(), true).asString();
+      std::string strTitleId =
+          LAUNCHERS::CXBELauncher::GetTitleID(item->GetPath(), true).asString();
       std::string strSaveGamePath = URIUtils::AddFileToFolder("E:\\UDATA\\", strTitleId);
       if (XFILE::CDirectory::Exists(strSaveGamePath))
         Update("gamesaves://" + strTitleId);
       else
-        CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(38779), g_localizeStrings.Get(38772));
+        CGUIDialogKaiToast::QueueNotification(
+            CGUIDialogKaiToast::Info, g_localizeStrings.Get(38779), g_localizeStrings.Get(38772));
       return true;
     }
   }
@@ -165,7 +167,7 @@ bool CGUIWindowPrograms::OnAddMediaSource()
   return CGUIDialogMediaSource::ShowAndAddMediaSource("programs");
 }
 
-bool CGUIWindowPrograms::Update(const std::string &strDirectory, bool updateFilterPath /* = true */)
+bool CGUIWindowPrograms::Update(const std::string& strDirectory, bool updateFilterPath /* = true */)
 {
   if (m_thumbLoader.IsLoading())
     m_thumbLoader.StopThread();
@@ -187,7 +189,7 @@ bool CGUIWindowPrograms::OnPlayMedia(int iItem, const std::string& player)
   return LAUNCHERS::CProgramLauncher::LaunchProgram(m_vecItems->Get(iItem)->GetPath());
 }
 
-bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItemList &items)
+bool CGUIWindowPrograms::GetDirectory(const std::string& strDirectory, CFileItemList& items)
 {
   std::string strDirectory1(strDirectory);
   if (!strDirectory.empty())
@@ -203,7 +205,7 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
   // don't allow the view state to change these
   if (StringUtils::StartsWithNoCase(strDirectory, "addons://"))
   {
-    for (int i=0;i<items.Size();++i)
+    for (int i = 0; i < items.Size(); ++i)
     {
       items[i]->SetLabel2(items[i]->GetProperty("Addon.Version").asString());
       items[i]->SetLabelPreformated(true);
@@ -242,7 +244,7 @@ bool CGUIWindowPrograms::GetDirectory(const std::string &strDirectory, CFileItem
   return true;
 }
 
-std::string CGUIWindowPrograms::GetStartFolder(const std::string &dir)
+std::string CGUIWindowPrograms::GetStartFolder(const std::string& dir)
 {
   if (dir == "Plugins" || dir == "Addons")
     return "addons://sources/executable/";

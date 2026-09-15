@@ -18,34 +18,33 @@
 
 namespace XBMCAddon
 {
-  namespace Python
-  {
-    struct MutableInteger;
+namespace Python
+{
+struct MutableInteger;
 
-    /**
+/**
      * This class supplies the python specific functionality for
      *  plugging into the API. It's got a static only implementation
      *  and uses the singleton pattern for access.
      */
-    class PythonLanguageHook : public XBMCAddon::LanguageHook
-    {
-      PyInterpreterState* m_interp;
-      CCriticalSection crit;
-      std::set<AddonClass*> currentObjects;
+class PythonLanguageHook : public XBMCAddon::LanguageHook
+{
+  PyInterpreterState* m_interp;
+  CCriticalSection crit;
+  std::set<AddonClass*> currentObjects;
 
-      // This constructor is only used to instantiate the global LanguageHook
-      inline PythonLanguageHook() : m_interp(NULL)  {  }
+  // This constructor is only used to instantiate the global LanguageHook
+  inline PythonLanguageHook() : m_interp(NULL) {}
 
-    public:
+public:
+  inline explicit PythonLanguageHook(PyInterpreterState* interp) : m_interp(interp) {}
+  virtual ~PythonLanguageHook();
 
-      inline explicit PythonLanguageHook(PyInterpreterState* interp) : m_interp(interp)  {  }
-      virtual ~PythonLanguageHook();
+  virtual void DelayedCallOpen();
+  virtual void DelayedCallClose();
+  virtual void MakePendingCalls();
 
-      virtual void DelayedCallOpen();
-      virtual void DelayedCallClose();
-      virtual void MakePendingCalls();
-
-      /**
+  /**
        * PythonCallbackHandler expects to be instantiated PER AddonClass instance
        *  that is to be used as a callback. This is why this cannot be instantiated
        *  once.
@@ -57,33 +56,36 @@ namespace XBMCAddon
        * See PythonCallbackHandler for more details
        * See PythonCallbackHandler::PythonCallbackHandler for more details
        */
-      virtual XBMCAddon::CallbackHandler* GetCallbackHandler();
+  virtual XBMCAddon::CallbackHandler* GetCallbackHandler();
 
-      virtual String GetAddonId();
-      virtual String GetAddonVersion();
-      virtual long GetInvokerId();
+  virtual String GetAddonId();
+  virtual String GetAddonVersion();
+  virtual long GetInvokerId();
 
-      virtual void RegisterPlayerCallback(IPlayerCallback* player);
-      virtual void UnregisterPlayerCallback(IPlayerCallback* player);
-      virtual void RegisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor);
-      virtual void UnregisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor);
-      virtual bool WaitForEvent(CEvent& hEvent, unsigned int milliseconds);
+  virtual void RegisterPlayerCallback(IPlayerCallback* player);
+  virtual void UnregisterPlayerCallback(IPlayerCallback* player);
+  virtual void RegisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor);
+  virtual void UnregisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor);
+  virtual bool WaitForEvent(CEvent& hEvent, unsigned int milliseconds);
 
-      static AddonClass::Ref<PythonLanguageHook> GetIfExists(PyInterpreterState* interp);
-      static bool IsAddonClassInstanceRegistered(AddonClass* obj);
+  static AddonClass::Ref<PythonLanguageHook> GetIfExists(PyInterpreterState* interp);
+  static bool IsAddonClassInstanceRegistered(AddonClass* obj);
 
-      void RegisterAddonClassInstance(AddonClass* obj);
-      void UnregisterAddonClassInstance(AddonClass* obj);
-      bool HasRegisteredAddonClassInstance(AddonClass* obj);
-      inline bool HasRegisteredAddonClasses() { CSingleLock l(*this); return !currentObjects.empty(); }
-
-      // You should hold the lock on the LanguageHook itself if you're
-      // going to do anything with the set that gets returned.
-      inline std::set<AddonClass*>& GetRegisteredAddonClasses() { return currentObjects; }
-
-      void UnregisterMe();
-      void RegisterMe();
-    };
+  void RegisterAddonClassInstance(AddonClass* obj);
+  void UnregisterAddonClassInstance(AddonClass* obj);
+  bool HasRegisteredAddonClassInstance(AddonClass* obj);
+  inline bool HasRegisteredAddonClasses()
+  {
+    CSingleLock l(*this);
+    return !currentObjects.empty();
   }
-}
 
+  // You should hold the lock on the LanguageHook itself if you're
+  // going to do anything with the set that gets returned.
+  inline std::set<AddonClass*>& GetRegisteredAddonClasses() { return currentObjects; }
+
+  void UnregisterMe();
+  void RegisterMe();
+};
+} // namespace Python
+} // namespace XBMCAddon

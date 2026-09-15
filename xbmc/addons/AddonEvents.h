@@ -24,31 +24,33 @@
 
 namespace ADDON
 {
-  struct AddonEvent
-  {
-    virtual ~AddonEvent() {};
-  };
-
-  namespace AddonEvents
-  {
-    struct Enabled : AddonEvent
-    {
-      std::string id;
-      Enabled(std::string id) : id(boost::move(id)) {}
-    };
-
-    struct Disabled : AddonEvent
-    {
-      std::string id;
-      Disabled(std::string id) : id(boost::move(id)) {}
-    };
-
-    struct MetadataChanged : AddonEvent
-    {
-      std::string id;
-      MetadataChanged(std::string id) : id(boost::move(id)) {}
-    };
-
-    struct InstalledChanged : AddonEvent {};
-  };
+struct AddonEvent
+{
+  virtual ~AddonEvent() {};
 };
+
+namespace AddonEvents
+{
+struct Enabled : AddonEvent
+{
+  std::string id;
+  Enabled(std::string id) : id(boost::move(id)) {}
+};
+
+struct Disabled : AddonEvent
+{
+  std::string id;
+  Disabled(std::string id) : id(boost::move(id)) {}
+};
+
+struct MetadataChanged : AddonEvent
+{
+  std::string id;
+  MetadataChanged(std::string id) : id(boost::move(id)) {}
+};
+
+struct InstalledChanged : AddonEvent
+{
+};
+}; // namespace AddonEvents
+}; // namespace ADDON

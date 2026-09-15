@@ -47,14 +47,14 @@ public:
   CGUIColorManager(void);
   virtual ~CGUIColorManager(void);
 
-  void Load(const std::string &colorFile);
+  void Load(const std::string& colorFile);
 
-  color_t GetColor(const std::string &color) const;
+  color_t GetColor(const std::string& color) const;
 
   void Clear();
 
 protected:
-  bool LoadXML(CXBMCTinyXML &xmlDoc);
+  bool LoadXML(CXBMCTinyXML& xmlDoc);
 
   std::map<std::string, color_t> m_colors;
   typedef std::map<std::string, color_t>::iterator iColor;

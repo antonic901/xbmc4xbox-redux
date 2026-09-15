@@ -37,11 +37,11 @@
 #include "utils/Variant.h"
 
 CSeekHandler::CSeekHandler()
-: m_seekDelay(500),
-  m_requireSeek(false),
-  m_analogSeek(false),
-  m_seekSize(0),
-  m_seekStep(0)
+  : m_seekDelay(500),
+    m_requireSeek(false),
+    m_analogSeek(false),
+    m_seekSize(0),
+    m_seekStep(0)
 {
 }
 
@@ -63,8 +63,10 @@ void CSeekHandler::Configure()
   Reset();
 
   m_seekDelays.clear();
-  m_seekDelays.insert(std::make_pair(SEEK_TYPE_VIDEO, CSettings::GetInstance().GetInt("videoplayer.seekdelay")));
-  m_seekDelays.insert(std::make_pair(SEEK_TYPE_MUSIC, CSettings::GetInstance().GetInt("musicplayer.seekdelay")));
+  m_seekDelays.insert(
+      std::make_pair(SEEK_TYPE_VIDEO, CSettings::GetInstance().GetInt("videoplayer.seekdelay")));
+  m_seekDelays.insert(
+      std::make_pair(SEEK_TYPE_MUSIC, CSettings::GetInstance().GetInt("musicplayer.seekdelay")));
 
   m_forwardSeekSteps.clear();
   m_backwardSeekSteps.clear();
@@ -73,7 +75,8 @@ void CSeekHandler::Configure()
   seekTypeSettingMap.insert(std::make_pair(SEEK_TYPE_VIDEO, "videoplayer.seeksteps"));
   seekTypeSettingMap.insert(std::make_pair(SEEK_TYPE_MUSIC, "musicplayer.seeksteps"));
 
-  for (std::map<SeekType, std::string>::iterator it = seekTypeSettingMap.begin(); it!=seekTypeSettingMap.end(); ++it)
+  for (std::map<SeekType, std::string>::iterator it = seekTypeSettingMap.begin();
+       it != seekTypeSettingMap.end(); ++it)
   {
     std::vector<int> forwardSeekSteps;
     std::vector<int> backwardSeekSteps;
@@ -107,7 +110,8 @@ int CSeekHandler::GetSeekStepSize(SeekType type, int step)
   if (step == 0)
     return 0;
 
-  std::vector<int> seekSteps(step > 0 ? m_forwardSeekSteps.find(type)->second : m_backwardSeekSteps.find(type)->second);
+  std::vector<int> seekSteps(step > 0 ? m_forwardSeekSteps.find(type)->second
+                                      : m_backwardSeekSteps.find(type)->second);
 
   if (seekSteps.empty())
   {
@@ -127,7 +131,11 @@ int CSeekHandler::GetSeekStepSize(SeekType type, int step)
   return seconds;
 }
 
-void CSeekHandler::Seek(bool forward, float amount, float duration /* = 0 */, bool analogSeek /* = false */, SeekType type /* = SEEK_TYPE_VIDEO */)
+void CSeekHandler::Seek(bool forward,
+                        float amount,
+                        float duration /* = 0 */,
+                        bool analogSeek /* = false */,
+                        SeekType type /* = SEEK_TYPE_VIDEO */)
 {
   CSingleLock lock(m_critSection);
 
@@ -151,7 +159,7 @@ void CSeekHandler::Seek(bool forward, float amount, float duration /* = 0 */, bo
   {
     //100% over 1 second.
     float speed = 100.0f;
-    if( duration )
+    if (duration)
       speed *= duration;
     else
       speed /= g_graphicsContext.GetFPS();
@@ -227,34 +235,37 @@ void CSeekHandler::FrameMove()
   }
 }
 
-void CSeekHandler::SettingOptionsSeekStepsFiller(const CSetting *setting, std::vector< std::pair<std::string, int> > &list, int &current, void *data)
+void CSeekHandler::SettingOptionsSeekStepsFiller(const CSetting* setting,
+                                                 std::vector<std::pair<std::string, int> >& list,
+                                                 int& current,
+                                                 void* data)
 {
   std::string label;
-  for (std::vector<int>::iterator it = g_advancedSettings.m_seekSteps.begin(); it != g_advancedSettings.m_seekSteps.end(); ++it) {
+  for (std::vector<int>::iterator it = g_advancedSettings.m_seekSteps.begin();
+       it != g_advancedSettings.m_seekSteps.end(); ++it)
+  {
     int seconds = *it;
     if (seconds > 60)
       label = StringUtils::Format(g_localizeStrings.Get(14044).c_str(), seconds / 60);
     else
       label = StringUtils::Format(g_localizeStrings.Get(14045).c_str(), seconds);
 
-    list.insert(list.begin(), make_pair("-" + label, seconds*-1));
+    list.insert(list.begin(), make_pair("-" + label, seconds * -1));
     list.push_back(make_pair(label, seconds));
   }
 }
 
-void CSeekHandler::OnSettingChanged(const CSetting *setting)
+void CSeekHandler::OnSettingChanged(const CSetting* setting)
 {
   if (setting == NULL)
     return;
 
-  if (setting->GetId() == "videoplayer.seekdelay" ||
-      setting->GetId() == "videoplayer.seeksteps" ||
-      setting->GetId() == "musicplayer.seekdelay" ||
-      setting->GetId() == "musicplayer.seeksteps")
+  if (setting->GetId() == "videoplayer.seekdelay" || setting->GetId() == "videoplayer.seeksteps" ||
+      setting->GetId() == "musicplayer.seekdelay" || setting->GetId() == "musicplayer.seeksteps")
     Configure();
 }
 
-bool CSeekHandler::OnAction(const CAction &action)
+bool CSeekHandler::OnAction(const CAction& action)
 {
   if (!g_application.m_pPlayer->IsPlaying() || !g_application.m_pPlayer->CanSeek())
     return false;
@@ -286,7 +297,8 @@ bool CSeekHandler::OnAction(const CAction &action)
     case ACTION_BIG_STEP_FORWARD:
     case ACTION_CHAPTER_OR_BIG_STEP_FORWARD:
     {
-      g_application.m_pPlayer->Seek(true, true, action.GetID() == ACTION_CHAPTER_OR_BIG_STEP_FORWARD);
+      g_application.m_pPlayer->Seek(true, true,
+                                    action.GetID() == ACTION_CHAPTER_OR_BIG_STEP_FORWARD);
       return true;
     }
     case ACTION_NEXT_SCENE:
@@ -303,7 +315,8 @@ bool CSeekHandler::OnAction(const CAction &action)
     case ACTION_ANALOG_SEEK_BACK:
     {
       if (action.GetAmount())
-        Seek(action.GetID() == ACTION_ANALOG_SEEK_FORWARD, action.GetAmount(), action.GetRepeat(), true);
+        Seek(action.GetID() == ACTION_ANALOG_SEEK_FORWARD, action.GetAmount(), action.GetRepeat(),
+             true);
       return true;
     }
     case REMOTE_0:
@@ -331,7 +344,7 @@ bool CSeekHandler::OnAction(const CAction &action)
   return false;
 }
 
-bool CSeekHandler::SeekTimeCode(const CAction &action)
+bool CSeekHandler::SeekTimeCode(const CAction& action)
 {
   if (m_timeCodePosition <= 0)
     return false;
@@ -391,8 +404,8 @@ void CSeekHandler::ChangeTimeCode(int remote)
         m_timeCodeStamp[i] = m_timeCodeStamp[i + 1];
       m_timeCodeStamp[5] = remote - REMOTE_0;
     }
-   }
- }
+  }
+}
 
 int CSeekHandler::GetTimeCodeSeconds() const
 {
@@ -404,8 +417,10 @@ int CSeekHandler::GetTimeCodeSeconds() const
       tot = tot * 10 + m_timeCodeStamp[i];
 
     // Interpret result as HHMMSS
-    int s = tot % 100; tot /= 100;
-    int m = tot % 100; tot /= 100;
+    int s = tot % 100;
+    tot /= 100;
+    int m = tot % 100;
+    tot /= 100;
     int h = tot % 100;
 
     return h * 3600 + m * 60 + s;

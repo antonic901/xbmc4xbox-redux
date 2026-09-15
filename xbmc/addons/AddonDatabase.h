@@ -38,23 +38,29 @@ public:
   bool GetAddon(const std::string& addonID, ADDON::AddonPtr& addon);
 
   /*! \brief Get an addon with a specific version and repository. */
-  bool GetAddon(const std::string& addonID, const ADDON::AddonVersion& version, const std::string& repoId, ADDON::AddonPtr& addon);
+  bool GetAddon(const std::string& addonID,
+                const ADDON::AddonVersion& version,
+                const std::string& repoId,
+                ADDON::AddonPtr& addon);
 
   /*! Get the addon IDs that has been set to disabled */
   bool GetDisabled(std::set<std::string>& addons);
 
   /*! @deprecated: use FindByAddonId */
-  bool GetAvailableVersions(const std::string& addonId,
+  bool GetAvailableVersions(
+      const std::string& addonId,
       std::vector<std::pair<ADDON::AddonVersion, std::string> >& versionsInfo);
 
   /*! @deprecated use CAddonMgr::FindInstallableById */
-  std::pair<ADDON::AddonVersion, std::string> GetAddonVersion(const std::string &id);
+  std::pair<ADDON::AddonVersion, std::string> GetAddonVersion(const std::string& id);
 
   /*! Returns all addons in the repositories with id `addonId`. */
   bool FindByAddonId(const std::string& addonId, ADDON::VECADDONS& addons);
 
-  bool UpdateRepositoryContent(const std::string& repositoryId, const ADDON::AddonVersion& version,
-      const std::string& checksum, const std::vector<ADDON::AddonPtr>& addons);
+  bool UpdateRepositoryContent(const std::string& repositoryId,
+                               const ADDON::AddonVersion& version,
+                               const std::string& checksum,
+                               const std::vector<ADDON::AddonPtr>& addons);
 
   int GetRepoChecksum(const std::string& id, std::string& checksum);
 
@@ -73,7 +79,9 @@ public:
    \param id id of the repository
    \returns id of the repository, or -1 on error.
    */
-  int SetLastChecked(const std::string& id, const ADDON::AddonVersion& version, const std::string& timestamp);
+  int SetLastChecked(const std::string& id,
+                     const ADDON::AddonVersion& version,
+                     const std::string& timestamp);
 
   /*!
    \brief Retrieve the time a repository was last checked and the version it was for
@@ -90,7 +98,7 @@ public:
    \param disable whether to enable or disable.  Defaults to true (disable)
    \return true on success, false on failure
    \sa IsAddonDisabled, HasDisabledAddons */
-  bool DisableAddon(const std::string &addonID, bool disable = true);
+  bool DisableAddon(const std::string& addonID, bool disable = true);
 
   /*! \brief Mark an addon as broken
    Sets a flag that this addon has been marked as broken in the repository.
@@ -98,12 +106,12 @@ public:
    \param reason why it is broken - if non empty we take it as broken.  Defaults to empty
    \return true on success, false on failure
    \sa IsAddonBroken */
-  bool BreakAddon(const std::string &addonID, const std::string& reason="");
+  bool BreakAddon(const std::string& addonID, const std::string& reason = "");
 
   /*! \brief Check whether an addon has been marked as broken via BreakAddon.
    \param addonID id of the addon to check
    \sa BreakAddon */
-  bool IsAddonBroken(const std::string &addonID);
+  bool IsAddonBroken(const std::string& addonID);
 
   bool BlacklistAddon(const std::string& addonID);
   bool RemoveAddonFromBlacklist(const std::string& addonID);
@@ -128,7 +136,7 @@ public:
   */
   bool GetPackageHash(const std::string& addonID,
                       const std::string& packageFileName,
-                      std::string&       hash);
+                      std::string& hash);
   /*! \brief Remove a package's info from the database
       \param  packageFileName filename of the package
       \return Whether or not we succeeded in removing the package
@@ -149,16 +157,14 @@ public:
   bool SetOrigin(const std::string& addonId, const std::string& origin);
   bool SetLastUsed(const std::string& addonId, const CDateTime& dateTime);
 
-
 protected:
   virtual void CreateTables();
   virtual void CreateAnalytics();
   virtual void UpdateTables(int version);
   virtual int GetMinSchemaVersion() const;
   virtual int GetSchemaVersion() const;
-  const char *GetBaseDBName() const { return "Addons"; }
+  const char* GetBaseDBName() const { return "Addons"; }
 
   bool GetAddon(int id, ADDON::AddonPtr& addon);
   void DeleteRepository(const std::string& id);
 };
-

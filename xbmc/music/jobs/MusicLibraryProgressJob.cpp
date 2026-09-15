@@ -22,9 +22,10 @@
 
 CMusicLibraryProgressJob::CMusicLibraryProgressJob(CGUIDialogProgressBarHandle* progressBar)
   : CProgressJob(progressBar)
-{ }
+{
+}
 
-CMusicLibraryProgressJob::~CMusicLibraryProgressJob() { };
+CMusicLibraryProgressJob::~CMusicLibraryProgressJob() {};
 
 bool CMusicLibraryProgressJob::DoWork()
 {

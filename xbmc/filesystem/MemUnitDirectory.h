@@ -19,22 +19,22 @@
  *
  */
 
-
 #include "IDirectory.h"
 #include "MemoryUnits/IFileSystem.h"
 
 namespace XFILE
 {
-  class CMemUnitDirectory : public IDirectory
-  {
-  public:
-    CMemUnitDirectory(void);
-    virtual ~CMemUnitDirectory(void);
-    virtual bool GetDirectory(const CURL& url, CFileItemList &items);
-    virtual bool Create(const CURL& url);
-    virtual bool Exists(const CURL& url);
-    virtual bool Remove(const CURL& url);
-  protected:
-    IFileSystem *GetFileSystem(const CStdString &path);
-  };
+class CMemUnitDirectory : public IDirectory
+{
+public:
+  CMemUnitDirectory(void);
+  virtual ~CMemUnitDirectory(void);
+  virtual bool GetDirectory(const CURL& url, CFileItemList& items);
+  virtual bool Create(const CURL& url);
+  virtual bool Exists(const CURL& url);
+  virtual bool Remove(const CURL& url);
+
+protected:
+  IFileSystem* GetFileSystem(const CStdString& path);
 };
+}; // namespace XFILE

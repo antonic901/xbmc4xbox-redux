@@ -25,9 +25,12 @@
 
 using namespace XFILE::VIDEODATABASEDIRECTORY;
 
-CDirectoryNodeGrouped::CDirectoryNodeGrouped(NODE_TYPE type, const std::string& strName, CDirectoryNode* pParent)
+CDirectoryNodeGrouped::CDirectoryNodeGrouped(NODE_TYPE type,
+                                             const std::string& strName,
+                                             CDirectoryNode* pParent)
   : CDirectoryNode(type, strName, pParent)
-{ }
+{
+}
 
 NODE_TYPE CDirectoryNodeGrouped::GetChildType() const
 {
@@ -74,7 +77,8 @@ bool CDirectoryNodeGrouped::GetContent(CFileItemList& items) const
   if (!videoUrl.FromString(BuildPath()))
     return false;
 
-  return videodatabase.GetItems(videoUrl.ToString(), (VIDEODB_CONTENT_TYPE)params.GetContentType(), itemType, items);
+  return videodatabase.GetItems(videoUrl.ToString(), (VIDEODB_CONTENT_TYPE)params.GetContentType(),
+                                itemType, items);
 }
 
 std::string CDirectoryNodeGrouped::GetContentType() const
@@ -85,7 +89,7 @@ std::string CDirectoryNodeGrouped::GetContentType() const
   return GetContentType(params);
 }
 
-std::string CDirectoryNodeGrouped::GetContentType(const CQueryParams &params) const
+std::string CDirectoryNodeGrouped::GetContentType(const CQueryParams& params) const
 {
   switch (GetType())
   {

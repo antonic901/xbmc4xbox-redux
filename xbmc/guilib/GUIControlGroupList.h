@@ -34,21 +34,32 @@
 class CGUIControlGroupList : public CGUIControlGroup
 {
 public:
-  CGUIControlGroupList(int parentID, int controlID, float posX, float posY, float width, float height, float itemGap, int pageControl, ORIENTATION orientation, bool useControlPositions, uint32_t alignment, const CScroller& scroller);
+  CGUIControlGroupList(int parentID,
+                       int controlID,
+                       float posX,
+                       float posY,
+                       float width,
+                       float height,
+                       float itemGap,
+                       int pageControl,
+                       ORIENTATION orientation,
+                       bool useControlPositions,
+                       uint32_t alignment,
+                       const CScroller& scroller);
   virtual ~CGUIControlGroupList(void);
-  virtual CGUIControlGroupList *Clone() const { return new CGUIControlGroupList(*this); };
+  virtual CGUIControlGroupList* Clone() const { return new CGUIControlGroupList(*this); };
 
   virtual float GetWidth() const;
   virtual float GetHeight() const;
   virtual float Size() const;
 
-  virtual void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
+  virtual void Process(unsigned int currentTime, CDirtyRegionList& dirtyregions);
   virtual void Render();
   virtual bool OnMessage(CGUIMessage& message);
 
-  virtual void UnfocusFromPoint(const CPoint &point);
+  virtual void UnfocusFromPoint(const CPoint& point);
 
-  virtual void AddControl(CGUIControl *control, int position = -1);
+  virtual void AddControl(CGUIControl* control, int position = -1);
   virtual void ClearAll();
 
   virtual std::string GetLabel(int info) const;
@@ -61,13 +72,14 @@ public:
 
   // based on grouplist orientation pick one value as minSize;
   void SetMinSize(float minWidth, float minHeight);
+
 protected:
   bool IsControlOnScreen(float pos, const CGUIControl* control) const;
-  bool IsFirstFocusableControl(const CGUIControl *control) const;
-  bool IsLastFocusableControl(const CGUIControl *control) const;
+  bool IsFirstFocusableControl(const CGUIControl* control) const;
+  bool IsLastFocusableControl(const CGUIControl* control) const;
   void ValidateOffset();
   void CalculateItemGap();
-  inline float Size(const CGUIControl *control) const;
+  inline float Size(const CGUIControl* control) const;
   void ScrollTo(float offset);
   float GetAlignOffset() const;
 
@@ -89,4 +101,3 @@ protected:
   // for autosizing
   float m_minSize;
 };
-

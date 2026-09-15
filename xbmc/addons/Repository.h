@@ -31,70 +31,71 @@ struct cp_cfg_element_t;
 
 namespace ADDON
 {
-  class CRepository : public CAddon
+class CRepository : public CAddon
+{
+public:
+  struct DirInfo
   {
-  public:
-    struct DirInfo
-    {
-      DirInfo() : version("0.0.0"), hashes(false) {}
-      AddonVersion version;
-      std::string info;
-      std::string checksum;
-      std::string datadir;
-      std::string artdir;
-      bool hashes;
-    };
+    DirInfo() : version("0.0.0"), hashes(false) {}
+    AddonVersion version;
+    std::string info;
+    std::string checksum;
+    std::string datadir;
+    std::string artdir;
+    bool hashes;
+  };
 
-    typedef std::vector<DirInfo> DirList;
+  typedef std::vector<DirInfo> DirList;
 
-    static boost::movelib::unique_ptr<CRepository> FromExtension(AddonProps props, const cp_extension_t* ext);
+  static boost::movelib::unique_ptr<CRepository> FromExtension(AddonProps props,
+                                                               const cp_extension_t* ext);
 
-    explicit CRepository(AddonProps props) : CAddon(boost::move(props)) {};
-    CRepository(AddonProps props, DirList dirs);
+  explicit CRepository(AddonProps props) : CAddon(boost::move(props)) {};
+  CRepository(AddonProps props, DirList dirs);
 
-    /*! \brief Get the md5 hash for an addon.
+  /*! \brief Get the md5 hash for an addon.
      \param the addon in question.
      */
-    bool GetAddonHash(const AddonPtr& addon, std::string& checksum) const;
+  bool GetAddonHash(const AddonPtr& addon, std::string& checksum) const;
 
-    enum FetchStatus
-    {
-      STATUS_OK,
-      STATUS_NOT_MODIFIED,
-      STATUS_ERROR
-    };
-
-    FetchStatus FetchIfChanged(const std::string& oldChecksum, std::string& checksum, VECADDONS& addons) const;
-
-    struct ResolveResult
-    {
-      std::string location;
-      std::string hash;
-    };
-    ResolveResult ResolvePathAndHash(AddonPtr const& addon) const;
-
-  private:
-    static bool FetchChecksum(const std::string& url, std::string& checksum);
-    static bool FetchIndex(const DirInfo& repo, VECADDONS& addons);
-
-    static DirInfo ParseDirConfiguration(cp_cfg_element_t* configuration);
-
-    DirList m_dirs;
-  };
-
-  typedef boost::shared_ptr<CRepository> RepositoryPtr;
-
-
-  class CRepositoryUpdateJob : public CProgressJob
+  enum FetchStatus
   {
-  public:
-    CRepositoryUpdateJob(const RepositoryPtr& repo);
-    virtual ~CRepositoryUpdateJob() {}
-    virtual bool DoWork();
-    const RepositoryPtr& GetAddon() const { return m_repo; };
-
-  private:
-    const RepositoryPtr m_repo;
+    STATUS_OK,
+    STATUS_NOT_MODIFIED,
+    STATUS_ERROR
   };
-}
 
+  FetchStatus FetchIfChanged(const std::string& oldChecksum,
+                             std::string& checksum,
+                             VECADDONS& addons) const;
+
+  struct ResolveResult
+  {
+    std::string location;
+    std::string hash;
+  };
+  ResolveResult ResolvePathAndHash(AddonPtr const& addon) const;
+
+private:
+  static bool FetchChecksum(const std::string& url, std::string& checksum);
+  static bool FetchIndex(const DirInfo& repo, VECADDONS& addons);
+
+  static DirInfo ParseDirConfiguration(cp_cfg_element_t* configuration);
+
+  DirList m_dirs;
+};
+
+typedef boost::shared_ptr<CRepository> RepositoryPtr;
+
+class CRepositoryUpdateJob : public CProgressJob
+{
+public:
+  CRepositoryUpdateJob(const RepositoryPtr& repo);
+  virtual ~CRepositoryUpdateJob() {}
+  virtual bool DoWork();
+  const RepositoryPtr& GetAddon() const { return m_repo; };
+
+private:
+  const RepositoryPtr m_repo;
+};
+} // namespace ADDON

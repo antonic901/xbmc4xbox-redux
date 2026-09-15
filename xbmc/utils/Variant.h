@@ -14,12 +14,12 @@
 #include <stdint.h>
 #include <wchar.h>
 
-int64_t str2int64(const std::string &str, int64_t fallback = 0);
-int64_t str2int64(const std::wstring &str, int64_t fallback = 0);
-uint64_t str2uint64(const std::string &str, uint64_t fallback = 0);
-uint64_t str2uint64(const std::wstring &str, uint64_t fallback = 0);
-double str2double(const std::string &str, double fallback = 0.0);
-double str2double(const std::wstring &str, double fallback = 0.0);
+int64_t str2int64(const std::string& str, int64_t fallback = 0);
+int64_t str2int64(const std::wstring& str, int64_t fallback = 0);
+uint64_t str2uint64(const std::string& str, uint64_t fallback = 0);
+uint64_t str2uint64(const std::wstring& str, uint64_t fallback = 0);
+double str2double(const std::string& str, double fallback = 0.0);
+double str2double(const std::wstring& str, double fallback = 0.0);
 
 #ifdef TARGET_WINDOWS_STORE
 #pragma pack(push)
@@ -51,19 +51,17 @@ public:
   CVariant(double value);
   CVariant(float value);
   CVariant(bool boolean);
-  CVariant(const char *str);
-  CVariant(const char *str, unsigned int length);
-  CVariant(const std::string &str);
-  CVariant(const wchar_t *str);
-  CVariant(const wchar_t *str, unsigned int length);
-  CVariant(const std::wstring &str);
-  CVariant(const std::vector<std::string> &strArray);
-  CVariant(const std::map<std::string, std::string> &strMap);
-  CVariant(const std::map<std::string, CVariant> &variantMap);
-  CVariant(const CVariant &variant);
+  CVariant(const char* str);
+  CVariant(const char* str, unsigned int length);
+  CVariant(const std::string& str);
+  CVariant(const wchar_t* str);
+  CVariant(const wchar_t* str, unsigned int length);
+  CVariant(const std::wstring& str);
+  CVariant(const std::vector<std::string>& strArray);
+  CVariant(const std::map<std::string, std::string>& strMap);
+  CVariant(const std::map<std::string, CVariant>& variantMap);
+  CVariant(const CVariant& variant);
   ~CVariant();
-
-
 
   bool isInteger() const;
   bool isSignedInteger() const;
@@ -83,37 +81,37 @@ public:
   uint64_t asUnsignedInteger(uint64_t fallback = 0u) const;
   uint32_t asUnsignedInteger32(uint32_t fallback = 0u) const;
   bool asBoolean(bool fallback = false) const;
-  std::string asString(const std::string &fallback = "") const;
-  std::wstring asWideString(const std::wstring &fallback = L"") const;
+  std::string asString(const std::string& fallback = "") const;
+  std::wstring asWideString(const std::wstring& fallback = L"") const;
   double asDouble(double fallback = 0.0) const;
   float asFloat(float fallback = 0.0f) const;
 
-  CVariant &operator[](const std::string &key);
-  const CVariant &operator[](const std::string &key) const;
-  CVariant &operator[](unsigned int position);
-  const CVariant &operator[](unsigned int position) const;
+  CVariant& operator[](const std::string& key);
+  const CVariant& operator[](const std::string& key) const;
+  CVariant& operator[](unsigned int position);
+  const CVariant& operator[](unsigned int position) const;
 
-  CVariant &operator=(const CVariant &rhs);
-  bool operator==(const CVariant &rhs) const;
-  bool operator!=(const CVariant &rhs) const { return !(*this == rhs); }
+  CVariant& operator=(const CVariant& rhs);
+  bool operator==(const CVariant& rhs) const;
+  bool operator!=(const CVariant& rhs) const { return !(*this == rhs); }
 
-  void push_back(const CVariant &variant);
-  void append(const CVariant &variant);
+  void push_back(const CVariant& variant);
+  void append(const CVariant& variant);
 
-  const char *c_str() const;
+  const char* c_str() const;
 
-  void swap(CVariant &rhs);
+  void swap(CVariant& rhs);
 
 private:
   typedef std::vector<CVariant> VariantArray;
   typedef std::map<std::string, CVariant> VariantMap;
 
 public:
-  typedef VariantArray::iterator        iterator_array;
-  typedef VariantArray::const_iterator  const_iterator_array;
+  typedef VariantArray::iterator iterator_array;
+  typedef VariantArray::const_iterator const_iterator_array;
 
-  typedef VariantMap::iterator          iterator_map;
-  typedef VariantMap::const_iterator    const_iterator_map;
+  typedef VariantMap::iterator iterator_map;
+  typedef VariantMap::const_iterator const_iterator_map;
 
   iterator_array begin_array();
   const_iterator_array begin_array() const;
@@ -128,10 +126,10 @@ public:
   unsigned int size() const;
   bool empty() const;
   void clear();
-  void erase(const std::string &key);
+  void erase(const std::string& key);
   void erase(unsigned int position);
 
-  bool isMember(const std::string &key) const;
+  bool isMember(const std::string& key) const;
 
   static CVariant ConstNullVariant;
 
@@ -143,10 +141,10 @@ private:
     uint64_t unsignedinteger;
     bool boolean;
     double dvalue;
-    std::string *string;
-    std::wstring *wstring;
-    VariantArray *array;
-    VariantMap *map;
+    std::string* string;
+    std::wstring* wstring;
+    VariantArray* array;
+    VariantMap* map;
   };
 
   VariantType m_type;
@@ -159,4 +157,3 @@ private:
 #ifdef TARGET_WINDOWS_STORE
 #pragma pack(pop)
 #endif
-

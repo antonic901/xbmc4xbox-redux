@@ -30,4 +30,3 @@
 #elif (defined TARGET_WINDOWS) || (defined _XBOX)
 #include "threads/platform/win/ThreadImpl.cpp"
 #endif
-

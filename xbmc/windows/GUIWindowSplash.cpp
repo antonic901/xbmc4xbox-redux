@@ -33,7 +33,6 @@ CGUIWindowSplash::CGUIWindowSplash(void) : CGUIWindow(WINDOW_SPLASH, "")
 
 CGUIWindowSplash::~CGUIWindowSplash(void)
 {
-
 }
 
 void CGUIWindowSplash::OnInitWindow()
@@ -44,7 +43,9 @@ void CGUIWindowSplash::OnInitWindow()
 
   CLog::Log(LOGINFO, "load splash image: %s", CSpecialProtocol::TranslatePath(splashImage).c_str());
 
-  m_image = boost::movelib::unique_ptr<CGUIImage>(new CGUIImage(0, 0, 0, 0, g_graphicsContext.GetWidth(), g_graphicsContext.GetHeight(), CTextureInfo(splashImage)));
+  m_image = boost::movelib::unique_ptr<CGUIImage>(
+      new CGUIImage(0, 0, 0, 0, g_graphicsContext.GetWidth(), g_graphicsContext.GetHeight(),
+                    CTextureInfo(splashImage)));
   m_image->SetAspectRatio(CAspectRatio::AR_SCALE);
 }
 

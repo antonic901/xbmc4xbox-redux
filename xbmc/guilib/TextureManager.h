@@ -44,12 +44,12 @@ public:
 
   void Reset();
 
-  void Add(CBaseTexture *texture, int delay);
-  void Set(CBaseTexture *texture, int width, int height);
+  void Add(CBaseTexture* texture, int delay);
+  void Set(CBaseTexture* texture, int width, int height);
   void Free();
   unsigned int size() const;
 
-  std::vector<CBaseTexture* > m_textures;
+  std::vector<CBaseTexture*> m_textures;
   std::vector<int> m_delays;
   int m_width;
   int m_height;
@@ -85,6 +85,7 @@ public:
   bool IsEmpty() const;
   void SetHeight(int height);
   void SetWidth(int height);
+
 protected:
   void FreeTexture();
 
@@ -113,8 +114,13 @@ public:
   void EndPreLoad();
   void FlushPreLoad();
 #endif
-  bool HasTexture(const std::string &textureName, std::string *path = NULL, int *bundle = NULL, int *size = NULL);
-  static bool CanLoad(const std::string &texturePath); ///< Returns true if the texture manager can load this texture
+  bool HasTexture(const std::string& textureName,
+                  std::string* path = NULL,
+                  int* bundle = NULL,
+                  int* size = NULL);
+  static bool CanLoad(
+      const std::string&
+          texturePath); ///< Returns true if the texture manager can load this texture
   const CTextureArray& Load(const std::string& strTextureName, bool checkBundleOnly = false);
   void ReleaseTexture(const std::string& strTextureName, bool immediately = false);
   void Cleanup();
@@ -122,14 +128,20 @@ public:
   uint32_t GetMemoryUsage() const;
   void Flush();
   std::string GetTexturePath(const std::string& textureName, bool directory = false);
-  void GetBundledTexturesFromPath(const std::string& texturePath, std::vector<std::string> &items);
+  void GetBundledTexturesFromPath(const std::string& texturePath, std::vector<std::string>& items);
 
-  void AddTexturePath(const std::string &texturePath);    ///< Add a new path to the paths to check when loading media
-  void SetTexturePath(const std::string &texturePath);    ///< Set a single path as the path to check when loading media (clear then add)
-  void RemoveTexturePath(const std::string &texturePath); ///< Remove a path from the paths to check when loading media
+  void AddTexturePath(
+      const std::string& texturePath); ///< Add a new path to the paths to check when loading media
+  void SetTexturePath(
+      const std::string&
+          texturePath); ///< Set a single path as the path to check when loading media (clear then add)
+  void RemoveTexturePath(
+      const std::string& texturePath); ///< Remove a path from the paths to check when loading media
 
-  void FreeUnusedTextures(unsigned int timeDelay = 0); ///< Free textures (called from app thread only)
+  void FreeUnusedTextures(
+      unsigned int timeDelay = 0); ///< Free textures (called from app thread only)
   void ReleaseHwTexture(unsigned int texture);
+
 protected:
   std::vector<CTextureMap*> m_vecTextures;
   std::list<std::pair<CTextureMap*, unsigned int> > m_unusedTextures;

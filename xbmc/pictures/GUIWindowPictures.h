@@ -35,19 +35,19 @@ public:
   void OnInitWindow();
 
 protected:
-  bool GetDirectory(const std::string &strDirectory, CFileItemList& items);
+  bool GetDirectory(const std::string& strDirectory, CFileItemList& items);
   void OnItemInfo(int item);
-  bool OnClick(int iItem, const std::string &player = "");
+  bool OnClick(int iItem, const std::string& player = "");
   void UpdateButtons();
   void OnPrepareFileItems(CFileItemList& items);
-  bool Update(const std::string &strDirectory, bool updateFilterPath = true);
-  void GetContextButtons(int itemNumber, CContextButtons &buttons);
+  bool Update(const std::string& strDirectory, bool updateFilterPath = true);
+  void GetContextButtons(int itemNumber, CContextButtons& buttons);
   bool OnContextButton(int itemNumber, CONTEXT_BUTTON button);
   bool OnAddMediaSource();
-  std::string GetStartFolder(const std::string &dir);
+  std::string GetStartFolder(const std::string& dir);
 
   void OnRegenerateThumbs();
-  bool OnPlayMedia(int iItem, const std::string &player = "");
+  bool OnPlayMedia(int iItem, const std::string& player = "");
   bool ShowPicture(int iItem, bool startSlideShow);
   void OnShowPictureRecursive(const std::string& strPath);
   void OnSlideShow(const std::string& strPicture);

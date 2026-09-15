@@ -28,9 +28,9 @@ class CUISoundsResource : public CResource
 {
 public:
   CUISoundsResource(AddonProps props) : CResource(boost::move(props)) {};
-  virtual bool IsAllowed(const std::string &file) const;
+  virtual bool IsAllowed(const std::string& file) const;
   virtual bool IsInUse() const;
   virtual void OnPostInstall(bool update, bool modal);
 };
 
-}
+} // namespace ADDON

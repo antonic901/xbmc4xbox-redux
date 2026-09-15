@@ -32,7 +32,7 @@
 
 using namespace XFILE;
 
-CTextureCache &CTextureCache::Get()
+CTextureCache& CTextureCache::Get()
 {
   static CTextureCache s_cache;
   return s_cache;
@@ -60,27 +60,29 @@ void CTextureCache::Deinitialize()
   m_database.Close();
 }
 
-bool CTextureCache::IsCachedImage(const std::string &url) const
+bool CTextureCache::IsCachedImage(const std::string& url) const
 {
   if (url != "-" && !CURL::IsFullPath(url))
     return true;
   if (URIUtils::PathHasParent(url, "special://skin", true) ||
       URIUtils::PathHasParent(url, "special://temp", true) ||
       URIUtils::PathHasParent(url, "resource://", true) ||
-      URIUtils::PathHasParent(url, "androidapp://", true)   ||
+      URIUtils::PathHasParent(url, "androidapp://", true) ||
       URIUtils::PathHasParent(url, CProfilesManager::Get().GetThumbnailsFolder(), true))
     return true;
   return false;
 }
 
-bool CTextureCache::HasCachedImage(const std::string &url)
+bool CTextureCache::HasCachedImage(const std::string& url)
 {
   CTextureDetails details;
   std::string cachedImage(GetCachedImage(url, details));
   return (!cachedImage.empty() && cachedImage != url);
 }
 
-std::string CTextureCache::GetCachedImage(const std::string &image, CTextureDetails &details, bool trackUsage)
+std::string CTextureCache::GetCachedImage(const std::string& image,
+                                          CTextureDetails& details,
+                                          bool trackUsage)
 {
   std::string url = CTextureUtils::UnwrapImageURL(image);
 
@@ -97,12 +99,12 @@ std::string CTextureCache::GetCachedImage(const std::string &image, CTextureDeta
   return "";
 }
 
-bool CTextureCache::CanCacheImageURL(const CURL &url)
+bool CTextureCache::CanCacheImageURL(const CURL& url)
 {
   return (url.GetUserName().empty() || url.GetUserName() == "music");
 }
 
-std::string CTextureCache::CheckCachedImage(const std::string &url, bool &needsRecaching)
+std::string CTextureCache::CheckCachedImage(const std::string& url, bool& needsRecaching)
 {
   CTextureDetails details;
   std::string path(GetCachedImage(url, details, true));
@@ -112,7 +114,7 @@ std::string CTextureCache::CheckCachedImage(const std::string &url, bool &needsR
   return "";
 }
 
-void CTextureCache::BackgroundCacheImage(const std::string &url)
+void CTextureCache::BackgroundCacheImage(const std::string& url)
 {
   if (url.empty())
     return;
@@ -130,7 +132,9 @@ void CTextureCache::BackgroundCacheImage(const std::string &url)
   AddJob(new CTextureCacheJob(path, details.hash));
 }
 
-std::string CTextureCache::CacheImage(const std::string &image, CBaseTexture **texture /* = NULL */, CTextureDetails *details /* = NULL */)
+std::string CTextureCache::CacheImage(const std::string& image,
+                                      CBaseTexture** texture /* = NULL */,
+                                      CTextureDetails* details /* = NULL */)
 {
   std::string url = CTextureUtils::UnwrapImageURL(image);
   if (url.empty())
@@ -167,7 +171,7 @@ std::string CTextureCache::CacheImage(const std::string &image, CBaseTexture **t
   return GetCachedImage(url, *details, true);
 }
 
-bool CTextureCache::CacheImage(const std::string &image, CTextureDetails &details)
+bool CTextureCache::CacheImage(const std::string& image, CTextureDetails& details)
 {
   std::string path = GetCachedImage(image, details);
   if (path.empty()) // not cached
@@ -176,7 +180,7 @@ bool CTextureCache::CacheImage(const std::string &image, CTextureDetails &detail
   return !path.empty();
 }
 
-void CTextureCache::ClearCachedImage(const std::string &url, bool deleteSource /*= false */)
+void CTextureCache::ClearCachedImage(const std::string& url, bool deleteSource /*= false */)
 {
   //! @todo This can be removed when the texture cache covers everything.
   std::string path = deleteSource ? url : "";
@@ -206,19 +210,19 @@ bool CTextureCache::ClearCachedImage(int id)
   return false;
 }
 
-bool CTextureCache::GetCachedTexture(const std::string &url, CTextureDetails &details)
+bool CTextureCache::GetCachedTexture(const std::string& url, CTextureDetails& details)
 {
   CSingleLock lock(m_databaseSection);
   return m_database.GetCachedTexture(url, details);
 }
 
-bool CTextureCache::AddCachedTexture(const std::string &url, const CTextureDetails &details)
+bool CTextureCache::AddCachedTexture(const std::string& url, const CTextureDetails& details)
 {
   CSingleLock lock(m_databaseSection);
   return m_database.AddCachedTexture(url, details);
 }
 
-void CTextureCache::IncrementUseCount(const CTextureDetails &details)
+void CTextureCache::IncrementUseCount(const CTextureDetails& details)
 {
   static const size_t count_before_update = 100;
   CSingleLock lock(m_useCountSection);
@@ -231,25 +235,25 @@ void CTextureCache::IncrementUseCount(const CTextureDetails &details)
   }
 }
 
-bool CTextureCache::SetCachedTextureValid(const std::string &url, bool updateable)
+bool CTextureCache::SetCachedTextureValid(const std::string& url, bool updateable)
 {
   CSingleLock lock(m_databaseSection);
   return m_database.SetCachedTextureValid(url, updateable);
 }
 
-bool CTextureCache::ClearCachedTexture(const std::string &url, std::string &cachedURL)
+bool CTextureCache::ClearCachedTexture(const std::string& url, std::string& cachedURL)
 {
   CSingleLock lock(m_databaseSection);
   return m_database.ClearCachedTexture(url, cachedURL);
 }
 
-bool CTextureCache::ClearCachedTexture(int id, std::string &cachedURL)
+bool CTextureCache::ClearCachedTexture(int id, std::string& cachedURL)
 {
   CSingleLock lock(m_databaseSection);
   return m_database.ClearCachedTexture(id, cachedURL);
 }
 
-std::string CTextureCache::GetCacheFile(const std::string &url)
+std::string CTextureCache::GetCacheFile(const std::string& url)
 {
   Crc32 crc;
   crc.ComputeFromLowerCase(url);
@@ -258,12 +262,12 @@ std::string CTextureCache::GetCacheFile(const std::string &url)
   return hash;
 }
 
-std::string CTextureCache::GetCachedPath(const std::string &file)
+std::string CTextureCache::GetCachedPath(const std::string& file)
 {
   return URIUtils::AddFileToFolder(CProfilesManager::Get().GetThumbnailsFolder(), file);
 }
 
-void CTextureCache::OnCachingComplete(bool success, CTextureCacheJob *job)
+void CTextureCache::OnCachingComplete(bool success, CTextureCacheJob* job)
 {
   if (success)
   {
@@ -283,20 +287,23 @@ void CTextureCache::OnCachingComplete(bool success, CTextureCacheJob *job)
   m_completeEvent.Set();
 }
 
-void CTextureCache::OnJobComplete(unsigned int jobID, bool success, CJob *job)
+void CTextureCache::OnJobComplete(unsigned int jobID, bool success, CJob* job)
 {
   if (strcmp(job->GetType(), kJobTypeCacheImage) == 0)
-    OnCachingComplete(success, (CTextureCacheJob *)job);
+    OnCachingComplete(success, (CTextureCacheJob*)job);
   return CJobQueue::OnJobComplete(jobID, success, job);
 }
 
-void CTextureCache::OnJobProgress(unsigned int jobID, unsigned int progress, unsigned int total, const CJob *job)
+void CTextureCache::OnJobProgress(unsigned int jobID,
+                                  unsigned int progress,
+                                  unsigned int total,
+                                  const CJob* job)
 {
   if (strcmp(job->GetType(), kJobTypeCacheImage) == 0 && !progress)
   { // check our processing list
     {
       CSingleLock lock(m_processingSection);
-      const CTextureCacheJob *cacheJob = (CTextureCacheJob *)job;
+      const CTextureCacheJob* cacheJob = (CTextureCacheJob*)job;
       std::set<std::string>::iterator i = m_processinglist.find(cacheJob->m_url);
       if (i == m_processinglist.end())
       {
@@ -310,7 +317,7 @@ void CTextureCache::OnJobProgress(unsigned int jobID, unsigned int progress, uns
     CJobQueue::OnJobProgress(jobID, progress, total, job);
 }
 
-bool CTextureCache::Export(const std::string &image, const std::string &destination, bool overwrite)
+bool CTextureCache::Export(const std::string& image, const std::string& destination, bool overwrite)
 {
   CTextureDetails details;
   std::string cachedImage(GetCachedImage(image, details));
@@ -321,13 +328,14 @@ bool CTextureCache::Export(const std::string &image, const std::string &destinat
     {
       if (CFile::Copy(cachedImage, dest))
         return true;
-      CLog::Log(LOGERROR, "%s failed exporting '%s' to '%s'", __FUNCTION__, cachedImage.c_str(), dest.c_str());
+      CLog::Log(LOGERROR, "%s failed exporting '%s' to '%s'", __FUNCTION__, cachedImage.c_str(),
+                dest.c_str());
     }
   }
   return false;
 }
 
-bool CTextureCache::Export(const std::string &image, const std::string &destination)
+bool CTextureCache::Export(const std::string& image, const std::string& destination)
 {
   CTextureDetails details;
   std::string cachedImage(GetCachedImage(image, details));
@@ -335,7 +343,8 @@ bool CTextureCache::Export(const std::string &image, const std::string &destinat
   {
     if (CFile::Copy(cachedImage, destination))
       return true;
-    CLog::Log(LOGERROR, "%s failed exporting '%s' to '%s'", __FUNCTION__, cachedImage.c_str(), destination.c_str());
+    CLog::Log(LOGERROR, "%s failed exporting '%s' to '%s'", __FUNCTION__, cachedImage.c_str(),
+              destination.c_str());
   }
   return false;
 }

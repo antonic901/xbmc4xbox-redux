@@ -37,8 +37,8 @@ CNSFFileDirectory::~CNSFFileDirectory(void)
 int CNSFFileDirectory::GetTrackCount(const std::string& strPath)
 {
   CMusicInfoTagLoaderNSF nsf;
-  nsf.Load(strPath,m_tag);
-  m_tag.SetDuration(4*60); // 4 mins
+  nsf.Load(strPath, m_tag);
+  m_tag.SetDuration(4 * 60); // 4 mins
 
   return nsf.GetStreamCount(strPath);
 }

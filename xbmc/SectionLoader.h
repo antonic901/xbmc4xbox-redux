@@ -41,7 +41,7 @@ public:
   public:
     CStdString m_strDllName;
     long m_lReferenceCount;
-    LibraryLoader *m_pDll;
+    LibraryLoader* m_pDll;
     unsigned int m_unloadDelayStartTick;
     bool m_bDelayUnload;
   };
@@ -51,10 +51,13 @@ public:
   static bool IsLoaded(const CStdString& strSection);
   static bool Load(const CStdString& strSection);
   static void Unload(const CStdString& strSection);
-  static LibraryLoader* LoadDLL(const CStdString& strSection, bool bDelayUnload=true, bool bLoadSymbols=false);
+  static LibraryLoader* LoadDLL(const CStdString& strSection,
+                                bool bDelayUnload = true,
+                                bool bLoadSymbols = false);
   static void UnloadDLL(const CStdString& strSection);
   static void UnloadDelayed();
   static void UnloadAll();
+
 protected:
   std::vector<CSection> m_vecLoadedSections;
   typedef std::vector<CSection>::iterator ivecLoadedSections;
@@ -62,4 +65,4 @@ protected:
   CCriticalSection m_critSection;
 };
 
-XBMC_GLOBAL_REF(CSectionLoader,g_sectionLoader);
+XBMC_GLOBAL_REF(CSectionLoader, g_sectionLoader);

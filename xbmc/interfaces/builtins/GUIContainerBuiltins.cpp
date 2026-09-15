@@ -30,7 +30,7 @@
  *  Set the Dir template parameter to 1 to switch to next sort method
  *  or -1 to switch to previous sort method.
  */
-  template<int Dir>
+template<int Dir>
 static int ChangeSortMethod(const std::vector<std::string>& params)
 {
   CGUIMessage message(GUI_MSG_CHANGE_SORT_METHOD, g_windowManager.GetActiveWindow(), 0, 0, Dir);
@@ -45,7 +45,7 @@ static int ChangeSortMethod(const std::vector<std::string>& params)
  *  Set the Dir template parameter to 1 to switch to next view mode
  *  or -1 to switch to previous view mode.
  */
-  template<int Dir>
+template<int Dir>
 static int ChangeViewMode(const std::vector<std::string>& params)
 {
   CGUIMessage message(GUI_MSG_CHANGE_VIEW_MODE, g_windowManager.GetActiveWindow(), 0, 0, Dir);
@@ -61,7 +61,8 @@ static int ChangeViewMode(const std::vector<std::string>& params)
 static int Refresh(const std::vector<std::string>& params)
 { // NOTE: These messages require a media window, thus they're sent to the current activewindow.
   //       This shouldn't stop a dialog intercepting it though.
-  CGUIMessage message(GUI_MSG_NOTIFY_ALL, g_windowManager.GetActiveWindow(), 0, GUI_MSG_UPDATE, 1); // 1 to reset the history
+  CGUIMessage message(GUI_MSG_NOTIFY_ALL, g_windowManager.GetActiveWindow(), 0, GUI_MSG_UPDATE,
+                      1); // 1 to reset the history
   message.SetStringParam(!params.empty() ? params[0] : "");
   g_windowManager.SendMessage(message);
 
@@ -74,7 +75,8 @@ static int Refresh(const std::vector<std::string>& params)
  */
 static int SetSortMethod(const std::vector<std::string>& params)
 {
-  CGUIMessage message(GUI_MSG_CHANGE_SORT_METHOD, g_windowManager.GetActiveWindow(), 0, atoi(params[0].c_str()));
+  CGUIMessage message(GUI_MSG_CHANGE_SORT_METHOD, g_windowManager.GetActiveWindow(), 0,
+                      atoi(params[0].c_str()));
   g_windowManager.SendMessage(message);
 
   return 0;
@@ -86,7 +88,8 @@ static int SetSortMethod(const std::vector<std::string>& params)
  */
 static int SetViewMode(const std::vector<std::string>& params)
 {
-  CGUIMessage message(GUI_MSG_CHANGE_VIEW_MODE, g_windowManager.GetActiveWindow(), 0, atoi(params[0].c_str()));
+  CGUIMessage message(GUI_MSG_CHANGE_VIEW_MODE, g_windowManager.GetActiveWindow(), 0,
+                      atoi(params[0].c_str()));
   g_windowManager.SendMessage(message);
 
   return 0;
@@ -190,13 +193,15 @@ CBuiltins::CommandMap CGUIContainerBuiltins::GetOperations() const
   CBuiltins::BUILT_IN builtin1 = {"Change to the next sort method", 0, ChangeSortMethod<1>};
   commands.insert(std::make_pair("container.nextsortmethod", builtin1));
 
-  CBuiltins::BUILT_IN builtin2 = {"Move to the next view type (and refresh the listing)", 0, ChangeViewMode<1>};
+  CBuiltins::BUILT_IN builtin2 = {"Move to the next view type (and refresh the listing)", 0,
+                                  ChangeViewMode<1>};
   commands.insert(std::make_pair("container.nextviewmode", builtin2));
 
   CBuiltins::BUILT_IN builtin3 = {"Change to the previous sort method", 0, ChangeSortMethod<-1>};
   commands.insert(std::make_pair("container.previoussortmethod", builtin3));
 
-  CBuiltins::BUILT_IN builtin4 = {"Move to the previous view type (and refresh the listing)", 0, ChangeViewMode<-1>};
+  CBuiltins::BUILT_IN builtin4 = {"Move to the previous view type (and refresh the listing)", 0,
+                                  ChangeViewMode<-1>};
   commands.insert(std::make_pair("container.previousviewmode", builtin4));
 
   CBuiltins::BUILT_IN builtin5 = {"Refresh current listing", 0, Refresh};
@@ -211,7 +216,9 @@ CBuiltins::CommandMap CGUIContainerBuiltins::GetOperations() const
   CBuiltins::BUILT_IN builtin8 = {"Move to the view with the given id", 1, SetViewMode};
   commands.insert(std::make_pair("container.setviewmode", builtin8));
 
-  CBuiltins::BUILT_IN builtin9 = {"Update current listing. Send Container.Update(path,replace) to reset the path history", 1, Update};
+  CBuiltins::BUILT_IN builtin9 = {
+      "Update current listing. Send Container.Update(path,replace) to reset the path history", 1,
+      Update};
   commands.insert(std::make_pair("container.update", builtin9));
 
   return commands;
