@@ -1,0 +1,105 @@
+name: clang-format check
+
+on:
+  push:
+    paths:
+      - ".github/workflows/check-clang-format.yml"
+      - "**/*.c"
+      - "**/*.cc"
+      - "**/*.cpp"
+      - "**/*.cxx"
+      - "**/*.h"
+      - "**/*.hh"
+      - "**/*.hpp"
+      - "**/*.hxx"
+  pull_request:
+    paths:
+      - ".github/workflows/check-clang-format.yml"
+      - "**/*.c"
+      - "**/*.cc"
+      - "**/*.cpp"
+      - "**/*.cxx"
+      - "**/*.h"
+      - "**/*.hh"
+      - "**/*.hpp"
+      - "**/*.hxx"
+
+jobs:
+  clang-format:
+    runs-on: ubuntu-26.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@main
+
+      - name: Run clang-format
+        id: format
+        run: |
+          set +e
+          clang-format-22 --version
+          FILES=$(git ls-files -- \
+          '*.c' \
+          '*.cc' \
+          '*.cpp' \
+          '*.cxx' \
+          '*.h' \
+          '*.hh' \
+          '*.hpp' \
+          '*.hxx' \
+          ':!lib' \
+          ':!sources' \
+          ':!mplayer' \
+          ':!xbmc/cores' \
+          ':!tools' \
+          )
+          if [ -z "$FILES" ]; then
+            echo "no_files=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          clang-format-22 -style=file -i $FILES
+
+          git diff --exit-code > clang-format.diff
+          DIFF_STATUS=$?
+
+          if [ $DIFF_STATUS -ne 0 ]; then
+            echo "has_diff=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_diff=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload diff artifact
+        if: steps.format.outputs.has_diff == 'true'
+        uses: actions/upload-artifact@main
+        with:
+          archive: false
+          path: clang-format.diff
+
+      - name: Write summary banner (issues found)
+        if: steps.format.outputs.has_diff == 'true'
+        run: |
+          {
+            echo "# Clang-Format Summary: issues found"
+            echo ""
+            echo "One or more files are not formatted correctly."
+            echo ""
+            echo "Download the clang-format-diff artifact from this run and apply it with:"
+            echo ""
+            echo '```'
+            echo "git apply clang-format.diff"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Write summary banner (all clean)
+        if: steps.format.outputs.has_diff == 'false'
+        run: |
+          {
+            echo "# Clang-Format Summary"
+            echo ""
+            echo "All tracked files are correctly formatted."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fail if formatting issues found
+        if: steps.format.outputs.has_diff == 'true'
+        run: |
+          echo "clang-format found issues, see uploaded diff artifact"
+          exit 1

@@ -2,3 +2,8 @@
 # then breaks long string values onto a line of their own, and JSON has no comments, so the
 # "clang-format off" escape is not available to the schemas that would need it.
 **/*.json
+# Libs and old code
+lib/**
+sources/**
+mplayer/**
+xbmc/cores/**
