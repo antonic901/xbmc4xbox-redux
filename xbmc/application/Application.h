@@ -9,6 +9,7 @@
 #pragma once
 
 #include "application/ApplicationComponents.h"
+#include "application/ApplicationEnums.h"
 #include "application/ApplicationPlayerCallback.h"
 #include "application/ApplicationSettingsHandling.h"
 #include "guilib/IMsgTargetCallback.h"

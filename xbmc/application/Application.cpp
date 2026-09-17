@@ -127,7 +127,6 @@
 #include "utils/CharsetConverter.h"
 
 #include "AudioContext.h"
-#include "platform/xbox/XKHDD.h"
 #include "platform/xbox/filesystem/MemoryUnitManager.h"
 
 #include <boost/bind.hpp>
@@ -184,7 +183,8 @@ CApplication::CApplication(void)
     m_itemCurrentFile(boost::make_shared<CFileItem>()),
     m_bInitializing(true),
     m_nextPlaylistItem(-1),
-    m_bStop(false)
+    m_bStop(false),
+    m_ExitCode(EXITCODE_QUIT)
 {
   TiXmlBase::SetCondenseWhiteSpace(false);
 
@@ -1123,18 +1123,11 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
   switch (msg)
   {
   case TMSG_POWERDOWN:
-    if (Stop(0))
-    {
-      Sleep(200);
-      XKHDD::SpindownHarddisk();
-      XKUtils::XBOXPowerOff();
-      while (1) { Sleep(0); }
-    }
+    Stop(EXITCODE_POWERDOWN);
     break;
 
   case TMSG_QUIT:
-    Stop(0);
-    CBuiltins::GetInstance().Execute("XBMC.Dashboard()");
+    Stop(EXITCODE_QUIT);
     break;
 
   case TMSG_SHUTDOWN:
@@ -1143,12 +1136,11 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
 
   case TMSG_RESTART:
   case TMSG_RESET:
-    if (Stop(0))
-    {
-      Sleep(200);
-      XKUtils::XBOXPowerCycle();
-      while (1) { Sleep(0); }
-    }
+    Stop(EXITCODE_REBOOT);
+    break;
+
+  case TMSG_RESTARTAPP:
+    Stop(EXITCODE_RESTARTAPP);
     break;
 
   case TMSG_INHIBITIDLESHUTDOWN:

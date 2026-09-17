@@ -19,7 +19,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalOptions="/EHa"
+				AdditionalOptions="/EHa /Zm200"
 				Optimization="0"
 				OptimizeForProcessor="2"
 				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
@@ -5106,6 +5106,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\application\ApplicationComponents.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\application\ApplicationEnums.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\application\ApplicationPlayer.cpp">

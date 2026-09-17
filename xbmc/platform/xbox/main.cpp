@@ -10,9 +10,12 @@
 
 #include "ServiceBroker.h"
 #include "Util.h"
+#include "application/ApplicationEnums.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
 
+#include "platform/xbox/XKHDD.h"
+#include "platform/xbox/XKUtils.h"
 #include "platform/xbox/storage/IoSupport.h"
 
 #include <boost/make_shared.hpp>
@@ -102,4 +105,33 @@ void main()
 
   CServiceBroker::GetSettingsComponent()->Deinitialize();
   CServiceBroker::UnregisterSettingsComponent();
+
+#ifndef _DEBUG
+  if (status == EXITCODE_POWERDOWN)
+  {
+    Sleep(200);
+    XKHDD::SpindownHarddisk();
+    XKUtils::XBOXPowerOff();
+  }
+  else if (status == EXITCODE_REBOOT)
+  {
+    Sleep(200);
+    XKUtils::XBOXPowerCycle();
+  }
+  else if (status == EXITCODE_QUIT)
+  {
+    CUtil::LaunchXbe("Harddisk0\\Partition2", "D:\\xboxdash.xbe", NULL, VIDEO_NULL, COUNTRY_NULL, NULL);
+  }
+  else if (status == EXITCODE_RESTARTAPP)
+  {
+    char szXbePath[MAX_PATH];
+    CIoSupport::GetXbePath(szXbePath);
+    char szDevicePath[MAX_PATH];
+    CIoSupport::GetPartition(szXbePath[0], szDevicePath);
+    szXbePath[0] = 'D';
+    CUtil::LaunchXbe(szDevicePath, szXbePath, NULL, VIDEO_NULL, COUNTRY_NULL, NULL);
+  }
+#endif
+
+  while(1) { Sleep(0); }
 }
