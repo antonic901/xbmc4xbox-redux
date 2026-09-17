@@ -1,35 +1,18 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "JobManager.h"
+
 #include "ServiceBroker.h"
-#include <algorithm>
+#include "utils/log.h"
+
 #include <functional>
 #include <stdexcept>
-#include "threads/SingleLock.h"
-#include "utils/log.h"
-#ifdef TARGET_POSIX
-#include "linux/XTimeUtils.h"
-#endif
-
-#include "system.h"
 
 bool CJob::ShouldCancel(unsigned int progress, unsigned int total) const
 {
@@ -46,9 +29,6 @@ CJobWorker::CJobWorker(CJobManager *manager) : CThread("JobWorker")
 
 CJobWorker::~CJobWorker()
 {
-  // while we should already be removed from the job manager, if an exception
-  // occurs during processing that we haven't caught, we may skip over that step.
-  // Thus, before we go out of scope, ensure the job manager knows we're gone.
   m_jobManager->RemoveWorker(this);
   if(!IsAutoDelete())
     StopThread();
@@ -56,11 +36,11 @@ CJobWorker::~CJobWorker()
 
 void CJobWorker::Process()
 {
-  SetPriority( GetMinPriority() );
+  SetPriority(GetMinPriority());
   while (true)
   {
     // request an item from our manager (this call is blocking)
-    CJob *job = m_jobManager->GetNextJob(this);
+    CJob* job = m_jobManager->GetNextJob();
     if (!job)
       break;
 
@@ -95,13 +75,12 @@ CJobQueue::~CJobQueue()
 
 void CJobQueue::OnJobComplete(unsigned int jobID, bool success, CJob *job)
 {
-  CSingleLock lock(m_section);
-  // check if this job is in our processing list
-  Processing::iterator i = find(m_processing.begin(), m_processing.end(), job);
-  if (i != m_processing.end())
-    m_processing.erase(i);
-  // request a new job be queued
-  QueueNextJob();
+  OnJobNotify(job);
+}
+
+void CJobQueue::OnJobAbort(unsigned int jobID, CJob* job)
+{
+  OnJobNotify(job);
 }
 
 void CJobQueue::CancelJob(const CJob *job)
@@ -142,14 +121,31 @@ bool CJobQueue::AddJob(CJob *job)
   return true;
 }
 
+void CJobQueue::OnJobNotify(CJob* job)
+{
+  CSingleLock lock(m_section);
+
+  // check if this job is in our processing list
+  const CJobQueue::Processing::iterator it = std::find(m_processing.begin(), m_processing.end(), job);
+  if (it != m_processing.end())
+    m_processing.erase(it);
+  // request a new job be queued
+  QueueNextJob();
+}
+
 void CJobQueue::QueueNextJob()
 {
   CSingleLock lock(m_section);
-  if (m_jobQueue.size() && m_processing.size() < m_jobsAtOnce)
+  while (m_jobQueue.size() && m_processing.size() < m_jobsAtOnce)
   {
     CJobPointer &job = m_jobQueue.back();
     job.m_id = CServiceBroker::GetJobManager()->AddJob(job.m_job, this, m_priority);
-    m_processing.push_back(job);
+    if (job.m_id > 0)
+    {
+      m_processing.push_back(job);
+      m_jobQueue.pop_back();
+      return;
+    }
     m_jobQueue.pop_back();
   }
 }
@@ -165,7 +161,8 @@ void CJobQueue::CancelJobs()
 
 bool CJobQueue::IsProcessing() const
 {
-  return !m_processing.empty() || !m_jobQueue.empty();
+  return CServiceBroker::GetJobManager()->m_running &&
+         (!m_processing.empty() || !m_jobQueue.empty());
 }
 
 bool CJobQueue::QueueEmpty() const
@@ -198,25 +195,31 @@ void CJobManager::CancelJobs()
   // clear any pending jobs
   for (unsigned int priority = CJob::PRIORITY_LOW_PAUSABLE; priority <= CJob::PRIORITY_DEDICATED; ++priority)
   {
-    for_each(m_jobQueue[priority].begin(), m_jobQueue[priority].end(), std::mem_fun_ref(&CWorkItem::FreeJob));
+    for (std::deque<CWorkItem>::iterator wi = m_jobQueue[priority].begin(); wi != m_jobQueue[priority].end(); ++wi)
+    {
+      if (wi->m_callback)
+        wi->m_callback->OnJobAbort(wi->m_id, wi->m_job);
+      wi->FreeJob();
+    }
     m_jobQueue[priority].clear();
   }
 
   // cancel any callbacks on jobs still processing
-  for_each(m_processing.begin(), m_processing.end(), std::mem_fun_ref(&CWorkItem::Cancel));
+  for (std::vector<CWorkItem>::iterator wi = m_processing.begin(); wi != m_processing.end(); ++wi)
+  {
+    if (wi->m_callback)
+      wi->m_callback->OnJobAbort(wi->m_id, wi->m_job);
+    wi->Cancel();
+  }
 
   // tell our workers to finish
   while (m_workers.size())
   {
-    lock.Leave();
+    lock.unlock();
     m_jobEvent.Set();
     Sleep(0); // yield after setting the event to give the workers some time to die
-    lock.Enter();
+    lock.lock();
   }
-}
-
-CJobManager::~CJobManager()
-{
 }
 
 unsigned int CJobManager::AddJob(CJob *job, IJobCallback *callback, CJob::PRIORITY priority)
@@ -224,7 +227,10 @@ unsigned int CJobManager::AddJob(CJob *job, IJobCallback *callback, CJob::PRIORI
   CSingleLock lock(m_section);
 
   if (!m_running)
+  {
+    delete job;
     return 0;
+  }
 
   // increment the job counter, ensuring 0 (invalid job) is never hit
   m_jobCounter++;
@@ -346,7 +352,7 @@ int CJobManager::IsProcessing(const std::string &type) const
   return jobsMatched;
 }
 
-CJob *CJobManager::GetNextJob(const CJobWorker *worker)
+CJob* CJobManager::GetNextJob()
 {
   CSingleLock lock(m_section);
   while (m_running)
@@ -356,20 +362,15 @@ CJob *CJobManager::GetNextJob(const CJobWorker *worker)
     if (job)
       return job;
     // no jobs are left - sleep for 30 seconds to allow new jobs to come in
-    lock.Leave();
+    lock.unlock();
     bool newJob = m_jobEvent.WaitMSec(30000);
-    lock.Enter();
+    lock.lock();
     if (!newJob)
       break;
   }
   // ensure no jobs have come in during the period after
   // timeout and before we held the lock
-  CJob *job = PopJob();
-  if (job)
-    return job;
-  // have no jobs
-  RemoveWorker(worker);
-  return NULL;
+  return PopJob();
 }
 
 bool CJobManager::OnJobProgress(unsigned int progress, unsigned int total, const CJob *job) const
@@ -380,7 +381,7 @@ bool CJobManager::OnJobProgress(unsigned int progress, unsigned int total, const
   if (i != m_processing.end())
   {
     CWorkItem item(*i);
-    lock.Leave(); // leave section prior to call
+    lock.unlock(); // leave section prior to call
     if (item.m_callback)
     {
       item.m_callback->OnJobProgress(item.m_id, progress, total, job);
@@ -399,7 +400,7 @@ void CJobManager::OnJobComplete(bool success, CJob *job)
   {
     // tell any listeners we're done with the job, then delete it
     CWorkItem item(*i);
-    lock.Leave();
+    lock.unlock();
     try
     {
       if (item.m_callback)
@@ -409,11 +410,11 @@ void CJobManager::OnJobComplete(bool success, CJob *job)
     {
       CLog::Log(LOGERROR, "%s error processing job %s", __FUNCTION__, item.m_job->GetType());
     }
-    lock.Enter();
+    lock.lock();
     Processing::iterator j = find(m_processing.begin(), m_processing.end(), job);
     if (j != m_processing.end())
       m_processing.erase(j);
-    lock.Leave();
+    lock.unlock();
     item.FreeJob();
   }
 }

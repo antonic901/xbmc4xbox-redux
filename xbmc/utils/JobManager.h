@@ -1,42 +1,50 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <queue>
-#include <vector>
-#include <string>
+#pragma once
+
+#include "Job.h"
 #include "threads/CriticalSection.h"
 #include "threads/Thread.h"
-#include "Job.h"
+
+#include <queue>
+#include <string>
+#include <vector>
 
 class CJobManager;
 
 class CJobWorker : public CThread
 {
 public:
-  CJobWorker(CJobManager *manager);
+  explicit CJobWorker(CJobManager *manager);
   virtual ~CJobWorker();
 
-  void Process();
+  virtual void Process();
 private:
   CJobManager  *m_jobManager;
+};
+
+template<typename F>
+class CLambdaJob : public CJob
+{
+public:
+  CLambdaJob(const F& f) : m_f(boost::forward<F>(f)) {}
+  virtual bool DoWork()
+  {
+    m_f();
+    return true;
+  }
+  virtual bool operator==(const CJob *job) const
+  {
+    return this == job;
+  };
+private:
+  F m_f;
 };
 
 /*!
@@ -57,7 +65,7 @@ class CJobQueue: public IJobCallback
   class CJobPointer
   {
   public:
-    CJobPointer(CJob *job)
+    explicit CJobPointer(CJob *job)
     {
       m_job = job;
       m_id = 0;
@@ -96,11 +104,22 @@ public:
 
   /*!
    \brief Add a job to the queue
-   On completion of the job (or destruction of the job queue) the CJob object will be destroyed.
+   On completion of the job, destruction of the job queue or in case the job could not be added successfully, the CJob object will be destroyed.
    \param job a pointer to the job to add. The job should be subclassed from CJob.
+   \return True if the job was added successfully, false otherwise.
+   In case of failure, the passed CJob object will be deleted before returning from this method.
    \sa CJob
    */
   bool AddJob(CJob *job);
+
+  /*!
+   \brief Add a function f to this job queue
+   */
+  template<typename F>
+  void Submit(F& f)
+  {
+    AddJob(new CLambdaJob<F>(boost::forward<F>(f)));
+  }
 
   /*!
    \brief Cancel a job in the queue
@@ -128,17 +147,27 @@ public:
   /*!
    \brief The callback used when a job completes.
 
-   OnJobComplete is called at the completion of the CJob::DoWork function, and is used
-   to return information to the caller on the result of the job.  On returning from this function
-   the CJobManager will destroy this job.
+   CJobQueue implementation will cleanup the internal processing queue and then queue the next
+   job at the job manager, if any.
 
-   Subclasses should override this function if they wish to transfer information from the job prior
-   to it's deletion.  They must then call this base class function, which will move on to the next
-   job.
-
-   \sa CJobManager, IJobCallback and  CJob
+   \param jobID the unique id of the job (as retrieved from CJobManager::AddJob)
+   \param success the result from the DoWork call
+   \param job the job that has been processed.
+   \sa CJobManager, IJobCallback and CJob
    */
   virtual void OnJobComplete(unsigned int jobID, bool success, CJob *job);
+
+  /*!
+   \brief The callback used when a job will be aborted.
+
+   CJobQueue implementation will cleanup the internal processing queue and then queue the next
+   job at the job manager, if any.
+
+   \param jobID the unique id of the job (as retrieved from CJobManager::AddJob)
+   \param job the job that has been aborted.
+   \sa CJobManager, IJobCallback and CJob
+   */
+  virtual void OnJobAbort(unsigned int jobID, CJob* job);
 
 protected:
   /*!
@@ -148,6 +177,7 @@ protected:
   bool QueueEmpty() const;
 
 private:
+  void OnJobNotify(CJob* job);
   void QueueNextJob();
 
   typedef std::deque<CJobPointer> Queue;
@@ -157,7 +187,7 @@ private:
 
   unsigned int m_jobsAtOnce;
   CJob::PRIORITY m_priority;
-  CCriticalSection m_section;
+  mutable CCriticalSection m_section;
   bool m_lifo;
 };
 
@@ -166,8 +196,8 @@ private:
  \brief Job Manager class for scheduling asynchronous jobs.
 
  Controls asynchronous job execution, by allowing clients to add and cancel jobs.
- Should be accessed via CServiceBroker::GetJobManager()->  Jobs are allocated based on
- priority levels.  Lower priority jobs are executed only if there are sufficient
+ Should be accessed via CServiceBroker::GetJobManager().  Jobs are allocated based
+ on priority levels.  Lower priority jobs are executed only if there are sufficient
  spare worker threads free to allow for higher priority jobs that may arise.
 
  \sa CJob and IJobCallback
@@ -207,29 +237,17 @@ class CJobManager
     CJob::PRIORITY m_priority;
   };
 
-  template<typename F>
-  class CLambdaJob : public CJob
-  {
-  public:
-    CLambdaJob(const F& f) : m_f(boost::forward<F>(f)) {};
-    bool DoWork()
-    {
-      m_f();
-      return true;
-    }
-  private:
-    F m_f;
-  };
-
 public:
   CJobManager();
 
   /*!
    \brief Add a job to the threaded job manager.
+   On completion or abort of the job or in case the job could not be added successfully, the CJob object will be destroyed.
    \param job a pointer to the job to add. The job should be subclassed from CJob
    \param callback a pointer to an IJobCallback instance to receive job progress and completion notices.
    \param priority the priority that this job should run at.
-   \return a unique identifier for this job, to be used with other interaction
+   \return On success, a unique identifier for this job, to be used with other interaction, 0 otherwise.
+   In case of failure, the passed CJob object will be deleted before returning from this method.
    \sa CJob, IJobCallback, CancelJob()
    */
   unsigned int AddJob(CJob *job, IJobCallback *callback, CJob::PRIORITY priority = CJob::PRIORITY_LOW);
@@ -240,7 +258,16 @@ public:
   template<typename F>
   void Submit(F& f, CJob::PRIORITY priority = CJob::PRIORITY_LOW)
   {
-    AddJob(new CLambdaJob<F>(boost::forward<F>(f)), nullptr, priority);
+    AddJob(new CLambdaJob<F>(boost::forward<F>(f)), NULL, priority);
+  }
+
+  /*!
+   \brief Add a function f to this job manager for asynchronously execution.
+   */
+  template<typename F>
+  void Submit(F& f, IJobCallback *callback, CJob::PRIORITY priority = CJob::PRIORITY_LOW)
+  {
+    AddJob(new CLambdaJob<F>(boost::forward<F>(f)), callback, priority);
   }
 
   /*!
@@ -296,13 +323,13 @@ public:
 protected:
   friend class CJobWorker;
   friend class CJob;
+  friend class CJobQueue;
 
   /*!
    \brief Get a new job to process. Blocks until a new job is available, or a timeout has occurred.
-   \param worker a pointer to the current CJobWorker instance requesting a job.
    \sa CJob
    */
-  CJob *GetNextJob(const CJobWorker *worker);
+  CJob* GetNextJob();
 
   /*!
    \brief Callback from CJobWorker after a job has completed.
@@ -325,7 +352,6 @@ protected:
   bool  OnJobProgress(unsigned int progress, unsigned int total, const CJob *job) const;
 
 private:
-  // private construction, and no assignements; use the provided singleton methods
   CJobManager(const CJobManager&);
   CJobManager const& operator=(CJobManager const&);
 
@@ -349,7 +375,7 @@ private:
   Processing m_processing;
   Workers    m_workers;
 
-  CCriticalSection m_section;
+  mutable CCriticalSection m_section;
   CEvent           m_jobEvent;
   bool             m_running;
 };
