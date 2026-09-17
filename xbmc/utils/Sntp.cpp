@@ -685,11 +685,6 @@ BOOL CSNTPClient::GetServerTime(LPCTSTR pszHostName, NtpServerResponse& response
   }
 }
 
-extern "C"
-{
-  extern bool WINAPI NtSetSystemTime(LPFILETIME SystemTime , LPFILETIME PreviousTime );
-};
-
 BOOL CSNTPClient::SetClientTime(const CNtpTime& NewTime)
 {
   BOOL bSuccess = FALSE;

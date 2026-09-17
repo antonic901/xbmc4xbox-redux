@@ -214,7 +214,7 @@ extern "C"
 
 #ifdef _XBOX
 #define DEVICE_TYPE ULONG
-#endif 
+#endif
   // Structure of FileFsDeviceInformation
   typedef struct _FILE_FS_DEVICE_INFORMATION
   {
@@ -293,7 +293,7 @@ extern "C"
 #define METHOD_OUT_DIRECT               2
 #define METHOD_NEITHER                  3
 
-  
+
 typedef struct _PARTITION_INFORMATION {
     LARGE_INTEGER StartingOffset;
     LARGE_INTEGER PartitionLength;
@@ -544,7 +544,7 @@ typedef struct _DISK_GEOMETRY {
       PKPRCB          Prcb;                                           // 0x20    Pointer to thread structre
       UCHAR           Irql;                                           // 0x24    Current IRQL of the OS
       KPRCB           PrcbData;                                       // 0x28    Thread structure
-  } KPCR, *PKPCR; 
+  } KPCR, *PKPCR;
 
   inline PKPCR GetCurrentKPCR()
   {
@@ -553,7 +553,7 @@ typedef struct _DISK_GEOMETRY {
     __asm mov  kpcr,eax
   }
 
-  // Structure of the data at FS, 
+  // Structure of the data at FS,
   // KPCR is more complete, only kept here for reference
   typedef struct _FS_STRUCTURE
   {
@@ -976,7 +976,7 @@ typedef struct _DISK_GEOMETRY {
     IN ULONG FreeType
   );
 
-  NTSYSAPI 
+  NTSYSAPI
   EXPORTNUM(200)
   NTSTATUS
   NTAPI
@@ -1191,7 +1191,7 @@ typedef struct _DISK_GEOMETRY {
   );
 
   NTSYSAPI
-  PVOID 
+  PVOID
   NTAPI
   MmAllocateContiguousMemoryEx(
     IN SIZE_T NumberOfBytes,
@@ -1546,10 +1546,17 @@ typedef struct _DISK_GEOMETRY {
                       IN ULONG Unknown3
                       );
 
+  NTSYSAPI
+  VOID
+  NTAPI
+  NtYieldExecution(
+    VOID
+  );
+
   // Error codes
 #define STATUS_SUCCESS     0x00000000
 #define STATUS_UNSUCCESSFUL    0xC0000001
-#define STATUS_UNRECOGNIZED_MEDIA  0xC0000014 
+#define STATUS_UNRECOGNIZED_MEDIA  0xC0000014
   // The SCSI input buffer was too large (not necessarily an error!)
 #define STATUS_DATA_OVERRUN    0xC000003C
 #define STATUS_INVALID_IMAGE_FORMAT     0xC000007B
@@ -1609,7 +1616,7 @@ typedef struct
 
   IN_ADDR DHCP_DNS1;          // 0x17C
   IN_ADDR DHCP_DNS2;          // 0x180
-  
+
   unsigned char Data_184[0x200 - 0x184];
 }
 TXNetConfigParams, *PTXNetConfigParams;

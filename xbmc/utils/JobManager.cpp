@@ -9,6 +9,7 @@
 #include "JobManager.h"
 
 #include "ServiceBroker.h"
+#include "threads/Thread.h"
 #include "utils/log.h"
 
 #include <functional>
@@ -217,7 +218,7 @@ void CJobManager::CancelJobs()
   {
     lock.unlock();
     m_jobEvent.Set();
-    Sleep(0); // yield after setting the event to give the workers some time to die
+    XbmcThreads::ThreadYield(); // yield after setting the event to give the workers some time to die
     lock.lock();
   }
 }
