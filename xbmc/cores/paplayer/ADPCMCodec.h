@@ -22,6 +22,9 @@ private:
 
   DllADPCM m_dll;
   __int64 m_iDataPos;
+
+  std::string m_strFileName;
+  bool m_bInited;
 };
 
 #endif

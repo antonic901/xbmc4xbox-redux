@@ -49,6 +49,8 @@ private:
 
   std::string m_strContentType;
 
+  std::string m_strFileName;
+
   int m_nAudioStream;
 
   int m_audioPos;
@@ -56,6 +58,8 @@ private:
 
   BYTE *m_decoded;
   int  m_nDecodedLen;
+
+  bool m_bInited;
 };
 
 #endif

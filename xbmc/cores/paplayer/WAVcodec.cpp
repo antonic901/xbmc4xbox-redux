@@ -43,6 +43,8 @@ WAVCodec::WAVCodec()
   m_iDataLen=0;
   m_Bitrate = 0;
   m_CodecName = "WAV";
+  m_strFileName = "";
+  m_bInited = false;
 }
 
 WAVCodec::~WAVCodec()
@@ -52,6 +54,17 @@ WAVCodec::~WAVCodec()
 
 bool WAVCodec::Init(const std::string &strFile, unsigned int filecache)
 {
+  // take precaution if Init()ialized earlier
+  if (m_bInited)
+  {
+    // keep things as is if Init() was done with known strFile
+    if (m_strFileName == strFile)
+      return true;
+
+    // got differing filename, so cleanup before starting over
+    DeInit();
+  }
+
   if (!m_file.Open(strFile, XFILE::READ_CACHED))
     return false;
 
@@ -129,12 +142,26 @@ bool WAVCodec::Init(const std::string &strFile, unsigned int filecache)
   //  Seek to the start of the data chunk
   m_file.Seek(m_iDataStart);
 
+  m_strFileName = strFile;
+  m_bInited = true;
+
   return true;
 }
 
 void WAVCodec::DeInit()
 {
   m_file.Close();
+
+  m_SampleRate = 0;
+  m_Channels = 0;
+  m_BitsPerSample = 0;
+  m_iDataStart=0;
+  m_iDataLen=0;
+  m_Bitrate = 0;
+  m_strFileName = "";
+  m_bInited = false;
+  m_strFileName = "";
+  m_bInited = false;
 }
 
 __int64 WAVCodec::Seek(__int64 iSeekTime)

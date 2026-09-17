@@ -39,5 +39,8 @@ private:
   long m_iDataStart;
   long m_iDataLen;
   DWORD m_ChannelMask;
+
+  std::string m_strFileName;
+  bool m_bInited;
 };
 

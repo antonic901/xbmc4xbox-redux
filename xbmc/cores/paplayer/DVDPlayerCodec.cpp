@@ -40,8 +40,10 @@ DVDPlayerCodec::DVDPlayerCodec()
   m_nAudioStream = -1;
   m_audioPos = 0;
   m_pPacket = NULL;
-  m_decoded = NULL;;
+  m_decoded = NULL;
   m_nDecodedLen = 0;
+  m_strFileName = "";
+  m_bInited = false;
 }
 
 DVDPlayerCodec::~DVDPlayerCodec()
@@ -56,7 +58,18 @@ void DVDPlayerCodec::SetContentType(const std::string &strContent)
 
 bool DVDPlayerCodec::Init(const std::string &strFile, unsigned int filecache)
 {
-  m_decoded = NULL;;
+  // take precaution if Init()ialized earlier
+  if (m_bInited)
+  {
+    // keep things as is if Init() was done with known strFile
+    if (m_strFileName == strFile)
+      return true;
+
+    // got differing filename, so cleanup before starting over
+    DeInit();
+  }
+
+  m_decoded = NULL;
   m_nDecodedLen = 0;
 
   std::string strFileToOpen = strFile;
@@ -180,6 +193,9 @@ bool DVDPlayerCodec::Init(const std::string &strFile, unsigned int filecache)
   m_Bitrate = m_pAudioCodec->GetBitRate();
   m_pDemuxer->GetStreamCodecName(m_nAudioStream,m_CodecName);
 
+  m_strFileName = strFile;
+  m_bInited = true;
+
   return true;
 }
 
@@ -207,9 +223,19 @@ void DVDPlayerCodec::DeInit()
     m_pAudioCodec = NULL;
   }
 
+  // cleanup format information
+  m_TotalTime = 0;
+  m_SampleRate = 0;
+  m_BitsPerSample = 0;
+  m_Channels = 0;
+  m_Bitrate = 0;
+
   m_audioPos = 0;
-  m_decoded = NULL;;
+  m_decoded = NULL;
   m_nDecodedLen = 0;
+
+  m_strFileName = "";
+  m_bInited = false;
 }
 
 __int64 DVDPlayerCodec::Seek(__int64 iSeekTime)
@@ -221,7 +247,7 @@ __int64 DVDPlayerCodec::Seek(__int64 iSeekTime)
   m_pDemuxer->SeekTime((int)iSeekTime, false);
   m_pAudioCodec->Reset();
 
-  m_decoded = NULL;;
+  m_decoded = NULL;
   m_nDecodedLen = 0;
 
   return iSeekTime;
