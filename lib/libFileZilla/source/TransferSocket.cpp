@@ -653,10 +653,12 @@ void CTransferSocket::OnReceive(int nErrorCode)
             if (!m_nPreAlloc)
             {
                 // pre alloc the file on disk - makes writing much faster due to less FAT updates
-                SetFilePointer(m_hFile, 32*1024*1024, 0, FILE_CURRENT);
+                // 32MB is breaking files close to the FatX size limit.
+                // Set to 2MB due to DVD2Xbox and the old Redump to split DD script.
+                SetFilePointer(m_hFile, 2*1024*1024, 0, FILE_CURRENT);
                 SetEndOfFile(m_hFile);
-                SetFilePointer(m_hFile, -32*1024*1024, 0, FILE_CURRENT);
-                m_nPreAlloc = 32*1024*1024 / (128*1024);
+                SetFilePointer(m_hFile, -2*1024*1024, 0, FILE_CURRENT);
+                m_nPreAlloc = 2*1024*1024 / (128*1024);
             }
 
             DWORD numwritten;
