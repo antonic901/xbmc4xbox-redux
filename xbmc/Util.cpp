@@ -65,9 +65,6 @@
 #endif
 #include "network/Network.h"
 #include "GUIPassword.h"
-#ifdef HAS_FTP_SERVER
-#include "libfilezilla/xbfilezilla.h"
-#endif
 #include "music/MusicInfoLoader.h"
 #include "XBVideoConfig.h"
 #include "music/tags/MusicInfoTag.h"
