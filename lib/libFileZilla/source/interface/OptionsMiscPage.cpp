@@ -79,7 +79,7 @@ void COptionsMiscPage::LoadData()
 {
     m_bDontShowPass = m_pOptionsDlg->GetOptionVal(OPTION_LOGSHOWPASS)?FALSE:TRUE;
     m_bStartMinimized = m_pOptionsDlg->m_pInterfaceOptions->GetOptionVal(IOPTION_STARTMINIMIZED);
-    m_TransferBufferSize = StringUtils::Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_BUFFERSIZE));
+    m_TransferBufferSize.Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_BUFFERSIZE));
 }
 
 void COptionsMiscPage::SaveData()

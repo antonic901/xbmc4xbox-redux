@@ -72,9 +72,9 @@ void CUsersListCtrl::ProcessConnOp(int op, const t_connectiondata &connectionDat
     {
         CString str;
         if (connectionData.user=="")
-            str = StringUtils::Format("(not logged in) (%06d)",connectionData.userid);
+            str.Format("(not logged in) (%06d)",connectionData.userid);
         else
-            str = StringUtils::Format("%s (%06d)",connectionData.user.c_str(),connectionData.userid);
+            str.Format("%s (%06d)",connectionData.user,connectionData.userid);
         int index=InsertItem(GetItemCount(),str);
         t_connectiondata *pData = new t_connectiondata;
         *pData = connectionData;
@@ -91,9 +91,9 @@ void CUsersListCtrl::ProcessConnOp(int op, const t_connectiondata &connectionDat
 
                 CString str;
                 if (connectionData.user=="")
-                    str = StringUtils::Format("(not logged in) (%06d)",connectionData.userid);
+                    str.Format("(not logged in) (%06d)",connectionData.userid);
                 else
-                    str = StringUtils::Format("%s (%06d)",connectionData.user.c_str(),connectionData.userid);
+                    str.Format("%s (%06d)",connectionData.user,connectionData.userid);
                 SetItemText(i,0,str);
                 break;
             }

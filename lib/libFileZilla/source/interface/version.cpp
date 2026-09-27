@@ -85,10 +85,10 @@ CString GetVersionString()
                 {
                     char ch='a';
                     ch+=static_cast<char>(fi->dwFileVersionLS>>16)-1;
-                    version = StringUtils::Format("%s version %d.%d%c test release %d)",ProductName.c_str(),fi->dwFileVersionMS>>16,fi->dwFileVersionMS&0xFFFF,ch,fi->dwFileVersionLS&0xFFFF);
+                    version.Format("%s version %d.%d%c test release %d)",ProductName,fi->dwFileVersionMS>>16,fi->dwFileVersionMS&0xFFFF,ch,fi->dwFileVersionLS&0xFFFF);
                 }
                 else
-                    version = StringUtils::Format("%s version %d.%d test release %d",ProductName.c_str(),fi->dwFileVersionMS>>16,fi->dwFileVersionMS&0xFFFF,fi->dwFileVersionLS&0xFFFF);
+                    version.Format("%s version %d.%d test release %d",ProductName,fi->dwFileVersionMS>>16,fi->dwFileVersionMS&0xFFFF,fi->dwFileVersionLS&0xFFFF);
             }
             else
             { //final versions
@@ -96,10 +96,10 @@ CString GetVersionString()
                 {
                     char ch='a';
                     ch+=static_cast<char>(fi->dwFileVersionLS>>16)-1;
-                    version = StringUtils::Format("%s version %d.%d%c final",ProductName.c_str(),fi->dwFileVersionMS>>16,fi->dwFileVersionMS&0xFFFF,ch);
+                    version.Format("%s version %d.%d%c final",ProductName,fi->dwFileVersionMS>>16,fi->dwFileVersionMS&0xFFFF,ch);
                 }
                 else
-                    version = StringUtils::Format("%s version %d.%d final",ProductName.c_str(),fi->dwFileVersionMS>>16,fi->dwFileVersionMS&0xFFFF);
+                    version.Format("%s version %d.%d final",ProductName,fi->dwFileVersionMS>>16,fi->dwFileVersionMS&0xFFFF);
             }
         }
         else
@@ -108,17 +108,17 @@ CString GetVersionString()
             if ((fi->dwFileVersionLS&0xFFFF)/100)
                 if ((fi->dwFileVersionLS&0xFFFF) % 100)
                     //test release
-                    version = StringUtils::Format("%s version 0.%d.%d%c beta test release %d",ProductName.c_str(),fi->dwFileVersionMS&0xFFFF,fi->dwFileVersionLS>>16, (fi->dwFileVersionLS&0xFFFF)/100 + 'a' - 1, (fi->dwFileVersionLS&0xFFFF)%100);
+                    version.Format("%s version 0.%d.%d%c beta test release %d",ProductName,fi->dwFileVersionMS&0xFFFF,fi->dwFileVersionLS>>16, (fi->dwFileVersionLS&0xFFFF)/100 + 'a' - 1, (fi->dwFileVersionLS&0xFFFF)%100);
                 else
                     //final version
-                    version = StringUtils::Format(_T("%s version 0.%d.%d%c beta"),ProductName.c_str(),fi->dwFileVersionMS&0xFFFF,fi->dwFileVersionLS>>16, (fi->dwFileVersionLS&0xFFFF)/100 + 'a' - 1);
+                    version.Format(_T("%s version 0.%d.%d%c beta"),ProductName,fi->dwFileVersionMS&0xFFFF,fi->dwFileVersionLS>>16, (fi->dwFileVersionLS&0xFFFF)/100 + 'a' - 1);
             else
                 if (fi->dwFileVersionLS&0xFFFF)
                     //test release
-                    version = StringUtils::Format("%s version 0.%d.%d beta test release %d",ProductName.c_str(),fi->dwFileVersionMS&0xFFFF,fi->dwFileVersionLS>>16,fi->dwFileVersionLS&0xFFFF);
+                    version.Format("%s version 0.%d.%d beta test release %d",ProductName,fi->dwFileVersionMS&0xFFFF,fi->dwFileVersionLS>>16,fi->dwFileVersionLS&0xFFFF);
                 else
                     //final version
-                    version = StringUtils::Format(_T("%s version 0.%d.%d beta"),ProductName.c_str(),fi->dwFileVersionMS&0xFFFF,fi->dwFileVersionLS>>16);
+                    version.Format(_T("%s version 0.%d.%d beta"),ProductName,fi->dwFileVersionMS&0xFFFF,fi->dwFileVersionLS>>16);
         }
 
     }

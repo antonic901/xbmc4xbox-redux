@@ -105,12 +105,12 @@ BOOL COptionsGeneralPage::IsDataValid()
 
 void COptionsGeneralPage::LoadData()
 {
-    m_Port = StringUtils::Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_SERVERPORT));
-    m_Threadnum = StringUtils::Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_THREADNUM));
-    m_MaxUsers = StringUtils::Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_MAXUSERS));
-    m_Timeout = StringUtils::Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_TIMEOUT));
-    m_NoTransferTimeout = StringUtils::Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_NOTRANSFERTIMEOUT));
-    m_LoginTimeout = StringUtils::Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_LOGINTIMEOUT));
+    m_Port.Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_SERVERPORT));
+    m_Threadnum.Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_THREADNUM));
+    m_MaxUsers.Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_MAXUSERS));
+    m_Timeout.Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_TIMEOUT));
+    m_NoTransferTimeout.Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_NOTRANSFERTIMEOUT));
+    m_LoginTimeout.Format("%d", m_pOptionsDlg->GetOptionVal(OPTION_LOGINTIMEOUT));
 }
 
 void COptionsGeneralPage::SaveData()

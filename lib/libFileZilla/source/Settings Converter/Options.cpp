@@ -22,6 +22,8 @@
 #include "options.h"
 #include "misc\MarkupSTL.h"
 #include "permissions.h"
+#include "utils/StringUtils.h"
+#include <assert.h>
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -59,18 +61,18 @@ void COptions::SetOptionVal(int nOptionID)
     while (res)
     {
         std::string name=xml.GetChildAttrib( _T("name"));
-        if (!_tcscmp(name, m_Options[nOptionID].name))
+        if (!_tcscmp(name.c_str(), m_Options[nOptionID].name))
         {
             xml.SetChildAttrib(_T("name"), m_Options[nOptionID].name);
             xml.SetChildAttrib(_T("type"), _T("numeric"));
-            xml.SetChildData(valuestr);
+            xml.SetChildData(valuestr.c_str());
             break;
         }
         res=xml.FindChildElem();
     }
     if (!res)
     {
-        xml.InsertChildElem(_T("Item"), valuestr);
+        xml.InsertChildElem(_T("Item"), valuestr.c_str());
         xml.SetChildAttrib(_T("name"), m_Options[nOptionID].name);
         xml.SetChildAttrib(_T("type"), _T("numeric"));
     }
@@ -96,18 +98,18 @@ void COptions::SetOption(int nOptionID)
     while (res)
     {
         std::string name=xml.GetChildAttrib( _T("name"));
-        if (!_tcscmp(name, m_Options[nOptionID].name))
+        if (!_tcscmp(name.c_str(), m_Options[nOptionID].name))
         {
             xml.SetChildAttrib(_T("name"), m_Options[nOptionID].name);
             xml.SetChildAttrib(_T("type"), _T("string"));
-            xml.SetChildData(m_OptionsCache[nOptionID].str);
+            xml.SetChildData(m_OptionsCache[nOptionID].str.c_str());
             break;
         }
         res=xml.FindChildElem();
     }
     if (!res)
     {
-        xml.InsertChildElem( _T("Item"), m_OptionsCache[nOptionID].str );
+        xml.InsertChildElem( _T("Item"), m_OptionsCache[nOptionID].str.c_str() );
         xml.SetChildAttrib(_T("name"), m_Options[nOptionID].name);
         xml.SetChildAttrib(_T("type"), _T("string"));
     }
@@ -118,7 +120,7 @@ void COptions::SetOption(int nOptionID)
 
 void COptions::GetOption(int nOptionID)
 {
-    ASSERT(!m_OptionsCache[nOptionID].bCached);
+    assert(!m_OptionsCache[nOptionID].bCached);
 
     std::string res = "";
 
@@ -152,32 +154,32 @@ void COptions::GetOption(int nOptionID)
         {
             std::vector<std::string> msgLines;
             int oldpos=0;
-            res.Replace("\r\n", "\n");
-            int pos=res.Find("\n");
+            StringUtils::Replace(res, "\r\n", "\n");
+            int pos=res.find("\n");
             std::string line;
             while (pos!=-1)
             {
                 if (pos)
                 {
-                    line = res.Mid(oldpos, pos-oldpos);
-                    line = line.Left(70);
-                    line.TrimRight(" ");
+                    line = res.substr(oldpos, pos-oldpos);
+                    line = line.substr(0, 70);
+                    StringUtils::TrimRight(line, " ");
                     if (msgLines.size() || line!="")
                         msgLines.push_back(line);
                 }
                 oldpos=pos+1;
-                pos=res.Find("\n", oldpos);
+                pos=res.find("\n", oldpos);
             }
-            line=res.Mid(oldpos);
+            line=res.substr(oldpos);
             if (line!="")
             {
-                line=line.Left(70);
+                line=line.substr(0, 70);
                 msgLines.push_back(line);
             }
             res="";
             for (int i=0;i<msgLines.size();i++)
                 res+=msgLines[i]+"\r\n";
-            res.TrimRight("\r\n");
+            StringUtils::TrimRight(res, "\r\n");
             if (res=="")
             {
                 res="%v";
@@ -195,7 +197,7 @@ void COptions::GetOption(int nOptionID)
 
 void COptions::GetOptionVal(int nOptionID)
 {
-    ASSERT(!m_OptionsCache[nOptionID].bCached);
+    assert(!m_OptionsCache[nOptionID].bCached);
 
     int val=0;
 
@@ -276,7 +278,7 @@ CMarkupSTL *COptions::GetXML()
 
 BOOL COptions::FreeXML(CMarkupSTL *pXML, BOOL bSave)
 {
-    ASSERT(pXML);
+    assert(pXML);
     if (!pXML)
         return FALSE;
     if (bSave && AskSave())

@@ -238,14 +238,14 @@ int CStatusCtrl::OnCreate(LPCREATESTRUCT lpCreateStruct)
     for (int i=0; i<16; i++)
     {
         CString tmp;
-        tmp = StringUtils::Format(_T("\\red%d\\green%d\\blue%d;"), GetRValue(m_ColTable[i]), GetGValue(m_ColTable[i]), GetBValue(m_ColTable[i]));
+        tmp.Format(_T("\\red%d\\green%d\\blue%d;"), GetRValue(m_ColTable[i]), GetGValue(m_ColTable[i]), GetBValue(m_ColTable[i]));
         m_RTFHeader+=tmp;
     }
     m_RTFHeader += "}";
 
     int pointsize = (-m_lfFont.lfHeight*72/ GetDeviceCaps(GetDC()->GetSafeHdc(), LOGPIXELSY))*2;
     CString tmp;
-    tmp = StringUtils::Format(_T("%d"), pointsize);
+    tmp.Format(_T("%d"), pointsize);
     m_RTFHeader += "\\uc1\\pard\\fi-200\\li200\\tx200\\f0\\fs"+tmp; //180*m_nAvgCharWidth;
 
     CString rtfstr = m_RTFHeader;

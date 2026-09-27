@@ -133,14 +133,14 @@ void COptionsLoggingPage::LoadData()
     int nLimit = m_pOptionsDlg->GetOptionVal(OPTION_LOGLIMITSIZE);
     m_bLimit = nLimit ? TRUE : FALSE;
     if (nLimit)
-        m_LimitSize = StringUtils::Format("%d", nLimit);
+        m_LimitSize.Format("%d", nLimit);
 
     m_nLogtype = m_pOptionsDlg->GetOptionVal(OPTION_LOGTYPE);
 
     int nDelete = m_pOptionsDlg->GetOptionVal(OPTION_LOGDELETETIME);
     m_bDelete = nDelete ? TRUE : FALSE;
     if (nDelete)
-        m_DeleteTime = StringUtils::Format("%d", nDelete);
+        m_DeleteTime.Format("%d", nDelete);
 
 }
 

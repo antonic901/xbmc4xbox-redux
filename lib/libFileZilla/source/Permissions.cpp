@@ -29,6 +29,7 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "Util.h"
+#include "utils/StringUtils.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -240,7 +241,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
         }
 
         std::string fn = FindFileData.cFileName;
-        std::string fn2 = fn.substr(fn.size() - 4);
+        std::string fn2 = StringUtils::Right(fn, 4);
         StringUtils::ToLower(fn2);
 
         if (FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
@@ -300,7 +301,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
             pDir->buffer[pDir->len++] = directory.bFileWrite ? 'w' : '-';
 
             BOOL isexe = FALSE;
-            std::string ext = fn.substr(fn.size() - 4);
+            std::string ext = StringUtils::Right(fn, 4);
             StringUtils::ToLower(ext);
             if (ext.rfind('.')!=-1)
             {
@@ -522,7 +523,7 @@ int CPermissions::GetDirName(LPCTSTR user, std::string dirname, std::string curr
 
       if (tmp!="")
               piecelist.push_back(tmp);
-            dirname=dirname.substr(pos+1);
+            dirname = pos < dirname.size() ? dirname.substr(pos + 1) : "";
         }
 
     int remove=0; //Number of pieces that will be removed due to dots
@@ -643,7 +644,7 @@ int CPermissions::GetFileName(LPCTSTR user, std::string filename, std::string cu
 
     //If links are resolved, don't allow any operation on lnk files
     BOOL bLnk = m_UsersList[index].ResolveLinks();
-    if (filename.substr(filename.size() - 4)==".lnk" && bLnk)
+    if (StringUtils::Right(filename, 4)==".lnk" && bLnk)
         return PERMISSION_DENIED;
 
     //Reformat the directory
@@ -840,7 +841,7 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
             { //Oh, double dots found! Remove one piece
                 bRemoveThis=TRUE;
                 remove++;
-                piece=piece.Mid(1);
+                piece=piece.substr(1);
             }
 #endif
             if (!bRemoveThis && piece!=".") //Skips single dots
@@ -894,7 +895,7 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
                 StringUtils::Replace(target, ":U", m_UsersList[user].user);
                 if (target=="")
                     return PERMISSION_NOTFOUND;
-                if (target.substr(target.size() - 2)!=":\\")
+                if (StringUtils::Right(target, 2)!=":\\")
                 {
                     nAttributes=GetFileAttributes(target.c_str());
                     if (nAttributes==0xFFFFFFFF)
@@ -980,7 +981,7 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
                 StringUtils::Replace(target, ":U", m_UsersList[user].user);
                 if (target=="")
                     return PERMISSION_NOTFOUND;
-                if (target.substr(target.size() - 2)!=":\\")
+                if (StringUtils::Right(target, 2)!=":\\")
                 {
                     nAttributes=GetFileAttributes(target.c_str());
                     if (nAttributes==0xFFFFFFFF)
@@ -1097,7 +1098,7 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
             if (isalpha(dir[0]) && dir[1]==':')
                 dir="/"+dir;
         }
-        if (dir.substr(1)!="/")
+        if (dir.substr(0, 1)!="/")
         { //New relative path
           //The current dir has to be added to the split into pieces
             std::string tmp=currentdir;
@@ -1105,7 +1106,7 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
             StringUtils::TrimLeft(tmp, "/");
             while((pos=tmp.find("/"))!=-1)
             {
-                piecelist.push_back(tmp.substr(pos));
+                piecelist.push_back(tmp.substr(0, pos));
                 tmp=tmp.substr(pos+1);
             }
             if (tmp!="")
@@ -1149,7 +1150,7 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
         StringUtils::TrimLeft(dir, "/");
         while((pos=dir.find("/"))!=-1)
         {
-            piecelist.push_back(dir.substr(pos));
+            piecelist.push_back(dir.substr(0, pos));
             dir=dir.substr(pos+1);
         }
         if (dir!="")
@@ -1319,11 +1320,11 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
         if (i < 0)
             return res;
         sFileSpec = dir.substr(i+1);
-        dir = dir.substr(i+1);
+        dir = dir.substr(0, i+1);
 
         i = dirToDisplay.find_last_of("/");
         if (i >= 0)
-            dirToDisplay = dirToDisplay.substr(i+1);
+            dirToDisplay = dirToDisplay.substr(0, i+1);
         else
             dirToDisplay = "";
 
@@ -1378,7 +1379,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
         }
 
         std::string fn = FindFileData.cFileName;
-        std::string fn2 = fn.substr(fn.size() - 4);
+        std::string fn2 = StringUtils::Right(fn, 4);
         StringUtils::ToLower(fn2);
 
         if (!(FindFileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && fn2==".lnk" && m_UsersList[index].ResolveLinks())
@@ -1387,7 +1388,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
                 continue;
             if (bRelative)
             {
-                fn = fn.substr(fn.length()-4);
+                fn = fn.substr(0, fn.length()-4);
                 t_directory directory;
                 BOOL truematch;
                 if (GetRealDirectory(dir+"/"+fn, index, directory ,truematch))
@@ -1406,7 +1407,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
                 StringUtils::Replace(lnkpath, ":U", m_UsersList[index].user);
                 StringUtils::Replace(lnkpath, "\\", "/");
                 StringUtils::TrimRight(lnkpath, "/");
-                fn = fn.substr(fn.length()-4);
+                fn = fn.substr(0, fn.length()-4);
 
                 t_directory directory;
                 BOOL truematch;
@@ -1464,7 +1465,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
 
         if (bRelative)
         {
-            fn = fn.substr(fn.length()-4);
+            fn = fn.substr(0, fn.length()-4);
             t_directory directory;
             BOOL truematch;
             if (GetRealDirectory(dir+"/"+fn, index, directory ,truematch))
@@ -1483,7 +1484,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
             StringUtils::Replace(lnkpath, ":U", m_UsersList[index].user);
             StringUtils::Replace(lnkpath, "\\", "/");
             StringUtils::TrimRight(lnkpath, "/");
-            fn = fn.substr(fn.length()-4);
+            fn = fn.substr(0, fn.length()-4);
 
             t_directory directory;
             BOOL truematch;

@@ -84,7 +84,7 @@ void COptions::SetOption(int nOptionID, int value)
         xml.AddChildElem( _T("Settings") );
 
     CString valuestr;
-    valuestr = StringUtils::Format( _T("%d"), value);
+    valuestr.Format( _T("%d"), value);
     xml.IntoElem();
     BOOL res=xml.FindChildElem();
     while (res)

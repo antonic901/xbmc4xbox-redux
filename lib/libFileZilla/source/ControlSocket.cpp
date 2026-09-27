@@ -323,14 +323,11 @@ BOOL CControlSocket::SendDir(const std::string command,std::string curDir,const 
     // name is a single character without the ':' at the end
     if (curDir.length() > 3)
     {
-      curDir = curDir.substr(0, 2);
-      StringUtils::ToUpper(curDir);
-      curDir += curDir.substr(3);
+      curDir = StringUtils::ToUpper(curDir.substr(0, 2)) + curDir.substr(3);
     }
     else
     {
-      curDir = curDir.substr(0, 2);
-      StringUtils::ToUpper(curDir);
+      curDir = StringUtils::ToUpper(curDir.substr(0, 2));
     }
   }
 
@@ -630,7 +627,7 @@ void CControlSocket::ParseCommand()
             {
                 char sendme[4096];
 
-                int res = m_pGssLayer->ProcessCommand("USER", args, sendme);
+                int res = m_pGssLayer->ProcessCommand("USER", args.c_str(), sendme);
                 if (res != -1)
                     DoUserLogin(sendme);
                 Send(sendme);
@@ -647,7 +644,7 @@ void CControlSocket::ParseCommand()
         else if (m_pGssLayer && m_pGssLayer->AuthSuccessful())
         {
             char sendme[4096];
-            int res = m_pGssLayer->ProcessCommand("PASS", m_status.user, args, sendme);
+            int res = m_pGssLayer->ProcessCommand("PASS", m_status.user.c_str(), args.c_str(), sendme);
             if (res != -1)
                 DoUserLogin(sendme);
             Send(sendme);
@@ -808,24 +805,24 @@ void CControlSocket::ParseCommand()
                 }
             }
 #else
-            int res = m_pOwner->m_pPermissions->ChangeCurrentDir(m_status.user,m_CurrentDir,args);
+            int res = m_pOwner->m_pPermissions->ChangeCurrentDir(m_status.user.c_str(),m_CurrentDir,args);
             if (!res)
             {
                 std::string str;
                 str = StringUtils::Format("250 CWD successful. \"%s\" is current directory.",m_CurrentDir.c_str());
-                Send(str);
+                Send(str.c_str());
             }
             else if (res & 1)
             {
                 std::string str;
                 str = StringUtils::Format("550 CWD failed. \"%s\": Permission denied.",args.c_str());
-                Send(str);
+                Send(str.c_str());
             }
             else if (res)
             {
                 std::string str;
                 str = StringUtils::Format("550 CWD failed. \"%s\": directory not found.",args.c_str());
-                Send(str);
+                Send(str.c_str());
             }
 #endif
         }
@@ -1136,7 +1133,7 @@ void CControlSocket::ParseCommand()
                 error = m_pOwner->m_pPermissions->GetDirectoryListing(m_status.user.c_str(), dirToList, pResult);
             }
 #else
-            int error = m_pOwner->m_pPermissions->GetDirectoryListing(m_status.user, dirToList, pResult);
+            int error = m_pOwner->m_pPermissions->GetDirectoryListing(m_status.user.c_str(), dirToList, pResult);
 #endif
             if (error & 1)
             {
@@ -1229,19 +1226,19 @@ void CControlSocket::ParseCommand()
             {
                 std::string str;
                 str = StringUtils::Format("200 CDUP successful. \"%s\" is current directory.",m_CurrentDir.c_str());
-                Send(str);
+                Send(str.c_str());
             }
             else if (res & 1)
             {
                 std::string str;
                 str = StringUtils::Format("550 CDUP failed. \"%s\": Permission denied.",dir.c_str());
-                Send(str);
+                Send(str.c_str());
             }
             else if (res)
             {
                 std::string str;
                 str = StringUtils::Format("550 CDUP failed. \"%s\": directory not found.",dir.c_str());
-                Send(str);
+                Send(str.c_str());
             }
 #endif
         }
@@ -1504,7 +1501,7 @@ void CControlSocket::ParseCommand()
                 while (result!="")
                 {
                     std::string piece = result.substr(0, result.find("\\")+1);
-                    if (piece.substr(piece.size() - 2) == ".\\")
+                    if (StringUtils::Right(piece, 2) == ".\\")
                     {
                         Send("550 Directoryname not valid");
                         bReplySent = TRUE;
@@ -1875,7 +1872,7 @@ void CControlSocket::ParseCommand()
                 error = m_pOwner->m_pPermissions->GetShortDirectoryListing(m_status.user.c_str(), m_CurrentDir, args, pResult);
             }
 #else
-            int error = m_pOwner->m_pPermissions->GetShortDirectoryListing(m_status.user, m_CurrentDir, args, pResult);
+            int error = m_pOwner->m_pPermissions->GetShortDirectoryListing(m_status.user.c_str(), m_CurrentDir, args, pResult);
 #endif
             if (error & 1)
             {
@@ -2133,9 +2130,9 @@ void CControlSocket::ParseCommand()
             char command1[4096];
             char args1[4096];
 
-            strcpy(command1, command);
+            strcpy(command1, command.c_str());
             strupr(command1);
-            strcpy(args1, args);
+            strcpy(args1, args.c_str());
 
             m_pGssLayer->ProcessCommand(command1, args1, sendme);
             Send(sendme);
@@ -2193,7 +2190,7 @@ void CControlSocket::ParseCommand()
           Send(_T("500 Invalid built-in function.  Use SITE HELP for a list of valid SITE commands"));
           return;
         }
-        if (strBuiltIn == "xbmc.help" || strBuiltIn == "help")
+        if (StringUtils::EqualsNoCase(strBuiltIn, "xbmc.help") || StringUtils::EqualsNoCase(strBuiltIn, "help"))
         {
           std::string strHelp;
           CBuiltins::GetInstance().GetHelp(strHelp);
@@ -2274,7 +2271,7 @@ void CControlSocket::ParseCommand()
           CUser user;
                 m_pOwner->m_pPermissions->GetUser(m_status.user,user);
 
-                if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/")) {
+                if((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/")) {
                     Send( _T("550 Permission denied - Storing in XBOX Root not allowed.") );
                     break;
                 }
@@ -2321,7 +2318,7 @@ void CControlSocket::ParseCommand()
                   CUser user;
                   m_pOwner->m_pPermissions->GetUser(m_status.user, user);
 
-                  if ((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user) == "/"))
+                  if ((m_CurrentDir=="/") && (user.nRelative == FALSE) && (m_pOwner->m_pPermissions->GetHomeDir(m_status.user.c_str()) == "/"))
             {
                       Send( _T("550 Permission denied - Executing in XBOX Root not allowed.") );
                       break;
@@ -2473,7 +2470,7 @@ void CControlSocket::ProcessTransferMsg()
 
       if (XBFILEZILLA(GetSfvEnabled()))
       {
-        if (!StringUtils::CompareNoCase(filename.substr(filename.size() - 4), _T(".sfv")))
+        if (!StringUtils::CompareNoCase(StringUtils::Right(filename, 4), _T(".sfv")))
         {
           // this is a sfv file, so don't check
           //mSfvFile.SetSfvFile(filename);
@@ -2716,7 +2713,7 @@ BOOL CControlSocket::UnquoteArgs(std::string &args)
     if (pos1 || pos2!=(args.length()-1) || pos1>=(pos2-1))
         return FALSE;
     args=args.substr(1, args.length()-2);
-    if (args.find('"')!=-1 || args.substr(0, 1)==" " || args.substr(args.size() - 1)==" ")
+    if (args.find('"')!=-1 || args.substr(0, 1)==" " || StringUtils::Right(args, 1)==" ")
         return FALSE;
     return TRUE;
 }

@@ -198,14 +198,14 @@ void CGroupsDlgSpeedLimit::ShowSpeedLimit(CListBox &listBox, SPEEDLIMITSLIST &li
     {
         CString str;
 
-        str = StringUtils::Format(_T( "%dkB/s"), list[i].m_Speed);
+        str.Format(_T( "%dkB/s"), list[i].m_Speed);
 
         CString help;
 
         if (list[i].m_DateCheck)
         {
             CTime t(list[i].m_Date.y, list[i].m_Date.m, list[i].m_Date.d, 0, 0, 0);
-            help += t = StringUtils::Format(_T("%x"));
+            help += t.Format(_T("%x"));
         }
 
         if (list[i].m_FromCheck)
@@ -214,7 +214,7 @@ void CGroupsDlgSpeedLimit::ShowSpeedLimit(CListBox &listBox, SPEEDLIMITSLIST &li
                 help += _T( "; ");
 
             CTime t(2003, 1, 1, list[i].m_FromTime.h, list[i].m_FromTime.m, list[i].m_FromTime.s);
-            help += _T("F:") + t = StringUtils::Format( _T("%X"));
+            help += _T("F:") + t.Format( _T("%X"));
         }
 
         if (list[i].m_ToCheck)
@@ -223,7 +223,7 @@ void CGroupsDlgSpeedLimit::ShowSpeedLimit(CListBox &listBox, SPEEDLIMITSLIST &li
                 help += _T( "; ");
 
             CTime t(2003, 1, 1, list[i].m_ToTime.h, list[i].m_ToTime.m, list[i].m_ToTime.s);
-            help += _T("T:") + t = StringUtils::Format( _T("%X"));
+            help += _T("T:") + t.Format( _T("%X"));
         }
 
         for (int j = 0; j < 7; j++)
@@ -244,7 +244,7 @@ void CGroupsDlgSpeedLimit::ShowSpeedLimit(CListBox &listBox, SPEEDLIMITSLIST &li
 
                         CTime time(2001, 1, k + 1, 0, 0, 0);
 
-                        help += time = StringUtils::Format(_T("%a"));
+                        help += time.Format(_T("%a"));
                     }
                 }
 

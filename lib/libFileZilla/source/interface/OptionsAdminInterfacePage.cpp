@@ -217,7 +217,7 @@ void COptionsAdminInterfacePage::SaveData()
 
 void COptionsAdminInterfacePage::LoadData()
 {
-    m_Port = StringUtils::Format(_T("%d"), m_pOptionsDlg->GetOptionVal(OPTION_ADMINPORT));
+    m_Port.Format(_T("%d"), m_pOptionsDlg->GetOptionVal(OPTION_ADMINPORT));
     m_IpBindings = m_pOptionsDlg->GetOption(OPTION_ADMINIPBINDINGS);
     m_IpAddresses = m_pOptionsDlg->GetOption(OPTION_ADMINIPADDRESSES);
     m_NewPass = m_pOptionsDlg->GetOption(OPTION_ADMINPASS);

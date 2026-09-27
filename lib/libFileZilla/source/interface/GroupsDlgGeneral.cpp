@@ -585,9 +585,9 @@ BOOL CGroupsDlgGeneral::DisplayGroup(const t_group *pGroup)
     m_nRelative = pGroup->nRelative;
     m_nMaxUsersBypass = pGroup->nBypassUserLimit;
     CString str;
-    str = StringUtils::Format("%d", pGroup->nUserLimit);
+    str.Format("%d", pGroup->nUserLimit);
     m_MaxConnCount = str;
-    str = StringUtils::Format("%d", pGroup->nIpLimit);
+    str.Format("%d", pGroup->nIpLimit);
     m_IpLimit = str;
     UpdateData(FALSE);
 

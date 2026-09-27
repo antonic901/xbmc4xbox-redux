@@ -875,7 +875,7 @@ void CMainFrame::ParseReply(int nReplyID, unsigned char *pData, int nDataLength)
     default:
         {
             CString str;
-            str = StringUtils::Format(_T("Protocol error: Unexpected reply id (%d)."), nReplyID);
+            str.Format(_T("Protocol error: Unexpected reply id (%d)."), nReplyID);
             ShowStatus(str, 1);
             break;
         }
@@ -970,7 +970,7 @@ void CMainFrame::ParseStatus(int nStatusID, unsigned char *pData, int nDataLengt
                 m_nRecvCount += size;
                 m_RecvLed.Ping(100);
                 CString str;
-                str = StringUtils::Format("%I64d bytes received",m_nRecvCount);
+                str.Format("%I64d bytes received",m_nRecvCount);
                 SetStatusbarText(m_wndStatusBar.CommandToIndex(ID_INDICATOR_RECVCOUNT),str);
             }
             else
@@ -978,7 +978,7 @@ void CMainFrame::ParseStatus(int nStatusID, unsigned char *pData, int nDataLengt
                 m_nSendCount += size;
                 m_SendLed.Ping(100);
                 CString str;
-                str = StringUtils::Format("%I64d bytes sent",m_nSendCount);
+                str.Format("%I64d bytes sent",m_nSendCount);
                 SetStatusbarText(m_wndStatusBar.CommandToIndex(ID_INDICATOR_SENDCOUNT),str);
             }
 
@@ -987,7 +987,7 @@ void CMainFrame::ParseStatus(int nStatusID, unsigned char *pData, int nDataLengt
     default:
         {
             CString str;
-            str = StringUtils::Format(_T("Protocol error: Unexpected status id (%d)."), nStatusID);
+            str.Format(_T("Protocol error: Unexpected status id (%d)."), nStatusID);
             ShowStatus(str, 1);
         }
         break;

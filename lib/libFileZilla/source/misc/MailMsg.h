@@ -20,6 +20,7 @@
 
 #ifndef TStrStrMap
 #include <map>
+#include <string>
 
 typedef std::map<std::string, std::string> TStrStrMap;
 #endif // !defined TStrStrMap

@@ -21,6 +21,8 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "Permissions.h"
+#include "utils/StringUtils.h"
+#include <assert.h>
 #include "misc\MarkupSTL.h"
 
 #ifdef _DEBUG
@@ -65,10 +67,10 @@ CPermissions::CPermissions(BOOL bCU /*=TRUE*/)
             user.bLnk=GetKey(user.user,"Resolve Shortcuts")=="1";
             user.bRelative=GetKey(user.user,"Relative")=="1";
             user.bBypassUserLimit=GetKey(user.user,"Bypass server userlimit")=="1";
-            user.nUserLimit=atoi(GetKey(user.user,"User Limit"));
+            user.nUserLimit=atoi(GetKey(user.user,"User Limit").c_str());
             if (user.nUserLimit<0 || user.nUserLimit>999999999)
                 user.nUserLimit=0;
-            user.nIpLimit=atoi(GetKey(user.user,"IP Limit"));
+            user.nIpLimit=atoi(GetKey(user.user,"IP Limit").c_str());
             if (user.nIpLimit<0 || user.nIpLimit>999999999)
                 user.nIpLimit=0;
             ReadPermissions(user);
@@ -86,13 +88,13 @@ CPermissions::~CPermissions()
 std::string CPermissions::GetKey(const std::string &subkey, const std::string &keyname)
 {
     HKEY key;
-    if (RegOpenKey(m_bCU?HKEY_CURRENT_USER:HKEY_LOCAL_MACHINE, "Software\\FileZilla Server\\Users\\"+subkey, &key)==ERROR_SUCCESS)
+    if (RegOpenKey(m_bCU?HKEY_CURRENT_USER:HKEY_LOCAL_MACHINE, ("Software\\FileZilla Server\\Users\\"+subkey).c_str(), &key)==ERROR_SUCCESS)
     {
         unsigned char *buffer=new unsigned char[100];
         memset(buffer,0,100);
 
         unsigned long tmp=100;
-        if (RegQueryValueEx(key,keyname,NULL,NULL,buffer,&tmp)!=ERROR_SUCCESS)
+        if (RegQueryValueEx(key,keyname.c_str(),NULL,NULL,buffer,&tmp)!=ERROR_SUCCESS)
         {
             RegCloseKey(key);
             delete [] buffer;
@@ -112,7 +114,7 @@ std::string CPermissions::GetKey(const std::string &subkey, const std::string &k
 void CPermissions::ReadPermissions(t_user &user)
 {
     HKEY key;
-    if (RegOpenKey(m_bCU?HKEY_CURRENT_USER:HKEY_LOCAL_MACHINE, "Software\\FileZilla Server\\Users\\"+user.user+"\\", &key)==ERROR_SUCCESS)
+    if (RegOpenKey(m_bCU?HKEY_CURRENT_USER:HKEY_LOCAL_MACHINE, ("Software\\FileZilla Server\\Users\\"+user.user+"\\").c_str(), &key)==ERROR_SUCCESS)
     {
         char buffer[1000];
         int index=0;
@@ -139,7 +141,7 @@ void CPermissions::ReadPermissions(t_user &user)
 
 void CPermissions::SetKey(CMarkupSTL *pXML, LPCTSTR name, LPCTSTR value)
 {
-    ASSERT(pXML);
+    assert(pXML);
     pXML->AddChildElem(_T("Option"), value);
     pXML->AddChildAttrib(_T("Name"), name);
 }
@@ -151,7 +153,7 @@ void CPermissions::SavePermissions(CMarkupSTL *pXML, const t_user &user)
     for (int i=0;i<user.permissions.size();i++)
     {
         pXML->AddChildElem(_T("Permission"));
-        pXML->AddChildAttrib(_T("Dir"), user.permissions[i].dir);
+        pXML->AddChildAttrib(_T("Dir"), user.permissions[i].dir.c_str());
         pXML->IntoElem();
         SetKey(pXML, "FileRead", user.permissions[i].bFileRead ? "1":"0");
         SetKey(pXML, "FileWrite", user.permissions[i].bFileWrite ? "1":"0");
@@ -181,26 +183,26 @@ BOOL CPermissions::Convert(CMarkupSTL *pXML)
     {
         pXML->ResetChildPos();
         std::string newname = iter->user;
-        newname.MakeLower();
+        StringUtils::ToLower(newname);
         while (pXML->FindChildElem("User"))
         {
             std::string name = pXML->GetChildAttrib(_T("Name"));
-            name.MakeLower();
+            StringUtils::ToLower(name);
             if (name == newname)
                 pXML->RemoveChildElem();
         }
         pXML->AddChildElem(_T("User"));
-        pXML->AddChildAttrib(_T("Name"), iter->user);
+        pXML->AddChildAttrib(_T("Name"), iter->user.c_str());
         pXML->IntoElem();
-        SetKey(pXML, "Pass", iter->password);
+        SetKey(pXML, "Pass", iter->password.c_str());
         SetKey(pXML, "Resolve Shortcuts", iter->bLnk?"1":"0");
         SetKey(pXML, "Relative", iter->bRelative?"1":"0");
         SetKey(pXML, "Bypass server userlimit", iter->bBypassUserLimit?"1":"0");
         std::string str;
         str = StringUtils::Format(_T("%d"), iter->nUserLimit);
-        SetKey(pXML, "User Limit", str);
+        SetKey(pXML, "User Limit", str.c_str());
         str = StringUtils::Format(_T("%d"), iter->nIpLimit);
-        SetKey(pXML, "IP Limit", str);
+        SetKey(pXML, "IP Limit", str.c_str());
 
         SavePermissions(pXML, *iter);
         pXML->OutOfElem();

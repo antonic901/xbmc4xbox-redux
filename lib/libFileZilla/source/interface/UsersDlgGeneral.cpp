@@ -641,9 +641,9 @@ BOOL CUsersDlgGeneral::DisplayUser(const t_user *pUser)
     m_nRelative = pUser->nRelative;
     m_nMaxUsersBypass = pUser->nBypassUserLimit;
     CString str;
-    str = StringUtils::Format("%d", pUser->nUserLimit);
+    str.Format("%d", pUser->nUserLimit);
     m_MaxConnCount = str;
-    str = StringUtils::Format("%d", pUser->nIpLimit);
+    str.Format("%d", pUser->nIpLimit);
     m_IpLimit = str;
     UpdateData(FALSE);
 
