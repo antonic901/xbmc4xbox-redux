@@ -26,6 +26,7 @@
 #include "permissions.h"
 
 #include "thread.h"
+#include <boost/scoped_ptr.hpp>
 #include <vector>
 
 class CFreeSpace
@@ -41,6 +42,7 @@ public:
   bool          mDisplay;
 };
 
+class CAsyncSelectManager;
 class CXBServer;
 
 // singleton class
@@ -53,6 +55,8 @@ public:
 
   static CXBFileZillaImp* GetInstance();
   void DestructInstance();
+
+  static CAsyncSelectManager* GetAsyncSelectManager();
 
   //////////////////////////////////////////////////
   // server runtime control
@@ -105,6 +109,7 @@ protected:
   std::string ConvertToDrivename(LPCTSTR Dirname);
 
 protected:
+  boost::scoped_ptr<CAsyncSelectManager> m_selectManager;
     CXBServer* mServer;
   std::string mConfigurationPath;
   CriticalOperationCallback mCriticalOperationCallback;

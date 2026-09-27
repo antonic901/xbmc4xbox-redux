@@ -86,6 +86,8 @@ struct hostent FAR * gethostbyname (
 ///////////////////////////////////////////////////////////////////////////////////
 // CAsyncSelectHelper
 
+#include <boost/shared_ptr.hpp>
+
 class CAsyncSelectHelper
 {
 public:
@@ -116,7 +118,8 @@ public:
   bool mIsConnected;
 };
 
-typedef std::list<CAsyncSelectHelper*> CAsyncSelectHelperList;
+typedef boost::shared_ptr<CAsyncSelectHelper> CAsyncSelectHelperPtr;
+typedef std::list<CAsyncSelectHelperPtr> CAsyncSelectHelperList;
 
 class CAsyncSelectFindFunctor
 {
@@ -126,7 +129,7 @@ public:
   {
   }
 
-  bool operator()(const CAsyncSelectHelper* helper)
+  bool operator()(const CAsyncSelectHelperPtr& helper)
   {
     return mSocket == helper->mSocket;
   }
@@ -135,22 +138,25 @@ public:
 };
 
 ///////////////////////////////////////////////////////////////////////////////////
-// CAsyncSelectManager 
+// CAsyncSelectManager
 
 
-class CAsyncSelectManager : public CThread
+class CAsyncSelectManager
 {
 public:
   CAsyncSelectManager();
   ~CAsyncSelectManager();
-  
+
+  bool Start();
+  void StopAndJoin();
+
   int WSAAsyncSelect(SOCKET s, HWND hWnd, unsigned int wMsg, long lEvent);
   int Accept(SOCKET s, CAsyncSelectHelper* srcHelper);
 
-  virtual DWORD Run();
+  DWORD Run();
 
-  CAsyncSelectHelper* GetHelper(SOCKET s);
-  
+  CAsyncSelectHelperPtr GetHelper(SOCKET s);
+
   CAsyncSelectHelperList mAsyncSelectHelperList;
   CCriticalSectionWrapper mAsyncSelectHelperListCS;
   HANDLE mEventStop;
@@ -158,16 +164,22 @@ public:
 private:
   void AddHelper(CAsyncSelectHelper* Helper);
 
-  bool mIsSuspended;
+  static DWORD WINAPI ThreadProc(LPVOID parameter);
+  HANDLE m_thread;
+  HANDLE m_workEvent;
+
+  CAsyncSelectManager(const CAsyncSelectManager&);
+  CAsyncSelectManager& operator=(const CAsyncSelectManager&);
 };
 
 class CSocketLock
 {
 public:
   CSocketLock(SOCKET psocket);
+  explicit CSocketLock(const CAsyncSelectHelperPtr& helper);
   ~CSocketLock();
 
-  CAsyncSelectHelper* mHelper;
+  CAsyncSelectHelperPtr mHelper;
 };
 
 

@@ -25,6 +25,7 @@
 #include "XBFileZillaImp.h"
 
 #include "xbserver.h"
+#include "xbnetwork.h"
 #include "Options.h"
 #include "Permissions.h"
 #include "misc\md5.h"
@@ -46,6 +47,7 @@ CXBFileZillaImp::CXBFileZillaImp()
 {
   assert(mInstance == NULL);
   mConfigurationPath = "T:\\";
+  m_selectManager.reset(new CAsyncSelectManager());
   mServer = new CXBServer();
   mCriticalOperationCallback = NULL;
   mCrcEnabled = false;
@@ -54,6 +56,7 @@ CXBFileZillaImp::CXBFileZillaImp()
 
 CXBFileZillaImp::~CXBFileZillaImp()
 {
+  m_selectManager->StopAndJoin();
   delete mServer;
   mInstance = NULL;
 }
@@ -62,19 +65,20 @@ CXBFileZillaImp::~CXBFileZillaImp()
 BOOL CXBFileZillaImp::InitInstance()
 {
   ReadXBoxSettings();
-  if( mServer->Create() )
+  if (!m_selectManager->Start())
   {
-    CLog::Log(LOGINFO, "XBFileZilla: Started");
-    return true;
-  }
-  else
-  {
-    CLog::Log(LOGINFO, "XBFileZilla: Startup failed");
+    CLog::Log(LOGERROR, "XBFileZilla: Failed to start CAsyncSelectManager");
     return false;
   }
 
-  /* set our normal thread proprity */
-  SetThreadPriority(m_hThread, THREAD_PRIORITY_NORMAL);
+  if (!mServer->Create())
+  {
+    CLog::Log(LOGERROR, "XBFileZilla: Startup failed");
+    return false;
+  }
+
+  CLog::Log(LOGINFO, "XBFileZilla: Started");
+  return true;
 }
 
 void CXBFileZillaImp::DestructInstance()
@@ -90,8 +94,19 @@ CXBFileZillaImp* CXBFileZillaImp::GetInstance()
   return mInstance;
 }
 
+CAsyncSelectManager* CXBFileZillaImp::GetAsyncSelectManager()
+{
+  if (!mInstance)
+    return NULL;
+
+  return mInstance->m_selectManager.get();
+}
+
 DWORD CXBFileZillaImp::ExitInstance()
 {
+  // Stop polling before worker shutdown releases Winsock resources. Keep the
+  // manager and its helpers alive while the server closes its sockets.
+  m_selectManager->StopAndJoin();
   // signal ftp server to stop
   //SendMessage(mServer->GetHwnd(), WM_CLOSE, 0, 0);
   SendMessage(mServer->GetHwnd(), WM_DESTROY, 0, 0);
