@@ -68,6 +68,7 @@
 #include "music/dialogs/GUIDialogMusicOSD.h"
 #include "music/dialogs/GUIDialogVisualisationPresetList.h"
 #include "dialogs/GUIDialogTextViewer.h"
+#include "network/GUIDialogNetworkSetup.h"
 #include "dialogs/GUIDialogMediaSource.h"
 #include "addons/gui/GUIDialogAddonInfo.h"
 #include "addons/gui/GUIDialogAddonSettings.h"
@@ -164,6 +165,7 @@ void CGUIWindowManager::CreateWindows()
   Add(new CGUIDialogSubtitleSettings);
   Add(new CGUIDialogVideoBookmarks);
   // Don't add the filebrowser dialog - it's created and added when it's needed
+  Add(new CGUIDialogNetworkSetup);
   Add(new CGUIDialogMediaSource);
   Add(new CGUIDialogProfileSettings);
   Add(new CGUIDialogSongInfo);
