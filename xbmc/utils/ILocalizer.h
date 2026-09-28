@@ -14,10 +14,10 @@
 class ILocalizer
 {
 public:
-  virtual ~ILocalizer() {};
+  virtual ~ILocalizer() {}
 
   virtual std::string Localize(uint32_t code) const = 0;
 
 protected:
-  ILocalizer() {};
+  ILocalizer() {}
 };

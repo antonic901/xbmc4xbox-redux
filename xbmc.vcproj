@@ -22,7 +22,7 @@
 				AdditionalOptions="/EHa /Zm200"
 				Optimization="0"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib/libfribidi;./lib/libiconv;./lib/libpcre;./lib/tinyxml;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;_DEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				MinimalRebuild="FALSE"
 				ExceptionHandling="FALSE"
@@ -89,7 +89,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib/libfribidi;./lib/libiconv;./lib/libpcre;./lib/tinyxml;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
 				PreprocessorDefinitions="NDEBUG;_XBOX;_XBMC;PROFILE;HAVE_MSWINDOWS;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -152,7 +152,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="FALSE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib/libfribidi;./lib/libiconv;./lib/libpcre;./lib/tinyxml;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
 				PreprocessorDefinitions="NDEBUG;_XBOX;_XBMC;PROFILE;FASTCAP;HAVE_MSWINDOWS;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -214,7 +214,7 @@
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib/libfribidi;./lib/libiconv;./lib/libpcre;./lib/tinyxml;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;NDEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -280,7 +280,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				FavorSizeOrSpeed="2"
 				OmitFramePointers="TRUE"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib/libfribidi;./lib/libiconv;./lib/libpcre;./lib/tinyxml;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;NDEBUG;HAVE_MSWINDOWS;LTCG;NOMINMAX"
 				ExceptionHandling="FALSE"
 				RuntimeLibrary="0"
@@ -335,7 +335,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				AdditionalOptions="/EHa"
 				Optimization="0"
 				OptimizeForProcessor="2"
-				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
+				AdditionalIncludeDirectories="./xbmc;./xbmc/cores/dvdplayer/Codecs/ffmpeg;./xbmc/cores/dvdplayer/;./xbmc/guilib;./xbmc/guilib/common;./xbmc/platform/xbox;&quot;$(XDK)\Samples\Xbox\Common\Include&quot;;lib/libUPnP/Platinum/Source/Devices/MediaServer;lib/libUPnP/Platinum/Source/Devices/MediaRenderer;lib/libUPnP/Platinum/Source/Devices/MediaConnect;lib/libUPnP/Platinum/Source/Core;lib/libUPnP/Platinum/Source/Platinum;lib/libUPnP/Neptune/Source/Core;lib/libUPnP/Neptune/Source/System/Xbox;./lib/boost;./lib/libRTMP;./xbmc/utils;./lib/libcurl/include;./lib/libfribidi;./lib/libiconv;./lib/libpcre;./lib/tinyxml;./lib;lib/libPython/python/PC;lib/libPython/python/Include;&quot;lib/libjpeg-turbo/include&quot;;lib/freetype/include;lib/libmicrohttpd/include"
 				PreprocessorDefinitions="_XBOX;_XBMC;_DEBUG;HAVE_MSWINDOWS;NOMINMAX"
 				MinimalRebuild="TRUE"
 				ExceptionHandling="FALSE"
@@ -391,6 +391,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			<File
+				RelativePath=".\xbmc\Autorun.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\Autorun.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\AutoSwitch.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\AutoSwitch.h">
+			</File>
 			<File
 				RelativePath=".\xbmc\ContextMenuItem.cpp">
 			</File>
@@ -452,19 +464,76 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\DbUrl.cpp">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\FileUtils.cpp">
+				RelativePath=".\xbmc\DynamicDll.cpp">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\FileUtils.h">
+				RelativePath=".\xbmc\DynamicDll.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\FileItem.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\FileItem.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\GUIInfoManager.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\GUIInfoManager.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\GUIPassword.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\GUIPassword.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\InfoScanner.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\InfoScanner.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\LangInfo.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\LangInfo.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\MediaSource.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\MediaSource.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\NfoFile.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\NfoFile.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\PartyModeManager.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\PartyModeManager.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\PasswordManager.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\PasswordManager.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\PlayListPlayer.cpp">
 			</File>
 			<File
 				RelativePath=".\xbmc\PlayListPlayer.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\SectionLoader.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\SectionLoader.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\SeekHandler.cpp">
@@ -485,7 +554,10 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\ServiceManager.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\Socket.cpp">
+				RelativePath=".\xbmc\Shortcut.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\Shortcut.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\SystemGlobals.cpp">
@@ -507,6 +579,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\TextureDatabase.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\URL.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\URL.h">
+			</File>
+			<File
+				RelativePath=".\xbmc\XBDateTime.cpp">
+			</File>
+			<File
+				RelativePath=".\xbmc\XBDateTime.h">
 			</File>
 			<Filter
 				Name="Settings"
@@ -848,443 +932,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\pictures\PictureInfoTag.h">
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
-				Name="Utils"
-				Filter="">
-				<File
-					RelativePath=".\xbmc\utils\AlarmClock.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Archive.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\AutoPtrHandle.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\Autorun.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\AutoSwitch.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Base64.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Base64.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\BitstreamStats.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\BitstreamStats.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\BooleanLogic.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\BooleanLogic.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\CharsetConverter.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\CharsetDetection.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\CharsetDetection.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ColorUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ColorUtils.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ContentUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ContentUtils.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Crc32.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\DatabaseUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Digest.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Digest.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\DynamicDll.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\EmbeddedArt.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\EmbeddedArt.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ExecString.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ExecString.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Fanart.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Fanart.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileItem.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\FileOperationJob.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\FileOperationJob.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\FontUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\FontUtils.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\fstrcmp.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\GroupUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\GUIInfoManager.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\GUIPassword.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\HTMLUtil.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\HttpHeader.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\InfoLoader.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Insignia.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Insignia.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\IRssObserver.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\IXmlDeserializable.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Job.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\JobManager.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\JobManager.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\JpegIO.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\JpegIO.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\JSONVariantParser.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\JSONVariantWriter.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\LabelFormatter.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\LabelFormatter.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\LangCodeExpander.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\LangInfo.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\LegacyPathTranslation.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\log.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\md5.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\MediaSource.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\MediaSource.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Mime.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Mime.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\NfoFile.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Observer.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Observer.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\PartyModeManager.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\PasswordManager.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\PasswordManager.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\pictures\Picture.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\PlayerUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\PlayerUtils.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\POUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\POUtils.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ProgressJob.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ProgressJob.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\RecentlyAddedJob.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\RecentlyAddedJob.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\RegExp.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\rfft.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\rfft.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\RingBuffer.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\RingBuffer.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\RssManager.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\RssManager.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\RssReader.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\SaveFileStateJob.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\SaveFileStateJob.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ScraperParser.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ScraperParser.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ScraperUrl.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\ScraperUrl.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\SectionLoader.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\Shortcut.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Sntp.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\SortUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Speed.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Speed.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Stopwatch.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Stopwatch.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\StreamDetails.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\StreamDetails.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\StreamUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\StreamUtils.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\StringUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\StringValidation.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\SystemInfo.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Temperature.cpp">
-					<FileConfiguration
-						Name="Debug|Xbox">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Profile|Xbox">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Profile_FastCap|Xbox">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release|Xbox">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Release_LTCG|Xbox">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug Xbox No Memory Tracking|Xbox">
-						<Tool
-							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)/$(InputName)1.obj"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Temperature.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\TimeUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\TimeUtils.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Updater.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Updater.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\URIUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\URIUtils.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\URL.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\UrlOptions.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Utf8Utils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Utf8Utils.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\Util.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Variant.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\Variant.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\XBDateTime.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\XBLocale.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\XBLocale.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\XBMCTinyXML.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\XBMCTinyXML.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\XMLUtils.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\XMLUtils.h">
-				</File>
-				<Filter
-					Name="guilib"
-					Filter="">
-					<File
-						RelativePath=".\xbmc\utils\guilib\GUIContentUtils.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\utils\guilib\GUIContentUtils.h">
 					</File>
 				</Filter>
 			</Filter>
@@ -1645,9 +1292,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\FileSystem\FileFactory.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\FileItem.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\FileItemListModification.cpp">
@@ -5513,6 +5157,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="pictures"
 				Filter="">
 				<File
+					RelativePath=".\xbmc\pictures\Picture.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\pictures\Picture.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\pictures\PictureFolderImageFileLoader.cpp">
 				</File>
 				<File
@@ -5617,22 +5267,498 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\favourites\GUIWindowFavourites.h">
 				</File>
 			</Filter>
+			<Filter
+				Name="utils"
+				Filter="">
+				<File
+					RelativePath=".\xbmc\utils\AlarmClock.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\AlarmClock.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Archive.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Archive.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\AutoPtrHandle.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\AutoPtrHandle.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Base64.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Base64.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\BitstreamStats.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\BitstreamStats.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\BooleanLogic.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\BooleanLogic.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\CharsetConverter.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\CharsetConverter.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\CharsetDetection.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\CharsetDetection.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ColorUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ColorUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ComponentContainer.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ContentUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ContentUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Crc32.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Crc32.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\DatabaseUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\DatabaseUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Digest.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Digest.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\EmbeddedArt.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\EmbeddedArt.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\EndianSwap.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\EventStream.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\EventStreamDetail.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ExecString.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ExecString.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Fanart.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Fanart.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\FileOperationJob.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\FileOperationJob.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\FileUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\FileUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\FontUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\FontUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\fstrcmp.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\fstrcmp.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Geometry.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\GlobalsHandling.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\GroupUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\GroupUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\HTMLUtil.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\HTMLUtil.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\HttpHeader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\HttpHeader.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\IArchivable.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ILocalizer.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\InfoLoader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\InfoLoader.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Insignia.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Insignia.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\IRssObserver.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ISerializable.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ISortable.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\IXmlDeserializable.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Job.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\JobManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\JobManager.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\JpegIO.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\JpegIO.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\JSONVariantParser.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\JSONVariantParser.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\JSONVariantWriter.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\JSONVariantWriter.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\LabelFormatter.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\LabelFormatter.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\LangCodeExpander.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\LangCodeExpander.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\LegacyPathTranslation.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\LegacyPathTranslation.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\log.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\log.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\MathUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\md5.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\md5.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Mime.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Mime.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Observer.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Observer.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\params_check_macros.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\PlayerUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\PlayerUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\POUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\POUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ProgressJob.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ProgressJob.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Random.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RecentlyAddedJob.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RecentlyAddedJob.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RegExp.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RegExp.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\rfft.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\rfft.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RingBuffer.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RingBuffer.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RssManager.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RssManager.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RssReader.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\RssReader.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\SaveFileStateJob.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\SaveFileStateJob.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ScraperParser.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ScraperParser.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ScraperUrl.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\ScraperUrl.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Sntp.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Sntp.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Socket.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Socket.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\SortUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\SortUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Speed.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Speed.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Stopwatch.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\StreamDetails.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\StreamDetails.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\StreamUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\StreamUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\StringUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\StringUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\StringValidation.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\StringValidation.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\SystemInfo.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\SystemInfo.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Temperature.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Temperature.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\TimeFormat.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\TimeUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\TimeUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\TransformMatrix.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Updater.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Updater.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\URIUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\URIUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\UrlOptions.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\UrlOptions.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Utf8Utils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Utf8Utils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\Util.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\Util.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\uXstrings.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Variant.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\Variant.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\XBLocale.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\XBLocale.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\XBMCTinyXML.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\XBMCTinyXML.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\XMLUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\XMLUtils.h">
+				</File>
+				<Filter
+					Name="guilib"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\utils\guilib\GUIContentUtils.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\utils\guilib\GUIContentUtils.h">
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
 			<File
-				RelativePath=".\xbmc\utils\AlarmClock.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\albumdatabase.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\AlbumDirectory.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Archive.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\artistdatabase.h">
@@ -5644,28 +5770,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\cores\mplayer\audio.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\AutoPtrHandle.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\Autorun.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\AutoSwitch.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\CharsetConverter.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\ComponentContainer.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Crc32.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\CueDocument.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\DatabaseUtils.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\DbUrl.h">
@@ -5677,25 +5782,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\pictures\DllImageLib.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\DynamicDll.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\EventStream.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\EventStreamDetail.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\FileSystem\File.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\fstrcmp.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Geometry.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\GroupUtils.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\dialogs\GUIDialogButtonMenu.h">
@@ -5731,12 +5818,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\dialogs\GUIDialogYesNo.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\GUIInfoManager.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\GUIPassword.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\GuiUserMessages.h">
 			</File>
 			<File
@@ -5764,12 +5845,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\FileSystem\HDFile.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\HTMLUtil.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\HttpHeader.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\FileSystem\IDirectory.h">
 			</File>
 			<File
@@ -5782,12 +5857,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\IFileItemListModifier.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\InfoLoader.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\InfoScanner.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\cores\IPlayer.h">
 			</File>
 			<File
@@ -5797,73 +5866,13 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\FileSystem\iso9660.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\ISortable.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\JSONVariantParser.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\JSONVariantWriter.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\cores\mplayer\keycodes.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\LangCodeExpander.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\LangInfo.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\LegacyPathTranslation.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\log.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\md5.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\NfoFile.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\params_check_macros.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\PartyModeManager.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\pictures\Picture.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Random.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\RegExp.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\RssReader.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\SectionLoader.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\SettingsLock.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\Shortcut.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Sntp.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\Socket.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\SortFileItem.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\SortUtils.h">
 			</File>
 			<File
 				RelativePath=".\lib\libSpeex\speex.h">
@@ -5872,31 +5881,7 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\lib\libSpeex\speex_bits.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\utils\StringUtils.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\StringValidation.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\system.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\SystemInfo.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\URL.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\UrlOptions.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\Util.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\utils\uXstrings.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\XBDateTime.h">
 			</File>
 			<File
 				RelativePath=".\xbmc\input\XBIRRemote.h">

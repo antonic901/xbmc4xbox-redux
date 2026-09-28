@@ -1,37 +1,23 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "XMLUtils.h"
-#include "URL.h"
+
 #include "StringUtils.h"
-#ifdef TARGET_WINDOWS
-#include "PlatformDefs.h" //for strcasecmp
-#endif
+#include "URL.h"
+#include "XBDateTime.h"
 
 bool XMLUtils::GetHex(const TiXmlNode* pRootNode, const char* strTag, uint32_t& hexValue)
 {
   const TiXmlNode* pNode = pRootNode->FirstChild(strTag );
   if (!pNode || !pNode->FirstChild()) return false;
-  return sscanf(pNode->FirstChild()->Value(), "%x", (uint32_t*)&hexValue) == 1;
+  return sscanf(pNode->FirstChild()->Value(), "%x", &hexValue) == 1;
 }
-
 
 bool XMLUtils::GetUInt(const TiXmlNode* pRootNode, const char* strTag, uint32_t& uintValue)
 {
@@ -79,7 +65,7 @@ bool XMLUtils::GetInt(const TiXmlNode* pRootNode, const char* strTag, int &value
   return false;
 }
 
-bool XMLUtils::GetDouble(const TiXmlNode *root, const char *tag, double &value)
+bool XMLUtils::GetDouble(const TiXmlNode* root, const char* tag, double& value)
 {
   const TiXmlNode* node = root->FirstChild(tag);
   if (!node || !node->FirstChild()) return false;
@@ -95,12 +81,18 @@ bool XMLUtils::GetFloat(const TiXmlNode* pRootNode, const char* strTag, float& v
   return true;
 }
 
-bool XMLUtils::GetFloat(const TiXmlNode* pRootElement, const char *tagName, float& fValue, const float fMin, const float fMax)
+bool XMLUtils::GetFloat(const TiXmlNode* pRootNode,
+                        const char* tagName,
+                        float& fValue,
+                        const float fMin,
+                        const float fMax)
 {
-  if (GetFloat(pRootElement, tagName, fValue))
+  if (GetFloat(pRootNode, tagName, fValue))
   { // check range
-    if (fValue < fMin) fValue = fMin;
-    if (fValue > fMax) fValue = fMax;
+    if (fValue < fMin)
+      fValue = fMin;
+    if (fValue > fMax)
+      fValue = fMax;
     return true;
   }
   return false;
@@ -133,7 +125,7 @@ bool XMLUtils::GetString(const TiXmlNode* pRootNode, const char* strTag, std::st
   if (pNode != NULL)
   {
     strStringValue = pNode->ValueStr();
-    if (encoded && strcasecmp(encoded,"yes") == 0)
+    if (encoded && StringUtils::CompareNoCase(encoded, "yes") == 0)
       strStringValue = CURL::Decode(strStringValue);
     return true;
   }
@@ -172,7 +164,7 @@ bool XMLUtils::GetAdditiveString(const TiXmlNode* pRootNode, const char* strTag,
       bResult = true;
       strTemp = node->FirstChild()->Value();
       const char* clear=node->Attribute("clear");
-      if (strStringValue.empty() || (clear && strcasecmp(clear,"true")==0))
+      if (strStringValue.empty() || (clear && StringUtils::CompareNoCase(clear, "true") == 0))
         strStringValue = strTemp;
       else
         strStringValue += strSeparator+strTemp;
@@ -202,7 +194,7 @@ bool XMLUtils::GetStringArray(const TiXmlNode* pRootNode, const char* strTag, st
       strTemp = node->FirstChild()->ValueStr();
 
       const char* clearAttr = node->Attribute("clear");
-      if (clearAttr && strcasecmp(clearAttr, "true") == 0)
+      if (clearAttr && StringUtils::CompareNoCase(clearAttr, "true") == 0)
         arrayValue.clear();
 
       if (strTemp.empty())
@@ -232,7 +224,7 @@ bool XMLUtils::GetPath(const TiXmlNode* pRootNode, const char* strTag, std::stri
   if (pNode != NULL)
   {
     strStringValue = pNode->Value();
-    if (encoded && strcasecmp(encoded,"yes") == 0)
+    if (encoded && StringUtils::CompareNoCase(encoded, "yes") == 0)
       strStringValue = CURL::Decode(strStringValue);
     return true;
   }
@@ -302,13 +294,13 @@ TiXmlNode* XMLUtils::SetString(TiXmlNode* pRootNode, const char *strTag, const s
 
 TiXmlNode* XMLUtils::SetInt(TiXmlNode* pRootNode, const char *strTag, int value)
 {
-  std::string strValue = StringUtils::Format("%i", value);
+  std::string strValue = std::to_string(value);
   return SetString(pRootNode, strTag, strValue);
 }
 
 void XMLUtils::SetLong(TiXmlNode* pRootNode, const char *strTag, long value)
 {
-  std::string strValue = StringUtils::Format("%ld", value);
+  std::string strValue = std::to_string(value);
   SetString(pRootNode, strTag, strValue);
 }
 

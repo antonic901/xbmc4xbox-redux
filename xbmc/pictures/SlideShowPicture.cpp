@@ -270,16 +270,16 @@ void CSlideShowPic::UpdateVertices(float cur_x[4], float cur_y[4], const float n
 void CSlideShowPic::Process(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   if (!m_pImage || !m_bIsLoaded || m_bIsFinished) return ;
-  color_t alpha = m_alpha;
+  UTILS::COLOR::Color alpha = m_alpha;
   if (m_iCounter <= m_transistionStart.length)
   { // do start transistion
     if (m_transistionStart.type == CROSSFADE)
     { // fade in at 1x speed
-      alpha = (color_t)((float)m_iCounter / (float)m_transistionStart.length * 255.0f);
+      alpha = (UTILS::COLOR::Color)((float)m_iCounter / (float)m_transistionStart.length * 255.0f);
     }
     else if (m_transistionStart.type == FADEIN_FADEOUT)
     { // fade in at 2x speed, then keep solid
-      alpha = (color_t)((float)m_iCounter / (float)m_transistionStart.length * 255.0f * 2);
+      alpha = (UTILS::COLOR::Color)((float)m_iCounter / (float)m_transistionStart.length * 255.0f * 2);
       if (alpha > 255) alpha = 255;
     }
     else // m_transistionEffect == TRANSISTION_NONE
@@ -379,11 +379,11 @@ void CSlideShowPic::Process(unsigned int currentTime, CDirtyRegionList &dirtyreg
     m_bDrawNextImage = true;
     if (m_transistionEnd.type == CROSSFADE)
     { // fade out at 1x speed
-      alpha = 255 - (color_t)((float)(m_iCounter - m_transistionEnd.start) / (float)m_transistionEnd.length * 255.0f);
+      alpha = 255 - (UTILS::COLOR::Color)((float)(m_iCounter - m_transistionEnd.start) / (float)m_transistionEnd.length * 255.0f);
     }
     else if (m_transistionEnd.type == FADEIN_FADEOUT)
     { // keep solid, then fade out at 2x speed
-      alpha = (color_t)((float)(m_transistionEnd.length - m_iCounter + m_transistionEnd.start) / (float)m_transistionEnd.length * 255.0f * 2);
+      alpha = (UTILS::COLOR::Color)((float)(m_transistionEnd.length - m_iCounter + m_transistionEnd.start) / (float)m_transistionEnd.length * 255.0f * 2);
       if (alpha > 255) alpha = 255;
     }
     else // m_transistionEffect == TRANSISTION_NONE
@@ -732,7 +732,7 @@ void CSlideShowPic::Render()
   Render(m_ox, m_oy, NULL, PICTURE_VIEW_BOX_COLOR, D3DFILL_WIREFRAME);
 }
 
-void CSlideShowPic::Render(float *x, float *y, CTexture* pTexture, color_t color, _D3DFILLMODE fillmode)
+void CSlideShowPic::Render(float *x, float *y, CTexture* pTexture, UTILS::COLOR::Color color, _D3DFILLMODE fillmode)
 {
   struct VERTEX
   {

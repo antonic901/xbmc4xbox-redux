@@ -33,10 +33,10 @@ IInputCodingTable* CInputCodingTableFactory::CreateCodingTable(const std::string
   if (strTableName == "BaiduPY")
   {
     const char* apiurl = element->Attribute("apiurl");
-    if (apiurl == nullptr)
+    if (apiurl == NULL)
     {
       CLog::Log(LOGWARNING, "CInputCodingTableFactory: invalid \"apiurl\" attribute");
-      return nullptr;
+      return NULL;
     }
     return new CInputCodingTableBaiduPY(apiurl);
   }
@@ -45,5 +45,5 @@ IInputCodingTable* CInputCodingTableFactory::CreateCodingTable(const std::string
   if (strTableName == "Korean")
     return new CInputCodingTableKorean();
 #endif
-  return nullptr;
+  return NULL;
 }

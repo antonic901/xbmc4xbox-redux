@@ -1,31 +1,20 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "XBMCTinyXML.h"
-#include "filesystem/File.h"
-#include "utils/StringUtils.h"
-#include "utils/CharsetConverter.h"
-#include "utils/CharsetDetection.h"
-#include "utils/Utf8Utils.h"
+
 #include "LangInfo.h"
 #include "RegExp.h"
+#include "filesystem/File.h"
+#include "utils/CharsetConverter.h"
+#include "utils/CharsetDetection.h"
+#include "utils/StringUtils.h"
+#include "utils/Utf8Utils.h"
 #include "utils/log.h"
 
 #define MAX_ENTITY_LENGTH 8 // size of largest entity "&#xNNNN;"
@@ -102,8 +91,7 @@ bool CXBMCTinyXML::LoadFile(const std::string& _filename, const std::string& doc
 bool CXBMCTinyXML::LoadFile(FILE *f, TiXmlEncoding encoding)
 {
   std::string data;
-  char buf[BUFFER_SIZE];
-  memset(buf, 0, BUFFER_SIZE);
+  char buf[BUFFER_SIZE] = {};
   int result;
   while ((result = fread(buf, 1, BUFFER_SIZE, f)) > 0)
     data.append(buf, result);
@@ -122,14 +110,13 @@ bool CXBMCTinyXML::SaveFile(const std::string& filename) const
   {
     TiXmlPrinter printer;
     Accept(&printer);
-    return file.Write(printer.CStr(), printer.Size()) == static_cast<ssize_t>(printer.Size());
+    bool suc = file.Write(printer.CStr(), printer.Size()) == static_cast<ssize_t>(printer.Size());
+    if (suc)
+      file.Flush();
+
+    return suc;
   }
   return false;
-}
-
-bool CXBMCTinyXML::Parse(const char *_data, TiXmlEncoding encoding)
-{
-  return Parse(std::string(_data), encoding);
 }
 
 bool CXBMCTinyXML::Parse(const std::string& data, const std::string& dataCharset)
@@ -158,8 +145,10 @@ bool CXBMCTinyXML::Parse(const std::string& data, TiXmlEncoding encoding /*= TIX
   if (CCharsetDetection::DetectXmlEncoding(data, detectedCharset) && TryParse(data, detectedCharset))
   {
     if (!m_SuggestedCharset.empty())
-      CLog::Log(LOGWARNING, "%s: \"%s\" charset was used instead of suggested charset \"%s\" for %s", __FUNCTION__, m_UsedCharset.c_str(), m_SuggestedCharset.c_str(),
-                  (value.empty() ? "XML data" : ("file \"" + value + "\"").c_str()));
+      CLog::Log(LOGWARNING,
+                "%s: \"%s\" charset was used instead of suggested charset \"%s\" for %s",
+                __FUNCTION__, m_UsedCharset.c_str(), m_SuggestedCharset.c_str(),
+                (value.empty() ? "XML data" : ("file \"" + value + "\"")).c_str());
 
     return true;
   }
@@ -169,11 +158,14 @@ bool CXBMCTinyXML::Parse(const std::string& data, TiXmlEncoding encoding /*= TIX
       TryParse(data, "UTF-8"))
   {
     if (!m_SuggestedCharset.empty())
-      CLog::Log(LOGWARNING, "%s: \"%s\" charset was used instead of suggested charset \"%s\" for %s", __FUNCTION__, m_UsedCharset.c_str(), m_SuggestedCharset.c_str(),
-                  (value.empty() ? "XML data" : ("file \"" + value + "\"").c_str()));
+      CLog::Log(LOGWARNING,
+                "%s: \"%s\" charset was used instead of suggested charset \"%s\" for %s",
+                __FUNCTION__, m_UsedCharset.c_str(), m_SuggestedCharset.c_str(),
+                (value.empty() ? "XML data" : ("file \"" + value + "\"")).c_str());
     else if (!detectedCharset.empty())
-      CLog::Log(LOGWARNING, "%s: \"%s\" charset was used instead of detected charset \"%s\" for %s", __FUNCTION__, m_UsedCharset.c_str(), detectedCharset.c_str(),
-                  (value.empty() ? "XML data" : ("file \"" + value + "\"").c_str()));
+      CLog::Log(LOGWARNING, "%s: \"%s\" charset was used instead of detected charset \"%s\" for %s",
+                __FUNCTION__, m_UsedCharset.c_str(), detectedCharset.c_str(),
+                (value.empty() ? "XML data" : ("file \"" + value + "\"")).c_str());
     return true;
   }
 
@@ -181,11 +173,14 @@ bool CXBMCTinyXML::Parse(const std::string& data, TiXmlEncoding encoding /*= TIX
   if (TryParse(data, g_langInfo.GetGuiCharSet()))
   {
     if (!m_SuggestedCharset.empty())
-      CLog::Log(LOGWARNING, "%s: \"%s\" charset was used instead of suggested charset \"%s\" for %s", __FUNCTION__, m_UsedCharset.c_str(), m_SuggestedCharset.c_str(),
-                  (value.empty() ? "XML data" : ("file \"" + value + "\"").c_str()));
+      CLog::Log(LOGWARNING,
+                "%s: \"%s\" charset was used instead of suggested charset \"%s\" for %s",
+                __FUNCTION__, m_UsedCharset.c_str(), m_SuggestedCharset.c_str(),
+                (value.empty() ? "XML data" : ("file \"" + value + "\"").c_str()));
     else if (!detectedCharset.empty())
-      CLog::Log(LOGWARNING, "%s: \"%s\" charset was used instead of detected charset \"%s\" for %s", __FUNCTION__, m_UsedCharset.c_str(), detectedCharset.c_str(),
-                  (value.empty() ? "XML data" : ("file \"" + value + "\"").c_str()));
+      CLog::Log(LOGWARNING, "%s: \"%s\" charset was used instead of detected charset \"%s\" for %s",
+                __FUNCTION__, m_UsedCharset.c_str(), detectedCharset.c_str(),
+                (value.empty() ? "XML data" : ("file \"" + value + "\"").c_str()));
     return true;
   }
 
@@ -193,11 +188,13 @@ bool CXBMCTinyXML::Parse(const std::string& data, TiXmlEncoding encoding /*= TIX
   if (InternalParse(data, TIXML_ENCODING_UNKNOWN))
   {
     if (!m_SuggestedCharset.empty())
-      CLog::Log(LOGWARNING, "%s: Processed %s as unknown encoding instead of suggested \"%s\"", __FUNCTION__,
-                  (value.empty() ? "XML data" : ("file \"" + value + "\"").c_str()), m_SuggestedCharset.c_str());
+      CLog::Log(LOGWARNING, "%s: Processed %s as unknown encoding instead of suggested \"%s\"",
+                __FUNCTION__, (value.empty() ? "XML data" : ("file \"" + value + "\"").c_str()),
+                m_SuggestedCharset.c_str());
     else if (!detectedCharset.empty())
-      CLog::Log(LOGWARNING, "%s: Processed %s as unknown encoding instead of detected \"%s\"", __FUNCTION__,
-                  (value.empty() ? "XML data" : ("file \"" + value + "\"").c_str()), detectedCharset.c_str());
+      CLog::Log(LOGWARNING, "%s: Processed %s as unknown encoding instead of detected \"%s\"",
+                __FUNCTION__, (value.empty() ? "XML data" : ("file \"" + value + "\"").c_str()),
+                detectedCharset.c_str());
     return true;
   }
 
@@ -262,7 +259,7 @@ bool CXBMCTinyXML::Test()
                   "http://api.themoviedb.org/3/movie/12244"
                   "?api_key=57983e31fb435df4df77afb854740ea9"
                   "&language=en&#x3f;&#x003F;&#0063;</url></details>");
-  doc.Parse(data.c_str());
+  doc.Parse(data, TIXML_DEFAULT_ENCODING);
   TiXmlNode *root = doc.RootElement();
   if (root && root->ValueStr() == "details")
   {

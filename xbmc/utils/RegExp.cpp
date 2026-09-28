@@ -1,30 +1,20 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <stdlib.h>
-#include <string.h>
-#include <algorithm>
 #include "RegExp.h"
+
 #include "log.h"
 #include "utils/StringUtils.h"
 #include "utils/Utf8Utils.h"
+
+#include <algorithm>
+#include <stdlib.h>
+#include <string.h>
 
 using namespace PCRE;
 
@@ -295,8 +285,8 @@ bool CRegExp::RegComp(const char *re, studyMode study /*= NoStudy*/)
   if (!m_re)
   {
     m_pattern.clear();
-    CLog::Log(LOGERROR, "PCRE: %s. Compilation failed at offset %d in expression '%s'",
-              errMsg, errOffset, re);
+    CLog::Log(LOGERROR, "PCRE: %s. Compilation failed at offset %i in expression '%s'", errMsg,
+              errOffset, re);
     return false;
   }
 
@@ -310,7 +300,8 @@ bool CRegExp::RegComp(const char *re, studyMode study /*= NoStudy*/)
     m_sd = pcre_study(m_re, studyOptions, &errMsg);
     if (errMsg != NULL)
     {
-      CLog::Log(LOGWARNING, "%s: PCRE error \"%s\" while studying expression", __FUNCTION__, errMsg);
+      CLog::Log(LOGWARNING, "%s: PCRE error \"%s\" while studying expression", __FUNCTION__,
+                errMsg);
       if (m_sd != NULL)
       {
         pcre_free_study(m_sd);
@@ -390,7 +381,10 @@ int CRegExp::PrivateRegFind(size_t bufferLen, const char *str, unsigned int star
       {
         const size_t startPos = (m_subject.length() > fragmentLen) ? CUtf8Utils::RFindValidUtf8Char(m_subject, m_subject.length() - fragmentLen) : 0;
         if (startPos != std::string::npos)
-          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character at the end of string. Text before bad character: \"%s\"", m_subject.substr(startPos).c_str());
+          CLog::Log(
+              LOGERROR,
+              "PCRE: Bad UTF-8 character at the end of string. Text before bad character: \"%s\"",
+              m_subject.substr(startPos).c_str());
         else
           CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character at the end of string");
         return -1;
@@ -400,9 +394,14 @@ int CRegExp::PrivateRegFind(size_t bufferLen, const char *str, unsigned int star
       {
         const size_t startPos = (m_iOvector[0] > fragmentLen) ? CUtf8Utils::RFindValidUtf8Char(m_subject, m_iOvector[0] - fragmentLen) : 0;
         if (m_iOvector[0] >= 0 && startPos != std::string::npos)
-          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character, error code: %d, position: %d. Text before bad char: \"%s\"", m_iOvector[1], m_iOvector[0], m_subject.substr(startPos, m_iOvector[0] - startPos + 1).c_str());
+          CLog::Log(LOGERROR,
+                    "PCRE: Bad UTF-8 character, error code: %i, position: %i. Text before bad "
+                    "char: \"%s\"",
+                    m_iOvector[1], m_iOvector[0],
+                    m_subject.substr(startPos, m_iOvector[0] - startPos + 1).c_str());
         else
-          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character, error code: %d, position: %d", m_iOvector[1], m_iOvector[0]);
+          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character, error code: %i, position: %i",
+                    m_iOvector[1], m_iOvector[0]);
         return -1;
       }
     case PCRE_ERROR_BADUTF8_OFFSET:
@@ -410,7 +409,7 @@ int CRegExp::PrivateRegFind(size_t bufferLen, const char *str, unsigned int star
       return -1;
 
     default:
-      CLog::Log(LOGERROR, "PCRE: Unknown error: %d", rc);
+      CLog::Log(LOGERROR, "PCRE: Unknown error: %i", rc);
       return -1;
     }
   }
@@ -546,7 +545,7 @@ void CRegExp::DumpOvector(int iLog /* = LOGDEBUG */)
   int size = GetSubCount(); // past the subpatterns is junk
   for (int i = 0; i <= size; i++)
   {
-    std::string t = StringUtils::Format("[%i,%i]", m_iOvector[(i*2)], m_iOvector[(i*2)+1]);
+    std::string t = StringUtils::Format("[%i,%i]", m_iOvector[(i * 2)], m_iOvector[(i * 2) + 1]);
     if (i != size)
       t += ",";
     str += t;
@@ -626,7 +625,10 @@ bool CRegExp::LogCheckUtf8Support(void)
 
   if (!utf8FullSupport)
   {
-    CLog::Log(LOGINFO, "Consider installing PCRE lib version 8.10 or later with enabled Unicode properties and UTF-8 support. Your PCRE lib version: %s", PCRE::pcre_version());
+    CLog::Log(LOGINFO,
+              "Consider installing PCRE lib version 8.10 or later with enabled Unicode properties "
+              "and UTF-8 support. Your PCRE lib version: %s",
+              PCRE::pcre_version());
 #if PCRE_UCP == 0
     CLog::Log(LOGINFO, "You will need to rebuild XBMC after PCRE lib update.");
 #endif

@@ -1,30 +1,20 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "Fanart.h"
+
+#include "StringUtils.h"
+#include "URIUtils.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
-#include "utils/URIUtils.h"
-#include "utils/StringUtils.h"
 
-#include <boost/move/move.hpp>
+#include <algorithm>
+#include <functional>
 
 const unsigned int CFanart::max_fanart_colors=3;
 
@@ -33,14 +23,12 @@ const unsigned int CFanart::max_fanart_colors=3;
 /// CFanart Functions
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-CFanart::CFanart()
-{
-}
+CFanart::CFanart() {}
 
 void CFanart::Pack()
 {
   // Take our data and pack it into the m_xml string
-  m_xml.empty();
+  m_xml.clear();
   TiXmlElement fanart("fanart");
   for (std::vector<SFanartData>::const_iterator it = m_fanart.begin(); it != m_fanart.end(); ++it)
   {
@@ -60,7 +48,7 @@ void CFanart::AddFanart(const std::string& image, const std::string& preview, co
   info.strPreview = preview;
   info.strImage = image;
   ParseColors(colors, info.strColors);
-  m_fanart.push_back(boost::move(info));
+  m_fanart.push_back(info);
 }
 
 void CFanart::Clear()
@@ -125,7 +113,8 @@ std::string CFanart::GetPreviewURL(unsigned int index) const
 
 const std::string CFanart::GetColor(unsigned int index) const
 {
-  if (index >= max_fanart_colors || m_fanart.size() == 0)
+  if (index >= max_fanart_colors || m_fanart.empty() ||
+      m_fanart[0].strColors.size() < index*9+8)
     return "FFFFFFFF";
 
   // format is AARRGGBB,AARRGGBB etc.
@@ -153,11 +142,11 @@ unsigned int CFanart::GetNumFanarts() const
 bool CFanart::ParseColors(const std::string &colorsIn, std::string &colorsOut)
 {
   // Formats:
-  // 0: XBMC ARGB Hexadecimal string comma seperated "FFFFFFFF,DDDDDDDD,AAAAAAAA"
-  // 1: The TVDB RGB Int Triplets, pipe seperate with leading/trailing pipes "|68,69,59|69,70,58|78,78,68|"
+  // 0: XBMC ARGB Hexadecimal string comma separated "FFFFFFFF,DDDDDDDD,AAAAAAAA"
+  // 1: The TVDB RGB Int Triplets, pipe separate with leading/trailing pipes "|68,69,59|69,70,58|78,78,68|"
 
   // Essentially we read the colors in using the proper format, and store them in our own fixed temporary format (3 DWORDS), and then
-  // write them back in in the specified format.
+  // write them back in the specified format.
 
   if (colorsIn.empty())
     return false;
@@ -174,7 +163,8 @@ bool CFanart::ParseColors(const std::string &colorsIn, std::string &colorsOut)
       { // convert
         if (colorsOut.size())
           colorsOut += ",";
-        colorsOut += StringUtils::Format("FF%2lx%2lx%2lx", atol(strTriplets[0].c_str()), atol(strTriplets[1].c_str()), atol(strTriplets[2].c_str()));
+        colorsOut += StringUtils::Format("FF%2lx%2lx%2lx", atol(strTriplets[0].c_str()),
+                                         atol(strTriplets[1].c_str()), atol(strTriplets[2].c_str()));
       }
     }
   }

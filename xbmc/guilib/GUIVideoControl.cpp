@@ -63,7 +63,7 @@ void CGUIVideoControl::Render()
     CServiceBroker::GetWinSystem()->GetGfxContext().SetViewPort(m_posX, m_posY, m_width, m_height);
 
 #ifdef HAS_VIDEO_PLAYBACK
-    color_t alpha = CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(0xFF000000) >> 24;
+    UTILS::COLOR::Color alpha = CServiceBroker::GetWinSystem()->GetGfxContext().MergeAlpha(0xFF000000) >> 24;
     g_renderManager.RenderUpdate(false, 0, alpha);
 #endif
     CServiceBroker::GetWinSystem()->GetGfxContext().RestoreViewPort();

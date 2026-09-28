@@ -1,32 +1,21 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <assert.h>
-
 #include "Temperature.h"
+
 #include "utils/Archive.h"
 #include "utils/StringUtils.h"
 
+#include <assert.h>
+
 CTemperature::CTemperature()
 {
-  m_value=0.0f;
+  m_value = 0.0;
   m_valid=false;
 }
 
@@ -99,7 +88,7 @@ bool CTemperature::operator !=(const CTemperature& right) const
   return !operator ==(right.m_value);
 }
 
-const CTemperature& CTemperature::operator =(const CTemperature& right)
+CTemperature& CTemperature::operator =(const CTemperature& right)
 {
   m_valid=right.m_valid;
   m_value=right.m_value;
@@ -349,33 +338,38 @@ CTemperature CTemperature::CreateFromFahrenheit(double value)
 
 CTemperature CTemperature::CreateFromReaumur(double value)
 {
-  return CTemperature(value*2.25f+32.0f);
+  return CTemperature(value * 2.25 + 32.0);
 }
 
 CTemperature CTemperature::CreateFromRankine(double value)
 {
-  return CTemperature(value-459.67f);
+  return CTemperature(value - 459.67);
 }
 
 CTemperature CTemperature::CreateFromRomer(double value)
 {
-  return CTemperature((value-7.5f)*24.0f/7.0f+32.0f);
+  return CTemperature((value - 7.5) * 24.0 / 7.0 + 32.0);
 }
 
 CTemperature CTemperature::CreateFromDelisle(double value)
 {
-  CTemperature temp(212.0f - value * 1.2f);
+  CTemperature temp(212.0 - value * 1.2);
   return temp;
 }
 
 CTemperature CTemperature::CreateFromNewton(double value)
 {
-  return CTemperature(value*60.0f/11.0f+32.0f);
+  return CTemperature(value * 60.0 / 11.0 + 32.0);
 }
 
 CTemperature CTemperature::CreateFromCelsius(double value)
 {
-  return CTemperature(value*1.8f+32.0f);
+  return CTemperature(value * 1.8 + 32.0);
+}
+
+CTemperature CTemperature::CreateFromKelvin(double value)
+{
+  return CTemperature((value - 273.15) * 1.8 + 32.0);
 }
 
 void CTemperature::Archive(CArchive& ar)
@@ -404,37 +398,37 @@ double CTemperature::ToFahrenheit() const
 
 double CTemperature::ToKelvin() const
 {
-  return (m_value+459.67F)/1.8f;
+  return (m_value + 459.67) / 1.8;
 }
 
 double CTemperature::ToCelsius() const
 {
-  return (m_value-32.0f)/1.8f;
+  return (m_value - 32.0) / 1.8;
 }
 
 double CTemperature::ToReaumur() const
 {
-  return (m_value-32.0f)/2.25f;
+  return (m_value - 32.0) / 2.25;
 }
 
 double CTemperature::ToRankine() const
 {
-  return m_value+459.67f;
+  return m_value + 459.67;
 }
 
 double CTemperature::ToRomer() const
 {
-  return (m_value-32.0f)*7.0f/24.0f+7.5f;
+  return (m_value - 32.0) * 7.0 / 24.0 + 7.5;
 }
 
 double CTemperature::ToDelisle() const
 {
-  return (212.f-m_value)*5.0f/6.0f;
+  return (212.0 - m_value) * 5.0 / 6.0;
 }
 
 double CTemperature::ToNewton() const
 {
-  return (m_value-32.0f)*11.0f/60.0f;
+  return (m_value - 32.0) * 11.0 / 60.0;
 }
 
 double CTemperature::To(Unit temperatureUnit) const

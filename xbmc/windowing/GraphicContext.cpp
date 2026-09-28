@@ -691,7 +691,7 @@ float CGraphicContext::GetPixelRatio(RESOLUTION iRes) const
   return CDisplaySettings::GetInstance().GetResolutionInfo(iRes).fPixelRatio;
 }
 
-void CGraphicContext::Clear(color_t color)
+void CGraphicContext::Clear(UTILS::COLOR::Color color)
 {
   if (!m_pd3dDevice) return;
   //Not trying to clear the zbuffer when there is none is 7 fps faster (pal resolution)

@@ -1,32 +1,21 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <list>
-#include <string>
-#include <vector>
+#pragma once
 
 #include "threads/CriticalSection.h"
 #include "threads/Thread.h"
 #include "utils/IRssObserver.h"
 #include "utils/XBMCTinyXML.h"
+
+#include <list>
+#include <string>
+#include <vector>
 
 class CRssReader : public CThread
 {
@@ -35,7 +24,7 @@ public:
   virtual ~CRssReader();
 
   void Create(IRssObserver* aObserver, const std::vector<std::string>& aUrl, const std::vector<int>& times, int spacesBetweenFeeds, bool rtl);
-  bool Parse(LPSTR szBuffer, int iFeed);
+  bool Parse(const std::string& data, int iFeed);
   void getFeed(vecText &text);
   void AddTag(const std::string &addTag);
   void AddToQueue(int iAdd);
@@ -46,8 +35,7 @@ public:
   float m_savedScrollPixelPos;
 
 private:
-  void fromRSSToUTF16(const std::string& strSource, std::wstring& strDest);
-  void Process();
+  virtual void Process();
   bool Parse(int iFeed);
   void GetNewsItems(TiXmlElement* channelXmlNode, int iFeed);
   void AddString(std::wstring aString, int aColour, int iFeed);
@@ -59,7 +47,7 @@ private:
 
   std::vector<std::wstring> m_strFeed;
   std::vector<std::wstring> m_strColors;
-  std::vector<SYSTEMTIME *> m_vecTimeStamps;
+  std::vector<SYSTEMTIME*> m_vecTimeStamps;
   std::vector<int> m_vecUpdateTimes;
   int m_spacesBetweenFeeds;
   CXBMCTinyXML m_xml;
@@ -67,10 +55,8 @@ private:
   std::vector<std::string> m_vecUrls;
   std::vector<int> m_vecQueue;
   bool m_bIsRunning;
-  std::string m_encoding;
   bool m_rtlText;
   bool m_requestRefresh;
-  std::string m_userAgent;
 
   CCriticalSection m_critical;
 };

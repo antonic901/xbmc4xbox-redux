@@ -1,30 +1,19 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include "FileItem.h"
+#include "filesystem/IFileTypes.h"
+#include "utils/ProgressJob.h"
 
 #include <string>
 #include <vector>
-
-#include "FileItem.h"
-#include "filesystem/File.h"
-#include "utils/ProgressJob.h"
 
 class CFileOperationJob : public CProgressJob
 {
@@ -52,7 +41,9 @@ public:
   virtual const char* GetType() const { return m_displayProgress ? "filemanager" : ""; }
   virtual bool operator==(const CJob *job) const;
 
-  void SetFileOperation(FileAction action, CFileItemList &items, const std::string &strDestFile);
+  void SetFileOperation(FileAction action,
+                        const CFileItemList& items,
+                        const std::string& strDestFile);
 
   const std::string &GetAverageSpeed() const { return m_avgSpeed; }
   const std::string &GetCurrentOperation() const { return m_currentOperation; }
@@ -80,7 +71,11 @@ private:
   friend class CFileOperation;
 
   typedef std::vector<CFileOperation> FileOperationList;
-  bool DoProcess(FileAction action, CFileItemList & items, const std::string& strDestFile, FileOperationList &fileOperations, double &totalTime);
+  bool DoProcess(FileAction action,
+                 const CFileItemList& items,
+                 const std::string& strDestFile,
+                 FileOperationList& fileOperations,
+                 double& totalTime);
   bool DoProcessFolder(FileAction action, const std::string& strPath, const std::string& strDestFile, FileOperationList &fileOperations, double &totalTime);
   bool DoProcessFile(FileAction action, const std::string& strFileA, const std::string& strFileB, FileOperationList &fileOperations, double &totalTime);
 

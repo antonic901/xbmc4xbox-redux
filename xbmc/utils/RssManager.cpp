@@ -1,48 +1,32 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "RssManager.h"
 
-#include <utility>
-
+#include "ServiceBroker.h"
 #include "addons/AddonInstaller.h"
 #include "addons/AddonManager.h"
-#include "ServiceBroker.h"
-#include "filesystem/File.h"
+#include "addons/addoninfo/AddonType.h"
 #include "interfaces/builtins/Builtins.h"
-#include "messaging/ApplicationMessenger.h"
-#include "messaging/helpers/DialogHelper.h"
 #include "profiles/ProfileManager.h"
-#include "settings/lib/Setting.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "threads/SingleLock.h"
-#include "utils/log.h"
+#include "settings/lib/Setting.h"
+#include "utils/FileUtils.h"
 #include "utils/RssReader.h"
 #include "utils/StringUtils.h"
-#include "utils/Variant.h"
+#include "utils/XBMCTinyXML.h"
+#include "utils/log.h"
 
-using namespace XFILE;
+#include <utility>
+
 using namespace KODI::MESSAGING;
 
-using namespace KODI::MESSAGING::HELPERS;
 
 CRssManager::CRssManager()
 {
@@ -76,7 +60,7 @@ void CRssManager::OnSettingAction(const boost::shared_ptr<const CSetting>& setti
     return;
 
   const std::string &settingId = setting->GetId();
-  if (settingId == "lookandfeel.rssedit")
+  if (settingId == CSettings::SETTING_LOOKANDFEEL_RSSEDIT)
   {
     ADDON::AddonPtr addon;
     if (!CServiceBroker::GetAddonMgr().GetAddon("script.rss.editor", addon,
@@ -109,61 +93,65 @@ void CRssManager::Stop()
 
 bool CRssManager::Load()
 {
+  const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
+
   CSingleLock lock(m_critical);
-  std::string rssXML = CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataItem("RssFeeds.xml");
-  if (!CFile::Exists(rssXML))
+
+  std::string rssXML = profileManager->GetUserDataItem("RssFeeds.xml");
+  if (!CFileUtils::Exists(rssXML))
     return false;
 
   CXBMCTinyXML rssDoc;
   if (!rssDoc.LoadFile(rssXML))
   {
-    CLog::Log(LOGERROR, "CRssManager: error loading %s, Line %d\n%s", rssXML.c_str(), rssDoc.ErrorRow(), rssDoc.ErrorDesc());
+    CLog::Log(LOGERROR, "CRssManager: error loading %s, Line %i\n%s", rssXML.c_str(), rssDoc.ErrorRow(),
+              rssDoc.ErrorDesc());
     return false;
   }
 
-  const TiXmlElement *pRootElement = rssDoc.RootElement();
-  if (pRootElement == NULL || !StringUtils::EqualsNoCase(pRootElement->ValueStr(), "rssfeeds"))
+  TiXmlElement *rootElement = rssDoc.RootElement();
+  if (!rootElement || !StringUtils::EqualsNoCase(rootElement->Value(), "rssfeeds"))
   {
     CLog::Log(LOGERROR, "CRssManager: error loading %s, no <rssfeeds> node", rssXML.c_str());
     return false;
   }
 
   m_mapRssUrls.clear();
-  const TiXmlElement* pSet = pRootElement->FirstChildElement("set");
-  while (pSet != NULL)
+  TiXmlElement *setElement = rootElement->FirstChildElement("set");
+  while (setElement)
   {
     int iId;
-    if (pSet->QueryIntAttribute("id", &iId) == TIXML_SUCCESS)
+    if (setElement->QueryIntAttribute("id", &iId) == TIXML_SUCCESS)
     {
       RssSet set;
-      set.rtl = pSet->Attribute("rtl") != NULL && strcasecmp(pSet->Attribute("rtl"), "true") == 0;
-      const TiXmlElement* pFeed = pSet->FirstChildElement("feed");
-      while (pFeed != NULL)
+      set.rtl = setElement->Attribute("rtl") != nullptr &&
+                StringUtils::CompareNoCase(setElement->Attribute("rtl"), "true") == 0;
+      TiXmlElement *feedElement = setElement->FirstChildElement("feed");
+      while (feedElement)
       {
-        int iInterval;
-        if (pFeed->QueryIntAttribute("updateinterval", &iInterval) != TIXML_SUCCESS)
+        int iInterval = 30; // default to 30 min
+        if (feedElement->QueryIntAttribute("updateinterval", &iInterval) != TIXML_SUCCESS)
         {
-          iInterval = 30; // default to 30 min
           CLog::Log(LOGDEBUG, "CRssManager: no interval set, default to 30!");
         }
 
-        if (pFeed->FirstChild() != NULL)
+        if (feedElement->FirstChild())
         {
-          //! @todo UTF-8: Do these URLs need to be converted to UTF-8?
-          //!              What about the xml encoding?
-          std::string strUrl = pFeed->FirstChild()->ValueStr();
+          std::string strUrl = feedElement->FirstChild()->Value();
           set.url.push_back(strUrl);
           set.interval.push_back(iInterval);
         }
-        pFeed = pFeed->NextSiblingElement("feed");
+        feedElement = feedElement->NextSiblingElement("feed");
       }
 
       m_mapRssUrls.insert(std::make_pair(iId,set));
     }
     else
+    {
       CLog::Log(LOGERROR, "CRssManager: found rss url set with no id in RssFeeds.xml, ignored");
+    }
 
-    pSet = pSet->NextSiblingElement("set");
+    setElement = setElement->NextSiblingElement("set");
   }
 
   return true;

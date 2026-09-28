@@ -6,6 +6,7 @@
  *  See LICENSES/README.md for more information.
  */
 #include "SectionLoader.h"
+#include "utils/AlarmClock.h"
 #include "filesystem/DllLibCurl.h"
 #include "filesystem/DirectoryCache.h"
 #include "GUIPassword.h"
@@ -30,6 +31,7 @@ std::map<std::string, std::string> CSpecialProtocol::m_pathMap;
   XCURL::DllLibCurlGlobal g_curlInterface;
   CPartyModeManager     g_partyModeManager;
 
+  CAlarmClock        g_alarmClock;
   CSectionLoader     g_sectionLoader;
 
   CZipManager g_ZipManager;

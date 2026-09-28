@@ -77,7 +77,7 @@ bool CGUIColorManager::LoadXML(CXBMCTinyXML &xmlDoc)
       UTILS::COLOR::Color value = 0xffffffff;
       sscanf(color->FirstChild()->Value(), "%x", (unsigned int*) &value);
       std::string name = color->Attribute("name");
-      std::map<std::string, color_t>::iterator it = m_colors.find(name);
+      std::map<std::string, UTILS::COLOR::Color>::iterator it = m_colors.find(name);
       if (it != m_colors.end())
         (*it).second = value;
       else
@@ -94,7 +94,7 @@ UTILS::COLOR::Color CGUIColorManager::GetColor(const std::string& color) const
   // look in our color map
   std::string trimmed(color);
   StringUtils::TrimLeft(trimmed, "= ");
-  std::map<std::string, color_t>::const_iterator it = m_colors.find(trimmed);
+  std::map<std::string, UTILS::COLOR::Color>::const_iterator it = m_colors.find(trimmed);
   if (it != m_colors.end())
     return (*it).second;
 

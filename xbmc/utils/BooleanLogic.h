@@ -1,33 +1,19 @@
-#pragma once
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2012-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
+#include "system.h" // <xtl.h>
+#include "utils/IXmlDeserializable.h"
+
+#include <boost/shared_ptr.hpp>
 #include <string>
 #include <vector>
-#ifdef _XBOX
-#include <xtl.h>
-#endif
-
-#include "boost/shared_ptr.hpp"
-
-#include "utils/IXmlDeserializable.h"
 
 typedef enum {
   BooleanLogicOperationOr = 0,
@@ -40,7 +26,7 @@ public:
   CBooleanLogicValue(const std::string &value = "", bool negated = false)
     : m_value(value), m_negated(negated)
   { }
-  virtual ~CBooleanLogicValue() { }
+  virtual ~CBooleanLogicValue() {}
 
   virtual bool Deserialize(const TiXmlNode *node);
 
@@ -66,10 +52,10 @@ typedef std::vector<CBooleanLogicOperationPtr> CBooleanLogicOperations;
 class CBooleanLogicOperation : public IXmlDeserializable
 {
 public:
-  CBooleanLogicOperation(BooleanLogicOperation op = BooleanLogicOperationAnd)
+  explicit CBooleanLogicOperation(BooleanLogicOperation op = BooleanLogicOperationAnd)
     : m_operation(op)
   { }
-  virtual ~CBooleanLogicOperation();
+  virtual ~CBooleanLogicOperation() {}
 
   virtual bool Deserialize(const TiXmlNode *node);
 
@@ -90,14 +76,15 @@ protected:
 
 class CBooleanLogic : public IXmlDeserializable
 {
-public:
-  CBooleanLogic() { }
-  virtual ~CBooleanLogic() { }
+protected:
+  /* make sure nobody deletes a pointer to this class */
+  virtual ~CBooleanLogic() {}
 
+public:
   virtual bool Deserialize(const TiXmlNode *node);
 
-  virtual const CBooleanLogicOperationPtr& Get() const { return m_operation; }
-  virtual CBooleanLogicOperationPtr Get() { return m_operation; }
+  const CBooleanLogicOperationPtr& Get() const { return m_operation; }
+  CBooleanLogicOperationPtr Get() { return m_operation; }
 
 protected:
   CBooleanLogicOperationPtr m_operation;

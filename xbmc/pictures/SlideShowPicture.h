@@ -21,12 +21,11 @@
 
 #include "threads/CriticalSection.h"
 #include "guilib/DirtyRegion.h"
+#include "utils/ColorUtils.h"
 
 #include "platform/xbox/PlatformDefs.h" // uint32_t
 
 #include <string>
-
-typedef uint32_t color_t;
 
 #include <boost/move/unique_ptr.hpp>
 
@@ -91,7 +90,7 @@ public:
 private:
   void SetTexture_Internal(int iSlideNumber, boost::movelib::unique_ptr<CTexture> pTexture, DISPLAY_EFFECT dispEffect = EFFECT_RANDOM, TRANSISTION_EFFECT transEffect = FADEIN_FADEOUT);
   void UpdateVertices(float cur_x[4], float cur_y[4], const float new_x[4], const float new_y[4], CDirtyRegionList &dirtyregions);
-  void Render(float *x, float *y, CTexture* pTexture, color_t color, _D3DFILLMODE fillmode = D3DFILL_SOLID );
+  void Render(float *x, float *y, CTexture* pTexture, UTILS::COLOR::Color color, _D3DFILLMODE fillmode = D3DFILL_SOLID );
   boost::movelib::unique_ptr<CTexture> m_pImage;
 
   int m_iOriginalWidth;
@@ -104,7 +103,7 @@ private:
   std::string m_strFileName;
   float m_fWidth;
   float m_fHeight;
-  color_t m_alpha;
+  UTILS::COLOR::Color m_alpha;
   // stuff relative to middle position
   float m_fPosX;
   float m_fPosY;

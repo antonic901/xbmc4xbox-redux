@@ -1,26 +1,17 @@
 /*
- *      Copyright (C) 2012-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2012-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "utils/POUtils.h"
+
+#include "URL.h"
 #include "filesystem/File.h"
 #include "utils/log.h"
+
 #include <stdlib.h>
 
 CPODocument::CPODocument()
@@ -36,11 +27,16 @@ CPODocument::~CPODocument() {}
 
 bool CPODocument::LoadFile(const std::string &pofilename)
 {
+  CURL poFileUrl(pofilename);
+  if (!XFILE::CFile::Exists(poFileUrl))
+    return false;
+
   XFILE::CFile file;
   std::vector<uint8_t> buf;
-  if (file.LoadFile(pofilename, buf) < 18) // at least a size of a minimalistic header
+  if (file.LoadFile(poFileUrl, buf) < 18) // at least a size of a minimalistic header
   {
-    CLog::Log(LOGERROR, "%s: can't load file \"%s\" or file is too small", __FUNCTION__,  pofilename.c_str());
+    CLog::Log(LOGERROR, "%s: can't load file \"%s\" or file is too small", __FUNCTION__,
+              pofilename.c_str());
     return false;
   }
 
@@ -158,22 +154,24 @@ void CPODocument::ParseEntry(bool bisSourceLang)
       break;
   }
 
-  if (m_Entry.msgStrPlural.size() == 0)
+  if (m_Entry.msgStrPlural.empty())
   {
-    CLog::Log(LOGERROR, "POParser: msgstr[] plural lines have zero valid strings. "
-                        "Failed entry: %s", m_Entry.Content.c_str());
+    CLog::Log(LOGERROR,
+              "POParser: msgstr[] plural lines have zero valid strings. "
+              "Failed entry: %s",
+              m_Entry.Content.c_str());
     m_Entry.msgStrPlural.resize(1); // Put 1 element with an empty string into the vector
   }
-
-  return;
 }
 
 const std::string& CPODocument::GetPlurMsgstr(size_t plural) const
 {
   if (m_Entry.msgStrPlural.size() < plural+1)
   {
-    CLog::Log(LOGERROR, "POParser: msgstr[%i] plural field requested, but not found in PO file. "
-                        "Failed entry: %s", static_cast<int>(plural), m_Entry.Content.c_str());
+    CLog::Log(LOGERROR,
+              "POParser: msgstr[%i] plural field requested, but not found in PO file. "
+              "Failed entry: %s",
+              static_cast<int>(plural), m_Entry.Content.c_str());
     plural = m_Entry.msgStrPlural.size()-1;
   }
   return m_Entry.msgStrPlural[plural].Str;
@@ -199,7 +197,7 @@ std::string CPODocument::UnescapeString(const std::string &strInput)
                   "POParser: warning, unhandled escape character "
                   "at line-end. Problematic entry: %s",
                   m_Entry.Content.c_str());
-        continue;
+        break;
       }
       switch (*it++)
       {
@@ -253,8 +251,7 @@ bool CPODocument::ParseNumID()
 
   CLog::Log(LOGERROR, "POParser: found numeric id descriptor, but no valid id can be read, "
                       "entry was handled as normal msgid entry");
-  CLog::Log(LOGERROR, "POParser: The problematic entry: %s",
-            m_Entry.Content.c_str());
+  CLog::Log(LOGERROR, "POParser: The problematic entry: %s", m_Entry.Content.c_str());
   return false;
 }
 
@@ -266,7 +263,7 @@ void CPODocument::GetString(CStrEntry &strEntry)
 
   while (startPos < m_Entry.Content.size())
   {
-    nextLFPos = m_Entry.Content.find("\n", startPos);
+    nextLFPos = m_Entry.Content.find('\n', startPos);
     if (nextLFPos == std::string::npos)
       nextLFPos = m_Entry.Content.size();
 
@@ -284,20 +281,24 @@ void CPODocument::GetString(CStrEntry &strEntry)
 
 void CPODocument::ConvertLineEnds(const std::string &filename)
 {
-  size_t foundPos = m_strBuffer.find_first_of("\r");
+  size_t foundPos = m_strBuffer.find_first_of('\r');
   if (foundPos == std::string::npos)
     return; // We have only Linux style line endings in the file, nothing to do
 
   if (foundPos+1 >= m_strBuffer.size() || m_strBuffer[foundPos+1] != '\n')
-    CLog::Log(LOGDEBUG, "POParser: PO file has Mac Style Line Endings. "
-              "Converted in memory to Linux LF for file: %s", filename.c_str());
+    CLog::Log(LOGDEBUG,
+              "POParser: PO file has Mac Style Line Endings. "
+              "Converted in memory to Linux LF for file: %s",
+              filename.c_str());
   else
-    CLog::Log(LOGDEBUG, "POParser: PO file has Win Style Line Endings. "
-              "Converted in memory to Linux LF for file: %s", filename.c_str());
+    CLog::Log(LOGDEBUG,
+              "POParser: PO file has Win Style Line Endings. "
+              "Converted in memory to Linux LF for file: %s",
+              filename.c_str());
 
   std::string strTemp;
   strTemp.reserve(m_strBuffer.size());
-  for (std::string::const_iterator it = m_strBuffer.begin(); it < m_strBuffer.end(); it++)
+  for (std::string::const_iterator it = m_strBuffer.begin(); it < m_strBuffer.end(); ++it)
   {
     if (*it == '\r')
     {

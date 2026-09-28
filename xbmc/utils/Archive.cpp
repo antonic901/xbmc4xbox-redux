@@ -1,35 +1,23 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "Archive.h"
 
-#include <limits>
-#include <cstring>
-
-#include <algorithm>
-#include <stdexcept>
-
-#include "filesystem/File.h"
 #include "IArchivable.h"
+#include "filesystem/File.h"
 #include "utils/Variant.h"
 #include "utils/log.h"
+
+#include <algorithm>
+#include <stdint.h>
+#include <cstring>
+#include <limits>
+#include <stdexcept>
 
 #ifdef __GNUC__
 #pragma GCC diagnostic ignored "-Wlong-long"
@@ -43,11 +31,11 @@ using namespace XFILE;
 #define MAX_STRING_SIZE 100*1024*1024
 
 CArchive::CArchive(CFile* pFile, int mode)
+  : m_pBuffer(boost::movelib::unique_ptr<uint8_t[]>(new uint8_t[CARCHIVE_BUFFER_MAX]))
 {
   m_pFile = pFile;
   m_iMode = mode;
 
-  m_pBuffer = boost::movelib::unique_ptr<uint8_t[]>(new uint8_t[CARCHIVE_BUFFER_MAX]);
   memset(m_pBuffer.get(), 0, CARCHIVE_BUFFER_MAX);
   if (mode == load)
   {
@@ -228,8 +216,8 @@ CArchive& CArchive::operator<<(const std::vector<std::string>& strArray)
 
   *this << static_cast<uint32_t>(strArray.size());
 
-  for (std::vector<std::string>::const_iterator it = strArray.begin(); it != strArray.end(); ++it)
-    *this << *it;
+  for (std::vector<std::string>::const_iterator item = strArray.begin(); item != strArray.end(); ++item)
+    *this << *item;
 
   return *this;
 }
@@ -241,8 +229,8 @@ CArchive& CArchive::operator<<(const std::vector<int>& iArray)
 
   *this << static_cast<uint32_t>(iArray.size());
 
-  for (std::vector<int>::const_iterator it = iArray.begin(); it != iArray.end(); ++it)
-    *this << *it;
+  for (std::vector<int>::const_iterator item = iArray.begin(); item != iArray.end(); ++item)
+    *this << *item;
 
   return *this;
 }
@@ -383,7 +371,7 @@ CArchive& CArchive::operator>>(std::vector<std::string>& strArray)
   {
     std::string str;
     *this >> str;
-    strArray.push_back(boost::move(str));
+    strArray.push_back(str);
   }
 
   return *this;
@@ -422,7 +410,7 @@ CArchive &CArchive::streamout_bufferwrap(const uint8_t *ptr, size_t size)
 {
   do
   {
-    size_t chunkSize = std::min(size, m_BufferRemain);
+    std::size_t chunkSize = std::min(size, m_BufferRemain);
     m_BufferPos = std::copy(ptr, ptr + chunkSize, m_BufferPos);
     ptr += chunkSize;
     size -= chunkSize;
@@ -437,7 +425,7 @@ void CArchive::FillBuffer()
 {
   if (m_iMode == load && m_BufferRemain == 0)
   {
-    unsigned int read = m_pFile->Read(m_pBuffer.get(), CARCHIVE_BUFFER_MAX);
+    ssize_t read = m_pFile->Read(m_pBuffer.get(), CARCHIVE_BUFFER_MAX);
     if (read > 0)
     {
       m_BufferRemain = read;
@@ -457,14 +445,15 @@ CArchive &CArchive::streamin_bufferwrap(uint8_t *ptr, size_t size)
       FillBuffer();
       if (m_BufferRemain < CARCHIVE_BUFFER_MAX && m_BufferRemain < size)
       {
-        CLog::Log(LOGERROR, "%s: can't stream in: requested %lu bytes, was read %lu bytes", __FUNCTION__,
-            static_cast<unsigned long>(orig_size), static_cast<unsigned long>(ptr - orig_ptr + m_BufferRemain));
+        CLog::Log(LOGERROR, "%s: can't stream in: requested %lu bytes, was read %lu bytes",
+                  __FUNCTION__, static_cast<unsigned long>(orig_size),
+                  static_cast<unsigned long>(ptr - orig_ptr + m_BufferRemain));
 
         memset(orig_ptr, 0, orig_size);
         return *this;
       }
     }
-    size_t chunkSize = std::min(size, m_BufferRemain);
+    std::size_t chunkSize = std::min(size, m_BufferRemain);
     ptr = std::copy(m_BufferPos, m_BufferPos + chunkSize, ptr);
     m_BufferPos += chunkSize;
     m_BufferRemain -= chunkSize;

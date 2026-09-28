@@ -1,27 +1,12 @@
 /*
- *      Copyright (C) 2012-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2012-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "GroupUtils.h"
-
-#include <map>
-#include <set>
 
 #include "FileItem.h"
 #include "filesystem/MultiPathDirectory.h"
@@ -29,6 +14,9 @@
 #include "utils/URIUtils.h"
 #include "video/VideoDbUrl.h"
 #include "video/VideoInfoTag.h"
+
+#include <map>
+#include <set>
 
 typedef std::map<int, std::set<CFileItemPtr> > SetMap;
 
@@ -90,7 +78,7 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
         pItem->SetPath(basePath);
       else
       {
-        videoUrl.AddOptions(itemsUrl.GetOptionsString());
+        videoUrl.AddOptions((*set->second.begin())->GetURL().GetOptions());
         pItem->SetPath(videoUrl.ToString());
       }
       pItem->m_bIsFolder = true;
@@ -103,6 +91,7 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
       int ratings = 0;
       float totalRatings = 0;
       int iWatched = 0; // have all the movies been played at least once?
+      int inProgress = 0;
       std::set<std::string> pathSet;
       for (std::set<CFileItemPtr>::const_iterator movie = set->second.begin(); movie != set->second.end(); ++movie)
       {
@@ -131,6 +120,11 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
         if (movieInfo->GetPlayCount() > 0)
           iWatched++;
 
+        // handle resume points
+        CBookmark bookmark = movieInfo->GetResumePoint();
+        if (bookmark.IsSet())
+          inProgress++;
+
         //accumulate the path for a multipath construction
         CFileItem video(movieInfo->m_basePath, false);
         if (video.IsVideo())
@@ -140,13 +134,14 @@ bool GroupUtils::Group(GroupBy groupBy, const std::string &baseDir, const CFileI
       }
       setInfo->m_basePath = XFILE::CMultiPathDirectory::ConstructMultiPath(pathSet);
 
-      if (ratings > 1)
+      if (ratings > 0)
         pItem->GetVideoInfoTag()->SetRating(totalRatings / ratings);
 
       setInfo->SetPlayCount(iWatched >= static_cast<int>(set->second.size()) ? (setInfo->GetPlayCount() / set->second.size()) : 0);
       pItem->SetProperty("total", (int)set->second.size());
       pItem->SetProperty("watched", iWatched);
       pItem->SetProperty("unwatched", (int)set->second.size() - iWatched);
+      pItem->SetProperty("inprogress", inProgress);
       pItem->SetOverlayImage(setInfo->GetPlayCount() > 0 ? CGUIListItem::ICON_OVERLAY_WATCHED
                                                          : CGUIListItem::ICON_OVERLAY_UNWATCHED);
 

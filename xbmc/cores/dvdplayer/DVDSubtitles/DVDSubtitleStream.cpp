@@ -18,10 +18,16 @@
  *
  */
 
+#include <cstring>
+
 #include "DVDSubtitleStream.h"
 #include "DVDInputStreams/DVDFactoryInputStream.h"
 #include "DVDInputStreams/DVDInputStream.h"
 #include "utils/CharsetConverter.h"
+#include "utils/CharsetDetection.h"
+#include "utils/Utf8Utils.h"
+#include "utils/log.h"
+#include "utils/URIUtils.h"
 
 #include <string>
 
@@ -43,64 +49,96 @@ bool CDVDSubtitleStream::Open(const string& strFile)
   pInputStream = CDVDFactoryInputStream::CreateInputStream(NULL, item);
   if (pInputStream && pInputStream->Open())
   {
-    unsigned char buffer[16384];
-    int size_read = 0;
-    size_read = pInputStream->Read(buffer,3);
-    bool isUTF8 = false;
-    bool isUTF16 = false;
-    if (buffer[0] == 0xEF && buffer[1] == 0xBB && buffer[2] == 0xBF)
-      isUTF8 = true;
-    else if (buffer[0] == 0xFF && buffer[1] == 0xFE)
+    // prepare buffer
+    size_t totalread = 0;
+    std::vector<uint8_t> buf(1024);
+
+    if (URIUtils::HasExtension(strFile, ".sub") && IsIncompatible(pInputStream, buf, &totalread))
     {
-      isUTF16 = true;
-      pInputStream->Seek(2, SEEK_SET);
+      CLog::Log(LOGDEBUG,
+                "%s: file %s seems to be a vob sub"
+                "file without an idx file, skipping it",
+                __FUNCTION__, CURL::GetRedacted(pInputStream->GetFileName()).c_str());
+      buf.clear();
+      delete pInputStream;
+      return false;
+    }
+
+    static const size_t chunksize = 64 * 1024;
+
+    int read;
+    do
+    {
+      if (totalread == buf.size())
+        buf.resize(buf.size() + chunksize);
+
+      read = pInputStream->Read(&buf[0] + totalread, static_cast<int>(buf.size() - totalread));
+      if (read > 0)
+        totalread += read;
+    } while (read > 0);
+
+    delete pInputStream;
+    if (!totalread)
+      return false;
+
+    std::string tmpStr(reinterpret_cast<char*>(&buf[0]), totalread);
+    buf.clear();
+
+    std::string enc(CCharsetDetection::GetBomEncoding(tmpStr));
+    if (enc == "UTF-8" || (enc.empty() && CUtf8Utils::isValidUtf8(tmpStr)))
+      m_stringstream << tmpStr;
+    else if (!enc.empty())
+    {
+      std::string converted;
+      g_charsetConverter.ToUtf8(enc, tmpStr, converted);
+      if (converted.empty())
+        return false;
+
+      m_stringstream << converted;
     }
     else
-      pInputStream->Seek(0, SEEK_SET);
-
-    if (isUTF16)
     {
-      std::wstringstream wstringstream;
-      while( (size_read = pInputStream->Read(buffer, sizeof(buffer)-2) ) > 0 )
-      {
-        buffer[size_read] = buffer[size_read + 1] = '\0';
-        std::wstring temp;
-        g_charsetConverter.utf16LEtoW(std::u16string((char16_t*)buffer),temp);
-        wstringstream << temp;
-      }
-      delete pInputStream;
+      std::string converted;
+      g_charsetConverter.subtitleCharsetToUtf8(tmpStr, converted);
+      if (converted.empty())
+        return false;
 
-      std::string strUTF8;
-      g_charsetConverter.wToUTF8(std::wstring(wstringstream.str()),strUTF8);
-      m_stringstream.str("");
-      m_stringstream << strUTF8;
+      m_stringstream << converted;
     }
-    else
-    {
-      while( (size_read = pInputStream->Read(buffer, sizeof(buffer)-1) ) > 0 )
-      {
-        buffer[size_read] = '\0';
-        m_stringstream << buffer;
-      }
-      delete pInputStream;
 
-      if (!isUTF8)
-        isUTF8 = g_charsetConverter.isValidUtf8(m_stringstream.str());
-
-      if (!isUTF8)
-      {
-        std::wstring strUTF16;
-        std::string strUTF8;
-        g_charsetConverter.subtitleCharsetToW(m_stringstream.str(), strUTF16);
-        g_charsetConverter.wToUTF8(strUTF16,strUTF8);
-        m_stringstream.str("");
-        m_stringstream << strUTF8;
-      }
-    }
     return true;
   }
 
   delete pInputStream;
+  return false;
+}
+
+bool CDVDSubtitleStream::IsIncompatible(CDVDInputStream* pInputStream,
+                                        std::vector<uint8_t>& buf,
+                                        size_t* bytesRead)
+{
+  if (!pInputStream)
+    return true;
+
+  static const uint8_t vobsub[] = { 0x00, 0x00, 0x01, 0xBA };
+
+  int read = pInputStream->Read(&buf[0], static_cast<int>(buf.size()));
+
+  if (read < 0)
+  {
+    return true;
+  }
+  else
+  {
+    *bytesRead = (size_t)read;
+  }
+
+  if (read >= 4)
+  {
+    if (!std::memcmp(&buf[0], vobsub, 4))
+      return true;
+  }
+
   return false;
 }
 

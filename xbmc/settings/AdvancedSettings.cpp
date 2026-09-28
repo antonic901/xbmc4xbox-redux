@@ -287,6 +287,7 @@ void CAdvancedSettings::Initialize()
   m_videoItemSeparator = " / ";
   m_programItemSeparator = " / ";
   m_iMusicLibraryDateAdded = 1; // prefer mtime over ctime and current time
+  m_bMusicLibraryUseISODates = false;
   m_bMusicLibraryArtistNavigatesToSongs = false;
 
   m_bVideoLibraryAllItemsOnBottom = false;
@@ -494,6 +495,7 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
     XMLUtils::GetString(pElement, "albumformat", m_strMusicLibraryAlbumFormat);
     XMLUtils::GetString(pElement, "itemseparator", m_musicItemSeparator);
     XMLUtils::GetInt(pElement, "dateadded", m_iMusicLibraryDateAdded);
+    XMLUtils::GetBoolean(pElement, "useisodates", m_bMusicLibraryUseISODates);
     XMLUtils::GetBoolean(pElement, "artistnavigatestosongs", m_bMusicLibraryArtistNavigatesToSongs);
     //Music artist name separators
     TiXmlElement* separators = pElement->FirstChildElement("artistseparators");

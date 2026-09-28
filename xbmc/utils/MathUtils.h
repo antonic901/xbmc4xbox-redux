@@ -1,46 +1,47 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include <stdint.h>
-#include <cassert>
+#pragma once
+
+#include <assert.h>
 #include <climits>
 #include <cmath>
+#include <stdint.h>
+#include <boost/type_traits/is_floating_point.hpp>
+#include <boost/utility/enable_if.hpp>
+
+#if defined(HAVE_SSE2) && defined(__SSE2__)
+#include <emmintrin.h>
+#endif
 
 // use real compiler defines in here as we want to
 // avoid including system.h or other magic includes.
 // use 'gcc -dM -E - < /dev/null' or similar to find them.
 
-#if defined(__ppc__) || \
+// clang-format off
+#if defined(__aarch64__) || \
+    defined(__alpha__) || \
+    defined(__arc__) || \
+    defined(__arm__) || \
+    defined(__loongarch__) || \
+    defined(_M_ARM) || \
+    defined(__mips__) || \
+    defined(__or1k__) || \
     defined(__powerpc__) || \
-   (defined(__APPLE__) && defined(__arm__) && defined(__llvm__)) || \
-   (defined(__ANDROID__) && defined(__arm__))
-  #define DISABLE_MATHUTILS_ASM_ROUND_INT
+    defined(__ppc__) || \
+    defined(__riscv) || \
+    defined(__SH4__) || \
+    defined(__s390x__) || \
+    defined(__sparc__) || \
+    defined(__xtensa__)
+#define DISABLE_MATHUTILS_ASM_ROUND_INT
 #endif
-
-#if defined(__ppc__) || \
-    defined(__powerpc__) || \
-   (defined(__APPLE__) && defined(__llvm__)) || \
-   (defined(__ANDROID__) && defined(__arm__))
-  #define DISABLE_MATHUTILS_ASM_TRUNCATE_INT
-#endif
+// clang-format on
 
 /*! \brief Math utility class.
  Note that the test() routine should return true for all implementations
@@ -65,66 +66,70 @@ namespace MathUtils
   */
   inline int round_int(double x)
   {
-    assert(x > static_cast<double>(INT_MIN / 2) - 1.0);
-    assert(x < static_cast<double>(INT_MAX / 2) + 1.0);
-    const float round_to_nearest = 0.5f;
-    int i;
+    assert(x > static_cast<double>((int) (INT_MIN / 2)) - 1.0);
+    assert(x < static_cast<double>((int) (INT_MAX / 2)) + 1.0);
 
 #if defined(DISABLE_MATHUTILS_ASM_ROUND_INT)
-    i = floor(x + round_to_nearest);
+    /* This implementation warrants some further explanation.
+     *
+     * First, a couple of notes on rounding:
+     * 1) C casts from float/double to integer round towards zero.
+     * 2) Float/double additions are rounded according to the normal rules,
+     *    in other words: on some architectures, it's fixed at compile-time,
+     *    and on others it can be set using fesetround()). The following
+     *    analysis assumes round-to-nearest with ties rounding to even. This
+     *    is a fairly sensible choice, and is the default with ARM VFP.
+     *
+     * What this function wants is round-to-nearest with ties rounding to
+     * +infinity. This isn't an IEEE rounding mode, even if we could guarantee
+     * that all architectures supported fesetround(), which they don't. Instead,
+     * this adds an offset of 2147483648.5 (= 0x80000000.8p0), then casts to
+     * an unsigned int (crucially, all possible inputs are now in a range where
+     * round to zero acts the same as round to -infinity) and then subtracts
+     * 0x80000000 in the integer domain. The 0.5 component of the offset
+     * converts what is effectively a round down into a round to nearest, with
+     * ties rounding up, as desired.
+     *
+     * There is a catch, that because there is a double rounding, there is a
+     * small region where the input falls just *below* a tie, where the addition
+     * of the offset causes a round *up* to an exact integer, due to the finite
+     * level of precision available in floating point. You need to be aware of
+     * this when calling this function, although at present it is not believed
+     * that XBMC ever attempts to round numbers in this window.
+     *
+     * It is worth proving the size of the affected window. Recall that double
+     * precision employs a mantissa of 52 bits.
+     * 1) For all inputs -0.5 <= x <= INT_MAX
+     *    Once the offset is applied, the most significant binary digit in the
+     *    floating-point representation is +2^31.
+     *    At this magnitude, the smallest step representable in double precision
+     *    is 2^31 / 2^52 = 0.000000476837158203125
+     *    So the size of the range which is rounded up due to the addition is
+     *    half the size of this step, or 0.0000002384185791015625
+     *
+     * 2) For all inputs INT_MIN/2 < x < -0.5
+     *    Once the offset is applied, the most significant binary digit in the
+     *    floating-point representation is +2^30.
+     *    At this magnitude, the smallest step representable in double precision
+     *    is 2^30 / 2^52 = 0.0000002384185791015625
+     *    So the size of the range which is rounded up due to the addition is
+     *    half the size of this step, or 0.00000011920928955078125
+     *
+     * 3) For all inputs INT_MIN <= x <= INT_MIN/2
+     *    The representation once the offset is applied has equal or greater
+     *    precision than the input, so the addition does not cause rounding.
+     */
+    return ((unsigned int) (x + 2147483648.5)) - 0x80000000;
 
-#elif defined(__arm__)
-    // From 'ARM-v7-M Architecture Reference Manual' page A7-569:
-    //  "The floating-point to integer operation (vcvt) [normally] uses the Round towards Zero rounding mode"
-    // Because of this...we must use some less-than-straightforward logic to perform this operation without
-    //  changing the rounding mode flags
-
-    /* The assembly below implements the following logic:
-     if (x < 0)
-       inc = -0.5f
-     else
-       inc = 0.5f
-     int_val = trunc(x+inc);
-     err = x - int_val;
-     if (err == 0.5f)
-       int_val++;
-     return int_val;
-    */
-
-    __asm__ __volatile__ (
-#if defined(__ARM_PCS_VFP)
-      "fconstd d1,#%G[rnd_val]     \n\t" // Copy round_to_nearest into a working register (d1 = 0.5)
 #else
-      "vmov.F64 d1,%[rnd_val]      \n\t"
-#endif
-      "fcmpezd %P[value]           \n\t" // Check value against zero (value == 0?)
-      "fmstat                      \n\t" // Copy the floating-point status flags into the general-purpose status flags
-      "it mi                       \n\t"
-      "vnegmi.F64 d1, d1           \n\t" // if N-flag is set, negate round_to_nearest (if (value < 0) d1 = -1 * d1)
-      "vadd.F64 d1,%P[value],d1    \n\t" // Add round_to_nearest to value, store result in working register (d1 += value)
-      "vcvt.S32.F64 s3,d1          \n\t" // Truncate(round towards zero) (s3 = (int)d1)
-      "vmov %[result],s3           \n\t" // Store the integer result in a general-purpose register (result = s3)
-      "vcvt.F64.S32 d1,s3          \n\t" // Convert back to floating-point (d1 = (double)s3)
-      "vsub.F64 d1,%P[value],d1    \n\t" // Calculate the error (d1 = value - d1)
-#if defined(__ARM_PCS_VFP)
-      "fconstd d2,#%G[rnd_val]     \n\t" // d2 = 0.5;
-#else
-      "vmov.F64 d2,%[rnd_val]      \n\t"
-#endif
-      "fcmped d1, d2               \n\t" // (d1 == 0.5?)
-      "fmstat                      \n\t" // Copy the floating-point status flags into the general-purpose status flags
-      "it eq                       \n\t"
-      "addeq %[result],#1          \n\t" // (if (d1 == d2) result++;)
-      : [result] "=r"(i)                                  // Outputs
-      : [rnd_val] "Dv" (round_to_nearest), [value] "w"(x) // Inputs
-      : "d1", "d2", "s3"                                  // Clobbers
-    );
-
-#elif defined(__SSE2__)
+    const float round_to_nearest = 0.5f;
+    int i;
+#if defined(HAVE_SSE2) && defined(__SSE2__)
     const float round_dn_to_nearest = 0.4999999f;
-    i = (x > 0) ? _mm_cvttsd_si32(_mm_set_sd(x + round_to_nearest)) : _mm_cvttsd_si32(_mm_set_sd(x - round_dn_to_nearest));
+    i = (x > 0) ? _mm_cvttsd_si32(_mm_set_sd(x + static_cast<double>(round_to_nearest)))
+                : _mm_cvttsd_si32(_mm_set_sd(x - static_cast<double>(round_dn_to_nearest)));
 
-#elif defined(_WIN32)
+#elif defined(TARGET_WINDOWS) || defined(_XBOX)
     __asm
     {
       fld x
@@ -144,8 +149,8 @@ namespace MathUtils
     );
 
 #endif
-
     return i;
+#endif
   }
 
   /*! \brief Truncate to nearest integer.
@@ -159,45 +164,7 @@ namespace MathUtils
   {
     assert(x > static_cast<double>(INT_MIN / 2) - 1.0);
     assert(x < static_cast<double>(INT_MAX / 2) + 1.0);
-    int i;
-
-#if defined(DISABLE_MATHUTILS_ASM_TRUNCATE_INT)
-    return i = (int)x;
-
-#elif defined(__arm__)
-    __asm__ __volatile__ (
-      "vcvt.S32.F64 %[result],%P[value]   \n\t" // Truncate(round towards zero) and store the result
-      : [result] "=w"(i)                        // Outputs
-      : [value] "w"(x)                          // Inputs
-    );
-    return i;
-
-#elif defined(_WIN32)
-    const float round_towards_m_i = -0.5f;
-    __asm
-    {
-      fld x
-      fadd st, st (0)
-      fabs
-      fadd round_towards_m_i
-      fistp i
-      sar i, 1
-    }
-
-#else
-    const float round_towards_m_i = -0.5f;
-    __asm__ __volatile__ (
-      "fadd %%st\n\t"
-      "fabs\n\t"
-      "fadd %%st(1)\n\t"
-      "fistpl %0\n\t"
-      "sarl $1, %0\n"
-      : "=m"(i) : "u"(round_towards_m_i), "t"(x) : "st"
-    );
-#endif
-    if (x < 0)
-      i = -i;
-    return (i);
+    return static_cast<int>(x);
   }
 
   inline int64_t abs(int64_t a)
@@ -225,7 +192,21 @@ namespace MathUtils
   inline double round(double x)
   {
     // https://github.com/FFmpeg/FFmpeg/blob/924cc51ffece8027fd3896e66cac77f8ed22270a/libavutil/libm.h#L453
-    return (x > 0) ? floor(x + 0.5) : ceil(x - 0.5);
+    return x > 0 ? std::floor(x + 0.5) : std::ceil(x - 0.5);
+  }
+
+  /**
+   * Compare two floating-point numbers for equality and regard them
+   * as equal if their difference is below a given threshold.
+   *
+   * It is usually not useful to compare float numbers for equality with
+   * the standard operator== since very close numbers might have different
+   * representations.
+   */
+  template<typename FloatT>
+  inline bool FloatEquals(FloatT f1, FloatT f2, FloatT maxDelta)
+  {
+    return (std::abs(f2 - f1) < maxDelta);
   }
 
   /*!
@@ -234,12 +215,14 @@ namespace MathUtils
    * \param multiple The multiple
    * \return The rounded value
    */
-  inline float RoundF(const float value, const float multiple)
+  template<typename T>
+  inline typename boost::enable_if<boost::is_floating_point<T>, T>::type
+  RoundF(const T value, const T multiple)
   {
     if (multiple == 0)
       return value;
 
-    return static_cast<float>(round(static_cast<double>(value) / static_cast<double>(multiple)) *
+    return static_cast<T>(round(static_cast<double>(value) / static_cast<double>(multiple)) *
                           static_cast<double>(multiple));
   }
 

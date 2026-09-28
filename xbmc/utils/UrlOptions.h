@@ -1,27 +1,17 @@
-#pragma once
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2012-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
+
+#pragma once
+
+#include "utils/Variant.h"
 
 #include <map>
 #include <string>
-
-#include "utils/Variant.h"
 
 class CUrlOptions
 {
@@ -32,10 +22,10 @@ public:
   CUrlOptions(const std::string &options, const char *strLead = "");
   virtual ~CUrlOptions();
 
-  virtual void Clear() { m_options.clear(); m_strLead = ""; }
+  void Clear() { m_options.clear(); m_strLead.clear(); }
 
-  virtual const UrlOptions& GetOptions() const { return m_options; }
-  virtual std::string GetOptionsString(bool withLeadingSeperator = false) const;
+  const UrlOptions& GetOptions() const { return m_options; }
+  std::string GetOptionsString(bool withLeadingSeparator = false) const;
 
   virtual void AddOption(const std::string &key, const char *value);
   virtual void AddOption(const std::string &key, const std::string &value);
@@ -47,8 +37,8 @@ public:
   virtual void AddOptions(const CUrlOptions &options);
   virtual void RemoveOption(const std::string &key);
 
-  virtual bool HasOption(const std::string &key) const;
-  virtual bool GetOption(const std::string &key, CVariant &value) const;
+  bool HasOption(const std::string &key) const;
+  bool GetOption(const std::string &key, CVariant &value) const;
 
 protected:
   UrlOptions m_options;

@@ -1,21 +1,9 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "TimeUtils.h"
@@ -33,9 +21,14 @@
 #include <time.h>
 #endif
 
+namespace
+{
+unsigned int startTime = XbmcThreads::SystemClockMillis();
+}
+
 int64_t CurrentHostCounter(void)
 {
-#if   defined(TARGET_DARWIN)
+#if defined(TARGET_DARWIN)
   return( (int64_t)CVGetCurrentHostTime() );
 #elif defined(TARGET_WINDOWS) || defined(_XBOX)
   LARGE_INTEGER PerformanceCount;
@@ -43,7 +36,11 @@ int64_t CurrentHostCounter(void)
   return( (int64_t)PerformanceCount.QuadPart );
 #else
   struct timespec now;
+#if defined(CLOCK_MONOTONIC_RAW) && !defined(TARGET_ANDROID)
+  clock_gettime(CLOCK_MONOTONIC_RAW, &now);
+#else
   clock_gettime(CLOCK_MONOTONIC, &now);
+#endif // CLOCK_MONOTONIC_RAW && !TARGET_ANDROID
   return( ((int64_t)now.tv_sec * 1000000000L) + now.tv_nsec );
 #endif
 }
@@ -65,13 +62,28 @@ unsigned int CTimeUtils::frameTime = 0;
 
 void CTimeUtils::UpdateFrameTime()
 {
-  frameTime = XbmcThreads::SystemClockMillis();
+  unsigned int now = XbmcThreads::SystemClockMillis();
+  unsigned int duration = now - startTime;
+
+#ifdef _XBOX
+  frameTime = duration;
+#else
+  unsigned int currentTime = duration.count();
+  unsigned int last = frameTime;
+  while (frameTime < currentTime)
+  {
+    frameTime += (unsigned int)(1000 / CServiceBroker::GetWinSystem()->GetGfxContext().GetFPS());
+    // observe wrap around
+    if (frameTime < last)
+      break;
+  }
+#endif
 }
 
 unsigned int CTimeUtils::GetFrameTime()
 {
-  // we don't have an actual frametime on Xbox so just return timeGetTime()
 #ifdef _XBOX
+  // we don't have an actual frametime on Xbox so just return current time
   UpdateFrameTime();
 #endif
   return frameTime;
@@ -81,7 +93,13 @@ CDateTime CTimeUtils::GetLocalTime(time_t time)
 {
   CDateTime result;
 
-  tm *local = localtime(&time); // Conversion to local time
+  tm *local;
+#ifdef HAVE_LOCALTIME_R
+  tm res = {};
+  local = localtime_r(&time, &res); // Conversion to local time
+#else
+  local = localtime(&time); // Conversion to local time
+#endif
   /*
    * Microsoft implementation of localtime returns NULL if on or before epoch.
    * http://msdn.microsoft.com/en-us/library/bf12f0hc(VS.80).aspx
@@ -98,4 +116,3 @@ std::string CTimeUtils::WithoutSeconds(const std::string& hhmmss)
 {
   return hhmmss.substr(0, 5);
 }
-

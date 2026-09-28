@@ -1,34 +1,30 @@
 /*
- *      Copyright (C) 2015 Team Kodi
- *      http://kodi.tv
+ *  Copyright (C) 2015-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "rfft.h"
-#include "PlatformDefs.h" // nullptr
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
 #endif
 
+namespace
+{
+double filter(const kiss_fft_cpx& data, size_t size, bool windowed)
+{
+  return static_cast<double>(sqrt(data.r * data.r + data.i * data.i)) * 2.0 / size *
+         (windowed ? sqrt(8.0 / 3.0) : 1.0);
+}
+}
+
 RFFT::RFFT(int size, bool windowed) :
   m_size(size), m_windowed(windowed)
 {
-  m_cfg = kiss_fftr_alloc(m_size,0,nullptr,nullptr);
+  m_cfg = kiss_fftr_alloc(m_size,0,NULL,NULL);
 }
 
 RFFT::~RFFT()
@@ -62,20 +58,16 @@ void RFFT::calc(const float* input, float* output)
   kiss_fftr(m_cfg, &linput[0], &loutput[0]);
   kiss_fftr(m_cfg, &rinput[0], &routput[0]);
 
-  FilterFunctor filter(m_size, m_windowed);
-
   // interleave while taking magnitudes and normalizing
   for (size_t i=0;i<m_size/2;++i)
   {
-    output[2*i] = filter(loutput[i]);
-    output[2*i+1] = filter(routput[i]);
+    output[2*i] = filter(loutput[i], m_size, m_windowed);
+    output[2*i+1] = filter(routput[i], m_size, m_windowed);
   }
 }
-
-#include <iostream>
 
 void RFFT::hann(std::vector<kiss_fft_scalar>& data)
 {
   for (size_t i=0;i<data.size();++i)
-    data[i] *= 0.5*(1.0-cos(2*M_PI*i/(data.size()-1)));
+    data[i] *= 0.5f * (1.0f - cos(2.0f * static_cast<float>(M_PI) * i / (data.size() - 1)));
 }

@@ -9,6 +9,7 @@
 #include "PlayerUtils.h"
 
 #include "FileItem.h"
+#include "application/ApplicationPlayer.h"
 #include "music/MusicUtils.h"
 #include "utils/Variant.h"
 #include "video/VideoUtils.h"

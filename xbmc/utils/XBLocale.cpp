@@ -1,78 +1,66 @@
 /*
- *      Copyright (C) 2015 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2015-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "XBLocale.h"
+
 #include "utils/StringUtils.h"
 
 const CLocale CLocale::Empty;
 
 CLocale::CLocale()
-  : m_valid(false),
-    m_language(),
+  : m_language(),
     m_territory(),
     m_codeset(),
-    m_modifier()
+    m_modifier(),
+    m_valid(false)
 { }
 
 CLocale::CLocale(const std::string& language)
-  : m_valid(false),
-    m_language(),
+  : m_language(),
     m_territory(),
     m_codeset(),
-    m_modifier()
+    m_modifier(),
+    m_valid(false)
 {
   m_valid = ParseLocale(language, m_language, m_territory, m_codeset, m_modifier);
 }
 
 CLocale::CLocale(const std::string& language, const std::string& territory)
-  : m_valid(false),
-    m_language(language),
+  : m_language(language),
     m_territory(territory),
     m_codeset(),
-    m_modifier()
+    m_modifier(),
+    m_valid(false)
 {
   Initialize();
 }
 
 CLocale::CLocale(const std::string& language, const std::string& territory, const std::string& codeset)
-  : m_valid(false),
-    m_language(language),
+  : m_language(language),
     m_territory(territory),
     m_codeset(codeset),
-    m_modifier()
+    m_modifier(),
+    m_valid(false)
 {
   Initialize();
 }
 
 CLocale::CLocale(const std::string& language, const std::string& territory, const std::string& codeset, const std::string& modifier)
-  : m_valid(false),
-    m_language(language),
+  : m_language(language),
     m_territory(territory),
     m_codeset(codeset),
-    m_modifier(modifier)
+    m_modifier(modifier),
+    m_valid(false)
 {
   Initialize();
 }
 
-CLocale::~CLocale()
-{ }
+CLocale::~CLocale() {}
 
 CLocale CLocale::FromString(const std::string& locale)
 {
@@ -238,28 +226,28 @@ bool CLocale::ParseLocale(const std::string &locale, std::string &language, std:
   std::string tmp = locale;
 
   // look for the modifier after @
-  size_t pos = tmp.find("@");
+  size_t pos = tmp.find('@');
   if (pos != std::string::npos)
   {
     modifier = tmp.substr(pos + 1);
-    tmp = tmp.substr(0, pos);
+    tmp.resize(pos);
   }
 
   // look for the codeset after .
-  pos = tmp.find(".");
+  pos = tmp.find('.');
   if (pos != std::string::npos)
   {
     codeset = tmp.substr(pos + 1);
-    tmp = tmp.substr(0, pos);
+    tmp.resize(pos);
   }
 
   // look for the codeset after _
-  pos = tmp.find("_");
+  pos = tmp.find('_');
   if (pos != std::string::npos)
   {
     territory = tmp.substr(pos + 1);
     StringUtils::ToUpper(territory);
-    tmp = tmp.substr(0, pos);
+    tmp.resize(pos);
   }
 
   // what remains is the language

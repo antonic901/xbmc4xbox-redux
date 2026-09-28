@@ -1,32 +1,19 @@
-#ifndef CCHARSET_CONVERTER
-#define CCHARSET_CONVERTER
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
 #include "settings/lib/ISettingCallback.h"
-#include "threads/CriticalSection.h"
 #include "utils/GlobalsHandling.h"
 #include "utils/uXstrings.h"
 
 #include <string>
+#include <utility>
 #include <vector>
 
 class CSetting;
@@ -75,7 +62,6 @@ public:
    * @param forceLTRReadingOrder        force LTR reading order
    * @param failOnBadChar       if set to true function will fail on invalid character,
    *                            otherwise invalid character will be skipped
-   * @param visualToLogicalMap    is output mapping of positions in the visual string to the logical string
    * @return true on successful conversion, false on any error
    */
   static bool utf8ToUtf32Visual(const std::string& utf8StringSrc, std::u32string& utf32StringDst, bool bVisualBiDiFlip = false, bool forceLTRReadingOrder = false, bool failOnBadChar = false);
@@ -113,13 +99,14 @@ public:
    * @param logicalStringSrc    is source string with logical characters order
    * @param visualStringDst     is output string with visual characters order, empty on any error
    * @param forceLTRReadingOrder        force LTR reading order
+   * @param visualToLogicalMap    is output mapping of positions in the visual string to the logical string
    * @return true on success, false otherwise
    */
   static bool utf32logicalToVisualBiDi(const std::u32string& logicalStringSrc,
                                        std::u32string& visualStringDst,
                                        bool forceLTRReadingOrder = false,
                                        bool failOnBadString = false,
-                                       int* visualToLogicalMap = NULL);
+                                       int* visualToLogicalMap = nullptr);
   /**
    * Strictly convert wchar_t string (wstring) to UTF-32 string.
    * No RTL visual-logical transformation is performed.
@@ -137,7 +124,7 @@ public:
 
   static bool utf16LEtoW(const std::u16string& utf16String, std::wstring& wString);
 
-  static bool subtitleCharsetToW(const std::string& stringSrc, std::wstring& wStringDst);
+  static bool subtitleCharsetToUtf8(const std::string& stringSrc, std::string& utf8StringDst);
 
   static bool utf8ToStringCharset(const std::string& utf8StringSrc, std::string& stringDst);
 
@@ -151,13 +138,26 @@ public:
 
   static bool ToUtf8(const std::string& strSourceCharset, const std::string& stringSrc, std::string& utf8StringDst, bool failOnBadChar = false);
 
-  static bool isValidUtf8(const std::string& str);
-
-  static bool isValidUtf8(const char* buf, unsigned int len);
-
   static bool wToUTF8(const std::wstring& wStringSrc, std::string& utf8StringDst, bool failOnBadChar = false);
+
+  /*!
+   *  \brief Convert UTF-16BE (u16string) string to UTF-8 string.
+   *  No RTL visual-logical transformation is performed.
+   *  \param utf16StringSrc Is source UTF-16BE u16string string to convert
+   *  \param utf8StringDst Is output UTF-8 string, empty on any error
+   *  \return True on successful conversion, false on any error
+   */
   static bool utf16BEtoUTF8(const std::u16string& utf16StringSrc, std::string& utf8StringDst);
+
+  /*!
+   *  \brief Convert UTF-16BE (string) string to UTF-8 string.
+   *  No RTL visual-logical transformation is performed.
+   *  \param utf16StringSrc Is source UTF-16BE string to convert
+   *  \param utf8StringDst Is output UTF-8 string, empty on any error
+   *  \return True on successful conversion, false on any error
+   */
   static bool utf16BEtoUTF8(const std::string& utf16StringSrc, std::string& utf8StringDst);
+
   static bool utf16LEtoUTF8(const std::u16string& utf16StringSrc, std::string& utf8StringDst);
   static bool ucs2ToUTF8(const std::u16string& ucs2StringSrc, std::string& utf8StringDst);
 
@@ -192,12 +192,10 @@ public:
 private:
   static void resetUserCharset(void);
   static void resetSubtitleCharset(void);
-  static void resetKaraokeCharset(void);
 
   static const int m_Utf8CharMinSize, m_Utf8CharMaxSize;
   class CInnerConverter;
 };
 
-XBMC_GLOBAL(CCharsetConverter,g_charsetConverter);
-
-#endif
+XBMC_GLOBAL_REF(CCharsetConverter,g_charsetConverter);
+#define g_charsetConverter XBMC_GLOBAL_USE(CCharsetConverter)

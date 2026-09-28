@@ -1,30 +1,20 @@
 /*
-*      Copyright (C) 2013 Team XBMC
-*      http://xbmc.org
-*
-*  This Program is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2, or (at your option)
-*  any later version.
-*
-*  This Program is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-*  GNU General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with XBMC; see the file COPYING.  If not, see
-*  <http://www.gnu.org/licenses/>.
-*
-*/
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 
-#include <algorithm>
 #include "CharsetDetection.h"
+
+#include "LangInfo.h"
 #include "utils/CharsetConverter.h"
 #include "utils/StringUtils.h"
 #include "utils/Utf8Utils.h"
-#include "LangInfo.h"
 #include "utils/log.h"
+
+#include <algorithm>
 
 /* XML declaration can be virtually any size (with many-many whitespaces)
  * but for in real world we don't need to process megabytes of data
@@ -349,7 +339,8 @@ bool CCharsetDetection::ConvertHtmlToUtf8(const std::string& htmlContent, std::s
   else
     usedHtmlCharset = "WINDOWS-1252";
 
-  CLog::Log(LOGWARNING, "%s: Can't correctly convert to UTF-8 charset, converting as \"%s\"", __FUNCTION__, usedHtmlCharset.c_str());
+  CLog::Log(LOGWARNING, "%s: Can't correctly convert to UTF-8 charset, converting as \"%s\"",
+            __FUNCTION__, usedHtmlCharset.c_str());
   g_charsetConverter.ToUtf8(usedHtmlCharset, htmlContent, converted, false);
 
   return false;
@@ -420,7 +411,8 @@ bool CCharsetDetection::ConvertPlainTextToUtf8(const std::string& textContent, s
   else
     usedCharset = "WINDOWS-1252";
 
-  CLog::Log(LOGWARNING, "%s: Can't correctly convert to UTF-8 charset, converting as \"%s\"", __FUNCTION__, usedCharset.c_str());
+  CLog::Log(LOGWARNING, "%s: Can't correctly convert to UTF-8 charset, converting as \"%s\"",
+            __FUNCTION__, usedCharset.c_str());
   g_charsetConverter.ToUtf8(usedCharset, textContent, converted, false);
 
   return false;
@@ -594,7 +586,8 @@ size_t CCharsetDetection::GetHtmlAttribute(const std::string& htmlContent, size_
   return std::string::npos; // rest of htmlContent was attribute value
 }
 
-std::string CCharsetDetection::ExtractEncodingFromHtmlMeta(std::string metaContent, size_t pos /*= 0*/)
+std::string CCharsetDetection::ExtractEncodingFromHtmlMeta(const std::string& metaContent,
+                                                           size_t pos /*= 0*/)
 {
   size_t len = metaContent.length();
   if (pos >= len)

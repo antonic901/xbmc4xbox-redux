@@ -1,23 +1,12 @@
-#pragma once
 /*
-*      Copyright (C) 2014 Team XBMC
-*      http://xbmc.org
-*
-*  This Program is free software; you can redistribute it and/or modify
-*  it under the terms of the GNU General Public License as published by
-*  the Free Software Foundation; either version 2, or (at your option)
-*  any later version.
-*
-*  This Program is distributed in the hope that it will be useful,
-*  but WITHOUT ANY WARRANTY; without even the implied warranty of
-*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-*  GNU General Public License for more details.
-*
-*  You should have received a copy of the GNU General Public License
-*  along with XBMC; see the file COPYING.  If not, see
-*  <http://www.gnu.org/licenses/>.
-*
-*/
+ *  Copyright (C) 2014-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
+
+#pragma once
 
 // macros for gcc, clang & others
 #ifndef PARAM1_PRINTF_FORMAT
@@ -29,17 +18,22 @@
 // for use in functions that take printf format string as second parameter and additional printf parameters as third parameter
 // for example: bool log_string(int logLevel, const char* format, ...) PARAM2_PRINTF_FORMAT;
 // note: all non-static class member functions take pointer to class object as hidden first parameter
-// another example: class A { int myprintf(const char* format, ...) PARAM2_PRINTF_FORMAT; };
 #define PARAM2_PRINTF_FORMAT __attribute__((format(printf,2,3)))
 
 // for use in functions that take printf format string as third parameter and additional printf parameters as fourth parameter
 // note: all non-static class member functions take pointer to class object as hidden first parameter
-// for example: class A { bool log_string(int logLevel, const char* format, ...) PARAM3_PRINTF_FORMAT; };
+// for example: class A { bool log_string(int logLevel, const char* functionName, const char* format, ...) PARAM3_PRINTF_FORMAT; }
 #define PARAM3_PRINTF_FORMAT __attribute__((format(printf,3,4)))
+
+// for use in functions that take printf format string as fourth parameter and additional printf parameters as fifth parameter
+// note: all non-static class member functions take pointer to class object as hidden first parameter
+// for example: class A { bool log_string(int logLevel, const char* functionName, int component, const char* format, ...) PARAM4_PRINTF_FORMAT; }
+#define PARAM4_PRINTF_FORMAT __attribute__((format(printf,4,5)))
 #else  // ! __GNUC__
 #define PARAM1_PRINTF_FORMAT
 #define PARAM2_PRINTF_FORMAT
 #define PARAM3_PRINTF_FORMAT
+#define PARAM4_PRINTF_FORMAT
 #endif // ! __GNUC__
 #endif // PARAM1_PRINTF_FORMAT
 

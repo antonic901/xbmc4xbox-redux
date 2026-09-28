@@ -1,42 +1,28 @@
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "AlarmClock.h"
-#include "messaging/ApplicationMessenger.h"
-#include "LocalizeStrings.h"
-#include "threads/SingleLock.h"
-#include "utils/log.h"
+
+#include "ServiceBroker.h"
 #include "dialogs/GUIDialogKaiToast.h"
+#include "guilib/LocalizeStrings.h"
+#include "log.h"
+#include "messaging/ApplicationMessenger.h"
+#include "utils/StringUtils.h"
 
-CAlarmClock g_alarmClock;
+#include <utility>
 
-using namespace KODI::MESSAGING;
-using namespace std;
-
-CAlarmClock::CAlarmClock() : CThread("CAlarmClock"), m_bIsRunning(false)
+CAlarmClock::CAlarmClock() : CThread("AlarmClock")
 {
+  m_bIsRunning = false;
 }
 
-CAlarmClock::~CAlarmClock()
-{
-}
+CAlarmClock::~CAlarmClock() {}
 
 void CAlarmClock::Start(const std::string& strName, float n_secs, const std::string& strCommand, bool bSilent /* false */, bool bLoop /* false */)
 {
@@ -45,7 +31,7 @@ void CAlarmClock::Start(const std::string& strName, float n_secs, const std::str
   StringUtils::ToLower(lowerName);
   Stop(lowerName);
   SAlarmClockEvent event;
-  event.m_fSecs = n_secs;
+  event.m_fSecs = static_cast<double>(n_secs);
   event.m_strCommand = strCommand;
   event.m_loop = bLoop;
   if (!m_bIsRunning)
@@ -55,30 +41,28 @@ void CAlarmClock::Start(const std::string& strName, float n_secs, const std::str
     m_bIsRunning = true;
   }
 
-  std::string strAlarmClock;
-  std::string strStarted;
-  if (event.m_strCommand == "xbmc.shutdown" || event.m_strCommand == "xbmc.shutdown()")
+  uint32_t labelAlarmClock;
+  uint32_t labelStarted;
+  if (StringUtils::EqualsNoCase(strName, "shutdowntimer"))
   {
-    strAlarmClock = g_localizeStrings.Get(20144);
-    strStarted = g_localizeStrings.Get(20146);
+    labelAlarmClock = 20144;
+    labelStarted = 20146;
   }
   else
   {
-    strAlarmClock = g_localizeStrings.Get(13208);
-    strStarted = g_localizeStrings.Get(13210);
+    labelAlarmClock = 13208;
+    labelStarted = 13210;
   }
 
-  std::string strMessage;
-
-  strMessage = StringUtils::Format(strStarted.c_str(),static_cast<int>(event.m_fSecs)/60,static_cast<int>(event.m_fSecs)%60);
-
-  if(!bSilent)
-     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, strAlarmClock, strMessage);
+  if (!bSilent)
+  {
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(labelAlarmClock), g_localizeStrings.Get(labelStarted));
+  }
 
   event.watch.StartZero();
   CSingleLock lock(m_events);
   m_event.insert(make_pair(lowerName,event));
-  CLog::Log(LOGDEBUG,"started alarm with name: %s",lowerName.c_str());
+  CLog::Log(LOGDEBUG, "started alarm with name: %s", lowerName.c_str());
 }
 
 void CAlarmClock::Stop(const std::string& strName, bool bSilent /* false */)
@@ -87,36 +71,43 @@ void CAlarmClock::Stop(const std::string& strName, bool bSilent /* false */)
 
   std::string lowerName(strName);
   StringUtils::ToLower(lowerName);          // lookup as lowercase only
-  map<std::string,SAlarmClockEvent>::iterator iter = m_event.find(lowerName);
+  std::map<std::string,SAlarmClockEvent>::iterator iter = m_event.find(lowerName);
 
   if (iter == m_event.end())
     return;
 
-  SAlarmClockEvent& event = iter->second;
-
-  std::string strAlarmClock;
-  if (event.m_strCommand == "xbmc.shutdown" || event.m_strCommand == "xbmc.shutdown()")
-    strAlarmClock = g_localizeStrings.Get(20144);
+  uint32_t labelAlarmClock;
+  if (StringUtils::EqualsNoCase(strName, "shutdowntimer"))
+    labelAlarmClock = 20144;
   else
-    strAlarmClock = g_localizeStrings.Get(13208);
+    labelAlarmClock = 13208;
 
   std::string strMessage;
-  if( iter->second.watch.GetElapsedSeconds() > iter->second.m_fSecs )
+  float       elapsed     = 0.f;
+
+  if (iter->second.watch.IsRunning())
+    elapsed = iter->second.watch.GetElapsedSeconds();
+
+  if (elapsed > static_cast<float>(iter->second.m_fSecs))
     strMessage = g_localizeStrings.Get(13211);
   else
   {
-    float remaining = static_cast<float>(iter->second.m_fSecs-iter->second.watch.GetElapsedSeconds());
-    std::string strStarted = g_localizeStrings.Get(13212);
-    strMessage = StringUtils::Format(strStarted.c_str(),static_cast<int>(remaining)/60,static_cast<int>(remaining)%60);
+    float remaining = static_cast<float>(iter->second.m_fSecs) - elapsed;
+    strMessage = StringUtils::Format(g_localizeStrings.Get(13212).c_str(), static_cast<int>(remaining) / 60,
+                                     static_cast<int>(remaining) % 60);
   }
-  if (iter->second.m_strCommand.empty() || iter->second.m_fSecs > iter->second.watch.GetElapsedSeconds())
+
+  if (iter->second.m_strCommand.empty() || static_cast<float>(iter->second.m_fSecs) > elapsed)
   {
-    if(!bSilent)
-      CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, strAlarmClock, strMessage);
+    if (!bSilent)
+    {
+      CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, g_localizeStrings.Get(labelAlarmClock), strMessage);
+    }
   }
   else
   {
-    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, NULL, iter->second.m_strCommand);
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr,
+                                               iter->second.m_strCommand);
     if (iter->second.m_loop)
     {
       iter->second.watch.Reset();
@@ -132,11 +123,12 @@ void CAlarmClock::Process()
 {
   while( !m_bStop)
   {
-    std::string strLast = "";
+    std::string strLast;
     {
       CSingleLock lock(m_events);
-      for (map<std::string,SAlarmClockEvent>::iterator iter=m_event.begin();iter != m_event.end(); ++iter)
-        if (iter->second.watch.GetElapsedSeconds() >= iter->second.m_fSecs)
+      for (std::map<std::string,SAlarmClockEvent>::iterator iter=m_event.begin();iter != m_event.end(); ++iter)
+        if (iter->second.watch.IsRunning() &&
+            iter->second.watch.GetElapsedSeconds() >= static_cast<float>(iter->second.m_fSecs))
         {
           Stop(iter->first);
           if ((iter = m_event.find(strLast)) == m_event.end())
@@ -145,6 +137,7 @@ void CAlarmClock::Process()
         else
           strLast = iter->first;
     }
-    Sleep(100);
+    CThread::Sleep(100);
   }
 }
+

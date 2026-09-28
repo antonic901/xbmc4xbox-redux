@@ -1,39 +1,26 @@
-#pragma once
-
 /*
- *      Copyright (C) 2005-2013 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
+#pragma once
+
+#include "utils/ColorUtils.h"
+
+#include <algorithm>
 #include <math.h>
 #include <memory>
 #include <string.h>
-#include <stdint.h>
-#include <algorithm>
 
 #ifdef __GNUC__
-// under gcc, inline will only take place if optimizations are applied (-O). this will force inline even whith optimizations.
+// under gcc, inline will only take place if optimizations are applied (-O). this will force inline even with optimizations.
 #define XBMC_FORCE_INLINE __attribute__((always_inline))
 #else
 #define XBMC_FORCE_INLINE
 #endif
-
-typedef uint32_t color_t;
 
 class TransformMatrix
 {
@@ -262,9 +249,9 @@ public:
     return m[2][0] * x + m[2][1] * y + m[2][2] * z + m[2][3];
   }
 
-  inline color_t TransformAlpha(color_t colour) const XBMC_FORCE_INLINE
+  inline UTILS::COLOR::Color TransformAlpha(UTILS::COLOR::Color color) const XBMC_FORCE_INLINE
   {
-    return (color_t)(colour * alpha);
+    return static_cast<UTILS::COLOR::Color>(color * alpha);
   }
 
   inline UTILS::COLOR::Color TransformColor(UTILS::COLOR::Color color) const XBMC_FORCE_INLINE

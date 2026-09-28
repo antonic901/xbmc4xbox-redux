@@ -105,7 +105,7 @@ public:
   float GetPixelRatio(RESOLUTION iRes) const;
   void CaptureStateBlock();
   void ApplyStateBlock();
-  void Clear(color_t color = 0);
+  void Clear(UTILS::COLOR::Color color = 0);
 
   // output scaling
   const RESOLUTION_INFO GetResInfo() const;
@@ -136,9 +136,9 @@ public:
 
   inline float GetGUIScaleX() const { return m_finalTransform.scaleX; }
   inline float GetGUIScaleY() const { return m_finalTransform.scaleY; }
-  inline DWORD MergeAlpha(color_t color) const
+  inline DWORD MergeAlpha(UTILS::COLOR::Color color) const
   {
-    color_t alpha = m_finalTransform.matrix.TransformAlpha((color >> 24) & 0xff);
+    UTILS::COLOR::Color alpha = m_finalTransform.matrix.TransformAlpha((color >> 24) & 0xff);
     if (alpha > 255) alpha = 255;
     return ((alpha << 24) & 0xff000000) | (color & 0xffffff);
   }

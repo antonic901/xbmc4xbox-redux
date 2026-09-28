@@ -8,6 +8,10 @@
 
 #pragma once
 
+#include "system.h" // <xtl.h>
+#include <boost/shared_ptr.hpp>
+
+class CApplicationPlayer;
 class CFileItem;
 
 class CPlayerUtils

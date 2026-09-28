@@ -15,6 +15,7 @@
 #include "guilib/GUIFont.h"
 #include "input/actions/ActionIDs.h"
 #include "swighelper.h"
+#include "utils/ColorUtils.h"
 
 #include <vector>
 
@@ -705,7 +706,7 @@ namespace XBMCAddon
 #endif
 
 #ifndef SWIG
-      color_t color;
+      UTILS::COLOR::Color color;
       std::string strTextureUp;
       std::string strTextureDown;
       std::string strTextureUpFocus;
@@ -857,8 +858,8 @@ namespace XBMCAddon
 
       std::string strFont;
       std::string strText;
-      color_t textColor;
-      color_t disabledColor;
+      UTILS::COLOR::Color textColor;
+      UTILS::COLOR::Color disabledColor;
       uint32_t align;
       bool bHasPath;
       int iAngle;
@@ -1059,8 +1060,8 @@ namespace XBMCAddon
       std::string strText;
       std::string strTextureFocus;
       std::string strTextureNoFocus;
-      color_t textColor;
-      color_t disabledColor;
+      UTILS::COLOR::Color textColor;
+      UTILS::COLOR::Color disabledColor;
       uint32_t align;
       bool bIsPassword;
 
@@ -1653,8 +1654,8 @@ namespace XBMCAddon
       std::string strFont;
       AddonClass::Ref<ControlSpin> pControlSpin;
 
-      color_t textColor;
-      color_t selectedColor;
+      UTILS::COLOR::Color textColor;
+      UTILS::COLOR::Color selectedColor;
       std::string strTextureButton;
       std::string strTextureButtonFocus;
 
@@ -1808,7 +1809,7 @@ namespace XBMCAddon
 
 #ifndef SWIG
       std::string strFont;
-      color_t textColor;
+      UTILS::COLOR::Color textColor;
       std::vector<std::string> vecLabels;
       uint32_t align;
 
@@ -1994,7 +1995,7 @@ namespace XBMCAddon
 
 #ifndef SWIG
       std::string strFont;
-      color_t textColor;
+      UTILS::COLOR::Color textColor;
 
       SWIGHIDDENVIRTUAL CGUIControl* Create();
 
@@ -2115,7 +2116,7 @@ namespace XBMCAddon
 
       std::string strFileName;
       int aspectRatio;
-      color_t colorDiffuse;
+      UTILS::COLOR::Color colorDiffuse;
 
       SWIGHIDDENVIRTUAL CGUIControl* Create();
 #endif
@@ -2258,7 +2259,7 @@ namespace XBMCAddon
       std::string strTextureBg;
       std::string strTextureOverlay;
       int aspectRatio;
-      color_t colorDiffuse;
+      UTILS::COLOR::Color colorDiffuse;
 
       SWIGHIDDENVIRTUAL CGUIControl* Create();
       ControlProgress() :
@@ -2474,10 +2475,10 @@ namespace XBMCAddon
 
       int textOffsetX;
       int textOffsetY;
-      color_t align;
+      UTILS::COLOR::Color align;
       std::string strFont;
-      color_t textColor;
-      color_t disabledColor;
+      UTILS::COLOR::Color textColor;
+      UTILS::COLOR::Color disabledColor;
       int iAngle;
       int shadowColor;
       int focusedColor;
@@ -2791,14 +2792,14 @@ namespace XBMCAddon
       std::string strTextureRadioOffNoFocus;
       std::string strTextureRadioOnDisabled;
       std::string strTextureRadioOffDisabled;
-      color_t textColor;
-      color_t disabledColor;
+      UTILS::COLOR::Color textColor;
+      UTILS::COLOR::Color disabledColor;
       int textOffsetX;
       int textOffsetY;
      uint32_t align;
       int iAngle;
-      color_t shadowColor;
-      color_t focusedColor;
+      UTILS::COLOR::Color shadowColor;
+      UTILS::COLOR::Color focusedColor;
 
       SWIGHIDDENVIRTUAL CGUIControl* Create();
 
