@@ -18,17 +18,17 @@
  *
  */
 
+import groovy.xml.XmlParser
 import groovy.xml.XmlUtil
-import org.apache.commons.lang.StringEscapeUtils
+import org.apache.commons.text.StringEscapeUtils
 
-import groovy.text.SimpleTemplateEngine
 import groovy.text.SimpleTemplateEngine
 import java.util.regex.Pattern
 
 /**
  * This class contains a series of helper methods for parsing a xbmc addon spec xml file. It is intended to be
  * used from a bindings template.
- * 
+ *
  * @author jim
  *
  */
@@ -43,7 +43,7 @@ public class Helper
    public static String newline = System.getProperty("line.separator");
    public static File curTemplateFile = null;
 
-   public static void setTempateFile(File templateFile) { curTemplateFile = templateFile }
+   public static void setTemplateFile(File templateFile) { curTemplateFile = templateFile }
 
    /**
     * In order to use any of the typemap helper features, the Helper class needs to be initialized with
@@ -57,7 +57,7 @@ public class Helper
     public static void setup(def template,List pclasses, Map poutTypemap, def defaultOutTypemap,
                              Map pinTypemap, def defaultInTypemap)
     {
-      setTempateFile(template.binding.templateFile)
+      setTemplateFile(template.binding.templateFile)
       classes = pclasses ? pclasses : []
       if (poutTypemap) outTypemap.putAll(poutTypemap)
       if (defaultOutTypemap) defaultOutTypeConversion = defaultOutTypemap
@@ -77,7 +77,7 @@ public class Helper
   public static void setDoxygenXmlDir(File dir) { doxygenXmlDir = dir }
 
   private static String retrieveDocStringFromDoxygen(Node methodOrClass)
-  { 
+  {
     if (doxygenXmlDir == null)
       return null
 
@@ -104,7 +104,7 @@ public class Helper
       doc = docspec.compounddef[0].detaileddescription[0]
     else // it's a method of some sort ... or it better be
     {
-      Node memberdef = docspec.depthFirst().find { 
+      Node memberdef = docspec.depthFirst().find {
         return (it instanceof String) ? false :
           ((it.name() == 'memberdef' && (it.@kind == 'function' || it.@kind == 'variable') && it.@id.startsWith(doxygenId)) &&
            (it.name != null && it.name.text().trim() == methodOrClass.@sym_name))
@@ -114,13 +114,13 @@ public class Helper
     }
 
     if (doc != null)
-    { 
+    {
       def indent = '    '
       def curIndent = ''
       def prevIndent = ''
 
       def handleDoc
-      handleDoc = { 
+      handleDoc = {
         if (it instanceof String)
           ret += it
         else // it's a Node
@@ -171,7 +171,7 @@ public class Helper
 
    /**
     * <p>This method uses the previously set outTypemap and defaultOutTypemap to produce the chunk of code
-    * that will be used to return the method invocation result to the scripting language. For example, in 
+    * that will be used to return the method invocation result to the scripting language. For example, in
     * python, if the return type from the method is a long, then the OutConversion could look something like:</p>
     * <code>
     *    result = PyInt_FromLong(thingReturnedFromMethod);
@@ -242,7 +242,7 @@ public class Helper
       }
 
       Map bindings = ['result' : apiName, 'api' : 'apiResult', 'type' : "${apiType}",
-                      'method' : method, 'helper' : Helper.class, 
+                      'method' : method, 'helper' : Helper.class,
                       'swigTypeParser' : SwigTypeParser.class,
                       'sequence' : seq ]
       if (className) bindings['classname'] = className
@@ -260,14 +260,14 @@ public class Helper
       {
         File cur = (File)convertTemplate
         if (!cur.exists()) // see if the file is relative to the template file
-        { 
+        {
           File parent = curTemplateFile.getParentFile()
           // find the relative path to the convertTemplate
           File cwd = new File('.').getCanonicalFile()
           String relative = cwd.getAbsoluteFile().toURI().relativize(convertTemplate.getAbsoluteFile().toURI()).getPath()
           convertTemplate = new File(parent,relative)
 
-          // This is a fallback case which is hit occationally on OSX as a result
+          // This is a fallback case which is hit occasionally on OSX as a result
           // of case mismatches between the two paths in the relativize call above.
           if (!convertTemplate.exists())
             convertTemplate = new File(parent,cur.toString())
@@ -291,7 +291,7 @@ public class Helper
     * </code>
     * @param apiType - is the Swig typecode that describes the parameter type from the native method
     * @param apiName - is the name of the parameter from the method parameter list in the api
-    * @param slName - is the name of the varialbe that holds the parameter from the scripting language
+    * @param slName - is the name of the variable that holds the parameter from the scripting language
     * @param method - is the node from the module xml that contains the method description
     * @return the code chunk as a string ready to be placed into the generated code.
     */
@@ -312,9 +312,9 @@ public class Helper
     *    if (${slarg}) PyXBMCGetUnicodeString(${api},${slarg},"${api}");
     * </code>
     * @param apiType - is the Swig typecode that describes the parameter type from the native method
-    * @param apiName - is the name of the varialbe that holds the api parameter
+    * @param apiName - is the name of the variable that holds the api parameter
     * @param paramName - is the name of the parameter from the method parameter list in the api
-    * @param slName - is the name of the varialbe that holds the parameter from the scripting language
+    * @param slName - is the name of the variable that holds the parameter from the scripting language
     * @param method - is the node from the module xml that contains the method description
     * @return the code chunk as a string ready to be placed into the generated code.
     */
@@ -372,7 +372,7 @@ public class Helper
                   'type': "${apiType}", 'ltype': "${apiLType}",
                   'slarg' : "${slName}", 'api' : "${apiName}",
                   'param' : "${paramName}",
-                  'method' : method, 'helper' : Helper.class, 
+                  'method' : method, 'helper' : Helper.class,
                   'swigTypeParser' : SwigTypeParser.class,
                   'sequence' : seq
                ]
@@ -390,14 +390,14 @@ public class Helper
          {
            File cur = (File)convertTemplate
            if (!cur.exists()) // see if the file is relative to the template file
-           { 
+           {
              File parent = curTemplateFile.getParentFile()
              // find the relative path to the convertTemplate
              File cwd = new File('.').getCanonicalFile()
              String relative = cwd.getAbsoluteFile().toURI().relativize(convertTemplate.getAbsoluteFile().toURI()).getPath()
              convertTemplate = new File(parent,relative)
 
-             // This is a fallback case which is hit occationally on OSX as a result
+             // This is a fallback case which is hit occasionally on OSX as a result
              // of case mismatches between the two paths in the relativize call above.
              if (!convertTemplate.exists())
                convertTemplate = new File(parent,cur.toString())
@@ -417,13 +417,13 @@ public class Helper
 
    /**
     * <p>Transform a Swig generated xml file into something more manageable. For the most part this method will:</p>
-    * 
+    *
     * <li>1) Make all pertinent 'attributelist' elements actually be attributes of the parent element while
     * an attribute with the name 'name' will become that parent element name.</li>
     * <li>2) Filter out unused attributes</li>
     * <li>3) Filter out the automatically included 'swig'swg'</li>
     * <li>4) Flatten out the remaining 'include' elements</li>
-    * <li>5) Removes extraneous default argument function/method Node</li> 
+    * <li>5) Removes extraneous default argument function/method Node</li>
     * <li>6) Converts all type tables to a single entry under the main module node removing all 1-1 mappings.</li>
     * <li>7) Removes all non-public non-constructor methods.</li>
     * @param swigxml is the raw swig output xml document
@@ -489,7 +489,7 @@ public class Helper
          }
          it.parent().remove(it)
       }
-      
+
       // now remove all non-public methods, but leave constructors
       List allMethods = ret.depthFirst().findAll({ it.name() == 'function' || it.name() == 'destructor' || it.name() == 'constructor'})
       allMethods.each {
@@ -502,7 +502,7 @@ public class Helper
              new Node(it,'doc',['value' : doc])
          }
       }
-      
+
       // now remove all non-public variables
       List allVariables = ret.depthFirst().findAll({ it.name() == 'variable' })
       allVariables.each {
@@ -550,35 +550,35 @@ public class Helper
    {
       return (hasDefinedConstructor(clazz) && clazz.constructor[0].@access != null && clazz.constructor[0].@access != 'public')
    }
-   
+
    /**
     * <p>This will look through the entire module and look up a class node by name. It will return null if
     * that class node isn't found. It's meant to be used to look up base classes from a base class list
     * so it's fairly robust. It goes through the following rules:</p>
-    * 
+    *
     * <li>Does the FULL classname (considering the namespace) match the name provided.</li>
     * <li>Does the FULL classname match the reference nodes namespace + '::' + the provided classname.</li>
     * <li>Does the class node's name (which may contain the full classname) match the classname provided.</li>
-    * 
+    *
     * <p>Note, this method is not likely to find the classnode if you just pass a simple name and
-    * no referenceNode in the case where namespaces are used extensively.</p> 
+    * no referenceNode in the case where namespaces are used extensively.</p>
     */
    public static Node findClassNodeByName(Node module, String classname, Node referenceNode = null)
    {
       return module.depthFirst().findAll({ it.name() == 'class' }).find {
          // first check to see if this FULL class name matches
          if (findFullClassName(it).trim() == classname.trim()) return true
-            
+
          // now check to see if it matches the straight name considering the reference node
          if (referenceNode != null && (findNamespace(referenceNode) + classname) == findFullClassName(it)) return true
-         
+
          // now just see if it matches the straight name
          if (it.@name == classname) return true
-         
+
          return false
       }
    }
-   
+
    /**
     * Find me the class node that this node either is, or is within.
     * If this node is not within a class node then it will return null.
@@ -588,7 +588,7 @@ public class Helper
       if (node.name() == 'class') return node
       return node.parent() == null ? null : findClassNode(node.parent())
    }
-   
+
    /**
     * If this node is a class node, or a child of a class name (for example, a method) then
     * the full classname, with the namespace will be returned. Otherwise, null.
@@ -649,8 +649,8 @@ public class Helper
 
    /**
     * Group together overloaded methods into a map keyed by the first method's id. Each
-    * entry in this map contains a list of nodes that represent overloaded versions of 
-    * the same method. 
+    * entry in this map contains a list of nodes that represent overloaded versions of
+    * the same method.
     */
    public static Map functionNodesByOverloads(Node module)
    {
@@ -682,7 +682,7 @@ public class Helper
 
    /**
     * Because the return type is a combination of the function 'decl' and the
-    * function 'type,' this method will construct a valid Swig typestring from 
+    * function 'type,' this method will construct a valid Swig typestring from
     * the two.
     */
    public static String getReturnSwigType(Node method)
@@ -718,7 +718,7 @@ public class Helper
    }
 
    /**
-    * Swig has 'insert' nodes in it's parse tree that contain code chunks that are 
+    * Swig has 'insert' nodes in it's parse tree that contain code chunks that are
     * meant to be inserted into various positions in the generated code. This method
     * will extract the nodes that refer to the specific section asked for. See the
     * Swig documentation for more information.
@@ -730,10 +730,10 @@ public class Helper
 
    public static String unescape(Node insertSection) { return unescape(insertSection.@code) }
 
-   public static String unescape(String insertSection) { return StringEscapeUtils.unescapeHtml(insertSection) }
+   public static String unescape(String insertSection) { return StringEscapeUtils.unescapeHtml4(insertSection) }
 
    public static boolean isDirector(Node method)
-   { 
+   {
      Node clazz = findClassNode(method)
      if (!clazz || !clazz.@feature_director)
        return false
@@ -746,17 +746,17 @@ public class Helper
 
    /**
     * This method will search from the 'searchFrom' Node up to the root
-    *  looking for a %feature("knownbasetypes") declaration that the given 'type' is 
+    *  looking for a %feature("knownbasetypes") declaration that the given 'type' is
     *  known for 'searchFrom' Node.
     */
-   public static boolean isKnownBaseType(String type, Node searchFrom) 
+   public static boolean isKnownBaseType(String type, Node searchFrom)
    {
      return hasFeatureSetting(type,searchFrom,'feature_knownbasetypes',{ it.split(',').find({ it.trim() == type }) != null })
    }
 
    /**
     * This method will search from the 'searchFrom' Node up to the root
-    *  looking for a %feature("knownapitypes") declaration that the given 'type' is 
+    *  looking for a %feature("knownapitypes") declaration that the given 'type' is
     *  known for 'searchFrom' Node.
     */
    public static String isKnownApiType(String type, Node searchFrom)
@@ -765,14 +765,14 @@ public class Helper
      String namespace = findNamespace(searchFrom,'::',false)
      String lastMatch = null
      hasFeatureSetting(type,searchFrom,'feature_knownapitypes',{ it.split(',').find(
-       { 
+       {
          if (it.trim() == rootType)
          {
            lastMatch = rootType
            return true
          }
-         // we assume the 'type' is defined within namespace and 
-         //  so we can walk up the namespace appending the type until 
+         // we assume the 'type' is defined within namespace and
+         //  so we can walk up the namespace appending the type until
          //  we find a match.
          while (namespace != '')
          {

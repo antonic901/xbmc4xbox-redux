@@ -2793,19 +2793,19 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						Name="generated"
 						Filter="">
 						<File
-							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmc.cpp">
+							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmc.i.cpp">
 						</File>
 						<File
-							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcaddon.cpp">
+							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcaddon.i.cpp">
 						</File>
 						<File
-							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcgui.cpp">
+							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcgui.i.cpp">
 						</File>
 						<File
-							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcplugin.cpp">
+							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcplugin.i.cpp">
 						</File>
 						<File
-							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcvfs.cpp">
+							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcvfs.i.cpp">
 						</File>
 					</Filter>
 				</Filter>
