@@ -12,26 +12,29 @@
 #include "AddonString.h"
 #include "Alternative.h"
 #include "ListItem.h"
+#include "dialogs/GUIDialogBoxBase.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "dialogs/GUIDialogProgress.h"
+#include "swighelper.h"
 
+#include <boost/move/unique_ptr.hpp>
 #include <string>
 #include <vector>
 
-#define INPUT_ALPHANUM        0
-#define INPUT_NUMERIC         1
-#define INPUT_DATE            2
-#define INPUT_TIME            3
-#define INPUT_IPADDRESS       4
-#define INPUT_PASSWORD        5
-
-#define PASSWORD_VERIFY       1
-#define ALPHANUM_HIDE_INPUT   2
-
 namespace XBMCAddon
 {
-  namespace xbmcgui
-  {
+namespace xbmcgui
+{
+const int INPUT_ALPHANUM = 0;
+const int INPUT_NUMERIC = 1;
+const int INPUT_DATE = 2;
+const int INPUT_TIME = 3;
+const int INPUT_IPADDRESS = 4;
+const int INPUT_PASSWORD = 5;
+
+const int PASSWORD_VERIFY = 1;
+const int ALPHANUM_HIDE_INPUT = 2;
+
     ///
     /// \defgroup python_Dialog Dialog
     /// \ingroup python_xbmcgui
@@ -52,28 +55,34 @@ namespace XBMCAddon
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_Dialog
-      /// \python_func{ xbmcgui.Dialog().yesno(heading, line1[, line2, line3, nolabel, yeslabel, autoclose]) }
-      ///------------------------------------------------------------------------
-      ///
+      /// \python_func{ xbmcgui.Dialog().yesno(heading, message, [nolabel, yeslabel, autoclose]) }
       /// **Yes / no dialog**
       ///
       /// The Yes / No dialog can be used to inform the user about questions and
       /// get the answer.
       ///
       /// @param heading        string or unicode - dialog heading.
-      /// @param line1          string or unicode - line #1 multi-line text.
-      /// @param line2          [opt] string or unicode - line #2 text.
-      /// @param line3          [opt] string or unicode - line #3 text.
+      /// @param message        string or unicode - message text.
       /// @param nolabel        [opt] label to put on the no button.
       /// @param yeslabel       [opt] label to put on the yes button.
       /// @param autoclose      [opt] integer - milliseconds to autoclose dialog. (default=do not autoclose)
+      /// @param defaultbutton  [opt] integer - specifies the default focused button.
+      ///                       <em>(default=DLG_YESNO_NO_BTN)</em>
+      ///  |  Value:                       | Description:                                      |
+      ///  |------------------------------:|---------------------------------------------------|
+      ///  | xbmcgui.DLG_YESNO_NO_BTN     | Set the "No" button as default.
+      ///  | xbmcgui.DLG_YESNO_YES_BTN    | Set the "Yes" button as default.
+      ///  | xbmcgui.DLG_YESNO_CUSTOM_BTN | Set the "Custom" button as default.
       /// @return Returns True if 'Yes' was pressed, else False.
       ///
-      /// @note It is preferred to only use line1 as it is actually a multi-line text. In this case line2 and line3 must be omitted.
       ///
       ///
       ///------------------------------------------------------------------------
       /// @python_v13 Added new option **autoclose**.
+      /// @python_v19 Renamed option **line1** to **message**.
+      /// @python_v19 Removed option **line2**.
+      /// @python_v19 Removed option **line3**.
+      /// @python_v20 Added new option **defaultbutton**.
       ///
       /// **Example:**
       /// ~~~~~~~~~~~~~{.py}
@@ -85,20 +94,68 @@ namespace XBMCAddon
       ///
       yesno(...);
 #else
-      bool yesno(const String& heading, const String& line1,
-                 const String& line2 = emptyString,
-                 const String& line3 = emptyString,
+      bool yesno(const String& heading,
+                 const String& message,
                  const String& nolabel = emptyString,
                  const String& yeslabel = emptyString,
-                 int autoclose = 0);
+                 int autoclose = 0,
+                 int defaultbutton = CONTROL_NO_BUTTON);
+#endif
+
+#ifdef DOXYGEN_SHOULD_USE_THIS
+      ///
+      /// \ingroup python_Dialog
+      /// \python_func{ xbmcgui.Dialog().yesnocustom(heading, message, customlabel, [nolabel, yeslabel, autoclose]) }
+      /// **Yes / no / custom dialog**
+      ///
+      /// The YesNoCustom dialog can be used to inform the user about questions and
+      /// get the answer. The dialog provides a third button appart from yes and no.
+      /// Button labels are fully customizable.
+      ///
+      /// @param heading        string or unicode - dialog heading.
+      /// @param message        string or unicode - message text.
+      /// @param customlabel    string or unicode - label to put on the custom button.
+      /// @param nolabel        [opt] label to put on the no button.
+      /// @param yeslabel       [opt] label to put on the yes button.
+      /// @param autoclose      [opt] integer - milliseconds to autoclose dialog. (default=do not autoclose)
+      /// @param defaultbutton  [opt] integer - specifies the default focused button.
+      ///                       <em>(default=DLG_YESNO_NO_BTN)</em>
+      ///  |  Value:                       | Description:                                      |
+      ///  |------------------------------:|---------------------------------------------------|
+      ///  | xbmcgui.DLG_YESNO_NO_BTN     | Set the "No" button as default.
+      ///  | xbmcgui.DLG_YESNO_YES_BTN    | Set the "Yes" button as default.
+      ///  | xbmcgui.DLG_YESNO_CUSTOM_BTN | Set the "Custom" button as default.
+      /// @return Returns the integer value for the selected button (-1:cancelled, 0:no, 1:yes, 2:custom)
+      ///
+      ///
+      ///
+      ///------------------------------------------------------------------------
+      /// @python_v19 New function added.
+      /// @python_v20 Added new option **defaultbutton**.
+      ///
+      /// **Example:**
+      /// ~~~~~~~~~~~~~{.py}
+      /// ..
+      /// dialog = xbmcgui.Dialog()
+      /// ret = dialog.yesnocustom('Kodi', 'Question?', 'Maybe')
+      /// ..
+      /// ~~~~~~~~~~~~~
+      ///
+      yesnocustom(...);
+#else
+      int yesnocustom(const String& heading,
+                      const String& message,
+                      const String& customlabel,
+                      const String& nolabel = emptyString,
+                      const String& yeslabel = emptyString,
+                      int autoclose = 0,
+                      int defaultbutton = CONTROL_NO_BUTTON);
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_Dialog
       /// \python_func{ xbmcgui.Dialog().info(listitem) }
-      ///------------------------------------------------------------------------
-      ///
       /// **Info dialog**
       ///
       /// Show the corresponding info dialog for a given listitem
@@ -127,8 +184,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_Dialog
       /// \python_func{ xbmcgui.Dialog().select(heading, list[, autoclose, preselect, useDetails]) }
-      ///------------------------------------------------------------------------
-      ///
       /// **Select dialog**
       ///
       /// Show of a dialog to select of an entry as a key
@@ -163,8 +218,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_Dialog
       /// \python_func{ xbmcgui.Dialog().contextmenu(list) }
-      ///------------------------------------------------------------------------
-      ///
       /// Show a context menu.
       ///
       /// @param list           string list - list of items.
@@ -192,8 +245,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_Dialog
       /// \python_func{ xbmcgui.Dialog().multiselect(heading, options[, autoclose, preselect, useDetails]) }
-      ///------------------------------------------------------------------------
-      ///
       /// Show a multi-select dialog.
       ///
       /// @param heading        string or unicode - dialog heading.
@@ -229,24 +280,21 @@ namespace XBMCAddon
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_Dialog
-      /// \python_func{ xbmcgui.Dialog().ok(heading, line1[, line2, line3]) }
-      ///------------------------------------------------------------------------
-      ///
+      /// \python_func{ xbmcgui.Dialog().ok(heading, message) }
       /// **OK dialog**
       ///
       /// The functions permit the call of a dialog of information, a
       /// confirmation of the user by press from OK required.
       ///
       /// @param heading        string or unicode - dialog heading.
-      /// @param line1          string or unicode - line #1 multi-line text.
-      /// @param line2          [opt] string or unicode - line #2 text.
-      /// @param line3          [opt] string or unicode - line #3 text.
+      /// @param message        string or unicode - message text.
       /// @return Returns True if 'Ok' was pressed, else False.
-      ///
-      /// @note It is preferred to only use line1 as it is actually a multi-line text. In this case line2 and line3 must be omitted.
       ///
       ///
       ///------------------------------------------------------------------------
+      /// @python_v19 Renamed option **line1** to **message**.
+      /// @python_v19 Removed option **line2**.
+      /// @python_v19 Removed option **line3**.
       ///
       /// **Example:**
       /// ~~~~~~~~~~~~~{.py}
@@ -258,17 +306,13 @@ namespace XBMCAddon
       ///
       ok(...);
 #else
-      bool ok(const String& heading, const String& line1,
-              const String& line2 = emptyString,
-              const String& line3 = emptyString);
+      bool ok(const String& heading, const String& message);
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_Dialog
       /// \python_func{ xbmcgui.Dialog().textviewer(heading, text, usemono) }
-      ///------------------------------------------------------------------------
-      ///
       /// **TextViewer dialog**
       ///
       /// The text viewer dialog can be used to display descriptions, help texts
@@ -300,8 +344,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_Dialog
       /// \python_func{ xbmcgui.Dialog().browse(type, heading, shares[, mask, useThumbs, treatAsFolder, defaultt, enableMultiple]) }
-      ///------------------------------------------------------------------------
-      ///
       /// **Browser dialog**
       ///
       /// The function offer the possibility to select a file by the user of
@@ -366,8 +408,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_Dialog
       /// \python_func{ xbmcgui.Dialog().browseSingle(type, heading, shares[, mask, useThumbs, treatAsFolder, defaultt]) }
-      ///------------------------------------------------------------------------
-      ///
       /// **Browse single dialog**
       ///
       /// The function offer the possibility to select a file by the user of
@@ -428,8 +468,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_Dialog
       /// \python_func{ xbmcgui.Dialog().browseMultiple(type, heading, shares[, mask, useThumbs, treatAsFolder, defaultt]) }
-      ///------------------------------------------------------------------------
-      ///
       /// **Browser dialog**
       ///
       /// The function offer the possibility to select multiple files by the
@@ -485,28 +523,30 @@ namespace XBMCAddon
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_Dialog
-      /// \python_func{ xbmcgui.Dialog().numeric(type, heading[, defaultt]) }
-      ///------------------------------------------------------------------------
-      ///
+      /// \python_func{ xbmcgui.Dialog().numeric(type, heading[, defaultt, bHiddenInput]) }
       /// **Numeric dialog**
       ///
       /// The function have to be permitted by the user for the representation
       /// of a numeric keyboard around an input.
       ///
       /// @param type           integer - the type of numeric dialog.
-      /// | Param | Name                | Format                       |
-      /// |:-----:|:--------------------|:-----------------------------|
-      /// |  0    | ShowAndGetNumber    | (default format: #)
-      /// |  1    | ShowAndGetDate      | (default format: DD/MM/YYYY)
-      /// |  2    | ShowAndGetTime      | (default format: HH:MM)
-      /// |  3    | ShowAndGetIPAddress | (default format: #.#.#.#)
-      /// @param heading        string or unicode - dialog heading.
+      /// | Param | Name                     | Format                       |
+      /// |:-----:|:-------------------------|:-----------------------------|
+      /// |  0    | ShowAndGetNumber         | (default format: #)
+      /// |  1    | ShowAndGetDate           | (default format: DD/MM/YYYY)
+      /// |  2    | ShowAndGetTime           | (default format: HH:MM)
+      /// |  3    | ShowAndGetIPAddress      | (default format: #.#.#.#)
+      /// |  4    | ShowAndVerifyNewPassword | (default format: *)
+      /// @param heading        string or unicode - dialog heading (will be ignored for type 4).
       /// @param defaultt       [opt] string - default value.
+      /// @param bHiddenInput   [opt] bool - mask input (available for type 0).
       /// @return Returns the entered data as a string.
       ///         Returns the default value if dialog was canceled.
       ///
       ///
       ///------------------------------------------------------------------------
+      /// @python_v19 New option added ShowAndVerifyNewPassword.
+      /// @python_v19 Added new option **bHiddenInput**.
       ///
       /// **Example:**
       /// ~~~~~~~~~~~~~{.py}
@@ -518,15 +558,13 @@ namespace XBMCAddon
       ///
       numeric(...);
 #else
-      String numeric(int type, const String& heading, const String& defaultt = emptyString);
+      String numeric(int type, const String& heading, const String& defaultt = emptyString, bool bHiddenInput = false);
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_Dialog
       /// \python_func{ xbmcgui.Dialog().notification(heading, message[, icon, time, sound]) }
-      ///------------------------------------------------------------------------
-      ///
       /// Show a Notification alert.
       ///
       /// @param heading        string - dialog heading.
@@ -561,8 +599,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_Dialog
       /// \python_func{ xbmcgui.Dialog().input(heading[, defaultt, type, option, autoclose]) }
-      ///------------------------------------------------------------------------
-      ///
       /// Show an Input dialog.
       ///
       /// @param heading        string - dialog heading.
@@ -660,6 +696,18 @@ namespace XBMCAddon
           const String& colorfile = emptyString,
           const std::vector<const ListItem*>& colorlist = std::vector<const ListItem*>());
 #endif
+
+    private:
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+      // used by both yesno() and yesnocustom()
+      int yesNoCustomInternal(const String& heading,
+                              const String& message,
+                              const String& nolabel,
+                              const String& yeslabel,
+                              const String& customlabel,
+                              int autoclose,
+                              int defaultbutton);
+#endif
     };
     //@}
 
@@ -680,27 +728,25 @@ namespace XBMCAddon
 
     public:
 
-      DialogProgress() : dlg(nullptr), open(false) {}
+      DialogProgress() : dlg(NULL), open(false) {}
       virtual ~DialogProgress();
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_DialogProgress
-      /// \python_func{ xbmcgui.DialogProgress().create(heading[, line1, line2, line3]) }
-      ///------------------------------------------------------------------------
-      ///
+      /// \python_func{ xbmcgui.DialogProgress().create(heading[, message]) }
       /// Create and show a progress dialog.
       ///
       /// @param heading        string or unicode - dialog heading.
-      /// @param line1          [opt] string or unicode - line #1 multi-line text.
-      /// @param line2          [opt] string or unicode - line #2 text.
-      /// @param line3          [opt] string or unicode - line #3 text.
+      /// @param message        [opt] string or unicode - message text.
       ///
-      /// @note It is preferred to only use line1 as it is actually a multi-line text. In this case line2 and line3 must be omitted.
       /// @note Use update() to update lines and progressbar.
       ///
       ///
       ///------------------------------------------------------------------------
+      /// @python_v19 Renamed option **line1** to **message**.
+      /// @python_v19 Removed option **line2**.
+      /// @python_v19 Removed option **line3**.
       ///
       /// **Example:**
       /// ~~~~~~~~~~~~~{.py}
@@ -712,28 +758,24 @@ namespace XBMCAddon
       ///
       create(...);
 #else
-      void create(const String& heading, const String& line1 = emptyString,
-                  const String& line2 = emptyString,
-                  const String& line3 = emptyString);
+      void create(const String& heading, const String& message = emptyString);
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_DialogProgress
-      /// \python_func{ xbmcgui.DialogProgress().update(percent[, line1, line2, line3]) }
-      ///------------------------------------------------------------------------
-      ///
+      /// \python_func{ xbmcgui.DialogProgress().update(percent[, message]) }
       /// Updates the progress dialog.
       ///
       /// @param percent        integer - percent complete. (0:100)
-      /// @param line1          [opt] string or unicode - line #1 multi-line text.
-      /// @param line2          [opt] string or unicode - line #2 text.
-      /// @param line3          [opt] string or unicode - line #3 text.
+      /// @param message        [opt] string or unicode - message text.
       ///
-      /// @note It is preferred to only use line1 as it is actually a multi-line text. In this case line2 and line3 must be omitted.
       ///
       ///
       ///------------------------------------------------------------------------
+      /// @python_v19 Renamed option **line1** to **message**.
+      /// @python_v19 Removed option **line2**.
+      /// @python_v19 Removed option **line3**.
       ///
       /// **Example:**
       /// ~~~~~~~~~~~~~{.py}
@@ -744,17 +786,13 @@ namespace XBMCAddon
       ///
       update(...);
 #else
-      void update(int percent, const String& line1 = emptyString,
-                  const String& line2 = emptyString,
-                  const String& line3 = emptyString);
+      void update(int percent, const String& message = emptyString);
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_DialogProgress
       /// \python_func{ xbmcgui.DialogProgress().close() }
-      ///------------------------------------------------------------------------
-      ///
       /// Close the progress dialog.
       ///
       ///
@@ -776,8 +814,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_DialogProgress
       /// \python_func{ xbmcgui.DialogProgress().iscanceled() }
-      ///------------------------------------------------------------------------
-      ///
       /// Checks progress is canceled.
       ///
       /// @return True if the user pressed cancel.
@@ -801,112 +837,6 @@ namespace XBMCAddon
     //@}
 
     ///
-    /// \defgroup python_DialogBusy DialogBusy
-    /// \ingroup python_xbmcgui
-    /// @{
-    /// @brief <b>Kodi's busy dialog class</b>
-    ///
-    ///-----------------------------------------------------------------------
-    /// @python_v18 removed, usage results in nop!
-    ///
-    class DialogBusy : public AddonClass
-    {
-
-    protected:
-      virtual void deallocating();
-
-    public:
-      DialogBusy() {}
-      virtual ~DialogBusy();
-
-#ifdef DOXYGEN_SHOULD_USE_THIS
-      ///
-      /// \ingroup python_DialogBusy
-      /// \python_func{ xbmcgui.DialogBusy().create() }
-      ///------------------------------------------------------------------------
-      ///
-      /// Create and show a busy dialog.
-      ///
-      /// @note Use update() to update the progressbar.
-      ///
-      ///
-      ///------------------------------------------------------------------------
-      /// @python_v18 removed, usage results in nop!
-      ///
-      /// **Example:**
-      /// ~~~~~~~~~~~~~{.py}
-      /// ..
-      /// dialog = xbmcgui.DialogBusy()
-      /// dialog.create()
-      /// ..
-      /// ~~~~~~~~~~~~~
-      ///
-      create(...);
-#else
-      void create();
-#endif
-
-#ifdef DOXYGEN_SHOULD_USE_THIS
-      ///
-      /// \ingroup python_DialogBusy
-      /// \python_func{ xbmcgui.DialogBusy().update(percent) }
-      ///------------------------------------------------------------------------
-      ///
-      /// Updates the busy dialog.
-      ///
-      /// @param percent        integer - percent complete. (-1:100)
-      ///
-      /// @note If percent == -1 (default), the progressbar will be hidden.
-      ///
-      ///
-      ///------------------------------------------------------------------------
-      /// @python_v18 removed, usage results in nop!
-      ///
-      update(...);
-#else
-      void update(int percent) const;
-#endif
-
-#ifdef DOXYGEN_SHOULD_USE_THIS
-      ///
-      /// \ingroup python_DialogBusy
-      /// \python_func{ xbmcgui.DialogBusy().close() }
-      ///------------------------------------------------------------------------
-      ///
-      /// Close the progress dialog.
-      ///
-      ///
-      ///------------------------------------------------------------------------
-      /// @python_v18 removed, usage results in nop!
-      ///
-      close(...);
-#else
-      void close();
-#endif
-
-#ifdef DOXYGEN_SHOULD_USE_THIS
-      ///
-      /// \ingroup python_DialogBusy
-      /// \python_func{ xbmcgui.DialogBusy().iscanceled() }
-      ///------------------------------------------------------------------------
-      ///
-      /// Checks if busy dialog is canceled.
-      ///
-      /// @return True if the user pressed cancel.
-      ///
-      ///
-      ///------------------------------------------------------------------------
-      /// @python_v18 removed, usage results in nop!
-      ///
-      iscanceled(...);
-#else
-      bool iscanceled() const;
-#endif
-    };
-
-    //@}
-
-    ///
     /// \defgroup python_DialogProgressBG DialogProgressBG
     /// \ingroup python_xbmcgui
     /// @{
@@ -924,15 +854,13 @@ namespace XBMCAddon
 
     public:
 
-      DialogProgressBG() : dlg(nullptr), handle(nullptr), open(false) {}
+      DialogProgressBG() : dlg(NULL), handle(NULL), open(false) {}
       virtual ~DialogProgressBG();
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_DialogProgressBG
       /// \python_func{ xbmcgui.DialogProgressBG().create(heading[, message]) }
-      ///------------------------------------------------------------------------
-      ///
       /// Create and show a background progress dialog.
       ///
       /// @param heading     string or unicode - dialog heading.
@@ -961,8 +889,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_DialogProgressBG
       /// \python_func{ xbmcgui.DialogProgressBG().update([percent, heading, message]) }
-      ///------------------------------------------------------------------------
-      ///
       /// Updates the background progress dialog.
       ///
       /// @param percent     [opt] integer - percent complete. (0:100)
@@ -990,8 +916,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_DialogProgressBG
       /// \python_func{ xbmcgui.DialogProgressBG().close() }
-      ///------------------------------------------------------------------------
-      ///
       /// Close the background progress dialog
       ///
       ///
@@ -1013,8 +937,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_DialogProgressBG
       /// \python_func{ xbmcgui.DialogProgressBG().isFinished() }
-      ///------------------------------------------------------------------------
-      ///
       /// Checks progress is finished
       ///
       /// @return True if the background dialog is active.
@@ -1035,6 +957,10 @@ namespace XBMCAddon
 #endif
     };
     //@}
-
-  }
-}
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+    SWIG_CONSTANT2(int, DLG_YESNO_NO_BTN, CONTROL_NO_BUTTON);
+    SWIG_CONSTANT2(int, DLG_YESNO_YES_BTN, CONTROL_YES_BUTTON);
+    SWIG_CONSTANT2(int, DLG_YESNO_CUSTOM_BTN, CONTROL_CUSTOM_BUTTON);
+#endif
+} // namespace xbmcgui
+} // namespace XBMCAddon

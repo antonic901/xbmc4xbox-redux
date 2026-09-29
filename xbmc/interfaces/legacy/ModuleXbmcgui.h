@@ -31,7 +31,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcgui
     /// @brief \python_func{ xbmcgui.getCurrentWindowId() }
-    ///-------------------------------------------------------------------------
     /// Returns the id for the current 'active' window as an integer.
     ///
     /// @return                        The currently active window Id
@@ -55,7 +54,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcgui
     /// @brief \python_func{ xbmcgui.getCurrentWindowDialogId() }
-    ///-------------------------------------------------------------------------
     /// Returns the id for the current 'active' dialog as an integer.
     ///
     /// @return                        The currently active dialog Id
@@ -79,10 +77,10 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcgui
     /// @brief \python_func{ getScreenHeight() }
-    ///-------------------------------------------------------------------------
     /// Returns the height of this screen.
     ///
     /// @return                       Screen height
+    ///
     ///
     ///-------------------------------------------------------------------------
     /// @python_v18 New function added.
@@ -96,10 +94,10 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcgui
     /// @brief \python_func{ getScreenWidth() }
-    ///-------------------------------------------------------------------------
     /// Returns the width of this screen.
     ///
     /// @return                       Screen width
+    ///
     ///
     ///-------------------------------------------------------------------------
     /// @python_v18 New function added.
@@ -127,6 +125,7 @@ namespace XBMCAddon
     SWIG_CONSTANT2(int, INPUT_TYPE_PASSWORD, CGUIEditControl::INPUT_TYPE_PASSWORD);
     SWIG_CONSTANT2(int, INPUT_TYPE_PASSWORD_MD5, CGUIEditControl::INPUT_TYPE_PASSWORD_MD5);
     SWIG_CONSTANT2(int, INPUT_TYPE_SECONDS, CGUIEditControl::INPUT_TYPE_SECONDS);
+    SWIG_CONSTANT2(int, INPUT_TYPE_PASSWORD_NUMBER_VERIFY_NEW, CGUIEditControl::INPUT_TYPE_PASSWORD_NUMBER_VERIFY_NEW);
 
     SWIG_CONSTANT_FROM_GETTER(const char*, NOTIFICATION_INFO);
     SWIG_CONSTANT_FROM_GETTER(const char*, NOTIFICATION_WARNING);

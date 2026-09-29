@@ -88,7 +88,7 @@ public:
   virtual void Uninitialize();
   virtual bool OnScriptInitialized(ILanguageInvoker *invoker);
   virtual void OnScriptStarted(ILanguageInvoker *invoker);
-  virtual void OnScriptAbortRequested(ILanguageInvoker *invoker);
+  virtual void NotifyScriptAborting(ILanguageInvoker *invoker);
   virtual void OnExecutionEnded(ILanguageInvoker *invoker);
   virtual void OnScriptFinalized(ILanguageInvoker *invoker);
   virtual ILanguageInvoker* CreateInvoker();

@@ -39,7 +39,7 @@ namespace XBMCAddon
     ///                             look for.
     /// @param scriptPath           string - path to script. used to
     ///                             fallback to if the xml doesn't exist in
-    ///                             the current skin. (eg xbmcaddon.Addon().getAddonInfo('path').decode('utf-8'))
+    ///                             the current skin. (eg xbmcaddon.Addon().getAddonInfo('path'))
     /// @param defaultSkin          [opt] string - name of the folder in the
     ///                             skins path to look in for the xml.
     ///                             (default='Default')
@@ -62,7 +62,7 @@ namespace XBMCAddon
     /// **Example:**
     /// ~~~~~~~~~~~~~{.py}
     /// ..
-    /// win = xbmcgui.WindowXML('script-Lyrics-main.xml', xbmcaddon.Addon().getAddonInfo('path').decode('utf-8'), 'default', '1080i', False)
+    /// win = xbmcgui.WindowXML('script-Lyrics-main.xml', xbmcaddon.Addon().getAddonInfo('path'), 'default', '1080i', False)
     /// win.doModal()
     /// del win
     /// ..
@@ -113,7 +113,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_xbmcgui_window_xml
       /// @brief \python_func{ addItem(item[, position]) }
-      ///-----------------------------------------------------------------------
       /// Add a new item to this Window List.
       ///
       /// @param item            string, unicode or ListItem - item to add.
@@ -140,7 +139,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_xbmcgui_window_xml
       /// @brief \python_func{ addItems(items) }
-      ///-----------------------------------------------------------------------
       /// Add a list of items to to the window list.
       ///
       ///
@@ -165,7 +163,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_xbmcgui_window_xml
       /// @brief \python_func{ removeItem(position) }
-      ///-----------------------------------------------------------------------
       /// Removes a specified item based on position, from the Window List.
       ///
       /// @param position        integer - position of item to remove.
@@ -190,7 +187,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_xbmcgui_window_xml
       /// @brief \python_func{ getCurrentListPosition() }
-      ///-----------------------------------------------------------------------
       /// Gets the current position in the Window List.
       ///
       ///
@@ -213,7 +209,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_xbmcgui_window_xml
       /// @brief \python_func{ setCurrentListPosition(position) }
-      ///-----------------------------------------------------------------------
       /// Set the current position in the Window List.
       ///
       /// @param position        integer - position of item to set.
@@ -238,7 +233,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_xbmcgui_window_xml
       /// @brief \python_func{ getListItem(position) }
-      ///-----------------------------------------------------------------------
       /// Returns a given ListItem in this Window List.
       ///
       /// @param position        integer - position of item to return.
@@ -263,7 +257,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_xbmcgui_window_xml
       /// @brief \python_func{ getListSize() }
-      ///-----------------------------------------------------------------------
       /// Returns the number of items in this Window List.
       ///
       ///
@@ -286,10 +279,7 @@ namespace XBMCAddon
       ///
       /// \ingroup python_xbmcgui_window_xml
       /// @brief \python_func{ clearList() }
-      ///-----------------------------------------------------------------------
       /// Clear the Window List.
-      ///
-      ///
       ///
       /// ------------------------------------------------------------------------
       ///
@@ -302,12 +292,6 @@ namespace XBMCAddon
       ///
       clearList();
 #else
-      /**
-       * clearList() -- Clear the Window List.
-       *
-       * example:\n
-       *   - self.clearList()
-       */
       SWIGHIDDENVIRTUAL void clearList();
 #endif
 
@@ -315,7 +299,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_xbmcgui_window_xml
       /// @brief \python_func{ setContainerProperty(key, value) }
-      ///-----------------------------------------------------------------------
       /// Sets a container property, similar to an infolabel.
       ///
       /// @param key            string - property name.
@@ -346,7 +329,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_xbmcgui_window_xml
       /// @brief \python_func{ setContent(value) }
-      ///-----------------------------------------------------------------------
       /// Sets the content type of the container.
       ///
       /// @param value          string or unicode - content value.
@@ -396,7 +378,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_xbmcgui_window_xml
       /// @brief \python_func{ getCurrentContainerId() }
-      ///-----------------------------------------------------------------------
       /// Get the id of the currently visible container.
       ///
       /// ------------------------------------------------------------------------
@@ -416,15 +397,15 @@ namespace XBMCAddon
 
 #ifndef SWIG
       // CGUIWindow
-      SWIGHIDDENVIRTUAL bool OnMessage(CGUIMessage& message);
-      SWIGHIDDENVIRTUAL bool OnAction(const CAction& action);
+      virtual bool OnMessage(CGUIMessage& message);
+      virtual bool OnAction(const CAction& action);
       SWIGHIDDENVIRTUAL void AllocResources(bool forceLoad = false);
       SWIGHIDDENVIRTUAL void FreeResources(bool forceUnLoad = false);
       SWIGHIDDENVIRTUAL bool OnClick(int iItem);
       SWIGHIDDENVIRTUAL bool OnDoubleClick(int iItem);
       SWIGHIDDENVIRTUAL void Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
 
-      SWIGHIDDENVIRTUAL bool IsMediaWindow() const
+      virtual bool IsMediaWindow() const
       {
         XBMC_TRACE;
         return m_isMedia;
@@ -482,7 +463,7 @@ namespace XBMCAddon
     ///                                 look for.
     /// @param scriptPath               string - path to script. used to
     ///                                 fallback to if the xml doesn't exist in
-    ///                                 the current skin. (eg \ref python_xbmcaddon_Addon "xbmcaddon.Addon().getAddonInfo('path').decode('utf-8'))"
+    ///                                 the current skin. (eg \ref python_xbmcaddon_Addon "xbmcaddon.Addon().getAddonInfo('path'))"
     /// @param defaultSkin              [opt] string - name of the folder in the
     ///                                 skins path to look in for the xml.
     ///                                 (default='Default')
@@ -498,7 +479,7 @@ namespace XBMCAddon
     /// **Example:**
     /// ~~~~~~~~~~~~~{.py}
     /// ..
-    /// dialog = xbmcgui.WindowXMLDialog('script-Lyrics-main.xml', xbmcaddon.Addon().getAddonInfo('path').decode('utf-8'), 'default', '1080i')
+    /// dialog = xbmcgui.WindowXMLDialog('script-Lyrics-main.xml', xbmcaddon.Addon().getAddonInfo('path'), 'default', '1080i')
     /// dialog.doModal()
     /// del dialog
     /// ..
@@ -533,38 +514,38 @@ namespace XBMCAddon
       virtual ~WindowXMLDialog();
 
 #ifndef SWIG
-      SWIGHIDDENVIRTUAL bool OnMessage(CGUIMessage& message);
-      SWIGHIDDENVIRTUAL bool IsDialogRunning() const
+      virtual bool OnMessage(CGUIMessage& message);
+      virtual bool IsDialogRunning() const
       {
         XBMC_TRACE;
         return WindowDialogMixin::IsDialogRunning();
       }
-      SWIGHIDDENVIRTUAL bool IsDialog() const
+      virtual bool IsDialog() const
       {
         XBMC_TRACE;
         return true;
       };
-      SWIGHIDDENVIRTUAL bool IsModalDialog() const
+      virtual bool IsModalDialog() const
       {
         XBMC_TRACE;
         return true;
       };
-      SWIGHIDDENVIRTUAL bool IsMediaWindow() const
+      virtual bool IsMediaWindow() const
       {
         XBMC_TRACE;
         return false;
       };
-      SWIGHIDDENVIRTUAL bool OnAction(const CAction& action);
-      SWIGHIDDENVIRTUAL void OnDeinitWindow(int nextWindowID);
+      virtual bool OnAction(const CAction& action);
+      virtual void OnDeinitWindow(int nextWindowID);
 
-      SWIGHIDDENVIRTUAL bool LoadXML(const String& strPath, const String& strPathLower);
+      virtual bool LoadXML(const String& strPath, const String& strPathLower);
 
-      SWIGHIDDENVIRTUAL inline void show()
+      virtual inline void show()
       {
         XBMC_TRACE;
         WindowDialogMixin::show();
       }
-      SWIGHIDDENVIRTUAL inline void close()
+      virtual inline void close()
       {
         XBMC_TRACE;
         WindowDialogMixin::close();

@@ -37,7 +37,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcplugin
     /// @brief \python_func{ xbmcplugin.addDirectoryItem(handle, url, listitem [,isFolder, totalItems]) }
-    ///-------------------------------------------------------------------------
     /// Callback function to pass directory contents back to Kodi.
     ///
     /// @param handle               integer - handle the plugin was started
@@ -75,7 +74,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcplugin
     /// @brief \python_func{ xbmcplugin.addDirectoryItems(handle, items[, totalItems]) }
-    ///-------------------------------------------------------------------------
     /// Callback function to pass directory contents back to Kodi as a list.
     ///
     /// @param handle               integer - handle the plugin was started
@@ -110,7 +108,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcplugin
     /// @brief \python_func{ xbmcplugin.endOfDirectory(handle[, succeeded, updateListing, cacheToDisc]) }
-    ///-------------------------------------------------------------------------
     /// Callback function to tell Kodi that the end of the directory listing in
     /// a virtualPythonFolder module is reached.
     ///
@@ -145,7 +142,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcplugin
     /// @brief \python_func{ xbmcplugin.setResolvedUrl(handle, succeeded, listitem) }
-    ///-------------------------------------------------------------------------
     /// Callback function to tell Kodi that the file plugin has been resolved to
     /// a url
     ///
@@ -181,7 +177,7 @@ namespace XBMCAddon
     /// @param handle               integer - handle the plugin was started
     ///                             with.
     /// @param sortMethod           integer - see available sort methods at
-    ///                             the bottom (or see SortFileItem.h).
+    ///                             the bottom (or see \ref List_of_sort_methods "SortUtils").
     /// | Value                                        | Description           |
     /// |----------------------------------------------|-----------------------|
     /// | xbmcplugin.SORT_METHOD_NONE                  | Do not sort
@@ -274,7 +270,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcplugin
     /// @brief \python_func{ xbmcplugin.getSetting(handle, id) }
-    ///-------------------------------------------------------------------------
     /// Returns the value of a setting as a string.
     ///
     /// @param handle               integer - handle the plugin was started
@@ -304,7 +299,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcplugin
     /// @brief \python_func{ xbmcplugin.setSetting(handle, id, value) }
-    ///-------------------------------------------------------------------------
     /// Sets a plugin setting for the current running plugin.
     ///
     /// @param handle    integer - handle the plugin was started with.
@@ -330,7 +324,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcplugin
     /// @brief \python_func{ xbmcplugin.setContent(handle, content) }
-    ///-------------------------------------------------------------------------
     /// Sets the plugins content.
     ///
     /// @param handle      integer - handle the plugin was started with.
@@ -367,7 +360,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcplugin
     /// @brief \python_func{ xbmcplugin.setPluginCategory(handle, category) }
-    ///-------------------------------------------------------------------------
     /// Sets the plugins name for skins to display.
     ///
     /// @param handle      integer - handle the plugin was started with.
@@ -392,7 +384,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcplugin
     /// @brief \python_func{ xbmcplugin.setPluginFanart(handle, image, color1, color2, color3) }
-    ///-------------------------------------------------------------------------
     /// Sets the plugins fanart and color for skins to display.
     ///
     /// @param handle      integer - handle the plugin was started with.
@@ -423,7 +414,6 @@ namespace XBMCAddon
     ///
     /// \ingroup python_xbmcplugin
     /// @brief \python_func{ xbmcplugin.setProperty(handle, key, value) }
-    ///-------------------------------------------------------------------------
     /// Sets a container property for this plugin.
     ///
     /// @param handle      integer - handle the plugin was started with.
@@ -473,6 +463,8 @@ namespace XBMCAddon
     SWIG_CONSTANT(int, SORT_METHOD_VIDEO_TITLE);
     SWIG_CONSTANT(int, SORT_METHOD_VIDEO_SORT_TITLE);
     SWIG_CONSTANT(int, SORT_METHOD_VIDEO_SORT_TITLE_IGNORE_THE);
+    SWIG_CONSTANT(int, SORT_METHOD_VIDEO_ORIGINAL_TITLE);
+    SWIG_CONSTANT(int, SORT_METHOD_VIDEO_ORIGINAL_TITLE_IGNORE_THE);
     SWIG_CONSTANT(int, SORT_METHOD_PRODUCTIONCODE);
     SWIG_CONSTANT(int, SORT_METHOD_SONG_RATING);
     SWIG_CONSTANT(int, SORT_METHOD_MPAA_RATING);

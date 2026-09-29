@@ -14,6 +14,7 @@
 #endif
 
 #include "interfaces/legacy/Addon.h"
+#include "interfaces/legacy/Settings.h"
 
 using namespace XBMCAddon;
 using namespace xbmcaddon;
@@ -33,4 +34,6 @@ using namespace xbmcaddon;
 
 %feature("python:coerceToUnicode") XBMCAddon::xbmcaddon::Addon::getLocalizedString "true"
 %include "interfaces/legacy/Addon.h"
+%nodefaultctor Settings;
+%include "interfaces/legacy/Settings.h"
 

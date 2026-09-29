@@ -30,13 +30,13 @@
 //#define XBMC_ADDON_DEBUG_MEMORY
 
 #include "AddonString.h"
-#include "threads/SingleLock.h"
+
 #ifdef XBMC_ADDON_DEBUG_MEMORY
 #include "utils/log.h"
 #endif
 #include "AddonUtils.h"
 
-#include <threads/Atomics.h>
+#include "threads/Atomics.h"
 
 namespace XBMCAddon
 {
@@ -55,7 +55,7 @@ namespace XBMCAddon
   class AddonClass : public CCriticalSection
   {
   private:
-    long refs;
+    mutable long refs;
     bool m_isDeallocating;
 
     // no copying
@@ -113,9 +113,10 @@ namespace XBMCAddon
     void Release() const
 #ifndef XBMC_ADDON_DEBUG_MEMORY
     {
-      long ct = AtomicDecrement((long*)&refs);
+      long ct = AtomicDecrement(&refs);
 #ifdef LOG_LIFECYCLE_EVENTS
-      CLog::Log(LOGDEBUG,"NEWADDON REFCNT decrementing to %ld on %s 0x%lx", ct,GetClassname(), (long)(((void*)this)));
+      CLog::Log(LOGDEBUG, "NEWADDON REFCNT decrementing to %li on %s 0x%x", ct, GetClassname(),
+                (long)(((void*)this)));
 #endif
       if(ct == 0)
         delete this;
@@ -134,10 +135,10 @@ namespace XBMCAddon
 #ifndef XBMC_ADDON_DEBUG_MEMORY
     {
 #ifdef LOG_LIFECYCLE_EVENTS
-      CLog::Log(LOGDEBUG,"NEWADDON REFCNT incrementing to %ld on %s 0x%lx",
-                AtomicIncrement((long*)&refs), GetClassname(), (long)(((void*)this)));
+      CLog::Log(LOGDEBUG, "NEWADDON REFCNT incrementing to %li on %s 0x%x", AtomicIncrement(&refs), GetClassname(),
+                (long)(((void*)this)));
 #else
-      AtomicIncrement((long*)&refs);
+      AtomicIncrement(&refs);
 #endif
     }
 #else

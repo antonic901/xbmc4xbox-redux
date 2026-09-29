@@ -68,18 +68,17 @@ namespace XBMCAddon
           file->Open(filepath, XFILE::READ_NO_CACHE);
       }
 
-      inline ~File() { delete file; }
+      virtual inline ~File() { delete file; }
 
 #if !defined(DOXYGEN_SHOULD_USE_THIS)
-      inline File* __enter__() { return this; };
-      inline void __exit__() { close(); };
+      inline File* __enter__() { return this; }
+      inline void __exit__() { close(); }
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_file
       /// @brief \python_func{ read([bytes]) }
-      ///-----------------------------------------------------------------------
       /// Read file parts as string.
       ///
       /// @param bytes              [opt] How many bytes to read - if not
@@ -119,7 +118,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_file
       /// @brief \python_func{ readBytes(numbytes) }
-      ///-----------------------------------------------------------------------
       /// Read bytes from file.
       ///
       /// @param numbytes           How many bytes to read [opt]- if not set
@@ -155,7 +153,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_file
       /// @brief \python_func{ write(buffer) }
-      ///-----------------------------------------------------------------------
       /// To write given data in file.
       ///
       /// @param buffer             Buffer to write to file
@@ -176,7 +173,7 @@ namespace XBMCAddon
       /// **Example (v19 and up):**
       /// ~~~~~~~~~~~~~{.py}
       /// ..
-      /// whith xbmcvfs.File(file, 'w') as f:
+      /// with xbmcvfs.File(file, 'w') as f:
       ///   result = f.write(buffer)
       /// ..
       /// ~~~~~~~~~~~~~
@@ -190,7 +187,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_file
       /// @brief \python_func{ size() }
-      ///-----------------------------------------------------------------------
       /// Get the file size.
       ///
       /// @return                       The file size
@@ -224,7 +220,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_file
       /// @brief \python_func{ seek(seekBytes, iWhence) }
-      ///-----------------------------------------------------------------------
       /// Seek to position in file.
       ///
       /// @param seekBytes          position in the file
@@ -261,7 +256,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_file
       /// @brief \python_func{ tell() }
-      ///-----------------------------------------------------------------------
       /// Get the current position in the file.
       ///
       /// @return                       The file position
@@ -296,7 +290,6 @@ namespace XBMCAddon
       ///
       /// \ingroup python_file
       /// @brief \python_func{ close() }
-      ///-----------------------------------------------------------------------
       /// Close opened file.
       ///
       ///

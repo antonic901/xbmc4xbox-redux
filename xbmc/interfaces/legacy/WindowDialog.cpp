@@ -8,9 +8,10 @@
 
 #include "WindowDialog.h"
 
+#include "ServiceBroker.h"
 #include "WindowInterceptor.h"
-#include "guilib/GUIWindow.h"
 #include "guilib/GUIComponent.h"
+#include "guilib/GUIWindow.h"
 #include "guilib/GUIWindowManager.h"
 
 namespace XBMCAddon
@@ -33,7 +34,8 @@ namespace XBMCAddon
     {
 #ifdef ENABLE_XBMC_TRACE_API
       XBMC_TRACE;
-      CLog::Log(LOGDEBUG,"%sNEWADDON WindowDialog::OnMessage Message %d", _tg.getSpaces(),message.GetMessage());
+      CLog::Log(LOGDEBUG, "%sNEWADDON WindowDialog::OnMessage Message %i", _tg.getSpaces(),
+                message.GetMessage().c_str());
 #endif
 
       switch(message.GetMessage())

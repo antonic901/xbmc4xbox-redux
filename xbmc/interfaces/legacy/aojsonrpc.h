@@ -8,7 +8,6 @@
 
 #pragma once
 
-#ifdef HAS_JSONRPC
 #include "interfaces/json-rpc/ITransportLayer.h"
 #include "interfaces/json-rpc/JSONRPC.h"
 
@@ -29,4 +28,3 @@ public:
     virtual bool SetAnnouncementFlags(int flags) { return true; }
   };
 };
-#endif

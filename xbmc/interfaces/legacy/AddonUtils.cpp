@@ -7,10 +7,12 @@
  */
 
 #include "AddonUtils.h"
-#include "application/Application.h"
-#include "utils/XBMCTinyXML.h"
-#include "addons/Skin.h"
+
 #include "LanguageHook.h"
+#include "addons/Skin.h"
+#include "application/Application.h"
+#include "threads/ThreadLocal.h"
+#include "utils/XBMCTinyXML.h"
 #ifdef ENABLE_XBMC_TRACE_API
 #include "utils/log.h"
 #endif
@@ -26,13 +28,13 @@ namespace XBMCAddonUtils
       m_languageHook->DelayedCallOpen();
 
     if (!m_offScreen)
-      CServiceBroker::GetWinSystem()->GetGfxContext().Lock();
+      g_application.LockFrameMoveGuard();
   }
 
   GuiLock::~GuiLock()
   {
     if (!m_offScreen)
-      CServiceBroker::GetWinSystem()->GetGfxContext().Unlock();
+      g_application.UnlockFrameMoveGuard();
 
     if (m_languageHook)
       m_languageHook->DelayedCallClose();
@@ -69,7 +71,7 @@ namespace XBMCAddonUtils
   }
 
 #ifdef ENABLE_XBMC_TRACE_API
-  static thread_local TraceGuard* tlParent;
+  static XbmcThreads::ThreadLocal<TraceGuard> tlParent;
 
   static char** getSpacesArray(int size)
   {
@@ -92,19 +94,19 @@ namespace XBMCAddonUtils
 
   TraceGuard::TraceGuard(const char* _function) :function(_function)
   {
-    parent = tlParent;
+    parent = tlParent.get();
     depth = parent == NULL ? 0 : parent->depth + 1;
 
-    tlParent = this;
+    tlParent.set(this);
 
     CLog::Log(LOGDEBUG, "%sNEWADDON Entering %s", spaces[depth], function);
   }
 
   TraceGuard::TraceGuard() :function(NULL)
   {
-    parent = tlParent;
+    parent = tlParent.get();
     depth = parent == NULL ? 0 : parent->depth + 1;
-    tlParent = this;
+    tlParent.set(this);
     // silent
   }
 
@@ -114,7 +116,7 @@ namespace XBMCAddonUtils
       CLog::Log(LOGDEBUG, "%sNEWADDON Leaving %s", spaces[depth], function);
 
     // need to pop the stack
-    tlParent = this->parent;
+    tlParent.set(this->parent);
   }
 #endif
 

@@ -9,9 +9,11 @@
 #include "ModuleXbmcgui.h"
 
 #include "LanguageHook.h"
+#include "ServiceBroker.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "windowing/GraphicContext.h"
+
 
 #define NOTIFICATION_INFO     "info"
 #define NOTIFICATION_WARNING  "warning"

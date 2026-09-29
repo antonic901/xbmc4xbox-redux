@@ -8,23 +8,22 @@
 
 #include "Window.h"
 
-#include "application/Application.h"
+#include "ServiceBroker.h"
 #include "WindowException.h"
 #include "WindowInterceptor.h"
+#include "application/Application.h"
 #include "guilib/GUIButtonControl.h"
+#include "guilib/GUIComponent.h"
 #include "guilib/GUIEditControl.h"
 #include "guilib/GUIRadioButtonControl.h"
-#include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
 #include "messaging/ApplicationMessenger.h"
+#include "utils/StringUtils.h"
 #include "utils/Variant.h"
 
-using namespace KODI::MESSAGING;
-
 #define ACTIVE_WINDOW CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow()
-
 
 namespace XBMCAddon
 {
@@ -79,22 +78,36 @@ namespace XBMCAddon
     CGUIWindow* ProxyExistingWindowInterceptor::get() { XBMC_TRACE; return cguiwindow; }
 
     Window::Window(bool discrim):
-      isDisposed(false), window(NULL), iWindowId(-1),
-      iOldWindowId(0), iCurrentControlId(3000), bModal(false), m_actionEvent(true),
-      canPulse(true), existingWindow(false), destroyAfterDeInit(false)
+      window(NULL),
+      m_actionEvent(true),
+      canPulse(true), existingWindow(false)
     {
       XBMC_TRACE;
+      isDisposed = false;
+      iWindowId = -1;
+      iOldWindowId = 0;
+      iCurrentControlId = 3000;
+      bModal = false;
+      destroyAfterDeInit = false;
     }
 
     /**
      * This just creates a default window.
      */
     Window::Window(int existingWindowId) :
-      isDisposed(false), window(NULL), iWindowId(-1),
-      iOldWindowId(0), iCurrentControlId(3000), bModal(false), m_actionEvent(true),
-      canPulse(false), existingWindow(true), destroyAfterDeInit(false)
+      window(NULL),
+      m_actionEvent(true)
     {
       XBMC_TRACE;
+      isDisposed = false;
+      iWindowId = -1;
+      iOldWindowId = 0;
+      iCurrentControlId = 3000;
+      bModal = false;
+      canPulse = false;
+      existingWindow = true;
+      destroyAfterDeInit = false;
+
       SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(),languageHook);
 
       if (existingWindowId == -1)
@@ -370,7 +383,7 @@ namespace XBMCAddon
 
       // It got this far so means the control isn't actually in the vector of controls
       // so lets add it to save doing all that next time
-      vecControls.push_back(pControl);
+      vecControls.push_back(AddonClass::Ref<Control>(pControl));
 
       // return the control with increased reference (+1)
       return pControl;
@@ -387,7 +400,8 @@ namespace XBMCAddon
     {
       XBMC_TRACE;
       // DO NOT MAKE THIS A DELAYED CALL!!!!
-      bool ret = languageHook == NULL ? m_actionEvent.WaitMSec(milliseconds) : languageHook->WaitForEvent(m_actionEvent,milliseconds);
+      bool ret = languageHook == NULL ? m_actionEvent.WaitMSec(milliseconds)
+                                      : languageHook->WaitForEvent(m_actionEvent, milliseconds);
       if (ret)
         m_actionEvent.Reset();
       return ret;
@@ -553,6 +567,10 @@ namespace XBMCAddon
           throw WindowException("Control does not exist in window");
       }
 
+      CGUIMessage msg(GUI_MSG_REMOVE_CONTROL, 0, 0);
+      msg.SetPointer(pControl->pGUIControl);
+      CServiceBroker::GetAppMessenger()->SendGUIMessage(msg, iWindowId, wait);
+
       // delete control from vecControls in window object
       std::vector<AddonClass::Ref<Control> >::iterator it = vecControls.begin();
       while (it != vecControls.end())
@@ -561,12 +579,12 @@ namespace XBMCAddon
         if (control->iControlId == pControl->iControlId)
         {
           it = vecControls.erase(it);
-        } else ++it;
+        }
+        else
+        {
+          ++it;
+        }
       }
-
-      CGUIMessage msg(GUI_MSG_REMOVE_CONTROL, 0, 0);
-      msg.SetPointer(pControl->pGUIControl);
-      CServiceBroker::GetAppMessenger()->SendGUIMessage(msg, iWindowId, wait);
 
       // initialize control to zero
       pControl->pGUIControl = NULL;
@@ -597,18 +615,6 @@ namespace XBMCAddon
       SingleLockWithDelayGuard gslock(CServiceBroker::GetWinSystem()->GetGfxContext(), languageHook);
       RESOLUTION_INFO resInfo = ref(window)->GetCoordsRes();
       return resInfo.iWidth;
-    }
-
-    long Window::getResolution()
-    {
-      XBMC_TRACE;
-      return (long)CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
-    }
-
-    void Window::setCoordinateResolution(long res)
-    {
-      XBMC_TRACE;
-      throw WindowException("not implemented.");
     }
 
     void Window::setProperty(const char* key, const String& value)
@@ -659,7 +665,7 @@ namespace XBMCAddon
 
       {
         DelayedCallGuard dcguard(languageHook);
-        CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_ACTIVATE_WINDOW, iOldWindowId, 0);
+        CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_PREVIOUS_WINDOW, iOldWindowId, 0);
       }
 
       iOldWindowId = 0;
@@ -677,16 +683,6 @@ namespace XBMCAddon
 
         while (bModal && !g_application.m_bStop)
         {
-//! @todo garbear added this code to the python window.cpp class and
-//!  commented in XBPyThread.cpp. I'm not sure how to handle this
-//! in this native implementation.
-//          // Check if XBPyThread::stop() raised a SystemExit exception
-//          if (PyThreadState_Get()->async_exc == PyExc_SystemExit)
-//          {
-//            CLog::Log(LOGDEBUG, "PYTHON: doModal() encountered a SystemExit exception, closing window and returning");
-//            Window_Close(self, NULL);
-//            break;
-//          }
           languageHook->MakePendingCalls(); // MakePendingCalls
 
           bool stillWaiting;
@@ -696,6 +692,14 @@ namespace XBMCAddon
               DelayedCallGuard dcguard(languageHook);
               stillWaiting = WaitForActionEvent(100) ? false : true;
             }
+
+            // If application has quit, close the window
+            if (bModal && g_application.m_bStop)
+            {
+              CLog::Log(LOGDEBUG, "PYTHON: Application quit inside doModal(), closing window");
+              close();
+            }
+
             languageHook->MakePendingCalls();
           } while (stillWaiting);
         }
@@ -718,7 +722,7 @@ namespace XBMCAddon
       if(pControl->iControlId != 0)
         throw WindowException("Control is already used");
 
-      // lock xbmc GUI before accessing data from it
+      // lock kodi GUI before accessing data from it
       pControl->iParentId = iWindowId;
 
       {
@@ -742,7 +746,7 @@ namespace XBMCAddon
       pControl->pGUIControl->SetAction(ACTION_MOVE_RIGHT, CGUIAction(pControl->iControlRight));
 
       // add control to list and allocate resources for the control
-      vecControls.push_back(pControl);
+      vecControls.push_back(AddonClass::Ref<Control>(pControl));
       pControl->pGUIControl->AllocResources();
 
       // This calls the CGUIWindow parent class to do the final add

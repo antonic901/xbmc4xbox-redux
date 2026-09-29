@@ -55,28 +55,28 @@ namespace XBMCAddon
       virtual ~WindowDialog();
 
 #ifndef SWIG
-      SWIGHIDDENVIRTUAL bool OnMessage(CGUIMessage& message);
-      SWIGHIDDENVIRTUAL bool OnAction(const CAction& action);
-      SWIGHIDDENVIRTUAL void OnDeinitWindow(int nextWindowID);
+      virtual bool OnMessage(CGUIMessage& message);
+      virtual bool OnAction(const CAction& action);
+      virtual void OnDeinitWindow(int nextWindowID);
 
-      SWIGHIDDENVIRTUAL bool IsDialogRunning() const { return WindowDialogMixin::IsDialogRunning(); }
-      SWIGHIDDENVIRTUAL bool IsModalDialog() const
+      virtual bool IsDialogRunning() const { return WindowDialogMixin::IsDialogRunning(); }
+      virtual bool IsModalDialog() const
       {
         XBMC_TRACE;
         return true;
       };
-      SWIGHIDDENVIRTUAL bool IsDialog() const
+      virtual bool IsDialog() const
       {
         XBMC_TRACE;
         return true;
       };
 
-      SWIGHIDDENVIRTUAL void show()
+      virtual inline void show()
       {
         XBMC_TRACE;
         WindowDialogMixin::show();
       }
-      SWIGHIDDENVIRTUAL inline void close()
+      virtual inline void close()
       {
         XBMC_TRACE;
         WindowDialogMixin::close();

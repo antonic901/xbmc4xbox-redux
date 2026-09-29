@@ -5,36 +5,36 @@
  *  SPDX-License-Identifier: GPL-2.0-or-later
  *  See LICENSES/README.md for more information.
  */
-#include "LanguageHook.h"
+#include "Dialog.h"
 
+#include "LanguageHook.h"
+#include "ListItem.h"
+#include "ModuleXbmcgui.h"
+#include "ServiceBroker.h"
+#include "WindowException.h"
 #include "dialogs/GUIDialogColorPicker.h"
-#include "dialogs/GUIDialogOK.h"
-#include "dialogs/GUIDialogYesNo.h"
-#include "dialogs/GUIDialogSelect.h"
 #include "dialogs/GUIDialogContextMenu.h"
-#include "dialogs/GUIDialogTextViewer.h"
-#include "guilib/GUIComponent.h"
-#include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogFileBrowser.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "dialogs/GUIDialogNumeric.h"
-#include "video/dialogs/GUIDialogVideoInfo.h"
+#include "dialogs/GUIDialogSelect.h"
+#include "dialogs/GUIDialogTextViewer.h"
+#include "dialogs/GUIDialogYesNo.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIKeyboardFactory.h"
+#include "guilib/GUIWindowManager.h"
+#include "messaging/helpers/DialogOKHelper.h"
 #include "music/dialogs/GUIDialogMusicInfo.h"
 #include "settings/MediaSourceSettings.h"
 #include "storage/MediaManager.h"
-#include "dialogs/GUIDialogKaiToast.h"
-#include "ModuleXbmcgui.h"
-#include "guilib/GUIKeyboardFactory.h"
-#include "utils/log.h"
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
-#include "WindowException.h"
-#include "Dialog.h"
-#include "ListItem.h"
-#ifdef TARGET_POSIX
-#include "platform/posix/XTimeUtils.h"
-#endif
+#include "utils/log.h"
+#include "video/dialogs/GUIDialogVideoInfo.h"
 
-using namespace KODI::MESSAGING;
+#include <memory>
+
+ using namespace KODI::MESSAGING;
 
 #define ACTIVE_WINDOW CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow()
 
@@ -44,43 +44,52 @@ namespace XBMCAddon
   {
     Dialog::~Dialog() {}
 
-    bool Dialog::yesno(const String& heading, const String& line1,
-                       const String& line2,
-                       const String& line3,
+    bool Dialog::yesno(const String& heading,
+                       const String& message,
                        const String& nolabel,
                        const String& yeslabel,
-                       int autoclose)
+                       int autoclose,
+                       int defaultbutton)
+    {
+      return yesNoCustomInternal(heading, message, nolabel, yeslabel, emptyString, autoclose,
+                                 defaultbutton) == 1;
+    }
+
+    int Dialog::yesnocustom(const String& heading,
+                            const String& message,
+                            const String& customlabel,
+                            const String& nolabel,
+                            const String& yeslabel,
+                            int autoclose,
+                            int defaultbutton)
+    {
+      return yesNoCustomInternal(heading, message, nolabel, yeslabel, customlabel, autoclose,
+                                 defaultbutton);
+    }
+
+    int Dialog::yesNoCustomInternal(const String& heading,
+                                    const String& message,
+                                    const String& nolabel,
+                                    const String& yeslabel,
+                                    const String& customlabel,
+                                    int autoclose,
+                                    int defaultbutton)
     {
       DelayedCallGuard dcguard(languageHook);
-      CGUIDialogYesNo* pDialog = dynamic_cast<CGUIDialogYesNo*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_YES_NO));
+      CGUIDialogYesNo* pDialog =
+          CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogYesNo>(
+              WINDOW_DIALOG_YES_NO);
       if (pDialog == NULL)
-        throw WindowException("Error: Window is NULL, this is not possible :-)");
+        throw WindowException("Error: Window is null");
 
-      // get lines, last 4 lines are optional.
-      if (!heading.empty())
-        pDialog->SetHeading(heading);
-      if (!line1.empty())
-        pDialog->SetLine(0, line1);
-      if (!line2.empty())
-        pDialog->SetLine(1, line2);
-      if (!line3.empty())
-        pDialog->SetLine(2, line3);
-
-      if (!nolabel.empty())
-        pDialog->SetChoice(0, nolabel);
-      if (!yeslabel.empty())
-        pDialog->SetChoice(1, yeslabel);
-
-      if (autoclose > 0)
-        pDialog->SetAutoClose(autoclose);
-
-      pDialog->Open();
-
-      return pDialog->IsConfirmed();
+      return pDialog->ShowAndGetInput(heading, message, nolabel,
+                                      yeslabel, customlabel, autoclose,
+                                      defaultbutton);
     }
 
     bool Dialog::info(const ListItem* item)
     {
+      DelayedCallGuard dcguard(languageHook);
       const AddonClass::Ref<xbmcgui::ListItem> listitem(item);
       if (listitem->item->HasVideoInfoTag())
       {
@@ -98,7 +107,7 @@ namespace XBMCAddon
     int Dialog::contextmenu(const std::vector<String>& list)
     {
       DelayedCallGuard dcguard(languageHook);
-      CGUIDialogContextMenu* pDialog= dynamic_cast<CGUIDialogContextMenu*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_CONTEXT_MENU));
+      CGUIDialogContextMenu* pDialog= CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogContextMenu>(WINDOW_DIALOG_CONTEXT_MENU);
       if (pDialog == NULL)
         throw WindowException("Error: Window is NULL, this is not possible :-)");
 
@@ -114,17 +123,16 @@ namespace XBMCAddon
     int Dialog::select(const String& heading, const std::vector<Alternative<String, const ListItem* > > & list, int autoclose, int preselect, bool useDetails)
     {
       DelayedCallGuard dcguard(languageHook);
-      CGUIDialogSelect* pDialog= dynamic_cast<CGUIDialogSelect*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT));
+      CGUIDialogSelect* pDialog= CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
       if (pDialog == NULL)
         throw WindowException("Error: Window is NULL, this is not possible :-)");
 
       pDialog->Reset();
       if (!heading.empty())
         pDialog->SetHeading(heading);
-      for(unsigned int i = 0; i < list.size(); i++)
+      for (std::vector<Alternative<String, const ListItem* > >::const_iterator item = list.begin(); item != list.end(); ++item)
       {
-        const XBMCAddon::Alternative<XBMCAddon::String, const XBMCAddon::xbmcgui::ListItem *> &item = list[i];
-        AddonClass::Ref<ListItem> ritem = item.which() == XBMCAddon::first ? ListItem::fromString(item.former()) : AddonClass::Ref<ListItem>(item.later());
+        AddonClass::Ref<ListItem> ritem = item->which() == XBMCAddon::first ? ListItem::fromString(item->former()) : AddonClass::Ref<ListItem>(item->later());
         CFileItemPtr& fileItem = ritem->item;
         pDialog->Add(*fileItem);
       }
@@ -143,18 +151,17 @@ namespace XBMCAddon
         const std::vector<Alternative<String, const ListItem* > > & options, int autoclose, const std::vector<int>& preselect, bool useDetails)
     {
       DelayedCallGuard dcguard(languageHook);
-      CGUIDialogSelect* pDialog = dynamic_cast<CGUIDialogSelect*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_SELECT));
-      if (pDialog == nullptr)
+      CGUIDialogSelect* pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogSelect>(WINDOW_DIALOG_SELECT);
+      if (pDialog == NULL)
         throw WindowException("Error: Window is NULL");
 
       pDialog->Reset();
       pDialog->SetMultiSelection(true);
       pDialog->SetHeading(heading);
 
-      for (unsigned int i = 0; i < options.size(); i++)
+      for (std::vector<Alternative<String, const ListItem* > >::const_iterator item = options.begin(); item != options.end(); ++item)
       {
-        const XBMCAddon::Alternative<XBMCAddon::String, const XBMCAddon::xbmcgui::ListItem *> &item = options[i];
-        AddonClass::Ref<ListItem> ritem = item.which() == XBMCAddon::first ? ListItem::fromString(item.former()) : AddonClass::Ref<ListItem>(item.later());
+        AddonClass::Ref<ListItem> ritem = item->which() == XBMCAddon::first ? ListItem::fromString(item->former()) : AddonClass::Ref<ListItem>(item->later());
         CFileItemPtr& fileItem = ritem->item;
         pDialog->Add(*fileItem);
       }
@@ -170,43 +177,24 @@ namespace XBMCAddon
         return boost::movelib::unique_ptr<std::vector<int> >();
     }
 
-    bool Dialog::ok(const String& heading, const String& line1,
-                    const String& line2,
-                    const String& line3)
+    bool Dialog::ok(const String& heading, const String& message)
     {
       DelayedCallGuard dcguard(languageHook);
-      CGUIDialogOK* pDialog = dynamic_cast<CGUIDialogOK*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_OK));
-      if (pDialog == NULL)
-        throw WindowException("Error: Window is NULL, this is not possible :-)");
-
-      if (!heading.empty())
-        pDialog->SetHeading(heading);
-      if (!line1.empty())
-        pDialog->SetLine(0, line1);
-      if (!line2.empty())
-        pDialog->SetLine(1, line2);
-      if (!line3.empty())
-        pDialog->SetLine(2, line3);
-
-      pDialog->Open();
-
-      return pDialog->IsConfirmed();
+      return HELPERS::ShowOKDialogText(heading, message);
     }
 
     void Dialog::textviewer(const String& heading, const String& text, bool usemono)
     {
       DelayedCallGuard dcguard(languageHook);
 
-      CGUIDialogTextViewer* pDialog = dynamic_cast<CGUIDialogTextViewer*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_TEXT_VIEWER));
+      CGUIDialogTextViewer* pDialog = CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogTextViewer>(WINDOW_DIALOG_TEXT_VIEWER);
       if (pDialog == NULL)
         throw WindowException("Error: Window is NULL, this is not possible :-)");
       if (!heading.empty())
         pDialog->SetHeading(heading);
       if (!text.empty())
         pDialog->SetText(text);
-#ifndef _XBOX
       pDialog->UseMonoFont(usemono);
-#endif
       pDialog->Open();
     }
 
@@ -238,7 +226,7 @@ namespace XBMCAddon
       if (!shares)
       {
         CServiceBroker::GetMediaManager().GetLocalDrives(localShares);
-        if (strcmpi(s_shares.c_str(), "local") != 0)
+        if (StringUtils::CompareNoCase(s_shares, "local") != 0)
           CServiceBroker::GetMediaManager().GetNetworkLocations(localShares);
       }
       else // always append local drives
@@ -273,7 +261,7 @@ namespace XBMCAddon
       if (!shares)
       {
         CServiceBroker::GetMediaManager().GetLocalDrives(localShares);
-        if (strcmpi(s_shares.c_str(), "local") != 0)
+        if (StringUtils::CompareNoCase(s_shares, "local") != 0)
           CServiceBroker::GetMediaManager().GetNetworkLocations(localShares);
       }
       else // always append local drives
@@ -295,7 +283,7 @@ namespace XBMCAddon
       return valuelist;
     }
 
-    String Dialog::numeric(int inputtype, const String& heading, const String& defaultt)
+    String Dialog::numeric(int inputtype, const String& heading, const String& defaultt, bool bHiddenInput)
     {
       DelayedCallGuard dcguard(languageHook);
       std::string value;
@@ -308,13 +296,14 @@ namespace XBMCAddon
         {
           if (!defaultt.empty() && defaultt.size() == 10)
           {
-            std::string sDefault = defaultt;
+            const std::string& sDefault = defaultt;
             timedate.wDay = atoi(sDefault.substr(0, 2).c_str());
             timedate.wMonth = atoi(sDefault.substr(3, 4).c_str());
             timedate.wYear = atoi(sDefault.substr(sDefault.size() - 4).c_str());
           }
           if (CGUIDialogNumeric::ShowAndGetDate(timedate, heading))
-            value = StringUtils::Format("%2d/%2d/%4d", timedate.wDay, timedate.wMonth, timedate.wYear);
+            value =
+                StringUtils::Format("%2d/%2d/%4d", timedate.wDay, timedate.wMonth, timedate.wYear);
           else
             return emptyString;
         }
@@ -322,7 +311,7 @@ namespace XBMCAddon
         {
           if (!defaultt.empty() && defaultt.size() == 5)
           {
-            std::string sDefault = defaultt;
+            const std::string& sDefault = defaultt;
             timedate.wHour = atoi(sDefault.substr(0, 2).c_str());
             timedate.wMinute = atoi(sDefault.substr(3, 2).c_str());
           }
@@ -337,10 +326,16 @@ namespace XBMCAddon
           if (!CGUIDialogNumeric::ShowAndGetIPAddress(value, heading))
             return emptyString;
         }
+        else if (inputtype == 4)
+        {
+          value = defaultt;
+          if (!CGUIDialogNumeric::ShowAndVerifyNewPassword(value))
+            return emptyString;
+        }
         else
         {
           value = defaultt;
-          if (!CGUIDialogNumeric::ShowAndGetNumber(value, heading))
+          if (!CGUIDialogNumeric::ShowAndGetNumber(value, heading, 0, bHiddenInput))
             return emptyString;
         }
       }
@@ -395,13 +390,14 @@ namespace XBMCAddon
           {
             if (!defaultt.empty() && defaultt.size() == 10)
             {
-              std::string sDefault = defaultt;
+              const std::string& sDefault = defaultt;
               timedate.wDay = atoi(sDefault.substr(0, 2).c_str());
               timedate.wMonth = atoi(sDefault.substr(3, 4).c_str());
               timedate.wYear = atoi(sDefault.substr(sDefault.size() - 4).c_str());
             }
             if (CGUIDialogNumeric::ShowAndGetDate(timedate, heading))
-              value = StringUtils::Format("%2d/%2d/%4d", timedate.wDay, timedate.wMonth, timedate.wYear);
+              value = StringUtils::Format("%2d/%2d/%4d", timedate.wDay, timedate.wMonth,
+                                          timedate.wYear);
             else
               value = emptyString;
           }
@@ -410,7 +406,7 @@ namespace XBMCAddon
           {
             if (!defaultt.empty() && defaultt.size() == 5)
             {
-              std::string sDefault = defaultt;
+              const std::string& sDefault = defaultt;
               timedate.wHour = atoi(sDefault.substr(0, 2).c_str());
               timedate.wMinute = atoi(sDefault.substr(3, 2).c_str());
             }
@@ -501,12 +497,10 @@ namespace XBMCAddon
       }
     }
 
-    void DialogProgress::create(const String& heading, const String& line1,
-                                const String& line2,
-                                const String& line3)
+    void DialogProgress::create(const String& heading, const String& message)
     {
       DelayedCallGuard dcguard(languageHook);
-      CGUIDialogProgress* pDialog= dynamic_cast<CGUIDialogProgress*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_PROGRESS));
+      CGUIDialogProgress* pDialog= CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogProgress>(WINDOW_DIALOG_PROGRESS);
 
       if (pDialog == NULL)
         throw WindowException("Error: Window is NULL, this is not possible :-)");
@@ -516,19 +510,13 @@ namespace XBMCAddon
 
       pDialog->SetHeading(heading);
 
-      if (!line1.empty())
-        pDialog->SetLine(0, line1);
-      if (!line2.empty())
-        pDialog->SetLine(1, line2);
-      if (!line3.empty())
-        pDialog->SetLine(2, line3);
+      if (!message.empty())
+        pDialog->SetText(message);
 
       pDialog->Open();
     }
 
-    void DialogProgress::update(int percent, const String& line1,
-                                const String& line2,
-                                const String& line3)
+    void DialogProgress::update(int percent, const String& message)
     {
       DelayedCallGuard dcguard(languageHook);
       CGUIDialogProgress* pDialog = dlg;
@@ -546,12 +534,8 @@ namespace XBMCAddon
         pDialog->ShowProgressBar(false);
       }
 
-      if (!line1.empty())
-        pDialog->SetLine(0, line1);
-      if (!line2.empty())
-        pDialog->SetLine(1, line2);
-      if (!line3.empty())
-        pDialog->SetLine(2, line3);
+      if (!message.empty())
+        pDialog->SetText(message);
     }
 
     void DialogProgress::close()
@@ -568,28 +552,6 @@ namespace XBMCAddon
       if (dlg == NULL)
         throw WindowException("Dialog not created.");
       return dlg->IsCanceled();
-    }
-
-    // deprecated because wrong
-    // modal dialogs can't be called from python using a proxy class with async
-    // messaging. there can only be one DialogBusy at a time.
-    DialogBusy::~DialogBusy() { XBMC_TRACE; deallocating(); }
-    void DialogBusy::deallocating()
-    {
-    }
-    void DialogBusy::create()
-    {
-      CLog::Log(LOGWARNING, "using DialogBusy from python results in nop now");
-    }
-    void DialogBusy::update(int percent) const
-    {
-    }
-    void DialogBusy::close()
-    {
-    }
-    bool DialogBusy::iscanceled() const
-    {
-      return false;
     }
 
     DialogProgressBG::~DialogProgressBG() { XBMC_TRACE; deallocating(); }
@@ -609,7 +571,7 @@ namespace XBMCAddon
     {
       DelayedCallGuard dcguard(languageHook);
       CGUIDialogExtendedProgressBar* pDialog =
-          dynamic_cast<CGUIDialogExtendedProgressBar*>(CServiceBroker::GetGUI()->GetWindowManager().GetWindow(WINDOW_DIALOG_EXT_PROGRESS));
+          CServiceBroker::GetGUI()->GetWindowManager().GetWindow<CGUIDialogExtendedProgressBar>(WINDOW_DIALOG_EXT_PROGRESS);
 
       if (pDialog == NULL)
         throw WindowException("Error: Window is NULL, this is not possible :-)");

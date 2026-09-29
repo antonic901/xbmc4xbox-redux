@@ -8,16 +8,19 @@
 
 #include "WindowXML.h"
 
+#include "ServiceBroker.h"
 #include "WindowException.h"
 #include "WindowInterceptor.h"
 #include "addons/Addon.h"
 #include "addons/Skin.h"
-#include "filesystem/File.h"
+#include "addons/addoninfo/AddonInfo.h"
+#include "addons/addoninfo/AddonType.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/TextureManager.h"
 #include "input/actions/Action.h"
 #include "input/actions/ActionIDs.h"
+#include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 
@@ -57,7 +60,7 @@ namespace XBMCAddon
 
       virtual void AllocResources(bool forceLoad = false)
       { XBMC_TRACE; if(up()) CGUIMediaWindow::AllocResources(forceLoad); else checkedv(AllocResources(forceLoad)); }
-      virtual  void FreeResources(bool forceUnLoad = false)
+       virtual void FreeResources(bool forceUnLoad = false)
       { XBMC_TRACE; if(up()) CGUIMediaWindow::FreeResources(forceUnLoad); else checkedv(FreeResources(forceUnLoad)); }
       virtual bool OnClick(int iItem, const std::string &player = "") { XBMC_TRACE; return up() ? CGUIMediaWindow::OnClick(iItem, player) : checkedb(OnClick(iItem)); }
 
@@ -99,7 +102,7 @@ namespace XBMCAddon
       std::string strSkinPath = g_SkinInfo->GetSkinPath(xmlFilename, &res);
       m_isMedia = isMedia;
 
-      if (!XFILE::CFile::Exists(strSkinPath))
+      if (!CFileUtils::Exists(strSkinPath))
       {
         std::string str("none");
         ADDON::AddonInfoPtr addonInfo =
@@ -113,7 +116,7 @@ namespace XBMCAddon
         strSkinPath = g_SkinInfo->GetSkinPath(xmlFilename, &res, basePath);
 
         // Check for the matching folder for the skin in the fallback skins folder (if it exists)
-        if (XFILE::CFile::Exists(basePath))
+        if (CFileUtils::Exists(basePath))
         {
           addonInfo->SetPath(basePath);
           boost::shared_ptr<ADDON::CSkinInfo> skinInfo = boost::make_shared<ADDON::CSkinInfo>(addonInfo, res);
@@ -121,7 +124,7 @@ namespace XBMCAddon
           strSkinPath = skinInfo->GetSkinPath(xmlFilename, &res);
         }
 
-        if (!XFILE::CFile::Exists(strSkinPath))
+        if (!CFileUtils::Exists(strSkinPath))
         {
           // Finally fallback to the DefaultSkin as it didn't exist in either the XBMC Skin folder or the fallback skin folder
           addonInfo->SetPath(URIUtils::AddFileToFolder(fallbackPath, defaultSkin));
@@ -129,7 +132,7 @@ namespace XBMCAddon
 
           skinInfo->Start();
           strSkinPath = skinInfo->GetSkinPath(xmlFilename, &res);
-          if (!XFILE::CFile::Exists(strSkinPath))
+          if (!CFileUtils::Exists(strSkinPath))
             throw WindowException("XML File for Window is missing");
         }
       }
@@ -189,10 +192,9 @@ namespace XBMCAddon
     {
     XBMC_TRACE;
     XBMCAddonUtils::GuiLock lock(languageHook, false);
-    for (std::vector<Alternative<String, const XBMCAddon::xbmcgui::ListItem* > >::const_iterator it = items.begin(); it != items.end(); ++it)
+    for (std::vector<Alternative<String, const XBMCAddon::xbmcgui::ListItem* > >::const_iterator item = items.begin(); item != items.end(); ++item)
       {
-        XBMCAddon::Alternative<XBMCAddon::String, const XBMCAddon::xbmcgui::ListItem *> item = *it;
-        AddonClass::Ref<ListItem> ritem = item.which() == XBMCAddon::first ? ListItem::fromString(item.former()) : AddonClass::Ref<ListItem>(item.later());
+        AddonClass::Ref<ListItem> ritem = item->which() == XBMCAddon::first ? ListItem::fromString(item->former()) : AddonClass::Ref<ListItem>(item->later());
         CFileItemPtr& fileItem = ritem->item;
         A(m_vecItems)->Add(fileItem);
       }
@@ -300,7 +302,7 @@ namespace XBMCAddon
     {
 #ifdef ENABLE_XBMC_TRACE_API
       XBMC_TRACE;
-      CLog::Log(LOGDEBUG,"%sMessage id:%d",_tg.getSpaces(),(int)message.GetMessage());
+      CLog::Log(LOGDEBUG, "%sMessage id:%i", _tg.getSpaces(), (int)message.GetMessage());
 #endif
 
       //! @todo We shouldn't be dropping down to CGUIWindow in any of this ideally.

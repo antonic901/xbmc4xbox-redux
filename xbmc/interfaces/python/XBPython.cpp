@@ -669,7 +669,7 @@ void XBPython::OnScriptStarted(ILanguageInvoker *invoker)
   m_vecPyList.push_back(inf);
 }
 
-void XBPython::OnScriptAbortRequested(ILanguageInvoker *invoker)
+void XBPython::NotifyScriptAborting(ILanguageInvoker *invoker)
 {
   XBMC_TRACE;
 
@@ -683,7 +683,7 @@ void XBPython::OnScriptAbortRequested(ILanguageInvoker *invoker)
     if (CHECK_FOR_ENTRY(m_vecMonitorCallbackList, (*it)))
     {
       if (invokerId < 0 || (*it)->GetInvokerId() == invokerId)
-        (*it)->OnAbortRequested();
+        (*it)->AbortNotify();
     }
   }
 }

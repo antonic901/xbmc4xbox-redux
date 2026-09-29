@@ -8,6 +8,8 @@
 
 #include "Monitor.h"
 
+#include "threads/SystemClock.h"
+
 #include <algorithm>
 #include <math.h>
 
@@ -26,24 +28,27 @@ namespace XBMCAddon
       }
     }
 
-    void Monitor::OnAbortRequested()
+    void Monitor::AbortNotify()
     {
       XBMC_TRACE;
       abortEvent.Set();
-      invokeCallback(new CallbackFunction<Monitor>(this,&Monitor::onAbortRequested));
     }
 
     bool Monitor::waitForAbort(double timeout)
     {
       XBMC_TRACE;
       int timeoutMS = ceil(timeout * 1000);
-      XbmcThreads::EndTime endTime(timeoutMS > 0 ? timeoutMS : XbmcThreads::EndTime::InfiniteValue);
+      XbmcThreads::EndTime endTime(timeoutMS);
+
+      if (timeoutMS <= 0)
+        endTime.SetInfinite();
+
       while (!endTime.IsTimePast())
       {
         {
           DelayedCallGuard dg(languageHook);
-          unsigned int t = std::min(endTime.MillisLeft(), 100u);
-          if (abortEvent.WaitMSec(t))
+          unsigned int waitTime = std::min(endTime.MillisLeft(), 100U);
+          if (abortEvent.WaitMSec(waitTime))
             return true;
         }
         if (languageHook)

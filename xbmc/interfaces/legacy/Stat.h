@@ -56,35 +56,32 @@ namespace XBMCAddon
       ///
       /// \ingroup python_stat
       /// @brief \python_func{ st_mode() }
-      ///-----------------------------------------------------------------------
       /// To get file protection.
       ///
       /// @return                        st_mode
       ///
       st_mode();
 #else
-      inline long long st_mode() { return st.st_mode; };
+      inline long long st_mode() { return st.st_mode; }
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_stat
       /// @brief \python_func{ st_ino() }
-      ///-----------------------------------------------------------------------
       /// To get inode number.
       ///
       /// @return                        st_ino
       ///
       st_ino();
 #else
-      inline long long st_ino() { return st.st_ino; };
+      inline long long st_ino() { return st.st_ino; }
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_stat
       /// @brief \python_func{ st_dev() }
-      ///-----------------------------------------------------------------------
       /// To get ID of device containing file.
       ///
       /// The st_dev field describes the device on which this file resides.
@@ -93,56 +90,52 @@ namespace XBMCAddon
       ///
       st_dev();
 #else
-      inline long long st_dev() { return st.st_dev; };
+      inline long long st_dev() { return st.st_dev; }
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_stat
       /// @brief \python_func{ st_nlink() }
-      ///-----------------------------------------------------------------------
       /// To get number of hard links.
       ///
       /// @return                        st_nlink
       ///
       st_nlink();
 #else
-      inline long long st_nlink() { return st.st_nlink; };
+      inline long long st_nlink() { return st.st_nlink; }
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_stat
       /// @brief \python_func{ st_uid() }
-      ///-----------------------------------------------------------------------
       /// To get user ID of owner.
       ///
       /// @return                        st_uid
       ///
       st_uid();
 #else
-      inline long long st_uid() { return st.st_uid; };
+      inline long long st_uid() { return st.st_uid; }
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_stat
       /// @brief \python_func{ st_gid() }
-      ///-----------------------------------------------------------------------
       /// To get group ID of owner.
       ///
       /// @return                        st_gid
       ///
       st_gid();
 #else
-      inline long long st_gid() { return st.st_gid; };
+      inline long long st_gid() { return st.st_gid; }
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_stat
       /// @brief \python_func{ st_size() }
-      ///-----------------------------------------------------------------------
       /// To get total size, in bytes.
       ///
       /// The st_size field gives the size of the file (if it is a regular file
@@ -154,14 +147,13 @@ namespace XBMCAddon
       ///
       st_size();
 #else
-      inline long long st_size() { return st.st_size; };
+      inline long long st_size() { return st.st_size; }
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_stat
       /// @brief \python_func{ st_atime() }
-      ///-----------------------------------------------------------------------
       /// To get time of last access.
       ///
       /// @return                        st_atime
@@ -175,28 +167,26 @@ namespace XBMCAddon
       ///
       /// \ingroup python_stat
       /// @brief \python_func{ st_mtime() }
-      ///-----------------------------------------------------------------------
       /// To get time of last modification.
       ///
       /// @return                        st_mtime
       ///
       st_mtime();
 #else
-      inline long long mtime() { return st.st_mtime; };
+      inline long long mtime() { return st.st_mtime; }
 #endif
 
 #ifdef DOXYGEN_SHOULD_USE_THIS
       ///
       /// \ingroup python_stat
       /// @brief \python_func{ st_ctime() }
-      ///-----------------------------------------------------------------------
       /// To get time of last status change.
       ///
       /// @return                        st_ctime
       ///
       st_ctime();
 #else
-      inline long long ctime() { return st.st_ctime; };
+      inline long long ctime() { return st.st_ctime; }
 #endif
     };
     /// @}

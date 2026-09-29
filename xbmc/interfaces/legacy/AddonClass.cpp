@@ -55,12 +55,13 @@ namespace XBMCAddon
   void AddonClass::Release() const
   {
     if (isDeleted)
-      CLog::Log(LOGERROR,"NEWADDON REFCNT Releasing dead class %s 0x%lx",
-                GetClassname(), (long)(((void*)this)));
+      CLog::Log(LOGERROR, "NEWADDON REFCNT Releasing dead class %s 0x%x", GetClassname(),
+                (long)(((void*)this)));
 
-    long ct = AtomicDecrement((long*)&refs);
+    long ct = AtomicDecrement(&refs);
 #ifdef LOG_LIFECYCLE_EVENTS
-    CLog::Log(LOGDEBUG,"NEWADDON REFCNT decrementing to %ld on %s 0x%lx", refs, GetClassname(), (long)(((void*)this)));
+    CLog::Log(LOGDEBUG, "NEWADDON REFCNT decrementing to %i on %s 0x%x", ct,
+              GetClassname(), (long)(((void*)this)));
 #endif
     if(ct == 0)
     {
@@ -73,14 +74,14 @@ namespace XBMCAddon
   void AddonClass::Acquire() const
   {
     if (isDeleted)
-      CLog::Log(LOGERROR,"NEWADDON REFCNT Acquiring dead class %s 0x%lx",
-                GetClassname(), (long)(((void*)this)));
+      CLog::Log(LOGERROR, "NEWADDON REFCNT Acquiring dead class %s 0x%x", GetClassname(),
+                (long)(((void*)this)));
 
 #ifdef LOG_LIFECYCLE_EVENTS
-    CLog::Log(LOGDEBUG,"NEWADDON REFCNT incrementing to %ld on %s 0x%lx",
-              AtomicIncrement((long*)&refs), GetClassname(), (long)(((void*)this)));
+    CLog::Log(LOGDEBUG, "NEWADDON REFCNT incrementing to %li on %s 0x%x", AtomicIncrement(&refs), GetClassname(),
+              (long)(((void*)this)));
 #else
-    AtomicIncrement((long*)&refs);
+    AtomicIncrement(&refs);
 #endif
   }
 #endif

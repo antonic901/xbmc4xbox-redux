@@ -10,7 +10,6 @@
 
 #include "Window.h"
 #include "guilib/GUIWindow.h"
-
 #include "threads/ThreadLocal.h"
 
 namespace XBMCAddon
@@ -116,7 +115,8 @@ namespace XBMCAddon
       {
 #ifdef ENABLE_XBMC_TRACE_API
         XBMCAddonUtils::TraceGuard tg;
-        CLog::Log(LOGDEBUG, "%sNEWADDON constructing %s 0x%lx", tg.getSpaces(),classname.c_str(), (long)(((void*)this)));
+        CLog::Log(LOGDEBUG, "%sNEWADDON constructing %s 0x%x", tg.getSpaces(), classname.c_str(),
+                  (long)(((void*)this)));
 #endif
         window.reset(_window);
         P::SetLoadType(CGUIWindow::LOAD_ON_GUI_INIT);
@@ -129,7 +129,8 @@ namespace XBMCAddon
       {
 #ifdef ENABLE_XBMC_TRACE_API
         XBMCAddonUtils::TraceGuard tg;
-        CLog::Log(LOGDEBUG, "%sNEWADDON constructing %s 0x%lx", tg.getSpaces(),classname.c_str(), (long)(((void*)this)));
+        CLog::Log(LOGDEBUG, "%sNEWADDON constructing %s 0x%x", tg.getSpaces(), classname.c_str(),
+                  (long)(((void*)this)));
 #endif
         window.reset(_window);
         P::SetLoadType(CGUIWindow::LOAD_ON_GUI_INIT);
@@ -139,10 +140,11 @@ namespace XBMCAddon
       virtual ~Interceptor()
       {
         XBMCAddonUtils::TraceGuard tg;
-        CLog::Log(LOGDEBUG, "%sNEWADDON LIFECYCLE destroying %s 0x%lx", tg.getSpaces(),classname.c_str(), (long)(((void*)this)));
+        CLog::Log(LOGDEBUG, "%sNEWADDON LIFECYCLE destroying %s 0x%x", tg.getSpaces(), classname.c_str(),
+                  (long)(((void*)this)));
       }
 #else
-      virtual ~Interceptor() {};
+      virtual ~Interceptor() {}
 #endif
 
       virtual bool OnMessage(CGUIMessage& message)
@@ -157,11 +159,27 @@ namespace XBMCAddon
       virtual void OnDeinitWindow(int nextWindowID)
       { XBMC_TRACE; if(up()) P::OnDeinitWindow(nextWindowID); else checkedv(OnDeinitWindow(nextWindowID)); }
 
-      virtual bool IsModalDialog() const { XBMC_TRACE; return checkedb(IsModalDialog()); };
+      virtual bool IsModalDialog() const
+      {
+        XBMC_TRACE;
+        return checkedb(IsModalDialog());
+      }
 
-      virtual bool IsDialogRunning() const { XBMC_TRACE; return checkedb(IsDialogRunning()); };
-      virtual bool IsDialog() const { XBMC_TRACE; return checkedb(IsDialog()); };
-      virtual bool IsMediaWindow() const { XBMC_TRACE; return checkedb(IsMediaWindow()); };
+      virtual bool IsDialogRunning() const
+      {
+        XBMC_TRACE;
+        return checkedb(IsDialogRunning());
+      }
+      virtual bool IsDialog() const
+      {
+        XBMC_TRACE;
+        return checkedb(IsDialog());
+      }
+      virtual bool IsMediaWindow() const
+      {
+        XBMC_TRACE;
+        return checkedb(IsMediaWindow());
+      }
 
       virtual void SetRenderOrder(int renderOrder) { XBMC_TRACE; P::m_renderOrder = renderOrder; }
 
