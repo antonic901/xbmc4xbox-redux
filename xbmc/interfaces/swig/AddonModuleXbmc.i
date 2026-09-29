@@ -37,6 +37,7 @@ using namespace xbmc;
 
 %include "interfaces/legacy/AddonString.h"
 %include "interfaces/legacy/ModuleXbmc.h"
+%include "interfaces/legacy/Dictionary.h"
 
 %feature("director") Player;
 
