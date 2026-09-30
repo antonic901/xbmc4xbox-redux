@@ -281,14 +281,51 @@ void CGraphicContext::SetScissors(const CRect &rect)
     return;
 
   m_scissors = rect;
-  m_scissors.Intersect(CRect(0,0,(float)m_iScreenWidth, (float)m_iScreenHeight));
+  m_scissors.Intersect(CRect(0, 0, (float)m_iScreenWidth, (float)m_iScreenHeight));
 
-  D3DRECT scissor;
-  scissor.x1 = MathUtils::round_int(m_scissors.x1);
-  scissor.y1 = MathUtils::round_int(m_scissors.y1);
-  scissor.x2 = MathUtils::round_int(m_scissors.x2);
-  scissor.y2 = MathUtils::round_int(m_scissors.y2);
-  m_pd3dDevice->SetScissors(1, TRUE, &scissor);
+  // In IDirect3DDevice8::SetScissors, scissors are inverted. We pass to the scissors
+  // what we DON'T want to modify. We draw at most 4 Rects to invert the original
+  // Rect. See https://github.com/antonic901/xbmc4xbox-redux/issues/161
+  D3DRECT scissors[4];
+  int scissorCount = 0;
+
+  if (m_scissors.y1 > 0)
+  {
+    scissors[scissorCount].x1 = 0;
+    scissors[scissorCount].y1 = 0;
+    scissors[scissorCount].x2 = m_iScreenWidth;
+    scissors[scissorCount].y2 = MathUtils::round_int(m_scissors.y1);
+    scissorCount++;
+  }
+
+  if (m_scissors.y2 < m_iScreenHeight)
+  {
+    scissors[scissorCount].x1 = 0;
+    scissors[scissorCount].y1 = MathUtils::round_int(m_scissors.y2);
+    scissors[scissorCount].x2 = m_iScreenWidth;
+    scissors[scissorCount].y2 = m_iScreenHeight;
+    scissorCount++;
+  }
+
+  if (m_scissors.x1 > 0)
+  {
+    scissors[scissorCount].x1 = 0;
+    scissors[scissorCount].y1 = MathUtils::round_int(m_scissors.y1);
+    scissors[scissorCount].x2 = MathUtils::round_int(m_scissors.x1);
+    scissors[scissorCount].y2 = MathUtils::round_int(m_scissors.y2);
+    scissorCount++;
+  }
+
+  if (m_scissors.x2 < m_iScreenWidth)
+  {
+    scissors[scissorCount].x1 = MathUtils::round_int(m_scissors.x2);
+    scissors[scissorCount].y1 = MathUtils::round_int(m_scissors.y1);
+    scissors[scissorCount].x2 = m_iScreenWidth;
+    scissors[scissorCount].y2 = MathUtils::round_int(m_scissors.y2);
+    scissorCount++;
+  }
+
+  m_pd3dDevice->SetScissors(scissorCount, TRUE, scissors);
 }
 
 void CGraphicContext::ResetScissors()
@@ -298,12 +335,7 @@ void CGraphicContext::ResetScissors()
 
   m_scissors.SetRect(0, 0, (float)m_iScreenWidth, (float)m_iScreenHeight);
 
-  D3DRECT scissor;
-  scissor.x1 = 0;
-  scissor.y1 = 0;
-  scissor.x2 = CDisplaySettings::GetInstance().GetCurrentResolutionInfo().iWidth;
-  scissor.y2 = CDisplaySettings::GetInstance().GetCurrentResolutionInfo().iHeight;
-  m_pd3dDevice->SetScissors(0, FALSE, &scissor);
+  m_pd3dDevice->SetScissors(0, FALSE, NULL);
 }
 
 const CRect& CGraphicContext::GetViewWindow() const
@@ -694,11 +726,21 @@ float CGraphicContext::GetPixelRatio(RESOLUTION iRes) const
 void CGraphicContext::Clear(UTILS::COLOR::Color color)
 {
   if (!m_pd3dDevice) return;
-  //Not trying to clear the zbuffer when there is none is 7 fps faster (pal resolution)
+
+  // IDirect3DDevice8::Clear doesn't respect IDirect3DDevice8::SetScissors on the Xbox, so we call Clear with
+  // the last scissor region, which should be equal to the last dirty region or the entire screen if
+  // dirty regions are disabled.
+  D3DRECT d3dRect;
+  d3dRect.x1 = MathUtils::round_int(m_scissors.x1);
+  d3dRect.y1 = MathUtils::round_int(m_scissors.y1);
+  d3dRect.x2 = MathUtils::round_int(m_scissors.x2);
+  d3dRect.y2 = MathUtils::round_int(m_scissors.y2);
+
+  // Not trying to clear the zbuffer when there is none is 7 fps faster (pal resolution)
   if ((!m_pd3dParams) || (m_pd3dParams->EnableAutoDepthStencil == TRUE))
-    m_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3D_CLEAR_STENCIL, color, 1.0f, 0L );
+    m_pd3dDevice->Clear(1L, &d3dRect, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3D_CLEAR_STENCIL, color, 1.0f, 0L);
   else
-    m_pd3dDevice->Clear( 0L, NULL, D3DCLEAR_TARGET, color, 1.0f, 0L );
+    m_pd3dDevice->Clear(1L, &d3dRect, D3DCLEAR_TARGET, color, 1.0f, 0L);
 }
 
 void CGraphicContext::CaptureStateBlock()
