@@ -40,6 +40,7 @@
 #include "GUITextBox.h"
 #include "GUIToggleButtonControl.h"
 #include "GUIVideoControl.h"
+#include "GUIVisualisationControl.h"
 #include "GUIWrappingListContainer.h"
 #include "LocalizeStrings.h"
 #include "addons/Skin.h"
@@ -1537,6 +1538,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID,
     }
     case CGUIControl::GUICONTROL_VISUALISATION:
     {
+      control = new CGUIVisualisationControl(parentID, id, posX, posY, width, height);
       break;
     }
     case CGUIControl::GUICONTROL_RENDERADDON:

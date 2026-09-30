@@ -60,9 +60,6 @@ IAddonInstanceHandler::IAddonInstanceHandler(
   info->functions->set_instance_setting_string = set_instance_setting_string;
   m_ifc.info = info;
   m_ifc.functions = new KODI_ADDON_INSTANCE_FUNC();
-
-  m_info = KODI_ADDON_INSTANCE_INFO();
-  m_ifc = KODI_ADDON_INSTANCE_STRUCT();
 }
 
 IAddonInstanceHandler::~IAddonInstanceHandler()
