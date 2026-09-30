@@ -1,5 +1,8 @@
 <addons>
-  <!-- when you add new default addon add it here too -->
+  <addon>kodi.binary.global.filesystem</addon>
+  <addon>kodi.binary.global.main</addon>
+  <addon>kodi.binary.instance.screensaver</addon>
+  <addon>kodi.binary.instance.visualization</addon>
   <addon>kodi.resource</addon>
   <addon>metadata.albums.theaudiodb.com</addon>
   <addon>metadata.artists.theaudiodb.com</addon>
