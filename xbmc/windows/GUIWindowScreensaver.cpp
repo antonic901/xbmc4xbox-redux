@@ -44,20 +44,11 @@ void CGUIWindowScreensaver::Process(unsigned int currentTime, CDirtyRegionList& 
 
 void CGUIWindowScreensaver::Render()
 {
-  // FIXME/TODO: Screensaver addons should make the screen black instead
-  // keeping this just for compatibility reasons since it's now a dialog.
-  CGUITexture::DrawQuad(m_renderRegion, UTILS::COLOR::BLACK);
-
   if (m_addon)
   {
     CGraphicContext &context = CServiceBroker::GetWinSystem()->GetGfxContext();
 
-#ifdef HAS_XBOX_D3D
-    if (m_addon->ID() == "screensaver.cpblobs" || m_addon->ID() == "screensaver.pmblobs" || m_addon->ID() == "screensaver.drempels")
-      context.ApplyStateBlock();
-    else
-#endif
-      context.CaptureStateBlock();
+    context.CaptureStateBlock();
     m_addon->Render();
     context.ApplyStateBlock();
     return;
@@ -103,12 +94,7 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
     {
       CGUIWindow::OnMessage(message);
 
-#ifdef HAS_XBOX_D3D
-      if (m_addon->ID() == "screensaver.cpblobs" || m_addon->ID() == "screensaver.pmblobs" || m_addon->ID() == "screensaver.drempels")
-        CServiceBroker::GetWinSystem()->GetGfxContext().ApplyStateBlock();
-      else
-#endif
-        CServiceBroker::GetWinSystem()->GetGfxContext().CaptureStateBlock();
+      CServiceBroker::GetWinSystem()->GetGfxContext().CaptureStateBlock();
 
       const std::string addon = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(
           CSettings::SETTING_SCREENSAVER_MODE);
