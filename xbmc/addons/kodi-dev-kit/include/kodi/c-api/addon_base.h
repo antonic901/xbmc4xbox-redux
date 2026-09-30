@@ -19,7 +19,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#ifndef TARGET_WINDOWS
+#if !defined(TARGET_WINDOWS) && !defined(_XBOX)
 #ifndef __cdecl
 #define __cdecl
 #endif

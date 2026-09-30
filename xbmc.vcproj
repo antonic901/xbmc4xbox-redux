@@ -3313,6 +3313,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\addons\interfaces\AddonBase.cpp">
 					</File>
 					<File
+						RelativePath=".\xbmc\addons\interfaces\Filesystem.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\addons\interfaces\Filesystem.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\addons\interfaces\AddonBase.h">
 					</File>
 				</Filter>

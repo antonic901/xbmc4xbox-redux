@@ -28,13 +28,7 @@
 #include "utils/log.h"
 
 // "C" interface addon callback handle classes
-#if 0
-#include "AudioEngine.h"
 #include "Filesystem.h"
-#include "General.h"
-#include "Network.h"
-#include "gui/General.h"
-#endif
 
 namespace ADDON
 {
@@ -84,26 +78,14 @@ bool Interface_Base::InitInterface(CAddonDll* addon,
   addonInterface.toAddon = new KodiToAddonFuncTable_Addon();
 
   // Init the other interfaces
-#if 0
-  Interface_General::Init(&addonInterface);
-  Interface_AudioEngine::Init(&addonInterface);
   Interface_Filesystem::Init(&addonInterface);
-  Interface_Network::Init(&addonInterface);
-  Interface_GUIGeneral::Init(&addonInterface);
-#endif
 
   return true;
 }
 
 void Interface_Base::DeInitInterface(AddonGlobalInterface& addonInterface)
 {
-#if 0
-  Interface_GUIGeneral::DeInit(&addonInterface);
-  Interface_Network::DeInit(&addonInterface);
   Interface_Filesystem::DeInit(&addonInterface);
-  Interface_AudioEngine::DeInit(&addonInterface);
-  Interface_General::DeInit(&addonInterface);
-#endif
 
   if (addonInterface.toKodi)
     delete addonInterface.toKodi->kodi_addon;
