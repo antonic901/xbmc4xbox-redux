@@ -30,6 +30,7 @@
   <addon>xbmc.addon</addon>
   <addon>xbmc.core</addon>
   <addon>xbmc.gui</addon>
+  <addon>xbmc.json</addon>
   <addon>xbmc.metadata</addon>
   <addon>xbmc.python</addon>
   <addon>xbmc.webinterface</addon>

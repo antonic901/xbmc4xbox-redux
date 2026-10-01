@@ -1,16 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addon
   id="webinterface.default"
-  version="2.0.0"
-  name="Default"
-  provider-name="Team XBMC">
+  version="21.x-1.0.1"
+  name="Kodi web interface - Chorus2"
+  provider-name="jez500, Team Kodi">
   <requires>
-    <import addon="xbmc.gui" version="5.17.0"/>
+    <import addon="xbmc.json" version="6.0.0" />
   </requires>
   <extension point="xbmc.webinterface"/>
   <extension point="xbmc.addon.metadata">
     <platform>all</platform>
-    <summary lang="en_GB">Team XBMC Web Interface. (XBMC's default web interface)</summary>
-    <description lang="en_GB">Default web interface for XBMC; Designed for devices of all resolutions</description>
+    <source>https://github.com/xbmc/chorus2</source>
+    <forum>http://forum.xbmc.org/showthread.php?tid=183451</forum>
+    <assets>
+      <icon>icon.png</icon>
+      <fanart>images/turntable.jpg</fanart>
+      <screenshot>screenshots/now-playing.jpg</screenshot>
+      <screenshot>screenshots/search.jpg</screenshot>
+      <screenshot>screenshots/artists.jpg</screenshot>
+      <screenshot>screenshots/artist.jpg</screenshot>
+      <screenshot>screenshots/tv.jpg</screenshot>
+      <screenshot>screenshots/movie.jpg</screenshot>
+      <screenshot>screenshots/settings.jpg</screenshot>
+      <screenshot>screenshots/addons.jpg</screenshot>
+      <screenshot>screenshots/edit-media.jpg</screenshot>
+    </assets>
+    <summary lang="en_GB">Default web interface</summary>
+    <description lang="en_GB">Browse and interact with your Music, Movies, TV Shows and more via a web browser. Stream music and videos on your browser. Edit and manage your Kodi media library.</description>
   </extension>
 </addon>
