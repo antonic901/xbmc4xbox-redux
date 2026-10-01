@@ -554,6 +554,10 @@ namespace XBMCAddon
     {
       return CNetworkServices::ES_EVENTSERVER;
     }
+    int getSERVER_JSONRPCSERVER()
+    {
+      return CNetworkServices::ES_JSONRPCSERVER;
+    }
 
     int getPLAYLIST_MUSIC()
     {

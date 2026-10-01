@@ -739,6 +739,7 @@ namespace XBMCAddon
     /// | Value                     | Description                                                |
     /// |--------------------------:|------------------------------------------------------------|
     /// | xbmc.SERVER_WEBSERVER     | [To control Kodi's builtin webserver](http://kodi.wiki/view/Webserver)
+    /// | xbmc.SERVER_JSONRPCSERVER | [Control JSON-RPC HTTP/TCP socket-based interface](http://kodi.wiki/view/JSON-RPC_API)
     /// | xbmc.SERVER_UPNPRENDERER  | [UPnP client (aka UPnP renderer)](http://kodi.wiki/view/UPnP/Client)
     /// | xbmc.SERVER_UPNPSERVER    | [Control built-in UPnP A/V media server (UPnP-server)](http://kodi.wiki/view/UPnP/Server)
     /// | xbmc.SERVER_EVENTSERVER   | [Set eventServer part that accepts remote device input on all platforms](http://kodi.wiki/view/EventServer)
@@ -868,6 +869,7 @@ namespace XBMCAddon
     SWIG_CONSTANT_FROM_GETTER(int, SERVER_UPNPSERVER);
     SWIG_CONSTANT_FROM_GETTER(int, SERVER_UPNPRENDERER);
     SWIG_CONSTANT_FROM_GETTER(int, SERVER_EVENTSERVER);
+    SWIG_CONSTANT_FROM_GETTER(int, SERVER_JSONRPCSERVER);
 
     SWIG_CONSTANT_FROM_GETTER(int, PLAYLIST_MUSIC);
     SWIG_CONSTANT_FROM_GETTER(int, PLAYLIST_VIDEO);

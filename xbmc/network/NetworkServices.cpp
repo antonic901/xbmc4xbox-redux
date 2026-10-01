@@ -17,11 +17,15 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "interfaces/json-rpc/JSONRPC.h"
 #include "messaging/ApplicationMessenger.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "messaging/helpers/DialogOKHelper.h"
 #include "network/EventServer.h"
 #include "network/Network.h"
+#if 0
+#include "network/TCPServer.h"
+#endif
 #include "profiles/ProfileManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
@@ -42,11 +46,23 @@
 
 #ifdef HAS_WEB_SERVER
 #include "network/WebServer.h"
+#include "network/httprequesthandler/HTTPImageHandler.h"
+#include "network/httprequesthandler/HTTPImageTransformationHandler.h"
+#include "network/httprequesthandler/HTTPVfsHandler.h"
+#include "network/httprequesthandler/HTTPJsonRpcHandler.h"
+#ifdef HAS_WEB_INTERFACE
+#ifdef HAS_PYTHON
+#include "network/httprequesthandler/HTTPPythonHandler.h"
+#endif
+#include "network/httprequesthandler/HTTPWebinterfaceHandler.h"
+#include "network/httprequesthandler/HTTPWebinterfaceAddonsHandler.h"
+#endif // HAS_WEB_INTERFACE
 #endif // HAS_WEB_SERVER
 
 #include "libFileZilla/XBFileZilla.h"
 
 using namespace KODI::MESSAGING;
+using namespace JSONRPC;
 using namespace EVENTSERVER;
 #ifdef HAS_UPNP
 using namespace UPNP;
@@ -55,10 +71,34 @@ using namespace UPNP;
 CNetworkServices::CNetworkServices()
 #ifdef HAS_WEB_SERVER
   : m_webserver(*new CWebServer),
+  m_httpImageHandler(*new CHTTPImageHandler),
+  m_httpImageTransformationHandler(*new CHTTPImageTransformationHandler),
+  m_httpVfsHandler(*new CHTTPVfsHandler),
+  m_httpJsonRpcHandler(*new CHTTPJsonRpcHandler)
+#ifdef HAS_WEB_INTERFACE
+#ifdef HAS_PYTHON
+  , m_httpPythonHandler(*new CHTTPPythonHandler)
+#endif
+  , m_httpWebinterfaceHandler(*new CHTTPWebinterfaceHandler)
+  , m_httpWebinterfaceAddonsHandler(*new CHTTPWebinterfaceAddonsHandler)
+#endif // HAS_WEB_INTERFACE
 #endif // HAS_WEB_SERVER
-    m_sntpclient(NULL),
-    m_filezilla(NULL)
+  , m_sntpclient(NULL)
+  , m_filezilla(NULL)
 {
+#ifdef HAS_WEB_SERVER
+  m_webserver.RegisterRequestHandler(&m_httpImageHandler);
+  m_webserver.RegisterRequestHandler(&m_httpImageTransformationHandler);
+  m_webserver.RegisterRequestHandler(&m_httpVfsHandler);
+  m_webserver.RegisterRequestHandler(&m_httpJsonRpcHandler);
+#ifdef HAS_WEB_INTERFACE
+#ifdef HAS_PYTHON
+  m_webserver.RegisterRequestHandler(&m_httpPythonHandler);
+#endif
+  m_webserver.RegisterRequestHandler(&m_httpWebinterfaceAddonsHandler);
+  m_webserver.RegisterRequestHandler(&m_httpWebinterfaceHandler);
+#endif // HAS_WEB_INTERFACE
+#endif // HAS_WEB_SERVER
   std::set<std::string> settingSet;
   settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVER);
   settingSet.insert(CSettings::SETTING_SERVICES_WEBSERVERPORT);
@@ -88,6 +128,25 @@ CNetworkServices::~CNetworkServices()
 {
   m_settings->GetSettingsManager()->UnregisterCallback(this);
 #ifdef HAS_WEB_SERVER
+  m_webserver.UnregisterRequestHandler(&m_httpImageHandler);
+  delete &m_httpImageHandler;
+  m_webserver.UnregisterRequestHandler(&m_httpImageTransformationHandler);
+  delete &m_httpImageTransformationHandler;
+  m_webserver.UnregisterRequestHandler(&m_httpVfsHandler);
+  delete &m_httpVfsHandler;
+  m_webserver.UnregisterRequestHandler(&m_httpJsonRpcHandler);
+  delete &m_httpJsonRpcHandler;
+  CJSONRPC::Cleanup();
+#ifdef HAS_WEB_INTERFACE
+#ifdef HAS_PYTHON
+  m_webserver.UnregisterRequestHandler(&m_httpPythonHandler);
+  delete &m_httpPythonHandler;
+#endif
+  m_webserver.UnregisterRequestHandler(&m_httpWebinterfaceAddonsHandler);
+  delete &m_httpWebinterfaceAddonsHandler;
+  m_webserver.UnregisterRequestHandler(&m_httpWebinterfaceHandler);
+  delete &m_httpWebinterfaceHandler;
+#endif // HAS_WEB_INTERFACE
   delete &m_webserver;
 #endif // HAS_WEB_SERVER
   delete m_sntpclient;
@@ -216,12 +275,18 @@ bool CNetworkServices::OnSettingChanging(const boost::shared_ptr<const CSetting>
         result = false;
       }
 
+      if (!StartJSONRPCServer())
+      {
+        HELPERS::ShowOKDialogText(33103, 33100);
+        result = false;
+      }
       return result;
     }
     else
     {
       bool result = true;
       result = StopEventServer(true, true);
+      result &= StopJSONRPCServer(false);
       return result;
     }
   }
@@ -257,6 +322,18 @@ bool CNetworkServices::OnSettingChanging(const boost::shared_ptr<const CSetting>
         return false;
       }
     }
+
+    if (m_settings->GetBool(CSettings::SETTING_SERVICES_ESENABLED))
+    {
+      if (!StopJSONRPCServer(true))
+        return false;
+
+      if (!StartJSONRPCServer())
+      {
+        HELPERS::ShowOKDialogText(33103, 33100);
+        return false;
+      }
+    }
   }
 
   else if (settingId == CSettings::SETTING_SERVICES_ESINITIALDELAY ||
@@ -265,6 +342,7 @@ bool CNetworkServices::OnSettingChanging(const boost::shared_ptr<const CSetting>
     if (m_settings->GetBool(CSettings::SETTING_SERVICES_ESENABLED))
       return RefreshEventServer();
   }
+
   else if (settingId == CSettings::SETTING_SERVICES_TIMESERVER)
   {
     if (m_settings->GetBool(CSettings::SETTING_SERVICES_TIMESERVER))
@@ -345,14 +423,30 @@ void CNetworkServices::Start()
     StartUPnP();
   if (m_settings->GetBool(CSettings::SETTING_SERVICES_ESENABLED) && !StartEventServer())
     CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33102), g_localizeStrings.Get(33100));
+  if (m_settings->GetBool(CSettings::SETTING_SERVICES_ESENABLED) && !StartJSONRPCServer())
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33103), g_localizeStrings.Get(33100));
 
 #ifdef HAS_WEB_SERVER
   // Start web server after eventserver and JSON-RPC server, so users can use these interfaces
   // to confirm the warning message below if it is shown
   if (m_settings->GetBool(CSettings::SETTING_SERVICES_WEBSERVER))
   {
+    // services.webserverauthentication setting was added in Kodi v18 and requires a valid password
+    // to be set, but on upgrade the setting will be activated automatically regardless of whether
+    // a password was set before -> this can lead to an invalid configuration
+    if (m_settings->GetBool(CSettings::SETTING_SERVICES_WEBSERVERAUTHENTICATION) &&
+        m_settings->GetString(CSettings::SETTING_SERVICES_WEBSERVERPASSWORD).empty())
+    {
+      // Alert user to new default security settings in new Kodi version
+      HELPERS::ShowOKDialogText(33101, 33104);
+      // Fix settings: Disable web server
+      m_settings->SetBool(CSettings::SETTING_SERVICES_WEBSERVER, false);
+      // Bring user to settings screen where authentication can be configured properly
+      CServiceBroker::GetGUI()->GetWindowManager().ActivateWindow(
+          WINDOW_SETTINGS_SERVICE, std::vector<std::string>(1, "services.webserverauthentication"));
+    }
     // Only try to start server if configuration is OK
-    if (!StartWebserver())
+    else if (!StartWebserver())
       CGUIDialogKaiToast::QueueNotification(
           CGUIDialogKaiToast::Warning, g_localizeStrings.Get(33101), g_localizeStrings.Get(33100));
   }
@@ -375,6 +469,7 @@ void CNetworkServices::Stop(bool bWait)
   }
 
   StopEventServer(bWait, false);
+  StopJSONRPCServer(bWait);
 }
 
 bool CNetworkServices::StartServer(enum ESERVERS server, bool start)
@@ -393,6 +488,11 @@ bool CNetworkServices::StartServer(enum ESERVERS server, bool start)
     case ES_WEBSERVER:
       // the callback will take care of starting/stopping webserver
       ret = settings->SetBool(CSettings::SETTING_SERVICES_WEBSERVER, start);
+      break;
+
+    case ES_JSONRPCSERVER:
+      // the callback will take care of starting/stopping jsonrpc server
+      ret = settings->SetBool(CSettings::SETTING_SERVICES_ESENABLED, start);
       break;
 
     case ES_UPNPSERVER:
@@ -495,6 +595,42 @@ bool CNetworkServices::StopWebserver()
   return true;
 #endif // HAS_WEB_SERVER
   return false;
+}
+
+bool CNetworkServices::StartJSONRPCServer()
+{
+  if (!m_settings->GetBool(CSettings::SETTING_SERVICES_ESENABLED))
+    return false;
+
+  if (IsJSONRPCServerRunning())
+    return true;
+
+#if 0
+  if (!CTCPServer::StartServer(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_jsonTcpPort, m_settings->GetBool(CSettings::SETTING_SERVICES_ESALLINTERFACES)))
+   return false;
+#endif
+
+  return true;
+}
+
+bool CNetworkServices::IsJSONRPCServerRunning()
+{
+#if 0
+  return CTCPServer::IsRunning();
+#endif
+  return false;
+}
+
+bool CNetworkServices::StopJSONRPCServer(bool bWait)
+{
+  if (!IsJSONRPCServerRunning())
+    return true;
+
+#if 0
+  CTCPServer::StopServer(bWait);
+#endif
+
+  return true;
 }
 
 bool CNetworkServices::StartEventServer()

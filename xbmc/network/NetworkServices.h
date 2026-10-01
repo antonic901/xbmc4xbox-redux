@@ -14,6 +14,17 @@ class CSettings;
 class CSNTPClient;
 #ifdef HAS_WEB_SERVER
 class CWebServer;
+class CHTTPImageHandler;
+class CHTTPImageTransformationHandler;
+class CHTTPVfsHandler;
+class CHTTPJsonRpcHandler;
+#ifdef HAS_WEB_INTERFACE
+#ifdef HAS_PYTHON
+class CHTTPPythonHandler;
+#endif
+class CHTTPWebinterfaceHandler;
+class CHTTPWebinterfaceAddonsHandler;
+#endif // HAS_WEB_INTERFACE
 #endif // HAS_WEB_SERVER
 class CXBFileZilla;
 
@@ -35,6 +46,7 @@ public:
   enum ESERVERS
   {
     ES_WEBSERVER = 1,
+    ES_JSONRPCSERVER,
     ES_UPNPRENDERER,
     ES_UPNPSERVER,
     ES_EVENTSERVER,
@@ -47,6 +59,10 @@ public:
   bool StartWebserver();
   bool IsWebserverRunning();
   bool StopWebserver();
+
+  bool StartJSONRPCServer();
+  bool IsJSONRPCServerRunning();
+  bool StopJSONRPCServer(bool bWait);
 
   bool StartEventServer();
   bool IsEventServerRunning();
@@ -92,6 +108,18 @@ private:
   // Network services
 #ifdef HAS_WEB_SERVER
   CWebServer& m_webserver;
+  // Handlers
+  CHTTPImageHandler& m_httpImageHandler;
+  CHTTPImageTransformationHandler& m_httpImageTransformationHandler;
+  CHTTPVfsHandler& m_httpVfsHandler;
+  CHTTPJsonRpcHandler& m_httpJsonRpcHandler;
+#ifdef HAS_WEB_INTERFACE
+#ifdef HAS_PYTHON
+  CHTTPPythonHandler& m_httpPythonHandler;
+#endif
+  CHTTPWebinterfaceHandler& m_httpWebinterfaceHandler;
+  CHTTPWebinterfaceAddonsHandler& m_httpWebinterfaceAddonsHandler;
+#endif
 #endif
   CSNTPClient* m_sntpclient;
   CXBFileZilla* m_filezilla;
