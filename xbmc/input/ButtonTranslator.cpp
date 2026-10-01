@@ -596,6 +596,15 @@ int CButtonTranslator::GetFallbackWindow(int windowID)
   return -1;
 }
 
+void CButtonTranslator::GetWindows(std::vector<std::string> &windowList)
+{
+  unsigned int size = sizeof(windows) / sizeof(ActionMapping);
+  windowList.clear();
+  windowList.reserve(size);
+  for (unsigned int index = 0; index < size; index++)
+    windowList.push_back(windows[index].name);
+}
+
 CAction CButtonTranslator::GetAction(int window, const CKey &key)
 {
   std::string strAction;

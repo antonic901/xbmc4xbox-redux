@@ -40,6 +40,7 @@
 #include "input/InputManager.h"
 #include "interfaces/builtins/Builtins.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
+#include "interfaces/json-rpc/JSONRPC.h"
 #include "music/MusicLibraryQueue.h"
 #include "music/tags/MusicInfoTag.h"
 #include "network/Network.h"
@@ -139,6 +140,7 @@ using namespace MEDIA_DETECT;
 #endif
 using namespace VIDEO;
 using namespace MUSIC_INFO;
+using namespace JSONRPC;
 using namespace KODI;
 using namespace KODI::MESSAGING;
 
@@ -610,6 +612,8 @@ bool CApplication::Initialize()
   {
     uiInitializationFinished = true;
   }
+
+  CJSONRPC::Initialize();
 
   if (!m_ServiceManager->InitStageThree(profileManager))
   {
@@ -2320,8 +2324,8 @@ bool CApplication::OnMessage(CGUIMessage& message)
     CVariant param;
     const int64_t iTime = message.GetParam1AsI64();
     const int64_t seekOffset = message.GetParam2AsI64();
-    param["player"]["time"]["hours"] = iTime;
-    param["player"]["seekoffset"]["hours"] = seekOffset;
+    JSONRPC::CJSONUtils::MillisecondsToTimeObject(iTime, param["player"]["time"]);
+    JSONRPC::CJSONUtils::MillisecondsToTimeObject(seekOffset, param["player"]["seekoffset"]);
     param["player"]["playerid"] = CServiceBroker::GetPlaylistPlayer().GetCurrentPlaylist();
     const CApplicationComponents &components = CServiceBroker::GetAppComponents();
     const boost::shared_ptr<const CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();

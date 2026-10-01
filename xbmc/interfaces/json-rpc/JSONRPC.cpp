@@ -1,372 +1,401 @@
 /*
- *      Copyright (C) 2005-2010 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "JSONRPC.h"
-#include "ServiceBroker.h"
-#include "utils/log.h"
-#include "utils/Variant.h"
-#include "utils/JSONVariantParser.h"
-#include "threads/SingleLock.h"
-#include "application/ApplicationComponents.h"
-#include "application/ApplicationPlayer.h"
-#include "application/ApplicationPowerHandling.h"
-#include "application/ApplicationVolumeHandling.h"
-#include "guilib/GUIAudioManager.h"
-#include "messaging/ApplicationMessenger.h"
-#include "guilib/GUIComponent.h"
-#include "PlayListPlayer.h"
-#include "playlists/PlayList.h"
+
 #include "FileItem.h"
-#include "settings/Settings.h"
-#include "input/keyboard/Key.h"
-#include "input/keyboard/KeyIDs.h"
-#include "input/actions/Action.h"
-#include "input/actions/ActionIDs.h"
-#include "video/VideoInfoTag.h"
-#include "utils/JSONVariantParser.h"
-#include "input/keyboard/XBMC_vkeys.h"
-#include "utils/JSONVariantWriter.h"
+#include "GUIUserMessages.h"
+#include "ServiceBroker.h"
+#include "ServiceDescription.h"
+#include "TextureDatabase.h"
+#include "addons/Addon.h"
+#include "addons/IAddon.h"
+#include "addons/addoninfo/AddonInfo.h"
+#include "addons/addoninfo/AddonType.h"
+#include "dbwrappers/DatabaseQuery.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIMessage.h"
+#include "guilib/GUIWindowManager.h"
+#include "input/ButtonTranslator.h"
+#include "interfaces/AnnouncementManager.h"
+#include "playlists/SmartPlayList.h"
+#include "settings/AdvancedSettings.h"
+#include "settings/SettingsComponent.h"
+#include "utils/StringUtils.h"
+#include "utils/Variant.h"
+#include "utils/log.h"
 
+#include <string.h>
+
+#include <boost/shared_ptr.hpp>
+
+using namespace KODI;
 using namespace JSONRPC;
-using namespace PLAYLIST;
 
-static CCriticalSection s_inputCritSection;
-static uint32_t s_pendingKey = KEY_INVALID;
+bool CJSONRPC::m_initialized = false;
 
-uint32_t CJSONRPC::GetInputKey()
-{
-    CSingleLock lock(s_inputCritSection);
-    uint32_t currentKey = s_pendingKey;
-    s_pendingKey = KEY_INVALID;
-    return currentKey;
-}
-
-//
-// ===== JSON-RPC Status Codes (matches Eden) =====
-//
-enum JSON_STATUS
-{
-    OK = 0,
-    ACK = 1,
-    InvalidRequest = -32600,
-    MethodNotFound = -32601,
-    InvalidParams = -32602,
-    InternalError = -32603,
-    ParseError = -32700,
-    BadPermission = -32099,
-    FailedToExecute = -32100
-};
-
-//
-// ===== Response Builders (matches Eden CJSONRPC::BuildResponse) =====
-//
-static void BuildResponse(const CVariant &request, JSON_STATUS code, const CVariant &result, CVariant &response)
-{
-    response["jsonrpc"] = "2.0";
-    response["id"] = request.isMember("id") ? request["id"] : CVariant();
-
-    switch (code)
-    {
-        case OK:
-            response["result"] = result;
-            break;
-        case ACK:
-            response["result"] = CVariant("OK");
-            break;
-        case InvalidRequest:
-            response["error"]["code"] = InvalidRequest;
-            response["error"]["message"] = "Invalid request.";
-            break;
-        case InvalidParams:
-            response["error"]["code"] = InvalidParams;
-            response["error"]["message"] = "Invalid params.";
-            break;
-        case MethodNotFound:
-            response["error"]["code"] = MethodNotFound;
-            response["error"]["message"] = "Method not found.";
-            break;
-        case ParseError:
-            response["error"]["code"] = ParseError;
-            response["error"]["message"] = "Parse error.";
-            break;
-        case BadPermission:
-            response["error"]["code"] = BadPermission;
-            response["error"]["message"] = "Bad client permission.";
-            break;
-        case FailedToExecute:
-            response["error"]["code"] = FailedToExecute;
-            response["error"]["message"] = "Failed to execute method.";
-            break;
-        default:
-            response["error"]["code"] = InternalError;
-            response["error"]["message"] = "Internal error.";
-            break;
-    }
-}
-
-//
-// ===== Application Operations (matches Eden CApplicationOperations) =====
-//
-static JSON_STATUS ApplicationGetProperties(const CVariant &params, CVariant &result)
-{
-    result = CVariant(CVariant::VariantTypeObject);
-
-    for (unsigned int i = 0; i < params["properties"].size(); i++)
-    {
-        std::string prop = params["properties"][i].asString();
-
-    if (prop == "volume" || prop == "muted")
-    {
-      const CApplicationComponents &components = CServiceBroker::GetAppComponents();
-      const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
-      if (prop == "volume")
-        result = static_cast<int>(appVolume->GetVolumePercent());
-      else if (prop == "muted")
-        result = appVolume->IsMuted();
-    }
-        else if (prop == "name")
-            result["name"] = "Xodi";
-        else if (prop == "version")
-        {
-            CVariant ver(CVariant::VariantTypeObject);
-            ver["major"] = 22;
-            ver["minor"] = 1;
-            ver["revision"] = "dev";
-            ver["tag"] = "beta";
-            result["version"] = ver;
-        }
-    }
-
-    return OK;
-}
-
-static JSON_STATUS ApplicationSetVolume(const CVariant &params, CVariant &result)
-{
-  bool up = false;
-  if (params["volume"].isInteger())
-  {
-    CApplicationComponents &components = CServiceBroker::GetAppComponents();
-    const boost::shared_ptr<CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
-    int oldVolume = static_cast<int>(appVolume->GetVolumePercent());
-    float volume = static_cast<float>(params["volume"].asFloat());
-
-    appVolume->SetVolume(volume, true);
-
-    up = oldVolume < volume;
-  }
-
-  return ApplicationGetProperties("volume", result);
-}
-
-static JSON_STATUS ApplicationSetMute(const CVariant &params, CVariant &result)
-{
-  const CApplicationComponents &components = CServiceBroker::GetAppComponents();
-  const boost::shared_ptr<const CApplicationVolumeHandling> appVolume = components.GetComponent<CApplicationVolumeHandling>();
-  if ((params["mute"].isString() &&
-       params["mute"].asString().compare("toggle") == 0) ||
-      (params["mute"].isBoolean() &&
-       params["mute"].asBoolean() != appVolume->IsMuted()))
-    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1,
-                                               static_cast<void*>(new CAction(ACTION_MUTE)));
-  else if (!params["mute"].isBoolean() && !params["mute"].isString())
-    return InvalidParams;
-
-    return ApplicationGetProperties("muted", result);
-}
-
-//
-// ===== System Operations (matches Eden CSystemOperations) =====
-//
-static JSON_STATUS SystemShutdown(const CVariant &params, CVariant &result)
-{
-    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_POWERDOWN);
-    return ACK;
-}
-
-static JSON_STATUS SystemReboot(const CVariant &params, CVariant &result)
-{
-    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_RESTART);
-    return ACK;
-}
-
-//
-// ===== Input Operations (matches Eden CInputOperations) =====
-//
-static JSON_STATUS InputSendKey(uint32_t keyCode)
-{
-  CApplicationComponents &components = CServiceBroker::GetAppComponents();
-  const boost::shared_ptr<CApplicationPowerHandling> appPower = components.GetComponent<CApplicationPowerHandling>();
-  appPower->ResetSystemIdleTimer();
-  CGUIComponent* gui = CServiceBroker::GetGUI();
-  if (gui)
-    gui->GetAudioManager().PlayActionSound(keyCode);
-
-  CServiceBroker::GetAppMessenger()->PostMsg(TMSG_GUI_ACTION, WINDOW_INVALID, -1,
-                                              static_cast<void*>(new CAction(keyCode)));
-  return ACK;
-}
-
-static JSON_STATUS InputLeft(const CVariant &params, CVariant &result)
-{
-    return InputSendKey(ACTION_MOVE_LEFT);
-}
-
-static JSON_STATUS InputRight(const CVariant &params, CVariant &result)
-{
-    return InputSendKey(ACTION_MOVE_RIGHT);
-}
-
-static JSON_STATUS InputUp(const CVariant &params, CVariant &result)
-{
-    return InputSendKey(ACTION_MOVE_UP);
-}
-
-static JSON_STATUS InputDown(const CVariant &params, CVariant &result)
-{
-    return InputSendKey(ACTION_MOVE_DOWN);
-}
-
-static JSON_STATUS InputSelect(const CVariant &params, CVariant &result)
-{
-    return InputSendKey(ACTION_SELECT_ITEM);
-}
-
-static JSON_STATUS InputBack(const CVariant &params, CVariant &result)
-{
-    return InputSendKey(ACTION_NAV_BACK);
-}
-
-static JSON_STATUS InputHome(const CVariant &params, CVariant &result)
-{
-    CServiceBroker::GetAppMessenger()->SendMsg(TMSG_GUI_ACTIVATE_WINDOW, WINDOW_HOME, 0);
-    return ACK;
-}
-
-//
-// ===== JSONRPC Intrinsics =====
-//
-static JSON_STATUS JSONRPCPing(const CVariant &params, CVariant &result)
-{
-    CVariant pong("pong");
-    result.swap(pong);
-    return OK;
-}
-
-//
-// ===== Method Dispatch (matches Eden CJSONRPC::HandleMethodCall) =====
-//
-typedef JSON_STATUS (*MethodHandler)(const CVariant &params, CVariant &result);
-
-struct MethodEntry
-{
-    const char *name;
-    MethodHandler handler;
-};
-
-static const MethodEntry s_methods[] =
-{
-    // JSONRPC
-    { "jsonrpc.ping",               JSONRPCPing },
-
-    // Application
-    { "application.getproperties",  ApplicationGetProperties },
-    { "application.setvolume",      ApplicationSetVolume },
-    { "application.setmute",        ApplicationSetMute },
-
-    // System
-    { "system.shutdown",            SystemShutdown },
-    { "system.reboot",              SystemReboot },
-
-    // Input
-    { "input.up",                   InputUp },
-    { "input.down",                 InputDown },
-    { "input.left",                 InputLeft },
-    { "input.right",                InputRight },
-    { "input.select",               InputSelect },
-    { "input.back",                 InputBack },
-    { "input.home",                 InputHome },
-
-    { NULL, NULL }
-};
-
-static MethodHandler FindMethod(const std::string &method)
-{
-    std::string lower = method;
-    for (size_t i = 0; i < lower.size(); i++)
-        lower[i] = (char)tolower((unsigned char)lower[i]);
-
-    for (const MethodEntry *entry = s_methods; entry->name != NULL; entry++)
-    {
-        if (lower == entry->name)
-            return entry->handler;
-    }
-    return NULL;
-}
-
-//
-// ===== Public Interface =====
-//
 void CJSONRPC::Initialize()
 {
-    CLog::Log(LOGINFO, "JSONRPC: Initialized");
+  if (m_initialized)
+    return;
+
+  // Add some types/enums at runtime
+  std::vector<std::string> enumList;
+  for (int addonType = static_cast<int>(ADDON::AddonType::UNKNOWN);
+       addonType < static_cast<int>(ADDON::AddonType::MAX_TYPES); addonType++)
+    enumList.push_back(
+        ADDON::CAddonInfo::TranslateType(static_cast<ADDON::AddonType::Type>(addonType), false));
+  CJSONServiceDescription::AddEnum("Addon.Types", enumList);
+
+  enumList.clear();
+  CButtonTranslator::GetActions(enumList);
+  CJSONServiceDescription::AddEnum("Input.Action", enumList);
+
+  enumList.clear();
+  CButtonTranslator::GetWindows(enumList);
+  CJSONServiceDescription::AddEnum("GUI.Window", enumList);
+
+  // filter-related enums
+  std::vector<std::string> smartplaylistList;
+  CDatabaseQueryRule::GetAvailableOperators(smartplaylistList);
+  CJSONServiceDescription::AddEnum("List.Filter.Operators", smartplaylistList);
+
+  smartplaylistList.clear();
+  CSmartPlaylist::GetAvailableFields("movies", smartplaylistList);
+  CJSONServiceDescription::AddEnum("List.Filter.Fields.Movies", smartplaylistList);
+
+  smartplaylistList.clear();
+  CSmartPlaylist::GetAvailableFields("tvshows", smartplaylistList);
+  CJSONServiceDescription::AddEnum("List.Filter.Fields.TVShows", smartplaylistList);
+
+  smartplaylistList.clear();
+  CSmartPlaylist::GetAvailableFields("episodes", smartplaylistList);
+  CJSONServiceDescription::AddEnum("List.Filter.Fields.Episodes", smartplaylistList);
+
+  smartplaylistList.clear();
+  CSmartPlaylist::GetAvailableFields("musicvideos", smartplaylistList);
+  CJSONServiceDescription::AddEnum("List.Filter.Fields.MusicVideos", smartplaylistList);
+
+  smartplaylistList.clear();
+  CSmartPlaylist::GetAvailableFields("artists", smartplaylistList);
+  CJSONServiceDescription::AddEnum("List.Filter.Fields.Artists", smartplaylistList);
+
+  smartplaylistList.clear();
+  CSmartPlaylist::GetAvailableFields("albums", smartplaylistList);
+  CJSONServiceDescription::AddEnum("List.Filter.Fields.Albums", smartplaylistList);
+
+  smartplaylistList.clear();
+  CSmartPlaylist::GetAvailableFields("songs", smartplaylistList);
+  CJSONServiceDescription::AddEnum("List.Filter.Fields.Songs", smartplaylistList);
+
+  smartplaylistList.clear();
+  CTextureRule::GetAvailableFields(smartplaylistList);
+  CJSONServiceDescription::AddEnum("List.Filter.Fields.Textures", smartplaylistList);
+
+  unsigned int size = sizeof(JSONRPC_SERVICE_TYPES) / sizeof(char*);
+
+  for (unsigned int index = 0; index < size; index++)
+    CJSONServiceDescription::AddType(JSONRPC_SERVICE_TYPES[index]);
+
+  size = sizeof(JSONRPC_SERVICE_METHODS) / sizeof(char*);
+
+  for (unsigned int index = 0; index < size; index++)
+    CJSONServiceDescription::AddBuiltinMethod(JSONRPC_SERVICE_METHODS[index]);
+
+  size = sizeof(JSONRPC_SERVICE_NOTIFICATIONS) / sizeof(char*);
+
+  for (unsigned int index = 0; index < size; index++)
+    CJSONServiceDescription::AddNotification(JSONRPC_SERVICE_NOTIFICATIONS[index]);
+
+  CJSONServiceDescription::ResolveReferences();
+
+  m_initialized = true;
+  CLog::Log(LOGINFO, "JSONRPC v%s: Successfully initialized",
+            CJSONServiceDescription::GetVersion());
+}
+
+void CJSONRPC::Cleanup()
+{
+  CJSONServiceDescription::Cleanup();
+  m_initialized = false;
+}
+
+JSONRPC_STATUS CJSONRPC::Introspect(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant& parameterObject, CVariant &result)
+{
+  return CJSONServiceDescription::Print(result, transport, client,
+    parameterObject["getdescriptions"].asBoolean(), parameterObject["getmetadata"].asBoolean(), parameterObject["filterbytransport"].asBoolean(),
+    parameterObject["filter"]["id"].asString(), parameterObject["filter"]["type"].asString(), parameterObject["filter"]["getreferences"].asBoolean());
+}
+
+JSONRPC_STATUS CJSONRPC::Version(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant& parameterObject, CVariant &result)
+{
+  result["version"]["major"] = 0;
+  result["version"]["minor"] = 0;
+  result["version"]["patch"] = 0;
+
+  const char* version = CJSONServiceDescription::GetVersion();
+  if (version != NULL)
+  {
+    std::vector<std::string> parts = StringUtils::Split(version, ".");
+    if (!parts.empty())
+      result["version"]["major"] = (int)strtol(parts[0].c_str(), NULL, 10);
+    if (parts.size() > 1)
+      result["version"]["minor"] = (int)strtol(parts[1].c_str(), NULL, 10);
+    if (parts.size() > 2)
+      result["version"]["patch"] = (int)strtol(parts[2].c_str(), NULL, 10);
+  }
+
+  return OK;
+}
+
+JSONRPC_STATUS CJSONRPC::Permission(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant& parameterObject, CVariant &result)
+{
+  int flags = client->GetPermissionFlags();
+
+  for (int i = 1; i <= OPERATION_PERMISSION_ALL; i *= 2)
+    result[PermissionToString((OperationPermission)i)] = (flags & i) == i;
+
+  return OK;
+}
+
+JSONRPC_STATUS CJSONRPC::Ping(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant& parameterObject, CVariant &result)
+{
+  CVariant temp = "pong";
+  result.swap(temp);
+  return OK;
+}
+
+JSONRPC_STATUS CJSONRPC::GetConfiguration(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant& parameterObject, CVariant &result)
+{
+  int flags = client->GetAnnouncementFlags();
+
+  for (int i = 1; i <= ANNOUNCEMENT::ANNOUNCE_ALL; i *= 2)
+    result["notifications"][AnnouncementFlagToString((ANNOUNCEMENT::AnnouncementFlag)i)] = (flags & i) == i;
+
+  return OK;
+}
+
+JSONRPC_STATUS CJSONRPC::SetConfiguration(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant& parameterObject, CVariant &result)
+{
+  int flags = 0;
+  int oldFlags = client->GetAnnouncementFlags();
+
+  if (parameterObject.isMember("notifications"))
+  {
+    CVariant notifications = parameterObject["notifications"];
+    if ((notifications["Player"].isNull() && (oldFlags & ANNOUNCEMENT::Player)) ||
+        (notifications["Player"].isBoolean() && notifications["Player"].asBoolean()))
+      flags |= ANNOUNCEMENT::Player;
+    if ((notifications["Playlist"].isNull() && (oldFlags & ANNOUNCEMENT::Playlist)) ||
+        (notifications["Playlist"].isBoolean() && notifications["Playlist"].asBoolean()))
+      flags |= ANNOUNCEMENT::Playlist;
+    if ((notifications["GUI"].isNull() && (oldFlags & ANNOUNCEMENT::GUI)) ||
+        (notifications["GUI"].isBoolean() && notifications["GUI"].asBoolean()))
+      flags |= ANNOUNCEMENT::GUI;
+    if ((notifications["System"].isNull() && (oldFlags & ANNOUNCEMENT::System)) ||
+        (notifications["System"].isBoolean() && notifications["System"].asBoolean()))
+      flags |= ANNOUNCEMENT::System;
+    if ((notifications["VideoLibrary"].isNull() && (oldFlags & ANNOUNCEMENT::VideoLibrary)) ||
+        (notifications["VideoLibrary"].isBoolean() && notifications["VideoLibrary"].asBoolean()))
+      flags |= ANNOUNCEMENT::VideoLibrary;
+    if ((notifications["AudioLibrary"].isNull() && (oldFlags & ANNOUNCEMENT::AudioLibrary)) ||
+        (notifications["AudioLibrary"].isBoolean() && notifications["AudioLibrary"].asBoolean()))
+      flags |= ANNOUNCEMENT::AudioLibrary;
+    if ((notifications["Application"].isNull() && (oldFlags & ANNOUNCEMENT::Other)) ||
+        (notifications["Application"].isBoolean() && notifications["Application"].asBoolean()))
+      flags |= ANNOUNCEMENT::Application;
+    if ((notifications["Input"].isNull() && (oldFlags & ANNOUNCEMENT::Input)) ||
+        (notifications["Input"].isBoolean() && notifications["Input"].asBoolean()))
+      flags |= ANNOUNCEMENT::Input;
+    if ((notifications["Other"].isNull() && (oldFlags & ANNOUNCEMENT::Other)) ||
+        (notifications["Other"].isBoolean() && notifications["Other"].asBoolean()))
+      flags |= ANNOUNCEMENT::Other;
+  }
+
+  if (!client->SetAnnouncementFlags(flags))
+    return BadPermission;
+
+  return GetConfiguration(method, transport, client, parameterObject, result);
+}
+
+JSONRPC_STATUS CJSONRPC::NotifyAll(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant& parameterObject, CVariant &result)
+{
+  if (parameterObject["data"].isNull())
+    CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Other,
+                                                       parameterObject["sender"].asString(),
+                                                       parameterObject["message"].asString());
+  else
+  {
+    CVariant data = parameterObject["data"];
+    CServiceBroker::GetAnnouncementManager()->Announce(ANNOUNCEMENT::Other,
+                                                       parameterObject["sender"].asString(),
+                                                       parameterObject["message"].asString(), data);
+  }
+
+  return ACK;
 }
 
 std::string CJSONRPC::MethodCall(const std::string &inputString, ITransportLayer *transport, IClient *client)
 {
-    CVariant inputroot, outputroot, result;
+  CVariant inputroot, outputroot, result;
+  bool hasResponse = false;
 
-    CLog::Log(LOGDEBUG, "JSONRPC: Incoming request: %s", inputString.substr(0, 200).c_str());
+  CLog::Log(LOGDEBUG, "JSONRPC: Incoming request: %s", inputString.c_str());
 
-    inputroot = CJSONVariantParser::Parse(inputString);
-
-    if (inputroot.isNull())
+  inputroot = CJSONVariantParser::Parse(inputString);
+  if (inputroot != CVariant::VariantTypeNull && !inputroot.isNull())
+  {
+    if (inputroot.isArray())
     {
-        CLog::Log(LOGERROR, "JSONRPC: Failed to parse request");
-        BuildResponse(inputroot, ParseError, CVariant(), outputroot);
-        return CJSONVariantWriter::Write(outputroot, true).c_str();
-    }
-
-    // Validate JSON-RPC 2.0 structure
-    if (!inputroot.isObject() || !inputroot.isMember("method") || !inputroot["method"].isString())
-    {
+      if (inputroot.size() <= 0)
+      {
+        CLog::Log(LOGERROR, "JSONRPC: Empty batch call");
         BuildResponse(inputroot, InvalidRequest, CVariant(), outputroot);
-        return CJSONVariantWriter::Write(outputroot, true).c_str();
-    }
-
-    std::string methodName = inputroot["method"].asString();
-    CVariant params = inputroot.isMember("params") ? inputroot["params"] : CVariant(CVariant::VariantTypeObject);
-
-    CLog::Log(LOGDEBUG, "JSONRPC: Calling %s", methodName.c_str());
-
-    MethodHandler handler = FindMethod(methodName);
-    if (handler)
-    {
-        JSON_STATUS status = handler(params, result);
-        BuildResponse(inputroot, status, result, outputroot);
+        hasResponse = true;
+      }
+      else
+      {
+        for (CVariant::const_iterator_array itr = inputroot.begin_array();
+             itr != inputroot.end_array(); ++itr)
+        {
+          CVariant response;
+          if (HandleMethodCall(*itr, response, transport, client))
+          {
+            outputroot.append(response);
+            hasResponse = true;
+          }
+        }
+      }
     }
     else
-    {
-        CLog::Log(LOGWARNING, "JSONRPC: Method not found: %s", methodName.c_str());
-        BuildResponse(inputroot, MethodNotFound, CVariant(), outputroot);
-    }
+      hasResponse = HandleMethodCall(inputroot, outputroot, transport, client);
+  }
+  else
+  {
+    CLog::Log(LOGERROR, "JSONRPC: Failed to parse '%s'", inputString.c_str());
+    BuildResponse(inputroot, ParseError, CVariant(), outputroot);
+    hasResponse = true;
+  }
 
-    return CJSONVariantWriter::Write(outputroot, true).c_str();
+  std::string str;
+  if (hasResponse)
+    str = CJSONVariantWriter::Write(outputroot, CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_jsonOutputCompact);
+
+  return str;
+}
+
+bool CJSONRPC::HandleMethodCall(const CVariant& request, CVariant& response, ITransportLayer *transport, IClient *client)
+{
+  JSONRPC_STATUS errorCode = OK;
+  CVariant result;
+  bool isNotification = false;
+
+  if (IsProperJSONRPC(request))
+  {
+    isNotification = !request.isMember("id");
+
+    std::string methodName = request["method"].asString();
+    StringUtils::ToLower(methodName);
+
+    JSONRPC::MethodCall method;
+    CVariant params;
+
+    if ((errorCode = CJSONServiceDescription::CheckCall(methodName.c_str(), request["params"], transport, client, isNotification, method, params)) == OK)
+      errorCode = method(methodName, transport, client, params, result);
+    else
+      result = params;
+  }
+  else
+  {
+    std::string str = CJSONVariantWriter::Write(request, true);
+
+    CLog::Log(LOGERROR, "JSONRPC: Failed to parse '%s'", str.c_str());
+    errorCode = InvalidRequest;
+  }
+
+  BuildResponse(request, errorCode, result, response);
+
+  return !isNotification;
+}
+
+inline bool CJSONRPC::IsProperJSONRPC(const CVariant& inputroot)
+{
+  return inputroot.isMember("jsonrpc") && inputroot["jsonrpc"].isString() && inputroot["jsonrpc"] == CVariant("2.0") && inputroot.isMember("method") && inputroot["method"].isString() && (!inputroot.isMember("params") || inputroot["params"].isArray() || inputroot["params"].isObject());
+}
+
+inline void CJSONRPC::BuildResponse(const CVariant& request, JSONRPC_STATUS code, const CVariant& result, CVariant& response)
+{
+  response["jsonrpc"] = "2.0";
+  response["id"] = request.isMember("id") ? request["id"] : CVariant();
+
+  switch (code)
+  {
+    case OK:
+      response["result"] = result;
+      break;
+    case ACK:
+      response["result"] = "OK";
+      break;
+    case InvalidRequest:
+      response["error"]["code"] = InvalidRequest;
+      response["error"]["message"] = "Invalid request.";
+      break;
+    case InvalidParams:
+      response["error"]["code"] = InvalidParams;
+      response["error"]["message"] = "Invalid params.";
+      if (!result.isNull())
+        response["error"]["data"] = result;
+      break;
+    case MethodNotFound:
+      response["error"]["code"] = MethodNotFound;
+      response["error"]["message"] = "Method not found.";
+      break;
+    case ParseError:
+      response["error"]["code"] = ParseError;
+      response["error"]["message"] = "Parse error.";
+      break;
+    case BadPermission:
+      response["error"]["code"] = BadPermission;
+      response["error"]["message"] = "Bad client permission.";
+      break;
+    case FailedToExecute:
+      response["error"]["code"] = FailedToExecute;
+      response["error"]["message"] = "Failed to execute method.";
+      break;
+    default:
+      response["error"]["code"] = InternalError;
+      response["error"]["message"] = "Internal error.";
+      break;
+  }
+}
+
+void CJSONRPCUtils::NotifyItemUpdated()
+{
+  CGUIMessage message(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE,
+                      CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow());
+  CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message);
+}
+
+void CJSONRPCUtils::NotifyItemUpdated(const boost::shared_ptr<CFileItem>& item)
+{
+  CGUIWindowManager& wm = CServiceBroker::GetGUI()->GetWindowManager();
+  CGUIMessage message(GUI_MSG_NOTIFY_ALL, wm.GetActiveWindow(), 0, GUI_MSG_UPDATE_ITEM, 0, item);
+  wm.SendThreadMessage(message);
+}
+
+void CJSONRPCUtils::NotifyItemUpdated(const CVideoInfoTag& info,
+                                      const std::map<std::string, std::string>& artwork)
+{
+  CFileItemPtr msgItem(new CFileItem(info));
+  if (!artwork.empty())
+    msgItem->SetArt(artwork);
+  CGUIMessage message(GUI_MSG_NOTIFY_ALL,
+                      CServiceBroker::GetGUI()->GetWindowManager().GetActiveWindow(), 0,
+                      GUI_MSG_UPDATE_ITEM, 0, msgItem);
+  CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message);
 }

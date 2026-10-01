@@ -22,6 +22,7 @@ public:
   static bool DeleteItem(const std::string &strPath);
   static bool Exists(const std::string& strFileName, bool bUseCache = true);
   static bool RenameFile(const std::string &strFile);
+  static bool RemoteAccessAllowed(const std::string &strPath);
   /*! \brief Get the modified date of a file if its invalid it returns the creation date - this behavior changes when you set bUseLatestDate
   \param strFileNameAndPath path to the file
   \param bUseLatestDate use the newer datetime of the files mtime and ctime

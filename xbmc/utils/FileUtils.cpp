@@ -9,13 +9,18 @@
 #include "FileUtils.h"
 
 #include "FileOperationJob.h"
+#include "ServiceBroker.h"
 #include "URIUtils.h"
 #include "URL.h"
+#include "Util.h"
 #include "filesystem/File.h"
 #include "filesystem/MultiPathDirectory.h"
 #include "filesystem/StackDirectory.h"
 #include "guilib/GUIKeyboardFactory.h"
 #include "guilib/LocalizeStrings.h"
+#include "settings/MediaSourceSettings.h"
+#include "settings/Settings.h"
+#include "settings/SettingsComponent.h"
 #include "utils/log.h"
 
 #include <vector>
@@ -77,6 +82,66 @@ bool CFileUtils::RenameFile(const std::string &strFile)
     }
     return CFile::Rename(strFileAndPath, strPath);
   }
+  return false;
+}
+
+bool CFileUtils::RemoteAccessAllowed(const std::string &strPath)
+{
+  std::string SourceNames[] = { "programs", "files", "video", "music", "pictures" };
+
+  std::string realPath = URIUtils::GetRealPath(strPath);
+  // for rar:// and zip:// paths we need to extract the path to the archive
+  // instead of using the VFS path
+  while (URIUtils::IsInArchive(realPath))
+    realPath = CURL(realPath).GetHostName();
+
+  if (StringUtils::StartsWithNoCase(realPath, "virtualpath://upnproot/"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "musicdb://"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "videodb://"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "library://video"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "library://music"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "sources://video"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "special://musicplaylists"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "special://profile/playlists"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "special://videoplaylists"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "special://skin"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "special://profile/addon_data"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "addons://sources"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "upnp://"))
+    return true;
+  else if (StringUtils::StartsWithNoCase(realPath, "plugin://"))
+    return true;
+  else
+  {
+    std::string strPlaylistsPath = CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SYSTEM_PLAYLISTSPATH);
+    URIUtils::RemoveSlashAtEnd(strPlaylistsPath);
+    if (StringUtils::StartsWithNoCase(realPath, strPlaylistsPath))
+      return true;
+  }
+  bool isSource;
+  // Check manually added sources (held in sources.xml)
+  for (size_t i = 0; i < sizeof(SourceNames) / sizeof(std::string); ++i)
+  {
+    VECSOURCES* sources = CMediaSourceSettings::GetInstance().GetSources(SourceNames[i]);
+    int sourceIndex = CUtil::GetMatchingSource(realPath, *sources, isSource);
+    if (sourceIndex >= 0 && sourceIndex < static_cast<int>(sources->size()) &&
+        sources->at(sourceIndex).m_iHasLock != LOCK_STATE_LOCKED &&
+        sources->at(sourceIndex).m_allowSharing)
+      return true;
+  }
+
   return false;
 }
 
