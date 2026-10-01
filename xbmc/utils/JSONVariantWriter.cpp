@@ -57,6 +57,7 @@ bool CJSONVariantWriter::InternalWrite(Json::Value &jsonValue, const CVariant &v
       jsonValue = Json::Value(value.asString());
       break;
     case CVariant::VariantTypeArray:
+      jsonValue = Json::Value(Json::arrayValue);
       for (CVariant::const_iterator_array it = value.begin_array(); it != value.end_array(); ++it)
       {
         Json::Value subJsonValue;
@@ -66,6 +67,7 @@ bool CJSONVariantWriter::InternalWrite(Json::Value &jsonValue, const CVariant &v
       }
       break;
     case CVariant::VariantTypeObject:
+      jsonValue = Json::Value(Json::objectValue);
       for (CVariant::const_iterator_map it = value.begin_map(); it != value.end_map(); ++it)
       {
         Json::Value subJsonValue;

@@ -85,13 +85,13 @@ CVariant CJSONVariantParser::ConvertJsonValueToCVariant(const Json::Value &jsonV
   }
   else if (jsonValue.isArray())
   {
-      CVariant variant = CVariant::VariantTypeArray;
-      for (Json::Value::iterator it = jsonValue.begin(); it != jsonValue.end(); ++it)
-      {
-        const Json::Value &element = *it;
-        variant.push_back(ConvertJsonValueToCVariant(element));
-      }
-      return variant;
+    CVariant variant = CVariant::VariantTypeArray;
+    for (Json::Value::iterator it = jsonValue.begin(); it != jsonValue.end(); ++it)
+    {
+      const Json::Value &element = *it;
+      variant.push_back(ConvertJsonValueToCVariant(element));
+    }
+    return variant;
   }
   return CVariant();
 }
