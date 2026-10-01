@@ -65,6 +65,8 @@ public:
    */
   bool CacheTexture(boost::movelib::unique_ptr<CTexture>* texture = NULL);
 
+  static bool ResizeTexture(const std::string &url, uint8_t* &result, size_t &result_size);
+
   std::string m_url;
   std::string m_oldHash;
   CTextureDetails m_details;

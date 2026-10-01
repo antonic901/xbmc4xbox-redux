@@ -154,6 +154,30 @@ bool CTextureCacheJob::CacheTexture(boost::movelib::unique_ptr<CTexture>* out_te
   return false;
 }
 
+bool CTextureCacheJob::ResizeTexture(const std::string &url, uint8_t* &result, size_t &result_size)
+{
+  result = NULL;
+  result_size = 0;
+
+  if (url.empty())
+    return false;
+
+  // unwrap the URL as required
+  std::string additional_info;
+  unsigned int width, height;
+  std::string image = DecodeImageURL(url, width, height, additional_info);
+  if (image.empty())
+    return false;
+
+  boost::movelib::unique_ptr<CTexture> texture = LoadImage(image, width, height, additional_info, true);
+  if (texture == NULL)
+    return false;
+
+  bool success = CPicture::ResizeTexture(image, texture.get(), width, height, result, result_size);
+
+  return success;
+}
+
 std::string CTextureCacheJob::DecodeImageURL(const std::string &url, unsigned int &width, unsigned int &height, std::string &additional_info)
 {
   // unwrap the URL as required

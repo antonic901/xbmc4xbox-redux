@@ -25,11 +25,13 @@
 #include "FileItem.h"
 #include "filesystem/File.h"
 #include "filesystem/CurlFile.h"
+#include "filesystem/SpecialProtocol.h"
 #include "DllImageLib.h"
 #include "utils/JpegIO.h"
 #include "utils/Crc32.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
+#include "utils/StringUtils.h"
 #include "cores/dvdplayer/Codecs/DllSwScale.h"
 #include "guilib/Texture.h"
 #include "windowing/GraphicContext.h"
@@ -39,6 +41,32 @@
 #include <boost/move/make_unique.hpp>
 
 using namespace XFILE;
+
+bool CPicture::GetThumbnailFromSurface(const unsigned char* buffer, int width, int height, int stride, const std::string &thumbFile, uint8_t* &result, size_t& result_size)
+{
+  result = NULL;
+  result_size = 0;
+
+  struct TemporaryThumbnail
+  {
+    explicit TemporaryThumbnail(const std::string& filename) : path(filename) {}
+    ~TemporaryThumbnail() { CFile::Delete(path); }
+    std::string path;
+  } thumbnail(CSpecialProtocol::TranslatePath("special://temp/" + StringUtils::CreateUUID() + URIUtils::GetExtension(thumbFile)));
+
+  if (!CreateThumbnailFromSurface(buffer, width, height, stride, thumbnail.path))
+    return false;
+
+  CFile file;
+  std::vector<uint8_t> encoded;
+  if (file.LoadFile(thumbnail.path, encoded) <= 0)
+    return false;
+
+  result = new uint8_t[encoded.size()];
+  memcpy(result, &encoded[0], encoded.size());
+  result_size = encoded.size();
+  return true;
+}
 
 bool CPicture::CreateThumbnailFromSurface(const unsigned char *buffer, int width, int height, int stride, const std::string &thumbFile)
 {
@@ -52,6 +80,81 @@ bool CPicture::CreateThumbnailFromSurface(const unsigned char *buffer, int width
   DllImageLib dll;
   if (!buffer || !dll.Load()) return false;
   return dll.CreateThumbnailFromSurface((BYTE *)buffer, width, height, stride, thumbFile.c_str());
+}
+
+bool CPicture::ResizeTexture(const std::string& image,
+                             CTexture* texture,
+                             uint32_t& dest_width,
+                             uint32_t& dest_height,
+                             uint8_t*& result,
+                             size_t& result_size)
+{
+  if (image.empty() || texture == NULL)
+    return false;
+
+  return ResizeTexture(image, texture->GetPixels(), texture->GetWidth(), texture->GetHeight(), texture->GetPitch(),
+                       dest_width, dest_height, result, result_size);
+}
+
+bool CPicture::ResizeTexture(const std::string &image, uint8_t *pixels, uint32_t width, uint32_t height, uint32_t pitch,
+  uint32_t &dest_width, uint32_t &dest_height, uint8_t* &result, size_t& result_size)
+{
+  if (image.empty() || pixels == NULL)
+    return false;
+
+  dest_width = std::min(width, dest_width);
+  dest_height = std::min(height, dest_height);
+
+  // if no max width or height is specified, don't resize
+  if (dest_width == 0 && dest_height == 0)
+  {
+    dest_width = width;
+    dest_height = height;
+  }
+  else if (dest_width == 0)
+  {
+    double factor = (double)dest_height / (double)height;
+    dest_width = (uint32_t)(width * factor);
+  }
+  else if (dest_height == 0)
+  {
+    double factor = (double)dest_width / (double)width;
+    dest_height = (uint32_t)(height * factor);
+  }
+
+  // nothing special to do if the dimensions already match
+  if (dest_width >= width || dest_height >= height)
+    return GetThumbnailFromSurface(pixels, dest_width, dest_height, pitch, image, result, result_size);
+
+  // create a buffer large enough for the resulting image
+  GetScale(width, height, dest_width, dest_height);
+
+  // Let's align so that stride is always divisible by 16, and then add some 32 bytes more on top
+  // See: https://github.com/FFmpeg/FFmpeg/blob/75638fe9402f70645bdde4d95672fa640a327300/libswscale/tests/swscale.c#L157
+  uint32_t dest_width_aligned = ((dest_width + 15) & ~0x0f);
+  uint32_t stride = dest_width_aligned * sizeof(uint32_t);
+
+  uint32_t* buffer = new uint32_t[dest_width_aligned * dest_height + 4];
+  if (!ScaleImage(pixels, width, height, pitch, (uint8_t*)buffer, dest_width,
+                  dest_height, dest_width * 4))
+  {
+    delete[] buffer;
+    result = NULL;
+    result_size = 0;
+    return false;
+  }
+
+  bool success = GetThumbnailFromSurface((unsigned char*)buffer, dest_width, dest_height, stride,
+                                         image, result, result_size);
+  delete[] buffer;
+
+  if (!success)
+  {
+    result = NULL;
+    result_size = 0;
+  }
+
+  return success;
 }
 
 bool CPicture::CacheTexture(CTexture *texture, uint32_t &dest_width, uint32_t &dest_height, const std::string &dest)
