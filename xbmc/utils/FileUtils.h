@@ -18,6 +18,7 @@ class CDateTime;
 class CFileUtils
 {
 public:
+  static bool CheckFileAccessAllowed(const std::string &filePath);
   static bool DeleteItem(const boost::shared_ptr<CFileItem>& item);
   static bool DeleteItem(const std::string &strPath);
   static bool Exists(const std::string& strFileName, bool bUseCache = true);

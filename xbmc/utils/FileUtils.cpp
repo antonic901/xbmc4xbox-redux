@@ -15,6 +15,7 @@
 #include "Util.h"
 #include "filesystem/File.h"
 #include "filesystem/MultiPathDirectory.h"
+#include "filesystem/SpecialProtocol.h"
 #include "filesystem/StackDirectory.h"
 #include "guilib/GUIKeyboardFactory.h"
 #include "guilib/LocalizeStrings.h"
@@ -229,6 +230,61 @@ CDateTime CFileUtils::GetModificationDate(const int& code, const std::string& st
               strFileNameAndPath.c_str());
   }
   return dateAdded;
+}
+
+bool CFileUtils::CheckFileAccessAllowed(const std::string &filePath)
+{
+  // DENY access to paths matching
+  std::vector<std::string> blacklist;
+  blacklist.push_back("passwords.xml");
+  blacklist.push_back("sources.xml");
+  blacklist.push_back("guisettings.xml");
+  blacklist.push_back("advancedsettings.xml");
+  blacklist.push_back("server.key");
+  blacklist.push_back("/.ssh/");
+  // ALLOW kodi paths
+  std::vector<std::string> whitelist;
+  whitelist.push_back(CSpecialProtocol::TranslatePath("special://home"));
+  whitelist.push_back(CSpecialProtocol::TranslatePath("special://xbmc"));
+  whitelist.push_back(CSpecialProtocol::TranslatePath("special://musicartistsinfo"));
+
+  std::vector<std::string> kodiExtraWhitelist = StringUtils::Split("", ',');
+  whitelist.insert(whitelist.end(), kodiExtraWhitelist.begin(), kodiExtraWhitelist.end());
+
+  // image urls come in the form of image://... sometimes with a / appended at the end
+  // and can be embedded in a music or video file image://music@...
+  // strip this off to get the real file path
+  bool isImage = false;
+  std::string decodePath = CURL::Decode(filePath);
+  size_t pos = decodePath.find("image://");
+  if (pos != std::string::npos)
+  {
+    isImage = true;
+    decodePath.erase(pos, 8);
+    URIUtils::RemoveSlashAtEnd(decodePath);
+    if (StringUtils::StartsWith(decodePath, "music@") || StringUtils::StartsWith(decodePath, "video@"))
+      decodePath.erase(pos, 6);
+  }
+
+  // check blacklist
+  for (std::vector<std::string>::const_iterator b = blacklist.begin(); b != blacklist.end(); ++b)
+  {
+    if (decodePath.find(*b) != std::string::npos)
+    {
+      CLog::Log(LOGERROR, "%s denied access to %s", __FUNCTION__, decodePath.c_str());
+      return false;
+    }
+  }
+
+  // local file
+  CURL url(decodePath);
+  if (url.GetProtocol().empty())
+    return true;
+
+  // if it isn't a local file, it must be a vfs entry
+  if (! isImage)
+    return CFileUtils::RemoteAccessAllowed(decodePath);
+  return true;
 }
 
 bool CFileUtils::Exists(const std::string& strFileName, bool bUseCache)
