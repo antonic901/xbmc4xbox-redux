@@ -9,6 +9,7 @@
 #pragma once
 
 #include "threads/CriticalSection.h"
+#include "threads/SingleLock.h"
 
 #include <cstddef>
 #include <boost/shared_ptr.hpp>

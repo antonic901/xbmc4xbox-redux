@@ -27,7 +27,6 @@
  *
  */
 
-#define HAS_XBOX_D3D
 #define GAMMA_RAMP_FLAG  D3DSGR_IMMEDIATE
 
 #include <xgraphics.h>

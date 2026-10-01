@@ -25,36 +25,6 @@
 #include <xvoice.h>
 #include <xonline.h>
 
-#define HAS_XBOX_D3D
-#define HAS_RAM_CONTROL
-#define HAS_XFONT
-#define HAS_FILESYSTEM
-#define HAS_FILESYSTEM_CDDA
-#define HAS_FILESYSTEM_SMB
-#define HAS_FILESYSTEM_RAR
-#define HAS_GAMEPAD
-#define HAS_IR_REMOTE
-#define HAS_OPTICAL_DRIVE
-#define HAS_XBOX_HARDWARE
-#define HAS_XBOX_NETWORK
-#define HAS_VIDEO_PLAYBACK
-#define HAS_FTP_SERVER
-#define HAS_WEB_SERVER
-#define HAS_TIME_SERVER
-#define HAS_VISUALISATION
-#define HAS_KARAOKE
-#define HAS_SYSINFO
-#define HAS_SCREENSAVER
-#define HAS_MIKMOD
-#define HAS_UPNP
-#define HAS_LCD
-#define HAS_UNDOCUMENTED
-#define HAS_CDDA_RIPPER
-#define HAS_PYTHON
-#define HAS_EVENT_SERVER
-#define HAVE_LIBMP3LAME
-#define HAVE_LIBVORBISENC
-
 #define XBMC_MAX_PATH 1024 // normal max path is 260, but smb shares and the like can be longer
 
 #if defined(_DEBUG) && defined(_MEMTRACKING)
