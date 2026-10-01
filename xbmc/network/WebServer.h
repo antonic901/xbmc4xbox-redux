@@ -1,88 +1,119 @@
-#pragma once
 /*
- *      Copyright (C) 2005-2010 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2005-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
-#include "interfaces/json-rpc/IClient.h"
-#include "interfaces/json-rpc/ITransportLayer.h"
+#pragma once
+
+#include "network/httprequesthandler/IHTTPRequestHandler.h"
 #include "threads/CriticalSection.h"
 
-#include <map>
-#include <string>
+#include <boost/shared_ptr.hpp>
+#include <vector>
 
-#include <microhttpd.h>
+namespace XFILE
+{
+  class CFile;
+}
+class CDateTime;
+class CVariant;
 
-class CWebServer : public JSONRPC::ITransportLayer
+class CWebServer
 {
 public:
-    CWebServer();
+  CWebServer();
+  virtual ~CWebServer() {}
 
-    bool Start(int port, const std::string &username, const std::string &password);
-    bool Stop();
-    bool IsStarted();
-    void SetCredentials(const std::string &username, const std::string &password);
+  bool Start(uint16_t port, const std::string &username, const std::string &password);
+  bool Stop();
+  bool IsStarted();
+  static bool WebServerSupportsSSL();
+  void SetCredentials(const std::string &username, const std::string &password);
 
-    virtual bool PrepareDownload(const char *path, CVariant &details, std::string &protocol);
-    virtual bool Download(const char *path, CVariant &result);
-    virtual int GetCapabilities();
+  void RegisterRequestHandler(IHTTPRequestHandler *handler);
+  void UnregisterRequestHandler(IHTTPRequestHandler *handler);
+
+protected:
+  typedef struct ConnectionHandler
+  {
+    std::string fullUri;
+    bool isNew;
+    boost::shared_ptr<IHTTPRequestHandler> requestHandler;
+    struct MHD_PostProcessor* postprocessor;
+    int errorStatus;
+
+    explicit ConnectionHandler(const std::string& uri) : fullUri(uri), isNew(true), postprocessor(NULL), errorStatus(MHD_HTTP_OK) {}
+  } ConnectionHandler;
+
+  virtual void LogRequest(const char* uri) const;
+
+  virtual MHD_RESULT HandlePartialRequest(struct MHD_Connection *connection, ConnectionHandler* connectionHandler, const HTTPRequest& request,
+                                   const char *upload_data, size_t *upload_data_size, void **con_cls);
+  virtual MHD_RESULT HandleRequest(const boost::shared_ptr<IHTTPRequestHandler>& handler);
+  virtual MHD_RESULT FinalizeRequest(const boost::shared_ptr<IHTTPRequestHandler>& handler, int responseStatus, struct MHD_Response *response);
+
 private:
-    enum HTTPMethod
-    {
-        UNKNOWN,
-        POST,
-        GET,
-        HEAD
-    };
-    struct MHD_Daemon* StartMHD(unsigned int flags, int port);
-    static int AskForAuthentication(struct MHD_Connection *connection);
-    static bool IsAuthenticated(CWebServer *server, struct MHD_Connection *connection);
+  struct MHD_Daemon* StartMHD(unsigned int flags, int port);
 
-    static ssize_t ContentReaderCallback(void *cls, uint64_t pos, char *buf, size_t max);
+  boost::shared_ptr<IHTTPRequestHandler> FindRequestHandler(const HTTPRequest& request) const;
 
-    static int JSONRPC(CWebServer *server, void **con_cls, struct MHD_Connection *connection, const char *upload_data, size_t *upload_data_size);
-    static enum MHD_Result AnswerToConnection(void *cls, struct MHD_Connection *connection,
-                                                const char *url, const char *method,
-                                                const char *version, const char *upload_data,
-                                                size_t *upload_data_size, void **con_cls);
-    static void ContentReaderFreeCallback(void *cls);
-    static HTTPMethod GetMethod(const char *method);
-    static int CreateRedirect(struct MHD_Connection *connection, const std::string &strURL);
-    static int CreateFileDownloadResponse(struct MHD_Connection *connection, const std::string &strURL, HTTPMethod methodType);
-    static int CreateErrorResponse(struct MHD_Connection *connection, int responseType, HTTPMethod method);
-    static int CreateMemoryDownloadResponse(struct MHD_Connection *connection, void *data, size_t size);
+  MHD_RESULT AskForAuthentication(const HTTPRequest& request) const;
+  bool IsAuthenticated(const HTTPRequest& request) const;
 
-    static enum MHD_Result FillArgumentMap(void *cls, enum MHD_ValueKind kind, const char *key, const char *value);
-    static void StringToBase64(const char *input, std::string &output);
+  bool IsRequestCacheable(const HTTPRequest& request) const;
+  bool IsRequestRanged(const HTTPRequest& request, const CDateTime &lastModified) const;
 
-    static const char *CreateMimeTypeFromExtension(const char *ext);
+  void SetupPostDataProcessing(const HTTPRequest& request, ConnectionHandler *connectionHandler, boost::shared_ptr<IHTTPRequestHandler> handler, void **con_cls) const;
+  bool ProcessPostData(const HTTPRequest& request, ConnectionHandler *connectionHandler, const char *upload_data, size_t *upload_data_size, void **con_cls) const;
+  void FinalizePostDataProcessing(ConnectionHandler *connectionHandler) const;
 
-    struct MHD_Daemon *m_daemon;
-    bool m_running, m_needcredentials;
-    std::string m_Credentials64Encoded;
-    CCriticalSection m_critSection;
+  MHD_RESULT CreateMemoryDownloadResponse(const boost::shared_ptr<IHTTPRequestHandler>& handler, struct MHD_Response *&response) const;
+  MHD_RESULT CreateRangedMemoryDownloadResponse(const boost::shared_ptr<IHTTPRequestHandler>& handler, struct MHD_Response *&response) const;
 
-    class CHTTPClient : public JSONRPC::IClient
-    {
-    public:
-        virtual int  GetPermissionFlags();
-        virtual int  GetAnnouncementFlags();
-        virtual bool SetAnnouncementFlags(int flags);
-    };
+  MHD_RESULT CreateRedirect(struct MHD_Connection *connection, const std::string &strURL, struct MHD_Response *&response) const;
+  MHD_RESULT CreateFileDownloadResponse(const boost::shared_ptr<IHTTPRequestHandler>& handler, struct MHD_Response *&response) const;
+  MHD_RESULT CreateErrorResponse(struct MHD_Connection *connection, int responseType, HTTPMethod method, struct MHD_Response *&response) const;
+  MHD_RESULT CreateMemoryDownloadResponse(struct MHD_Connection *connection, const void *data, size_t size, bool free, bool copy, struct MHD_Response *&response) const;
+
+  MHD_RESULT SendResponse(const HTTPRequest& request, int responseStatus, MHD_Response *response) const;
+  MHD_RESULT SendErrorResponse(const HTTPRequest& request, int errorType, HTTPMethod method) const;
+
+  MHD_RESULT AddHeader(struct MHD_Response *response, const std::string &name, const std::string &value) const;
+
+  void LogRequest(const HTTPRequest& request) const;
+  void LogResponse(const HTTPRequest& request, int responseStatus) const;
+
+  static std::string CreateMimeTypeFromExtension(const char *ext);
+
+  // MHD callback implementations
+  static void* UriRequestLogger(void *cls, const char *uri);
+
+  static ssize_t ContentReaderCallback (void *cls, uint64_t pos, char *buf, size_t max);
+  static void ContentReaderFreeCallback(void *cls);
+
+  static MHD_RESULT AnswerToConnection (void *cls, struct MHD_Connection *connection,
+                        const char *url, const char *method,
+                        const char *version, const char *upload_data,
+                        size_t *upload_data_size, void **con_cls);
+  static MHD_RESULT HandlePostField(void *cls, enum MHD_ValueKind kind, const char *key,
+                             const char *filename, const char *content_type,
+                             const char *transfer_encoding, const char *data, uint64_t off,
+                             size_t size);
+
+  bool LoadCert(std::string &skey, std::string &scert);
+
+  uint16_t m_port;
+  struct MHD_Daemon *m_daemon_ip4;
+  bool m_running;
+  size_t m_thread_stacksize;
+  bool m_authenticationRequired;
+  std::string m_authenticationUsername;
+  std::string m_authenticationPassword;
+  std::string m_key;
+  std::string m_cert;
+  mutable CCriticalSection m_critSection;
+  std::vector<IHTTPRequestHandler *> m_requestHandlers;
 };

@@ -2217,6 +2217,83 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\network\upnp\UPnPSettings.h">
 					</File>
 				</Filter>
+				<Filter
+					Name="httprequesthandler"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPFileHandler.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPFileHandler.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPImageHandler.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPImageHandler.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPImageTransformationHandler.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPImageTransformationHandler.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPJsonRpcHandler.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPJsonRpcHandler.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPPythonHandler.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPPythonHandler.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPRequestHandlerUtils.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPRequestHandlerUtils.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPVfsHandler.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPVfsHandler.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPWebinterfaceAddonsHandler.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPWebinterfaceAddonsHandler.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPWebinterfaceHandler.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\HTTPWebinterfaceHandler.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\IHTTPRequestHandler.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\httprequesthandler\IHTTPRequestHandler.h">
+					</File>
+					<Filter
+						Name="python"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\network\httprequesthandler\python\HTTPPythonInvoker.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\network\httprequesthandler\python\HTTPPythonInvoker.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\network\httprequesthandler\python\HTTPPythonRequest.h">
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="Interfaces"
@@ -5587,6 +5664,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\HttpHeader.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\HttpRangeUtils.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\HttpRangeUtils.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\IArchivable.h">
