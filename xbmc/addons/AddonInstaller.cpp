@@ -22,6 +22,7 @@
 #include "addons/addoninfo/AddonInfo.h"
 #include "addons/addoninfo/AddonType.h"
 #include "dialogs/GUIDialogExtendedProgressBar.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "favourites/FavouritesService.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
@@ -411,6 +412,7 @@ bool CAddonInstaller::InstallFromZip(const std::string &path)
   if (!CDirectory::GetDirectory(zipDir, items, "", DIR_FLAG_DEFAULTS) ||
       items.Size() != 1 || !items[0]->m_bIsFolder)
   {
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(24045), StringUtils::Format(g_localizeStrings.Get(24143).c_str(), path.c_str()));
     CLog::Log(
         LOGERROR,
         "CAddonInstaller: installing addon failed '%s' - itemsize: %i, first item is folder: %i",
@@ -424,6 +426,7 @@ bool CAddonInstaller::InstallFromZip(const std::string &path)
                      AutoUpdateJob::CHOICE_NO, DependencyJob::CHOICE_NO,
                      AllowCheckForUpdates::CHOICE_YES);
 
+  CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, g_localizeStrings.Get(24045), StringUtils::Format(g_localizeStrings.Get(24143).c_str(), path.c_str()));
   return false;
 }
 
