@@ -17,8 +17,10 @@
 #include "addons/interfaces/AddonBase.h"
 #include "addons/kodi-dev-kit/include/kodi/versions.h"
 #include "addons/settings/AddonSettings.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
+#include "guilib/LocalizeStrings.h"
 #include "messaging/helpers/DialogOKHelper.h"
 #include "settings/lib/SettingSection.h"
 #include "utils/URIUtils.h"
@@ -550,6 +552,8 @@ bool CAddonDll::CheckAPIVersion(int type)
       kodiMinVersion.asString().c_str(),
       addonMinVersion.asString().c_str(),
       addonVersion.asString().c_str());
+
+    CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, Name(), g_localizeStrings.Get(24152));
 
     return false;
   }
