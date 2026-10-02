@@ -71,6 +71,7 @@
 #define NETWORK_DASH   0
 #define NETWORK_DHCP   1
 #define NETWORK_STATIC  2
+#define NETWORK_INSIGNIA  3
 
 #define SETTINGS_TYPE_BOOL   1
 #define SETTINGS_TYPE_FLOAT   2

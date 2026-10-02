@@ -13851,6 +13851,10 @@ msgctxt "#38903"
 msgid "Game is not installed"
 msgstr ""
 
+msgctxt "#38904"
+msgid "Insignia"
+msgstr ""
+
 #empty strings from id 38791 to 38999
 
 msgctxt "#38973"

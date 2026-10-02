@@ -225,6 +225,17 @@ bool CNetwork::Initialize(int iAssignment, const char* szLocalAddress, const cha
     TranslateConfig(m_networkinfo, params);
     CLog::Log(LOGNOTICE, "Network: Using static IP settings");
   }
+  else if (iAssignment == NETWORK_INSIGNIA)
+  {
+    m_networkinfo.DHCP = true;
+    strcpy(m_networkinfo.ip, "0.0.0.0");
+    
+    // Insignia DNS1 + Google DNS2
+    strcpy(m_networkinfo.DNS1, "46.101.64.175");
+    strcpy(m_networkinfo.DNS2, "8.8.8.8");    
+    TranslateConfig(m_networkinfo, params);
+    CLog::Log(LOGNOTICE, "Network: Using Insignia DNS + DHCP IP settings");
+  }
   else
   {
     dashconfig = true;
