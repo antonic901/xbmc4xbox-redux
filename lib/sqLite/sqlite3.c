@@ -14990,7 +14990,6 @@ struct fts5_api {
 /*
 ** Include standard header files as necessary
 */
-#include <stdint.h>
 #ifdef HAVE_INTTYPES_H
 #include <inttypes.h>
 #endif
@@ -31041,7 +31040,7 @@ SQLITE_PRIVATE sqlite3_mutex_methods const *sqlite3DefaultMutex(void){
 /*
 ** Include the primary Windows SDK header file.
 */
-#include "windows.h"
+#include "xtl.h"
 
 #ifdef __CYGWIN__
 # include <sys/cygwin.h>
@@ -36853,6 +36852,8 @@ SQLITE_PRIVATE u8 sqlite3StrIHash(const char *z){
 #define SQLITE_USE_UINT128
 #endif
 
+#define UINT64_C(value) value##ui64
+
 /*
 ** Two inputs are multiplied to get a 128-bit result.  Write the
 ** lower 64-bits of the result into *pLo, and return the high-order
@@ -37158,6 +37159,8 @@ static void sqlite3Fp2Convert10(u64 m, int e, int n, u64 *pD, int *pP){
   }
   *pP = -p;
 }
+
+#define INFINITY HUGE_VAL
 
 /*
 ** Return an IEEE754 floating point value that approximates d*pow(10,p).
