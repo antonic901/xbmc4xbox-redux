@@ -4726,7 +4726,15 @@ msgctxt "#12023"
 msgid "Play from beginning"
 msgstr ""
 
-#empty strings from id 12024 to 12309
+#empty strings from id 12024 to 12307
+
+#. Label of the show password button in the keyboard dialog
+#: xbmc/dialogs/GUIDialogKeyboardGeneric.cpp
+msgctxt "#12308"
+msgid "Show password"
+msgstr ""
+
+#empty string with id 12309
 
 #: addons/skin.estuary/1080i/DialogNumeric.xml
 #: skin.estouchy
@@ -13022,10 +13030,22 @@ msgctxt "#36627"
 msgid "Client"
 msgstr ""
 
+#. Text in confirm dialog when enabling setting "Services -> Control -> Allow remote control via HTTP"
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#36632"
+msgid "Anyone who has access to the web interface will be able to completely control this application and, therefore, this device, so it should never be exposed on the Internet. A password should be set below. Proceed?"
+msgstr ""
+
 #. Text in confirm dialog when enabling setting "Services -> Control -> Allow remote control from applications on other systems"
 #: xbmc/network/NetworkServices.cpp
 msgctxt "#36633"
 msgid "These services offer neither authentication nor encryption. Anyone who can connect to them will be able to completely control this application and, therefore, this device, so they should never be exposed to the Internet. Proceed?"
+msgstr ""
+
+#. Text in confirm dialog when disabling setting "Services -> Control -> Require authentication"
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#36634"
+msgid "Anyone who has access to the web interface will be able to completely control this application and, therefore, this device, so it should be secured by a password. Are you sure you want to disable authentication?"
 msgstr ""
 
 #. Menuitem at "Settings -> System -> Add-ons"
