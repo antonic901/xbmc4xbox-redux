@@ -328,7 +328,7 @@ void CAdvancedSettings::Initialize()
 
   m_guiKeepInMemory = false;
   m_guiVisualizeDirtyRegions = false;
-  m_guiAlgorithmDirtyRegions = 0;
+  m_guiAlgorithmDirtyRegions = 1;
   m_guiSmartRedraw = false;
 
   m_databaseMusic.Reset();
