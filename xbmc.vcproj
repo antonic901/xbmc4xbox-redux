@@ -2292,6 +2292,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						<File
 							RelativePath=".\xbmc\network\httprequesthandler\python\HTTPPythonRequest.h">
 						</File>
+						<File
+							RelativePath=".\xbmc\network\httprequesthandler\python\HTTPPythonWsgiInvoker.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\network\httprequesthandler\python\HTTPPythonWsgiInvoker.h">
+						</File>
 					</Filter>
 				</Filter>
 			</Filter>
@@ -2736,6 +2742,34 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					<File
 						RelativePath=".\xbmc\interfaces\legacy\WindowXML.h">
 					</File>
+					<Filter
+						Name="wsgi"
+						Filter="">
+						<File
+							RelativePath=".\xbmc\interfaces\legacy\wsgi\WsgiErrorStream.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\interfaces\legacy\wsgi\WsgiErrorStream.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\interfaces\legacy\wsgi\WsgiInputStream.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\interfaces\legacy\wsgi\WsgiInputStream.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\interfaces\legacy\wsgi\WsgiResponse.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\interfaces\legacy\wsgi\WsgiResponse.h">
+						</File>
+						<File
+							RelativePath=".\xbmc\interfaces\legacy\wsgi\WsgiResponseBody.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\interfaces\legacy\wsgi\WsgiResponseBody.h">
+						</File>
+					</Filter>
 				</Filter>
 				<Filter
 					Name="python"
@@ -2883,6 +2917,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						</File>
 						<File
 							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcvfs.i.cpp">
+						</File>
+						<File
+							RelativePath=".\xbmc\interfaces\python\generated\AddonModuleXbmcwsgi.i.cpp">
 						</File>
 					</Filter>
 				</Filter>

@@ -281,7 +281,24 @@ extern "C"
   FUNCTION16(PyRun_String)
   FUNCTION4(PyErr_ExceptionMatches)
   FUNCTION(PyErr_Clear)
+  FUNCTION8(PyObject_GetAttrString)
   FUNCTION12(PyObject_SetAttrString)
+  FUNCTION8(PyObject_HasAttrString)
+  FUNCTION4(PyObject_GetIter)
+  FUNCTION4(PyIter_Next)
+  FUNCTION8(PyObject_CallObject)
+  FUNCTION4(PyCallable_Check)
+  FUNCTION4(_PyObject_NextNotImplemented)
+  VA_FUNCTION8(PyTuple_Pack)
+  /*void* PyTuple_Pack(void* a, ...)
+  {
+    void* ret;
+    va_list va;
+    va_start(va, c);
+    ret = p_va_PyTuple_Pack(a, va_pass(va));
+    va_end(va);
+    return ret;
+  }*/
 
 #ifdef Py_TRACE_REFS
   FUNCTION12(_Py_NegativeRefcount)
@@ -365,7 +382,7 @@ extern "C"
       dll.ResolveExport(DLL_FUNCTION(PyList_Size)) &&
       dll.ResolveExport(DLL_FUNCTION(PyList_New)) &&
       dll.ResolveExport(DLL_FUNCTION(PyList_Append)) &&
-      dll.ResolveExport(DLL_FUNCTION(_PyObject_New)) &&               
+      dll.ResolveExport(DLL_FUNCTION(_PyObject_New)) &&
       dll.ResolveExport(DLL_FUNCTION(PyLong_AsLong)) &&
       dll.ResolveExport(DLL_FUNCTION(PyLong_AsLongLong)) &&
       dll.ResolveExport(DLL_VA_FUNCTION(PyErr_Format)) &&
@@ -449,7 +466,15 @@ extern "C"
       dll.ResolveExport(DLL_FUNCTION(PyObject_Str)) &&
       dll.ResolveExport(DLL_FUNCTION(PyRun_File)) &&
       dll.ResolveExport(DLL_FUNCTION(PyErr_Clear)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyObject_GetAttrString)) &&
       dll.ResolveExport(DLL_FUNCTION(PyObject_SetAttrString)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyObject_HasAttrString)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyObject_GetIter)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyIter_Next)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyObject_CallObject)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyCallable_Check)) &&
+      dll.ResolveExport(DLL_FUNCTION(_PyObject_NextNotImplemented)) &&
+      dll.ResolveExport(DLL_VA_FUNCTION(PyTuple_Pack)) &&
       dll.ResolveExport(DLL_FUNCTION(PyErr_ExceptionMatches)) &&
       dll.ResolveExport(DLL_FUNCTION(PyRun_SimpleStringFlags)) &&
       dll.ResolveExport(DLL_FUNCTION(PyRun_StringFlags)) &&
