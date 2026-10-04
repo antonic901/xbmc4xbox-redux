@@ -23,9 +23,7 @@
 #include "messaging/helpers/DialogOKHelper.h"
 #include "network/EventServer.h"
 #include "network/Network.h"
-#if 0
 #include "network/TCPServer.h"
-#endif
 #include "profiles/ProfileManager.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
@@ -605,20 +603,15 @@ bool CNetworkServices::StartJSONRPCServer()
   if (IsJSONRPCServerRunning())
     return true;
 
-#if 0
   if (!CTCPServer::StartServer(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_jsonTcpPort, m_settings->GetBool(CSettings::SETTING_SERVICES_ESALLINTERFACES)))
    return false;
-#endif
 
   return true;
 }
 
 bool CNetworkServices::IsJSONRPCServerRunning()
 {
-#if 0
   return CTCPServer::IsRunning();
-#endif
-  return false;
 }
 
 bool CNetworkServices::StopJSONRPCServer(bool bWait)
@@ -626,9 +619,7 @@ bool CNetworkServices::StopJSONRPCServer(bool bWait)
   if (!IsJSONRPCServerRunning())
     return true;
 
-#if 0
   CTCPServer::StopServer(bWait);
-#endif
 
   return true;
 }

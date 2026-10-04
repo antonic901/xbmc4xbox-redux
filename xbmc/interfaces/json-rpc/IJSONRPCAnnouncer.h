@@ -37,10 +37,7 @@ namespace JSONRPC
       root["params"]["data"] = data;
       root["params"]["sender"] = sender;
 
-      std::string str;
-      CJSONVariantWriter::Write(root, str, compactOutput);
-
-      return str;
+      return CJSONVariantWriter::Write(root, compactOutput);
     }
   };
 }

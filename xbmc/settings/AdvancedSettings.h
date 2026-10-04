@@ -264,6 +264,7 @@ class CAdvancedSettings : public ISettingCallback, public ISettingsHandler
     bool m_useLocaleCollation;
 
     bool m_jsonOutputCompact;
+    unsigned int m_jsonTcpPort;
 
     void ParseSettingsFile(const std::string &file);
 

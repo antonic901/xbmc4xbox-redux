@@ -324,6 +324,7 @@ void CAdvancedSettings::Initialize()
   m_addonPackageFolderSize = 200;
 
   m_jsonOutputCompact = true;
+  m_jsonTcpPort = 9090;
 
   m_guiKeepInMemory = false;
   m_guiVisualizeDirtyRegions = false;
@@ -573,6 +574,7 @@ void CAdvancedSettings::ParseSettingsFile(const std::string &file)
   if (pElement)
   {
     XMLUtils::GetBoolean(pElement, "compactoutput", m_jsonOutputCompact);
+    XMLUtils::GetUInt(pElement, "tcpport", m_jsonTcpPort);
   }
 
   pElement = pRootElement->FirstChildElement("cache");

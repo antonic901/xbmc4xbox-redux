@@ -2172,6 +2172,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\network\NetworkServices.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\network\TCPServer.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\network\TCPServer.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\network\UdpClient.cpp">
 				</File>
 				<File
@@ -2299,6 +2305,34 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 							RelativePath=".\xbmc\network\httprequesthandler\python\HTTPPythonWsgiInvoker.h">
 						</File>
 					</Filter>
+				</Filter>
+				<Filter
+					Name="websocket"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\network\websocket\WebSocket.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\websocket\WebSocket.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\websocket\WebSocketManager.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\websocket\WebSocketManager.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\websocket\WebSocketV13.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\websocket\WebSocketV13.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\websocket\WebSocketV8.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\network\websocket\WebSocketV8.h">
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
@@ -5703,10 +5737,22 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\HttpHeader.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\HttpParser.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\HttpParser.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\HttpRangeUtils.cpp">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\HttpRangeUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\HttpResponse.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\HttpResponse.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\IArchivable.h">
