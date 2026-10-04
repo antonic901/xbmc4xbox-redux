@@ -9,6 +9,7 @@
 #pragma once
 
 #include "md5.h"
+#include "sha256.h"
 #include "StringUtils.h"
 
 #include <iostream>
@@ -91,7 +92,12 @@ public:
 
 private:
   bool m_finalized;
-  MD5Context m_context;
+  Type m_type;
+  union
+  {
+    MD5Context md5;
+    XBMC::SHA256Context sha256;
+  } m_context;
 };
 
 struct TypedDigest

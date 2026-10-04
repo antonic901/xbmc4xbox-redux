@@ -68,12 +68,17 @@ CDigest::Type CDigest::TypeFromString(std::string const& type)
   }
 }
 
-CDigest::CDigest(Type type) : m_finalized(false)
+CDigest::CDigest(Type type) : m_finalized(false), m_type(type)
 {
-  if (type != Type::MD5)
-    CLog::Log(LOGWARNING, "Digest of type %s is not supported. Falling back to MD5", TypeToString(type).c_str());
-
-  MD5Init(&m_context);
+  if (type == Type::SHA256)
+    XBMC::SHA256Init(&m_context.sha256);
+  else
+  {
+    if (type != Type::MD5)
+      CLog::Log(LOGWARNING, "Digest of type %s is not supported. Falling back to MD5", TypeToString(type).c_str());
+    m_type = Type::MD5;
+    MD5Init(&m_context.md5);
+  }
 }
 
 void CDigest::Update(std::string const& data)
@@ -88,7 +93,10 @@ void CDigest::Update(void const* data, std::size_t size)
     throw std::logic_error("Finalized digest cannot be updated any more");
   }
 
-  MD5Update(&m_context, (md5byte*)data, size);
+  if (m_type == Type::SHA256)
+    XBMC::SHA256Update(&m_context.sha256, static_cast<const unsigned char*>(data), size);
+  else
+    MD5Update(&m_context.md5, static_cast<const md5byte*>(data), size);
 }
 
 std::string CDigest::FinalizeRaw()
@@ -100,14 +108,15 @@ std::string CDigest::FinalizeRaw()
 
   m_finalized = true;
 
-  unsigned char digest[16] = {'\0'};
-  MD5Final(digest, &m_context);
-  return StringUtils::Format("%02X%02X%02X%02X%02X%02X%02X%02X"\
-                             "%02X%02X%02X%02X%02X%02X%02X%02X",
-                             digest[0], digest[1], digest[2],
-                             digest[3], digest[4], digest[5], digest[6], digest[7], digest[8],
-                             digest[9], digest[10], digest[11], digest[12], digest[13], digest[14],
-                             digest[15]);
+  unsigned char digest[32];
+  if (m_type == Type::SHA256)
+  {
+    XBMC::SHA256Final(&m_context.sha256, digest);
+    return std::string(reinterpret_cast<const char*>(digest), 32);
+  }
+
+  MD5Final(digest, &m_context.md5);
+  return std::string(reinterpret_cast<const char*>(digest), 16);
 }
 
 std::string CDigest::Finalize()

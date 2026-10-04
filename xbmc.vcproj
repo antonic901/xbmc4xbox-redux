@@ -5845,6 +5845,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\md5.h">
 				</File>
 				<File
+					RelativePath=".\xbmc\utils\sha256.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\sha256.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\utils\Mime.cpp">
 				</File>
 				<File
