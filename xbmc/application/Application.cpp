@@ -613,7 +613,7 @@ bool CApplication::Initialize()
     uiInitializationFinished = true;
   }
 
-  CJSONRPC::Initialize();
+  // On Xbox we don't initialize JSON-RPC on startup. See CNetworkServices
 
   if (!m_ServiceManager->InitStageThree(profileManager))
   {

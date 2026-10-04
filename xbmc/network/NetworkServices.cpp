@@ -17,7 +17,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
-#include "interfaces/json-rpc/JSONRPC.h"
+#include "interfaces/json-rpc/JSONRPC.h" // On Xbox we initialize JSON-RPC only when we need it
 #include "messaging/ApplicationMessenger.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "messaging/helpers/DialogOKHelper.h"
@@ -565,6 +565,8 @@ bool CNetworkServices::StartWebserver()
   if (!m_webserver.Start(webPort, username, password))
     return false;
 
+  CJSONRPC::Initialize();
+
   return true;
 #endif // HAS_WEB_SERVER
   return false;
@@ -590,6 +592,9 @@ bool CNetworkServices::StopWebserver()
     return false;
   }
 
+  if (!IsJSONRPCServerRunning())
+    CJSONRPC::Cleanup();
+
   return true;
 #endif // HAS_WEB_SERVER
   return false;
@@ -606,6 +611,8 @@ bool CNetworkServices::StartJSONRPCServer()
   if (!CTCPServer::StartServer(CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_jsonTcpPort, m_settings->GetBool(CSettings::SETTING_SERVICES_ESALLINTERFACES)))
    return false;
 
+  CJSONRPC::Initialize();
+
   return true;
 }
 
@@ -620,6 +627,9 @@ bool CNetworkServices::StopJSONRPCServer(bool bWait)
     return true;
 
   CTCPServer::StopServer(bWait);
+
+  if (!IsWebserverRunning())
+    CJSONRPC::Cleanup();
 
   return true;
 }
