@@ -17,26 +17,26 @@ class CHTTPPythonHandler : public IHTTPRequestHandler
 {
 public:
   CHTTPPythonHandler();
-  ~CHTTPPythonHandler() {}
+  virtual ~CHTTPPythonHandler() {}
 
-  IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPPythonHandler(request); }
-  bool CanHandleRequest(const HTTPRequest &request) const;
-  bool CanHandleRanges() const { return false; }
-  bool CanBeCached() const { return false; }
-  bool GetLastModifiedDate(CDateTime &lastModified) const;
+  virtual IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPPythonHandler(request); }
+  virtual bool CanHandleRequest(const HTTPRequest &request) const;
+  virtual bool CanHandleRanges() const { return false; }
+  virtual bool CanBeCached() const { return false; }
+  virtual bool GetLastModifiedDate(CDateTime &lastModified) const;
 
-  MHD_RESULT HandleRequest();
+  virtual MHD_RESULT HandleRequest();
 
-  HttpResponseRanges GetResponseData() const { return m_responseRanges; }
+  virtual HttpResponseRanges GetResponseData() const { return m_responseRanges; }
 
-  std::string GetRedirectUrl() const { return m_redirectUrl; }
+  virtual std::string GetRedirectUrl() const { return m_redirectUrl; }
 
-  int GetPriority() const { return 3; }
+  virtual int GetPriority() const { return 3; }
 
 protected:
   explicit CHTTPPythonHandler(const HTTPRequest &request);
 
-  bool appendPostData(const char *data, size_t size);
+  virtual bool appendPostData(const char *data, size_t size);
 
 private:
   std::string m_scriptPath;

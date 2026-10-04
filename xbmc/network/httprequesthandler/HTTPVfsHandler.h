@@ -16,12 +16,12 @@ class CHTTPVfsHandler : public CHTTPFileHandler
 {
 public:
   CHTTPVfsHandler() {}
-  ~CHTTPVfsHandler() {}
+  virtual ~CHTTPVfsHandler() {}
 
-  IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPVfsHandler(request); }
-  bool CanHandleRequest(const HTTPRequest &request) const;
+  virtual IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPVfsHandler(request); }
+  virtual bool CanHandleRequest(const HTTPRequest &request) const;
 
-  int GetPriority() const { return 5; }
+  virtual int GetPriority() const { return 5; }
 
 protected:
   explicit CHTTPVfsHandler(const HTTPRequest &request);

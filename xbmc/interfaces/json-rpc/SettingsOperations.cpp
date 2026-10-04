@@ -27,8 +27,6 @@
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
 
-#include <boost/shared_ptr.hpp>
-
 using namespace JSONRPC;
 
 JSONRPC_STATUS CSettingsOperations::GetSections(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)

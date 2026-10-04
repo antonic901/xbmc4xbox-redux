@@ -16,7 +16,7 @@
 class CHTTPPythonInvoker : public CPythonInvoker
 {
 public:
-  ~CHTTPPythonInvoker();
+  virtual ~CHTTPPythonInvoker();
 
   virtual HTTPPythonRequest* GetRequest() = 0;
 
@@ -24,8 +24,8 @@ protected:
   CHTTPPythonInvoker(ILanguageInvocationHandler* invocationHandler, HTTPPythonRequest* request);
 
   // overrides of CPythonInvoker
-  void onAbort();
-  void onError(const std::string& exceptionType = "", const std::string& exceptionValue = "", const std::string& exceptionTraceback = "");
+  virtual void onAbort();
+  virtual void onError(const std::string& exceptionType = "", const std::string& exceptionValue = "", const std::string& exceptionTraceback = "");
 
   HTTPPythonRequest* m_request;
   bool m_internalError;

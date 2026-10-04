@@ -17,10 +17,10 @@ class CHTTPWebinterfaceHandler : public CHTTPFileHandler
 {
 public:
   CHTTPWebinterfaceHandler() {}
-  ~CHTTPWebinterfaceHandler() {}
+  virtual ~CHTTPWebinterfaceHandler() {}
 
-  IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPWebinterfaceHandler(request); }
-  bool CanHandleRequest(const HTTPRequest &request) const;
+  virtual IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPWebinterfaceHandler(request); }
+  virtual bool CanHandleRequest(const HTTPRequest &request) const;
 
   static int ResolveUrl(const std::string &url, std::string &path);
   static int ResolveUrl(const std::string &url, std::string &path, ADDON::AddonPtr &addon);

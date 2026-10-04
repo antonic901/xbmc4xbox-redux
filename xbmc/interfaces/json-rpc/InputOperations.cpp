@@ -22,8 +22,6 @@
 #include "utils/Variant.h"
 
 using namespace KODI;
-#include <boost/shared_ptr.hpp>
-
 using namespace JSONRPC;
 
 //! @todo the breakage of the screensaver should be refactored

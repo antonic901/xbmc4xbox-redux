@@ -18,24 +18,24 @@ class CHTTPJsonRpcHandler : public IHTTPRequestHandler
 {
 public:
   CHTTPJsonRpcHandler() {}
-  ~CHTTPJsonRpcHandler() {}
+  virtual ~CHTTPJsonRpcHandler() {}
 
   // implementations of IHTTPRequestHandler
-  IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPJsonRpcHandler(request); }
-  bool CanHandleRequest(const HTTPRequest &request) const;
+  virtual IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPJsonRpcHandler(request); }
+  virtual bool CanHandleRequest(const HTTPRequest &request) const;
 
-  MHD_RESULT HandleRequest();
+  virtual MHD_RESULT HandleRequest();
 
-  HttpResponseRanges GetResponseData() const;
+  virtual HttpResponseRanges GetResponseData() const;
 
-  int GetPriority() const { return 5; }
+  virtual int GetPriority() const { return 5; }
 
 protected:
   explicit CHTTPJsonRpcHandler(const HTTPRequest &request)
     : IHTTPRequestHandler(request)
   { }
 
-  bool appendPostData(const char *data, size_t size);
+  virtual bool appendPostData(const char *data, size_t size);
 
 private:
   std::string m_requestData;
@@ -46,12 +46,12 @@ private:
   {
   public:
     CHTTPTransportLayer() {}
-    ~CHTTPTransportLayer() {}
+    virtual ~CHTTPTransportLayer() {}
 
     // implementations of JSONRPC::ITransportLayer
-    bool PrepareDownload(const char *path, CVariant &details, std::string &protocol);
-    bool Download(const char *path, CVariant &result);
-    int GetCapabilities();
+    virtual bool PrepareDownload(const char *path, CVariant &details, std::string &protocol);
+    virtual bool Download(const char *path, CVariant &result);
+    virtual int GetCapabilities();
   };
   CHTTPTransportLayer m_transportLayer;
 
@@ -59,11 +59,11 @@ private:
   {
   public:
     explicit CHTTPClient(HTTPMethod method);
-    ~CHTTPClient() {}
+    virtual ~CHTTPClient() {}
 
-    int GetPermissionFlags() { return m_permissionFlags; }
-    int GetAnnouncementFlags();
-    bool SetAnnouncementFlags(int flags);
+    virtual int GetPermissionFlags() { return m_permissionFlags; }
+    virtual int GetAnnouncementFlags();
+    virtual bool SetAnnouncementFlags(int flags);
 
   private:
     int m_permissionFlags;

@@ -31,7 +31,6 @@
 #include <string.h>
 
 #include <boost/make_shared.hpp>
-#include <boost/shared_ptr.hpp>
 
 using namespace MUSIC_INFO;
 using namespace JSONRPC;

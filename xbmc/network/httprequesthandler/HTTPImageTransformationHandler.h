@@ -18,21 +18,21 @@ class CHTTPImageTransformationHandler : public IHTTPRequestHandler
 {
 public:
   CHTTPImageTransformationHandler();
-  ~CHTTPImageTransformationHandler();
+  virtual ~CHTTPImageTransformationHandler();
 
-  IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPImageTransformationHandler(request); }
-  bool CanHandleRequest(const HTTPRequest &request)const;
+  virtual IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPImageTransformationHandler(request); }
+  virtual bool CanHandleRequest(const HTTPRequest &request)const;
 
-  MHD_RESULT HandleRequest();
+  virtual MHD_RESULT HandleRequest();
 
-  bool CanHandleRanges() const { return true; }
-  bool CanBeCached() const { return true; }
-  bool GetLastModifiedDate(CDateTime &lastModified) const;
+  virtual bool CanHandleRanges() const { return true; }
+  virtual bool CanBeCached() const { return true; }
+  virtual bool GetLastModifiedDate(CDateTime &lastModified) const;
 
-  HttpResponseRanges GetResponseData() const { return m_responseData; }
+  virtual HttpResponseRanges GetResponseData() const { return m_responseData; }
 
   // priority must be higher than the one of CHTTPImageHandler
-  int GetPriority() const { return 6; }
+  virtual int GetPriority() const { return 6; }
 
 protected:
   explicit CHTTPImageTransformationHandler(const HTTPRequest &request);

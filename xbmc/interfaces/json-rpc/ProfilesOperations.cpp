@@ -18,8 +18,6 @@
 #include "utils/Digest.h"
 #include "utils/Variant.h"
 
-#include <boost/shared_ptr.hpp>
-
 using namespace JSONRPC;
 using KODI::UTILITY::CDigest;
 

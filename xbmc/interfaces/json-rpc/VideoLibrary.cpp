@@ -22,7 +22,6 @@
 #include "video/VideoLibraryQueue.h"
 
 #include <boost/make_shared.hpp>
-#include <boost/shared_ptr.hpp>
 
 typedef std::pair<const std::string, std::string> StringPair;
 

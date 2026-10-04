@@ -26,7 +26,6 @@
 #include "video/VideoDatabase.h"
 
 #include <boost/make_shared.hpp>
-#include <boost/shared_ptr.hpp>
 
 using namespace XFILE;
 using namespace JSONRPC;

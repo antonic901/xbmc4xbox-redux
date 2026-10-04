@@ -21,8 +21,6 @@
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
 
-#include <boost/shared_ptr.hpp>
-
 using namespace JSONRPC;
 using namespace ADDON;
 

@@ -32,8 +32,6 @@
 
 #include <string.h>
 
-#include <boost/shared_ptr.hpp>
-
 using namespace KODI;
 using namespace JSONRPC;
 

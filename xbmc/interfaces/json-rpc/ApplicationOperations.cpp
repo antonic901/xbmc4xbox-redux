@@ -22,9 +22,6 @@
 #include <cmath>
 #include <string.h>
 
-
-#include <boost/shared_ptr.hpp>
-
 using namespace JSONRPC;
 
 JSONRPC_STATUS CApplicationOperations::GetProperties(const std::string &method, ITransportLayer *transport, IClient *client, const CVariant &parameterObject, CVariant &result)

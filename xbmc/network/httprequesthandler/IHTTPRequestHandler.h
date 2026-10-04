@@ -22,10 +22,6 @@
 #endif
 
 #include <microhttpd.h>
-#if !defined(_WIN32)
-#include <sys/select.h>
-#include <sys/socket.h>
-#endif
 #include <sys/types.h>
 
 #if MHD_VERSION >= 0x00097002

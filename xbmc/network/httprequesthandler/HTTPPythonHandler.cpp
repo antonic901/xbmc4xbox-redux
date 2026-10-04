@@ -23,8 +23,6 @@
 #include "utils/URIUtils.h"
 #include "utils/log.h"
 
-#include <boost/shared_ptr.hpp>
-
 #define MAX_STRING_POST_SIZE 20000
 
 CHTTPPythonHandler::CHTTPPythonHandler()
@@ -53,7 +51,7 @@ CHTTPPythonHandler::CHTTPPythonHandler(const HTTPRequest &request)
   // get the real path of the script and check if it actually exists
   m_response.status = CHTTPWebinterfaceHandler::ResolveUrl(m_request.pathUrl, m_scriptPath, m_addon);
   // only allow requests to a non-static webinterface addon
-  if (!m_addon || m_addon->Type() != ADDON::AddonType::WEB_INTERFACE ||
+  if (m_addon == NULL || m_addon->Type() != ADDON::AddonType::WEB_INTERFACE ||
       boost::dynamic_pointer_cast<ADDON::CWebinterface>(m_addon)->GetType() ==
           ADDON::WebinterfaceTypeStatic)
   {
@@ -105,7 +103,7 @@ bool CHTTPPythonHandler::CanHandleRequest(const HTTPRequest &request) const
   ADDON::AddonPtr addon;
   std::string path;
   // try to resolve the addon as any python script must be part of a webinterface
-  if (!CHTTPWebinterfaceHandler::ResolveAddon(request.pathUrl, addon, path) || !addon ||
+  if (!CHTTPWebinterfaceHandler::ResolveAddon(request.pathUrl, addon, path) || addon == NULL ||
       addon->Type() != ADDON::AddonType::WEB_INTERFACE)
     return false;
 

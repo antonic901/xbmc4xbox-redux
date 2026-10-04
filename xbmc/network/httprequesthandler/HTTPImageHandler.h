@@ -16,13 +16,13 @@ class CHTTPImageHandler : public CHTTPFileHandler
 {
 public:
   CHTTPImageHandler() {}
-  ~CHTTPImageHandler() {}
+  virtual ~CHTTPImageHandler() {}
 
-  IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPImageHandler(request); }
-  bool CanHandleRequest(const HTTPRequest &request) const;
+  virtual IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPImageHandler(request); }
+  virtual bool CanHandleRequest(const HTTPRequest &request) const;
 
-  int GetPriority() const { return 5; }
-  int GetMaximumAgeForCaching() const { return 60 * 60 * 24 * 7; }
+  virtual int GetPriority() const { return 5; }
+  virtual int GetMaximumAgeForCaching() const { return 60 * 60 * 24 * 7; }
 
 protected:
   explicit CHTTPImageHandler(const HTTPRequest &request);

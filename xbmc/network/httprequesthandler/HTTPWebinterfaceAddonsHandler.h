@@ -16,16 +16,16 @@ class CHTTPWebinterfaceAddonsHandler : public IHTTPRequestHandler
 {
 public:
   CHTTPWebinterfaceAddonsHandler() {}
-  ~CHTTPWebinterfaceAddonsHandler() {}
+  virtual ~CHTTPWebinterfaceAddonsHandler() {}
 
-  IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPWebinterfaceAddonsHandler(request); }
-  bool CanHandleRequest(const HTTPRequest &request) const;
+  virtual IHTTPRequestHandler* Create(const HTTPRequest &request) const { return new CHTTPWebinterfaceAddonsHandler(request); }
+  virtual bool CanHandleRequest(const HTTPRequest &request) const;
 
-  MHD_RESULT HandleRequest();
+  virtual MHD_RESULT HandleRequest();
 
-  HttpResponseRanges GetResponseData() const;
+  virtual HttpResponseRanges GetResponseData() const;
 
-  int GetPriority() const { return 4; }
+  virtual int GetPriority() const { return 4; }
 
 protected:
   explicit CHTTPWebinterfaceAddonsHandler(const HTTPRequest &request)
