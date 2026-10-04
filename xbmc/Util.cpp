@@ -776,9 +776,8 @@ bool CUtil::CacheXBEIcon(const std::string& strFilePath, const std::string& strI
 {
   bool success = false;
 
-  Crc32 crc;
-  crc.ComputeFromLowerCase(strFilePath);
-  std::string strTempFile = StringUtils::Format("Z:\\%08x.tbn", (unsigned __int32) crc);
+  uint32_t crc = Crc32::ComputeFromLowerCase(strFilePath);
+  std::string strTempFile = StringUtils::Format("Z:\\%08x.tbn", crc);
 
   // extract icon from .xbe
   if (URIUtils::HasExtension(strFilePath, ".xbx"))

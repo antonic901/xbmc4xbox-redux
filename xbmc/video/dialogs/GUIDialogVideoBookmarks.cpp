@@ -425,10 +425,9 @@ bool CGUIDialogVideoBookmarks::AddBookmark(CVideoInfoTag* tag)
 
     const boost::shared_ptr<CProfileManager> profileManager = CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
-    Crc32 crc;
-    crc.ComputeFromLowerCase(g_application.CurrentFile());
+    uint32_t crc = Crc32::ComputeFromLowerCase(g_application.CurrentFile());
     bookmark.thumbNailImage =
-        StringUtils::Format("%08x_%i.jpg", (unsigned __int32)crc, (int)bookmark.timeInSeconds);
+        StringUtils::Format("%08x_%i.jpg", crc, (int)bookmark.timeInSeconds);
     bookmark.thumbNailImage = URIUtils::AddFileToFolder(profileManager->GetBookmarksThumbFolder(), bookmark.thumbNailImage);
 
     if (!CPicture::CreateThumbnailFromSurface((BYTE *)lockedRect.pBits, width, height, lockedRect.Pitch,

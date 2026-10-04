@@ -2823,9 +2823,7 @@ std::string CFileItemList::GetDiscFileCache(int windowID) const
   std::string strPath(GetPath());
   URIUtils::RemoveSlashAtEnd(strPath);
 
-  Crc32 crc32;
-  crc32.ComputeFromLowerCase(strPath);
-  uint32_t crc = (unsigned __int32)crc32;
+  uint32_t crc = Crc32::ComputeFromLowerCase(strPath);
 
   if (IsCDDA() || IsOnDVD())
     return StringUtils::Format("special://temp/archive_cache/r-%08x.fi", crc);
@@ -3263,9 +3261,8 @@ std::string CFileItem::GetGameSaveThumb() const
   URIUtils::RemoveSlashAtEnd(strPath);
   std::vector<std::string> Path = StringUtils::Split(strPath, "://");
 
-  Crc32 crc;
-  crc.ComputeFromLowerCase(m_strPath);
-  std::string thumb = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetGameSaveThumbFolder(), StringUtils::Format("%08x.tbn", (unsigned __int32)crc));
+  uint32_t crc = Crc32::ComputeFromLowerCase(strPath);
+  std::string thumb = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetGameSaveThumbFolder(), StringUtils::Format("%08x.tbn", crc));
   if (!CFile::Exists(thumb))
   {
     std::string strSavegamePath = "E:\\UDATA\\" + Path.back();
