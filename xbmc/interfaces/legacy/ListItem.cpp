@@ -234,9 +234,9 @@ namespace XBMCAddon
       else if (lowerKey == "totaltime")
       {
         CLog::Log(LOGWARNING,
-                  "\"{}\" in ListItem.setProperty() is deprecated and might be removed in future "
+                  "\"%s\" in ListItem.setProperty() is deprecated and might be removed in future "
                   "Kodi versions. Please use InfoTagVideo.setResumePoint().",
-                  lowerKey);
+                  lowerKey.c_str());
 
         CBookmark resumePoint(GetVideoInfoTag()->GetResumePoint());
         resumePoint.totalTimeInSeconds = atof(value.c_str());
@@ -245,9 +245,9 @@ namespace XBMCAddon
       else if (lowerKey == "resumetime")
       {
         CLog::Log(LOGWARNING,
-                  "\"{}\" in ListItem.setProperty() is deprecated and might be removed in future "
+                  "\"%s\" in ListItem.setProperty() is deprecated and might be removed in future "
                   "Kodi versions. Please use InfoTagVideo.setResumePoint().",
-                  lowerKey);
+                  lowerKey.c_str());
 
         xbmc::InfoTagVideo::setResumePointRaw(GetVideoInfoTag(), atof(value.c_str()));
       }
@@ -279,18 +279,18 @@ namespace XBMCAddon
       else if (lowerKey == "totaltime")
       {
         CLog::Log(LOGWARNING,
-                  "\"{}\" in ListItem.getProperty() is deprecated and might be removed in future "
+                  "\"%s\" in ListItem.getProperty() is deprecated and might be removed in future "
                   "Kodi versions. Please use InfoTagVideo.getResumeTimeTotal().",
-                  lowerKey);
+                  lowerKey.c_str());
 
         value = StringUtils::Format("%f", GetVideoInfoTag()->GetResumePoint().totalTimeInSeconds);
       }
       else if (lowerKey == "resumetime")
       {
         CLog::Log(LOGWARNING,
-                  "\"{}\" in ListItem.getProperty() is deprecated and might be removed in future "
+                  "\"%s\" in ListItem.getProperty() is deprecated and might be removed in future "
                   "Kodi versions. Please use InfoTagVideo.getResumeTime().",
-                  lowerKey);
+                  lowerKey.c_str());
 
         value = StringUtils::Format("%f", GetVideoInfoTag()->GetResumePoint().timeInSeconds);
       }

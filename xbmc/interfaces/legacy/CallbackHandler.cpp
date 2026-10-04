@@ -134,7 +134,7 @@ namespace XBMCAddon
       {
 #ifdef ENABLE_XBMC_TRACE_API
         CLog::Log(LOGDEBUG,
-                  "{}NEWADDON removing callback 0x{:x} for PyThreadState 0x{:x} from queue",
+                  "%sNEWADDON removing callback 0x%x for PyThreadState 0x%x from queue",
                   _tg.getSpaces(), (long)(p->cb.get()), (long)userData);
 #endif
         iter = g_callQueue.erase(iter);
