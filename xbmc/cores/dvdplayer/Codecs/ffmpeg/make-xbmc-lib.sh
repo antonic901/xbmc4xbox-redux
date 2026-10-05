@@ -14,7 +14,7 @@ xbmc_configure ()
 {
   echo "Configuring ..."
   CFLAGS="-D_XBOX -msse -mfpmath=sse"
-  LDFLAGS="-Wl,--enable-auto-import"
+  LDFLAGS="-Wl,--enable-auto-import -static-libgcc"
   PARAMS=" \
   --cpu=pentium3 \
   --enable-gpl \
@@ -116,4 +116,3 @@ in
     echo "$0 clean|configure [additional parameters]|make [install dir]|all"
   ;;
 esac
-
