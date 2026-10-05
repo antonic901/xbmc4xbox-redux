@@ -29,8 +29,6 @@ public:
   CRGBRendererV2(LPDIRECT3DDEVICE8 pDevice);
   //~CRGBRendererV2();
 
-  // Functions called from mplayer
-  // virtual void     WaitForFlip();
   virtual bool Configure(unsigned int width, unsigned int height, unsigned int d_width, unsigned int d_height, float fps, unsigned flags);
   virtual bool IsConfigured() { return m_bConfigured; } 
   virtual unsigned int PreInit();

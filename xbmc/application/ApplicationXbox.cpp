@@ -331,12 +331,6 @@ void CApplicationXbox::CheckNetworkHDSpinDown(bool playbackStarted)
   {
     int iDuration = 0;
 
-    // try to get duration from current tag because mplayer doesn't calculate vbr mp3 correctly
-    if (appPlayer->IsPlayingAudio() && g_application.CurrentFileItem().HasMusicInfoTag())
-    {
-      iDuration = g_application.CurrentFileItem().GetMusicInfoTag()->GetDuration();
-    }
-
     if (appPlayer->IsPlaying() && iDuration <= 0)
     {
       iDuration = static_cast<int>(g_application.GetTotalTime());

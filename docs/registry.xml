@@ -13,7 +13,7 @@
 
 			<key path="Apple Computer, Inc.\QuickTime\SystemPreferences">
 				<value type="dword" id="WinVersion">117506916</value>
-				<value type="string" id="QTSysDir">Q:\system\players\mplayer\codecs</value>
+				<value type="string" id="QTSysDir">Q:\system\players\dvdplayer\codecs</value>
 			</key>
 		</key>
 	</key>

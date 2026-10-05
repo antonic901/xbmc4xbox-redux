@@ -162,7 +162,6 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
     case SYSTEM_XBOX_PRODUCE_INFO:
     case SYSTEM_XBOX_BIOS:
     case SYSTEM_XBE_REGION:
-    case SYSTEM_MPLAYER_VERSION:
     case NETWORK_IS_DHCP:
 #endif
     case SYSTEM_VIDEO_ENCODER_INFO:

@@ -226,11 +226,6 @@ bool CGUIWindowFullScreen::OnAction(const CAction &action)
       int label = CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleOn?305:1223;
       CGUIDialogKaiToast::QueueNotification(g_localizeStrings.Get(287),
                                                           g_localizeStrings.Get(label));
-      if (appPlayer->GetCurrentPlayer() == "MPlayer" && !CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleCached && CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleOn)
-      {
-        g_application.Restart(true); // cache subtitles
-        Close();
-      }
     }
     return true;
     break;
@@ -818,8 +813,7 @@ void CGUIWindowFullScreen::RenderTTFSubtitles()
 {
   CApplicationComponents &components = CServiceBroker::GetAppComponents();
   const boost::shared_ptr<CApplicationPlayer> appPlayer = components.GetComponent<CApplicationPlayer>();
-  //if ( g_application.GetCurrentPlayer() == EPC_MPLAYER && CUtil::IsUsingTTFSubtitles() && g_application.m_pPlayer->GetSubtitleVisible() && m_subsLayout)
-  if ((appPlayer->GetCurrentPlayer() == "MPlayer" || appPlayer->GetCurrentPlayer() == "VideoPlayer") &&
+  if (appPlayer->GetCurrentPlayer() == "VideoPlayer" &&
       CUtil::IsUsingTTFSubtitles() && appPlayer->GetSubtitleVisible())
   {
     CSingleLock lock (m_fontLock);

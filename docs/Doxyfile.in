@@ -72,7 +72,6 @@ INPUT                  = c:/XBMC/guilib/ \
                          c:/XBMC/xbmc/utils/ \
                          c:/XBMC/xbmc/FileSystem/ \
                          c:/XBMC/xbmc/cores/ \
-                         c:/XBMC/xbmc/cores/mplayer/ \
                          c:/XBMC/xbmc/cores/DllLoader/ \
                          c:/XBMC/xbmc/osd/
 FILE_PATTERNS          = *.cpp \

@@ -564,20 +564,6 @@ void GUIFontManager::SettingOptionsFontsFiller(const SettingConstPtr& setting,
 
     list.push_back(StringSettingOption(item->GetLabel(), item->GetLabel()));
   }
-
-#ifdef _XBOX
-  // Find mplayer fonts...
-  XFILE::CDirectory::GetDirectory("special://xbmc/system/players/mplayer/font/", items, "", XFILE::DIR_FLAG_DEFAULTS);
-  for (int i = 0; i < items.Size(); ++i)
-  {
-    CFileItemPtr pItem = items[i];
-    if (pItem->m_bIsFolder)
-    {
-      if (strcmpi(pItem->GetLabel().c_str(), ".svn") == 0) continue;
-      list.push_back(StringSettingOption(pItem->GetLabel(), pItem->GetLabel()));
-    }
-  }
-#endif
 }
 
 void GUIFontManager::Initialize()

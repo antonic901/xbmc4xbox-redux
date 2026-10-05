@@ -53,7 +53,6 @@ public:
   int m_SubtitleStream;
   float m_SubtitleDelay;
   bool m_SubtitleOn;
-  bool m_SubtitleCached;
   float m_Brightness;
   float m_Contrast;
   float m_Gamma;
@@ -62,9 +61,6 @@ public:
   // Xbox specific
   bool m_bForceIndex;
   bool m_OutputToAllSpeakers;
-  bool m_NoCache;
-  bool m_NonInterleaved;
-  float m_FilmGrain;
   bool m_Crop;
   int m_CropTop;
   int m_CropBottom;

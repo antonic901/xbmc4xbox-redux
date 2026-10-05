@@ -141,7 +141,6 @@ public:
   static std::string GetVobSubSubFromIdx(const std::string& vobSubIdx);
   static std::string GetVobSubIdxFromSub(const std::string& vobSub);
 
-  static void PrepareSubtitleFonts();
   static __int64 ToInt64(DWORD dwHigh, DWORD dwLow);
   static void PlayDVD(const std::string& strProtocol = "dvd", bool restart = false);
   static std::string GetNextFilename(const std::string &fn_template, int max);

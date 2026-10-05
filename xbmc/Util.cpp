@@ -1461,58 +1461,6 @@ std::string CUtil::GetVobSubIdxFromSub(const std::string& vobSub)
   return std::string();
 }
 
-void CUtil::PrepareSubtitleFonts()
-{
-  std::string strFontPath = "special://xbmc/system/players/mplayer/font";
-
-  if( IsUsingTTFSubtitles()
-    || CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SUBTITLES_FONTSIZE) == 0
-    || CServiceBroker::GetSettingsComponent()->GetSettings()->GetString(CSettings::SETTING_SUBTITLES_FONT).size() == 0)
-  {
-    /* delete all files in the font dir, so mplayer doesn't try to load them */
-
-    std::string strSearchMask = strFontPath + "\\*.*";
-    WIN32_FIND_DATA wfd;
-    CAutoPtrFind hFind ( FindFirstFile(CSpecialProtocol::TranslatePath(strSearchMask).c_str(), &wfd));
-    if (hFind.isValid())
-    {
-      do
-      {
-        if(wfd.cFileName[0] == 0) continue;
-        if( (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 )
-          CFile::Delete(URIUtils::AddFileToFolder(strFontPath, wfd.cFileName));
-      }
-      while (FindNextFile((HANDLE)hFind, &wfd));
-    }
-  }
-  else
-  {
-    std::string strPath;
-    strPath = StringUtils::Format("%s\\%s\\%i",
-                  strFontPath.c_str(),
-                  CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("Subtitles.Font").c_str(),
-                  CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt("Subtitles.Height"));
-
-    std::string strSearchMask = strPath + "\\*.*";
-    WIN32_FIND_DATA wfd;
-    CAutoPtrFind hFind ( FindFirstFile(CSpecialProtocol::TranslatePath(strSearchMask).c_str(), &wfd));
-    if (hFind.isValid())
-    {
-      do
-      {
-        if (wfd.cFileName[0] == 0) continue;
-        if ( (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0 )
-        {
-          std::string strSource = URIUtils::AddFileToFolder(strPath, wfd.cFileName);
-          std::string strDest = URIUtils::AddFileToFolder(strFontPath, wfd.cFileName);
-          CFile::Copy(strSource, strDest);
-        }
-      }
-      while (FindNextFile((HANDLE)hFind, &wfd));
-    }
-  }
-}
-
 __int64 CUtil::ToInt64(DWORD dwHigh, DWORD dwLow)
 {
   __int64 n;

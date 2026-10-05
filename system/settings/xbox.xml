@@ -9,7 +9,6 @@
           <constraints>
             <options>
               <option label="38788">1</option> <!-- PLAYER_DVDPLAYER -->
-              <option label="38789">0</option> <!-- PLAYER_MPLAYER -->
             </options>
           </constraints>
           <control type="spinner" format="string" />
@@ -85,7 +84,6 @@
           <constraints>
             <options>
               <option label="38787">2</option> <!-- PLAYER_PAPLAYER -->
-              <option label="38789">0</option> <!-- PLAYER_MPLAYER -->
               <option label="38788">1</option> <!-- PLAYER_DVDPLAYER -->
             </options>
           </constraints>

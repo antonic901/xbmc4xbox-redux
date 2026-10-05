@@ -425,8 +425,6 @@ public:
 #ifdef _XBOX
   inline std::string GetPlayerName(const int& player) const
   {
-    if (player == 0)
-      return "MPlayer";
     if (player == 1)
       return "VideoPlayer";
     if (player == 2)

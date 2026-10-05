@@ -375,10 +375,6 @@ void CURL::SetProtocolOptions(std::string strOptions)
 
 std::string CURL::GetTranslatedProtocol() const
 {
-  // Xbox: Used inside MPlayer
-  if (IsProtocol("ftpx"))
-    return "ftp";
-
   if (IsProtocol("shout")
    || IsProtocol("dav")
    || IsProtocol("mms")

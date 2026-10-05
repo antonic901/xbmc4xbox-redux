@@ -44,9 +44,9 @@ public:
   virtual HMODULE GetHModule() = 0;
   virtual bool HasSymbols() = 0;
 
-  char* GetName(); // eg "mplayer.dll"
-  char* GetFileName(); // "special://xbmc/system/mplayer/players/mplayer.dll"
-  char* GetPath(); // "special://xbmc/system/mplayer/players/"
+  char* GetName(); // eg "python27.dll"
+  char* GetFileName(); // "special://xbmc/system/python/python27.dll"
+  char* GetPath(); // "special://xbmc/system/python/"
 
   int IncrRef();
   int DecrRef();

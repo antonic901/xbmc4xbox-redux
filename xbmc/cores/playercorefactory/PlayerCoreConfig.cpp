@@ -10,7 +10,6 @@
 
 #include "cores/IPlayer.h"
 #include "cores/dvdplayer/DVDPlayer.h"
-#include "cores/mplayer/MPlayer.h"
 #include "cores/paplayer/PAPlayer.h"
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
@@ -40,10 +39,7 @@ boost::shared_ptr<IPlayer> CPlayerCoreConfig::CreatePlayer(IPlayerCallback& call
 
   if (m_type.compare("video") == 0)
   {
-    if (m_name == "MPlayer")
-      player.reset(new CMPlayer(callback));
-    else
-      player.reset(new CDVDPlayer(callback));
+    player.reset(new CDVDPlayer(callback));
   }
   else if (m_type.compare("music") == 0)
   {

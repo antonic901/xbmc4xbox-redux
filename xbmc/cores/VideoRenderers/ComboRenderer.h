@@ -35,7 +35,7 @@ public:
   virtual void SetupScreenshot();
   virtual void FlipPage(int source);
 
-  // Functions called from mplayer  
+  // Functions called from dvdplayer  
   virtual bool Configure(unsigned int width, unsigned int height, unsigned int d_width, unsigned int d_height, float fps, unsigned flags);
   virtual bool IsConfigured() { return m_bConfigured; } 
   virtual unsigned int PreInit();

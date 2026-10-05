@@ -38,7 +38,7 @@
 char* regpathname = NULL;
 
 //carry default regisrty.dat path+filename
-static char* localregpathname = "Q:\\system\\players\\mplayer\\codecs\\registry.dat";
+static char* localregpathname = "Q:\\system\\registry.dat";
 
 //will trim away any traling ch
 static void strrtrim(char* s, char ch)

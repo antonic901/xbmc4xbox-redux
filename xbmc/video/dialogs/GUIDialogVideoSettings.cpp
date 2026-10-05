@@ -50,10 +50,6 @@
 #define SETTING_VIDEO_CROP                "video.crop"
 #define SETTING_VIDEO_FLICKER             "video.flicker"
 #define SETTING_VIDEO_SOFTEN              "video.soften"
-#define SETTING_VIDEO_FILM_GRAIN          "video.filmgrain"
-#define SETTING_VIDEO_NON_INTERLEAVED     "video.noninterleaved"
-#define SETTING_VIDEO_NO_CACHE            "video.nocache"
-#define SETTING_VIDEO_FORCE_INDEX         "video.forceindex"
 
 #define SETTING_VIDEO_MAKE_DEFAULT        "video.save"
 #define SETTING_VIDEO_CALIBRATION         "video.calibration"
@@ -147,10 +143,6 @@ void CGUIDialogVideoSettings::OnSettingChanged(const boost::shared_ptr<const CSe
     RESOLUTION res = CServiceBroker::GetWinSystem()->GetGfxContext().GetVideoResolution();
     CServiceBroker::GetWinSystem()->GetGfxContext().SetVideoResolution(res);
   }
-  else if (settingId == SETTING_VIDEO_NON_INTERLEAVED ||  settingId == SETTING_VIDEO_NO_CACHE)
-    g_application.Restart(true);
-  else if (settingId == SETTING_VIDEO_FILM_GRAIN)
-    g_application.DelayedPlayerRestart();
 }
 
 void CGUIDialogVideoSettings::OnSettingAction(const boost::shared_ptr<const CSetting>& setting)
@@ -191,11 +183,6 @@ void CGUIDialogVideoSettings::OnSettingAction(const boost::shared_ptr<const CSet
   //! @todo implement
   else if (settingId == SETTING_VIDEO_MAKE_DEFAULT)
     Save();
-  else if (settingId == SETTING_VIDEO_FORCE_INDEX)
-  {
-    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_bForceIndex = true;
-    g_application.Restart(true);
-  }
 }
 
 bool CGUIDialogVideoSettings::Save()
@@ -294,13 +281,6 @@ void CGUIDialogVideoSettings::InitializeSettings()
   AddPercentageSlider(groupVideo, SETTING_VIDEO_CONTRAST, 465, SettingLevel::Basic, static_cast<int>(videoSettings.m_Contrast), 14047, 1, 465, usePopup);
   AddPercentageSlider(groupVideo, SETTING_VIDEO_GAMMA, 466, SettingLevel::Basic, static_cast<int>(videoSettings.m_Gamma), 14047, 1, 466, usePopup);
 
-  if (g_application.GetCurrentPlayer() == "MPlayer")
-  {
-    AddSlider(groupVideo, SETTING_VIDEO_FILM_GRAIN, 14058, SettingLevel::Basic, videoSettings.m_FilmGrain, "%f", 0.0f, 1.0f, 10.0f);
-    AddToggle(groupVideo, SETTING_VIDEO_NON_INTERLEAVED, 306, SettingLevel::Basic, videoSettings.m_NonInterleaved);
-    AddToggle(groupVideo, SETTING_VIDEO_NO_CACHE, 431, SettingLevel::Basic, videoSettings.m_NoCache);
-    AddButton(groupSaveAsDefault, SETTING_VIDEO_FORCE_INDEX, 12009, SettingLevel::Basic);
-  }
   AddSpinner(groupSaveAsDefault, SETTING_VIDEO_FLICKER, 13100, SettingLevel::Basic, CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_VIDEOPLAYER_FLICKER), 0, 1, 5, -1, 351);
   AddToggle(groupSaveAsDefault, SETTING_VIDEO_SOFTEN, 215, SettingLevel::Basic, CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_VIDEOPLAYER_SOFTEN));
 

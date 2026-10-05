@@ -25,7 +25,7 @@ Keymappings while playing video:
     small step back (-8 seconds)                controller: back            remote    : back
     toggle zoom/stretch/normal                  controller: start           remote    : select
     bring up OSD                                controller: Y               remote    : menu
-    toggle mplayer OSD display (playtime)       controller: white           remote    : ?
+    toggle OSD display (playtime)               controller: white           remote    : ?
     toggle subtitles on/off                     controller: ? (use OSD)     remote    : title
     show codec info                             controller: black           remote    : info
     take a screenshot                           controller: click L thumbst.
@@ -37,7 +37,7 @@ Keymappings while in the video OSD:
    exit OSD                                     controller: Y OR back       remote    : menu
   
 Keymappings in My Music:
-  switch between Visualisation/menu:		controller: X               remote    : display
+  switch between Visualisation/menu:		        controller: X               remote    : display
   previous/next song                            controller: ?               remote    : skip- and skip+
   select/play a song                            controller: A               remote    : select 
   pause song                                    controller: ?               remote    : pause

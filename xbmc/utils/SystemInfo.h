@@ -87,7 +87,6 @@ public:
   // info specific to xbox
   std::string xboxBios;
   std::string xboxModChip;
-  std::string mplayerversion;
   std::string xboxversion;
   std::string avpackinfo;
   std::string xboxserial;
@@ -152,7 +151,6 @@ public:
 #ifdef _XBOX
   static std::string SmartXXModCHIP();
   static std::string GetAVPackInfo();
-  static std::string GetMPlayerVersion();
   std::string GetUnits(int iFrontPort);
   std::string GetXBOXSerial();
   std::string GetXBProduceInfo();

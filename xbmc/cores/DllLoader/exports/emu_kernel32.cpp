@@ -634,13 +634,6 @@ extern "C" UINT WINAPI dllGetWindowsDirectoryA(LPTSTR lpBuffer, UINT uSize)
 
 extern "C" UINT WINAPI dllGetSystemDirectoryA(LPTSTR lpBuffer, UINT uSize)
 {
-  //char* systemdir = "special://xbmc/system/mplayer/codecs";
-  //unsigned int len = strlen(systemdir);
-  //if (len > uSize) return 0;
-  //strcpy(lpBuffer, systemdir);
-  //not_implement("kernel32.dll incompete function dllGetSystemDirectory called\n"); //warning
-  //CLog::Log(LOGDEBUG,"KERNEL32!GetSystemDirectoryA(0x%x, %d) => %s", lpBuffer, uSize, systemdir);
-  //return len;
 #ifdef API_DEBUG
   CLog::Log(LOGDEBUG, "GetSystemDirectoryA(%p,%d)\n", lpBuffer, uSize);
 #endif
@@ -652,10 +645,6 @@ extern "C" UINT WINAPI dllGetSystemDirectoryA(LPTSTR lpBuffer, UINT uSize)
 extern "C" UINT WINAPI dllGetShortPathName(LPTSTR lpszLongPath, LPTSTR lpszShortPath, UINT cchBuffer)
 {
   if (!lpszLongPath) return 0;
-  if (strlen(lpszLongPath) == 0)
-  {
-    //strcpy(lpszLongPath, "special://xbmc/system/mplayer/codecs/QuickTime.qts");
-  }
 #ifdef API_DEBUG
   CLog::Log(LOGDEBUG, "KERNEL32!GetShortPathNameA('%s',%p,%d)\n", lpszLongPath, lpszShortPath, cchBuffer);
 #endif

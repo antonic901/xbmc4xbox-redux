@@ -4,7 +4,6 @@
     The following aliases may also be used:
       audiodefaultplayer, videodefaultplayer
     <player name="DVDPlayer" audio="true" video="true" />
-    <player name="MPlayer" audio="true" video="true" />
     <player name="PAPlayer" audio="true" />
     -->
   </players>

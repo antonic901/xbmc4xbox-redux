@@ -26,7 +26,7 @@
 #include "dll_util.h"
 #include "filesystem/SpecialProtocol.h"
 
-#define DEFAULT_DLLPATH "special://xbmc/system/players/mplayer/codecs/"
+#define DEFAULT_DLLPATH "special://xbmc/system/"
 #define HIGH_WORD(a) ((WORD)(((DWORD)(a) >> 16) & MAXWORD))
 #define LOW_WORD(a) ((WORD)(((DWORD)(a)) & MAXWORD))
 
@@ -75,10 +75,6 @@ extern "C" HMODULE __stdcall dllLoadLibraryExtended(LPCSTR lib_file, LPCSTR sour
     {
       /* use calling dll's path as base address for this call */
       getpath(libpath, sourcedll);
-
-      /* mplayer has all it's dlls in a codecs subdirectory */
-      if (strstr(sourcedll, "mplayer.dll"))
-        strcat(libpath, "codecs\\");
     }
   }
 

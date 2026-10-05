@@ -307,11 +307,6 @@ bool CPlayerCoreFactory::LoadConfiguration(const std::string &file, bool clear)
     VideoPlayer->m_bPlaysVideo = true;
     m_vecPlayerConfigs.push_back(VideoPlayer);
 
-    boost::shared_ptr<CPlayerCoreConfig> mplayer = boost::make_shared<CPlayerCoreConfig>("MPlayer", "video", static_cast<const TiXmlElement*>(NULL));
-    VideoPlayer->m_bPlaysAudio = true;
-    VideoPlayer->m_bPlaysVideo = true;
-    m_vecPlayerConfigs.push_back(mplayer);
-
     boost::shared_ptr<CPlayerCoreConfig> paplayer = boost::make_shared<CPlayerCoreConfig>("PAPlayer", "music", static_cast<const TiXmlElement*>(NULL));
     paplayer->m_bPlaysAudio = true;
     m_vecPlayerConfigs.push_back(paplayer);
@@ -335,7 +330,7 @@ bool CPlayerCoreFactory::LoadConfiguration(const std::string &file, bool clear)
       StringUtils::ToLower(type);
 
       std::string internaltype;
-      if (type == "videoplayer" || type == "mplayer")
+      if (type == "videoplayer")
         internaltype = "video";
       else if (type == "paplayer")
         internaltype = "music";

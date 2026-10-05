@@ -108,7 +108,7 @@ IDirectory* CDirectoryFactory::Create(const CURL& url)
   if (url.IsProtocol("favourites")) return new CFavouritesDirectory();
   if (url.IsProtocol("resource")) return new CResourceDirectory();
 
-  if (url.IsProtocol("ftp") || url.IsProtocol("ftps") || url.IsProtocol("ftpx")) return new CFTPDirectory();
+  if (url.IsProtocol("ftp") || url.IsProtocol("ftps")) return new CFTPDirectory();
   if (url.IsProtocol("http") || url.IsProtocol("https")) return new CHTTPDirectory();
   if (url.IsProtocol("dav") || url.IsProtocol("davs")) return new CDAVDirectory();
 #ifdef HAS_FILESYSTEM_SMB

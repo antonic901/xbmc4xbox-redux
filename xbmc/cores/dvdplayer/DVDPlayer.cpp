@@ -547,8 +547,6 @@ bool CDVDPlayer::OpenInputStream()
         }
       }
     } // end loop over all subtitle files
-
-    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleCached = true;
   }
 
   SetAVDelay(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_AudioDelay);
@@ -827,8 +825,6 @@ void CDVDPlayer::Process()
       ptr->SetState(m_PlayerOptions.state);
     else if(CDVDInputStreamNavigator* nav = dynamic_cast<CDVDInputStreamNavigator*>(m_pInputStream))
       nav->EnableSubtitleStream(CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleOn);
-
-    CMediaSettings::GetInstance().GetCurrentVideoSettings().m_SubtitleCached = true;
   }
 
   if(!OpenDemuxStream())

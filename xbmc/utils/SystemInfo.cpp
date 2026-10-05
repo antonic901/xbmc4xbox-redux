@@ -75,7 +75,6 @@ bool CSysInfoJob::DoWork()
     if(!CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_DisableModChipDetection)
       m_info.xboxModChip     = CSysInfo::GetModChipInfo();
     m_info.xboxBios          = g_sysinfo.GetBIOSInfo();
-    m_info.mplayerversion    = CSysInfo::GetMPlayerVersion();
     m_info.xboxversion       = CSysInfo::GetXBVerInfo();
     m_info.avpackinfo        = CSysInfo::GetAVPackInfo();
     m_info.xboxserial        = g_sysinfo.GetXBOXSerial();
@@ -265,8 +264,6 @@ std::string CSysInfo::TranslateInfo(int info) const
   switch(info)
   {
 #ifdef HAS_XBOX_HARDWARE
-  case SYSTEM_MPLAYER_VERSION:
-    return m_info.mplayerversion;
   case SYSTEM_OS_VERSION_INFO:
     return m_info.kernelVersion;
   case SYSTEM_CPUFREQUENCY:
@@ -1313,41 +1310,6 @@ std::string CSysInfo::SmartXXModCHIP()
     return "None";
 }
 
-std::string CSysInfo::GetMPlayerVersion()
-{
-  std::string strVersion="";
-  DllLoader* mplayerDll;
-  const char* (__cdecl* pMplayerGetVersion)();
-  const char* (__cdecl* pMplayerGetCompileDate)();
-  const char* (__cdecl* pMplayerGetCompileTime)();
-
-  const char *version = NULL;
-  const char *date = NULL;
-  const char *btime = NULL;
-
-  mplayerDll = new DllLoader("Q:\\system\\players\\mplayer\\mplayer.dll",true);
-
-  if( mplayerDll->Load() )
-  {
-    if (mplayerDll->ResolveExport("mplayer_getversion", (void**)&pMplayerGetVersion))
-      version = pMplayerGetVersion();
-    if (mplayerDll->ResolveExport("mplayer_getcompiledate", (void**)&pMplayerGetCompileDate))
-      date = pMplayerGetCompileDate();
-    if (mplayerDll->ResolveExport("mplayer_getcompiletime", (void**)&pMplayerGetCompileTime))
-      btime = pMplayerGetCompileTime();
-    if (version && date && btime)
-    {
-      strVersion = StringUtils::Format("%s (%s - %s)",version, date, btime);
-    }
-    else if (version)
-    {
-      strVersion = StringUtils::Format("%s",version);
-    }
-  }
-  delete mplayerDll;
-  mplayerDll=NULL;
-  return strVersion;
-}
 std::string CSysInfo::GetKernelVersion()
 {
   int ikrnl = XboxKrnlVersion->Qfe & 67;
