@@ -6101,9 +6101,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\ArtistDirectory.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\cores\mplayer\audio.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\CueDocument.h">
 			</File>
 			<File
@@ -6200,9 +6197,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				RelativePath=".\xbmc\FileSystem\iso9660.h">
 			</File>
 			<File
-				RelativePath=".\xbmc\cores\mplayer\keycodes.h">
-			</File>
-			<File
 				RelativePath=".\xbmc\SettingsLock.h">
 			</File>
 			<File
@@ -6219,9 +6213,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			</File>
 			<File
 				RelativePath=".\xbmc\input\XBIRRemote.h">
-			</File>
-			<File
-				RelativePath=".\xbmc\cores\mplayer\xbox_video.h">
 			</File>
 		</Filter>
 		<Filter
@@ -6242,34 +6233,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 			<File
 				RelativePath=".\xbmc\cores\VideoSettings.h">
 			</File>
-			<Filter
-				Name="mplayer"
-				Filter="">
-				<File
-					RelativePath=".\xbmc\cores\mplayer\audio.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\mplayer\DllMPlayer.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\mplayer\DllMPlayer.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\mplayer\MPlayer.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\mplayer\MPlayer.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\mplayer\ResampleDirectSound.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\mplayer\ResampleDirectSound.h">
-				</File>
-				<File
-					RelativePath=".\xbmc\cores\mplayer\xbox_video.cpp">
-				</File>
-			</Filter>
 			<Filter
 				Name="dvdplayer"
 				Filter="">
