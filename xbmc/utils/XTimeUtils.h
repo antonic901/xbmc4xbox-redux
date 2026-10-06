@@ -56,7 +56,7 @@ struct FileTime
 void GetLocalTime(SystemTime* systemTime);
 uint32_t GetTimeZoneInformation(TimeZoneInformation* timeZoneInformation);
 
-void Sleep(unsigned int duration)
+inline void Sleep(unsigned int duration)
 {
   if (duration == 0)
   {
