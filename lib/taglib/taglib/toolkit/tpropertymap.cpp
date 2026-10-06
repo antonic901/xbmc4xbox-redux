@@ -184,7 +184,7 @@ const StringList &PropertyMap::unsupportedData() const
   return unsupported;
 }
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(_XBOX)
 // When building with shared libraries and tests, MSVC will fail with
 // "already defined in test_opus.obj" as soon as operator[] of
 // Ogg::FieldListMap is used because this will instantiate the same template
