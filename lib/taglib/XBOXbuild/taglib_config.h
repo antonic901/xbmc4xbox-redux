@@ -1,0 +1,3 @@
+#ifndef TAGLIB_TAGLIB_CONFIG_H
+#define TAGLIB_TAGLIB_CONFIG_H
+#endif
