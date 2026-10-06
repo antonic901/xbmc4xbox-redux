@@ -781,6 +781,22 @@
 				RelativePath="..\taglib\xm\xmproperties.h">
 			</File>
 		</Filter>
+		<Filter
+			Name="xbox"
+			Filter="">
+			<File
+				RelativePath=".\xbox\CallbackStream.h">
+			</File>
+			<File
+				RelativePath=".\xbox\Metadata.h">
+			</File>
+			<File
+				RelativePath=".\xbox\taglib_xbmc.cpp">
+			</File>
+			<File
+				RelativePath=".\xbox\taglib_xbmc.h">
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
