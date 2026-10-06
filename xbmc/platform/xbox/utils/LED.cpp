@@ -50,6 +50,7 @@ OFF/Green/Red/Orange/Cycle
 #include "application/ApplicationXbox.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "utils/XTimeUtils.h"
 #include "utils/log.h"
 
 #include "platform/xbox/XKUtils.h"
@@ -205,7 +206,7 @@ void ILEDSmartxxRGB::Process()
       }
         }
 
-        Sleep(10);
+        KODI::TIME::Sleep(10);
     }
 }
 

@@ -94,6 +94,7 @@
 #include "utils/log.h"
 #include "video/VideoInfoTag.h"
 #include "programs/launchers/ProgramLauncher.h"
+#include "utils/XTimeUtils.h"
 
 #include "xbresource.h"
 #include "platform/xbox/Undocumented.h"
@@ -1648,7 +1649,7 @@ void CUtil::TakeScreenshot(const std::string& strFileName, bool flashScreen)
       CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->BlockUntilVerticalBlank();
 #endif
       FlashScreen(true, true);
-      Sleep(10);
+      KODI::TIME::Sleep(10);
 #ifdef HAS_XBOX_D3D
       CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->BlockUntilVerticalBlank();
 #endif
@@ -3298,7 +3299,7 @@ void CUtil::RunXBE(const char* szPath1, char* szParameters, F_VIDEO ForceVideo, 
   CApplicationComponents &components = CServiceBroker::GetAppComponents();
   const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
   appXbox->PrintXBETitleToLCD(szPath1); //write to LCD
-  Sleep(600);        //and wait a little bit to execute
+  KODI::TIME::Sleep(600);        //and wait a little bit to execute
 
   char szPath[1024];
   strcpy(szPath, CSpecialProtocol::TranslatePath(szPath1).c_str());

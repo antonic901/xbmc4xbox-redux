@@ -52,6 +52,7 @@
 #include "utils/JobManager.h"
 #include "utils/LangCodeExpander.h"
 #include "utils/Variant.h"
+#include "utils/XTimeUtils.h"
 #include "video/Bookmark.h"
 #include "video/VideoLibraryQueue.h"
 
@@ -685,7 +686,7 @@ void CApplication::Render()
     // rendering is happening inside CXBoxRenderManager thread and not main render loop.
     // Because of that we need to skip main render loop.
     // TODO: understand why it's done like this and if it's possible to move videoplayback inside main render loop
-    Sleep(50);
+    KODI::TIME::Sleep(50);
     appPower->ResetScreenSaver();
     CServiceBroker::GetGUI()->GetInfoManager().ResetCache();
     return;
@@ -1592,7 +1593,7 @@ bool CApplication::Stop(int exitCode)
 
   cleanup_emu_environ();
 
-  Sleep(200);
+  KODI::TIME::Sleep(200);
 
   return success;
 }

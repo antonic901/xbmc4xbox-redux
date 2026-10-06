@@ -22,7 +22,6 @@
 
 #ifdef _XBOX
 #include <xtl.h>
-#include "Undocumented.h" // NtYieldExecution
 #else
 #include <windows.h>
 #endif
@@ -39,6 +38,5 @@ typedef DWORD THREADFUNC;
 namespace XbmcThreads
 {
   inline static void ThreadSleep(unsigned int millis) { Sleep(millis); }
-  inline static void ThreadYield() { NtYieldExecution(); }
 }
 

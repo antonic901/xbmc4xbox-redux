@@ -40,6 +40,7 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
+#include "utils/XTimeUtils.h"
 #include "utils/log.h"
 
 #include <boost/algorithm/cxx11/none_of.hpp>
@@ -1049,7 +1050,7 @@ bool CAddonInstallJob::Install(const std::string &installFrom, const RepositoryP
         if (CAddonInstaller::GetInstance().HasJob(addonID))
         {
           while (CAddonInstaller::GetInstance().HasJob(addonID))
-            Sleep(50);
+            KODI::TIME::Sleep(50);
 
           if (!CServiceBroker::GetAddonMgr().IsAddonInstalled(addonID))
           {

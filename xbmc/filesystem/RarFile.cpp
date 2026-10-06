@@ -36,6 +36,7 @@
 #include "UnrarXLib/rar.hpp"
 #include "utils/StringUtils.h"
 #include "messaging/helpers/DialogOKHelper.h"
+#include "utils/XTimeUtils.h"
 
 #ifndef TARGET_POSIX
 #include <process.h>
@@ -582,7 +583,7 @@ void CRarFile::CleanUp()
       {
         m_pExtract->GetDataIO().hQuit->Set();
         while (m_pExtractThread->hRunning.WaitMSec(1))
-          Sleep(1);
+          KODI::TIME::Sleep(1);
       }
       delete m_pExtract->GetDataIO().hBufferFilled;
       delete m_pExtract->GetDataIO().hBufferEmpty;

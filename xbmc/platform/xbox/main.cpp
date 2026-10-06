@@ -13,6 +13,7 @@
 #include "application/ApplicationEnums.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
+#include "utils/XTimeUtils.h"
 
 #include "platform/xbox/XKHDD.h"
 #include "platform/xbox/XKUtils.h"
@@ -109,13 +110,13 @@ void main()
 #ifndef _DEBUG
   if (status == EXITCODE_POWERDOWN)
   {
-    Sleep(200);
+    KODI::TIME::Sleep(200);
     XKHDD::SpindownHarddisk();
     XKUtils::XBOXPowerOff();
   }
   else if (status == EXITCODE_REBOOT)
   {
-    Sleep(200);
+    KODI::TIME::Sleep(200);
     XKUtils::XBOXPowerCycle();
   }
   else if (status == EXITCODE_QUIT)
@@ -133,5 +134,5 @@ void main()
   }
 #endif
 
-  while(1) { Sleep(0); }
+  while(1) { KODI::TIME::Sleep(0); }
 }

@@ -28,6 +28,7 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
+#include "utils/XTimeUtils.h"
 #include "utils/XMLUtils.h"
 #include "utils/log.h"
 
@@ -99,7 +100,7 @@ bool CWeatherJob::DoWork()
     {
       if (!CScriptInvocationManager::GetInstance().IsRunning(scriptId))
         break;
-      Sleep(100);
+      KODI::TIME::Sleep(100);
     }
 
     SetFromProperties();

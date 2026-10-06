@@ -42,6 +42,7 @@
 #include "settings/SettingsComponent.h"
 #include "FileItem.h"
 #include "utils/URIUtils.h"
+#include "utils/XTimeUtils.h"
 
 #include "emu_msvcrt.h"
 #include "emu_dummy.h"
@@ -200,7 +201,7 @@ extern "C"
 {
   void dll_sleep(unsigned long imSec)
   {
-    Sleep(imSec);
+    KODI::TIME::Sleep(imSec);
   }
 
   // FIXME, XXX, !!!!!!

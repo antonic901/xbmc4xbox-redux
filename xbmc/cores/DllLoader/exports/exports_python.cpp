@@ -64,7 +64,6 @@ extern "C" FILE *fopen_utf8(const char *_Filename, const char *_Mode);
       if (str[pos] == '\\') str[pos] = '/'; \
   }
 
-#include "../dll_tracker_file.h"
 #include "emu_msvcrt.h"
 
 extern "C"

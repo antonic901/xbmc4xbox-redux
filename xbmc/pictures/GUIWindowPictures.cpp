@@ -49,15 +49,12 @@
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
+#include "utils/XTimeUtils.h"
 #include "Autorun.h"
 #include "interfaces/AnnouncementManager.h"
 #include "utils/SortUtils.h"
 #include "utils/StringUtils.h"
 #include "GUIWindowSlideShow.h"
-
-#ifdef TARGET_POSIX
-#include "linux/XTimeUtils.h"
-#endif
 
 #define CONTROL_BTNVIEWASICONS      2
 #define CONTROL_BTNSORTBY           3
@@ -256,7 +253,7 @@ void CGUIWindowPictures::OnPrepareFileItems(CFileItemList& items)
         m_dlgProgress->Progress();
       }
     } // if (bShowProgress)
-    Sleep(1);
+    KODI::TIME::Sleep(1);
   } // while (loader.IsLoading())
 
   if (bProgressVisible && m_dlgProgress)

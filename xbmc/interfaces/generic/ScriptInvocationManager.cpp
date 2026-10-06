@@ -17,6 +17,7 @@
 #include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
+#include "utils/XTimeUtils.h"
 #include "utils/log.h"
 
 #include <cerrno>
@@ -338,7 +339,7 @@ int CScriptInvocationManager::ExecuteSync(
     if (timeout && timeoutMs < sleepMs)
       sleepMs = timeoutMs;
 
-    Sleep(sleepMs);
+    KODI::TIME::Sleep(sleepMs);
 
     if (timeout)
       timeoutMs -= sleepMs;

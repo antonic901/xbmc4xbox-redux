@@ -26,6 +26,7 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/StringUtils.h"
+#include "utils/XTimeUtils.h"
 #include "utils/log.h"
 
 #include "platform/xbox/Undocumented.h"
@@ -119,7 +120,7 @@ void CFanController::Process()
     cpuLastTemp = cpuTemp;
     gpuLastTemp = gpuTemp;
 
-    Sleep(interval);
+    KODI::TIME::Sleep(interval);
   }
 }
 
@@ -141,7 +142,7 @@ void CFanController::SetMinFanSpeed(int minFanspeed)
 void CFanController::RestoreStartupSpeed()
 {
   SetFanSpeed(systemFanSpeed);
-  Sleep(100);
+  KODI::TIME::Sleep(100);
   //if it's not a 1.6 box disable custom fanmode
   if (!bIs16Box)
   {
@@ -231,14 +232,14 @@ void CFanController::SetFanSpeed(const int fanspeed, const bool force)
     //on boot or first time set it needs a kickstart in releasemode for some reason
     //it works fine without this block in debugmode...
     HalWriteSMBusValue(PIC_ADDRESS, FAN_MODE, 0, 1);
-    Sleep(10);
+    KODI::TIME::Sleep(10);
     HalWriteSMBusValue(PIC_ADDRESS, FAN_REGISTER, 0, fanspeed);
   }
   //enable custom fanspeeds
   HalWriteSMBusValue(PIC_ADDRESS, FAN_MODE, 0, 1);
-  Sleep(10);
+  KODI::TIME::Sleep(10);
   HalWriteSMBusValue(PIC_ADDRESS, FAN_REGISTER, 0, fanspeed);
-  Sleep(10);
+  KODI::TIME::Sleep(10);
   currentFanSpeed = fanspeed;
   inCustomMode = true;
 }
