@@ -35,7 +35,7 @@
 #include "flacpicture.h"
 #include "taglib_export.h"
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(_XBOX)
 // Explained at end of tpropertymap.cpp
 extern template class TAGLIB_EXPORT TagLib::Map<TagLib::String, TagLib::StringList>;
 #endif
