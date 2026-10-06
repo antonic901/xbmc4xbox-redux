@@ -26,6 +26,7 @@
 #include "threads/SingleLock.h"
 #include "threads/Thread.h"
 #include "utils/StringUtils.h"
+#include "utils/XTimeUtils.h"
 
 #include <string>
 
@@ -75,8 +76,8 @@ void CLog::Log(int loglevel, const char *format, ... )
     if (extras != 0 && (m_extraLogLevels & extras) == 0)
       return;
 
-    SYSTEMTIME time;
-    GetLocalTime(&time);
+    KODI::TIME::SystemTime time;
+    KODI::TIME::GetLocalTime(&time);
 
     std::string strPrefix, strData;
 
@@ -93,7 +94,7 @@ void CLog::Log(int loglevel, const char *format, ... )
     }
     else if (m_repeatCount)
     {
-      strPrefix = StringUtils::Format(prefixFormat, time.wHour, time.wMinute, time.wSecond, (uint64_t)CThread::GetCurrentThreadId(), levelNames[m_repeatLogLevel]);
+      strPrefix = StringUtils::Format(prefixFormat, time.hour, time.minute, time.second, (uint64_t)CThread::GetCurrentThreadId(), levelNames[m_repeatLogLevel]);
 
       std::string strData2 = StringUtils::Format("Previous line repeats %d times." LINE_ENDING, m_repeatCount);
       fputs(strPrefix.c_str(), m_file);
@@ -123,7 +124,7 @@ void CLog::Log(int loglevel, const char *format, ... )
     StringUtils::Replace(strData, "\n", LINE_ENDING"                                            ");
     strData += LINE_ENDING;
 
-    strPrefix = StringUtils::Format(prefixFormat, time.wHour, time.wMinute, time.wSecond, (uint64_t)CThread::GetCurrentThreadId(), levelNames[loglevel]);
+    strPrefix = StringUtils::Format(prefixFormat, time.hour, time.minute, time.second, (uint64_t)CThread::GetCurrentThreadId(), levelNames[loglevel]);
 
     fputs(strPrefix.c_str(), m_file);
     fputs(strData.c_str(), m_file);

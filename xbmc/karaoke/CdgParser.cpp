@@ -297,7 +297,7 @@ void CCdgReader::Process()
     const CMusicInfoTag* tag = CServiceBroker::GetGUI()->GetInfoManager().GetCurrentSongTag();
     if (!tag || tag->GetURL().substr(0,strExt.size()) != strExt)
     {
-      Sleep(15);
+      CThread::Sleep(15);
       if (CThread::m_bStop)
         return;
 
@@ -327,7 +327,7 @@ void CCdgReader::Process()
 
     fCurTime = fNewTime;
     lock.Leave();
-    Sleep(15);
+    CThread::Sleep(15);
   }
 }
 

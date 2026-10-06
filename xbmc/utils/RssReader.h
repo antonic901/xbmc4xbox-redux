@@ -17,6 +17,14 @@
 #include <string>
 #include <vector>
 
+namespace KODI
+{
+namespace TIME
+{
+struct SystemTime;
+}
+}
+
 class CRssReader : public CThread
 {
 public:
@@ -47,7 +55,7 @@ private:
 
   std::vector<std::wstring> m_strFeed;
   std::vector<std::wstring> m_strColors;
-  std::vector<SYSTEMTIME*> m_vecTimeStamps;
+  std::vector<KODI::TIME::SystemTime*> m_vecTimeStamps;
   std::vector<int> m_vecUpdateTimes;
   int m_spacesBetweenFeeds;
   CXBMCTinyXML m_xml;

@@ -18,7 +18,6 @@
 * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
-#include "system.h"
 /*
  Redbook   : CDDA
  Yellowbook : CDROM
@@ -40,7 +39,9 @@ ISO9660
 
 */
 #include "iso9660.h"
+
 #include "utils/CharsetConverter.h"
+#include "utils/XTimeUtils.h"
 #include "threads/SingleLock.h"
 #include "storage/DetectDVDType.h"  // for MODE2_DATA_SIZE etc.
 //#define _DEBUG_OUTPUT 1
@@ -51,6 +52,26 @@ class iso9660 m_isoReader;
 #define RET_ERR -1
 
 using namespace std;
+
+struct iso_dirtree
+{
+  char *path;
+  char *name;  // name of the directory/file
+  char type;  // bit 0 = no entry, bit 1 = file, bit 2 = dir
+  DWORD Location; // number of the first sector of file data or directory
+  DWORD Length;      // number of bytes of file data or length of directory
+  KODI::TIME::FileTime filetime; // date time of the directory/file
+
+  struct iso_dirtree *dirpointer; // if type is a dir, this will point to the list in that dir
+  struct iso_dirtree *next;  // pointer to next file/dir in this directory
+};
+
+struct iso_directories
+{
+  char* path;
+  struct iso_dirtree* dir;
+  struct iso_directories* next;
+};
 
 //******************************************************************************************************************
 const string iso9660::ParseName(struct iso9660_Directory& isodir)
@@ -625,9 +646,12 @@ HANDLE iso9660::FindFirstFile( char *szLocalFolder, WIN32_FIND_DATA *wfdFile )
       if ( m_searchpointer->type == 2 )
         wfdFile->dwFileAttributes |= FILE_ATTRIBUTE_DIRECTORY;
 
-      wfdFile->ftLastWriteTime = m_searchpointer->filetime;
-      wfdFile->ftLastAccessTime = m_searchpointer->filetime;
-      wfdFile->ftCreationTime = m_searchpointer->filetime;
+      wfdFile->ftLastWriteTime.dwLowDateTime = m_searchpointer->filetime.lowDateTime;
+      wfdFile->ftLastWriteTime.dwHighDateTime = m_searchpointer->filetime.highDateTime;
+      wfdFile->ftLastAccessTime.dwLowDateTime = m_searchpointer->filetime.lowDateTime;
+      wfdFile->ftLastAccessTime.dwHighDateTime = m_searchpointer->filetime.highDateTime;
+      wfdFile->ftCreationTime.dwLowDateTime = m_searchpointer->filetime.lowDateTime;
+      wfdFile->ftCreationTime.dwHighDateTime = m_searchpointer->filetime.highDateTime;
 
       wfdFile->nFileSizeLow = m_searchpointer->Length;
       return (HANDLE)1;
@@ -651,9 +675,12 @@ int iso9660::FindNextFile( HANDLE szLocalFolder, WIN32_FIND_DATA *wfdFile )
     if ( m_searchpointer->type == 2 )
       wfdFile->dwFileAttributes |= FILE_ATTRIBUTE_DIRECTORY;
 
-    wfdFile->ftLastWriteTime = m_searchpointer->filetime;
-    wfdFile->ftLastAccessTime = m_searchpointer->filetime;
-    wfdFile->ftCreationTime = m_searchpointer->filetime;
+    wfdFile->ftLastWriteTime.dwLowDateTime = m_searchpointer->filetime.lowDateTime;
+    wfdFile->ftLastWriteTime.dwHighDateTime = m_searchpointer->filetime.highDateTime;
+    wfdFile->ftLastAccessTime.dwLowDateTime = m_searchpointer->filetime.lowDateTime;
+    wfdFile->ftLastAccessTime.dwHighDateTime = m_searchpointer->filetime.highDateTime;
+    wfdFile->ftCreationTime.dwLowDateTime = m_searchpointer->filetime.lowDateTime;
+    wfdFile->ftCreationTime.dwHighDateTime = m_searchpointer->filetime.highDateTime;
 
     wfdFile->nFileSizeLow = m_searchpointer->Length;
     return 1;
@@ -1015,7 +1042,7 @@ bool iso9660::IsScanned()
 }
 
 //************************************************************************************
-void iso9660::IsoDateTimeToFileTime(iso9660_Datetime* isoDateTime, FILETIME* filetime)
+void iso9660::IsoDateTimeToFileTime(iso9660_Datetime* isoDateTime, KODI::TIME::FileTime* filetime)
 {
   tm t;
   ZeroMemory(&t, sizeof(tm));
@@ -1028,14 +1055,14 @@ void iso9660::IsoDateTimeToFileTime(iso9660_Datetime* isoDateTime, FILETIME* fil
   t.tm_isdst=-1;
   mktime(&t);
 
-  SYSTEMTIME time;
-  time.wYear=t.tm_year+1900;
-  time.wMonth=t.tm_mon+1;
-  time.wDayOfWeek=t.tm_wday;
-  time.wDay=t.tm_mday;
-  time.wHour=t.tm_hour;
-  time.wMinute=t.tm_min;
-  time.wSecond=t.tm_sec;
-  time.wMilliseconds=0;
-  SystemTimeToFileTime(&time, filetime);
+  KODI::TIME::SystemTime time;
+  time.year=t.tm_year+1900;
+  time.month=t.tm_mon+1;
+  time.dayOfWeek=t.tm_wday;
+  time.day=t.tm_mday;
+  time.hour=t.tm_hour;
+  time.minute=t.tm_min;
+  time.second=t.tm_sec;
+  time.milliseconds=0;
+  KODI::TIME::SystemTimeToFileTime(&time, filetime);
 }

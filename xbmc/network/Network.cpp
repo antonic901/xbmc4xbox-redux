@@ -29,6 +29,7 @@
 #include "network/NetworkServices.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "utils/XTimeUtils.h"
 #include "utils/log.h"
 
 using namespace KODI::MESSAGING;
@@ -433,7 +434,7 @@ bool CNetwork::WaitForSetup(unsigned int iTimeout)
     if (IsEthernetConnected() && (dwState & XNET_GET_XNADDR_DHCP || dwState & XNET_GET_XNADDR_STATIC) && !(dwState & XNET_GET_XNADDR_NONE || dwState & XNET_GET_XNADDR_TROUBLESHOOT || dwState & XNET_GET_XNADDR_PENDING))
       return true;
 
-    Sleep(100);
+    KODI::TIME::Sleep(100);
   } while (!timeout.IsTimePast());
 
   CLog::Log(LOGDEBUG, "%s - Waiting for network setup failed!", __FUNCTION__);

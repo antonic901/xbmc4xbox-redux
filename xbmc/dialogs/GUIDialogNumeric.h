@@ -9,6 +9,7 @@
 #pragma once
 
 #include "guilib/GUIDialog.h"
+#include "utils/XTimeUtils.h"
 
 #include <stdint.h>
 
@@ -43,13 +44,13 @@ public:
   static InputVerificationResult::VerificationResult ShowAndVerifyInput(std::string& strPassword, const std::string& strHeading, bool bGetUserInput);
 
   void SetHeading(const std::string &strHeading);
-  void SetMode(INPUT_MODE mode, const SYSTEMTIME& initial);
+  void SetMode(INPUT_MODE mode, const KODI::TIME::SystemTime& initial);
   void SetMode(INPUT_MODE mode, const std::string &initial);
-  SYSTEMTIME GetOutput() const;
+  KODI::TIME::SystemTime GetOutput() const;
   std::string GetOutputString() const;
 
-  static bool ShowAndGetTime(SYSTEMTIME& time, const std::string& heading);
-  static bool ShowAndGetDate(SYSTEMTIME& date, const std::string& heading);
+  static bool ShowAndGetTime(KODI::TIME::SystemTime& time, const std::string& heading);
+  static bool ShowAndGetDate(KODI::TIME::SystemTime& date, const std::string& heading);
   static bool ShowAndGetIPAddress(std::string &IPAddress, const std::string &heading);
   static bool ShowAndGetNumber(std::string& strInput, const std::string &strHeading, unsigned int iAutoCloseTimeoutMs = 0, bool bSetHidden = false);
   static bool ShowAndGetSeconds(std::string& timeString, const std::string &heading);
@@ -75,7 +76,7 @@ protected:
   bool m_bCanceled;
 
   INPUT_MODE m_mode; // the current input mode
-  SYSTEMTIME m_datetime; // for time and date modes
+  KODI::TIME::SystemTime m_datetime; // for time and date modes
   uint8_t m_ip[4];                  // for ip address mode
   uint32_t m_block;             // for time, date, and IP methods.
   uint32_t m_lastblock;

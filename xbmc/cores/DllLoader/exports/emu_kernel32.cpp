@@ -30,6 +30,7 @@
 
 #include "../dll_tracker.h"
 #include "filesystem/SpecialProtocol.h"
+#include "utils/XTimeUtils.h"
 
 using namespace std;
 
@@ -180,7 +181,7 @@ extern "C" BOOL WINAPI dllTerminateThread(HANDLE tHread, DWORD dwExitCode)
 
 extern "C" void WINAPI dllSleep(DWORD dwTime)
 {
-  return ::Sleep(dwTime);
+  return KODI::TIME::Sleep(dwTime);
 }
 
 extern "C" HANDLE WINAPI dllGetCurrentThread(void)

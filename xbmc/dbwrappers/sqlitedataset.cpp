@@ -15,6 +15,7 @@
 #include "filesystem/File.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
+#include "utils/XTimeUtils.h"
 #include "utils/log.h"
 
 #include <fstream>
@@ -65,7 +66,7 @@ int callback(void* res_ptr, int ncol, char** result, char** cols)
 
 static int busy_callback(void*, int busyCount)
 {
-  Sleep(100);
+  KODI::TIME::Sleep(100);
   return 1;
 }
 

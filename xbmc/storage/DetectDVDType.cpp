@@ -74,7 +74,7 @@ void CDetectDVDMedia::Process()
 {
   while ( !m_bStop )
   {
-    Sleep(500);
+    CThread::Sleep(500);
     UpdateDvdrom();
     m_bStartup = false;
     if ( m_bAutorun )
@@ -86,10 +86,10 @@ void CDetectDVDMedia::Process()
     {
       UpdateDvdrom();
       m_bStartup = false;
-      Sleep(2000);
+      CThread::Sleep(2000);
       if ( m_bAutorun )
       {
-        Sleep(1500); // Media in drive, wait 1.5s more to be sure the device is ready for playback
+        CThread::Sleep(1500); // Media in drive, wait 1.5s more to be sure the device is ready for playback
         m_evAutorun.Set();
         m_bAutorun = false;
       }

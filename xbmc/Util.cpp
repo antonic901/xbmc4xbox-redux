@@ -94,6 +94,7 @@
 #include "utils/log.h"
 #include "video/VideoInfoTag.h"
 #include "programs/launchers/ProgramLauncher.h"
+#include "utils/XTimeUtils.h"
 
 #include "xbresource.h"
 #include "platform/xbox/Undocumented.h"
@@ -1648,7 +1649,7 @@ void CUtil::TakeScreenshot(const std::string& strFileName, bool flashScreen)
       CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->BlockUntilVerticalBlank();
 #endif
       FlashScreen(true, true);
-      Sleep(10);
+      KODI::TIME::Sleep(10);
 #ifdef HAS_XBOX_D3D
       CServiceBroker::GetWinSystem()->GetGfxContext().Get3DDevice()->BlockUntilVerticalBlank();
 #endif
@@ -2298,120 +2299,6 @@ void CUtil::DeleteDirectoryCache(const std::string &prefix)
     if (StringUtils::StartsWith(fileName, prefix))
       XFILE::CFile::Delete(item->GetPath());
   }
-}
-
-bool CUtil::SetSysDateTimeYear(int iYear, int iMonth, int iDay, int iHour, int iMinute)
-{
-  TIME_ZONE_INFORMATION tziNew;
-  SYSTEMTIME CurTime;
-  SYSTEMTIME NewTime;
-  GetLocalTime(&CurTime);
-  GetLocalTime(&NewTime);
-  int iRescBiases, iHourUTC;
-  int iMinuteNew;
-
-  DWORD dwRet = GetTimeZoneInformation(&tziNew);  // Get TimeZone Informations
-  float iGMTZone = (float(tziNew.Bias)/(60));     // Calc's the GMT Time
-
-  CLog::Log(LOGDEBUG, "------------ TimeZone -------------");
-  CLog::Log(LOGDEBUG, "-      GMT Zone: GMT %.1f",iGMTZone);
-  CLog::Log(LOGDEBUG, "-          Bias: %lu minutes",tziNew.Bias);
-  CLog::Log(LOGDEBUG, "-  DaylightBias: %lu",tziNew.DaylightBias);
-  CLog::Log(LOGDEBUG, "-  StandardBias: %lu",tziNew.StandardBias);
-
-  switch (dwRet)
-  {
-    case TIME_ZONE_ID_STANDARD:
-      {
-        iRescBiases   = tziNew.Bias + tziNew.StandardBias;
-        CLog::Log(LOGDEBUG, "-   Timezone ID: 1, Standart");
-      }
-      break;
-    case TIME_ZONE_ID_DAYLIGHT:
-      {
-        iRescBiases   = tziNew.Bias + tziNew.StandardBias + tziNew.DaylightBias;
-        CLog::Log(LOGDEBUG, "-   Timezone ID: 2, Daylight");
-      }
-      break;
-    case TIME_ZONE_ID_UNKNOWN:
-      {
-        iRescBiases   = tziNew.Bias + tziNew.StandardBias;
-        CLog::Log(LOGDEBUG, "-   Timezone ID: 0, Unknown");
-      }
-      break;
-    case TIME_ZONE_ID_INVALID:
-      {
-        iRescBiases   = tziNew.Bias + tziNew.StandardBias;
-        CLog::Log(LOGDEBUG, "-   Timezone ID: Invalid");
-      }
-      break;
-    default:
-      iRescBiases   = tziNew.Bias + tziNew.StandardBias;
-  }
-    CLog::Log(LOGDEBUG, "--------------- END ---------------");
-
-  // Calculation
-  iHourUTC = GMTZoneCalc(iRescBiases, iHour, iMinute, iMinuteNew);
-  iMinute = iMinuteNew;
-  if(iHourUTC <0)
-  {
-    iDay = iDay - 1;
-    iHourUTC =iHourUTC + 24;
-  }
-  if(iHourUTC >23)
-  {
-    iDay = iDay + 1;
-    iHourUTC =iHourUTC - 24;
-  }
-
-  // Set the New-,Detected Time Values to System Time!
-  NewTime.wYear     = (WORD)iYear;
-  NewTime.wMonth    = (WORD)iMonth;
-  NewTime.wDay      = (WORD)iDay;
-  NewTime.wHour     = (WORD)iHourUTC;
-  NewTime.wMinute   = (WORD)iMinute;
-
-  FILETIME stNewTime, stCurTime;
-  SystemTimeToFileTime(&NewTime, &stNewTime);
-  SystemTimeToFileTime(&CurTime, &stCurTime);
-#ifdef HAS_XBOX_HARDWARE
-  bool bReturn=NT_SUCCESS(NtSetSystemTime(&stNewTime, &stCurTime));
-#else
-  bool bReturn(false);
-#endif
-  return bReturn;
-}
-int CUtil::GMTZoneCalc(int iRescBiases, int iHour, int iMinute, int &iMinuteNew)
-{
-  int iHourUTC, iTemp;
-  iMinuteNew = iMinute;
-  iTemp = iRescBiases/60;
-
-  if (iRescBiases == 0 )return iHour;   // GMT Zone 0, no need calculate
-  if (iRescBiases > 0)
-    iHourUTC = iHour + abs(iTemp);
-  else
-    iHourUTC = iHour - abs(iTemp);
-
-  if ((iTemp*60) != iRescBiases)
-  {
-    if (iRescBiases > 0)
-      iMinuteNew = iMinute + abs(iTemp*60 - iRescBiases);
-    else
-      iMinuteNew = iMinute - abs(iTemp*60 - iRescBiases);
-
-    if (iMinuteNew >= 60)
-    {
-      iMinuteNew = iMinuteNew -60;
-      iHourUTC = iHourUTC + 1;
-    }
-    else if (iMinuteNew < 0)
-    {
-      iMinuteNew = iMinuteNew +60;
-      iHourUTC = iHourUTC - 1;
-    }
-  }
-  return iHourUTC;
 }
 
 bool CUtil::AutoDetection()
@@ -3298,7 +3185,7 @@ void CUtil::RunXBE(const char* szPath1, char* szParameters, F_VIDEO ForceVideo, 
   CApplicationComponents &components = CServiceBroker::GetAppComponents();
   const boost::shared_ptr<CApplicationXbox> appXbox = components.GetComponent<CApplicationXbox>();
   appXbox->PrintXBETitleToLCD(szPath1); //write to LCD
-  Sleep(600);        //and wait a little bit to execute
+  KODI::TIME::Sleep(600);        //and wait a little bit to execute
 
   char szPath[1024];
   strcpy(szPath, CSpecialProtocol::TranslatePath(szPath1).c_str());

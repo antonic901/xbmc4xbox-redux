@@ -11,6 +11,7 @@
 #include "IArchivable.h"
 #include "filesystem/File.h"
 #include "utils/Variant.h"
+#include "utils/XTimeUtils.h"
 #include "utils/log.h"
 
 #include <algorithm>
@@ -152,9 +153,9 @@ CArchive& CArchive::operator<<(const std::wstring& wstr)
   return streamout(wstr.data(), size * sizeof(wchar_t));
 }
 
-CArchive& CArchive::operator<<(const SYSTEMTIME& time)
+CArchive& CArchive::operator<<(const KODI::TIME::SystemTime& time)
 {
-  return streamout(&time, sizeof(SYSTEMTIME));
+  return streamout(&time, sizeof(KODI::TIME::SystemTime));
 }
 
 CArchive& CArchive::operator<<(IArchivable& obj)
@@ -265,9 +266,9 @@ CArchive& CArchive::operator>>(std::wstring& wstr)
   return *this;
 }
 
-CArchive& CArchive::operator>>(SYSTEMTIME& time)
+CArchive& CArchive::operator>>(KODI::TIME::SystemTime& time)
 {
-  return streamin(&time, sizeof(SYSTEMTIME));
+  return streamin(&time, sizeof(KODI::TIME::SystemTime));
 }
 
 CArchive& CArchive::operator>>(IArchivable& obj)

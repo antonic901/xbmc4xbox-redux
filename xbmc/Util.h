@@ -179,8 +179,6 @@ public:
   static std::string MusicPlaylistsLocation();
   static std::string VideoPlaylistsLocation();
 
-  static bool SetSysDateTimeYear(int iYear, int iMonth, int iDay, int iHour, int iMinute);
-  static int GMTZoneCalc(int iRescBiases, int iHour, int iMinute, int &iMinuteNew);
   static bool SetXBOXNickName(std::string strXboxNickNameIn, std::string &strXboxNickNameOut);
   static bool GetXBOXNickName(std::string &strXboxNickNameOut);
   static bool AutoDetectionPing(std::string strFTPUserName, std::string strFTPPass, std::string strNickName, int iFTPPort);

@@ -33,6 +33,7 @@
 #include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
+#include "utils/XTimeUtils.h"
 #include "utils/log.h"
 #include "windowing/GraphicContext.h"
 
@@ -402,7 +403,7 @@ bool CPythonInvoker::execute(const std::string &script, const std::vector<std::s
 
       lock.Leave();
       CPyThreadState pyState;
-      Sleep(100);
+      KODI::TIME::Sleep(100);
       pyState.Restore();
       lock.Enter();
     }

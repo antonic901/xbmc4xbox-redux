@@ -7,9 +7,11 @@
  */
 
 #include "HDDirectory.h"
+
 #include "FileItem.h"
 #include "URL.h"
 #include "Util.h"
+#include "utils/XTimeUtils.h"
 
 #include <xtl.h>
 
@@ -81,11 +83,11 @@ bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
     // calculation of size and date costs a little on win32
     // so DIR_FLAG_NO_FILE_INFO flag is ignored
-    FILETIME fileTime;
-    fileTime.dwLowDateTime = findData.ftLastWriteTime.dwLowDateTime;
-    fileTime.dwHighDateTime = findData.ftLastWriteTime.dwHighDateTime;
-    FILETIME localTime;
-    if (FileTimeToLocalFileTime(&fileTime, &localTime) == TRUE)
+    KODI::TIME::FileTime fileTime;
+    fileTime.lowDateTime = findData.ftLastWriteTime.dwLowDateTime;
+    fileTime.highDateTime = findData.ftLastWriteTime.dwHighDateTime;
+    KODI::TIME::FileTime localTime;
+    if (KODI::TIME::FileTimeToLocalFileTime(&fileTime, &localTime) == TRUE)
       pItem->m_dateTime = localTime;
     else
       pItem->m_dateTime = 0;

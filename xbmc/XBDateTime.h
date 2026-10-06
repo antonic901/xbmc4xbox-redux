@@ -12,6 +12,7 @@
 
 #include "utils/IArchivable.h"
 #include "utils/TimeFormat.h"
+#include "utils/XTimeUtils.h"
 
 #include <string>
 
@@ -54,7 +55,7 @@ private:
   void FromLargeInt(const LARGE_INTEGER& time);
 
 private:
-  FILETIME m_timeSpan;
+  KODI::TIME::FileTime m_timeSpan;
 
   friend class CDateTime;
 };
@@ -65,8 +66,8 @@ class CDateTime : public IArchivable
 public:
   CDateTime();
   CDateTime(const CDateTime& time);
-  explicit CDateTime(const SYSTEMTIME& time);
-  explicit CDateTime(const FILETIME& time);
+  explicit CDateTime(const KODI::TIME::SystemTime& time);
+  explicit CDateTime(const KODI::TIME::FileTime& time);
   explicit CDateTime(const time_t& time);
   explicit CDateTime(const tm& time);
   CDateTime(int year, int month, int day, int hour, int minute, int second);
@@ -85,8 +86,8 @@ public:
   static CDateTime FromUTCDateTime(const time_t &dateTime);
   static CDateTime FromRFC1123DateTime(const std::string &dateTime);
 
-  const CDateTime& operator=(const SYSTEMTIME& right);
-  const CDateTime& operator=(const FILETIME& right);
+  const CDateTime& operator=(const KODI::TIME::SystemTime& right);
+  const CDateTime& operator=(const KODI::TIME::FileTime& right);
   const CDateTime& operator =(const time_t& right);
   const CDateTime& operator =(const tm& right);
 
@@ -97,19 +98,19 @@ public:
   bool operator ==(const CDateTime& right) const;
   bool operator !=(const CDateTime& right) const;
 
-  bool operator>(const FILETIME& right) const;
-  bool operator>=(const FILETIME& right) const;
-  bool operator<(const FILETIME& right) const;
-  bool operator<=(const FILETIME& right) const;
-  bool operator==(const FILETIME& right) const;
-  bool operator!=(const FILETIME& right) const;
+  bool operator>(const KODI::TIME::FileTime& right) const;
+  bool operator>=(const KODI::TIME::FileTime& right) const;
+  bool operator<(const KODI::TIME::FileTime& right) const;
+  bool operator<=(const KODI::TIME::FileTime& right) const;
+  bool operator==(const KODI::TIME::FileTime& right) const;
+  bool operator!=(const KODI::TIME::FileTime& right) const;
 
-  bool operator>(const SYSTEMTIME& right) const;
-  bool operator>=(const SYSTEMTIME& right) const;
-  bool operator<(const SYSTEMTIME& right) const;
-  bool operator<=(const SYSTEMTIME& right) const;
-  bool operator==(const SYSTEMTIME& right) const;
-  bool operator!=(const SYSTEMTIME& right) const;
+  bool operator>(const KODI::TIME::SystemTime& right) const;
+  bool operator>=(const KODI::TIME::SystemTime& right) const;
+  bool operator<(const KODI::TIME::SystemTime& right) const;
+  bool operator<=(const KODI::TIME::SystemTime& right) const;
+  bool operator==(const KODI::TIME::SystemTime& right) const;
+  bool operator!=(const KODI::TIME::SystemTime& right) const;
 
   bool operator >(const time_t& right) const;
   bool operator >=(const time_t& right) const;
@@ -133,7 +134,7 @@ public:
 
   CDateTimeSpan operator -(const CDateTime& right) const;
 
-  operator FILETIME() const;
+  operator KODI::TIME::FileTime() const;
 
   virtual void Archive(CArchive& ar);
 
@@ -166,10 +167,10 @@ public:
    */
   bool SetFromDBDateTime(const std::string &dateTime);
 
-  void GetAsSystemTime(SYSTEMTIME& time) const;
+  void GetAsSystemTime(KODI::TIME::SystemTime& time) const;
   void GetAsTime(time_t& time) const;
   void GetAsTm(tm& time) const;
-  void GetAsTimeStamp(FILETIME& time) const;
+  void GetAsTimeStamp(KODI::TIME::FileTime& time) const;
 
   enum ReturnFormat
   {
@@ -199,15 +200,15 @@ public:
   static CDateTimeSpan GetTimezoneBias(void);
 
 private:
-  bool ToFileTime(const SYSTEMTIME& time, FILETIME& fileTime) const;
-  bool ToFileTime(const time_t& time, FILETIME& fileTime) const;
-  bool ToFileTime(const tm& time, FILETIME& fileTime) const;
+  bool ToFileTime(const KODI::TIME::SystemTime& time, KODI::TIME::FileTime& fileTime) const;
+  bool ToFileTime(const time_t& time, KODI::TIME::FileTime& fileTime) const;
+  bool ToFileTime(const tm& time, KODI::TIME::FileTime& fileTime) const;
 
   void ToLargeInt(LARGE_INTEGER& time) const;
   void FromLargeInt(const LARGE_INTEGER& time);
 
 private:
-  FILETIME m_time;
+  KODI::TIME::FileTime m_time;
 
   typedef enum _STATE
   {

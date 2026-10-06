@@ -33,6 +33,7 @@
 #include "settings/SettingsComponent.h"
 #include "utils/log.h"
 #include "utils/StringUtils.h"
+#include "utils/XTimeUtils.h"
 
 using namespace MUSIC_INFO;
 using namespace XFILE;
@@ -461,9 +462,9 @@ CUPnPDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
             // look for date?
             if((*entry)->m_Description.date.GetLength()) {
-                SYSTEMTIME time = {};
+                KODI::TIME::SystemTime time = {};
                 sscanf((*entry)->m_Description.date, "%hu-%hu-%huT%hu:%hu:%hu",
-                       &time.wYear, &time.wMonth, &time.wDay, &time.wHour, &time.wMinute, &time.wSecond);
+                       &time.year, &time.month, &time.day, &time.hour, &time.minute, &time.second);
                 pItem->m_dateTime = time;
             }
 

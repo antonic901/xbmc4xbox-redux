@@ -5420,6 +5420,55 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						</File>
 					</Filter>
 				</Filter>
+				<Filter
+					Name="win32"
+					Filter="">
+					<File
+						RelativePath=".\xbmc\platform\win32\CharsetConverter.cpp">
+						<FileConfiguration
+							Name="Debug|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile_FastCap|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release_LTCG|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug Xbox No Memory Tracking|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\win32\CharsetConverter.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\win32\XTimeUtils.cpp">
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="rendering"
@@ -5845,12 +5894,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					RelativePath=".\xbmc\utils\md5.h">
 				</File>
 				<File
-					RelativePath=".\xbmc\utils\sha256.cpp">
-				</File>
-				<File
-					RelativePath=".\xbmc\utils\sha256.h">
-				</File>
-				<File
 					RelativePath=".\xbmc\utils\Mime.cpp">
 				</File>
 				<File
@@ -5939,6 +5982,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\ScraperUrl.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\sha256.cpp">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\sha256.h">
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\Sntp.cpp">
@@ -6071,6 +6120,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				</File>
 				<File
 					RelativePath=".\xbmc\utils\XMLUtils.h">
+				</File>
+				<File
+					RelativePath=".\xbmc\utils\XTimeUtils.h">
 				</File>
 				<Filter
 					Name="guilib"
