@@ -21,6 +21,7 @@
 #include "settings/SettingsComponent.h"
 #include "threads/SystemClock.h"
 #include "utils/HTMLUtil.h"
+#include "utils/XTimeUtils.h"
 
 #define RSS_COLOR_BODY      0
 #define RSS_COLOR_HEADLINE  1
@@ -69,8 +70,8 @@ void CRssReader::Create(IRssObserver* aObserver, const std::vector<std::string>&
   for (unsigned int i = 0; i < m_vecUpdateTimes.size(); ++i)
   {
     AddToQueue(i);
-    SYSTEMTIME* time = new SYSTEMTIME;
-    GetLocalTime(time);
+    KODI::TIME::SystemTime* time = new KODI::TIME::SystemTime;
+    KODI::TIME::GetLocalTime(time);
     m_vecTimeStamps.push_back(time);
   }
 }
@@ -366,18 +367,18 @@ void CRssReader::UpdateObserver()
 
 void CRssReader::CheckForUpdates()
 {
-  SYSTEMTIME time;
-  GetLocalTime(&time);
+  KODI::TIME::SystemTime time;
+  KODI::TIME::GetLocalTime(&time);
 
   for (unsigned int i = 0;i < m_vecUpdateTimes.size(); ++i )
   {
-    if (m_requestRefresh || ((time.wDay * 24 * 60) + (time.wHour * 60) + time.wMinute) -
-                                    ((m_vecTimeStamps[i]->wDay * 24 * 60) +
-                                     (m_vecTimeStamps[i]->wHour * 60) + m_vecTimeStamps[i]->wMinute) >
+    if (m_requestRefresh || ((time.day * 24 * 60) + (time.hour * 60) + time.minute) -
+                                    ((m_vecTimeStamps[i]->day * 24 * 60) +
+                                     (m_vecTimeStamps[i]->hour * 60) + m_vecTimeStamps[i]->minute) >
                                 m_vecUpdateTimes[i])
     {
       CLog::Log(LOGDEBUG, "Updating RSS");
-      GetLocalTime(m_vecTimeStamps[i]);
+      KODI::TIME::GetLocalTime(m_vecTimeStamps[i]);
       AddToQueue(i);
     }
   }

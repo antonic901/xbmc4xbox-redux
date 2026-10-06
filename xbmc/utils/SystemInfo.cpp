@@ -39,6 +39,7 @@
 #include "utils/Temperature.h"
 #include "utils/log.h"
 #include "utils/XMLUtils.h"
+#include "utils/XTimeUtils.h"
 #ifdef HAS_XBOX_HARDWARE
 extern "C" XPP_DEVICE_TYPE XDEVICE_TYPE_IR_REMOTE_TABLE;
 #endif
@@ -936,17 +937,18 @@ bool CSysInfo::GetHDDInfo(std::string& strHDDModel, std::string& strHDDSerial,st
 bool CSysInfo::GetRefurbInfo(std::string& rfi_FirstBootTime, std::string& rfi_PowerCycleCount)
 {
   XBOX_REFURB_INFO xri;
-  SYSTEMTIME sys_time;
+  KODI::TIME::SystemTime sys_time;
   if (ExReadWriteRefurbInfo(&xri, sizeof(XBOX_REFURB_INFO), FALSE) < 0)
     return false;
 
-  FileTimeToSystemTime((FILETIME*)&xri.FirstBootTime, &sys_time);
+  const KODI::TIME::FileTime firstBootTime = {xri.FirstBootTime.u.LowPart, static_cast<unsigned int>(xri.FirstBootTime.u.HighPart)};
+  KODI::TIME::FileTimeToSystemTime(&firstBootTime, &sys_time);
   rfi_FirstBootTime = StringUtils::Format("%d-%d-%d %d:%02d",
-    sys_time.wMonth,
-    sys_time.wDay,
-    sys_time.wYear,
-    sys_time.wHour,
-    sys_time.wMinute);
+    sys_time.month,
+    sys_time.day,
+    sys_time.year,
+    sys_time.hour,
+    sys_time.minute);
 
   rfi_PowerCycleCount = StringUtils::Format("%d", xri.PowerCycleCount);
   return true;
@@ -1390,7 +1392,7 @@ std::string CSysInfo::GetUnits(int iFrontPort)
   if (iFrontPort==4) iFrontPort = 3;
   if (iFrontPort==8) iFrontPort = 4;
   strReturn = StringUtils::Format("%s%s%s%s%s%s%s%s%s",
-    bPad ? g_localizeStrings.Get(38730).c_str() : "", 
+    bPad ? g_localizeStrings.Get(38730).c_str() : "",
     bPad && bKeyb ? ", " : "",
     bPad && bMem ? ", " : "",
     bPad && (bHeadSet || bMic) ? ", " : "",

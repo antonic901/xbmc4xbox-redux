@@ -8,8 +8,6 @@
 
 #pragma once
 
-#include "system.h" // SYSTEMTIME
-
 #include <stdint.h>
 #include <cstring>
 #include <boost/move/unique_ptr.hpp>
@@ -24,6 +22,13 @@ namespace XFILE
 }
 class CVariant;
 class IArchivable;
+namespace KODI
+{
+namespace TIME
+{
+struct SystemTime;
+}
+}
 
 class CArchive
 {
@@ -56,7 +61,7 @@ public:
   CArchive& operator<<(char c);
   CArchive& operator<<(const std::string &str);
   CArchive& operator<<(const std::wstring& wstr);
-  CArchive& operator<<(const SYSTEMTIME& time);
+  CArchive& operator<<(const KODI::TIME::SystemTime& time);
   CArchive& operator<<(IArchivable& obj);
   CArchive& operator<<(const CVariant& variant);
   CArchive& operator<<(const std::vector<std::string>& strArray);
@@ -125,7 +130,7 @@ public:
 
   CArchive& operator>>(std::string &str);
   CArchive& operator>>(std::wstring& wstr);
-  CArchive& operator>>(SYSTEMTIME& time);
+  CArchive& operator>>(KODI::TIME::SystemTime& time);
   CArchive& operator>>(IArchivable& obj);
   CArchive& operator>>(CVariant& variant);
   CArchive& operator>>(std::vector<std::string>& strArray);
