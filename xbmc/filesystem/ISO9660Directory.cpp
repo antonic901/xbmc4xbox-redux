@@ -12,6 +12,7 @@
 #include "URL.h"
 #include "Util.h"
 #include "utils/URIUtils.h"
+#include "utils/XTimeUtils.h"
 
 #include "iso9660.h"
 
@@ -74,8 +75,9 @@ bool CISO9660Directory::GetDirectory(const CURL& url, CFileItemList& items)
           URIUtils::AddSlashAtEnd(path);
           pItem->SetPath(path);
           pItem->m_bIsFolder = true;
-          FILETIME localTime;
-          FileTimeToLocalFileTime(&wfd.ftLastWriteTime, &localTime);
+          const KODI::TIME::FileTime fileTime = {wfd.ftLastWriteTime.dwLowDateTime, wfd.ftLastWriteTime.dwHighDateTime};
+          KODI::TIME::FileTime localTime;
+          KODI::TIME::FileTimeToLocalFileTime(&fileTime, &localTime);
           pItem->m_dateTime=localTime;
           items.Add(pItem);
         }
@@ -86,8 +88,9 @@ bool CISO9660Directory::GetDirectory(const CURL& url, CFileItemList& items)
         pItem->SetPath(strRoot + wfd.cFileName);
         pItem->m_bIsFolder = false;
         pItem->m_dwSize = CUtil::ToInt64(wfd.nFileSizeHigh, wfd.nFileSizeLow);
-        FILETIME localTime;
-        FileTimeToLocalFileTime(&wfd.ftLastWriteTime, &localTime);
+        const KODI::TIME::FileTime fileTime = {wfd.ftLastWriteTime.dwLowDateTime, wfd.ftLastWriteTime.dwHighDateTime};
+        KODI::TIME::FileTime localTime;
+        KODI::TIME::FileTimeToLocalFileTime(&fileTime, &localTime);
         pItem->m_dateTime=localTime;
         items.Add(pItem);
       }

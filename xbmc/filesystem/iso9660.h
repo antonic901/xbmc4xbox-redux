@@ -140,26 +140,18 @@ struct iso9660info
 
 };
 
-struct iso_dirtree
-{
-  char *path;
-  char *name;  // name of the directory/file
-  char type;  // bit 0 = no entry, bit 1 = file, bit 2 = dir
-  DWORD Location; // number of the first sector of file data or directory
-  DWORD Length;      // number of bytes of file data or length of directory
-  FILETIME filetime; // date time of the directory/file
+struct iso_dirtree;
+struct iso_directories;
 
-  struct iso_dirtree *dirpointer; // if type is a dir, this will point to the list in that dir
-  struct iso_dirtree *next;  // pointer to next file/dir in this directory
-};
-
-struct iso_directories
-{
-  char* path;
-  struct iso_dirtree* dir;
-  struct iso_directories* next;
-};
 #define MAX_ISO_FILES 30
+
+namespace KODI
+{
+namespace TIME
+{
+struct FileTime;
+}
+}
 
 class iso9660
 {
@@ -196,7 +188,7 @@ public:
   bool IsScanned();
 
 protected:
-  void IsoDateTimeToFileTime(iso9660_Datetime* isoDateTime, FILETIME* filetime);
+  void IsoDateTimeToFileTime(iso9660_Datetime* isoDateTime, KODI::TIME::FileTime* filetime);
   struct iso_dirtree* ReadRecursiveDirFromSector( DWORD sector, const char * );
   struct iso_dirtree* FindFolder( char *Folder );
   std::string GetThinText(WCHAR* strTxt, int iLen );
