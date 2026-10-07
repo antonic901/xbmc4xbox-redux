@@ -1,0 +1,39 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libSQLite3", "libSQLite3.vcproj", "{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Debug (Win32) = Debug (Win32)
+		Profile = Profile
+		Profile_FastCap = Profile_FastCap
+		Release = Release
+		Release (Win32) = Release (Win32)
+		Release with Debug = Release with Debug
+		Release_LTCG = Release_LTCG
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Debug.ActiveCfg = Debug|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Debug.Build.0 = Debug|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Debug (Win32).ActiveCfg = Debug|Win32
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Debug (Win32).Build.0 = Debug|Win32
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Profile.ActiveCfg = Profile|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Profile.Build.0 = Profile|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Profile_FastCap.ActiveCfg = Profile_FastCap|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Profile_FastCap.Build.0 = Profile_FastCap|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Release.ActiveCfg = Release|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Release.Build.0 = Release|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Release (Win32).ActiveCfg = Release|Win32
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Release (Win32).Build.0 = Release|Win32
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Release with Debug.ActiveCfg = Release with Debug|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Release with Debug.Build.0 = Release with Debug|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Release_LTCG.ActiveCfg = Release_LTCG|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Release_LTCG.Build.0 = Release_LTCG|Xbox
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
