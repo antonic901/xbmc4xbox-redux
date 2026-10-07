@@ -613,6 +613,114 @@ static void quoteFunc(sqlite3_context *context, int argc, sqlite3_value **argv){
   }
 }
 
+/*
+** The replace() function.  Three arguments are all strings: call
+** them A, B, and C. The result is also a string which is derived
+** from A by replacing every occurance of B with C.  The match
+** must be exact.  Collating sequences are not used.
+*/
+static void replaceFunc(
+  sqlite3_context *context,
+  int argc,
+  sqlite3_value **argv
+){
+  const unsigned char *zStr;        /* The input string A */
+  const unsigned char *zPattern;    /* The pattern string B */
+  const unsigned char *zRep;        /* The replacement string C */
+  unsigned char *zOut;              /* The output */
+  int nStr;                /* Size of zStr */
+  int nPattern;            /* Size of zPattern */
+  int nRep;                /* Size of zRep */
+  int nOut;                /* Maximum size of zOut */
+  int loopLimit;           /* Last zStr[] that might match zPattern[] */
+  int i, j;                /* Loop counters */
+
+  assert( argc==3 );
+  if( sqlite3_value_type(argv[0])==SQLITE_NULL ||
+      sqlite3_value_type(argv[1])==SQLITE_NULL ||
+      sqlite3_value_type(argv[2])==SQLITE_NULL ){
+    return;
+  }
+  zStr = sqlite3_value_text(argv[0]);
+  nStr = sqlite3_value_bytes(argv[0]);
+  zPattern = sqlite3_value_text(argv[1]);
+  nPattern = sqlite3_value_bytes(argv[1]);
+  zRep = sqlite3_value_text(argv[2]);
+  nRep = sqlite3_value_bytes(argv[2]);
+  if( nPattern>=nRep ){
+    nOut = nStr;
+  }else{
+    nOut = (nStr/nPattern + 1)*nRep;
+  }
+  zOut = sqlite3MallocX(nOut+1);
+  if(sqlite3_malloc_failed || zOut==0 ) return;
+  loopLimit = nStr - nPattern;
+  for(i=j=0; i<=loopLimit; i++){
+    if( zStr[i]!=zPattern[0] || memcmp(&zStr[i], zPattern, nPattern) ){
+      zOut[j++] = zStr[i];
+    }else{
+      memcpy(&zOut[j], zRep, nRep);
+      j += nRep;
+      i += nPattern-1;
+    }
+  }
+  memcpy(&zOut[j], &zStr[i], nStr-i);
+  j += nStr - i;
+  assert( j<=nOut );
+  zOut[j] = 0;
+  sqlite3_result_text(context, (char*)zOut, j, sqlite3_free);
+}
+
+/*
+** Implementation of the TRIM(), LTRIM(), and RTRIM() functions.
+** The userdata is 0x1 for left trim, 0x2 for right trim, 0x3 for both.
+*/
+static void trimFunc(
+  sqlite3_context *context,
+  int argc,
+  sqlite3_value **argv
+){
+  const unsigned char *zIn;         /* Input string */
+  const unsigned char *zCharSet;    /* Set of characters to trim */
+  int nIn;                          /* Number of bytes in input */
+  int flags;
+  int i;
+  unsigned char cFirst, cNext;
+  if( sqlite3_value_type(argv[0])==SQLITE_NULL ){
+    return;
+  }
+  zIn = sqlite3_value_text(argv[0]);
+  nIn = sqlite3_value_bytes(argv[0]);
+  if( argc==1 ){
+    static const unsigned char zSpace[] = " ";
+    zCharSet = zSpace;
+  }else if( sqlite3_value_type(argv[1])==SQLITE_NULL ){
+    return;
+  }else{
+    zCharSet = sqlite3_value_text(argv[1]);
+  }
+  cFirst = zCharSet[0];
+  if( cFirst ){
+    flags = (int)sqlite3_user_data(context);
+    if( flags & 1 ){
+      for(; nIn>0; nIn--, zIn++){
+        if( cFirst==zIn[0] ) continue;
+        for(i=1; zCharSet[i] && zCharSet[i]!=zIn[0]; i++){}
+        if( zCharSet[i]==0 ) break;
+      }
+    }
+    if( flags & 2 ){
+      for(; nIn>0; nIn--){
+        cNext = zIn[nIn-1];
+        if( cFirst==cNext ) continue;
+        for(i=1; zCharSet[i] && zCharSet[i]!=cNext; i++){}
+        if( zCharSet[i]==0 ) break;
+      }
+    }
+  }
+  sqlite3_result_text(context, (char*)zIn, nIn, SQLITE_TRANSIENT);
+}
+
 #ifdef SQLITE_SOUNDEX
 /*
 ** Compute the soundex encoding of a word.
@@ -978,6 +1086,13 @@ void sqlite3RegisterBuiltinFunctions(sqlite3 *db){
     { "last_insert_rowid",  0, 1, SQLITE_UTF8,    0, last_insert_rowid },
     { "changes",            0, 1, SQLITE_UTF8,    0, changes    },
     { "total_changes",      0, 1, SQLITE_UTF8,    0, total_changes },
+    { "replace",            3, 0, SQLITE_UTF8,    0, replaceFunc       },
+    { "ltrim",              1, 1, SQLITE_UTF8,    0, trimFunc          },
+    { "ltrim",              2, 1, SQLITE_UTF8,    0, trimFunc          },
+    { "rtrim",              1, 2, SQLITE_UTF8,    0, trimFunc          },
+    { "rtrim",              2, 2, SQLITE_UTF8,    0, trimFunc          },
+    { "trim",               1, 3, SQLITE_UTF8,    0, trimFunc          },
+    { "trim",               2, 3, SQLITE_UTF8,    0, trimFunc          },
 #ifdef SQLITE_SOUNDEX
     { "soundex",            1, 0, SQLITE_UTF8, 0, soundexFunc},
 #endif
