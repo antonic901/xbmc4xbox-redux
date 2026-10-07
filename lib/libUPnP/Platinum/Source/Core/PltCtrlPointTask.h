@@ -67,14 +67,14 @@ public:
                                     PLT_CtrlPoint*     ctrl_point,
                                     NPT_TimeInterval   leasetime,
                                     NPT_String         uuid);
-    ~PLT_CtrlPointGetDescriptionTask() override;
+    virtual ~PLT_CtrlPointGetDescriptionTask();
 
 protected:
     // PLT_HttpClientSocketTask methods
-    NPT_Result ProcessResponse(NPT_Result                    res, 
+    virtual NPT_Result ProcessResponse(NPT_Result                    res,
                                const NPT_HttpRequest&        request, 
                                const NPT_HttpRequestContext& context, 
-                               NPT_HttpResponse*             response) override;
+                               NPT_HttpResponse*             response);
 
 protected:
     PLT_CtrlPoint*   m_CtrlPoint;
@@ -97,7 +97,7 @@ public:
                                 const char*              method = "GET",
                                 const char*              protocol = NPT_HTTP_PROTOCOL_1_1) : // 1.1 for pipelining
         NPT_HttpRequest(url, method, protocol), m_Device(device) {}
-    ~PLT_CtrlPointGetSCPDRequest() override {}
+    virtual ~PLT_CtrlPointGetSCPDRequest() {}
 
     // members
     PLT_DeviceDataReference m_Device;
@@ -114,24 +114,24 @@ class PLT_CtrlPointGetSCPDsTask : public PLT_HttpClientSocketTask
 {
 public:
     PLT_CtrlPointGetSCPDsTask(PLT_CtrlPoint* ctrl_point, PLT_DeviceDataReference& root_device);
-    ~PLT_CtrlPointGetSCPDsTask() override {}
+    virtual ~PLT_CtrlPointGetSCPDsTask() {}
 
     NPT_Result AddSCPDRequest(PLT_CtrlPointGetSCPDRequest* request) {
         return PLT_HttpClientSocketTask::AddRequest((NPT_HttpRequest*)request);
     }
 
     // override to prevent calling this directly
-    NPT_Result AddRequest(NPT_HttpRequest*) override {
+    virtual NPT_Result AddRequest(NPT_HttpRequest*) {
         // only queuing PLT_CtrlPointGetSCPDRequest allowed
         return NPT_ERROR_NOT_SUPPORTED;
     }
 
 protected:
     // PLT_HttpClientSocketTask methods
-    NPT_Result ProcessResponse(NPT_Result                    res, 
+    virtual NPT_Result ProcessResponse(NPT_Result                    res,
                                const NPT_HttpRequest&        request, 
                                const NPT_HttpRequestContext& context, 
-                               NPT_HttpResponse*             response) override;   
+                               NPT_HttpResponse*             response);
 
 protected:
     PLT_CtrlPoint*          m_CtrlPoint;
@@ -152,14 +152,14 @@ public:
                                   PLT_CtrlPoint*       ctrl_point, 
                                   PLT_ActionReference& action,
                                   void*                userdata);
-    ~PLT_CtrlPointInvokeActionTask() override;
+    virtual ~PLT_CtrlPointInvokeActionTask();
 
 protected:
     // PLT_HttpClientSocketTask methods
-    NPT_Result ProcessResponse(NPT_Result                    res, 
+    virtual NPT_Result ProcessResponse(NPT_Result                    res,
                                const NPT_HttpRequest&        request, 
                                const NPT_HttpRequestContext& context, 
-                               NPT_HttpResponse*             response) override;   
+                               NPT_HttpResponse*             response);
 
 protected:
     PLT_CtrlPoint*      m_CtrlPoint;
@@ -181,10 +181,10 @@ public:
                                   NPT_TimeInterval timer = NPT_TimeInterval(5.));
 
 protected:
-    ~PLT_CtrlPointHouseKeepingTask() override {}
+    virtual ~PLT_CtrlPointHouseKeepingTask() {}
 
     // PLT_ThreadTask methods
-    void DoRun() override;
+    virtual void DoRun();
 
 protected:
     PLT_CtrlPoint*   m_CtrlPoint;
@@ -206,14 +206,14 @@ public:
 									PLT_DeviceDataReference& device,
                                     PLT_Service*             service,
                                     void*                    userdata = NULL);
-    ~PLT_CtrlPointSubscribeEventTask() override;
+    virtual ~PLT_CtrlPointSubscribeEventTask();
     
 protected:
     // PLT_HttpClientSocketTask methods
-    NPT_Result ProcessResponse(NPT_Result                    res, 
+    virtual NPT_Result ProcessResponse(NPT_Result                    res,
                                const NPT_HttpRequest&        request, 
                                const NPT_HttpRequestContext& context, 
-                               NPT_HttpResponse*             response) override;
+                               NPT_HttpResponse*             response);
 
 protected:
     PLT_CtrlPoint*          m_CtrlPoint;

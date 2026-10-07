@@ -133,15 +133,15 @@ public:
     virtual void UpdateContainerUpdateID(const char* id, NPT_UInt32 update);
     
 protected:
-    ~PLT_MediaServer() override;
+    virtual ~PLT_MediaServer();
     
     // PLT_DeviceHost methods
-    NPT_Result SetupServices() override;
-    NPT_Result OnAction(PLT_ActionReference&          action, 
-                                const PLT_HttpRequestContext& context) override;
-    NPT_Result ProcessHttpGetRequest(NPT_HttpRequest&              request, 
+    virtual NPT_Result SetupServices();
+    virtual NPT_Result OnAction(PLT_ActionReference&          action,
+                                const PLT_HttpRequestContext& context);
+    virtual NPT_Result ProcessHttpGetRequest(NPT_HttpRequest&              request,
                                              const NPT_HttpRequestContext& context,
-                                             NPT_HttpResponse&             response) override;
+                                             NPT_HttpResponse&             response);
     
     // ConnectionManager
     virtual NPT_Result OnGetCurrentConnectionIDs(PLT_ActionReference&          action, 

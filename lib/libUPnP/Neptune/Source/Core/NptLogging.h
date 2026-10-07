@@ -194,16 +194,16 @@ public:
     // constructor and destructor
     NPT_HttpLoggerConfigurator(NPT_UInt16 port = NPT_HTTP_LOGGER_CONFIGURATOR_DEFAULT_PORT,
                                bool       detached = true);
-    ~NPT_HttpLoggerConfigurator() override;
+    virtual ~NPT_HttpLoggerConfigurator();
 
     // NPT_Runnable (NPT_Thread) methods
-    void Run() override;
+    virtual void Run();
 
 private:
     // NPT_HttpRequestHandler methods
-    NPT_Result SetupResponse(NPT_HttpRequest&              request,
+    virtual NPT_Result SetupResponse(NPT_HttpRequest&              request,
                                      const NPT_HttpRequestContext& context,
-                                     NPT_HttpResponse&             response) override;
+                                     NPT_HttpResponse&             response);
 
     // members
     NPT_HttpServer* m_Server;

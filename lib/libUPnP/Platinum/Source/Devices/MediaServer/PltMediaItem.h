@@ -285,12 +285,12 @@ public:
     NPT_IMPLEMENT_DYNAMIC_CAST_D(PLT_MediaItem, PLT_MediaObject)
 
     PLT_MediaItem();
-    ~PLT_MediaItem() override;
+    virtual ~PLT_MediaItem();
 
     // PLT_MediaObject methods
-    NPT_Result ToDidl(const NPT_String& filter, NPT_String& didl) override;
-    NPT_Result ToDidl(NPT_UInt64 mask, NPT_String& didl) override;
-    NPT_Result FromDidl(NPT_XmlElementNode* entry) override;
+    virtual NPT_Result ToDidl(const NPT_String& filter, NPT_String& didl);
+    virtual NPT_Result ToDidl(NPT_UInt64 mask, NPT_String& didl);
+    virtual NPT_Result FromDidl(NPT_XmlElementNode* entry);
 };
 
 /*----------------------------------------------------------------------
@@ -307,13 +307,13 @@ public:
     NPT_IMPLEMENT_DYNAMIC_CAST_D(PLT_MediaContainer, PLT_MediaObject)
 
     PLT_MediaContainer();
-    ~PLT_MediaContainer() override;
+    virtual ~PLT_MediaContainer();
 
     // PLT_MediaObject methods
-    NPT_Result Reset() override;
-    NPT_Result ToDidl(const NPT_String& filter, NPT_String& didl) override;
-    NPT_Result ToDidl(NPT_UInt64 mask, NPT_String& didl) override;
-    NPT_Result FromDidl(NPT_XmlElementNode* entry) override;
+    virtual NPT_Result Reset();
+    virtual NPT_Result ToDidl(const NPT_String& filter, NPT_String& didl);
+    virtual NPT_Result ToDidl(NPT_UInt64 mask, NPT_String& didl);
+    virtual NPT_Result FromDidl(NPT_XmlElementNode* entry);
 
 public:
     NPT_List<PLT_SearchClass> m_SearchClasses;

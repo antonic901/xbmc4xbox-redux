@@ -67,7 +67,7 @@ public:
     static NPT_Result Create(const char* logger_name, NPT_LogHandler*& handler);
 
     // methods
-    void Log(const NPT_LogRecord& record) override;
+    virtual void Log(const NPT_LogRecord& record);
 
 private:
     // members
@@ -82,7 +82,7 @@ public:
     static NPT_Result Create(const char* logger_name, NPT_LogHandler*& handler);
 
     // methods
-    void Log(const NPT_LogRecord& record) override;
+    virtual void Log(const NPT_LogRecord& record);
 
 private:
     NPT_Result Open(bool append = true);
@@ -104,7 +104,7 @@ public:
     static NPT_Result Create(const char* logger_name, NPT_LogHandler*& handler);
 
     // methods
-    void Log(const NPT_LogRecord& record) override;
+    virtual void Log(const NPT_LogRecord& record);
 
 private:
     // constructor
@@ -125,7 +125,7 @@ public:
     static NPT_Result Create(const char* logger_name, NPT_LogHandler*& handler);
 
     // methods
-    void Log(const NPT_LogRecord& record) override;
+    virtual void Log(const NPT_LogRecord& record);
 
 private:
     // members
@@ -139,7 +139,7 @@ public:
     static NPT_Result Create(NPT_LogHandler*& handler);
 
     // methods
-    void Log(const NPT_LogRecord& record) override;
+    virtual void Log(const NPT_LogRecord& record);
 };
 
 class NPT_LogCustomHandler : public NPT_LogHandler {
@@ -149,7 +149,7 @@ public:
     static NPT_Result Create(NPT_LogHandler*& handler);
     
     // methods
-    void Log(const NPT_LogRecord& record) override;
+    virtual void Log(const NPT_LogRecord& record);
     
 private:
     static CustomHandlerExternalFunction s_ExternalFunction;

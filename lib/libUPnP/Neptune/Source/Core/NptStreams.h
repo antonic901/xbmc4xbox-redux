@@ -139,10 +139,10 @@ class NPT_DelegatingInputStream : public NPT_InputStream
 {
 public:
     // NPT_InputStream methods
-    NPT_Result Seek(NPT_Position offset) override {
+    virtual NPT_Result Seek(NPT_Position offset) {
         return InputSeek(offset);
     }
-    NPT_Result Tell(NPT_Position& offset) override {
+    virtual NPT_Result Tell(NPT_Position& offset) {
         return InputTell(offset);
     }
 
@@ -165,10 +165,10 @@ class NPT_DelegatingOutputStream : public NPT_OutputStream
 {
 public:
     // NPT_OutputStream methods
-    NPT_Result Seek(NPT_Position offset) override {
+    virtual NPT_Result Seek(NPT_Position offset) {
         return OutputSeek(offset);
     }
-    NPT_Result Tell(NPT_Position& offset) override {
+    virtual NPT_Result Tell(NPT_Position& offset) {
         return OutputTell(offset);
     }
 
@@ -189,28 +189,28 @@ public:
     // constructor and destructor
     NPT_MemoryStream(NPT_Size initial_capacity = 0);
     NPT_MemoryStream(const void* data, NPT_Size size);
-    ~NPT_MemoryStream() override {}
+    virtual ~NPT_MemoryStream() {}
 
     // accessors
     const NPT_DataBuffer& GetBuffer() const { return m_Buffer; }
 
     // NPT_InputStream methods
-    NPT_Result Read(void*     buffer, 
+    virtual NPT_Result Read(void*     buffer,
                     NPT_Size  bytes_to_read, 
-                    NPT_Size* bytes_read = NULL) override;
-    NPT_Result GetSize(NPT_LargeSize& size) override  { 
+                    NPT_Size* bytes_read = NULL);
+    virtual NPT_Result GetSize(NPT_LargeSize& size) {
         size = m_Buffer.GetDataSize();    
         return NPT_SUCCESS;
     }
-    NPT_Result GetAvailable(NPT_LargeSize& available) override { 
+    virtual NPT_Result GetAvailable(NPT_LargeSize& available) {
         available = (NPT_LargeSize)m_Buffer.GetDataSize()-m_ReadOffset; 
         return NPT_SUCCESS;
     }
 
     // NPT_OutputStream methods
-    NPT_Result Write(const void* buffer, 
+    virtual NPT_Result Write(const void* buffer,
                      NPT_Size    bytes_to_write, 
-                     NPT_Size*   bytes_written = NULL) override;
+                     NPT_Size*   bytes_written = NULL);
 
     // methods delegated to m_Buffer
     const NPT_Byte* GetData() const { return m_Buffer.GetData(); }
@@ -223,15 +223,15 @@ public:
 
 private:
     // NPT_DelegatingInputStream methods
-    NPT_Result InputSeek(NPT_Position offset) override;
-    NPT_Result InputTell(NPT_Position& offset) override { 
+    virtual NPT_Result InputSeek(NPT_Position offset);
+    virtual NPT_Result InputTell(NPT_Position& offset) {
         offset = m_ReadOffset; 
         return NPT_SUCCESS;
     }
 
     // NPT_DelegatingOutputStream methods
-    NPT_Result OutputSeek(NPT_Position offset) override;
-    NPT_Result OutputTell(NPT_Position& offset) override {
+    virtual NPT_Result OutputSeek(NPT_Position offset);
+    virtual NPT_Result OutputTell(NPT_Position& offset) {
         offset = m_WriteOffset; 
         return NPT_SUCCESS;
     }
@@ -254,16 +254,16 @@ public:
     // methods
     NPT_StringOutputStream(NPT_Size size = 4096);
     NPT_StringOutputStream(NPT_String* storage);
-    ~NPT_StringOutputStream() override ;
+    virtual ~NPT_StringOutputStream();
 
     const NPT_String& GetString() const { return *m_String; }
     NPT_Result Reset() { if (m_String) m_String->SetLength(0); return NPT_SUCCESS; }
 
     // NPT_OutputStream methods
-    NPT_Result Write(const void* buffer, NPT_Size bytes_to_write, NPT_Size* bytes_written = NULL) override;
+    virtual NPT_Result Write(const void* buffer, NPT_Size bytes_to_write, NPT_Size* bytes_written = NULL);
 
-    NPT_Result Seek(NPT_Position /*offset*/) override  { return NPT_ERROR_NOT_SUPPORTED;   }
-    NPT_Result Tell(NPT_Position& offset) override { offset = m_String->GetLength(); return NPT_SUCCESS; }
+    virtual NPT_Result Seek(NPT_Position /*offset*/) { return NPT_ERROR_NOT_SUPPORTED;   }
+    virtual NPT_Result Tell(NPT_Position& offset) { offset = m_String->GetLength(); return NPT_SUCCESS; }
 
 protected:
     NPT_String* m_String;
@@ -284,13 +284,13 @@ public:
                        NPT_LargeSize             size); 
 
     // methods
-    NPT_Result Read(void*     buffer, 
+    virtual NPT_Result Read(void*     buffer,
                             NPT_Size  bytes_to_read, 
-                            NPT_Size* bytes_read = NULL) override;
-    NPT_Result Seek(NPT_Position offset) override;
-    NPT_Result Tell(NPT_Position& offset) override;
-    NPT_Result GetSize(NPT_LargeSize& size) override;
-    NPT_Result GetAvailable(NPT_LargeSize& available) override;
+                            NPT_Size* bytes_read = NULL);
+    virtual NPT_Result Seek(NPT_Position offset);
+    virtual NPT_Result Tell(NPT_Position& offset);
+    virtual NPT_Result GetSize(NPT_LargeSize& size);
+    virtual NPT_Result GetAvailable(NPT_LargeSize& available);
 
 private:
     NPT_InputStreamReference m_Source;
@@ -307,13 +307,13 @@ class NPT_NullOutputStream : public NPT_OutputStream
 public:
     // methods
     NPT_NullOutputStream() {}
-    ~NPT_NullOutputStream() override {}
+    virtual ~NPT_NullOutputStream() {}
 
     // NPT_OutputStream methods
-    NPT_Result Write(const void* buffer, NPT_Size bytes_to_write, NPT_Size* bytes_written = NULL) override;
+    virtual NPT_Result Write(const void* buffer, NPT_Size bytes_to_write, NPT_Size* bytes_written = NULL);
 
-    NPT_Result Seek(NPT_Position /*offset*/) override  { return NPT_ERROR_NOT_SUPPORTED;   }
-    NPT_Result Tell(NPT_Position& /*offset*/) override  { return NPT_ERROR_NOT_SUPPORTED;   }
+    virtual NPT_Result Seek(NPT_Position /*offset*/) { return NPT_ERROR_NOT_SUPPORTED;   }
+    virtual NPT_Result Tell(NPT_Position& /*offset*/) { return NPT_ERROR_NOT_SUPPORTED;   }
 };
 
 typedef NPT_Reference<NPT_NullOutputStream> NPT_NullOutputStreamReference;

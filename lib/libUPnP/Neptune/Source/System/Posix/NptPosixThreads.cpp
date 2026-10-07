@@ -41,11 +41,11 @@ class NPT_PosixMutex : public NPT_MutexInterface
 public:
     // methods
              NPT_PosixMutex(bool recursive = false);
-    ~NPT_PosixMutex() override;
+    virtual ~NPT_PosixMutex();
 
     // NPT_Mutex methods
-    NPT_Result Lock() override;
-    NPT_Result Unlock() override;
+    virtual NPT_Result Lock();
+    virtual NPT_Result Unlock();
 
 private:
     // members
@@ -112,11 +112,11 @@ class NPT_PosixSharedVariable : public NPT_SharedVariableInterface
 public:
     // methods
                NPT_PosixSharedVariable(int value);
-              ~NPT_PosixSharedVariable() override;
-    void       SetValue(int value) override;
-    int        GetValue() override;
-    NPT_Result WaitUntilEquals(int value, NPT_Timeout timeout) override;
-    NPT_Result WaitWhileEquals(int value, NPT_Timeout timeout) override;
+              virtual ~NPT_PosixSharedVariable();
+    virtual void       SetValue(int value);
+    virtual int        GetValue();
+    virtual NPT_Result WaitUntilEquals(int value, NPT_Timeout timeout);
+    virtual NPT_Result WaitWhileEquals(int value, NPT_Timeout timeout);
 
  private:
     // members
@@ -270,11 +270,11 @@ class NPT_PosixAtomicVariable : public NPT_AtomicVariableInterface
  public:
     // methods
          NPT_PosixAtomicVariable(int value);
-        ~NPT_PosixAtomicVariable() override;
-    int  Increment() override; 
-    int  Decrement() override;
-    int  GetValue() override;
-    void SetValue(int value) override;
+        virtual ~NPT_PosixAtomicVariable();
+    virtual int  Increment();
+    virtual int  Decrement();
+    virtual int  GetValue();
+    virtual void SetValue(int value);
 
  private:
     // members
@@ -368,12 +368,12 @@ class NPT_PosixThread : public NPT_ThreadInterface
                 NPT_PosixThread(NPT_Thread*   delegator,
                                 NPT_Runnable& target,
                                 bool          detached);
-               ~NPT_PosixThread() override;
-    NPT_Result  Start() override; 
-    NPT_Result  Wait(NPT_Timeout timeout = NPT_TIMEOUT_INFINITE) override;
-    NPT_Result  CancelBlockerSocket() override;
-    NPT_Result  SetPriority(int priority) override;
-    NPT_Result  GetPriority(int& priority) override;
+               virtual ~NPT_PosixThread();
+    virtual NPT_Result  Start();
+    virtual NPT_Result  Wait(NPT_Timeout timeout = NPT_TIMEOUT_INFINITE);
+    virtual NPT_Result  CancelBlockerSocket();
+    virtual NPT_Result  SetPriority(int priority);
+    virtual NPT_Result  GetPriority(int& priority);
     
     // class methods
     static NPT_Result GetPriority(NPT_Thread::ThreadId thread_id, int& priority);
@@ -384,10 +384,10 @@ class NPT_PosixThread : public NPT_ThreadInterface
     static void* EntryPoint(void* argument);
 
     // NPT_Runnable methods
-    void Run() override;
+    virtual void Run();
 
     // NPT_Interruptible methods
-    NPT_Result Interrupt() override { return NPT_ERROR_NOT_IMPLEMENTED; }
+    virtual NPT_Result Interrupt() { return NPT_ERROR_NOT_IMPLEMENTED; }
 
     // members
     NPT_Thread*        m_Delegator;

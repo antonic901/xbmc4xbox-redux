@@ -218,7 +218,7 @@ NPT_ZipFile::Parse(NPT_InputStream& stream, NPT_ZipFile*& file)
     NPT_DataBuffer central_directory_buffer;
     result = central_directory_buffer.SetDataSize((NPT_Size)central_directory_size);
     if (NPT_FAILED(result)) {
-        NPT_LOG_WARNING_1("central directory too large (%lld)", central_directory_size);
+        NPT_LOG_WARNING_1("central directory too large (%" NPT_FORMAT_64 "d)", central_directory_size);
         return result;
     }
     result = stream.Seek(central_directory_offset);

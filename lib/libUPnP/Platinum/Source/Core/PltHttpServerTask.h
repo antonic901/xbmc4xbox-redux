@@ -64,7 +64,7 @@ public:
     PLT_HttpServerSocketTask(NPT_Socket* socket, bool stay_alive_forever = false);
 
 protected:
-    ~PLT_HttpServerSocketTask() override;
+    virtual ~PLT_HttpServerSocketTask();
 
 protected:
     // Request callback handler
@@ -77,8 +77,8 @@ protected:
     virtual NPT_Result GetInfo(NPT_SocketInfo& info);
 
     // PLT_ThreadTask methods
-    void DoAbort() override { if (m_Socket) m_Socket->Cancel(); }
-    void DoRun() override;
+    virtual void DoAbort() { if (m_Socket) m_Socket->Cancel(); }
+    virtual void DoRun();
 
 private:
     virtual NPT_Result Read(NPT_BufferedInputStreamReference& buffered_input_stream, 
@@ -117,11 +117,11 @@ public:
         PLT_HttpServerSocketTask(socket, keep_alive), m_Handler(handler) {}
 
 protected:
-    ~PLT_HttpServerTask() override {}
+    virtual ~PLT_HttpServerTask() {}
 
-    NPT_Result SetupResponse(NPT_HttpRequest&              request, 
+    virtual NPT_Result SetupResponse(NPT_HttpRequest&              request,
                              const NPT_HttpRequestContext& context,
-                             NPT_HttpResponse&             response) override {
+                             NPT_HttpResponse&             response) {
         return m_Handler->SetupResponse(request, context, response);
     }
 
@@ -145,14 +145,14 @@ public:
         m_Handler(handler), m_Socket(socket), m_OwnsSocket(owns_socket) {}
 
 protected:
-    ~PLT_HttpListenTask() override { 
+    virtual ~PLT_HttpListenTask() {
         if (m_OwnsSocket && m_Socket) delete m_Socket;
     }
 
 protected:
     // PLT_ThreadTask methods
-    void DoAbort() override { if (m_Socket) m_Socket->Cancel(); }
-    void DoRun() override;
+    virtual void DoAbort() { if (m_Socket) m_Socket->Cancel(); }
+    virtual void DoRun();
 
 protected:
     NPT_HttpRequestHandler* m_Handler;

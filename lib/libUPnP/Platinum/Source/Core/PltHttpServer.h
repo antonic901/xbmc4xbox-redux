@@ -61,7 +61,7 @@ public:
                    bool          allow_random_port_on_bind_failure = false,
                    NPT_Cardinal  max_clients = 50,
                    bool          reuse_address = false);
-    ~PLT_HttpServer() override;
+    virtual ~PLT_HttpServer();
     
     // class methods
     static NPT_Result ServeFile(const NPT_HttpRequest&        request, 
@@ -75,9 +75,9 @@ public:
                                   const char*                   content_type);
 
     // NPT_HttpRequestHandler methods
-    NPT_Result SetupResponse(NPT_HttpRequest&              request,
+    virtual NPT_Result SetupResponse(NPT_HttpRequest&              request,
                                      const NPT_HttpRequestContext& context,
-                                     NPT_HttpResponse&             response) override;
+                                     NPT_HttpResponse&             response);
 
     // methods
     virtual NPT_Result   Start();

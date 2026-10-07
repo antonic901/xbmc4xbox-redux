@@ -371,11 +371,11 @@ PLT_HttpServerSocketTask::SendResponseBody(NPT_HttpResponse* response,
     }
 
     // send body
-    NPT_LOG_FINE_1("sending body stream, %lld bytes", entity->GetContentLength());
+    NPT_LOG_FINE_1("sending body stream, %" NPT_FORMAT_64 "d bytes", entity->GetContentLength());
     NPT_LargeSize bytes_written = 0;
     NPT_Result result = NPT_StreamToStreamCopy(*body_stream, *dest, 0, entity->GetContentLength(), &bytes_written); /* passing 0 if content length is unknown will read until nothing is left */
     if (NPT_FAILED(result)) {
-        NPT_LOG_FINE_3("body stream only partially sent, %lld bytes (%d:%s)",
+        NPT_LOG_FINE_3("body stream only partially sent, %" NPT_FORMAT_64 "d bytes (%d:%s)",
                        bytes_written,
                        result,
                        NPT_ResultText(result));

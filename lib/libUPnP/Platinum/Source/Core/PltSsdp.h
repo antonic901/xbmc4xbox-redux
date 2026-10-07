@@ -162,10 +162,10 @@ public:
         m_Device(device), m_RemoteAddr(remote_addr), m_ST(st) {}
 
 protected:
-    ~PLT_SsdpDeviceSearchResponseTask() override {}
+    virtual ~PLT_SsdpDeviceSearchResponseTask() {}
 
     // PLT_ThreadTask methods
-    void DoRun() override;
+    virtual void DoRun();
     
 protected:
     PLT_DeviceHost*     m_Device;
@@ -240,10 +240,10 @@ public:
         m_ExtraBroadcast(extra_broadcast) {}
 
 protected:
-    ~PLT_SsdpDeviceAnnounceTask() override {}
+    virtual ~PLT_SsdpDeviceAnnounceTask() {}
 
     // PLT_ThreadTask methods
-    void DoRun() override;
+    virtual void DoRun();
 
 protected:
     PLT_DeviceHost*             m_Device;
@@ -333,17 +333,17 @@ public:
     }
     
     // PLT_Task methods
-    void DoAbort() override;
+    virtual void DoAbort();
 
 protected:
-    ~PLT_SsdpListenTask() override {}
+    virtual ~PLT_SsdpListenTask() {}
 
     // PLT_HttpServerSocketTask methods
-    NPT_Result GetInputStream(NPT_InputStreamReference& stream) override;
-    NPT_Result GetInfo(NPT_SocketInfo& info) override;
-    NPT_Result SetupResponse(NPT_HttpRequest&              request, 
+    virtual NPT_Result GetInputStream(NPT_InputStreamReference& stream);
+    virtual NPT_Result GetInfo(NPT_SocketInfo& info);
+    virtual NPT_Result SetupResponse(NPT_HttpRequest&              request,
                              const NPT_HttpRequestContext& context,
-                             NPT_HttpResponse&             response) override;
+                             NPT_HttpResponse&             response);
 
 protected:
     PLT_InputDatagramStreamReference  m_Datagram;
@@ -367,11 +367,11 @@ public:
                        NPT_TimeInterval                frequency = NPT_TimeInterval(0.)); // pass 0 for one time
 
 protected:
-    ~PLT_SsdpSearchTask() override;
+    virtual ~PLT_SsdpSearchTask();
 
     // PLT_ThreadTask methods
-    void DoAbort() override;
-    void DoRun() override;
+    virtual void DoAbort();
+    virtual void DoRun();
 
     virtual NPT_Result ProcessResponse(NPT_Result                    res, 
                                        const NPT_HttpRequest&        request,  

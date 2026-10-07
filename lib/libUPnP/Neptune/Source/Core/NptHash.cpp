@@ -90,7 +90,7 @@ NPT_Fnv1aHashStr32(const char* data, NPT_UInt32 hash_init)
 |   NPT_FnvHash32
 +---------------------------------------------------------------------*/
 // 64 bit magic FNV-1a prime
-const NPT_UInt64 NPT_FNV_64_PRIME = 0x100000001b3ULL;
+const NPT_UInt64 NPT_FNV_64_PRIME = NPT_UINT64_C(0x100000001b3);
 
 /*----------------------------------------------------------------------
 |   NPT_Fnv1aHash64

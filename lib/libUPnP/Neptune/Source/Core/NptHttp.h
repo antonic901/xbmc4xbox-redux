@@ -135,7 +135,7 @@ public:
     NPT_HttpUrl(const char* url, bool ignore_scheme = false);
 
     // methods
-    NPT_String ToString(bool with_fragment = true) const override;
+    virtual NPT_String ToString(bool with_fragment = true) const;
 };
 
 /*----------------------------------------------------------------------
@@ -293,7 +293,7 @@ public:
     NPT_HttpRequest(const char*        url,
                     const char*        method,
                     const char*        protocol = NPT_HTTP_PROTOCOL_1_0);
-    ~NPT_HttpRequest() override;
+    virtual ~NPT_HttpRequest();
 
     // methods
     const NPT_HttpUrl& GetUrl() const { return m_Url; }
@@ -322,7 +322,7 @@ public:
              NPT_HttpResponse(NPT_HttpStatusCode status_code,
                               const char*        reason_phrase,
                               const char*        protocol = NPT_HTTP_PROTOCOL_1_0);
-    ~NPT_HttpResponse() override;
+    virtual ~NPT_HttpResponse();
 
     // methods
     NPT_Result         SetStatus(NPT_HttpStatusCode status_code,
@@ -503,16 +503,16 @@ public:
                    NPT_SocketReference&       socket,
                    NPT_InputStreamReference   input_stream,
                    NPT_OutputStreamReference  output_stream);
-        ~Connection() override;
+        virtual ~Connection();
                    
         // NPT_HttpClient::Connection methods
-        NPT_InputStreamReference&  GetInputStream() override      { return m_InputStream;           }
-        NPT_OutputStreamReference& GetOutputStream() override     { return m_OutputStream;          }
-        NPT_Result                 GetInfo(NPT_SocketInfo& info) override { return m_Socket->GetInfo(info); }
-        bool                       SupportsPersistence() override { return true;                    }
-        bool                       IsRecycled() override          { return m_IsRecycled;            }
-        NPT_Result                 Recycle() override;
-        NPT_Result                 Abort() override               { return m_Socket->Cancel(); }
+        virtual NPT_InputStreamReference&  GetInputStream() { return m_InputStream;           }
+        virtual NPT_OutputStreamReference& GetOutputStream() { return m_OutputStream;          }
+        virtual NPT_Result                 GetInfo(NPT_SocketInfo& info) { return m_Socket->GetInfo(info); }
+        virtual bool                       SupportsPersistence() { return true;                    }
+        virtual bool                       IsRecycled() { return m_IsRecycled;            }
+        virtual NPT_Result                 Recycle();
+        virtual NPT_Result                 Abort() { return m_Socket->Cancel(); }
 
         // members
         NPT_HttpConnectionManager& m_Manager;
@@ -524,7 +524,7 @@ public:
     };
     
     // destructor
-    ~NPT_HttpConnectionManager() override;
+    virtual ~NPT_HttpConnectionManager();
     
     // methods
     Connection* FindConnection(NPT_SocketAddress& address);
@@ -545,7 +545,7 @@ private:
     NPT_HttpConnectionManager();
     
     // NPT_Thread methods
-    void Run() override;
+    virtual void Run();
     
     // methods
     NPT_Result      UntrackConnection(NPT_HttpClient::Connection* connection);
@@ -635,9 +635,9 @@ public:
                                  bool        copy = true);
 
     // NPT_HttpRequestHandler methods
-    NPT_Result SetupResponse(NPT_HttpRequest&              request, 
+    virtual NPT_Result SetupResponse(NPT_HttpRequest&              request, 
                                      const NPT_HttpRequestContext& context,
-                                     NPT_HttpResponse&             response) override;
+                                     NPT_HttpResponse&             response);
 
 private:
     NPT_String     m_MimeType;
@@ -665,9 +665,9 @@ public:
                                const char* auto_index = NULL);
 
     // NPT_HttpRequestHandler methods
-    NPT_Result SetupResponse(NPT_HttpRequest&              request, 
+    virtual NPT_Result SetupResponse(NPT_HttpRequest&              request, 
                                      const NPT_HttpRequestContext& context,
-                                     NPT_HttpResponse&             response) override;
+                                     NPT_HttpResponse&             response);
     
     // class methods
     static const char* GetDefaultContentType(const char* extension);
@@ -821,16 +821,16 @@ class NPT_HttpChunkedInputStream : public NPT_InputStream
 public:
     // constructors and destructor
     NPT_HttpChunkedInputStream(NPT_BufferedInputStreamReference& stream);
-    ~NPT_HttpChunkedInputStream() override;
+    virtual ~NPT_HttpChunkedInputStream();
 
     // NPT_InputStream methods
-    NPT_Result Read(void*     buffer, 
+    virtual NPT_Result Read(void*     buffer, 
                     NPT_Size  bytes_to_read, 
-                    NPT_Size* bytes_read = NULL) override;
-    NPT_Result Seek(NPT_Position offset) override;
-    NPT_Result Tell(NPT_Position& offset) override;
-    NPT_Result GetSize(NPT_LargeSize& size) override;
-    NPT_Result GetAvailable(NPT_LargeSize& available) override;
+                    NPT_Size* bytes_read = NULL);
+    virtual NPT_Result Seek(NPT_Position offset);
+    virtual NPT_Result Tell(NPT_Position& offset);
+    virtual NPT_Result GetSize(NPT_LargeSize& size);
+    virtual NPT_Result GetAvailable(NPT_LargeSize& available);
 
 protected:
     // members
@@ -847,15 +847,15 @@ class NPT_HttpChunkedOutputStream : public NPT_OutputStream
 public:
     // constructors and destructor
     NPT_HttpChunkedOutputStream(NPT_OutputStream& stream);
-    ~NPT_HttpChunkedOutputStream() override;
+    virtual ~NPT_HttpChunkedOutputStream();
 
     // NPT_OutputStream methods
-    NPT_Result Write(const void* buffer, 
+    virtual NPT_Result Write(const void* buffer, 
                      NPT_Size    bytes_to_write, 
-                     NPT_Size*   bytes_written = NULL) override;
-    NPT_Result Seek(NPT_Position /*offset*/) override { return NPT_ERROR_NOT_SUPPORTED;}
-    NPT_Result Tell(NPT_Position& offset) override    { return m_Stream.Tell(offset);  }
-    NPT_Result Flush() override                       { return m_Stream.Flush();       }
+                     NPT_Size*   bytes_written = NULL);
+    virtual NPT_Result Seek(NPT_Position /*offset*/) { return NPT_ERROR_NOT_SUPPORTED;}
+    virtual NPT_Result Tell(NPT_Position& offset) { return m_Stream.Tell(offset);  }
+    virtual NPT_Result Flush() { return m_Stream.Flush();       }
 
 protected:
     // members

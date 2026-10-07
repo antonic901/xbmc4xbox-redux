@@ -53,12 +53,12 @@ class NPT_SimpleMessageQueue : public NPT_MessageQueue
  public:
     // members
     NPT_SimpleMessageQueue();
-    ~NPT_SimpleMessageQueue() override;
+    virtual ~NPT_SimpleMessageQueue();
 
     // NPT_MessageQueue methods
-    NPT_Result QueueMessage(NPT_Message*        message, 
-                                    NPT_MessageHandler* handler) override;
-    NPT_Result PumpMessage(NPT_Timeout timeout = NPT_TIMEOUT_INFINITE) override;
+    virtual NPT_Result QueueMessage(NPT_Message*        message, 
+                                    NPT_MessageHandler* handler);
+    virtual NPT_Result PumpMessage(NPT_Timeout timeout = NPT_TIMEOUT_INFINITE);
 
  private:
     // members

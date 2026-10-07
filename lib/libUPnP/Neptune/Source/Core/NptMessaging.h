@@ -89,11 +89,11 @@ public:
     NPT_MessageHandlerProxy(NPT_MessageHandler* handler);
     
     // destructor
-    ~NPT_MessageHandlerProxy() override;
+    virtual ~NPT_MessageHandlerProxy();
 
     // NPT_MessageHandler methods
-    void OnMessage(NPT_Message*) override;
-    NPT_Result HandleMessage(NPT_Message* message) override;
+    virtual void OnMessage(NPT_Message*);
+    virtual NPT_Result HandleMessage(NPT_Message* message);
     
     /**
      * Detach the proxy from the handler implementation.
@@ -153,7 +153,7 @@ class NPT_TerminateMessage : public NPT_Message
 {
 public:
     // methods
-    NPT_Result Dispatch(NPT_MessageHandler* /*handler*/) override {
+    virtual NPT_Result Dispatch(NPT_MessageHandler* /*handler*/) {
         return NPT_ERROR_TERMINATED;
     }
 };

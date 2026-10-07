@@ -332,27 +332,27 @@ public:
                                   bool                              chunked,
                                   NPT_HttpClient::Connection*       connection,
                                   bool                              should_persist);
-    ~NPT_HttpEntityBodyInputStream() override;
+    virtual ~NPT_HttpEntityBodyInputStream();
                                   
     // methods
     bool SizeIsKnown() { return m_SizeIsKnown; }
     
     // NPT_InputStream methods
-    NPT_Result Read(void*     buffer, 
+    virtual NPT_Result Read(void*     buffer, 
                     NPT_Size  bytes_to_read, 
-                    NPT_Size* bytes_read = NULL) override;
-    NPT_Result Seek(NPT_Position /*offset*/) override { 
+                    NPT_Size* bytes_read = NULL);
+    virtual NPT_Result Seek(NPT_Position /*offset*/) { 
         return NPT_ERROR_NOT_SUPPORTED; 
     }
-    NPT_Result Tell(NPT_Position& offset) override { 
+    virtual NPT_Result Tell(NPT_Position& offset) { 
         offset = m_Position; 
         return NPT_SUCCESS; 
     }
-    NPT_Result GetSize(NPT_LargeSize& size) override {
+    virtual NPT_Result GetSize(NPT_LargeSize& size) {
         size = m_Size;
         return NPT_SUCCESS; 
     }
-    NPT_Result GetAvailable(NPT_LargeSize& available) override;
+    virtual NPT_Result GetAvailable(NPT_LargeSize& available);
     
 private:
     // methods
@@ -1012,7 +1012,7 @@ public:
     static NPT_HttpEnvProxySelector* GetInstance();
     
     // NPT_HttpProxySelector methods
-    NPT_Result GetProxyForUrl(const NPT_HttpUrl& url, NPT_HttpProxyAddress& proxy) override;
+    virtual NPT_Result GetProxyForUrl(const NPT_HttpUrl& url, NPT_HttpProxyAddress& proxy);
 
 private:    
     // class variables
@@ -1225,7 +1225,7 @@ public:
                                 NPT_UInt16  htts_proxy_port);
 
     // NPT_HttpProxySelector methods
-    NPT_Result GetProxyForUrl(const NPT_HttpUrl& url, NPT_HttpProxyAddress& proxy) override;
+    virtual NPT_Result GetProxyForUrl(const NPT_HttpUrl& url, NPT_HttpProxyAddress& proxy);
 
 private:
     // members
@@ -1899,13 +1899,13 @@ NPT_HttpClient::WriteRequest(NPT_OutputStream& output_stream,
             dest = new NPT_HttpChunkedOutputStream(output_stream);
         }
         
-        NPT_LOG_FINE_1("sending body stream, %lld bytes", entity->GetContentLength()); //FIXME: Would be 0 for chunked encoding
+        NPT_LOG_FINE_1("sending body stream, %" NPT_FORMAT_64 "d bytes", entity->GetContentLength()); //FIXME: Would be 0 for chunked encoding
         NPT_LargeSize bytes_written = 0;
     
         // content length = 0 means copy until input returns EOS
         result = NPT_StreamToStreamCopy(*body_stream.AsPointer(), *dest, 0, entity->GetContentLength(), &bytes_written);
         if (NPT_FAILED(result)) {
-            NPT_LOG_FINE_3("body stream only partially sent, %lld bytes (%d:%s)", 
+            NPT_LOG_FINE_3("body stream only partially sent, %" NPT_FORMAT_64 "d bytes (%d:%s)",
                            bytes_written, 
                            result, 
                            NPT_ResultText(result));
@@ -2718,11 +2718,11 @@ NPT_HttpRequestHandler::SendResponseBody(const NPT_HttpRequestContext& /*context
     }
     
     // send the body
-    NPT_LOG_FINE_1("sending body stream, %lld bytes", entity->GetContentLength());
+    NPT_LOG_FINE_1("sending body stream, %" NPT_FORMAT_64 "d bytes", entity->GetContentLength());
     NPT_LargeSize bytes_written = 0;
     NPT_Result result = NPT_StreamToStreamCopy(*body_stream, *dest, 0, entity->GetContentLength(), &bytes_written);
     if (NPT_FAILED(result)) {
-        NPT_LOG_FINE_3("body stream only partially sent, %lld bytes (%d:%s)", 
+        NPT_LOG_FINE_3("body stream only partially sent, %" NPT_FORMAT_64 "d bytes (%d:%s)", 
                        bytes_written, 
                        result, 
                        NPT_ResultText(result));
@@ -3104,7 +3104,7 @@ NPT_HttpFileRequestHandler::SetupResponseBody(NPT_HttpResponse&         response
         NPT_Result result = stream->GetSize(stream_size);
         if (NPT_SUCCEEDED(result)) {
             has_stream_size = true;
-            NPT_LOG_FINE_1("body size=%lld", stream_size);
+            NPT_LOG_FINE_1("body size=%" NPT_FORMAT_64 "d", stream_size);
             if (stream_size == 0) return NPT_SUCCESS;
         }
         
@@ -3179,7 +3179,7 @@ NPT_HttpFileRequestHandler::SetupResponseBody(NPT_HttpResponse&         response
                     }
                 }
             }
-            NPT_LOG_FINE_2("final range: start=%lld, end=%lld", range_start, range_end);
+            NPT_LOG_FINE_2("final range: start=%" NPT_FORMAT_64 "d, end=%" NPT_FORMAT_64 "d", range_start, range_end);
             if (range_start > range_end) {
                 NPT_LOG_FINE("invalid range");
                 response.SetStatus(400, "Bad Request");

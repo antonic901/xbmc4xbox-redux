@@ -48,7 +48,7 @@ class NPT_AutoreleasePool : public NPT_AutoreleasePoolInterface
 {
 public:
     NPT_AutoreleasePool();
-    ~NPT_AutoreleasePool() override;
+    virtual ~NPT_AutoreleasePool();
 
 private:
     NPT_AutoreleasePoolInterface* m_Delegate;

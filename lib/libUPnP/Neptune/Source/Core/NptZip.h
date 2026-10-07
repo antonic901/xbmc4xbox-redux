@@ -141,16 +141,16 @@ class NPT_ZipInflatingInputStream : public NPT_InputStream
 {
 public:
     NPT_ZipInflatingInputStream(NPT_InputStreamReference& source, bool raw = false);
-   ~NPT_ZipInflatingInputStream() override;
+   virtual ~NPT_ZipInflatingInputStream();
    
     // NPT_InputStream methods
-    NPT_Result Read(void*     buffer, 
+    virtual NPT_Result Read(void*     buffer,
                             NPT_Size  bytes_to_read, 
-                            NPT_Size* bytes_read = NULL) override;
-    NPT_Result Seek(NPT_Position offset) override;
-    NPT_Result Tell(NPT_Position& offset) override;
-    NPT_Result GetSize(NPT_LargeSize& size) override;
-    NPT_Result GetAvailable(NPT_LargeSize& available) override;
+                            NPT_Size* bytes_read = NULL);
+    virtual NPT_Result Seek(NPT_Position offset);
+    virtual NPT_Result Tell(NPT_Position& offset);
+    virtual NPT_Result GetSize(NPT_LargeSize& size);
+    virtual NPT_Result GetAvailable(NPT_LargeSize& available);
 
 private:
     NPT_InputStreamReference m_Source;
@@ -172,16 +172,16 @@ public:
     NPT_ZipDeflatingInputStream(NPT_InputStreamReference& source,
                                 int                       compression_level = NPT_ZIP_COMPRESSION_LEVEL_DEFAULT,
                                 NPT_Zip::Format           format = NPT_Zip::ZLIB);
-   ~NPT_ZipDeflatingInputStream() override;
+   virtual ~NPT_ZipDeflatingInputStream();
    
     // NPT_InputStream methods
-    NPT_Result Read(void*     buffer, 
+    virtual NPT_Result Read(void*     buffer,
                             NPT_Size  bytes_to_read, 
-                            NPT_Size* bytes_read = NULL) override;
-    NPT_Result Seek(NPT_Position offset) override;
-    NPT_Result Tell(NPT_Position& offset) override;
-    NPT_Result GetSize(NPT_LargeSize& size) override;
-    NPT_Result GetAvailable(NPT_LargeSize& available) override;
+                            NPT_Size* bytes_read = NULL);
+    virtual NPT_Result Seek(NPT_Position offset);
+    virtual NPT_Result Tell(NPT_Position& offset);
+    virtual NPT_Result GetSize(NPT_LargeSize& size);
+    virtual NPT_Result GetAvailable(NPT_LargeSize& available);
 
 private:
     NPT_InputStreamReference m_Source;

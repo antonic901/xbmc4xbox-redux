@@ -116,13 +116,13 @@ protected:
      The task manager will destroy the task when finished if m_AutoDestroy is 
      true otherwise the owner of this task must use the Kill method.
      */
-    ~PLT_ThreadTask() override;
+    virtual ~PLT_ThreadTask();
     
 private:    
     NPT_Result StartThread();
     
     // NPT_Thread methods
-    void Run() override;
+    virtual void Run();
 
 protected:
     // members

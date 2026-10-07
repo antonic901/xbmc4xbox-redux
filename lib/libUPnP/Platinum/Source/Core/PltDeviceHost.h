@@ -90,7 +90,7 @@ public:
                    bool         show_ip = false,
                    NPT_UInt16   port = 0,
                    bool         port_rebind = false);
-    ~PLT_DeviceHost() override;
+    virtual ~PLT_DeviceHost();
     
     virtual void SetExtraBroadcast(bool broadcast) { m_ExtraBroascast = broadcast; }
      
@@ -123,9 +123,9 @@ protected:
      @param context the context of the request
      @param response the response to set up
      */
-    NPT_Result SetupResponse(NPT_HttpRequest&              request,
+    virtual NPT_Result SetupResponse(NPT_HttpRequest&              request,
                                      const NPT_HttpRequestContext& context,
-                                     NPT_HttpResponse&             response) override;
+                                     NPT_HttpResponse&             response);
 
     /**
      Static method similar to Announce.
@@ -156,8 +156,8 @@ protected:
      @param request SSDP packet
      @param context the context of the request
      */
-    NPT_Result OnSsdpPacket(const NPT_HttpRequest&        request, 
-                                    const NPT_HttpRequestContext& context) override;
+    virtual NPT_Result OnSsdpPacket(const NPT_HttpRequest&        request,
+                                    const NPT_HttpRequestContext& context);
 
     /**
      Static method similar to SendSsdpSearchResponse.

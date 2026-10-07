@@ -38,10 +38,10 @@ class NPT_PosixQueue : public NPT_GenericQueue
 public:
     // methods
                NPT_PosixQueue(NPT_Cardinal max_items);
-              ~NPT_PosixQueue() override;
-    NPT_Result Push(NPT_QueueItem* item, NPT_Timeout timeout) override; 
-    NPT_Result Pop(NPT_QueueItem*& item, NPT_Timeout timeout) override;
-    NPT_Result Peek(NPT_QueueItem*& item, NPT_Timeout timeout) override;
+              virtual ~NPT_PosixQueue();
+    virtual NPT_Result Push(NPT_QueueItem* item, NPT_Timeout timeout);
+    virtual NPT_Result Pop(NPT_QueueItem*& item, NPT_Timeout timeout);
+    virtual NPT_Result Peek(NPT_QueueItem*& item, NPT_Timeout timeout);
 
 private:
     void       Abort();

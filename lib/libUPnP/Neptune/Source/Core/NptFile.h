@@ -174,7 +174,7 @@ public:
     
     // constructors and destructor
     NPT_File(const char* path);
-   ~NPT_File() override { delete m_Delegate; }
+   virtual ~NPT_File() { delete m_Delegate; }
 
     // methods
     NPT_Result          Load(NPT_DataBuffer& buffer);
@@ -186,16 +186,16 @@ public:
     NPT_Result          Rename(const char* path);
     
     // NPT_FileInterface methods
-    NPT_Result Open(OpenMode mode) override {
+    virtual NPT_Result Open(OpenMode mode) {
         return m_Delegate->Open(mode);
     }
-    NPT_Result Close() override {
+    virtual NPT_Result Close() {
         return m_Delegate->Close();
     }
-    NPT_Result GetInputStream(NPT_InputStreamReference& stream) override {
+    virtual NPT_Result GetInputStream(NPT_InputStreamReference& stream) {
         return m_Delegate->GetInputStream(stream);
     }
-    NPT_Result GetOutputStream(NPT_OutputStreamReference& stream) override {
+    virtual NPT_Result GetOutputStream(NPT_OutputStreamReference& stream) {
         return m_Delegate->GetOutputStream(stream);
     }
 
