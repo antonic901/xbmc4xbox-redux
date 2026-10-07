@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libSQLite3", "libSQLite3.vcproj", "{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Debug.ActiveCfg = Debug|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Debug.Build.0 = Debug|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Release.ActiveCfg = Release|Xbox
+		{0FC07770-CBCC-4C8D-BEF1-93D668848C0C}.Release.Build.0 = Release|Xbox
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
