@@ -195,6 +195,8 @@ public:
   static const char* SETTING_SERVICES_DEVICENAME;
   static const char* SETTING_SERVICES_UPNP;
   static const char* SETTING_SERVICES_UPNPSERVER;
+  static const char* SETTING_SERVICES_UPNPANNOUNCE;
+  static const char* SETTING_SERVICES_UPNPCONTROLLER;
   static const char* SETTING_SERVICES_UPNPRENDERER;
   static const char* SETTING_SERVICES_WEBSERVER;
   static const char* SETTING_SERVICES_WEBSERVERPORT;

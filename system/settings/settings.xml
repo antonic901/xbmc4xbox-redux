@@ -1400,6 +1400,32 @@
           </dependencies>
           <control type="toggle" />
         </setting>
+        <setting id="services.upnpannounce" type="boolean" parent="services.upnpserver" label="20188" help="36324">
+          <level>2</level>
+          <default>true</default>
+          <dependencies>
+            <dependency type="enable">
+              <and>
+                <condition setting="services.upnp" operator="is">true</condition>
+                <condition setting="services.upnpserver" operator="is">true</condition>
+              </and>
+            </dependency>
+          </dependencies>
+          <control type="toggle" />
+        </setting>
+        <setting id="services.upnpcontroller" type="boolean" parent="services.upnpserver" label="21361" help="36326">
+          <level>2</level>
+          <default>false</default>
+          <dependencies>
+            <dependency type="enable">
+              <and>
+                <condition setting="services.upnp" operator="is">true</condition>
+                <condition setting="services.upnpserver" operator="is">true</condition>
+              </and>
+            </dependency>
+          </dependencies>
+          <control type="toggle" />
+        </setting>
         <setting id="services.upnprenderer" type="boolean" label="21881" help="36325">
           <level>1</level>
           <default>false</default>

@@ -148,6 +148,9 @@ public:
   bool CreateEEPROMBackup();
   void WriteTXTInfoFile();
 
+  static std::string GetDeviceName() { return "Xodi"; }
+  static std::string GetVersion() { return SVN_APP_VERSION_SHORT; }
+
 #ifdef _XBOX
   static std::string SmartXXModCHIP();
   static std::string GetAVPackInfo();
