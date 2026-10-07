@@ -4387,25 +4387,13 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\music\tags\APEv2Tag.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\music\tags\DllTagLib.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\TagLibVFSStream.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\TagLibVFSStream.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\TagLoaderTagLib.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\TagLoaderTagLib.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\music\tags\DllLibapetag.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\music\tags\DllLibid3tag.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\tags\DllTagLib.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\music\tags\FlacTag.cpp">
@@ -4420,9 +4408,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\music\tags\Id3Tag.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\music\tags\id3v1genre.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\music\tags\ImusicInfoTagLoader.h">
 					</File>
 					<File
@@ -4430,24 +4415,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\music\tags\MusicInfoTag.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderAAC.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderAAC.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderAdplug.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderAdplug.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderApe.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderApe.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderASAP.cpp">
@@ -4474,46 +4441,16 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderFactory.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderFlac.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderFlac.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderGYM.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderGYM.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMP3.cpp">
 					</File>
 					<File
 						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMP3.h">
 					</File>
 					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMP4.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMP4.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMPC.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderMPC.h">
-					</File>
-					<File
 						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderNSF.cpp">
 					</File>
 					<File
 						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderNSF.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderOgg.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderOgg.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderShn.cpp">
@@ -4532,30 +4469,6 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderSPC.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWav.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWav.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWavPack.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWavPack.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWMA.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderWMA.h">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderYM.cpp">
-					</File>
-					<File
-						RelativePath=".\xbmc\music\tags\MusicInfoTagLoaderYM.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\music\tags\OggTag.cpp">
@@ -4607,6 +4520,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\music\tags\Tag.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\tags\TagLibVFSStream.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\tags\TagLibVFSStream.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\tags\TagLoaderTagLib.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\tags\TagLoaderTagLib.h">
 					</File>
 					<File
 						RelativePath=".\xbmc\music\tags\VorbisTag.cpp">
