@@ -12,6 +12,7 @@
 #define DLL_PATH_LIBIMAGE "Q:\\system\\ImageLib.dll"
 #define DLL_PATH_LIBEXIF "Q:\\system\\libexif.dll"
 #define DLL_PATH_LIBID3TAG "Q:\\system\\libid3tag.dll"
+#define DLL_PATH_LIBTAG "Q:\\system\\taglib.dll"
 
 /* CDRipper */
 #define DLL_PATH_LIBVORBISENC "Q:\\system\\cdrip\\vorbisenc.dll"

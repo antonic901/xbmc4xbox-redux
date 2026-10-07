@@ -4387,6 +4387,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\music\tags\APEv2Tag.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\music\tags\DllTagLib.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\music\tags\DllLibapetag.h">
 					</File>
 					<File
