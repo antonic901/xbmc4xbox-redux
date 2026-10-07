@@ -4390,6 +4390,18 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\music\tags\DllTagLib.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\music\tags\TagLibVFSStream.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\tags\TagLibVFSStream.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\tags\TagLoaderTagLib.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\music\tags\TagLoaderTagLib.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\music\tags\DllLibapetag.h">
 					</File>
 					<File
