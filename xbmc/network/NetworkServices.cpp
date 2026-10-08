@@ -106,6 +106,7 @@ CNetworkServices::CNetworkServices()
   settingSet.insert(CSettings::SETTING_SERVICES_UPNP);
   settingSet.insert(CSettings::SETTING_SERVICES_UPNPSERVER);
   settingSet.insert(CSettings::SETTING_SERVICES_UPNPRENDERER);
+  settingSet.insert(CSettings::SETTING_SERVICES_UPNPCONTROLLER);
   settingSet.insert(CSettings::SETTING_SERVICES_ESENABLED);
   settingSet.insert(CSettings::SETTING_SERVICES_ESPORT);
   settingSet.insert(CSettings::SETTING_SERVICES_ESALLINTERFACES);
@@ -228,6 +229,7 @@ bool CNetworkServices::OnSettingChanging(const boost::shared_ptr<const CSetting>
     if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
     {
       StartUPnPClient();
+      StartUPnPController();
       StartUPnPServer();
       StartUPnPRenderer();
     }
@@ -235,6 +237,7 @@ bool CNetworkServices::OnSettingChanging(const boost::shared_ptr<const CSetting>
     {
       StopUPnPRenderer();
       StopUPnPServer();
+      StopUPnPController();
       StopUPnPClient();
     }
   }
@@ -247,7 +250,9 @@ bool CNetworkServices::OnSettingChanging(const boost::shared_ptr<const CSetting>
 
       // always stop and restart the client and controller if necessary
       StopUPnPClient();
+      StopUPnPController();
       StartUPnPClient();
+      StartUPnPController();
     }
     else
       return StopUPnPServer();
@@ -258,6 +263,13 @@ bool CNetworkServices::OnSettingChanging(const boost::shared_ptr<const CSetting>
       return StartUPnPRenderer();
     else
       return StopUPnPRenderer();
+  }
+  else if (settingId == CSettings::SETTING_SERVICES_UPNPCONTROLLER)
+  {
+    // always stop and restart
+    StopUPnPController();
+    if (boost::static_pointer_cast<const CSettingBool>(setting)->GetValue())
+      return StartUPnPController();
   }
   else
 #endif // HAS_UPNP
@@ -719,6 +731,11 @@ bool CNetworkServices::StartUPnP()
    ret |= StartUPnPServer();
   }
 
+  if (m_settings->GetBool(CSettings::SETTING_SERVICES_UPNPCONTROLLER))
+  {
+    ret |= StartUPnPController();
+  }
+
   if (m_settings->GetBool(CSettings::SETTING_SERVICES_UPNPRENDERER))
   {
     ret |= StartUPnPRenderer();
@@ -770,6 +787,43 @@ bool CNetworkServices::StopUPnPClient()
 
   CLog::Log(LOGINFO, "stopping upnp client");
   CUPnP::GetInstance()->StopClient();
+
+  return true;
+#endif // HAS_UPNP
+  return false;
+}
+
+bool CNetworkServices::StartUPnPController()
+{
+#ifdef HAS_UPNP
+  if (!m_settings->GetBool(CSettings::SETTING_SERVICES_UPNPCONTROLLER) ||
+      !m_settings->GetBool(CSettings::SETTING_SERVICES_UPNPSERVER) ||
+      !m_settings->GetBool(CSettings::SETTING_SERVICES_UPNP))
+    return false;
+
+  CLog::Log(LOGINFO, "starting upnp controller");
+  CUPnP::GetInstance()->StartController();
+  return IsUPnPControllerRunning();
+#endif // HAS_UPNP
+  return false;
+}
+
+bool CNetworkServices::IsUPnPControllerRunning()
+{
+#ifdef HAS_UPNP
+  return CUPnP::GetInstance()->IsControllerStarted();
+#endif // HAS_UPNP
+  return false;
+}
+
+bool CNetworkServices::StopUPnPController()
+{
+#ifdef HAS_UPNP
+  if (!IsUPnPControllerRunning())
+    return true;
+
+  CLog::Log(LOGINFO, "stopping upnp controller");
+  CUPnP::GetInstance()->StopController();
 
   return true;
 #endif // HAS_UPNP
@@ -837,6 +891,8 @@ bool CNetworkServices::StopUPnPServer()
 #ifdef HAS_UPNP
   if (!IsUPnPServerRunning())
     return true;
+
+  StopUPnPController();
 
   CLog::Log(LOGINFO, "stopping upnp server");
   CUPnP::GetInstance()->StopServer();
