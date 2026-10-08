@@ -26,7 +26,7 @@ CGUITextureD3D::CGUITextureD3D(
 }
 
 CGUITextureD3D::CGUITextureD3D(const CGUITextureD3D& texture)
-  : CGUITexture(texture.m_posX, texture.m_posY, texture.m_width, texture.m_height, texture.m_info)
+  : CGUITexture(texture)
 {
 }
 
