@@ -1494,7 +1494,7 @@ void CUtil::PlayDVD(const std::string& strProtocol, bool restart)
 
 std::string CUtil::GetNextFilename(const std::string &fn_template, int max)
 {
-  if (!fn_template.find("%03d"))
+  if (!fn_template.find("%03i"))
     return "";
 
   std::string searchPath = URIUtils::GetDirectory(fn_template);
