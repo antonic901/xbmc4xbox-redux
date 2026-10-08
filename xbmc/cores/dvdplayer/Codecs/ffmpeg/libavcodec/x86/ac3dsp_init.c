@@ -56,6 +56,13 @@ extern void ff_ac3_extract_exponents_ssse3(uint8_t *exp, int32_t *coef, int nb_c
 #       define HAVE_7REGS 0
 #endif
 
+/* GCC 6 on 32-bit Xbox builds cannot satisfy MIX5's seven-register
+ * constraints. Keep the generic downmix and the other SIMD routines. */
+#if ARCH_X86_32 && defined(_XBOX) && defined(__GNUC__) && __GNUC__ == 6
+#       undef HAVE_7REGS
+#       define HAVE_7REGS 0
+#endif
+
 #if HAVE_SSE_INLINE && HAVE_7REGS
 
 #define IF1(x) x

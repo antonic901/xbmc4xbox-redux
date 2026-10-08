@@ -252,6 +252,12 @@ int ff_getnameinfo(const struct sockaddr *sa, int salen,
 #endif /* !HAVE_GETADDRINFO */
 
 #if !HAVE_GETADDRINFO || HAVE_WINSOCK2_H
+
+// When compiling with MinGW and GCC6,ERROR_NOT_ENOUGH_MEMORY is somehow not defined.
+#if defined(_XBOX) && !defined(ERROR_NOT_ENOUGH_MEMORY)
+#define ERROR_NOT_ENOUGH_MEMORY 8L
+#endif
+
 const char *ff_gai_strerror(int ecode)
 {
     switch (ecode) {
