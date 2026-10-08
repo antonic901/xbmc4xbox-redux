@@ -44,6 +44,12 @@
 #include <limits.h>
 #endif
 
+#ifdef TARGET_WINDOWS_STORE
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN 1
+#endif
+#include <windows.h>
+#endif
 /*----------------------------------------------------------------------
 |   constants
 +---------------------------------------------------------------------*/
@@ -105,6 +111,59 @@ NPT_BytesToInt16Be(const unsigned char* bytes)
 }
 
 /*----------------------------------------------------------------------
+|   NPT_BytesToInt64Le
++---------------------------------------------------------------------*/
+NPT_UInt64 
+NPT_BytesToInt64Le(const unsigned char* bytes)
+{
+    return 
+        ( ((NPT_UInt64)bytes[7])<<56 ) |
+        ( ((NPT_UInt64)bytes[6])<<48 ) |
+        ( ((NPT_UInt64)bytes[5])<<40 ) |
+        ( ((NPT_UInt64)bytes[4])<<32 ) |
+        ( ((NPT_UInt64)bytes[3])<<24 ) |
+        ( ((NPT_UInt64)bytes[2])<<16 ) |
+        ( ((NPT_UInt64)bytes[1])<<8  ) |
+        ( ((NPT_UInt64)bytes[0])     );    
+}
+
+/*----------------------------------------------------------------------
+|   NPT_BytesToInt32Le
++---------------------------------------------------------------------*/
+NPT_UInt32 
+NPT_BytesToInt32Le(const unsigned char* bytes)
+{
+    return 
+        ( ((NPT_UInt32)bytes[3])<<24 ) |
+        ( ((NPT_UInt32)bytes[2])<<16 ) |
+        ( ((NPT_UInt32)bytes[1])<<8  ) |
+        ( ((NPT_UInt32)bytes[0])     );    
+}
+
+/*----------------------------------------------------------------------
+|   NPT_BytesToInt24Le
++---------------------------------------------------------------------*/
+NPT_UInt32 
+NPT_BytesToInt24Le(const unsigned char* bytes)
+{
+    return 
+        ( ((NPT_UInt32)bytes[2])<<16 ) |
+        ( ((NPT_UInt32)bytes[1])<<8  ) |
+        ( ((NPT_UInt32)bytes[0])     );    
+}
+
+/*----------------------------------------------------------------------
+|   NPT_BytesToInt16Le
++---------------------------------------------------------------------*/
+NPT_UInt16
+NPT_BytesToInt16Le(const unsigned char* bytes)
+{
+    return 
+        ( ((NPT_UInt16)bytes[1])<<8  ) |
+        ( ((NPT_UInt16)bytes[0])     );    
+}
+
+/*----------------------------------------------------------------------
 |    NPT_BytesFromInt64Be
 +---------------------------------------------------------------------*/
 void 
@@ -153,6 +212,55 @@ NPT_BytesFromInt16Be(unsigned char* buffer, NPT_UInt16 value)
     buffer[1] = (unsigned char)((value    ) & 0xFF);
 }
 
+/*----------------------------------------------------------------------
+|    NPT_BytesFromInt64Le
++---------------------------------------------------------------------*/
+void 
+NPT_BytesFromInt64Le(unsigned char* buffer, NPT_UInt64 value)
+{
+    buffer[7] = (unsigned char)(value>>56) & 0xFF;
+    buffer[6] = (unsigned char)(value>>48) & 0xFF;
+    buffer[5] = (unsigned char)(value>>40) & 0xFF;
+    buffer[4] = (unsigned char)(value>>32) & 0xFF;
+    buffer[3] = (unsigned char)(value>>24) & 0xFF;
+    buffer[2] = (unsigned char)(value>>16) & 0xFF;
+    buffer[1] = (unsigned char)(value>> 8) & 0xFF;
+    buffer[0] = (unsigned char)(value    ) & 0xFF;
+}
+
+/*----------------------------------------------------------------------
+|    NPT_BytesFromInt32Le
++---------------------------------------------------------------------*/
+void 
+NPT_BytesFromInt32Le(unsigned char* buffer, NPT_UInt32 value)
+{
+    buffer[3] = (unsigned char)(value>>24) & 0xFF;
+    buffer[2] = (unsigned char)(value>>16) & 0xFF;
+    buffer[1] = (unsigned char)(value>> 8) & 0xFF;
+    buffer[0] = (unsigned char)(value    ) & 0xFF;
+}
+
+/*----------------------------------------------------------------------
+|    NPT_BytesFromInt24Le
++---------------------------------------------------------------------*/
+void 
+NPT_BytesFromInt24Le(unsigned char* buffer, NPT_UInt32 value)
+{
+    buffer[2] = (unsigned char)(value>>16) & 0xFF;
+    buffer[1] = (unsigned char)(value>> 8) & 0xFF;
+    buffer[0] = (unsigned char)(value    ) & 0xFF;
+}
+
+/*----------------------------------------------------------------------
+|    NPT_BytesFromInt16Le
++---------------------------------------------------------------------*/
+void 
+NPT_BytesFromInt16Le(unsigned char* buffer, NPT_UInt16 value)
+{
+    buffer[1] = (unsigned char)((value>> 8) & 0xFF);
+    buffer[0] = (unsigned char)((value    ) & 0xFF);
+}
+
 #if !defined(NPT_CONFIG_HAVE_SNPRINTF)
 /*----------------------------------------------------------------------
 |   NPT_FormatString
@@ -177,7 +285,6 @@ NPT_NibbleToHex(unsigned int nibble, bool uppercase /* = true */)
     } else {
         return (nibble < 10) ? ('0' + nibble) : ('a' + (nibble-10));
     }
-    return (nibble < 10) ? ('0' + nibble) : ('A' + (nibble-10));
 }
 
 /*----------------------------------------------------------------------
@@ -220,6 +327,28 @@ NPT_HexToByte(const char* buffer, NPT_Byte& b)
     if (nibble_1 < 0) return NPT_ERROR_INVALID_SYNTAX;
 
     b = (nibble_0 << 4) | nibble_1;
+    return NPT_SUCCESS;
+}
+
+/*----------------------------------------------------------------------
+|   NPT_HexToBytes
++---------------------------------------------------------------------*/
+NPT_Result
+NPT_HexToBytes(const char*    hex,
+              NPT_DataBuffer& bytes)
+{
+    // check the size
+    NPT_Size len = NPT_StringLength(hex);
+    if ((len%2) != 0) return NPT_ERROR_INVALID_PARAMETERS;
+    NPT_Size bytes_size = len / 2;
+    NPT_Result result = bytes.SetDataSize(bytes_size);
+    if (NPT_FAILED(result)) return result;
+    
+    // decode
+    for (NPT_Ordinal i=0; i<bytes_size; i++) {
+        result = NPT_HexToByte(hex+(i*2), *(bytes.UseData()+i));
+        if (NPT_FAILED(result)) return result;
+    }
     return NPT_SUCCESS;
 }
 
@@ -386,7 +515,7 @@ NPT_ParseInteger64(const char* str, NPT_Int64& result, bool relaxed, NPT_Cardina
     NPT_Int64 max = NPT_INT64_MAX/10;
 
     // adjust the max for overflows when the value is negative
-    if (negative && ((NPT_INT64_MAX%10) == 9)) ++max;
+	if (negative && ((NPT_INT64_MAX%10) == /* DISABLES CODE */ (9))) ++max;
 
     // parse the digits
     bool      empty = true;
@@ -519,9 +648,11 @@ NPT_ParseInteger(const char* str, long& value, bool relaxed, NPT_Cardinal* chars
     NPT_Result result = NPT_ParseInteger64(str, value_64, relaxed, chars_used);
     value = 0;
     if (NPT_SUCCEEDED(result)) {
+#if NPT_ULONG_MAX != NPT_UINT64_MAX
         if (value_64 < NPT_LONG_MIN || value_64 > NPT_LONG_MAX) {
             return NPT_ERROR_OVERFLOW;
         }
+#endif
         value = (long)value_64;
     }
     return result;
@@ -537,9 +668,11 @@ NPT_ParseInteger(const char* str, unsigned long& value, bool relaxed, NPT_Cardin
     NPT_Result result = NPT_ParseInteger64(str, value_64, relaxed, chars_used);
     value = 0;
     if (NPT_SUCCEEDED(result)) {
+#if NPT_ULONG_MAX != NPT_UINT64_MAX
         if (value_64 > NPT_ULONG_MAX) {
             return NPT_ERROR_OVERFLOW;
         }
+#endif
         value = (unsigned long)value_64;
     }
     return result;
@@ -798,3 +931,27 @@ NPT_ParseMimeParameters(const char*                      encoded,
     return NPT_SUCCESS;
 }
 
+#ifdef TARGET_WINDOWS_STORE
+std::wstring win32ConvertUtf8ToW(const std::string &text)
+{
+  if (text.empty())
+  {
+    return L"";
+  }
+
+  int bufSize = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.c_str(), -1, NULL, 0);
+  if (bufSize == 0)
+    return L"";
+  wchar_t *converted = new wchar_t[bufSize];
+  if (MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text.c_str(), -1, converted, bufSize) != bufSize)
+  {
+    delete[] converted;
+    return L"";
+  }
+
+  std::wstring Wret(converted);
+  delete[] converted;
+
+  return Wret;
+}
+#endif

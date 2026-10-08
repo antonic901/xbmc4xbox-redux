@@ -71,17 +71,18 @@ public:
                             NPT_Size* bytes_read);
                               
     // NPT_InputStream methods
-    NPT_Result Read(void*     buffer, 
+    virtual NPT_Result Read(void*     buffer,
                     NPT_Size  bytes_to_read, 
                     NPT_Size* bytes_read = NULL);
-    NPT_Result Seek(NPT_Position offset);
-    NPT_Result Tell(NPT_Position& offset);
-    NPT_Result GetSize(NPT_LargeSize& size);
-    NPT_Result GetAvailable(NPT_LargeSize& available);
+    virtual NPT_Result Seek(NPT_Position offset);
+    virtual NPT_Result Tell(NPT_Position& offset);
+    virtual NPT_Result GetSize(NPT_LargeSize& size);
+    virtual NPT_Result GetAvailable(NPT_LargeSize& available);
 
 protected:
     // members
     NPT_InputStreamReference m_Source;
+    NPT_Position             m_Position;
     bool                     m_SkipNewline;
     bool                     m_Eos;
     struct {

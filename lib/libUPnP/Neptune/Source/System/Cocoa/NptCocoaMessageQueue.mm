@@ -10,7 +10,9 @@
 /*----------------------------------------------------------------------
 |   includes
 +---------------------------------------------------------------------*/
-#include <Cocoa/Cocoa.h>
+#include "NptConfig.h"
+
+#import <Foundation/Foundation.h>
 #include "NptCocoaMessageQueue.h"
 
 /*----------------------------------------------------------------------
@@ -18,8 +20,9 @@
 +---------------------------------------------------------------------*/
 @interface NPT_CocoaMessageCapsule : NSObject
 {
-    NPT_Message*        message;
-    NPT_MessageHandler* handler;
+    NPT_Message*             message;
+    NPT_MessageHandler*      handler;
+    NPT_MessageHandlerProxy* proxy;
 }
 -(id)   initWithMessage: (NPT_Message*) message andHandler: (NPT_MessageHandler*) handler;
 -(void) handle;
@@ -31,14 +34,17 @@
     if ((self = [super init])) {
         message = aMessage;
         handler = aHandler;
+        proxy   = NPT_DYNAMIC_CAST(NPT_MessageHandlerProxy, aHandler);
+        if (proxy) proxy->AddReference();
     }
     return self;
 }
 
 -(void) dealloc
 {
-    [super dealloc];
     delete message;
+    if (proxy) proxy->Release();
+    [super dealloc];
 }
 
 -(void) handle 

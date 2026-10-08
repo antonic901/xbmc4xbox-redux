@@ -388,3 +388,45 @@ bool CPlayerCoreFactory::LoadConfiguration(const std::string &file, bool clear)
 
   return true;
 }
+
+void CPlayerCoreFactory::OnPlayerDiscovered(const std::string& id, const std::string& name)
+{
+  CSingleLock lock(m_section);
+  for (std::vector<boost::shared_ptr<CPlayerCoreConfig> >::iterator playerConfig = m_vecPlayerConfigs.begin();
+       playerConfig != m_vecPlayerConfigs.end(); ++playerConfig)
+  {
+    if ((*playerConfig)->GetId() == id)
+    {
+      (*playerConfig)->m_name = name;
+      (*playerConfig)->m_type = "remote";
+      return;
+    }
+  }
+
+  int count = 0;
+  std::string playername = name;
+  while (GetPlayerIndex(playername) >= 0)
+  {
+    count++;
+    std::stringstream itoa;
+    itoa << count;
+    playername = name + itoa.str();
+  }
+
+  boost::shared_ptr<CPlayerCoreConfig> player(
+      new CPlayerCoreConfig(playername, "remote", NULL, id));
+  player->m_bPlaysAudio = true;
+  player->m_bPlaysVideo = true;
+  m_vecPlayerConfigs.push_back(player);
+}
+
+void CPlayerCoreFactory::OnPlayerRemoved(const std::string& id)
+{
+  CSingleLock lock(m_section);
+  for (std::vector<boost::shared_ptr<CPlayerCoreConfig> >::iterator playerConfig = m_vecPlayerConfigs.begin();
+       playerConfig != m_vecPlayerConfigs.end(); ++playerConfig)
+  {
+    if ((*playerConfig)->GetId() == id)
+      (*playerConfig)->m_type = "";
+  }
+}

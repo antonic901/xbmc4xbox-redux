@@ -1,58 +1,45 @@
 /*
-* UPnP Support for XBMC
-* Copyright (c) 2006 c0diq (Sylvain Rebaud)
-* Portions Copyright (c) by the authors of libPlatinum
-*
-* http://www.plutinosoft.com/blog/category/platinum/
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
-
-#include "network/Network.h"
-#include "system.h"
-#include "Util.h"
-#include "application/Application.h"
-#include "messaging/ApplicationMessenger.h"
+ * UPnP Support for XBMC
+ *  Copyright (c) 2006 c0diq (Sylvain Rebaud)
+ *      Portions Copyright (c) by the authors of libPlatinum
+ *      http://www.plutinosoft.com/blog/category/platinum/
+ *  Copyright (C) 2006-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
+ *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
+ */
 
 #include "UPnP.h"
+
+#include "FileItem.h"
+#include "GUIUserMessages.h"
+#include "ServiceBroker.h"
 #include "UPnPInternal.h"
 #include "UPnPRenderer.h"
 #include "UPnPServer.h"
-#include "Platinum.h"
-#include "PltSyncMediaBrowser.h"
+#include "UPnPSettings.h"
 #include "URL.h"
+#include "cores/playercorefactory/PlayerCoreFactory.h"
+#include "guilib/GUIComponent.h"
+#include "guilib/GUIWindowManager.h"
+#include "messaging/ApplicationMessenger.h"
+#include "network/Network.h"
 #include "profiles/ProfileManager.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
-#include "FileItem.h"
-#include "guilib/GUIComponent.h"
-#include "guilib/GUIWindowManager.h"
-#include "GUIUserMessages.h"
-#include "GUIInfoManager.h"
-#include "guiinfo/GUIInfoLabels.h"
-#include "video/VideoInfoTag.h"
-#include "UPnPSettings.h"
+#include "utils/SystemInfo.h"
+#include "utils/TimeUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
+#include "video/VideoInfoTag.h"
 
-using namespace std;
+#include <set>
+
+#include <Platinum/Source/Platinum/Platinum.h>
+
 using namespace UPNP;
 using namespace KODI::MESSAGING;
-
-NPT_SET_LOCAL_LOGGER("xbmc.upnp")
 
 #define UPNP_DEFAULT_MAX_RETURNED_ITEMS 200
 #define UPNP_DEFAULT_MIN_RETURNED_ITEMS 30
@@ -64,7 +51,7 @@ NPT_SET_LOCAL_LOGGER("xbmc.upnp")
 DLNA_ORG_PS = 'DLNA.ORG_PS'
 DLNA_ORG_PS_VAL = '1'
 
-# Convertion Indicator
+# Conversion Indicator
 #    1 transcoded
 #    0 not transcoded
 DLNA_ORG_CI = 'DLNA.ORG_CI'
@@ -95,87 +82,34 @@ DLNA_ORG_FLAGS = 'DLNA.ORG_FLAGS'
 DLNA_ORG_FLAGS_VAL = '01500000000000000000000000000000'
 */
 
-#ifdef HAS_XBOX_NETWORK
-#include <xtl.h>
-#include <winsockx.h>
-#include "NptXboxNetwork.h"
-
-/*----------------------------------------------------------------------
-|   static initializer
-+---------------------------------------------------------------------*/
-NPT_WinsockSystem::NPT_WinsockSystem()
-{
-}
-
-NPT_WinsockSystem::~NPT_WinsockSystem()
-{
-}
-
-NPT_WinsockSystem NPT_WinsockSystem::Initializer;
-
-/*----------------------------------------------------------------------
-|       NPT_NetworkInterface::GetNetworkInterfaces
-+---------------------------------------------------------------------*/
-NPT_Result
-NPT_NetworkInterface::GetNetworkInterfaces(NPT_List<NPT_NetworkInterface*>& interfaces)
-{
-    if (!CServiceBroker::GetNetwork().IsAvailable(true))
-        return NPT_ERROR_NETWORK_DOWN;
-
-    NPT_IpAddress primary_address;
-    primary_address.ResolveName(CServiceBroker::GetNetwork().m_networkinfo.ip);
-
-    NPT_IpAddress netmask;
-    netmask.ResolveName(CServiceBroker::GetNetwork().m_networkinfo.subnet);
-
-    NPT_IpAddress broadcast_address;
-    broadcast_address.ResolveName("255.255.255.255");
-
-    NPT_Flags flags = NPT_NETWORK_INTERFACE_FLAG_BROADCAST | NPT_NETWORK_INTERFACE_FLAG_MULTICAST;
-
-    NPT_MacAddress mac;
-    //mac.SetAddress(NPT_MacAddress::TYPE_ETHERNET, CServiceBroker::GetNetwork().m_networkinfo.mac, 6);
-
-    // create an interface object
-    char iface_name[5];
-    iface_name[0] = 'i';
-    iface_name[1] = 'f';
-    iface_name[2] = '0';
-    iface_name[3] = '0';
-    iface_name[4] = '\0';
-    NPT_NetworkInterface* iface = new NPT_NetworkInterface(iface_name, mac, flags);
-
-    // set the interface address
-    NPT_NetworkInterfaceAddress iface_address(
-        primary_address,
-        broadcast_address,
-        NPT_IpAddress::Any,
-        netmask);
-    iface->AddAddress(iface_address);
-
-    // add the interface to the list
-    interfaces.Add(iface);
-
-    return NPT_SUCCESS;
-}
-#endif
-
-/*----------------------------------------------------------------------
-|   NPT_GetEnvironment
-+---------------------------------------------------------------------*/
-NPT_Result
-NPT_GetEnvironment(const char* name, NPT_String& value)
-{
-    return NPT_FAILURE;
-}
-
 /*----------------------------------------------------------------------
 |   NPT_Console::Output
 +---------------------------------------------------------------------*/
-void
-NPT_Console::Output(const char* message)
+void NPT_Console::Output(const char* msg)
 {
-    CLog::Log(LOGDEBUG, "%s", message);
+}
+
+int ConvertLogLevel(int nptLogLevel)
+{
+  if (nptLogLevel >= NPT_LOG_LEVEL_FATAL)
+    return LOGFATAL;
+  if (nptLogLevel >= NPT_LOG_LEVEL_SEVERE)
+    return LOGERROR;
+  if (nptLogLevel >= NPT_LOG_LEVEL_WARNING)
+    return LOGWARNING;
+  if (nptLogLevel >= NPT_LOG_LEVEL_FINE)
+    return LOGINFO;
+  if (nptLogLevel >= NPT_LOG_LEVEL_FINER)
+    return LOGDEBUG;
+
+  return LOGDEBUG;
+}
+
+void UPnPLogger(const NPT_LogRecord* record)
+{
+  if (CLog::CanLogComponent(LOGUPNP))
+    CLog::Log(ConvertLogLevel(record->m_Level), "[%s]: %s", record->m_LoggerName,
+                record->m_Message);
 }
 
 namespace UPNP
@@ -185,10 +119,8 @@ namespace UPNP
 |   static
 +---------------------------------------------------------------------*/
 CUPnP* CUPnP::upnp = NULL;
-// change to false for XBMC_PC if you want real UPnP functionality
-// otherwise keep to true for xbox as it doesn't support multicast
-// don't change unless you know what you're doing!
-bool CUPnP::broadcast = true;
+static NPT_List<void*> g_UserData;
+static NPT_Mutex g_UserDataLock;
 
 /*----------------------------------------------------------------------
 |   CDeviceHostReferenceHolder class
@@ -196,7 +128,7 @@ bool CUPnP::broadcast = true;
 class CDeviceHostReferenceHolder
 {
 public:
-    PLT_DeviceHostReference m_Device;
+  PLT_DeviceHostReference m_Device;
 };
 
 /*----------------------------------------------------------------------
@@ -205,7 +137,7 @@ public:
 class CCtrlPointReferenceHolder
 {
 public:
-    PLT_CtrlPointReference m_CtrlPoint;
+  PLT_CtrlPointReference m_CtrlPoint;
 };
 
 /*----------------------------------------------------------------------
@@ -214,90 +146,407 @@ public:
 class CUPnPCleaner : public NPT_Thread
 {
 public:
-    CUPnPCleaner(CUPnP* upnp) : NPT_Thread(true), m_UPnP(upnp) {}
-    void Run() {
-        delete m_UPnP;
-    }
+  explicit CUPnPCleaner(CUPnP* upnp) : NPT_Thread(true), m_UPnP(upnp) {}
+  virtual void Run() { delete m_UPnP; }
 
-    CUPnP* m_UPnP;
+  CUPnP* m_UPnP;
 };
 
 /*----------------------------------------------------------------------
 |   CMediaBrowser class
 +---------------------------------------------------------------------*/
-class CMediaBrowser : public PLT_SyncMediaBrowser,
-                      public PLT_MediaContainerChangesListener
+class CMediaBrowser : public PLT_SyncMediaBrowser, public PLT_MediaContainerChangesListener
 {
 public:
-    CMediaBrowser(PLT_CtrlPointReference& ctrlPoint)
-        : PLT_SyncMediaBrowser(ctrlPoint, true)
+  explicit CMediaBrowser(PLT_CtrlPointReference& ctrlPoint)
+    : PLT_SyncMediaBrowser(ctrlPoint, true)
+  {
+    SetContainerListener(this);
+  }
+
+  // PLT_MediaBrowser methods
+  virtual bool OnMSAdded(PLT_DeviceDataReference& device)
+  {
+    CGUIMessage message(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_PATH);
+    message.SetStringParam("upnp://");
+    CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message);
+
+    return PLT_SyncMediaBrowser::OnMSAdded(device);
+  }
+  virtual void OnMSRemoved(PLT_DeviceDataReference& device)
+  {
+    PLT_SyncMediaBrowser::OnMSRemoved(device);
+
+    CGUIMessage message(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_PATH);
+    message.SetStringParam("upnp://");
+    CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message);
+
+    PLT_SyncMediaBrowser::OnMSRemoved(device);
+  }
+
+  // PLT_MediaContainerChangesListener methods
+  virtual void OnContainerChanged(PLT_DeviceDataReference& device,
+                          const char* item_id,
+                          const char* update_id)
+  {
+    NPT_String path = "upnp://" + device->GetUUID() + "/";
+    if (!NPT_StringsEqual(item_id, "0"))
     {
-        SetContainerListener(this);
+      std::string id(CURL::Encode(item_id));
+      URIUtils::AddSlashAtEnd(id);
+      path += id.c_str();
     }
 
-    // PLT_MediaBrowser methods
-    virtual bool OnMSAdded(PLT_DeviceDataReference& device)
+    CLog::Log(LOGDEBUG, "notified container update %s", (const char*)path);
+    CGUIMessage message(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_PATH);
+    message.SetStringParam(path.GetChars());
+    CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message);
+  }
+
+  bool MarkWatched(const CFileItem& item, const bool watched)
+  {
+    if (watched)
     {
-        CGUIMessage message(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_PATH);
-        message.SetStringParam("upnp://");
-        CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message);
-
-        return PLT_SyncMediaBrowser::OnMSAdded(device);
+      CFileItem temp(item);
+      temp.SetProperty("original_listitem_url", item.GetPath());
+      return SaveFileState(temp, CBookmark(), watched);
     }
-    virtual void OnMSRemoved(PLT_DeviceDataReference& device)
+    else
     {
-        PLT_SyncMediaBrowser::OnMSRemoved(device);
+      CLog::Log(LOGDEBUG, "Marking video item %s as watched", item.GetPath().c_str());
 
-        CGUIMessage message(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_PATH);
-        message.SetStringParam("upnp://");
-        CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message);
-
-        PLT_SyncMediaBrowser::OnMSRemoved(device);
+      std::set<std::pair<NPT_String, NPT_String> > values;
+      values.insert(std::make_pair("<upnp:playCount>1</upnp:playCount>",
+                                   "<upnp:playCount>0</upnp:playCount>"));
+      return InvokeUpdateObject(item.GetPath().c_str(), values);
     }
+  }
 
-    // PLT_MediaContainerChangesListener methods
-    virtual void OnContainerChanged(PLT_DeviceDataReference& device,
-                                    const char*              item_id,
-                                    const char*              update_id)
+  bool SaveFileState(const CFileItem& item, const CBookmark& bookmark, const bool updatePlayCount)
+  {
+    std::string path = item.GetProperty("original_listitem_url").asString();
+    if (!item.HasVideoInfoTag() || path.empty())
     {
-        NPT_String path = "upnp://"+device->GetUUID()+"/";
-        if (!NPT_StringsEqual(item_id, "0")) {
-            std::string id = item_id;
-            CURL::Encode(id);
-            path += id.c_str();
-            path += "/";
-        }
-
-        CGUIMessage message(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_UPDATE_PATH);
-        message.SetStringParam(path.GetChars());
-        CServiceBroker::GetGUI()->GetWindowManager().SendThreadMessage(message);
+      return false;
     }
+
+    std::set<std::pair<NPT_String, NPT_String> > values;
+    if (item.GetVideoInfoTag()->GetResumePoint().timeInSeconds != bookmark.timeInSeconds)
+    {
+      CLog::Log(LOGDEBUG, "Updating resume point for item %s", path.c_str());
+      long time = (long)bookmark.timeInSeconds;
+      if (time < 0)
+        time = 0;
+
+      values.insert(std::make_pair(
+          NPT_String::Format("<upnp:lastPlaybackPosition>%ld</upnp:lastPlaybackPosition>",
+                             (long)item.GetVideoInfoTag()->GetResumePoint().timeInSeconds),
+          NPT_String::Format("<upnp:lastPlaybackPosition>%ld</upnp:lastPlaybackPosition>", time)));
+
+      NPT_String curr_value = "<xbmc:lastPlayerState>";
+      PLT_Didl::AppendXmlEscape(curr_value,
+                                item.GetVideoInfoTag()->GetResumePoint().playerState.c_str());
+      curr_value += "</xbmc:lastPlayerState>";
+      NPT_String new_value = "<xbmc:lastPlayerState>";
+      PLT_Didl::AppendXmlEscape(new_value, bookmark.playerState.c_str());
+      new_value += "</xbmc:lastPlayerState>";
+      values.insert(std::make_pair(curr_value, new_value));
+    }
+    if (updatePlayCount)
+    {
+      CLog::Log(LOGDEBUG, "Marking video item %s as watched", path.c_str());
+      values.insert(std::make_pair("<upnp:playCount>0</upnp:playCount>",
+                                   "<upnp:playCount>1</upnp:playCount>"));
+    }
+
+    return InvokeUpdateObject(path.c_str(), values);
+  }
+
+  bool UpdateItem(const std::string& path, const CFileItem& item)
+  {
+    if (path.empty())
+      return false;
+
+    std::set<std::pair<NPT_String, NPT_String> > values;
+    if (item.HasVideoInfoTag())
+    {
+      // handle playcount
+      const CVideoInfoTag* details = item.GetVideoInfoTag();
+      int playcountOld = 0, playcountNew = 0;
+      if (details->GetPlayCount() <= 0)
+        playcountOld = 1;
+      else
+        playcountNew = details->GetPlayCount();
+
+      values.insert(
+          std::make_pair(NPT_String::Format("<upnp:playCount>%d</upnp:playCount>", playcountOld),
+                         NPT_String::Format("<upnp:playCount>%d</upnp:playCount>", playcountNew)));
+
+      // handle lastplayed
+      CDateTime lastPlayedOld, lastPlayedNew;
+      if (!details->m_lastPlayed.IsValid())
+        lastPlayedOld = CDateTime::GetCurrentDateTime();
+      else
+        lastPlayedNew = details->m_lastPlayed;
+
+      values.insert(
+          std::make_pair(NPT_String::Format("<upnp:lastPlaybackTime>%s</upnp:lastPlaybackTime>",
+                                            lastPlayedOld.GetAsW3CDateTime().c_str()),
+                         NPT_String::Format("<upnp:lastPlaybackTime>%s</upnp:lastPlaybackTime>",
+                                            lastPlayedNew.GetAsW3CDateTime().c_str())));
+
+      // handle resume point
+      long resumePointOld = 0L, resumePointNew = 0L;
+      if (details->GetResumePoint().timeInSeconds <= 0)
+        resumePointOld = 1;
+      else
+        resumePointNew = static_cast<long>(details->GetResumePoint().timeInSeconds);
+
+      values.insert(std::make_pair(
+          NPT_String::Format("<upnp:lastPlaybackPosition>%ld</upnp:lastPlaybackPosition>",
+                             resumePointOld),
+          NPT_String::Format("<upnp:lastPlaybackPosition>%ld</upnp:lastPlaybackPosition>",
+                             resumePointNew)));
+    }
+
+    return InvokeUpdateObject(path.c_str(), values);
+  }
+
+  bool InvokeUpdateObject(const char* id, const std::set<std::pair<NPT_String, NPT_String> >& values)
+  {
+    CURL url(id);
+    PLT_DeviceDataReference device;
+    PLT_Service* cds;
+    PLT_ActionReference action;
+    NPT_String curr_value, new_value;
+
+    CLog::Log(LOGDEBUG, "attempting to invoke UpdateObject for %s", id);
+
+    // check this server supports UpdateObject action
+    NPT_CHECK_LABEL(FindServer(url.GetHostName().c_str(), device), failed);
+    NPT_CHECK_LABEL(device->FindServiceById("urn:upnp-org:serviceId:ContentDirectory", cds),
+                    failed);
+
+    NPT_CHECK_LABEL(m_CtrlPoint->CreateAction(device,
+                                              "urn:schemas-upnp-org:service:ContentDirectory:1",
+                                              "UpdateObject", action),
+                    failed);
+
+    NPT_CHECK_LABEL(action->SetArgumentValue("ObjectID", url.GetFileName().c_str()), failed);
+
+    // put together the current and the new value string
+    for (std::set<std::pair<NPT_String, NPT_String> >::const_iterator value = values.begin();
+         value != values.end(); ++value)
+    {
+      if (!curr_value.IsEmpty())
+        curr_value.Append(",");
+      if (!new_value.IsEmpty())
+        new_value.Append(",");
+
+      curr_value.Append(value->first);
+      new_value.Append(value->second);
+    }
+    NPT_CHECK_LABEL(action->SetArgumentValue("CurrentTagValue", curr_value), failed);
+    NPT_CHECK_LABEL(action->SetArgumentValue("NewTagValue", new_value), failed);
+
+    NPT_CHECK_LABEL(m_CtrlPoint->InvokeAction(action, NULL), failed);
+
+    CLog::Log(LOGDEBUG, "invoked UpdateObject successfully");
+    return true;
+
+  failed:
+    CLog::Log(LOGINFO, "invoking UpdateObject failed");
+    return false;
+  }
+
 };
 
+/*----------------------------------------------------------------------
+|   CMediaController class
++---------------------------------------------------------------------*/
+class CMediaController : public PLT_MediaControllerDelegate, public PLT_MediaController
+{
+public:
+  explicit CMediaController(PLT_CtrlPointReference& ctrl_point) : PLT_MediaController(ctrl_point)
+  {
+    PLT_MediaController::SetDelegate(this);
+  }
+
+  virtual ~CMediaController()
+  {
+    for (std::set<std::string>::const_iterator itRenderer = m_registeredRenderers.begin();
+         itRenderer != m_registeredRenderers.end(); ++itRenderer)
+      unregisterRenderer(*itRenderer);
+    m_registeredRenderers.clear();
+  }
+
+#define CHECK_USERDATA_RETURN(userdata) \
+  do \
+  { \
+    if (!g_UserData.Contains(userdata)) \
+      return; \
+  } while (0)
+
+  virtual void OnStopResult(NPT_Result res, PLT_DeviceDataReference& device, void* userdata)
+  {
+    NPT_AutoLock lock(g_UserDataLock);
+    CHECK_USERDATA_RETURN(userdata);
+    static_cast<PLT_MediaControllerDelegate*>(userdata)->OnStopResult(res, device, userdata);
+  }
+
+  virtual void OnSetPlayModeResult(NPT_Result res, PLT_DeviceDataReference& device, void* userdata)
+  {
+    NPT_AutoLock lock(g_UserDataLock);
+    CHECK_USERDATA_RETURN(userdata);
+    static_cast<PLT_MediaControllerDelegate*>(userdata)->OnSetPlayModeResult(res, device, userdata);
+  }
+
+  virtual void OnSetAVTransportURIResult(NPT_Result res,
+                                 PLT_DeviceDataReference& device,
+                                 void* userdata)
+  {
+    NPT_AutoLock lock(g_UserDataLock);
+    CHECK_USERDATA_RETURN(userdata);
+    static_cast<PLT_MediaControllerDelegate*>(userdata)->OnSetAVTransportURIResult(res, device,
+                                                                                   userdata);
+  }
+
+  virtual void OnSeekResult(NPT_Result res, PLT_DeviceDataReference& device, void* userdata)
+  {
+    NPT_AutoLock lock(g_UserDataLock);
+    CHECK_USERDATA_RETURN(userdata);
+    static_cast<PLT_MediaControllerDelegate*>(userdata)->OnSeekResult(res, device, userdata);
+  }
+
+  virtual void OnPreviousResult(NPT_Result res, PLT_DeviceDataReference& device, void* userdata)
+  {
+    NPT_AutoLock lock(g_UserDataLock);
+    CHECK_USERDATA_RETURN(userdata);
+    static_cast<PLT_MediaControllerDelegate*>(userdata)->OnPreviousResult(res, device, userdata);
+  }
+
+  virtual void OnPlayResult(NPT_Result res, PLT_DeviceDataReference& device, void* userdata)
+  {
+    NPT_AutoLock lock(g_UserDataLock);
+    CHECK_USERDATA_RETURN(userdata);
+    static_cast<PLT_MediaControllerDelegate*>(userdata)->OnPlayResult(res, device, userdata);
+  }
+
+  virtual void OnPauseResult(NPT_Result res, PLT_DeviceDataReference& device, void* userdata)
+  {
+    NPT_AutoLock lock(g_UserDataLock);
+    CHECK_USERDATA_RETURN(userdata);
+    static_cast<PLT_MediaControllerDelegate*>(userdata)->OnPauseResult(res, device, userdata);
+  }
+
+  virtual void OnNextResult(NPT_Result res, PLT_DeviceDataReference& device, void* userdata)
+  {
+    NPT_AutoLock lock(g_UserDataLock);
+    CHECK_USERDATA_RETURN(userdata);
+    static_cast<PLT_MediaControllerDelegate*>(userdata)->OnNextResult(res, device, userdata);
+  }
+
+  virtual void OnGetMediaInfoResult(NPT_Result res,
+                            PLT_DeviceDataReference& device,
+                            PLT_MediaInfo* info,
+                            void* userdata)
+  {
+    NPT_AutoLock lock(g_UserDataLock);
+    CHECK_USERDATA_RETURN(userdata);
+    static_cast<PLT_MediaControllerDelegate*>(userdata)->OnGetMediaInfoResult(res, device, info,
+                                                                              userdata);
+  }
+
+  virtual void OnGetPositionInfoResult(NPT_Result res,
+                               PLT_DeviceDataReference& device,
+                               PLT_PositionInfo* info,
+                               void* userdata)
+  {
+    NPT_AutoLock lock(g_UserDataLock);
+    CHECK_USERDATA_RETURN(userdata);
+    static_cast<PLT_MediaControllerDelegate*>(userdata)->OnGetPositionInfoResult(res, device, info,
+                                                                                 userdata);
+  }
+
+  virtual void OnGetTransportInfoResult(NPT_Result res,
+                                PLT_DeviceDataReference& device,
+                                PLT_TransportInfo* info,
+                                void* userdata)
+  {
+    NPT_AutoLock lock(g_UserDataLock);
+    CHECK_USERDATA_RETURN(userdata);
+    static_cast<PLT_MediaControllerDelegate*>(userdata)->OnGetTransportInfoResult(res, device, info,
+                                                                                  userdata);
+  }
+
+  virtual bool OnMRAdded(PLT_DeviceDataReference& device)
+  {
+    if (device->GetUUID().IsEmpty() || device->GetUUID().GetChars() == NULL)
+      return false;
+
+    CPlayerCoreFactory& playerCoreFactory = CServiceBroker::GetPlayerCoreFactory();
+
+    playerCoreFactory.OnPlayerDiscovered((const char*)device->GetUUID(),
+                                         (const char*)device->GetFriendlyName());
+
+    m_registeredRenderers.insert(std::string(device->GetUUID().GetChars()));
+    return true;
+  }
+
+  virtual void OnMRRemoved(PLT_DeviceDataReference& device)
+  {
+    if (device->GetUUID().IsEmpty() || device->GetUUID().GetChars() == NULL)
+      return;
+
+    std::string uuid(device->GetUUID().GetChars());
+    unregisterRenderer(uuid);
+    m_registeredRenderers.erase(uuid);
+  }
+
+private:
+  void unregisterRenderer(const std::string& deviceUUID)
+  {
+    CPlayerCoreFactory& playerCoreFactory = CServiceBroker::GetPlayerCoreFactory();
+
+    playerCoreFactory.OnPlayerRemoved(deviceUUID);
+  }
+
+  std::set<std::string> m_registeredRenderers;
+};
 
 /*----------------------------------------------------------------------
 |   CUPnP::CUPnP
 +---------------------------------------------------------------------*/
-CUPnP::CUPnP() :
-    m_MediaBrowser(NULL),
+CUPnP::CUPnP()
+  : m_MediaBrowser(NULL),
+    m_MediaController(NULL),
+    m_LogHandler(NULL),
     m_ServerHolder(new CDeviceHostReferenceHolder()),
     m_RendererHolder(new CRendererReferenceHolder()),
     m_CtrlPointHolder(new CCtrlPointReferenceHolder())
 {
-    broadcast = false;
+  NPT_LogManager::GetDefault().Configure("plist:.level=FINE;.handlers=CustomHandler;");
+  NPT_LogHandler::Create("xbmc", "CustomHandler", m_LogHandler);
+  m_LogHandler->SetCustomHandlerFunction(&UPnPLogger);
 
-    // initialize upnp in broadcast listening mode for xbmc
-    m_UPnP = new PLT_UPnP(1900, !broadcast);
+  // initialize upnp context
+  m_UPnP = new PLT_UPnP();
 
-    // keep main IP around
+  // keep main IP around
+  if (CServiceBroker::GetNetwork().IsConnected())
+  {
     m_IP = CServiceBroker::GetNetwork().m_networkinfo.ip;
-    NPT_List<NPT_IpAddress> list;
-    if (NPT_SUCCEEDED(PLT_UPnPMessageHelper::GetIPAddresses(list))) {
-        m_IP = (*(list.GetFirstItem())).ToString();
-    }
+  }
+  NPT_List<NPT_IpAddress> list;
+  if (NPT_SUCCEEDED(PLT_UPnPMessageHelper::GetIPAddresses(list)) && list.GetItemCount())
+  {
+    m_IP = (*(list.GetFirstItem())).ToString();
+  }
+  else if (m_IP.empty())
+    m_IP = "localhost";
 
-    // start upnp monitoring
-    m_UPnP->Start();
+  // start upnp monitoring
+  m_UPnP->Start();
 }
 
 /*----------------------------------------------------------------------
@@ -305,238 +554,320 @@ CUPnP::CUPnP() :
 +---------------------------------------------------------------------*/
 CUPnP::~CUPnP()
 {
-    m_UPnP->Stop();
-    StopClient();
-    StopServer();
+  m_UPnP->Stop();
+  StopClient();
+  StopController();
+  StopServer();
 
-    delete m_UPnP;
-    delete m_ServerHolder;
-    delete m_RendererHolder;
-    delete m_CtrlPointHolder;
+  delete m_UPnP;
+  delete m_LogHandler;
+  delete m_ServerHolder;
+  delete m_RendererHolder;
+  delete m_CtrlPointHolder;
 }
 
 /*----------------------------------------------------------------------
 |   CUPnP::GetInstance
 +---------------------------------------------------------------------*/
-CUPnP*
-CUPnP::GetInstance()
+CUPnP* CUPnP::GetInstance()
 {
-    if (!upnp) {
-        upnp = new CUPnP();
-    }
+  if (!upnp)
+  {
+    upnp = new CUPnP();
+  }
 
-    return upnp;
+  return upnp;
 }
 
 /*----------------------------------------------------------------------
 |   CUPnP::ReleaseInstance
 +---------------------------------------------------------------------*/
-void
-CUPnP::ReleaseInstance(bool bWait)
+void CUPnP::ReleaseInstance(bool bWait)
 {
-    if (upnp) {
-        CUPnP* _upnp = upnp;
-        upnp = NULL;
+  if (upnp)
+  {
+    CUPnP* _upnp = upnp;
+    upnp = NULL;
 
-        if (bWait) {
-            delete _upnp;
-        } else {
-            // since it takes a while to clean up
-            // starts a detached thread to do this
-            CUPnPCleaner* cleaner = new CUPnPCleaner(_upnp);
-            cleaner->Start();
-        }
+    if (bWait)
+    {
+      delete _upnp;
     }
+    else
+    {
+      // since it takes a while to clean up
+      // starts a detached thread to do this
+      CUPnPCleaner* cleaner = new CUPnPCleaner(_upnp);
+      cleaner->Start();
+    }
+  }
+}
+
+/*----------------------------------------------------------------------
+|   CUPnP::GetServer
++---------------------------------------------------------------------*/
+CUPnPServer* CUPnP::GetServer()
+{
+  if (upnp)
+    return static_cast<CUPnPServer*>(upnp->m_ServerHolder->m_Device.AsPointer());
+  return NULL;
 }
 
 /*----------------------------------------------------------------------
 |   CUPnP::MarkWatched
 +---------------------------------------------------------------------*/
-bool
-CUPnP::MarkWatched(const CFileItem& item, const bool watched)
+bool CUPnP::MarkWatched(const CFileItem& item, const bool watched)
 {
-    // TODO: implement this
-    return false;
+  if (upnp && upnp->m_MediaBrowser)
+  {
+    // dynamic_cast is safe here, avoids polluting CUPnP.h header file
+    CMediaBrowser* browser = dynamic_cast<CMediaBrowser*>(upnp->m_MediaBrowser);
+    if (browser)
+      return browser->MarkWatched(item, watched);
+  }
+  return false;
 }
 
 /*----------------------------------------------------------------------
 |   CUPnP::SaveFileState
 +---------------------------------------------------------------------*/
-bool
-CUPnP::SaveFileState(const CFileItem& item, const CBookmark& bookmark, const bool updatePlayCount)
+bool CUPnP::SaveFileState(const CFileItem& item,
+                          const CBookmark& bookmark,
+                          const bool updatePlayCount)
 {
-    // TODO: implement this
-    return false;
+  if (upnp && upnp->m_MediaBrowser)
+  {
+    // dynamic_cast is safe here, avoids polluting CUPnP.h header file
+    CMediaBrowser* browser = dynamic_cast<CMediaBrowser*>(upnp->m_MediaBrowser);
+    if (browser)
+      return browser->SaveFileState(item, bookmark, updatePlayCount);
+  }
+  return false;
+}
+
+/*----------------------------------------------------------------------
+|   CUPnP::CreateControlPoint
++---------------------------------------------------------------------*/
+void CUPnP::CreateControlPoint()
+{
+  if (!m_CtrlPointHolder->m_CtrlPoint.IsNull())
+    return;
+
+  // create controlpoint
+  m_CtrlPointHolder->m_CtrlPoint = new PLT_CtrlPoint();
+
+  // start it
+  m_UPnP->AddCtrlPoint(m_CtrlPointHolder->m_CtrlPoint);
+}
+
+/*----------------------------------------------------------------------
+|   CUPnP::DestroyControlPoint
++---------------------------------------------------------------------*/
+void CUPnP::DestroyControlPoint()
+{
+  if (m_CtrlPointHolder->m_CtrlPoint.IsNull())
+    return;
+
+  m_UPnP->RemoveCtrlPoint(m_CtrlPointHolder->m_CtrlPoint);
+  m_CtrlPointHolder->m_CtrlPoint = NULL;
+}
+
+/*----------------------------------------------------------------------
+|   CUPnP::UpdateItem
++---------------------------------------------------------------------*/
+bool CUPnP::UpdateItem(const std::string& path, const CFileItem& item)
+{
+  if (upnp && upnp->m_MediaBrowser)
+  {
+    // dynamic_cast is safe here, avoids polluting CUPnP.h header file
+    CMediaBrowser* browser = dynamic_cast<CMediaBrowser*>(upnp->m_MediaBrowser);
+    if (browser)
+      return browser->UpdateItem(path, item);
+  }
+  return false;
 }
 
 /*----------------------------------------------------------------------
 |   CUPnP::StartClient
 +---------------------------------------------------------------------*/
-void
-CUPnP::StartClient()
+void CUPnP::StartClient()
 {
-    if (!m_CtrlPointHolder->m_CtrlPoint.IsNull()) return;
+  CSingleLock lock(m_lockMediaBrowser);
+  if (m_MediaBrowser != NULL)
+    return;
 
-    // create controlpoint, pass NULL to avoid sending a multicast search
-    m_CtrlPointHolder->m_CtrlPoint = new PLT_CtrlPoint(broadcast?NULL:"upnp:rootdevice");
+  CreateControlPoint();
 
-    // ignore our own server
-    if (!m_ServerHolder->m_Device.IsNull()) {
-        m_CtrlPointHolder->m_CtrlPoint->IgnoreUUID(m_ServerHolder->m_Device->GetUUID());
-    }
-
-    // start it
-    m_UPnP->AddCtrlPoint(m_CtrlPointHolder->m_CtrlPoint);
-
-    // start browser
-    m_MediaBrowser = new CMediaBrowser(m_CtrlPointHolder->m_CtrlPoint);
-
-#ifdef _XBOX
-    // Issue a search request on the every 6 seconds, both on broadcast and multicast
-    // xbox can't receive multicast, but it can send it so upnp clients know we are here
-    m_CtrlPointHolder->m_CtrlPoint->Discover(NPT_HttpUrl("255.255.255.255", 1900, "*"), "upnp:rootdevice", 1, 6000);
-    m_CtrlPointHolder->m_CtrlPoint->Discover(NPT_HttpUrl("239.255.255.250", 1900, "*"), "upnp:rootdevice", 1, 6000);
-#endif
+  // start browser
+  m_MediaBrowser = new CMediaBrowser(m_CtrlPointHolder->m_CtrlPoint);
 }
 
 /*----------------------------------------------------------------------
 |   CUPnP::StopClient
 +---------------------------------------------------------------------*/
-void
-CUPnP::StopClient()
+void CUPnP::StopClient()
 {
-    if (m_CtrlPointHolder->m_CtrlPoint.IsNull()) return;
+  CSingleLock lock(m_lockMediaBrowser);
+  if (m_MediaBrowser == NULL)
+    return;
 
-    m_UPnP->RemoveCtrlPoint(m_CtrlPointHolder->m_CtrlPoint);
-    m_CtrlPointHolder->m_CtrlPoint = NULL;
+  delete m_MediaBrowser;
+  m_MediaBrowser = NULL;
 
-    delete m_MediaBrowser;
-    m_MediaBrowser = NULL;
+  if (!IsControllerStarted())
+    DestroyControlPoint();
+}
+
+/*----------------------------------------------------------------------
+|   CUPnP::StartController
++---------------------------------------------------------------------*/
+void CUPnP::StartController()
+{
+  if (m_MediaController != NULL)
+    return;
+
+  CreateControlPoint();
+
+  m_MediaController = new CMediaController(m_CtrlPointHolder->m_CtrlPoint);
+}
+
+/*----------------------------------------------------------------------
+|   CUPnP::StopController
++---------------------------------------------------------------------*/
+void CUPnP::StopController()
+{
+  if (m_MediaController == NULL)
+    return;
+
+  delete m_MediaController;
+  m_MediaController = NULL;
+
+  if (!IsClientStarted())
+    DestroyControlPoint();
 }
 
 /*----------------------------------------------------------------------
 |   CUPnP::CreateServer
 +---------------------------------------------------------------------*/
-CUPnPServer*
-CUPnP::CreateServer(int port /* = 0 */)
+CUPnPServer* CUPnP::CreateServer(int port /* = 0 */)
 {
-    CUPnPServer* device =
-        new CUPnPServer(CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FRIENDLY_NAME, INFO::DEFAULT_CONTEXT).c_str(),
-                        CUPnPSettings::GetInstance().GetServerUUID().length()?CUPnPSettings::GetInstance().GetServerUUID().c_str():NULL,
-                        port);
+  CUPnPServer* device = new CUPnPServer(CSysInfo::GetDeviceName().c_str(),
+                                        CUPnPSettings::GetInstance().GetServerUUID().length()
+                                            ? CUPnPSettings::GetInstance().GetServerUUID().c_str()
+                                            : NULL,
+                                        port);
 
-    // trying to set optional upnp values for XP UPnP UI Icons to detect us
-    // but it doesn't work anyways as it requires multicast for XP to detect us
-    device->m_PresentationURL =
-        NPT_HttpUrl(m_IP.c_str(),
-                    CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SERVICES_WEBSERVERPORT),
-                    "/").ToString();
+  // trying to set optional upnp values for XP UPnP UI Icons to detect us
+  // but it doesn't work anyways as it requires multicast for XP to detect us
+  device->m_PresentationURL =
+      NPT_HttpUrl(m_IP.c_str(),
+                  CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
+                      CSettings::SETTING_SERVICES_WEBSERVERPORT),
+                  "/")
+          .ToString();
 
-    device->m_ModelName        = "XBMC Media Center";
-    device->m_ModelNumber      = "1.0";
-    device->m_ModelDescription = "XBMC Media Center - Media Server";
-    device->m_ModelURL         = "http://www.xbmc.org/";
-    device->m_Manufacturer     = "Team XBMC";
-    device->m_ManufacturerURL  = "http://www.xbmc.org/";
+  device->m_ModelName = "Kodi";
+  device->m_ModelNumber = CSysInfo::GetVersion().c_str();
+  device->m_ModelDescription = "Kodi - Media Server";
+  device->m_ModelURL = "http://kodi.tv/";
+  device->m_Manufacturer = "XBMC Foundation";
+  device->m_ManufacturerURL = "http://kodi.tv/";
 
-    return device;
+  device->SetDelegate(device);
+  return device;
 }
 
 /*----------------------------------------------------------------------
 |   CUPnP::StartServer
 +---------------------------------------------------------------------*/
-bool
-CUPnP::StartServer()
+bool CUPnP::StartServer()
 {
-    if (!m_ServerHolder->m_Device.IsNull()) return false;
+  if (!m_ServerHolder->m_Device.IsNull())
+    return false;
 
-    // load upnpserver.xml
-    std::string filename = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(), "upnpserver.xml");
-    CUPnPSettings::GetInstance().Load(filename);
+  const boost::shared_ptr<CProfileManager> profileManager =
+      CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
-    // create the server with a XBox compatible friendlyname and UUID from upnpserver.xml if found
-    m_ServerHolder->m_Device = CreateServer(CUPnPSettings::GetInstance().GetServerPort());
+  // load upnpserver.xml
+  std::string filename =
+      URIUtils::AddFileToFolder(profileManager->GetUserDataFolder(), "upnpserver.xml");
+  CUPnPSettings::GetInstance().Load(filename);
 
-#ifdef _XBOX
-    // since the xbox doesn't support multicast
-    // we use broadcast but we advertise more often
-    m_ServerHolder->m_Device->SetBroadcast(broadcast);
-#endif
+  // create the server with a XBox compatible friendlyname and UUID from upnpserver.xml if found
+  m_ServerHolder->m_Device = CreateServer(CUPnPSettings::GetInstance().GetServerPort());
 
-    // tell controller to ignore ourselves from list of upnp servers
-    if (!m_CtrlPointHolder->m_CtrlPoint.IsNull()) {
-        m_CtrlPointHolder->m_CtrlPoint->IgnoreUUID(m_ServerHolder->m_Device->GetUUID());
+  // start server
+  NPT_Result res = m_UPnP->AddDevice(m_ServerHolder->m_Device);
+  if (NPT_FAILED(res))
+  {
+    // if the upnp device port was not 0, it could have failed because
+    // of port being in used, so restart with a random port
+    if (CUPnPSettings::GetInstance().GetServerPort() > 0)
+      m_ServerHolder->m_Device = CreateServer(0);
+
+    res = m_UPnP->AddDevice(m_ServerHolder->m_Device);
+  }
+
+  // save port but don't overwrite saved settings if port was random
+  if (NPT_SUCCEEDED(res))
+  {
+    if (CUPnPSettings::GetInstance().GetServerPort() == 0)
+    {
+      CUPnPSettings::GetInstance().SetServerPort(m_ServerHolder->m_Device->GetPort());
     }
-
-    // start server
-    NPT_Result res = m_UPnP->AddDevice(m_ServerHolder->m_Device);
-    if (NPT_FAILED(res)) {
-        // if the upnp device port was not 0, it could have failed because
-        // of port being in used, so restart with a random port
-        if (CUPnPSettings::GetInstance().GetServerPort() > 0) m_ServerHolder->m_Device = CreateServer(0);
-
-        // tell controller to ignore ourselves from list of upnp servers
-        if (!m_CtrlPointHolder->m_CtrlPoint.IsNull()) {
-            m_CtrlPointHolder->m_CtrlPoint->IgnoreUUID(m_ServerHolder->m_Device->GetUUID());
-        }
-
-        res = m_UPnP->AddDevice(m_ServerHolder->m_Device);
+    CUPnPServer::m_MaxReturnedItems = UPNP_DEFAULT_MAX_RETURNED_ITEMS;
+    if (CUPnPSettings::GetInstance().GetMaximumReturnedItems() > 0)
+    {
+      // must be > UPNP_DEFAULT_MIN_RETURNED_ITEMS
+      CUPnPServer::m_MaxReturnedItems = std::max(
+          UPNP_DEFAULT_MIN_RETURNED_ITEMS, CUPnPSettings::GetInstance().GetMaximumReturnedItems());
     }
+    CUPnPSettings::GetInstance().SetMaximumReturnedItems(CUPnPServer::m_MaxReturnedItems);
+  }
 
-    // save port but don't overwrite saved settings if port was random
-    if (NPT_SUCCEEDED(res)) {
-        if (CUPnPSettings::GetInstance().GetServerPort() == 0) {
-            CUPnPSettings::GetInstance().SetServerPort(m_ServerHolder->m_Device->GetPort());
-        }
-        CUPnPServer::m_MaxReturnedItems = UPNP_DEFAULT_MAX_RETURNED_ITEMS;
-        if (CUPnPSettings::GetInstance().GetMaximumReturnedItems() > 0) {
-            // must be > UPNP_DEFAULT_MIN_RETURNED_ITEMS
-            CUPnPServer::m_MaxReturnedItems = max(UPNP_DEFAULT_MIN_RETURNED_ITEMS, CUPnPSettings::GetInstance().GetMaximumReturnedItems());
-        }
-        CUPnPSettings::GetInstance().SetMaximumReturnedItems(CUPnPServer::m_MaxReturnedItems);
-    }
-
-    // save UUID
-    CUPnPSettings::GetInstance().SetServerUUID(m_ServerHolder->m_Device->GetUUID().GetChars());
-    return CUPnPSettings::GetInstance().Save(filename);
+  // save UUID
+  CUPnPSettings::GetInstance().SetServerUUID(m_ServerHolder->m_Device->GetUUID().GetChars());
+  return CUPnPSettings::GetInstance().Save(filename);
 }
 
 /*----------------------------------------------------------------------
 |   CUPnP::StopServer
 +---------------------------------------------------------------------*/
-void
-CUPnP::StopServer()
+void CUPnP::StopServer()
 {
-    if (m_ServerHolder->m_Device.IsNull()) return;
+  if (m_ServerHolder->m_Device.IsNull())
+    return;
 
-    m_UPnP->RemoveDevice(m_ServerHolder->m_Device);
-    m_ServerHolder->m_Device = NULL;
+  m_UPnP->RemoveDevice(m_ServerHolder->m_Device);
+  m_ServerHolder->m_Device = NULL;
 }
 
 /*----------------------------------------------------------------------
 |   CUPnP::CreateRenderer
 +---------------------------------------------------------------------*/
-CUPnPRenderer*
-CUPnP::CreateRenderer(int port /* = 0 */)
+CUPnPRenderer* CUPnP::CreateRenderer(int port /* = 0 */)
 {
-    CUPnPRenderer* device =
-        new CUPnPRenderer(CServiceBroker::GetGUI()->GetInfoManager().GetLabel(SYSTEM_FRIENDLY_NAME, INFO::DEFAULT_CONTEXT).c_str(),
-                          false,
-                          (CUPnPSettings::GetInstance().GetRendererUUID().length() ? CUPnPSettings::GetInstance().GetRendererUUID().c_str() : NULL),
-                          port);
+  CUPnPRenderer* device =
+      new CUPnPRenderer(CSysInfo::GetDeviceName().c_str(), false,
+                        (CUPnPSettings::GetInstance().GetRendererUUID().length()
+                             ? CUPnPSettings::GetInstance().GetRendererUUID().c_str()
+                             : NULL),
+                        port);
 
-    device->m_PresentationURL =
-        NPT_HttpUrl(m_IP.c_str(),
-                    CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_SERVICES_WEBSERVERPORT),
-                    "/").ToString();
-    device->m_ModelName = "XBMC";
-    device->m_ModelNumber = "2.0";
-    device->m_ModelDescription = "XBMC Media Center - Media Renderer";
-    device->m_ModelURL = "http://www.xbmc.org/";
-    device->m_Manufacturer = "Team XBMC";
-    device->m_ManufacturerURL = "http://www.xbmc.org/";
+  device->m_PresentationURL =
+      NPT_HttpUrl(m_IP.c_str(),
+                  CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(
+                      CSettings::SETTING_SERVICES_WEBSERVERPORT),
+                  "/")
+          .ToString();
+  device->m_ModelName = "Kodi";
+  device->m_ModelNumber = CSysInfo::GetVersion().c_str();
+  device->m_ModelDescription = "Kodi - Media Renderer";
+  device->m_ModelURL = "http://kodi.tv/";
+  device->m_Manufacturer = "XBMC Foundation";
+  device->m_ManufacturerURL = "http://kodi.tv/";
 
-    return device;
+  return device;
 }
 
 /*----------------------------------------------------------------------
@@ -544,43 +875,37 @@ CUPnP::CreateRenderer(int port /* = 0 */)
 +---------------------------------------------------------------------*/
 bool CUPnP::StartRenderer()
 {
-    if (!m_RendererHolder->m_Device.IsNull()) return false;
+  if (!m_RendererHolder->m_Device.IsNull())
+    return false;
 
-    std::string filename = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetUserDataFolder(), "upnpserver.xml");
-    CUPnPSettings::GetInstance().Load(filename);
+  const boost::shared_ptr<CProfileManager> profileManager =
+      CServiceBroker::GetSettingsComponent()->GetProfileManager();
 
-    m_RendererHolder->m_Device = CreateRenderer(CUPnPSettings::GetInstance().GetRendererPort());
+  std::string filename =
+      URIUtils::AddFileToFolder(profileManager->GetUserDataFolder(), "upnpserver.xml");
+  CUPnPSettings::GetInstance().Load(filename);
 
-    // tell controller to ignore ourselves from list of upnp servers
-    if (!m_CtrlPointHolder->m_CtrlPoint.IsNull()) {
-        m_CtrlPointHolder->m_CtrlPoint->IgnoreUUID(m_RendererHolder->m_Device->GetUUID());
-    }
+  m_RendererHolder->m_Device = CreateRenderer(CUPnPSettings::GetInstance().GetRendererPort());
 
-#ifdef _XBOX
-    m_RendererHolder->m_Device->SetBroadcast(broadcast);
-#endif
+  NPT_Result res = m_UPnP->AddDevice(m_RendererHolder->m_Device);
 
-    NPT_Result res = m_UPnP->AddDevice(m_RendererHolder->m_Device);
+  // failed most likely because port is in use, try again with random port now
+  if (NPT_FAILED(res) && CUPnPSettings::GetInstance().GetRendererPort() != 0)
+  {
+    m_RendererHolder->m_Device = CreateRenderer(0);
 
-    // failed most likely because port is in use, try again with random port now
-    if (NPT_FAILED(res) && CUPnPSettings::GetInstance().GetRendererPort() != 0) {
-        m_RendererHolder->m_Device = CreateRenderer(0);
+    res = m_UPnP->AddDevice(m_RendererHolder->m_Device);
+  }
 
-        // tell controller to ignore ourselves from list of upnp servers
-        if (!m_CtrlPointHolder->m_CtrlPoint.IsNull()) {
-            m_CtrlPointHolder->m_CtrlPoint->IgnoreUUID(m_RendererHolder->m_Device->GetUUID());
-        }
+  // save port but don't overwrite saved settings if random
+  if (NPT_SUCCEEDED(res) && CUPnPSettings::GetInstance().GetRendererPort() == 0)
+  {
+    CUPnPSettings::GetInstance().SetRendererPort(m_RendererHolder->m_Device->GetPort());
+  }
 
-        res = m_UPnP->AddDevice(m_RendererHolder->m_Device);
-    }
-
-    if (NPT_SUCCEEDED(res) && CUPnPSettings::GetInstance().GetRendererPort() == 0) {
-        CUPnPSettings::GetInstance().SetRendererPort(m_RendererHolder->m_Device->GetPort());
-    }
-
-    // save UUID
-    CUPnPSettings::GetInstance().SetRendererUUID(m_RendererHolder->m_Device->GetUUID().GetChars());
-    return CUPnPSettings::GetInstance().Save(filename);
+  // save UUID
+  CUPnPSettings::GetInstance().SetRendererUUID(m_RendererHolder->m_Device->GetUUID().GetChars());
+  return CUPnPSettings::GetInstance().Save(filename);
 }
 
 /*----------------------------------------------------------------------
@@ -588,10 +913,11 @@ bool CUPnP::StartRenderer()
 +---------------------------------------------------------------------*/
 void CUPnP::StopRenderer()
 {
-    if (m_RendererHolder->m_Device.IsNull()) return;
+  if (m_RendererHolder->m_Device.IsNull())
+    return;
 
-    m_UPnP->RemoveDevice(m_RendererHolder->m_Device);
-    m_RendererHolder->m_Device = NULL;
+  m_UPnP->RemoveDevice(m_RendererHolder->m_Device);
+  m_RendererHolder->m_Device = NULL;
 }
 
 /*----------------------------------------------------------------------
@@ -600,7 +926,19 @@ void CUPnP::StopRenderer()
 void CUPnP::UpdateState()
 {
   if (!m_RendererHolder->m_Device.IsNull())
-      ((CUPnPRenderer*)m_RendererHolder->m_Device.AsPointer())->UpdateState();
+    static_cast<CUPnPRenderer*>(m_RendererHolder->m_Device.AsPointer())->UpdateState();
+}
+
+void CUPnP::RegisterUserdata(void* ptr)
+{
+  NPT_AutoLock lock(g_UserDataLock);
+  g_UserData.Add(ptr);
+}
+
+void CUPnP::UnregisterUserdata(void* ptr)
+{
+  NPT_AutoLock lock(g_UserDataLock);
+  g_UserData.Remove(ptr);
 }
 
 } /* namespace UPNP */

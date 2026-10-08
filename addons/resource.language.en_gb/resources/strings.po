@@ -8296,6 +8296,12 @@ msgctxt "#20187"
 msgid "UPnP / DLNA"
 msgstr ""
 
+#: xbmc/network/upnp/UPnPServer.cpp
+#: system/settings/settings.xml
+msgctxt "#20188"
+msgid "Announce library updates"
+msgstr ""
+
 #: addons/skin.estuary/1080i/SkinSettings.xml
 msgctxt "#20189"
 msgid "Enable auto scrolling for plot & review"
@@ -12525,6 +12531,12 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#36323"
 msgid "Enables the UPnP server. This allows you to stream media in your libraries to a UPnP client."
+msgstr ""
+
+#. Description of setting with label #20188 "Announce library updates"
+#: system/settings/settings.xml
+msgctxt "#36324"
+msgid "When a manual or automatic library update occurs, notify UPnP clients."
 msgstr ""
 
 #. Description of setting with label #21881 "Allow playback control via UPnP"

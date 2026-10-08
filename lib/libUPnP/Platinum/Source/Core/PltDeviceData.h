@@ -2,7 +2,7 @@
 |
 |   Platinum - Device Data
 |
-| Copyright (c) 2004-2008, Plutinosoft, LLC.
+| Copyright (c) 2004-2010, Plutinosoft, LLC.
 | All rights reserved.
 | http://www.plutinosoft.com
 |
@@ -17,7 +17,8 @@
 | licensed software under version 2, or (at your option) any later
 | version, of the GNU General Public License (the "GPL") must enter
 | into a commercial license agreement with Plutinosoft, LLC.
-| 
+| licensing@plutinosoft.com
+|  
 | This program is distributed in the hope that it will be useful,
 | but WITHOUT ANY WARRANTY; without even the implied warranty of
 | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -30,6 +31,10 @@
 | http://www.gnu.org/licenses/gpl-2.0.html
 |
 ****************************************************************/
+
+/** @file
+ UPnP Device information
+ */
 
 #ifndef _PLT_DEVICE_DATA_H_
 #define _PLT_DEVICE_DATA_H_
@@ -52,6 +57,9 @@ typedef NPT_List<PLT_DeviceDataReference> PLT_DeviceDataReferenceList;
 /*----------------------------------------------------------------------
 |   PLT_DeviceIcon class
 +---------------------------------------------------------------------*/
+/** 
+ The PLT_DeviceIcon class represents a given instance of a UPnP device icon.
+ */
 class PLT_DeviceIcon
 {
 public:
@@ -77,31 +85,37 @@ public:
 /*----------------------------------------------------------------------
 |   PLT_DeviceData class
 +---------------------------------------------------------------------*/
+/**
+ The PLT_DeviceData class holds information about a device being advertised or
+ found by a control point. It maintains a list of services and 
+ embedded devices if any.
+ */
 class PLT_DeviceData
 {
 public:
     PLT_DeviceData(
-        NPT_HttpUrl      description_url = NPT_HttpUrl(NULL, 0, "/"), 
+        NPT_HttpUrl      description_url = NPT_HttpUrl(NULL, 0, "/description.xml"), 
         const char*      uuid = "",
-        NPT_TimeInterval lease_time = PLT_Constants::GetInstance().m_DefaultDeviceLease,
+        NPT_TimeInterval lease_time = *PLT_Constants::GetInstance().GetDefaultDeviceLease(),
         const char*      device_type = "",
         const char*      friendly_name = "");
 
-    /* Getters */
+    /* methods */
     virtual NPT_Result  GetDescription(NPT_String& desc);
-    virtual NPT_String  GetDescriptionUrl(const char* bind_addr = NULL);
+    virtual NPT_String  GetDescriptionUrl(const char* ip_address = NULL);
     virtual NPT_HttpUrl GetURLBase();
     virtual NPT_HttpUrl NormalizeURL(const NPT_String& url);
     virtual NPT_Result  GetDescription(NPT_XmlElementNode* parent, NPT_XmlElementNode** device = NULL);
     virtual NPT_String  GetIconUrl(const char* mimetype = NULL, NPT_Int32 maxsize = 0, NPT_Int32 maxdepth = 0);
-
-    const NPT_TimeInterval& GetLeaseTime()    const { return m_LeaseTime;        }
-    const NPT_String&   GetUUID()             const { return m_UUID;             }
-    const NPT_String&   GetFriendlyName()     const { return m_FriendlyName;     }
-    const NPT_String&   GetType()             const { return m_DeviceType;       }
-    const NPT_String&   GetModelDescription() const { return m_ModelDescription; }
-    const NPT_String&   GetParentUUID()       const { return m_ParentUUID;       }
-    bool                IsRoot()              { return m_ParentUUID.IsEmpty(); }
+    
+    bool                    IsRoot()              { return m_ParentUUID.IsEmpty();   }
+    const NPT_TimeInterval& GetLeaseTime()        const { return m_LeaseTime;        }
+    const NPT_String&       GetUUID()             const { return m_UUID;             }
+    const NPT_String&       GetFriendlyName()     const { return m_FriendlyName;     }
+    const NPT_String&       GetType()             const { return m_DeviceType;       }
+    const NPT_String&       GetModelDescription() const { return m_ModelDescription; }
+    const NPT_String&       GetParentUUID()       const { return m_ParentUUID;       }
+    const NPT_IpAddress&    GetLocalIP()          const { return m_LocalIfaceIp;     }
 
     const NPT_Array<PLT_Service*>&            GetServices()        const { return m_Services; }
     const NPT_Array<PLT_DeviceDataReference>& GetEmbeddedDevices() const { return m_EmbeddedDevices; }
@@ -110,7 +124,8 @@ public:
     NPT_Result FindEmbeddedDeviceByType(const char* type, PLT_DeviceDataReference& device);
     NPT_Result FindServiceById(const char* id, PLT_Service*& service);
     NPT_Result FindServiceByType(const char* type, PLT_Service*& service);
-    NPT_Result FindServiceBySCPDURL(const char* url, PLT_Service*& service);
+	NPT_Result FindServiceByName(const char* name, PLT_Service*& service);
+    NPT_Result FindServiceBySCPDURL(const char* url, PLT_Service*& service, bool recursive = false);
     NPT_Result FindServiceByControlURL(const char* url, PLT_Service*& service, bool recursive = false);
     NPT_Result FindServiceByEventSubURL(const char* url, PLT_Service*& service, bool recursive = false);
 
@@ -118,22 +133,39 @@ public:
     NPT_Result AddEmbeddedDevice(PLT_DeviceDataReference& device);
     NPT_Result RemoveEmbeddedDevice(PLT_DeviceDataReference& device);
     NPT_Result AddService(PLT_Service* service);
+	NPT_Result RemoveService(PLT_Service* service);
+    
+    /* BOOTID UPnP 1/1 */
+    void SetBootId(NPT_UInt32 bootId);
+    void SetNextBootId(NPT_UInt32 nextBootId);
+    NPT_UInt32 GenerateNextBootId();
 
     operator const char* ();
 
 protected:
     virtual ~PLT_DeviceData();
+    
     virtual void       Cleanup();
     virtual NPT_Result OnAddExtraInfo(NPT_XmlElementNode* /*device_node*/) { return NPT_SUCCESS; }
+    
 
 private:
-    /* called by PLT_CtrlPoint when new device is discovered */
+    /* called by PLT_CtrlPoint when an existing device location is updated */
+    NPT_Result    SetDescriptionUrl(NPT_HttpUrl& url);
+    NPT_Result    SetLeaseTime(NPT_TimeInterval lease_time, NPT_TimeStamp lease_time_last_update = 0.);
     NPT_Result    SetURLBase(NPT_HttpUrl& url_base);
     NPT_TimeStamp GetLeaseTimeLastUpdate();
-    NPT_Result    SetLeaseTime(NPT_TimeInterval lease_time);
-    NPT_Result    SetDescription(const char*          szDescription, 
-                                 const NPT_IpAddress& local_iface_ip);
-    NPT_Result    SetDescriptionDevice(NPT_XmlElementNode* device_node);
+    void          UpdateConfigId();
+    
+    /* class methods */
+    static NPT_Result SetDescription(PLT_DeviceDataReference&      root_device,
+                                     NPT_TimeInterval              leasetime,
+                                     NPT_HttpUrl                   description_url,
+                                     const char*                   description, 
+                                     const NPT_HttpRequestContext& context);
+    static NPT_Result SetDescriptionDevice(PLT_DeviceDataReference&      device,
+                                           NPT_XmlElementNode*           device_node, 
+                                           const NPT_HttpRequestContext& context);
 
 public:
     NPT_String m_Manufacturer;
@@ -172,11 +204,20 @@ protected:
        We need the info for the control point subscription callback */
     NPT_IpAddress                      m_LocalIfaceIp; 
     NPT_String                         m_Representation;
+    
+private:
+    NPT_UInt32                         m_BootId;
+    NPT_UInt32                         m_NextBootId;
+    NPT_UInt32                         m_ConfigId;
 };
 
 /*----------------------------------------------------------------------
 |   PLT_DeviceDataFinder
 +---------------------------------------------------------------------*/
+/**
+ The PLT_DeviceDataFinder class returns a PLT_DeviceData instance given
+ a device UUID.
+ */
 class PLT_DeviceDataFinder
 {
 public:
@@ -196,6 +237,10 @@ private:
 /*----------------------------------------------------------------------
 |   PLT_DeviceDataFinderByType
 +---------------------------------------------------------------------*/
+/**
+ The PLT_DeviceDataFinderByType class returns a PLT_DeviceData instance 
+ given a device type.
+ */
 class PLT_DeviceDataFinderByType
 {
 public:

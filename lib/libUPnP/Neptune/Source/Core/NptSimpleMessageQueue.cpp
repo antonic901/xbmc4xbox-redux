@@ -34,6 +34,12 @@
 +---------------------------------------------------------------------*/
 #include "NptSimpleMessageQueue.h"
 #include "NptDebug.h"
+#include "NptLogging.h"
+
+/*----------------------------------------------------------------------
+|   logging
++---------------------------------------------------------------------*/
+NPT_SET_LOCAL_LOGGER("neptune.message-queue")
 
 /*----------------------------------------------------------------------
 |   NPT_SimpleMessageCapsule
@@ -41,11 +47,32 @@
 struct NPT_SimpleMessageCapsule
 {
     NPT_SimpleMessageCapsule(NPT_Message* message, 
-                             NPT_MessageHandler* handler) :
-        m_Message(message), m_Handler(handler) {}
+                             NPT_MessageHandler* handler);
+    ~NPT_SimpleMessageCapsule();
     NPT_Message*        m_Message;
     NPT_MessageHandler* m_Handler;
+    NPT_MessageHandlerProxy* m_Proxy;
 };
+
+/*----------------------------------------------------------------------
+|   NPT_SimpleMessageCapsule::NPT_SimpleMessageCapsule
++---------------------------------------------------------------------*/
+NPT_SimpleMessageCapsule::NPT_SimpleMessageCapsule(NPT_Message* message,
+                                                   NPT_MessageHandler* handler) :
+    m_Message(message), 
+    m_Handler(handler),
+    m_Proxy(NPT_DYNAMIC_CAST(NPT_MessageHandlerProxy, handler))
+{
+    if (m_Proxy) m_Proxy->AddReference();
+}
+
+/*----------------------------------------------------------------------
+|   NPT_SimpleMessageCapsule::~NPT_SimpleMessageCapsule
++---------------------------------------------------------------------*/
+NPT_SimpleMessageCapsule::~NPT_SimpleMessageCapsule()
+{
+    if (m_Proxy) m_Proxy->Release();
+}
 
 /*----------------------------------------------------------------------
 |   NPT_SimpleMessageQueue::NPT_SimpleMessageQueue
@@ -71,7 +98,10 @@ NPT_SimpleMessageQueue::QueueMessage(NPT_Message*        message,
                                      NPT_MessageHandler* handler)
 {
     // push the message on the queue, with the handler reference
-    return m_Queue.Push(new NPT_SimpleMessageCapsule(message, handler));
+    NPT_SimpleMessageCapsule* capsule = new NPT_SimpleMessageCapsule(message, handler);
+    NPT_Result result = m_Queue.Push(capsule);
+    if (NPT_FAILED(result)) delete capsule;
+    return result;
 }
 
 /*----------------------------------------------------------------------
@@ -81,6 +111,8 @@ NPT_Result
 NPT_SimpleMessageQueue::PumpMessage(NPT_Timeout timeout /* = NPT_TIMEOUT_INFINITE */)
 {
     NPT_SimpleMessageCapsule* capsule;
+    
+    NPT_LOG_FINEST_1("popping message from queue, timeout=%d", timeout);
     NPT_Result result = m_Queue.Pop(capsule, timeout);
     if (NPT_SUCCEEDED(result) && capsule) {
         if (capsule->m_Handler && capsule->m_Message) {
@@ -88,7 +120,9 @@ NPT_SimpleMessageQueue::PumpMessage(NPT_Timeout timeout /* = NPT_TIMEOUT_INFINIT
         }
         delete capsule->m_Message;
         delete capsule;
-    } 
+    } else {
+        NPT_LOG_FINEST_1("m_Queue.Pop() returned %d", result);
+    }
 
     return result;
 }

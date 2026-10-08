@@ -30,4 +30,5 @@
 #define LOGCURL (1 << (LOGMASKBIT + 1))
 #define LOGFFMPEG (1 << (LOGMASKBIT + 2))
 #define LOGRTMP (1 << (LOGMASKBIT + 4))
+#define LOGUPNP (1 << (LOGMASKBIT + 8))
 #define LOGWEBSERVER (1 << (LOGMASKBIT + 11))

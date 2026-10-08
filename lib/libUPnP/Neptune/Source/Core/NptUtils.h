@@ -39,6 +39,8 @@
 #include "NptTypes.h"
 #include "NptStrings.h"
 #include "NptMap.h"
+#include "NptDataBuffer.h"
+#include "NptHash.h"
 
 #if defined (NPT_CONFIG_HAVE_STDIO_H)
 #include <stdio.h>
@@ -52,6 +54,9 @@
 #include <stdarg.h>
 #endif
 
+#if defined(TARGET_WINDOWS_STORE)
+#include <string>
+#endif
 /*----------------------------------------------------------------------
 |   macros
 +---------------------------------------------------------------------*/
@@ -119,6 +124,7 @@ NPT_FormatOutput(void        (*function)(void* parameter, const char* message),
 
 void NPT_ByteToHex(NPT_Byte b, char* buffer, bool uppercase=false);
 NPT_Result NPT_HexToByte(const char* buffer, NPT_Byte& b);
+NPT_Result NPT_HexToBytes(const char* hex, NPT_DataBuffer& bytes);
 NPT_String NPT_HexString(const unsigned char* data, 
                          NPT_Size             data_size,
                          const char*          separator = NULL,
@@ -136,7 +142,13 @@ NPT_ParseMimeParameters(const char*                      encoded,
 /*----------------------------------------------------------------------
 |    environment variables
 +---------------------------------------------------------------------*/
-NPT_Result NPT_GetEnvironment(const char* name, NPT_String& value);
+class NPT_Environment {
+public:
+    static NPT_Result Get(const char* name, NPT_String& value);
+    static NPT_Result Set(const char* name, const char* value);
+};
+// compat for older APIs
+#define NPT_GetEnvironment(_x,_y) NPT_Environment::Get(_x,_y)
 
 /*----------------------------------------------------------------------
 |   string utils
@@ -214,6 +226,10 @@ extern void NPT_SetMemory(void* dest, int c, NPT_Size size);
 #define NPT_MemoryEqual(s1, s2, n) (memcmp((s1), (s2), (n)) == 0) 
 #else 
 extern int NPT_MemoryEqual(const void* s1, const void* s2, unsigned long n); 
+#endif
+
+#if defined(TARGET_WINDOWS_STORE)
+std::wstring win32ConvertUtf8ToW(const std::string &text);
 #endif
 
 #endif // _NPT_UTILS_H_

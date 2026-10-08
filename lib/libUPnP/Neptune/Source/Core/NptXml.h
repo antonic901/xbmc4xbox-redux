@@ -45,6 +45,8 @@
 +---------------------------------------------------------------------*/
 const int NPT_ERROR_XML_INVALID_NESTING = NPT_ERROR_BASE_XML - 0;
 const int NPT_ERROR_XML_TAG_MISMATCH    = NPT_ERROR_BASE_XML - 1;
+const int NPT_ERROR_XML_NO_ROOT         = NPT_ERROR_BASE_XML - 2;
+const int NPT_ERROR_XML_MULTIPLE_ROOTS  = NPT_ERROR_BASE_XML - 3;
 
 #define NPT_XML_ANY_NAMESPACE "*"
 #define NPT_XML_NO_NAMESPACE  NULL
@@ -173,7 +175,7 @@ class NPT_XmlElementNode : public NPT_XmlNode
     // methods
                             NPT_XmlElementNode(const char* tag);
                             NPT_XmlElementNode(const char* prefix, const char* tag);
-    virtual                ~NPT_XmlElementNode();
+                   virtual ~NPT_XmlElementNode();
     NPT_List<NPT_XmlNode*>& GetChildren() { return m_Children; }
     const NPT_List<NPT_XmlNode*>& 
                             GetChildren() const { return m_Children; }
@@ -209,12 +211,12 @@ class NPT_XmlElementNode : public NPT_XmlNode
     const NPT_String* GetNamespacePrefix(const char* uri) const;
 
     // type casting
-    NPT_XmlElementNode*       AsElementNode()       { return this; }
-    const NPT_XmlElementNode* AsElementNode() const { return this; }
+    virtual NPT_XmlElementNode*       AsElementNode() { return this; }
+    virtual const NPT_XmlElementNode* AsElementNode() const { return this; }
 
 protected:
     // methods
-    void SetParent(NPT_XmlNode* parent);
+    virtual void SetParent(NPT_XmlNode* parent);
     void SetNamespaceParent(NPT_XmlElementNode* parent);
     void RelinkNamespaceMaps();
 
@@ -258,11 +260,12 @@ class NPT_XmlTextNode : public NPT_XmlNode
     NPT_XmlTextNode(TokenType token_type, const char* text);
 
     // methods
-    const NPT_String& GetString() const { return m_Text; }
-
+    const NPT_String& GetString()    const { return m_Text;      }
+    TokenType         GetTokenType() const { return m_TokenType; }
+    
     // type casting
-    NPT_XmlTextNode*       AsTextNode()       { return this; }
-    const NPT_XmlTextNode* AsTextNode() const { return this; }
+    virtual NPT_XmlTextNode*       AsTextNode() { return this; }
+    virtual const NPT_XmlTextNode* AsTextNode() const { return this; }
 
  private:
     // members  
@@ -299,15 +302,18 @@ class NPT_XmlParser
     NPT_Result OnStartElement(const char* name);
     NPT_Result OnElementAttribute(const char* name, const char* value);
     NPT_Result OnEndElement(const char* name);
-    NPT_Result OnCharacterData(const char* data, unsigned long size);
+    NPT_Result OnCharacterData(const char* data, NPT_Size size);
     void       RemoveIgnorableWhitespace();
 
     // members
     NPT_XmlProcessor*   m_Processor;
-    NPT_XmlElementNode* m_Tree;
+    NPT_XmlElementNode* m_Root;
     NPT_XmlElementNode* m_CurrentElement;
     bool                m_KeepWhitespace;
 
+private:
+    void Reset();
+    
     // friends
     friend class NPT_XmlProcessor;
 };
@@ -322,7 +328,7 @@ public:
                        NPT_XmlSerializer(NPT_OutputStream* output,
                                          NPT_Cardinal      indentation = 0,
                                          bool              shrink_empty_elements = true,
-										 bool			   add_header = true);
+                                         bool              add_xml_decl = false);
     virtual           ~NPT_XmlSerializer();
     virtual NPT_Result StartDocument();
     virtual NPT_Result EndDocument();
@@ -348,7 +354,7 @@ protected:
     NPT_String        m_IndentationPrefix;
     bool              m_ElementHasText;
     bool              m_ShrinkEmptyElements;
-	bool			  m_AddHeader;
+    bool              m_AddXmlDecl;
 };
 
 /*----------------------------------------------------------------------
@@ -361,9 +367,9 @@ public:
     explicit NPT_XmlWriter(NPT_Cardinal indentation = 0) : m_Indentation(indentation) {}
 
     // methods
-	NPT_Result Serialize(NPT_XmlNode&	   node, 
-						 NPT_OutputStream& stream, 
-						 bool			   add_header = true);
+    NPT_Result Serialize(NPT_XmlNode&      node, 
+                         NPT_OutputStream& stream, 
+                         bool              add_xml_decl = false);
 
 private:
     // members
@@ -377,9 +383,9 @@ class NPT_XmlCanonicalizer
 {
 public:
     // methods
-	NPT_Result Serialize(NPT_XmlNode&      node, 
-						 NPT_OutputStream& stream, 
-						 bool			   add_header = true);
+    NPT_Result Serialize(NPT_XmlNode&      node, 
+                         NPT_OutputStream& stream, 
+                         bool              add_xml_decl = false);
 };
 
 #endif // _NPT_XML_H_

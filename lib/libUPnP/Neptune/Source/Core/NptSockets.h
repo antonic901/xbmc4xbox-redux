@@ -41,6 +41,7 @@
 #include "NptStrings.h"
 #include "NptDataBuffer.h"
 #include "NptNetwork.h"
+#include "NptThreads.h"
 
 /*----------------------------------------------------------------------
 |   constants
@@ -60,6 +61,10 @@ const int NPT_ERROR_ACCEPT_FAILED         = NPT_ERROR_BASE_SOCKET - 11;
 const int NPT_ERROR_ADDRESS_IN_USE        = NPT_ERROR_BASE_SOCKET - 12;
 const int NPT_ERROR_NETWORK_DOWN          = NPT_ERROR_BASE_SOCKET - 13;
 const int NPT_ERROR_NETWORK_UNREACHABLE   = NPT_ERROR_BASE_SOCKET - 14;
+const int NPT_ERROR_HOST_UNREACHABLE      = NPT_ERROR_BASE_SOCKET - 15;
+const int NPT_ERROR_NOT_CONNECTED         = NPT_ERROR_BASE_SOCKET - 16;
+
+const unsigned int NPT_SOCKET_FLAG_CANCELLABLE = 1; // make the socket cancellable
 
 /*----------------------------------------------------------------------
 |   forward references
@@ -123,14 +128,13 @@ class NPT_SocketInterface
     // interface methods
     virtual NPT_Result Bind(const NPT_SocketAddress& address, bool reuse_address = true) = 0;
     virtual NPT_Result Connect(const NPT_SocketAddress& address, NPT_Timeout timeout) = 0;
-    virtual NPT_Result Disconnect() = 0;
     virtual NPT_Result WaitForConnection(NPT_Timeout timeout) = 0;
     virtual NPT_Result GetInputStream(NPT_InputStreamReference& stream) = 0;
     virtual NPT_Result GetOutputStream(NPT_OutputStreamReference& stream) = 0;
     virtual NPT_Result GetInfo(NPT_SocketInfo& info) = 0;
-    virtual NPT_Result SetBlockingMode(bool blocking) = 0;
     virtual NPT_Result SetReadTimeout(NPT_Timeout timeout) = 0;
     virtual NPT_Result SetWriteTimeout(NPT_Timeout timeout) = 0;
+    virtual NPT_Result Cancel(bool shutdown=true) = 0;
 };
 
 /*----------------------------------------------------------------------
@@ -144,8 +148,8 @@ class NPT_UdpSocketInterface
     // methods
     virtual NPT_Result Send(const NPT_DataBuffer&    packet, 
                             const NPT_SocketAddress* address = NULL) = 0;
-    virtual NPT_Result Receive(NPT_DataBuffer&     packet, 
-                               NPT_SocketAddress*  address = NULL) = 0;
+    virtual NPT_Result Receive(NPT_DataBuffer&    packet, 
+                               NPT_SocketAddress* address = NULL) = 0;
 };
 
 /*----------------------------------------------------------------------
@@ -176,7 +180,8 @@ class NPT_TcpServerSocketInterface
     // interface methods
     virtual NPT_Result Listen(unsigned int max_clients) = 0;
     virtual NPT_Result WaitForNewClient(NPT_Socket*& client, 
-                                        NPT_Timeout  timeout) = 0;
+                                        NPT_Timeout  timeout,
+                                        NPT_Flags    flags) = 0;
 };
 
 /*----------------------------------------------------------------------
@@ -185,47 +190,46 @@ class NPT_TcpServerSocketInterface
 class NPT_Socket : public NPT_SocketInterface
 {
 public:
+    // static methods
+    static NPT_Result CancelBlockerSocket(NPT_Thread::ThreadId thread_id);
+    
     // constructor and destructor
-    NPT_Socket(NPT_SocketInterface* delegate) :
-        m_SocketDelegate(delegate) {}
+    explicit NPT_Socket(NPT_SocketInterface* delegate) : m_SocketDelegate(delegate) {}
     virtual ~NPT_Socket();
 
     // delegate NPT_SocketInterface methods
-    NPT_Result Bind(const NPT_SocketAddress& address, bool reuse_address = true) {             
+    virtual NPT_Result Bind(const NPT_SocketAddress& address, bool reuse_address = true) {
         return m_SocketDelegate->Bind(address, reuse_address);                            
     }                                                               
-    NPT_Result Connect(const NPT_SocketAddress& address,            
+    virtual NPT_Result Connect(const NPT_SocketAddress& address,
                        NPT_Timeout timeout = NPT_TIMEOUT_INFINITE) {
        return m_SocketDelegate->Connect(address, timeout);                 
-    }       
-    NPT_Result Disconnect() {
-       return m_SocketDelegate->Disconnect();                 
-    }  
-    NPT_Result WaitForConnection(NPT_Timeout timeout = NPT_TIMEOUT_INFINITE) {
+    }                                                               
+    virtual NPT_Result WaitForConnection(NPT_Timeout timeout = NPT_TIMEOUT_INFINITE) {
         return m_SocketDelegate->WaitForConnection(timeout);                 
     } 
-    NPT_Result GetInputStream(NPT_InputStreamReference& stream) {   
+    virtual NPT_Result GetInputStream(NPT_InputStreamReference& stream) {
         return m_SocketDelegate->GetInputStream(stream);                   
     }                                                               
-    NPT_Result GetOutputStream(NPT_OutputStreamReference& stream) { 
+    virtual NPT_Result GetOutputStream(NPT_OutputStreamReference& stream) {
     return m_SocketDelegate->GetOutputStream(stream);                      
     }                                                               
-    NPT_Result GetInfo(NPT_SocketInfo& info) {                      
+    virtual NPT_Result GetInfo(NPT_SocketInfo& info) {
         return m_SocketDelegate->GetInfo(info);                            
     }                                                               
-    NPT_Result SetBlockingMode(bool blocking) {                      
-        return m_SocketDelegate->SetBlockingMode(blocking);                            
-    }                                                          
-    NPT_Result SetReadTimeout(NPT_Timeout timeout) {                      
+    virtual NPT_Result SetReadTimeout(NPT_Timeout timeout) {
         return m_SocketDelegate->SetReadTimeout(timeout);                            
     }                                                          
-    NPT_Result SetWriteTimeout(NPT_Timeout timeout) {                      
+    virtual NPT_Result SetWriteTimeout(NPT_Timeout timeout) {
         return m_SocketDelegate->SetWriteTimeout(timeout);                            
+    }                                                          
+    virtual NPT_Result Cancel(bool shutdown=true) {
+        return m_SocketDelegate->Cancel(shutdown);                            
     }                                                          
 
 protected:
     // constructor
-    NPT_Socket() {}
+    NPT_Socket() : m_SocketDelegate(NULL) {}
 
     // members
     NPT_SocketInterface* m_SocketDelegate;
@@ -241,16 +245,16 @@ class NPT_UdpSocket : public NPT_Socket,
 {
  public:
     // constructor and destructor
-             NPT_UdpSocket();
+             NPT_UdpSocket(NPT_Flags flags=0);
     virtual ~NPT_UdpSocket();
 
     // delegate NPT_UdpSocketInterface methods
-    NPT_Result Send(const NPT_DataBuffer&    packet,           
+    virtual NPT_Result Send(const NPT_DataBuffer&    packet,
                     const NPT_SocketAddress* address = NULL) {
         return m_UdpSocketDelegate->Send(packet, address);              
     }                                                         
-    NPT_Result Receive(NPT_DataBuffer&     packet,            
-                       NPT_SocketAddress*  address = NULL) {  
+    virtual NPT_Result Receive(NPT_DataBuffer&     packet,
+                       NPT_SocketAddress*  address = NULL) {
         return m_UdpSocketDelegate->Receive(packet, address);           
     }
 
@@ -270,24 +274,24 @@ class NPT_UdpMulticastSocket : public NPT_UdpSocket,
 {
 public:
     // constructor and destructor
-             NPT_UdpMulticastSocket();
+             NPT_UdpMulticastSocket(NPT_Flags flags=0);
     virtual ~NPT_UdpMulticastSocket();
 
     // delegate NPT_UdpMulticastSocketInterface methods
-    NPT_Result JoinGroup(const NPT_IpAddress& group,            
+    virtual NPT_Result JoinGroup(const NPT_IpAddress& group,
                          const NPT_IpAddress& iface =           
-                         NPT_IpAddress::Any) {                  
+                         NPT_IpAddress::Any) {
         return m_UdpMulticastSocketDelegate->JoinGroup(group, iface);
     }                                                           
-    NPT_Result LeaveGroup(const NPT_IpAddress& group,           
+    virtual NPT_Result LeaveGroup(const NPT_IpAddress& group,
                           const NPT_IpAddress& iface =          
-                          NPT_IpAddress::Any) {                 
+                          NPT_IpAddress::Any) {
         return m_UdpMulticastSocketDelegate->LeaveGroup(group, iface);
     }                                                          
-    NPT_Result SetTimeToLive(unsigned char ttl) {     
+    virtual NPT_Result SetTimeToLive(unsigned char ttl) {
         return m_UdpMulticastSocketDelegate->SetTimeToLive(ttl); 
     }
-    NPT_Result SetInterface(const NPT_IpAddress& iface) {
+    virtual NPT_Result SetInterface(const NPT_IpAddress& iface) {
         return m_UdpMulticastSocketDelegate->SetInterface(iface);
     }
 
@@ -303,7 +307,7 @@ class NPT_TcpClientSocket : public NPT_Socket
 {
 public:
     // constructors and destructor
-             NPT_TcpClientSocket();
+             NPT_TcpClientSocket(NPT_Flags flags=0);
     virtual ~NPT_TcpClientSocket();
 };
 
@@ -315,16 +319,17 @@ class NPT_TcpServerSocket : public NPT_Socket,
 {
 public:
     // constructors and destructor
-             NPT_TcpServerSocket();
+             NPT_TcpServerSocket(NPT_Flags flags=0);
     virtual ~NPT_TcpServerSocket();
 
     // delegate NPT_TcpServerSocketInterface methods
-    NPT_Result Listen(unsigned int max_clients) {   
+    virtual NPT_Result Listen(unsigned int max_clients) {
         return m_TcpServerSocketDelegate->Listen(max_clients);
     }
-    NPT_Result WaitForNewClient(NPT_Socket*& client, 
-                                NPT_Timeout  timeout = NPT_TIMEOUT_INFINITE) {
-        return m_TcpServerSocketDelegate->WaitForNewClient(client, timeout);
+    virtual NPT_Result WaitForNewClient(NPT_Socket*& client,
+                                NPT_Timeout  timeout = NPT_TIMEOUT_INFINITE,
+                                NPT_Flags    flags = 0) {
+        return m_TcpServerSocketDelegate->WaitForNewClient(client, timeout, flags);
     }
 
 protected:

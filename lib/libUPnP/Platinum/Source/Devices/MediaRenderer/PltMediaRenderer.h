@@ -2,7 +2,7 @@
 |
 |   Platinum - AV Media Renderer Device
 |
-| Copyright (c) 2004-2008, Plutinosoft, LLC.
+| Copyright (c) 2004-2010, Plutinosoft, LLC.
 | All rights reserved.
 | http://www.plutinosoft.com
 |
@@ -17,6 +17,7 @@
 | licensed software under version 2, or (at your option) any later
 | version, of the GNU General Public License (the "GPL") must enter
 | into a commercial license agreement with Plutinosoft, LLC.
+| licensing@plutinosoft.com
 | 
 | This program is distributed in the hope that it will be useful,
 | but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -40,12 +41,12 @@
 #include "PltDeviceHost.h"
 
 /*----------------------------------------------------------------------
-|   PLT_MediaRenderer class
+|   PLT_MediaRendererDelegate
 +---------------------------------------------------------------------*/
-class PLT_MediaRendererInterface
+class PLT_MediaRendererDelegate
 {
 public:
-    virtual ~PLT_MediaRendererInterface() {}
+    virtual ~PLT_MediaRendererDelegate() {}
 
     // ConnectionManager
     virtual NPT_Result OnGetCurrentConnectionInfo(PLT_ActionReference& action) = 0;
@@ -58,18 +59,20 @@ public:
     virtual NPT_Result OnSeek(PLT_ActionReference& action) = 0;
     virtual NPT_Result OnStop(PLT_ActionReference& action) = 0;
     virtual NPT_Result OnSetAVTransportURI(PLT_ActionReference& action) = 0;
+    virtual NPT_Result OnSetNextAVTransportURI(PLT_ActionReference& action) = 0;
     virtual NPT_Result OnSetPlayMode(PLT_ActionReference& action) = 0;
 
     // RenderingControl
     virtual NPT_Result OnSetVolume(PLT_ActionReference& action) = 0;
+    virtual NPT_Result OnSetVolumeDB(PLT_ActionReference& action) = 0;
+    virtual NPT_Result OnGetVolumeDBRange(PLT_ActionReference& action) = 0;
     virtual NPT_Result OnSetMute(PLT_ActionReference& action) = 0;
 };
 
 /*----------------------------------------------------------------------
-|   PLT_MediaRenderer class
+|   PLT_MediaRenderer
 +---------------------------------------------------------------------*/
-class PLT_MediaRenderer : public PLT_DeviceHost,
-                          public PLT_MediaRendererInterface
+class PLT_MediaRenderer : public PLT_DeviceHost
 {
 public:
     PLT_MediaRenderer(const char*  friendly_name,
@@ -77,10 +80,12 @@ public:
                       const char*  uuid = NULL,
                       unsigned int port = 0,
                       bool         port_rebind = false);
+    // methods
+    virtual void SetDelegate(PLT_MediaRendererDelegate* delegate) { m_Delegate = delegate; }
 
     // PLT_DeviceHost methods
-    virtual NPT_Result SetupServices(PLT_DeviceData& data);
-    virtual NPT_Result OnAction(PLT_ActionReference&          action, 
+    virtual NPT_Result SetupServices();
+    virtual NPT_Result OnAction(PLT_ActionReference&          action,
                                 const PLT_HttpRequestContext& context);
 
 protected:
@@ -98,6 +103,7 @@ protected:
     virtual NPT_Result OnSeek(PLT_ActionReference& action);
     virtual NPT_Result OnStop(PLT_ActionReference& action);
     virtual NPT_Result OnSetAVTransportURI(PLT_ActionReference& action);
+    virtual NPT_Result OnSetNextAVTransportURI(PLT_ActionReference& action);
     virtual NPT_Result OnSetPlayMode(PLT_ActionReference& action);
 
     // RenderingControl
@@ -105,6 +111,9 @@ protected:
     virtual NPT_Result OnSetVolumeDB(PLT_ActionReference &action);
     virtual NPT_Result OnGetVolumeDBRange(PLT_ActionReference &action);
     virtual NPT_Result OnSetMute(PLT_ActionReference& action);
+
+private:
+    PLT_MediaRendererDelegate* m_Delegate;
 };
 
 #endif /* _PLT_MEDIA_RENDERER_H_ */

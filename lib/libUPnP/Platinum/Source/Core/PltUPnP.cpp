@@ -2,7 +2,7 @@
 |
 |   Platinum - UPnP Engine
 |
-| Copyright (c) 2004-2008, Plutinosoft, LLC.
+| Copyright (c) 2004-2010, Plutinosoft, LLC.
 | All rights reserved.
 | http://www.plutinosoft.com
 |
@@ -17,7 +17,8 @@
 | licensed software under version 2, or (at your option) any later
 | version, of the GNU General Public License (the "GPL") must enter
 | into a commercial license agreement with Plutinosoft, LLC.
-| 
+| licensing@plutinosoft.com
+|  
 | This program is distributed in the hope that it will be useful,
 | but WITHOUT ANY WARRANTY; without even the implied warranty of
 | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -92,6 +93,12 @@ public:
     virtual ~PLT_UPnP_DeviceStartIterator() {}
 
     NPT_Result operator()(PLT_DeviceHostReference& device_host) const {
+        
+        // We should always increment the boot id on restart
+        // so it is used in place of boot id during initial announcement
+        device_host->SetBootId(device_host->GenerateNextBootId());
+        device_host->SetNextBootId(0);
+        
         NPT_CHECK_SEVERE(device_host->Start(m_ListenTask));
         return NPT_SUCCESS;
     }
@@ -122,15 +129,12 @@ private:
 /*----------------------------------------------------------------------
 |   PLT_UPnP::PLT_UPnP
 +---------------------------------------------------------------------*/
-PLT_UPnP::PLT_UPnP(NPT_UInt32 port, bool multicast /* = true */) :
+PLT_UPnP::PLT_UPnP() :
+    m_TaskManager(NULL),
     m_Started(false),
-    m_Port(port),
-    m_Multicast(multicast),
     m_SsdpListenTask(NULL),
 	m_IgnoreLocalUUIDs(true)
 {
-    NPT_HttpClient::m_UserAgentHeader = "Platinum/" PLT_PLATINUM_SDK_VERSION_STRING ", DLNADOC/1.50";
-    NPT_HttpServer::m_ServerHeader    = "UPnP/1.0, DLNADOC/1.50, Platinum/" PLT_PLATINUM_SDK_VERSION_STRING;
 }
     
 /*----------------------------------------------------------------------
@@ -154,29 +158,31 @@ PLT_UPnP::Start()
 
     NPT_AutoLock lock(m_Lock);
 
-    if (m_Started == true) return NPT_FAILURE;
-
-    NPT_Socket* socket = m_Multicast?new NPT_UdpMulticastSocket(): new NPT_UdpSocket();
-
-    // try to bind harder
-    //NPT_List<NPT_IpAddress> ips;
-    //PLT_UPnPMessageHelper::GetIPAddresses(ips);
-    //NPT_CHECK_SEVERE(socket->Bind(NPT_SocketAddress(*ips.GetFirstItem(), m_Port)));
+    if (m_Started) NPT_CHECK_WARNING(NPT_ERROR_INVALID_STATE);
     
-    //NPT_IpAddress ip;
-    //ip.Parse("127.0.0.1");
-    //NPT_CHECK_SEVERE(socket->Bind(NPT_SocketAddress(ip, m_Port)));
-
-    NPT_CHECK_SEVERE(socket->Bind(NPT_SocketAddress(NPT_IpAddress::Any, m_Port)));
+    NPT_List<NPT_IpAddress> ips;
+    PLT_UPnPMessageHelper::GetIPAddresses(ips);
+    
+    /* Create multicast socket and bind on 1900. If other apps didn't
+       play nicely by setting the REUSE_ADDR flag, this could fail */
+    NPT_Reference<NPT_UdpMulticastSocket> socket(new NPT_UdpMulticastSocket(NPT_SOCKET_FLAG_CANCELLABLE));
+    NPT_CHECK_SEVERE(socket->Bind(NPT_SocketAddress(NPT_IpAddress::Any, 1900), true));
+    
+    /* Join multicast group for every ip we found */
+    NPT_CHECK_SEVERE(ips.ApplyUntil(PLT_SsdpInitMulticastIterator(socket.AsPointer()),
+                                    NPT_UntilResultNotEquals(NPT_SUCCESS)));
 
     /* create the ssdp listener */
-    m_SsdpListenTask = new PLT_SsdpListenTask(socket, m_Multicast, true);
-    NPT_CHECK_SEVERE(m_TaskManager.StartTask(m_SsdpListenTask));
+    m_SsdpListenTask = new PLT_SsdpListenTask(socket.AsPointer());
+    socket.Detach();
+    NPT_Reference<PLT_TaskManager> taskManager(new PLT_TaskManager());
+    NPT_CHECK_SEVERE(taskManager->StartTask(m_SsdpListenTask));
 
     /* start devices & ctrlpoints */
     m_CtrlPoints.Apply(PLT_UPnP_CtrlPointStartIterator(m_SsdpListenTask));
     m_Devices.Apply(PLT_UPnP_DeviceStartIterator(m_SsdpListenTask));
 
+    m_TaskManager = taskManager;
     m_Started = true;
     return NPT_SUCCESS;
 }
@@ -189,7 +195,7 @@ PLT_UPnP::Stop()
 {
     NPT_AutoLock lock(m_Lock);
 
-    if (m_Started == false) return NPT_FAILURE;
+    if (!m_Started) NPT_CHECK_WARNING(NPT_ERROR_INVALID_STATE);
 
     NPT_LOG_INFO("Stopping UPnP...");
 
@@ -197,8 +203,10 @@ PLT_UPnP::Stop()
     m_CtrlPoints.Apply(PLT_UPnP_CtrlPointStopIterator(m_SsdpListenTask));
     m_Devices.Apply(PLT_UPnP_DeviceStopIterator(m_SsdpListenTask));
 
-    m_TaskManager.StopAllTasks();
+    // stop remaining tasks
+    m_TaskManager->Abort();
     m_SsdpListenTask = NULL;
+    m_TaskManager = NULL;
 
     m_Started = false;
     return NPT_SUCCESS;
@@ -212,6 +220,7 @@ PLT_UPnP::AddDevice(PLT_DeviceHostReference& device)
 {
     NPT_AutoLock lock(m_Lock);
 
+    // tell all our controllers to ignore this device
 	if (m_IgnoreLocalUUIDs) {
 		for (NPT_List<PLT_CtrlPointReference>::Iterator iter = 
                  m_CtrlPoints.GetFirstItem(); 
@@ -253,6 +262,7 @@ PLT_UPnP::AddCtrlPoint(PLT_CtrlPointReference& ctrl_point)
 {
     NPT_AutoLock lock(m_Lock);
 
+    // tell the control point to ignore our own running devices
 	if (m_IgnoreLocalUUIDs) {
 		for (NPT_List<PLT_DeviceHostReference>::Iterator iter = 
                  m_Devices.GetFirstItem(); 

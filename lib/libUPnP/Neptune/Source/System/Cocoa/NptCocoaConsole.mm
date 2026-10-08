@@ -11,6 +11,7 @@
 |       includes
 +---------------------------------------------------------------------*/
 #include <stdio.h>
+#include <Foundation/Foundation.h>
 
 #include "NptConfig.h"
 #include "NptConsole.h"
@@ -21,6 +22,6 @@
 void
 NPT_Console::Output(const char* message)
 {
-    NSLog(@"%s", message);
+    NSLog(@"%@", [@(message) stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]]);
 }
 

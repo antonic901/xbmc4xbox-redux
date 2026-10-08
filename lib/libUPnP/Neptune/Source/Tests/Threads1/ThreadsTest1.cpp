@@ -18,7 +18,7 @@
 
 #define CHECK(x) {                                  \
     if (!(x)) {                                     \
-        printf("TEST FAILED line %d\n", __LINE__);  \
+        NPT_Console::OutputF("TEST FAILED line %d\n", __LINE__);  \
         NPT_ASSERT(0);                              \
     }                                               \
 }
@@ -29,7 +29,9 @@
 class Thread1 : public NPT_Thread
 {
 public:
-    virtual ~Thread1() { NPT_Debug("~Thread1\n"); }
+    virtual ~Thread1() { 
+        NPT_Debug("~Thread1\n"); 
+    }
     void Run() {
         NPT_Debug("Thread1::Run - start\n");
 
@@ -79,6 +81,8 @@ public:
     void Run() {
         NPT_Debug("Thread3::Run - start\n");
 
+        NPT_Thread::SetCurrentThreadPriority(NPT_THREAD_PRIORITY_ABOVE_NORMAL);
+
         // sleep a while
         NPT_TimeInterval duration(3.1f);
         NPT_System::Sleep(duration);
@@ -108,10 +112,15 @@ public:
 class Thread4 : public NPT_Runnable
 {
 public:
-    virtual ~Thread4() { NPT_Debug("~Thread4\n"); }
+    virtual ~Thread4() { 
+        NPT_Debug("~Thread4\n"); 
+    }
     void Run() {
         NPT_Debug("Thread4::Run - start\n");
 
+        // change the prio
+        NPT_Thread::SetCurrentThreadPriority(NPT_THREAD_PRIORITY_BELOW_NORMAL);
+        
         // sleep a while
         NPT_TimeInterval duration(4.3f);
         NPT_System::Sleep(duration);
@@ -132,6 +141,53 @@ class T1 : public NPT_Runnable
 };
 
 /*----------------------------------------------------------------------
+|       TestPrio
++---------------------------------------------------------------------*/
+class PrioThread : public NPT_Runnable
+{
+public:
+    PrioThread(int prio) : m_Prio(prio), m_Counter(0) {}
+    void Run() {
+        NPT_Thread::SetCurrentThreadPriority(m_Prio);
+        NPT_TimeStamp now;
+        NPT_TimeStamp then;
+        NPT_System::GetCurrentTimeStamp(now);
+        do {
+            for (unsigned int i=0; i<10000; i++) {
+                m_Counter++;
+            }
+            for (unsigned int i=0; i<10000; i++) {
+                m_Counter--;
+            }
+            m_Counter++;
+            NPT_System::GetCurrentTimeStamp(then);
+        } while (then.ToMillis()-now.ToMillis() < 30000);
+    }
+    
+    int        m_Prio;
+    NPT_UInt64 m_Counter;
+};
+static void
+TestPrio()
+{
+    PrioThread p1(NPT_THREAD_PRIORITY_NORMAL);
+    PrioThread p2(NPT_THREAD_PRIORITY_BELOW_NORMAL);
+    PrioThread p3(NPT_THREAD_PRIORITY_ABOVE_NORMAL);
+    NPT_Thread t1(p1);
+    NPT_Thread t2(p2);
+    NPT_Thread t3(p3);
+    t1.Start();
+    t2.Start();
+    t3.Start();
+    t1.Wait();
+    t2.Wait();
+    t3.Wait();
+    NPT_Debug("### Prio NORMAL       -> %lld iterations\n", p1.m_Counter);
+    NPT_Debug("### Prio BELOW NORMAL -> %lld iterations\n", p2.m_Counter);
+    NPT_Debug("### Prio ABOVE NORMAL -> %lld iterations\n", p3.m_Counter);
+}
+
+/*----------------------------------------------------------------------
 |       Test1
 +---------------------------------------------------------------------*/
 static void
@@ -148,7 +204,7 @@ Test1()
     NPT_Debug("+++ waiting for non-detached thread +++\n");
     NPT_Result result = thread1->Wait();
     CHECK(NPT_SUCCEEDED(result));
-    NPT_Debug("+++ deleting for non-detached thread +++\n");
+    NPT_Debug("+++ deleting non-detached thread +++\n");
     delete thread1;
     NPT_Debug("+++ done with non-detached thread +++\n");
 
@@ -165,17 +221,9 @@ Test1()
     thread1 = new NPT_Thread(runnable); // not detached
     NPT_Debug("+++ starting non-detached thread +++\n");
     thread1->Start();
-    NPT_Debug("+++ deleting for non-detached thread +++\n");
+    NPT_Debug("+++ deleting non-detached thread +++\n");
     delete thread1;
     NPT_Debug("+++ done with non-detached thread +++\n");
-
-    NPT_Debug("+++ creating detached thread +++\n");
-    thread1 = new NPT_Thread(runnable, true); // detached
-    NPT_Debug("+++ starting detached thread +++\n");
-    thread1->Start();
-    NPT_Debug("+++ deleting for detached thread +++\n");
-    delete thread1;
-    NPT_Debug("+++ done with detached thread +++\n");
 }
 
 /*----------------------------------------------------------------------
@@ -210,12 +258,12 @@ Test2()
     NPT_Debug("deleting thread4\n");
     delete thread4;
 
-    NPT_Debug("deleting for thread1...\n");
+    NPT_Debug("deleting thread1...\n");
     delete thread1;
     NPT_Debug("...done\n");
 
     // sleep a while
-    NPT_TimeInterval duration(15UL);
+    NPT_TimeInterval duration(15.0);
     NPT_System::Sleep(duration);
 
     NPT_Debug("--- Test2 End ---\n");
@@ -405,6 +453,48 @@ Test4()
     NPT_Debug("--- Test4 End ---\n");
 }
 
+/*----------------------------------------------------------------------
+|       TestSharedVariables
++---------------------------------------------------------------------*/
+class SharedVarThread : public NPT_Thread {
+public:
+    SharedVarThread(int target, NPT_SharedVariable& shared) : m_Target(target), m_Shared(shared), m_Result(NPT_FAILURE) {}
+    void Run() {
+        m_Result = m_Shared.WaitUntilEquals(m_Target, 10000);
+    }
+    
+    int                 m_Target;
+    NPT_SharedVariable& m_Shared;
+    NPT_Result          m_Result;
+};
+
+static void
+TestSharedVariables()
+{
+    NPT_SharedVariable shared;
+    SharedVarThread t1(1, shared);
+    SharedVarThread t2(2, shared);
+    SharedVarThread t3(2, shared);
+    
+    t1.Start();
+    t2.Start();
+    t3.Start();
+    NPT_System::Sleep(3.0);
+    shared.SetValue(1);
+    NPT_System::Sleep(2.0);
+    shared.SetValue(2);
+    
+    NPT_Result result = t1.Wait(20000);
+    CHECK(result == NPT_SUCCESS);
+    CHECK(t1.m_Result == NPT_SUCCESS);
+    result = t2.Wait(20000);
+    CHECK(result == NPT_SUCCESS);
+    CHECK(t2.m_Result == NPT_SUCCESS);
+    result = t3.Wait(20000);
+    CHECK(result == NPT_SUCCESS);
+    CHECK(t3.m_Result == NPT_SUCCESS);
+}
+
 #if defined(WIN32) && defined(_DEBUG)
 static int AllocHook( int allocType, void *userData, size_t size, int blockType, 
                      long requestNumber, const unsigned char *filename, int lineNumber)
@@ -435,7 +525,9 @@ main(int argc, char** argv)
                    _CRTDBG_LEAK_CHECK_DF);
     _CrtSetAllocHook(AllocHook);
 #endif
-
+    
+    TestSharedVariables();
+    TestPrio();
     Test3(100000, 0.0f, 0.0f);
     Test3(300, 0.1f, 0.0f);
     Test3(100, 0.5f, 0.4f);

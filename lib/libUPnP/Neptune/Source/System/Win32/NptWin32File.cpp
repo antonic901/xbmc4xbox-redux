@@ -31,6 +31,7 @@
 /*----------------------------------------------------------------------
 |   A2WHelper
 +---------------------------------------------------------------------*/
+#ifndef _XBOX
 static LPWSTR A2WHelper(LPWSTR lpw, LPCSTR lpa, int nChars, UINT acp)
 {
     int ret;
@@ -62,7 +63,8 @@ static LPSTR W2AHelper(LPSTR lpa, LPCWSTR lpw, int nChars, UINT acp)
     lpa[0] = '\0';
     ret = WideCharToMultiByte(acp, 0, lpw, -1, lpa, nChars, NULL, NULL);
     if (ret == 0) {
-        assert(0);
+        int error = GetLastError();
+        assert(error);
         return NULL;
     }
     return lpa;
@@ -72,6 +74,7 @@ static LPSTR W2AHelper(LPSTR lpa, LPCWSTR lpw, int nChars, UINT acp)
 |   macros
 +---------------------------------------------------------------------*/
 /* UNICODE support */
+#endif // !_XBOX: the Xbox filesystem uses narrow paths
 #if !defined(_XBOX)
 #define NPT_WIN32_USE_CHAR_CONVERSION int _convert = 0; LPCWSTR _lpw = NULL; LPCSTR _lpa = NULL
 
@@ -81,9 +84,10 @@ static LPSTR W2AHelper(LPSTR lpa, LPCWSTR lpw, int nChars, UINT acp)
     (INT_MAX/2<_convert)? NULL :  \
     A2WHelper((LPWSTR) alloca(_convert*sizeof(WCHAR)), _lpa, _convert, CP_UTF8)))
 
+/* +2 instead of +1 temporary fix for Chinese characters */
 #define NPT_WIN32_W2A(lpw) (\
     ((_lpw = lpw) == NULL) ? NULL : (\
-    (_convert = (lstrlenW(_lpw)+1), \
+    (_convert = (lstrlenW(_lpw)+2), \
     (_convert>INT_MAX/2) ? NULL : \
     W2AHelper((LPSTR) alloca(_convert*sizeof(WCHAR)), _lpw, _convert*sizeof(WCHAR), CP_UTF8))))
 
@@ -237,14 +241,14 @@ FILE*
 NPT_fsopen_utf8(const char* path, const char* mode, int sh_flags)
 {
     NPT_WIN32_USE_CHAR_CONVERSION;
-    return _wfsopen(NPT_WIN32_A2W(path), NPT_WIN32_A2W(mode + NPT_String(", ccs=UNICODE")), sh_flags);
+    return _wfsopen(NPT_WIN32_A2W(path), NPT_WIN32_A2W(mode), sh_flags);
 }
 #endif
 
 /*----------------------------------------------------------------------
 |   NPT_FilePath::Separator
 +---------------------------------------------------------------------*/
-const NPT_String NPT_FilePath::Separator("\\");
+const char* const NPT_FilePath::Separator = "\\";
 
 /*----------------------------------------------------------------------
 |   NPT_File::GetRoots
@@ -259,7 +263,7 @@ NPT_File::GetRoots(NPT_List<NPT_String>& roots)
     DWORD drives = GetLogicalDrives();
     for (unsigned int i=0; i<26; i++) {
         if (drives & (1<<i)) {
-            char drive_name[4] = {'A'+i, ':', '\\', 0};
+            char drive_name[4] = {(char)('A'+i), ':', '\\', 0};
             roots.Add(drive_name);
         }
     }

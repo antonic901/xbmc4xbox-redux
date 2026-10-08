@@ -2,7 +2,7 @@
 |
 |   Platinum - Light Sample Device
 |
-| Copyright (c) 2004-2008, Plutinosoft, LLC.
+| Copyright (c) 2004-2010, Plutinosoft, LLC.
 | All rights reserved.
 | http://www.plutinosoft.com
 |
@@ -17,6 +17,7 @@
 | licensed software under version 2, or (at your option) any later
 | version, of the GNU General Public License (the "GPL") must enter
 | into a commercial license agreement with Plutinosoft, LLC.
+| licensing@plutinosoft.com
 | 
 | This program is distributed in the hope that it will be useful,
 | but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +35,7 @@
 /*----------------------------------------------------------------------
 |   includes
 +---------------------------------------------------------------------*/
-#include "NptTypes.h"
+#include "Neptune.h"
 #include "Platinum.h"
 #include "PltLightSample.h"
 
@@ -64,19 +65,24 @@ PLT_LightSampleDevice::~PLT_LightSampleDevice()
 |   PLT_LightSampleDevice::SetupServices
 +---------------------------------------------------------------------*/
 NPT_Result
-PLT_LightSampleDevice::SetupServices(PLT_DeviceData& data)
+PLT_LightSampleDevice::SetupServices()
 {
+    NPT_Result res;
     PLT_Service* service = new PLT_Service(
         this,
         "urn:schemas-upnp-org:service:SwitchPower:1", 
-        "urn:upnp-org:serviceId:SwitchPower.001");
-    NPT_CHECK_FATAL(service->SetSCPDXML((const char*)SCPDXML));
-    NPT_CHECK_FATAL(service->InitURLs("SwitchPower", m_UUID));
-    NPT_CHECK_FATAL(data.AddService(service));
+        "urn:upnp-org:serviceId:SwitchPower.001",
+        "SwitchPower");
+    NPT_CHECK_LABEL_FATAL(res = service->SetSCPDXML((const char*)SCPDXML), failure);
+    NPT_CHECK_LABEL_FATAL(res = AddService(service), failure);
 
     service->SetStateVariable("Status", "True");
 
     return NPT_SUCCESS;
+    
+failure:
+    delete service;
+    return res;
 }
 
 /*----------------------------------------------------------------------

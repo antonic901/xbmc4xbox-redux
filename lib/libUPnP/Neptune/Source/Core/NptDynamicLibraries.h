@@ -63,7 +63,7 @@ public:
     static NPT_Result Load(const char* name, NPT_Flags flags, NPT_DynamicLibrary*& library);
     
     // destructor
-    ~NPT_DynamicLibrary() { delete m_Delegate; }
+    virtual ~NPT_DynamicLibrary() { delete m_Delegate; }
     
     // NPT_DynamicLibraryInterface methods
     virtual NPT_Result FindSymbol(const char* name, void*& symbol) {

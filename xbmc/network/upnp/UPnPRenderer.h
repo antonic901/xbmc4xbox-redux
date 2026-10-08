@@ -1,25 +1,18 @@
-#pragma once
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://xbmc.org
+ *  Copyright (C) 2012-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
-#include "PltMediaRenderer.h"
+
+#pragma once
+
+#include "interfaces/IAnnouncer.h"
+
+#include <Platinum/Source/Devices/MediaRenderer/PltMediaRenderer.h>
+
+class CVariant;
 
 namespace UPNP
 {
@@ -31,19 +24,26 @@ public:
 };
 
 class CUPnPRenderer : public PLT_MediaRenderer
+                    , public ANNOUNCEMENT::IAnnouncer
 {
 public:
     CUPnPRenderer(const char*  friendly_name,
                   bool         show_ip = false,
                   const char*  uuid = NULL,
-                  unsigned int port = 0) : PLT_MediaRenderer(friendly_name, show_ip, uuid, port) {}
+                  unsigned int port = 0);
 
+    virtual ~CUPnPRenderer();
+
+    virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag,
+                  const std::string& sender,
+                  const std::string& message,
+                  const CVariant& data);
     void UpdateState();
 
     // Http server handler
-    virtual NPT_Result ProcessHttpRequest(NPT_HttpRequest&              request,
-                                          const NPT_HttpRequestContext& context,
-                                          NPT_HttpResponse&             response);
+    virtual NPT_Result ProcessHttpGetRequest(NPT_HttpRequest&              request,
+                                             const NPT_HttpRequestContext& context,
+                                             NPT_HttpResponse&             response);
 
     // AVTransport methods
     virtual NPT_Result OnNext(PLT_ActionReference& action);
@@ -53,17 +53,23 @@ public:
     virtual NPT_Result OnStop(PLT_ActionReference& action);
     virtual NPT_Result OnSeek(PLT_ActionReference& action);
     virtual NPT_Result OnSetAVTransportURI(PLT_ActionReference& action);
+    virtual NPT_Result OnSetNextAVTransportURI(PLT_ActionReference& action);
 
     // RenderingControl methods
     virtual NPT_Result OnSetVolume(PLT_ActionReference& action);
     virtual NPT_Result OnSetMute(PLT_ActionReference& action);
 
 private:
-    NPT_Result SetupServices(PLT_DeviceData& data);
+    virtual NPT_Result SetupServices();
+    virtual NPT_Result SetupIcons();
     NPT_Result GetMetadata(NPT_String& meta);
-    NPT_Result PlayMedia(const char* uri,
-                         const char* metadata = NULL,
+    NPT_Result PlayMedia(const NPT_String& uri,
+                         const NPT_String& meta,
                          PLT_Action* action = NULL);
+    NPT_Result Reset(PLT_Service* avt);
+    NPT_String GetTransportState();
+    NPT_Mutex m_state;
 };
 
 } /* namespace UPNP */
+

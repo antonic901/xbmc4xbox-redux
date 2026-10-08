@@ -1,30 +1,21 @@
 /*
- *      Copyright (C) 2013 Team XBMC
- *      http://www.xbmc.org
+ *  Copyright (C) 2013-2018 Team Kodi
+ *  This file is part of Kodi - https://kodi.tv
  *
- *  This Program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
- *  any later version.
- *
- *  This Program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, see
- *  <http://www.gnu.org/licenses/>.
- *
+ *  SPDX-License-Identifier: GPL-2.0-or-later
+ *  See LICENSES/README.md for more information.
  */
 
 #include "UPnPSettings.h"
-#include "filesystem/File.h"
+
+#include "ServiceBroker.h"
 #include "threads/SingleLock.h"
-#include "utils/log.h"
+#include "utils/FileUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 #include "utils/XMLUtils.h"
+#include "utils/log.h"
+
 
 #define XML_UPNP          "upnpserver"
 #define XML_SERVER_UUID   "UUID"
@@ -32,9 +23,6 @@
 #define XML_MAX_ITEMS     "MaxReturnedItems"
 #define XML_RENDERER_UUID "UUIDRenderer"
 #define XML_RENDERER_PORT "PortRenderer"
-
-using namespace std;
-using namespace XFILE;
 
 CUPnPSettings::CUPnPSettings()
 {
@@ -63,29 +51,29 @@ bool CUPnPSettings::Load(const std::string &file)
 
   Clear();
 
-  if (!CFile::Exists(file))
+  if (!CFileUtils::Exists(file))
     return false;
-  
+
   CXBMCTinyXML doc;
   if (!doc.LoadFile(file))
   {
-    CLog::Log(LOGERROR, "CUPnPSettings: error loading %s, Line %d\n%s", file.c_str(), doc.ErrorRow(), doc.ErrorDesc());
+    CLog::Log(LOGERROR, "error loading %s, Line %i\n%s", file.c_str(), doc.ErrorRow(), doc.ErrorDesc());
     return false;
   }
 
-  TiXmlElement *pRootElement = doc.RootElement();
-  if (pRootElement == NULL || !StringUtils::EqualsNoCase(pRootElement->Value(), XML_UPNP))
+  TiXmlElement* rootElement = doc.RootElement();
+  if (!rootElement || !StringUtils::EqualsNoCase(rootElement->Value(), XML_UPNP))
   {
-    CLog::Log(LOGERROR, "CUPnPSettings: error loading %s, no <upnpserver> node", file.c_str());
+    CLog::Log(LOGERROR, "error loading %s, no <upnpserver> node", file.c_str());
     return false;
   }
 
   // load settings
-  XMLUtils::GetString(pRootElement, XML_SERVER_UUID, m_serverUUID);
-  XMLUtils::GetInt(pRootElement, XML_SERVER_PORT, m_serverPort);
-  XMLUtils::GetInt(pRootElement, XML_MAX_ITEMS, m_maxReturnedItems);
-  XMLUtils::GetString(pRootElement, XML_RENDERER_UUID, m_rendererUUID);
-  XMLUtils::GetInt(pRootElement, XML_RENDERER_PORT, m_rendererPort);
+  XMLUtils::GetString(rootElement, XML_SERVER_UUID, m_serverUUID);
+  XMLUtils::GetInt(rootElement, XML_SERVER_PORT, m_serverPort);
+  XMLUtils::GetInt(rootElement, XML_MAX_ITEMS, m_maxReturnedItems);
+  XMLUtils::GetString(rootElement, XML_RENDERER_UUID, m_rendererUUID);
+  XMLUtils::GetInt(rootElement, XML_RENDERER_PORT, m_rendererPort);
 
   return true;
 }
@@ -95,16 +83,16 @@ bool CUPnPSettings::Save(const std::string &file) const
   CSingleLock lock(m_critical);
 
   CXBMCTinyXML doc;
-  TiXmlElement xmlRootElement(XML_UPNP);
-  TiXmlNode *pRoot = doc.InsertEndChild(xmlRootElement);
-  if (pRoot == NULL)
+  TiXmlElement element(XML_UPNP);
+  TiXmlNode *rootNode = doc.InsertEndChild(element);
+  if (!rootNode)
     return false;
 
-  XMLUtils::SetString(pRoot, XML_SERVER_UUID, m_serverUUID);
-  XMLUtils::SetInt(pRoot, XML_SERVER_PORT, m_serverPort);
-  XMLUtils::SetInt(pRoot, XML_MAX_ITEMS, m_maxReturnedItems);
-  XMLUtils::SetString(pRoot, XML_RENDERER_UUID, m_rendererUUID);
-  XMLUtils::SetInt(pRoot, XML_RENDERER_PORT, m_rendererPort);
+  XMLUtils::SetString(rootNode, XML_SERVER_UUID, m_serverUUID);
+  XMLUtils::SetInt(rootNode, XML_SERVER_PORT, m_serverPort);
+  XMLUtils::SetInt(rootNode, XML_MAX_ITEMS, m_maxReturnedItems);
+  XMLUtils::SetString(rootNode, XML_RENDERER_UUID, m_rendererUUID);
+  XMLUtils::SetInt(rootNode, XML_RENDERER_PORT, m_rendererPort);
 
   // save the file
   return doc.SaveFile(file);

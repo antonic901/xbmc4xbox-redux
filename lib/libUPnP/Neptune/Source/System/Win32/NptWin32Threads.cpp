@@ -92,8 +92,9 @@ NPT_Win32Mutex::Unlock()
 /*----------------------------------------------------------------------
 |   NPT_Mutex::NPT_Mutex
 +---------------------------------------------------------------------*/
-NPT_Mutex::NPT_Mutex()
+NPT_Mutex::NPT_Mutex(bool recursive)
 {
+    NPT_COMPILER_UNUSED(recursive); // always recursive on Win32
     m_Delegate = new NPT_Win32Mutex();
 }
 
@@ -198,19 +199,23 @@ class NPT_Win32SharedVariable : public NPT_SharedVariableInterface
     int        GetValue();
     NPT_Result WaitUntilEquals(int value, NPT_Timeout timeout = NPT_TIMEOUT_INFINITE);
     NPT_Result WaitWhileEquals(int value, NPT_Timeout timeout = NPT_TIMEOUT_INFINITE);
+	NPT_Result WaitWhileOrUntilEquals(int value, NPT_Timeout timeout, bool until);
 
  private:
     // members
-    volatile int   m_Value;
-    NPT_Mutex      m_Lock;
-    NPT_Win32Event m_Event;
+    volatile int          m_Value;
+	volatile unsigned int m_Waiters;
+    NPT_Mutex             m_Lock;
+    NPT_Win32Event        m_Event;
 };
 
 /*----------------------------------------------------------------------
 |   NPT_Win32SharedVariable::NPT_Win32SharedVariable
 +---------------------------------------------------------------------*/
-NPT_Win32SharedVariable::NPT_Win32SharedVariable(int value) : 
-    m_Value(value)
+NPT_Win32SharedVariable::NPT_Win32SharedVariable(int value) :
+    m_Value(value),
+	m_Waiters(0),
+	m_Event(true)
 {
 }
 
@@ -230,7 +235,7 @@ NPT_Win32SharedVariable::SetValue(int value)
     m_Lock.Lock();
     if (value != m_Value) {
         m_Value = value;
-        m_Event.Signal();
+        if (m_Waiters) m_Event.Signal();
     }
     m_Lock.Unlock();
 }
@@ -246,26 +251,51 @@ NPT_Win32SharedVariable::GetValue()
 }
 
 /*----------------------------------------------------------------------
+|   NPT_Win32SharedVariable::WaitWhileOrUntilEquals
++---------------------------------------------------------------------*/
+NPT_Result
+NPT_Win32SharedVariable::WaitWhileOrUntilEquals(int value, NPT_Timeout timeout, bool until)
+{
+    do {
+        m_Lock.Lock();
+        if (until) {
+			if (m_Value == value) break;
+		} else {
+			if (m_Value != value) break;
+		}
+		++m_Waiters;
+		m_Lock.Unlock();
+
+        NPT_Result result = m_Event.Wait(timeout);
+		bool last_waiter = true;
+		m_Lock.Lock();
+		if (--m_Waiters == 0) {
+			m_Event.Reset();
+		} else {
+			last_waiter = false;
+		}
+		m_Lock.Unlock();
+
+        if (NPT_FAILED(result)) return result;
+
+		// FIXME: this is suboptimal, but we need it to ensure we don't busy-loop
+		if (!last_waiter) {
+			Sleep(10);
+		}
+    } while (true);
+
+    m_Lock.Unlock();
+
+    return NPT_SUCCESS;
+}
+
+/*----------------------------------------------------------------------
 |   NPT_Win32SharedVariable::WaitUntilEquals
 +---------------------------------------------------------------------*/
 NPT_Result
 NPT_Win32SharedVariable::WaitUntilEquals(int value, NPT_Timeout timeout)
 {
-    do {
-        m_Lock.Lock();
-        if (m_Value == value) {
-            break;
-        }
-        m_Lock.Unlock();
-        {
-             NPT_Result result = m_Event.Wait(timeout);
-             if (NPT_FAILED(result)) return result;
-        }
-    } while (1);
-
-    m_Lock.Unlock();
-    
-    return NPT_SUCCESS;
+	return WaitWhileOrUntilEquals(value, timeout, true);
 }
 
 /*----------------------------------------------------------------------
@@ -274,21 +304,7 @@ NPT_Win32SharedVariable::WaitUntilEquals(int value, NPT_Timeout timeout)
 NPT_Result
 NPT_Win32SharedVariable::WaitWhileEquals(int value, NPT_Timeout timeout)
 {
-    do {
-        m_Lock.Lock();
-        if (m_Value != value) {
-            break;
-        }
-        m_Lock.Unlock();
-        {
-             NPT_Result result = m_Event.Wait(timeout);
-             if (NPT_FAILED(result)) return result;
-        }
-    } while (1);
-
-    m_Lock.Unlock();
-    
-    return NPT_SUCCESS;
+	return WaitWhileOrUntilEquals(value, timeout, false);
 }
 
 /*----------------------------------------------------------------------
@@ -308,7 +324,7 @@ class NPT_Win32AtomicVariable : public NPT_AtomicVariableInterface
     // methods
                 NPT_Win32AtomicVariable(int value);
                ~NPT_Win32AtomicVariable();
-    int  Increment(); 
+    int  Increment();
     int  Decrement();
     void SetValue(int value);
     int  GetValue();
@@ -321,7 +337,7 @@ class NPT_Win32AtomicVariable : public NPT_AtomicVariableInterface
 /*----------------------------------------------------------------------
 |   NPT_Win32AtomicVariable::NPT_Win32AtomicVariable
 +---------------------------------------------------------------------*/
-NPT_Win32AtomicVariable::NPT_Win32AtomicVariable(int value) : 
+NPT_Win32AtomicVariable::NPT_Win32AtomicVariable(int value) :
     m_Value(value)
 {
 }
@@ -383,13 +399,20 @@ NPT_AtomicVariable::NPT_AtomicVariable(int value)
 class NPT_Win32Thread : public NPT_ThreadInterface
 {
  public:
+	// class methods
+	static NPT_Result SetThreadPriority(HANDLE thread, int priority);
+	static NPT_Result GetThreadPriority(HANDLE thread, int& priority);
+
     // methods
                 NPT_Win32Thread(NPT_Thread*   delegator,
                                 NPT_Runnable& target,
                                 bool          detached);
                ~NPT_Win32Thread();
-    NPT_Result  Start(); 
+    NPT_Result  Start();
     NPT_Result  Wait(NPT_Timeout timeout = NPT_TIMEOUT_INFINITE);
+    NPT_Result  GetPriority(int& priority);
+	NPT_Result  SetPriority(int priority);
+    NPT_Result  CancelBlockerSocket();
 
  private:
     // methods
@@ -399,13 +422,14 @@ class NPT_Win32Thread : public NPT_ThreadInterface
     void Run();
 
     // NPT_Interruptible methods
-    NPT_Result Interrupt() { return NPT_ERROR_NOT_IMPLEMENTED; } 
+    NPT_Result Interrupt() { return NPT_ERROR_NOT_IMPLEMENTED; }
 
     // members
     NPT_Thread*   m_Delegator;
     NPT_Runnable& m_Target;
     bool          m_Detached;
     HANDLE        m_ThreadHandle;
+    DWORD         m_ThreadId;
 };
 
 /*----------------------------------------------------------------------
@@ -413,11 +437,12 @@ class NPT_Win32Thread : public NPT_ThreadInterface
 +---------------------------------------------------------------------*/
 NPT_Win32Thread::NPT_Win32Thread(NPT_Thread*   delegator,
                                  NPT_Runnable& target,
-                                 bool          detached) : 
+                                 bool          detached) :
     m_Delegator(delegator),
     m_Target(target),
     m_Detached(detached),
-    m_ThreadHandle(0)
+    m_ThreadHandle(NULL),
+    m_ThreadId(0)
 {
 }
 
@@ -427,7 +452,7 @@ NPT_Win32Thread::NPT_Win32Thread(NPT_Thread*   delegator,
 NPT_Win32Thread::~NPT_Win32Thread()
 {
     if (!m_Detached) {
-        // we're not detached, and not in the Run() method, so we need to 
+        // we're not detached, and not in the Run() method, so we need to
         // wait until the thread is done
         Wait();
     }
@@ -436,6 +461,53 @@ NPT_Win32Thread::~NPT_Win32Thread()
     if (m_ThreadHandle) {
         CloseHandle(m_ThreadHandle);
     }
+}
+
+/*----------------------------------------------------------------------
+|   NPT_Win32Thread::SetThreadPriority
++---------------------------------------------------------------------*/
+NPT_Result
+NPT_Win32Thread::SetThreadPriority(HANDLE thread, int priority)
+{
+	int win32_priority;
+	if (priority < NPT_THREAD_PRIORITY_LOWEST) {
+		win32_priority = THREAD_PRIORITY_IDLE;
+	} else if (priority < NPT_THREAD_PRIORITY_BELOW_NORMAL) {
+		win32_priority = THREAD_PRIORITY_LOWEST;
+	} else if (priority < NPT_THREAD_PRIORITY_NORMAL) {
+		win32_priority = THREAD_PRIORITY_BELOW_NORMAL;
+	} else if (priority < NPT_THREAD_PRIORITY_ABOVE_NORMAL) {
+		win32_priority = THREAD_PRIORITY_NORMAL;
+	} else if (priority < NPT_THREAD_PRIORITY_HIGHEST) {
+		win32_priority = THREAD_PRIORITY_ABOVE_NORMAL;
+	} else if (priority < NPT_THREAD_PRIORITY_TIME_CRITICAL) {
+		win32_priority = THREAD_PRIORITY_HIGHEST;
+	} else {
+		win32_priority = THREAD_PRIORITY_TIME_CRITICAL;
+	}
+	BOOL result = ::SetThreadPriority(thread, win32_priority);
+	if (!result) {
+		NPT_LOG_WARNING_1("SetThreadPriority failed (%x)", GetLastError());
+		return NPT_FAILURE;
+	}
+
+	return NPT_SUCCESS;
+}
+
+/*----------------------------------------------------------------------
+|   NPT_Win32Thread::GetThreadPriority
++---------------------------------------------------------------------*/
+NPT_Result
+NPT_Win32Thread::GetThreadPriority(HANDLE thread, int& priority)
+{
+    int win32_priority = ::GetThreadPriority(thread);
+	if (win32_priority == THREAD_PRIORITY_ERROR_RETURN) {
+		NPT_LOG_WARNING_1("GetThreadPriority failed (%x)", GetLastError());
+		return NPT_FAILURE;
+	}
+
+    priority = win32_priority;
+	return NPT_SUCCESS;
 }
 
 /*----------------------------------------------------------------------
@@ -451,7 +523,7 @@ NPT_Win32Thread::EntryPoint(void* argument)
     // set random seed per thread
     NPT_TimeStamp now;
     NPT_System::GetCurrentTimeStamp(now);
-    NPT_System::SetRandomSeed(now.m_NanoSeconds + ::GetCurrentThreadId());
+    NPT_System::SetRandomSeed((NPT_UInt32)(now.ToNanos()) + ::GetCurrentThreadId());
 
     // set a default name
     #pragma pack(push,8)
@@ -475,9 +547,11 @@ NPT_Win32Thread::EntryPoint(void* argument)
     {
     }
 
-    // run the thread 
+    thread->m_ThreadId = (DWORD)::GetCurrentThreadId();
+
+    // run the thread
     thread->Run();
-    
+
     // if the thread is detached, delete it
     if (thread->m_Detached) {
         delete thread->m_Delegator;
@@ -493,7 +567,7 @@ NPT_Win32Thread::EntryPoint(void* argument)
 NPT_Result
 NPT_Win32Thread::Start()
 {
-    if (m_ThreadHandle > 0) {
+    if (m_ThreadHandle != NULL) {
         // failed
         NPT_LOG_WARNING("thread already started !");
         return NPT_ERROR_INVALID_STATE;
@@ -513,11 +587,11 @@ NPT_Win32Thread::Start()
     bool detached = m_Detached;
 
     HANDLE thread_handle = (HANDLE)
-        _beginthreadex(NULL, 
-                       NPT_CONFIG_THREAD_STACK_SIZE, 
-                       EntryPoint, 
-                       reinterpret_cast<void*>(this), 
-                       0, 
+        _beginthreadex(NULL,
+                       NPT_CONFIG_THREAD_STACK_SIZE,
+                       EntryPoint,
+                       reinterpret_cast<void*>(this),
+                       0,
                        &thread_id);
     if (thread_handle == 0) {
         // failed
@@ -530,6 +604,8 @@ NPT_Win32Thread::Start()
         m_ThreadHandle = thread_handle;
     }
 
+    m_ThreadId = (DWORD)thread_id;
+
     return NPT_SUCCESS;
 }
 
@@ -540,6 +616,26 @@ void
 NPT_Win32Thread::Run()
 {
     m_Target.Run();
+}
+
+/*----------------------------------------------------------------------
+|   NPT_Win32Thread::SetPriority
++---------------------------------------------------------------------*/
+NPT_Result
+NPT_Win32Thread::SetPriority(int priority)
+{
+	if (m_ThreadHandle == 0) return NPT_ERROR_INVALID_STATE;
+	return NPT_Win32Thread::SetThreadPriority(m_ThreadHandle, priority);
+}
+
+/*----------------------------------------------------------------------
+|   NPT_Win32Thread::GetPriority
++---------------------------------------------------------------------*/
+NPT_Result
+NPT_Win32Thread::GetPriority(int& priority)
+{
+	if (m_ThreadHandle == 0) return NPT_ERROR_INVALID_STATE;
+	return NPT_Win32Thread::GetThreadPriority(m_ThreadHandle, priority);
 }
 
 /*----------------------------------------------------------------------
@@ -555,7 +651,7 @@ NPT_Win32Thread::Wait(NPT_Timeout timeout /* = NPT_TIMEOUT_INFINITE */)
 
     // wait for the thread to finish
     // Logging here will cause a crash on exit because LogManager may already be destroyed
-    DWORD result = WaitForSingleObject(m_ThreadHandle, 
+    DWORD result = WaitForSingleObject(m_ThreadHandle,
                                        timeout==NPT_TIMEOUT_INFINITE?INFINITE:timeout);
     if (result != WAIT_OBJECT_0) {
         return NPT_FAILURE;
@@ -565,12 +661,30 @@ NPT_Win32Thread::Wait(NPT_Timeout timeout /* = NPT_TIMEOUT_INFINITE */)
 }
 
 /*----------------------------------------------------------------------
+|   NPT_Win32Thread::CancelBlockerSocket
++---------------------------------------------------------------------*/
+NPT_Result
+NPT_Win32Thread::CancelBlockerSocket()
+{
+    return NPT_Socket::CancelBlockerSocket((NPT_Thread::ThreadId)m_ThreadId);
+}
+
+/*----------------------------------------------------------------------
 |   NPT_Thread::GetCurrentThreadId
 +---------------------------------------------------------------------*/
-NPT_Thread::ThreadId 
+NPT_Thread::ThreadId
 NPT_Thread::GetCurrentThreadId()
 {
     return ::GetCurrentThreadId();
+}
+
+/*----------------------------------------------------------------------
+|   NPT_Thread::SetCurrentThreadPriority
++---------------------------------------------------------------------*/
+NPT_Result
+NPT_Thread::SetCurrentThreadPriority(int priority)
+{
+	return NPT_Win32Thread::SetThreadPriority(GetCurrentThread(), priority);
 }
 
 /*----------------------------------------------------------------------

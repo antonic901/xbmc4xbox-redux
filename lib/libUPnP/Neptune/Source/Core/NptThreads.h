@@ -46,6 +46,19 @@ const int NPT_ERROR_CALLBACK_HANDLER_SHUTDOWN = NPT_ERROR_BASE_THREADS-0;
 const int NPT_ERROR_CALLBACK_NOTHING_PENDING  = NPT_ERROR_BASE_THREADS-1;
 
 /*----------------------------------------------------------------------
+|   constants
++---------------------------------------------------------------------*/
+const int NPT_THREAD_PRIORITY_MIN           = -15;
+const int NPT_THREAD_PRIORITY_IDLE          = -15;
+const int NPT_THREAD_PRIORITY_LOWEST        =  -2;
+const int NPT_THREAD_PRIORITY_BELOW_NORMAL  =  -1;
+const int NPT_THREAD_PRIORITY_NORMAL        =   0;
+const int NPT_THREAD_PRIORITY_ABOVE_NORMAL  =   1;
+const int NPT_THREAD_PRIORITY_HIGHEST       =   2;
+const int NPT_THREAD_PRIORITY_TIME_CRITICAL =  15;
+const int NPT_THREAD_PRIORITY_MAX           =  15;
+
+/*----------------------------------------------------------------------
 |   NPT_MutexInterface
 +---------------------------------------------------------------------*/
 class NPT_MutexInterface
@@ -64,10 +77,10 @@ class NPT_Mutex : public NPT_MutexInterface
 {
  public:
     // methods
-               NPT_Mutex();
-              ~NPT_Mutex() { delete m_Delegate; }
-    NPT_Result Lock()   { return m_Delegate->Lock();   }
-    NPT_Result Unlock() { return m_Delegate->Unlock(); }
+               NPT_Mutex(bool recursive = false);
+              virtual ~NPT_Mutex() { delete m_Delegate; }
+    virtual NPT_Result Lock() { return m_Delegate->Lock();   }
+    virtual NPT_Result Unlock() { return m_Delegate->Unlock(); }
 
  private:
     // members
@@ -103,6 +116,20 @@ class NPT_Lock : public T,
 };
 
 /*----------------------------------------------------------------------
+|   NPT_SingletonLock
++---------------------------------------------------------------------*/
+class NPT_SingletonLock
+{
+public:
+    static NPT_Mutex& GetInstance() {
+        return Instance;
+    }
+    
+private:
+    static NPT_Mutex Instance;
+};
+
+/*----------------------------------------------------------------------
 |   NPT_SharedVariableInterface
 +---------------------------------------------------------------------*/
 class NPT_SharedVariableInterface
@@ -124,17 +151,17 @@ class NPT_SharedVariable : public NPT_SharedVariableInterface
  public:
     // methods
                NPT_SharedVariable(int value = 0);
-              ~NPT_SharedVariable() { delete m_Delegate; }
-    void SetValue(int value) { 
+              virtual ~NPT_SharedVariable() { delete m_Delegate; }
+    virtual void SetValue(int value) {
         m_Delegate->SetValue(value); 
     }
-    int GetValue() { 
+    virtual int GetValue() {
         return m_Delegate->GetValue(); 
     }
-    NPT_Result WaitUntilEquals(int value, NPT_Timeout timeout = NPT_TIMEOUT_INFINITE) { 
+    virtual NPT_Result WaitUntilEquals(int value, NPT_Timeout timeout = NPT_TIMEOUT_INFINITE) {
         return m_Delegate->WaitUntilEquals(value, timeout); 
     }
-    NPT_Result WaitWhileEquals(int value, NPT_Timeout timeout = NPT_TIMEOUT_INFINITE) { 
+    virtual NPT_Result WaitWhileEquals(int value, NPT_Timeout timeout = NPT_TIMEOUT_INFINITE) {
         return m_Delegate->WaitWhileEquals(value, timeout); 
     }
 
@@ -165,11 +192,11 @@ class NPT_AtomicVariable : public NPT_AtomicVariableInterface
  public:
     // methods
          NPT_AtomicVariable(int value = 0);
-        ~NPT_AtomicVariable() { delete m_Delegate;             }
-    int  Increment()          { return m_Delegate->Increment();}
-    int  Decrement()          { return m_Delegate->Decrement();}
-    void SetValue(int value)  { m_Delegate->SetValue(value);   }
-    int  GetValue()           { return m_Delegate->GetValue(); }
+        virtual ~NPT_AtomicVariable() { delete m_Delegate;             }
+    virtual int  Increment() { return m_Delegate->Increment();}
+    virtual int  Decrement() { return m_Delegate->Decrement();}
+    virtual void SetValue(int value) { m_Delegate->SetValue(value);   }
+    virtual int  GetValue() { return m_Delegate->GetValue(); }
 
  private:
     // members
@@ -193,9 +220,12 @@ class NPT_ThreadInterface: public NPT_Runnable, public NPT_Interruptible
 {
  public:
     // methods
-    virtual           ~NPT_ThreadInterface() {}
+              virtual ~NPT_ThreadInterface() {}
     virtual NPT_Result Start() = 0;
-    virtual NPT_Result Wait(NPT_Timeout timeout = NPT_TIMEOUT_INFINITE)  = 0;
+    virtual NPT_Result Wait(NPT_Timeout timeout = NPT_TIMEOUT_INFINITE) = 0;
+    virtual NPT_Result SetPriority(int /*priority*/) { return NPT_SUCCESS; } 
+    virtual NPT_Result CancelBlockerSocket() = 0;
+    virtual NPT_Result GetPriority(int& priority) = 0;
 };
 
 /*----------------------------------------------------------------------
@@ -205,31 +235,40 @@ class NPT_Thread : public NPT_ThreadInterface
 {
  public:
     // types
-    typedef unsigned long ThreadId;
+    typedef NPT_UInt64 ThreadId;
 
     // class methods
-    static ThreadId GetCurrentThreadId();
+    static ThreadId   GetCurrentThreadId();
+    static NPT_Result SetCurrentThreadPriority(int priority);
+    static NPT_Result GetCurrentThreadPriority(int& priority);
 
     // methods
     explicit NPT_Thread(bool detached = false);
     explicit NPT_Thread(NPT_Runnable& target, bool detached = false);
-   ~NPT_Thread() { delete m_Delegate; }
+   virtual ~NPT_Thread() { delete m_Delegate; }
+
+    // cancel any socket that this thread may be waiting for
+    virtual NPT_Result CancelBlockerSocket() { return m_Delegate->CancelBlockerSocket(); }
 
     // NPT_ThreadInterface methods
-    NPT_Result Start() { 
+    virtual NPT_Result Start() {
         return m_Delegate->Start(); 
     } 
-    NPT_Result Wait(NPT_Timeout timeout = NPT_TIMEOUT_INFINITE)  { 
+    virtual NPT_Result Wait(NPT_Timeout timeout = NPT_TIMEOUT_INFINITE) {
         return m_Delegate->Wait(timeout);  
+    }
+    virtual NPT_Result SetPriority(int priority) {
+        return m_Delegate->SetPriority(priority);
+    }    
+    virtual NPT_Result GetPriority(int& priority) {
+        return m_Delegate->GetPriority(priority);
     }
 
     // NPT_Runnable methods
     virtual void Run() {}
 
     // NPT_Interruptible methods
-    virtual NPT_Result Interrupt() { 
-        return m_Delegate->Interrupt(); 
-    }
+    virtual NPT_Result Interrupt() { return m_Delegate->Interrupt(); }
 
  private:
     // members

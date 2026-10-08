@@ -17,6 +17,7 @@
 #include "NptStrings.h"
 #include "NptLogging.h"
 
+#ifndef TARGET_WINDOWS_STORE
 /*----------------------------------------------------------------------
 |   NPT_Win32HandletWrapper
 +---------------------------------------------------------------------*/
@@ -207,6 +208,8 @@ NPT_Win32SerialPort::Open(unsigned int              speed,
                           NPT_SerialPortFlowControl flow_control,
                           NPT_SerialPortParity      parity)
 {
+    return NPT_FAILURE; // We don't need serial port suppurt
+#if 0
     // check if we're already open
     if (!m_HandleReference.IsNull()) {
         return NPT_ERROR_SERIAL_PORT_ALREADY_OPEN;
@@ -278,6 +281,7 @@ NPT_Win32SerialPort::Open(unsigned int              speed,
     m_HandleReference = new NPT_Win32HandleWrapper(handle);
 
     return NPT_SUCCESS;
+#endif
 }
 
 /*----------------------------------------------------------------------
@@ -335,3 +339,4 @@ NPT_SerialPort::NPT_SerialPort(const char* name)
 {
     m_Delegate = new NPT_Win32SerialPort(name);
 }
+#endif // ! TARGET_WINDOWS_STORE

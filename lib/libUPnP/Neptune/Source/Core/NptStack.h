@@ -48,7 +48,9 @@ class NPT_Stack : public NPT_List<T>
 public:
     // methods
     NPT_Result Push(const T& value) {
-        return Add(value);
+        // NOTE: we must use the this-> accessor here because the standard
+        // requires it when the member to look up is in a parent template
+        return this->Add(value);
     }
 
     NPT_Result Peek(T& value) {

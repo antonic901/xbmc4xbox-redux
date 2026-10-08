@@ -36,24 +36,57 @@
 #include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include "os_port.h"
 #include "crypto_misc.h"
 #ifdef CONFIG_WIN32_USE_CRYPTO_LIB
 #include "wincrypt.h"
 #endif
 
-#ifndef WIN32
+#if !defined(WIN32) && defined(CONFIG_USE_DEV_URANDOM) /* GBG modified */
 static int rng_fd = -1;
 #elif defined(CONFIG_WIN32_USE_CRYPTO_LIB)
 static HCRYPTPROV gCryptProv;
 #endif
 
-#if (!defined(CONFIG_USE_DEV_URANDOM) && !defined(CONFIG_WIN32_USE_CRYPTO_LIB))
-static uint64_t rng_num;
+#if !defined(CONFIG_USE_DEV_URANDOM) && !defined(CONFIG_WIN32_USE_CRYPTO_LIB) && !defined(WIN32)
+#include <sys/time.h> /* GBG */
 #endif
 
-static int rng_ref_count;
+#if !defined(CONFIG_USE_DEV_URANDOM) && !defined(CONFIG_WIN32_USE_CRYPTO_LIB)
+/* change to processor registers as appropriate */
+#define ENTROPY_POOL_SIZE 32
+#define ENTROPY_COUNTER1 ((((uint64_t)tv.tv_sec)<<32) | tv.tv_usec)
+#define ENTROPY_COUNTER2 rand()
+static uint8_t entropy_pool[ENTROPY_POOL_SIZE];
+#endif
+
 const char * const unsupported_str = "Error: Feature not supported\n";
 
+/* GBG: compatibility layer */
+#if defined(WIN32) && !defined(CONFIG_WIN32_USE_CRYPTO_LIB)
+static int _gettimeofday(struct timeval *tv)
+{
+	if (tv) {
+		FILETIME ft;
+		unsigned __int64 tmpres = 0;
+
+		GetSystemTimeAsFileTime(&ft);
+
+		tmpres |= ft.dwHighDateTime;
+		tmpres <<= 32;
+		tmpres |= ft.dwLowDateTime;
+
+		tmpres /= 10;
+		tv->tv_sec = (long)(tmpres / 1000000UL);
+		tv->tv_usec = (long)(tmpres % 1000000UL);
+  }
+
+  return 0;
+}
+#define gettimeofday(x,y) _gettimeofday(x)
+#endif
+
+#if 0 /* GBG */
 #ifndef CONFIG_SSL_SKELETON_MODE
 /** 
  * Retrieve a file and put it into memory
@@ -90,6 +123,7 @@ int get_file(const char *filename, uint8_t **buf)
     return filesize;
 }
 #endif
+#endif 
 
 /**
  * Initialise the Random Number Generator engine.
@@ -97,41 +131,47 @@ int get_file(const char *filename, uint8_t **buf)
  * - On Linux use /dev/urandom
  * - If none of these work then use a custom RNG.
  */
-EXP_FUNC void STDCALL RNG_initialize(const uint8_t *seed_buf, int size)
+EXP_FUNC void STDCALL RNG_initialize()
 {
-    if (rng_ref_count == 0)
-    {
 #if !defined(WIN32) && defined(CONFIG_USE_DEV_URANDOM)
-        rng_fd = ax_open("/dev/urandom", O_RDONLY);
+    rng_fd = ax_open("/dev/urandom", O_RDONLY);
 #elif defined(WIN32) && defined(CONFIG_WIN32_USE_CRYPTO_LIB)
-        if (!CryptAcquireContext(&gCryptProv, 
-                          NULL, NULL, PROV_RSA_FULL, 0))
+    if (!CryptAcquireContext(&gCryptProv, 
+                      NULL, NULL, PROV_RSA_FULL, 0))
+    {
+        if (GetLastError() == NTE_BAD_KEYSET &&
+                !CryptAcquireContext(&gCryptProv, 
+                       NULL, 
+                       NULL, 
+                       PROV_RSA_FULL, 
+                       CRYPT_NEWKEYSET))
         {
-            if (GetLastError() == NTE_BAD_KEYSET &&
-                    !CryptAcquireContext(&gCryptProv, 
-                           NULL, 
-                           NULL, 
-                           PROV_RSA_FULL, 
-                           CRYPT_NEWKEYSET))
-            {
-                printf("CryptoLib: %x\n", unsupported_str, GetLastError());
-                exit(1);
-            }
+            printf("CryptoLib: %x\n", unsupported_str, GetLastError());
+            exit(1);
         }
-#else   
-        /* help seed with the user's private key - this is a number that 
-           should be hard to find, due to the fact that it relies on knowing 
-           the private key */
-        int i;  
-
-        for (i = 0; i < size/(int)sizeof(uint64_t); i++)
-            rng_num ^= *((uint64_t *)&seed_buf[i*sizeof(uint64_t)]);
-
-        srand((long)&seed_buf);  /* use the stack ptr as another rnd seed */
-#endif
     }
+#else   
+    /* start of with a stack to copy across */
+    int i = 0; /* GBG */
+    memcpy(entropy_pool, &i, ENTROPY_POOL_SIZE);
+    srand((unsigned int)&i); 
+#endif
+}
 
-    rng_ref_count++;
+/**
+ * If no /dev/urandom, then initialise the RNG with something interesting.
+ */
+EXP_FUNC void STDCALL RNG_custom_init(const uint8_t *seed_buf, int size)
+{
+#if defined(WIN32) || defined(CONFIG_WIN32_USE_CRYPTO_LIB)
+    int i;
+
+    for (i = 0; i < ENTROPY_POOL_SIZE && i < size; i++)
+        entropy_pool[i] ^= seed_buf[i];
+#else /* GBG */
+    (void)seed_buf;
+    (void)size;
+#endif
 }
 
 /**
@@ -139,20 +179,17 @@ EXP_FUNC void STDCALL RNG_initialize(const uint8_t *seed_buf, int size)
  */
 EXP_FUNC void STDCALL RNG_terminate(void)
 {
-    if (--rng_ref_count == 0)
-    {
-#ifndef WIN32
-        close(rng_fd);
+#if !defined(WIN32) && defined(CONFIG_USE_DEV_URANDOM)
+    close(rng_fd);
 #elif defined(CONFIG_WIN32_USE_CRYPTO_LIB)
-        CryptReleaseContext(gCryptProv, 0);
+    CryptReleaseContext(gCryptProv, 0);
 #endif
-    }
 }
 
 /**
  * Set a series of bytes with a random number. Individual bytes can be 0
  */
-EXP_FUNC void STDCALL get_random(unsigned int num_rand_bytes, uint8_t *rand_data)
+EXP_FUNC void STDCALL get_random(int num_rand_bytes, uint8_t *rand_data)
 {   
 #if !defined(WIN32) && defined(CONFIG_USE_DEV_URANDOM)
     /* use the Linux default */
@@ -165,31 +202,34 @@ EXP_FUNC void STDCALL get_random(unsigned int num_rand_bytes, uint8_t *rand_data
        and a couple of random seeds to generate a random sequence */
     RC4_CTX rng_ctx;
     struct timeval tv;
-    uint64_t big_num1, big_num2;
+    MD5_CTX rng_digest_ctx;
+    uint8_t digest[MD5_SIZE];
+    uint64_t *ep;
+    int i;
 
-    gettimeofday(&tv, NULL);    /* yes I know we shouldn't do this */
+    /* A proper implementation would use counters etc for entropy */
+    gettimeofday(&tv, NULL);    
+    ep = (uint64_t *)entropy_pool;
+    ep[0] ^= ENTROPY_COUNTER1;
+    ep[1] ^= ENTROPY_COUNTER2; 
 
-    /* all numbers by themselves are pretty simple, but combined should 
-     * be a challenge */
-    big_num1 = (uint64_t)tv.tv_sec*(tv.tv_usec+1); 
-    big_num2 = (uint64_t)rand()*big_num1;
-    big_num1 ^= rng_num;
+    /* use a digested version of the entropy pool as a key */
+    MD5_Init(&rng_digest_ctx);
+    MD5_Update(&rng_digest_ctx, entropy_pool, ENTROPY_POOL_SIZE);
+    MD5_Final(digest, &rng_digest_ctx);
 
-    memcpy(rand_data, &big_num1, sizeof(uint64_t));
-    if (num_rand_bytes > sizeof(uint64_t))
-        memcpy(&rand_data[8], &big_num2, sizeof(uint64_t));
-
-    if (num_rand_bytes > 16)
-    {
-        /* clear rest of data */
-        memset(&rand_data[16], 0, num_rand_bytes-16); 
-    }
-
-    RC4_setup(&rng_ctx, rand_data, 16); /* use as a key */
+    /* come up with the random sequence */
+    RC4_setup(&rng_ctx, digest, MD5_SIZE); /* use as a key */
+    memcpy(rand_data, entropy_pool, num_rand_bytes < ENTROPY_POOL_SIZE ?
+				num_rand_bytes : ENTROPY_POOL_SIZE);
     RC4_crypt(&rng_ctx, rand_data, rand_data, num_rand_bytes);
+
+    /* move things along */
+    for (i = ENTROPY_POOL_SIZE-1; i >= MD5_SIZE ; i--)
+        entropy_pool[i] = entropy_pool[i-MD5_SIZE];
     
-    /* use last 8 bytes for next time */
-    memcpy(&rng_num, &rand_data[num_rand_bytes-8], sizeof(uint64_t));    
+    /* insert the digest at the start of the entropy pool */
+    memcpy(entropy_pool, digest, MD5_SIZE);
 #endif
 }
 
@@ -335,13 +375,16 @@ EXP_FUNC int STDCALL base64_decode(const char *in, int len,
 
             y = t = 0;
         }
+
+        /* check that we don't go past the output buffer */
+        if (z > *outlen) 
+            goto error;
     }
 
     if (y != 0)
         goto error;
 
-    if (outlen)
-        *outlen = z;
+    *outlen = z;
     ret = 0;
 
 error:
