@@ -1061,6 +1061,13 @@ void PLAYLIST::CPlayListPlayer::OnApplicationMessage(KODI::MESSAGING::ThreadMess
     }
     break;
 
+  case TMSG_MEDIA_SEEK_TIME:
+  {
+    if (appPlayer->IsPlaying() || appPlayer->IsPaused())
+      appPlayer->SeekTime(pMsg->param3);
+
+    break;
+  }
   default:
     break;
   }
