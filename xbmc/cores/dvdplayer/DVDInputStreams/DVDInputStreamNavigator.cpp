@@ -82,7 +82,7 @@ bool CDVDInputStreamNavigator::Open()
 
   // since libdvdnav automaticly play's the dvd if the directory contains VIDEO_TS.IFO
   // we strip it here.
-  strDVDFile = strdup(m_item.GetPath().c_str());
+  strDVDFile = strdup(m_item.GetDynPath().c_str());
   if (strnicmp(strDVDFile + strlen(strDVDFile) - 12, "VIDEO_TS.IFO", 12) == 0)
   {
     strDVDFile[strlen(strDVDFile) - 13] = '\0';
