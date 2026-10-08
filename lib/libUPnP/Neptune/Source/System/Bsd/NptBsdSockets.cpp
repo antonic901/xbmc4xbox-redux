@@ -141,6 +141,7 @@ static NPT_WinsockSystem& WinsockInitializer = NPT_WinsockSystem::Initializer;
 #define EADDRINUSE   WSAEADDRINUSE
 #define ENETDOWN     WSAENETDOWN
 #define ENETUNREACH  WSAENETUNREACH
+#define EHOSTUNREACH WSAEHOSTUNREACH
 #define ENOTCONN     WSAENOTCONN
 #if !defined(EAGAIN)
 #define EAGAIN       WSAEWOULDBLOCK 
@@ -502,57 +503,37 @@ MapErrorCode(int error)
 }
 
 #if defined(_XBOX)
-
-struct hostent {
-    char    * h_name;           /* official name of host */
-    char    * * h_aliases;      /* alias list */
-    short   h_addrtype;         /* host address type */
-    short   h_length;           /* length of address */
-    char    * * h_addr_list;    /* list of addresses */
-#define h_addr  h_addr_list[0]  /* address, for backward compat */
-};
-
-typedef struct {
-    struct hostent server;
-    char name[128];
-    char addr[16];
-    char* addr_list[4];
-} HostEnt;
-
-/*----------------------------------------------------------------------
-|   gethostbyname
-+---------------------------------------------------------------------*/
-static struct hostent* 
-gethostbyname(const char* name)
+/* XDK has XNetDnsLookup rather than getaddrinfo. The application owns XNet. */
+NPT_Result
+NPT_NetworkNameResolver::Resolve(const char* name,
+                                 NPT_List<NPT_IpAddress>& addresses,
+                                 NPT_Timeout timeout)
 {
-    struct hostent* host = NULL;
-    HostEnt*        host_entry = new HostEnt;
-    WSAEVENT        hEvent = WSACreateEvent();
-    XNDNS*          pDns = NULL;
+    addresses.Clear();
+    if (!name || !name[0]) return NPT_ERROR_HOST_UNKNOWN;
+    NPT_IpAddress numerical;
+    if (NPT_SUCCEEDED(numerical.Parse(name))) return addresses.Add(numerical);
 
-    INT err = XNetDnsLookup(name, hEvent, &pDns);
-    WaitForSingleObject(hEvent, INFINITE);
-    if (pDns) {
-        if (pDns->iStatus == 0) {
-            strcpy(host_entry->name, name);
-            host_entry->addr_list[0] = host_entry->addr;
-            memcpy(host_entry->addr, &(pDns->aina[0].s_addr), 4);
-            host_entry->server.h_name = host_entry->name;
-            host_entry->server.h_aliases = 0;
-            host_entry->server.h_addrtype = AF_INET;
-            host_entry->server.h_length = 4;
-            host_entry->server.h_addr_list = new char*[4];
-
-            host_entry->server.h_addr_list[0] = host_entry->addr_list[0];
-            host_entry->server.h_addr_list[1] = 0;
-
-            host = (struct hostent*)host_entry;
+    WSAEVENT event = WSACreateEvent();
+    if (event == WSA_INVALID_EVENT) return NPT_ERROR_OUT_OF_RESOURCES;
+    XNDNS* dns = NULL;
+    NPT_Result result = NPT_ERROR_HOST_UNKNOWN;
+    if (XNetDnsLookup(name, event, &dns) == 0 && dns != NULL) {
+        DWORD wait_result = WaitForSingleObject((HANDLE)event,
+            timeout == NPT_TIMEOUT_INFINITE ? INFINITE : (DWORD)timeout);
+        if (wait_result == WAIT_TIMEOUT) {
+            result = NPT_ERROR_TIMEOUT;
+        } else if (wait_result == WAIT_OBJECT_0 && dns->iStatus == 0) {
+            for (UINT i = 0; i < dns->cina; ++i) {
+                result = addresses.Add(NPT_IpAddress(ntohl(dns->aina[i].s_addr)));
+                if (NPT_FAILED(result)) break;
+            }
         }
-        XNetDnsRelease(pDns);
     }
-    WSACloseEvent(hEvent);
-    return host;
-};
+    if (dns) XNetDnsRelease(dns);
+    WSACloseEvent(event);
+    return result;
+}
 
 #endif // _XBOX
 
@@ -565,6 +546,15 @@ socketpair(int, int, int, SOCKET sockets[2]) // we ignore the first two params: 
 {
 	int result = 0;
         socklen_t name_length = 0;
+#if defined(_XBOX)
+        XNADDR title_address;
+        DWORD title_state = XNetGetTitleXnAddr(&title_address);
+        if (title_state == XNET_GET_XNADDR_PENDING ||
+            !(title_state & (XNET_GET_XNADDR_STATIC | XNET_GET_XNADDR_DHCP))) {
+            sockets[0] = sockets[1] = INVALID_SOCKET;
+            return NPT_ERROR_NETWORK_DOWN;
+        }
+#endif
         int reuse = 1;
 
         // initialize with default values
@@ -579,7 +569,11 @@ socketpair(int, int, int, SOCKET sockets[2]) // we ignore the first two params: 
 	struct sockaddr_in inet_address;
 	memset(&inet_address, 0, sizeof(inet_address));
 	inet_address.sin_family = AF_INET;
-	inet_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+#if defined(_XBOX)
+    inet_address.sin_addr.s_addr = htonl(INADDR_ANY);
+#else
+    inet_address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+#endif
 	setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, (const char*)&reuse, sizeof(reuse));
 	result = bind(listener, (const sockaddr*)&inet_address, sizeof(inet_address));
 	if (result != 0) goto fail;
@@ -595,13 +589,17 @@ socketpair(int, int, int, SOCKET sockets[2]) // we ignore the first two params: 
 	if (sockets[0] == INVALID_SOCKET) goto fail;
 
 	// connect the first socket
+#if defined(_XBOX)
+        // XDK sockets bind to ANY and use the title address for local traffic.
+        inet_address.sin_addr = title_address.ina;
+#endif
 	result = connect(sockets[0], (const sockaddr*)&inet_address, sizeof(inet_address));
 	if (result != 0) goto fail;
 
 	// accept the connection, resulting in the second socket
 	name_length = sizeof(inet_address);
 	sockets[1] = accept(listener, (sockaddr*)&inet_address, &name_length);
-	if (result != 0) goto fail;
+	if (sockets[1] == INVALID_SOCKET) goto fail;
 
 	// we don't need the listener anymore
 	closesocket(listener);
@@ -632,7 +630,7 @@ struct NPT_Hash<NPT_Thread::ThreadId>
 |   NPT_IpAddress::ResolveName
 +---------------------------------------------------------------------*/
 NPT_Result
-NPT_IpAddress::ResolveName(const char* name, NPT_Timeout)
+NPT_IpAddress::ResolveName(const char* name, NPT_Timeout timeout)
 {
     // check parameters
     if (name == NULL || name[0] == '\0') return NPT_ERROR_HOST_UNKNOWN;
@@ -649,7 +647,7 @@ NPT_IpAddress::ResolveName(const char* name, NPT_Timeout)
 
     // resolve the name into a list of addresses
     NPT_List<NPT_IpAddress> addresses;
-    NPT_Result result = NPT_NetworkNameResolver::Resolve(name, addresses);
+    NPT_Result result = NPT_NetworkNameResolver::Resolve(name, addresses, timeout);
     if (NPT_FAILED(result)) return result;
     if (addresses.GetItemCount() < 1) {
         return NPT_ERROR_NO_SUCH_NAME;
@@ -680,7 +678,11 @@ public:
         
         // cancellation support
         if (flags & NPT_SOCKET_FLAG_CANCELLABLE) {
+#if defined(__WINSOCK__)
+            int result = socketpair(AF_INET, SOCK_STREAM, 0, m_CancelFds);
+#else
             int result = socketpair(AF_UNIX, SOCK_DGRAM, 0, m_CancelFds);
+#endif
             if (result != 0) {
                 NPT_LOG_WARNING_1("socketpair failed (%d)", GetSocketError());
                 m_CancelFds[0] = m_CancelFds[1] = -1;
@@ -922,6 +924,16 @@ NPT_BsdSocketFd::WaitForCondition(bool        wait_for_readable,
         result = MapErrorCode(GetSocketError());
     } else if ((wait_for_readable  && FD_ISSET(m_SocketFd, &read_set)) ||
                (wait_for_writeable && FD_ISSET(m_SocketFd, &write_set))) {
+#if defined(_XBOX)
+        // XDK does not support SO_ERROR. As in the original Xbox backend,
+        // use the select exception set to detect a failed connection.
+        if (FD_ISSET(m_SocketFd, &except_set)) {
+            int error = GetSocketError();
+            result = error ? MapErrorCode(error) : NPT_FAILURE;
+        } else {
+            result = NPT_SUCCESS;
+        }
+#else
         if (async_connect) {
             // get error status from socket
             // (some systems return the error in errno, others
@@ -943,9 +955,14 @@ NPT_BsdSocketFd::WaitForCondition(bool        wait_for_readable,
         } else {
             result = NPT_SUCCESS;
         }
+#endif
     } else if (FD_ISSET(m_SocketFd, &except_set)) {
         NPT_LOG_FINE("select socket exception is set");
 
+#if defined(_XBOX)
+        int error = GetSocketError();
+        result = error ? MapErrorCode(error) : NPT_FAILURE;
+#else
         int error = 0;
         socklen_t length = sizeof(error);
         io_result = getsockopt(m_SocketFd, 
@@ -960,6 +977,7 @@ NPT_BsdSocketFd::WaitForCondition(bool        wait_for_readable,
         } else {
             result = NPT_FAILURE;
         }
+#endif
     } else {
         // should not happen
         NPT_LOG_FINE("unexected select state");
@@ -1373,7 +1391,7 @@ NPT_BsdSocket::Bind(const NPT_SocketAddress& address, bool reuse_address)
 #if defined(_XBOX)
     if( address.GetIpAddress().AsLong() != NPT_IpAddress::Any.AsLong() ) {
         // Xbox can't bind to specific address, defaulting to ANY
-        SocketAddressToInetAddress(NPT_SocketAddress(NPT_IpAddress::Any, address.GetPort()), &inet_address);
+        SocketAddressToInetAddress(NPT_SocketAddress(NPT_IpAddress::Any, address.GetPort()), inet_address, inet_address_length);
     }
 #endif
 

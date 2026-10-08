@@ -684,7 +684,7 @@ NPT_Thread::GetCurrentThreadId()
 NPT_Result
 NPT_Thread::SetCurrentThreadPriority(int priority)
 {
-	return NPT_Win32Thread::SetThreadPriority(::GetCurrentThread(), priority);
+	return NPT_Win32Thread::SetThreadPriority(GetCurrentThread(), priority);
 }
 
 /*----------------------------------------------------------------------

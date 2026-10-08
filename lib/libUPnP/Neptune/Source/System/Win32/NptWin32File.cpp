@@ -31,6 +31,7 @@
 /*----------------------------------------------------------------------
 |   A2WHelper
 +---------------------------------------------------------------------*/
+#ifndef _XBOX
 static LPWSTR A2WHelper(LPWSTR lpw, LPCSTR lpa, int nChars, UINT acp)
 {
     int ret;
@@ -73,6 +74,7 @@ static LPSTR W2AHelper(LPSTR lpa, LPCWSTR lpw, int nChars, UINT acp)
 |   macros
 +---------------------------------------------------------------------*/
 /* UNICODE support */
+#endif // !_XBOX: the Xbox filesystem uses narrow paths
 #if !defined(_XBOX)
 #define NPT_WIN32_USE_CHAR_CONVERSION int _convert = 0; LPCWSTR _lpw = NULL; LPCSTR _lpa = NULL
 

@@ -11,7 +11,11 @@
 |   includes
 +---------------------------------------------------------------------*/
 #include <stdio.h>
+#ifdef _XBOX
+#include <xtl.h>
+#else
 #include <windows.h>
+#endif
 
 #include "NptConfig.h"
 #include "NptDefs.h"
@@ -25,6 +29,9 @@
 void
 NPT_DebugOutput(const char* message)
 {
+#ifdef _XBOX
+    OutputDebugStringA(message);
+#else
   int result = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, message, -1, nullptr, 0);
   if (result == 0)
     return;
@@ -36,5 +43,6 @@ NPT_DebugOutput(const char* message)
     return;
 
   OutputDebugString(newStr.get());
+#endif
 }
 

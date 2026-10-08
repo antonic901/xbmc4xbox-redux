@@ -173,7 +173,11 @@ PLT_DeviceHost::Start(PLT_SsdpListenTask* task)
     
     // setup
     m_TaskManager = new PLT_TaskManager();
+#if defined(_XBOX)
+    m_HttpServer = new PLT_HttpServer(NPT_IpAddress::Any, m_Port, m_PortRebind, 5);
+#else
     m_HttpServer = new PLT_HttpServer(NPT_IpAddress::Any, m_Port, m_PortRebind, 100); // limit to 100 clients max  
+#endif
     if (NPT_FAILED(result = m_HttpServer->Start())) {
         m_TaskManager = NULL;
         m_HttpServer = NULL;
@@ -205,6 +209,10 @@ PLT_DeviceHost::Start(PLT_SsdpListenTask* task)
     NPT_Size leaseTime = (NPT_Size)GetLeaseTime().ToSeconds();
     NPT_TimeInterval repeat;
     repeat.SetSeconds(leaseTime?(int)((leaseTime >> 1) - 10):30);
+#if defined(_XBOX)
+    // Xbox cannot receive multicast; keep advertising for other control points.
+    repeat.SetSeconds(7);
+#endif
 
     PLT_ThreadTask* announce_task = new PLT_SsdpDeviceAnnounceTask(
         this, 

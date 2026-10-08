@@ -27,7 +27,10 @@ NPT_Environment::Get(const char* name, NPT_String& value)
     /* default value */
     value.SetLength(0);
 
-#if defined(NPT_CONFIG_HAVE_GETENV)
+#ifdef _XBOX
+    // The Xbox runtime does not provide process environment variables.
+    return NPT_ERROR_NO_SUCH_ITEM;
+#elif defined(NPT_CONFIG_HAVE_GETENV)
     env = getenv(name);
     if (env) {
         value = env;
