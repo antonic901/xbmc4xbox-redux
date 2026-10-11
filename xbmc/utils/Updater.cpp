@@ -33,12 +33,16 @@ CUpdaterJob::CUpdaterJob(bool notify /* = false */, bool install /* = false */)
 
 bool CUpdaterJob::DoWork()
 {
+  // if local build, skip updates
+  std::string channel(APP_CHANNEL);
+  if (channel == "local" || std::string(APP_SCMID) == "unavailable" || std::string(APP_VERSION_CODE) = "0.0.0")
+    return true;
+
   bool allowMajorUpgrade = CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool(CSettings::SETTING_UPDATER_PERFORM_MAJOR_UPGRADE);
   if (!CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool("Skin.HasSetting(updateavailable)", INFO::DEFAULT_CONTEXT))
   {
     CLog::Log(LOGINFO, "Checking for new updates...");
     XFILE::CCurlFile httpUtil;
-    std::string channel(APP_CHANNEL);
 
     CVariant data;
     bool updateAvailable = false;
