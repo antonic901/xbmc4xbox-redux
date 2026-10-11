@@ -99,7 +99,31 @@
 			<Tool
 				Name="VCPostBuildEventTool"/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCPreBuildEventTool"
+				CommandLine="IF NOT EXIST &quot;%ProgramFiles%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot; GOTO Vc7_Check2
+CALL &quot;%ProgramFiles%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot;
+GOTO VC_DONE
+
+:Vc7_Check2
+IF NOT EXIST &quot;%ProgramFiles(x86)%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot; GOTO Vc9_Check
+CALL &quot;%ProgramFiles(x86)%\Microsoft Visual Studio .NET 2003\Vc7\bin\vcvars32.bat&quot;
+GOTO VC_DONE
+
+:Vc9_Check
+IF NOT EXIST &quot;%ProgramFiles%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot; GOTO Vc9_Check2
+CALL &quot;%ProgramFiles%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot;
+GOTO VC_DONE
+
+:Vc9_Check2
+IF NOT EXIST &quot;%ProgramFiles(x86)%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot; GOTO NO_VC
+CALL &quot;%ProgramFiles(x86)%\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat&quot;
+GOTO VC_DONE
+
+:VC_DONE
+set PATH=%PATH%;C:\Program Files\nasm\
+cd &quot;$(SolutionDir)&quot;
+c:\python27\python.exe build_ssl.py Release $(PlatformName) -a
+exit 0"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
