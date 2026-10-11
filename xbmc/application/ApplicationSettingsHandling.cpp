@@ -92,6 +92,7 @@ void CApplicationSettingsHandling::RegisterSettings()
   temp.insert(CSettings::SETTING_SOURCE_VIDEOS);
   temp.insert(CSettings::SETTING_SOURCE_MUSIC);
   temp.insert(CSettings::SETTING_SOURCE_PICTURES);
+  temp.insert(CSettings::SETTING_UPDATER_CHECK);
   settingsMgr->RegisterCallback(this, temp);
 
   CApplicationComponents &components = CServiceBroker::GetAppComponents();
