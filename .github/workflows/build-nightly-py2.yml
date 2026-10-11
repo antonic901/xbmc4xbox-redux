@@ -65,7 +65,7 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "Failed to read the build revision." }
           $date = Get-Date -Format "yyyy-MM-dd HH:mm"
           $version = "$env:APP_VERSION_MAJOR.$env:APP_VERSION_MINOR.$env:APP_VERSION_PATCH"
-          $output = $template.Replace('$APP_CHANNEL$', 'nightly').
+          $output = $template.Replace('$APP_CHANNEL$', 'nightly-py2').
             Replace('$APP_VERSION_MAJOR$', $env:APP_VERSION_MAJOR).
             Replace('$APP_VERSION_MINOR$', $env:APP_VERSION_MINOR).
             Replace('$APP_VERSION_PATCH$', $env:APP_VERSION_PATCH).
