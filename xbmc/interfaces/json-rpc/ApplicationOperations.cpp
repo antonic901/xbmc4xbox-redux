@@ -126,7 +126,7 @@ JSONRPC_STATUS CApplicationOperations::GetPropertyValue(const std::string &prope
     result = CVariant(CVariant::VariantTypeObject);
     result["major"] = 21;
     result["minor"] = 3;
-    result["revision"] = SVN_REV;
+    result["revision"] = APP_SCMID;
     std::string tag = "";
     if (StringUtils::StartsWithNoCase(tag, "alpha"))
     {

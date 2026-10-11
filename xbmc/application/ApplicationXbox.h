@@ -10,6 +10,7 @@
 
 #include "application/IApplicationComponent.h"
 #include "storage/DetectDVDType.h"
+#include "utils/Stopwatch.h"
 
 #include "platform/xbox/threads/Idle.h"
 
@@ -35,6 +36,7 @@ public:
   CApplicationXbox();
 
   void OnCreate();
+  void OnInitialize();
 
   float GetCPUUsage();
 
@@ -81,6 +83,8 @@ public:
   void StartServices();
   void StopServices();
 
+  void CheckForUpdate();
+
 private:
   MEDIA_DETECT::CDetectDVDMedia m_DetectDVDType;
   CIdleThread m_idleThread;
@@ -97,4 +101,6 @@ private:
   ILCD *g_lcd;
 
   CGUITextLayout *m_debugLayout;
+
+  CStopWatch m_updaterTimer;
 };

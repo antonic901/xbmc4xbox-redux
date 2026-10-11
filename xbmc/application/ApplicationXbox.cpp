@@ -281,6 +281,13 @@ void CApplicationXbox::OnCreate()
   }
 }
 
+void CApplicationXbox::OnInitialize()
+{
+  m_updaterTimer.StartZero();
+  if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_UPDATER_AUTOUPDATE) == AUTO_UPDATER_NOTIFY)
+    CServiceBroker::GetJobManager()->AddJob(new CUpdaterJob(true), NULL);
+}
+
 float CApplicationXbox::GetCPUUsage()
 {
   return 100.0f - m_idleThread.GetRelativeUsage() * 100.0f;
@@ -657,5 +664,19 @@ void CApplicationXbox::StopServices()
   {
     delete m_pCdgParser;
     m_pCdgParser = NULL;
+  }
+}
+
+void CApplicationXbox::CheckForUpdate()
+{
+  // We perform check every 30 minutes
+  if (m_updaterTimer.GetElapsedSeconds() > 1800)
+  {
+    if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetInt(CSettings::SETTING_UPDATER_AUTOUPDATE) == AUTO_UPDATER_NOTIFY &&
+        !CServiceBroker::GetGUI()->GetInfoManager().EvaluateBool("Skin.HasSetting(updateavailable)", INFO::DEFAULT_CONTEXT))
+    {
+      CServiceBroker::GetJobManager()->AddJob(new CUpdaterJob(true), NULL);
+    }
+    m_updaterTimer.Reset();
   }
 }

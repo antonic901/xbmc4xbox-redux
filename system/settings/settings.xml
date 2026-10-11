@@ -1548,6 +1548,11 @@
           </constraints>
           <control type="list" format="string" />
         </setting>
+        <setting id="updater.majorupgrade" type="boolean" label="38904" help="">
+          <level>1</level>
+          <default>false</default>
+          <control type="toggle" />
+        </setting>
         <setting id="updater.check" type="action" label="24034" help="">
           <level>0</level>
           <control type="button" format="action" />

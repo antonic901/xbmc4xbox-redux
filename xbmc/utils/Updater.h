@@ -31,7 +31,7 @@ public:
   virtual bool ShouldCancel(unsigned int progress, unsigned int total) const { return false; }
 
 private:
-  virtual void DoInstall(const std::string& strCurrentVersion, const std::string& strCurrentRevision, const std::string& strUpdateChannel);
+  virtual void DoInstall();
 
   bool m_notify;
   bool m_install;

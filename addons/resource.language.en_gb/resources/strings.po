@@ -14393,6 +14393,14 @@ msgctxt "#38903"
 msgid "Game is not installed"
 msgstr ""
 
+msgctxt "#38904"
+msgid "Allow major upgrade"
+msgstr ""
+
+msgctxt "#38905"
+msgid "If enabled Xodi will automatically peform major upgrade from current major version to next major version (ex. 4.0.0 -> 5.0.0). Sometimes this can lead to data corruption inside userdata which will need manual intervention via FTP emergency mode. Disabled by default."
+msgstr ""
+
 #empty strings from id 38791 to 38999
 
 msgctxt "#38973"

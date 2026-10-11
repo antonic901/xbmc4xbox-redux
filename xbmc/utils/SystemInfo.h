@@ -149,7 +149,7 @@ public:
   void WriteTXTInfoFile();
 
   static std::string GetDeviceName() { return "Xodi"; }
-  static std::string GetVersion() { return SVN_APP_VERSION_SHORT; }
+  static std::string GetVersion() { return APP_VERSION_MAJOR "." APP_VERSION_MINOR; }
 
 #ifdef _XBOX
   static std::string SmartXXModCHIP();

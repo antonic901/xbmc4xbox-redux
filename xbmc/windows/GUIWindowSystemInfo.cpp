@@ -51,7 +51,7 @@ bool CGUIWindowSystemInfo::OnMessage(CGUIMessage& message)
     case GUI_MSG_WINDOW_INIT:
     {
       CGUIWindow::OnMessage(message);
-      SET_CONTROL_LABEL(52, "Xodi " + StringUtils::Format("%s", SVN_REV));
+      SET_CONTROL_LABEL(52, "Xodi " + StringUtils::Format("%s", APP_SCMID));
       SET_CONTROL_LABEL(53, __DATE__);
       return true;
     }

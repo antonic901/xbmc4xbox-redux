@@ -634,6 +634,8 @@ bool CApplication::Initialize()
 
   m_slowTimer.StartZero();
 
+  GetComponent<CApplicationXbox>()->OnInitialize();
+
   // register action listeners
   const boost::shared_ptr<CApplicationActionListeners> appListener = GetComponent<CApplicationActionListeners>();
   const boost::shared_ptr<CApplicationPlayer> appPlayer = GetComponent<CApplicationPlayer>();
@@ -2594,6 +2596,8 @@ void CApplication::ProcessSlow()
   // after the screensaver start time.
   if (!appPower->GetRenderGUI())
     appPower->ResetScreenSaverTimer();
+
+  GetComponent<CApplicationXbox>()->CheckForUpdate();
 }
 
 void CApplication::DelayedPlayerRestart()

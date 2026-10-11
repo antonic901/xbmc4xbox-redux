@@ -300,7 +300,9 @@ public:
   static const char* SETTING_NETWORK_GATEWAY;
   static const char* SETTING_NETWORK_DNS;
   static const char* SETTING_NETWORK_DNS2;
+  static const char* SETTING_UPDATER_AUTOUPDATE;
   static const char* SETTING_UPDATER_CHECK;
+  static const char* SETTING_UPDATER_PERFORM_MAJOR_UPGRADE;
   static const char* SETTING_XBOX_LED_COLOUR;
   static const char* SETTING_XBOX_LED_DISABLE_ON_PLAYBACK;
   static const char* SETTING_XBOX_AUTO_TEMPERATURE;

@@ -210,19 +210,19 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
       return true;
     }
     case SYSTEM_BUILD_VERSION_SHORT:
-      value = SVN_APP_VERSION_SHORT;
+      value = APP_VERSION_MAJOR "." APP_VERSION_MINOR;
       return true;
     case SYSTEM_BUILD_VERSION:
-      value = StringUtils::Format("Git: %s", SVN_REV);
+      value = StringUtils::Format("Git: %s", APP_SCMID);
       return true;
     case SYSTEM_BUILD_DATE:
       value = __DATE__;
       return true;
     case SYSTEM_BUILD_VERSION_CODE:
-      value = SVN_APP_VERSION_CODE;
+      value = APP_VERSION_CODE;
       return true;
     case SYSTEM_BUILD_VERSION_GIT:
-      value = SVN_REV;
+      value = APP_SCMID;
       return true;
     case SYSTEM_FREE_MEMORY:
     case SYSTEM_FREE_MEMORY_PERCENT:
