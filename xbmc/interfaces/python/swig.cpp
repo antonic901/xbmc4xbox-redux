@@ -19,7 +19,68 @@ namespace PythonBindings
   TypeInfo::TypeInfo(const std::type_info& ti) : swigType(NULL), parentType(NULL), typeIndex(ti)
   {
 #ifndef _XBOX
-    static PyTypeObject py_type_object_header = {PyVarObject_HEAD_INIT(NULL, 0)};
+    static PyTypeObject py_type_object_header = {
+      PyVarObject_HEAD_INIT(NULL, 0) 0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+#if PY_VERSION_HEX > 0x03080000
+      0,
+      0,
+#endif
+#if PY_VERSION_HEX < 0x03090000
+      0,
+#endif
+#if PY_VERSION_HEX >= 0x030C00A1
+      0,
+#endif
+#if PY_VERSION_HEX >= 0x030D00A4
+      0,
+#endif
+    };
+
     static int size = (long*)&(py_type_object_header.tp_name) - (long*)&py_type_object_header;
     memcpy(&(this->pythonType), &py_type_object_header, size);
 #endif
@@ -28,7 +89,68 @@ namespace PythonBindings
 #ifdef _XBOX
   void TypeInfo::reset()
   {
-    static PyTypeObject py_type_object_header = {PyVarObject_HEAD_INIT(NULL, 0)};
+    static PyTypeObject py_type_object_header = {
+      PyVarObject_HEAD_INIT(NULL, 0) 0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+#if PY_VERSION_HEX > 0x03080000
+      0,
+      0,
+#endif
+#if PY_VERSION_HEX < 0x03090000
+      0,
+#endif
+#if PY_VERSION_HEX >= 0x030C00A1
+      0,
+#endif
+#if PY_VERSION_HEX >= 0x030D00A4
+      0,
+#endif
+    };
+
     int size = (long*)&(py_type_object_header.tp_name) - (long*)&py_type_object_header;
     memset(&(this->pythonType), 0, sizeof(PyTypeObject));
     memcpy(&(this->pythonType), &py_type_object_header, size);
@@ -107,7 +229,7 @@ namespace PythonBindings
     std::string ns(methodNamespacePrefix);
     // cut off trailing '::'
     if (ns.size() > 2 && ns[ns.size() - 1] == ':' && ns[ns.size() - 2] == ':')
-      ns = ns.substr(0,ns.size()-2);
+      ns.resize(ns.size() - 2);
 
     bool done = false;
     while(! done)
@@ -380,10 +502,6 @@ namespace PythonBindings
 
   void registerAddonClassTypeInformation(const TypeInfo* classInfo)
   {
-#ifdef _XBOX
-    if (typeInfoLookup.find(classInfo->typeIndex) != typeInfoLookup.end())
-      return;
-#endif
     typeInfoLookup[classInfo->typeIndex] = classInfo;
   }
 

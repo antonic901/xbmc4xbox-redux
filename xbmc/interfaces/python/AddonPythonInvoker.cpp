@@ -83,59 +83,32 @@ PyObject* PyInit_Module_xbmcvfs(void);
 
 using namespace PythonBindings;
 
-typedef struct
+namespace
 {
-  const char *name;
-  CPythonInvoker::PythonModuleInitialization initialization;
-} PythonModule;
-
-static PythonModule PythonModules[] =
+// clang-format off
+const _inittab PythonModules[] =
   {
     { "xbmcgui",    PyInit_Module_xbmcgui    },
     { "xbmc",       PyInit_Module_xbmc       },
     { "xbmcplugin", PyInit_Module_xbmcplugin },
     { "xbmcaddon",  PyInit_Module_xbmcaddon  },
-    { "xbmcvfs",    PyInit_Module_xbmcvfs    }
+    { "xbmcvfs",    PyInit_Module_xbmcvfs    },
+    { NULL,      NULL }
   };
-
-#define PythonModulesSize sizeof(PythonModules) / sizeof(PythonModule)
+// clang-format on
+} // namespace
 
 CAddonPythonInvoker::CAddonPythonInvoker(ILanguageInvocationHandler *invocationHandler)
   : CPythonInvoker(invocationHandler)
 {
-  // DLL is not loaded at this point, so we can not inject modules
-#ifndef _XBOX
-  PyImport_AppendInittab("xbmcgui", PyInit_Module_xbmcgui);
-  PyImport_AppendInittab("xbmc", PyInit_Module_xbmc);
-  PyImport_AppendInittab("xbmcplugin", PyInit_Module_xbmcplugin);
-  PyImport_AppendInittab("xbmcaddon", PyInit_Module_xbmcaddon);
-  PyImport_AppendInittab("xbmcvfs", PyInit_Module_xbmcvfs);
-#endif
 }
 
 CAddonPythonInvoker::~CAddonPythonInvoker() {}
 
-#ifdef _XBOX
-void CAddonPythonInvoker::InjectModules()
+void CAddonPythonInvoker::GlobalInitializeModules(void)
 {
-  PyImport_AppendInittab("xbmcgui", PyInit_Module_xbmcgui);
-  PyImport_AppendInittab("xbmc", PyInit_Module_xbmc);
-  PyImport_AppendInittab("xbmcplugin", PyInit_Module_xbmcplugin);
-  PyImport_AppendInittab("xbmcaddon", PyInit_Module_xbmcaddon);
-  PyImport_AppendInittab("xbmcvfs", PyInit_Module_xbmcvfs);
-}
-#endif
-
-std::map<std::string, CPythonInvoker::PythonModuleInitialization> CAddonPythonInvoker::getModules() const
-{
-  static std::map<std::string, PythonModuleInitialization> modules;
-  if (modules.empty())
-  {
-    for (size_t i = 0; i < PythonModulesSize; i++)
-      modules.insert(std::make_pair(PythonModules[i].name, PythonModules[i].initialization));
-  }
-
-  return modules;
+  if (PyImport_ExtendInittab(const_cast<_inittab*>(PythonModules)))
+    CLog::Log(LOGWARNING, "CAddonPythonInvoker(): unable to extend inittab");
 }
 
 const char* CAddonPythonInvoker::getInitializationScript() const
