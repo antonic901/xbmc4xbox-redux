@@ -1,9 +1,9 @@
 #!/bin/sh
 DEST="../../system/python"
-OUT="$DEST/python27.zlib"
+OUT="$DEST/python34.zlib"
 
-cp -v "python/XBOXbuild/Release XBOX/python27.dll" "$DEST/"
-cp -v "python/XBOXbuild/Release XBOX/"*.pyd "$DEST/DLLs"
+cp -v "python/XBOXbuild/Release/python34.dll" "$DEST/"
+cp -v "python/XBOXbuild/Release/"*.pyd "$DEST/DLLs"
 rm "$OUT"
 
 cd python/Lib/
