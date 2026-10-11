@@ -12,14 +12,14 @@
 #include "interfaces/python/swig.h"
 #include "utils/log.h"
 
+#include <memory>
+
 #include <Python.h>
 #include <osdefs.h>
 
-
-CContextItemAddonInvoker::CContextItemAddonInvoker(
-    ILanguageInvocationHandler *invocationHandler,
-    const CFileItemPtr& item)
-  : CAddonPythonInvoker(invocationHandler), m_item(CFileItemPtr(new CFileItem(*item.get())))
+CContextItemAddonInvoker::CContextItemAddonInvoker(ILanguageInvocationHandler* invocationHandler,
+                                                   const CFileItemPtr& item)
+  : CAddonPythonInvoker(invocationHandler), m_item(boost::make_shared<CFileItem>(*item.get()))
 {
 }
 
@@ -34,7 +34,8 @@ void CContextItemAddonInvoker::onPythonModuleInitialization(void* moduleDict)
     PyObject* pyItem = PythonBindings::makePythonInstance(arg, true);
     if (pyItem == Py_None || PySys_SetObject("listitem", pyItem) == -1)
     {
-      CLog::Log(LOGERROR, "CPythonInvoker(%d, %s): Failed to set sys parameter", GetId(), m_sourceFile.c_str());
+      CLog::Log(LOGERROR, "CPythonInvoker(%i, %s): Failed to set sys parameter", GetId(),
+                m_sourceFile.c_str());
       //FIXME: we should really abort execution
     }
   }

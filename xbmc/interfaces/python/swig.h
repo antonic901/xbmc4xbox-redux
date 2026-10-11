@@ -8,16 +8,18 @@
 
 #pragma once
 
+#include "commons/typeindex.h"
 #include "interfaces/legacy/AddonClass.h"
 #include "interfaces/legacy/Exception.h"
 #include "interfaces/legacy/Window.h"
-#include "commons/typeindex.h"
 
 #include <stdint.h>
 #include <string>
 
 #include <Python.h>
+#ifdef _XBOX
 #include "libPython/XBPythonDll.h"
+#endif
 
 namespace PythonBindings
 {
@@ -197,7 +199,7 @@ namespace PythonBindings
       }
       catch (const XBMCAddon::WrongTypeException& e)
       {
-        CLog::Log(LOGERROR,"EXCEPTION: %s",e.GetExMessage());
+        CLog::Log(LOGERROR, "EXCEPTION: %s", e.GetExMessage());
         PyErr_SetString(PyExc_RuntimeError, e.GetExMessage());
       }
       return -1;

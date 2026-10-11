@@ -75,7 +75,11 @@ namespace XBMCAddon
       void RegisterAddonClassInstance(AddonClass* obj);
       void UnregisterAddonClassInstance(AddonClass* obj);
       bool HasRegisteredAddonClassInstance(AddonClass* obj);
-      inline bool HasRegisteredAddonClasses() { CSingleLock l(*this); return !currentObjects.empty(); }
+      inline bool HasRegisteredAddonClasses()
+      {
+        CSingleLock l(*this);
+        return !currentObjects.empty();
+      }
 
       // You should hold the lock on the LanguageHook itself if you're
       // going to do anything with the set that gets returned.

@@ -8,18 +8,15 @@
 
 #pragma once
 
-#include "ServiceBroker.h"
-#include "cores/IPlayer.h"
+#include "cores/IPlayerCallback.h"
 #include "interfaces/IAnnouncer.h"
 #include "interfaces/generic/ILanguageInvocationHandler.h"
 #include "threads/CriticalSection.h"
 #include "threads/Event.h"
 #include "threads/Thread.h"
 
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <vector>
-
-#define g_pythonParser CServiceBroker::GetXBPython()
 
 class CPythonInvoker;
 class CVariant;
@@ -60,9 +57,7 @@ public:
   XBPython();
   virtual ~XBPython();
   virtual void OnPlayBackEnded();
-  virtual void OnPlayBackStarted();
-  virtual void OnAVStarted(const CFileItem& file);
-  virtual void OnAVChange();
+  virtual void OnPlayBackStarted(const CFileItem& file);
   virtual void OnPlayBackPaused();
   virtual void OnPlayBackResumed();
   virtual void OnPlayBackStopped();
@@ -73,8 +68,8 @@ public:
   virtual void OnQueueNextItem();
 
   virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag,
-                const char* sender,
-                const char* message,
+                const std::string& sender,
+                const std::string& message,
                 const CVariant& data);
   void RegisterPythonPlayerCallBack(IPlayerCallback* pCallback);
   void UnregisterPythonPlayerCallBack(IPlayerCallback* pCallback);
@@ -105,22 +100,25 @@ public:
 
   bool WaitForEvent(CEvent& hEvent, unsigned int milliseconds);
 
-  void UnloadExtensionLibs();
-
 private:
+#ifdef _XBOX
+  void UnloadExtensionLibs();
   void Finalize();
+
+  unsigned int m_endtime;
+  LibraryLoader* m_pDll;
+#endif
+
+  static bool m_bInitialized; // whether global python runtime was already initialized
 
   CCriticalSection m_critSection;
   void* m_mainThreadState;
-  bool m_bInitialized;
   int m_iDllScriptCounter; // to keep track of the total scripts running that need the dll
-  unsigned int      m_endtime;
 
   //Vector with list of threads used for running scripts
   PyList m_vecPyList;
   PlayerCallbackList m_vecPlayerCallbackList;
   MonitorCallbackList m_vecMonitorCallbackList;
-  LibraryLoader*      m_pDll;
 
   // any global events that scripts should be using
   CEvent m_globalEvent;

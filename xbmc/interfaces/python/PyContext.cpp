@@ -7,6 +7,7 @@
  */
 
 #include "PyContext.h"
+
 #include "threads/ThreadLocal.h"
 #include "utils/log.h"
 
@@ -93,7 +94,7 @@ namespace XBMCAddon
 
     void PyGILLock::acquireGil()
     {
-      PyContextState* cur = tlsPyContextState.get(); 
+      PyContextState* cur = tlsPyContextState.get();
 
       // it's not possible for cur to be NULL (and if it is, we want to fail anyway).
 

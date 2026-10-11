@@ -16,6 +16,7 @@
 #include "interfaces/legacy/AddonUtils.h"
 #include "utils/log.h"
 
+
 namespace XBMCAddon
 {
   namespace Python
@@ -88,7 +89,7 @@ namespace XBMCAddon
 
     bool PythonLanguageHook::IsAddonClassInstanceRegistered(AddonClass* obj)
     {
-      for (std::map<PyInterpreterState*,AddonClass::Ref<PythonLanguageHook> >::iterator iter = hooks.begin();
+      for (std::map<PyInterpreterState*, AddonClass::Ref<PythonLanguageHook> >::const_iterator iter = hooks.begin();
            iter != hooks.end(); ++iter)
       {
         if (iter->second->HasRegisteredAddonClassInstance(obj))
@@ -124,7 +125,7 @@ namespace XBMCAddon
       PyObject* main_module = PyImport_AddModule("__main__");
       if (!main_module)
       {
-        CLog::Log(LOGDEBUG, "PythonLanguageHook::{}: __main__ returns null", __FUNCTION__);
+        CLog::Log(LOGDEBUG, "PythonLanguageHook::%s: __main__ returns null", __FUNCTION__);
         return "";
       }
       PyObject* global_dict = PyModule_GetDict(main_module);
@@ -144,7 +145,7 @@ namespace XBMCAddon
       PyObject* main_module = PyImport_AddModule("__main__");
       if (!main_module)
       {
-        CLog::Log(LOGDEBUG, "PythonLanguageHook::{}: __main__ returns null", __FUNCTION__);
+        CLog::Log(LOGDEBUG, "PythonLanguageHook::%s: __main__ returns null", __FUNCTION__);
         return "";
       }
       PyObject* global_dict = PyModule_GetDict(main_module);
@@ -165,7 +166,7 @@ namespace XBMCAddon
       PyObject* main_module = PyImport_AddModule("__main__");
       if (!main_module)
       {
-        CLog::Log(LOGDEBUG, "PythonLanguageHook::{}: __main__ returns null", __FUNCTION__);
+        CLog::Log(LOGDEBUG, "PythonLanguageHook::%s: __main__ returns null", __FUNCTION__);
         return -1;
       }
       PyObject* global_dict = PyModule_GetDict(main_module);
@@ -180,28 +181,28 @@ namespace XBMCAddon
     void PythonLanguageHook::RegisterPlayerCallback(IPlayerCallback* player)
     {
       XBMC_TRACE;
-      g_pythonParser.RegisterPythonPlayerCallBack(player);
+      CServiceBroker::GetXBPython().RegisterPythonPlayerCallBack(player);
     }
     void PythonLanguageHook::UnregisterPlayerCallback(IPlayerCallback* player)
     {
       XBMC_TRACE;
-      g_pythonParser.UnregisterPythonPlayerCallBack(player);
+      CServiceBroker::GetXBPython().UnregisterPythonPlayerCallBack(player);
     }
     void PythonLanguageHook::RegisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor)
     {
       XBMC_TRACE;
-      g_pythonParser.RegisterPythonMonitorCallBack(monitor);
+      CServiceBroker::GetXBPython().RegisterPythonMonitorCallBack(monitor);
     }
     void PythonLanguageHook::UnregisterMonitorCallback(XBMCAddon::xbmc::Monitor* monitor)
     {
       XBMC_TRACE;
-      g_pythonParser.UnregisterPythonMonitorCallBack(monitor);
+      CServiceBroker::GetXBPython().UnregisterPythonMonitorCallBack(monitor);
     }
 
     bool PythonLanguageHook::WaitForEvent(CEvent& hEvent, unsigned int milliseconds)
     {
       XBMC_TRACE;
-      return g_pythonParser.WaitForEvent(hEvent, milliseconds);
+      return CServiceBroker::GetXBPython().WaitForEvent(hEvent, milliseconds);
     }
 
     void PythonLanguageHook::RegisterAddonClassInstance(AddonClass* obj)

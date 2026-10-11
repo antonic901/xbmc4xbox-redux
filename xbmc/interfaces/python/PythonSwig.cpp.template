@@ -52,7 +52,7 @@ Helper.setup(this,classes,
       'int': '${result} = Py_BuildValue("i", ${api});',
       'unsigned int': '${result} = Py_BuildValue("I", ${api});',
       'double': '${result} = PyFloat_FromDouble(${api});',
-      'float': '${result} = Py_BuildValue("f", ${api});',
+      'float': '${result} = Py_BuildValue("f", static_cast<double>(${api}));',
       'std::string' : new File('typemaps/python.string.outtm'),
       'p.q(const).char' : '${result} = PyUnicode_FromString(${api});',
       (Pattern.compile('''(p.){0,1}XbmcCommons::Buffer''')) : new File('typemaps/python.buffer.outtm'),
@@ -87,7 +87,7 @@ Helper.setup(this,classes,
       'int' : '${api} = (int)PyLong_AsLong(${slarg});',
       'double' : '${api} = PyFloat_AsDouble(${slarg});',
       'float' : '${api} = (float)PyFloat_AsDouble(${slarg});',
-      'XBMCAddon::StringOrInt' : 'if (${slarg}) PyXBMCGetUnicodeString(${api},${slarg},PyLong_Check(${slarg}) || PyLong_Check(${slarg}) || PyFloat_Check(${slarg}),"${api}","${method.@name}");'
+      'XBMCAddon::StringOrInt' : 'if (${slarg}) PyXBMCGetUnicodeString(${api},${slarg},PyLong_Check(${slarg}) || PyFloat_Check(${slarg}),"${api}","${method.@name}");'
     ], '${api} = (${swigTypeParser.SwigType_str(ltype)})retrieveApiInstance(${slarg},"${ltype}","${helper.findNamespace(method)}","${helper.callingName(method)}");')
 // ---------------------------------------------------------
 
@@ -155,7 +155,7 @@ void doMethod(Node method, MethodType methodType)
 <%    }
       params.each {
 %>
-    ${SwigTypeParser.SwigType_str(SwigTypeParser.convertTypeToLTypeForParam(it.@type))} ${it.@name} ${it.@value != null ? ' = ' + it.@value : SwigTypeParser.SwigType_ispointer(it.@type) ? ' = nullptr' :  ''};<%
+    ${SwigTypeParser.SwigType_str(SwigTypeParser.convertTypeToLTypeForParam(it.@type))} ${it.@name} ${it.@value != null ? ' = ' + it.@value : SwigTypeParser.SwigType_ispointer(it.@type) ? ' = NULL' :  ''};<%
         if (!PythonTools.parameterCanBeUsedDirectly(it) && !doAsMappingIndex)
         { %>
     PyObject* py${it.@name} = NULL;<%
@@ -885,17 +885,17 @@ namespace PythonBindings
     }
   }
 
-#ifdef _XBOX
   static struct PyModuleDef createModule =
-#else
-  static struct PyModuleDef createModule
-#endif
   {
       PyModuleDef_HEAD_INIT,
       "${module.@name}",
       "",
       -1,
-      ${module.@name}_methods
+      ${module.@name}_methods,
+      NULL,
+      NULL,
+      NULL,
+      NULL,
   };
 
   PyObject *PyInit_Module_${module.@name}()
@@ -917,16 +917,24 @@ namespace PythonBindings
    }%>
 
    // constants
-   PyModule_AddStringConstant(module, "__author__", "Team XBMC <http://xbmc.tv>");
+   PyModule_AddStringConstant(module, "__author__", "Team Kodi <http://kodi.tv>");
    PyModule_AddStringConstant(module, "__date__", "${new Date().toString()}");
-   PyModule_AddStringConstant(module, "__version__", "3.0.0");
-   PyModule_AddStringConstant(module, "__credits__", "Team XBMC");
+   PyModule_AddStringConstant(module, "__version__", "3.0.1");
+   PyModule_AddStringConstant(module, "__credits__", "Team Kodi");
    PyModule_AddStringConstant(module, "__platform__", "ALL");
 
    // need to handle constants
+   // #define constants
 <% module.depthFirst().findAll( { it.name() == 'constant'} ).each {
      String pyCall =
         (it.@type == 'int' || it.@type == 'long' || it.@type == 'unsigned int' || it.@type == 'unsigned long' || it.@type == 'bool') ?
+        'PyModule_AddIntConstant' : 'PyModule_AddStringConstant' %>
+   ${pyCall}(module,"${it.@sym_name}",${it.@value}); <%
+  } %>
+  // constexpr constants
+<% module.depthFirst().findAll( { it.name() == 'variable' && it.@storage && it.@storage == "constexpr" && !it.@error } ).each {
+     String pyCall =
+        ( it.@type == 'q(const).int' || it.@type == 'q(const).long' || it.@type == 'q(const).unsigned int' || it.@type == 'q(const).unsigned long' || it.@type == 'q(const).bool' ) ?
         'PyModule_AddIntConstant' : 'PyModule_AddStringConstant' %>
    ${pyCall}(module,"${it.@sym_name}",${it.@value}); <%
   } %>

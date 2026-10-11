@@ -45,14 +45,14 @@
 
 #define RUNSCRIPT_SETUPTOOLS_HACK \
   "" \
-  "import imp,sys\n" \
+  "import types,sys\n" \
   "pkg_resources_code = \\\n" \
   "\"\"\"\n" \
   "def resource_filename(__name__,__path__):\n" \
   "  return __path__\n" \
   "\"\"\"\n" \
-  "pkg_resources = imp.new_module('pkg_resources')\n" \
-  "exec pkg_resources_code in pkg_resources.__dict__\n" \
+  "pkg_resources = types.ModuleType('pkg_resources')\n" \
+  "exec(pkg_resources_code, pkg_resources.__dict__)\n" \
   "sys.modules['pkg_resources'] = pkg_resources\n" \
   ""
 
@@ -69,25 +69,25 @@
 #endif
 
 namespace PythonBindings {
-  void initModule_xbmc(void);
-  void initModule_xbmcaddon(void);
-  void initModule_xbmcwsgi(void);
+PyObject* PyInit_Module_xbmc(void);
+PyObject* PyInit_Module_xbmcaddon(void);
+PyObject* PyInit_Module_xbmcwsgi(void);
 }
 
 using namespace PythonBindings;
 
-typedef struct
+namespace
 {
-  const char *name;
-  CPythonInvoker::PythonModuleInitialization initialization;
-} PythonModule;
-
-static PythonModule PythonModules[] =
+// clang-format off
+const _inittab PythonModules[] =
 {
-  { "xbmc",           initModule_xbmc },
-  { "xbmcaddon",      initModule_xbmcaddon },
-  { "xbmcwsgi",       initModule_xbmcwsgi }
+  { "xbmc",           PyInit_Module_xbmc },
+  { "xbmcaddon",      PyInit_Module_xbmcaddon },
+  { "xbmcwsgi",       PyInit_Module_xbmcwsgi },
+  { NULL,             NULL }
 };
+// clang-format on
+} // namespace
 
 CHTTPPythonWsgiInvoker::CHTTPPythonWsgiInvoker(ILanguageInvocationHandler* invocationHandler, HTTPPythonRequest* request)
   : CHTTPPythonInvoker(invocationHandler, request),
@@ -99,6 +99,12 @@ CHTTPPythonWsgiInvoker::~CHTTPPythonWsgiInvoker()
 {
   delete m_wsgiResponse;
   m_wsgiResponse = NULL;
+}
+
+void CHTTPPythonWsgiInvoker::GlobalInitializeModules(void)
+{
+  if (PyImport_ExtendInittab(const_cast<_inittab*>(PythonModules)))
+    CLog::Log(LOGWARNING, "CHTTPPythonWsgiInvoker(): unable to extend inittab");
 }
 
 HTTPPythonRequest* CHTTPPythonWsgiInvoker::GetRequest()
@@ -113,16 +119,18 @@ HTTPPythonRequest* CHTTPPythonWsgiInvoker::GetRequest()
   return m_request;
 }
 
-void CHTTPPythonWsgiInvoker::executeScript(void *fp, const std::string &script, void *module, void *moduleDict)
+void CHTTPPythonWsgiInvoker::executeScript(FILE* fp, const std::string& script, PyObject* moduleDict)
 {
   if (m_request == NULL || m_addon == NULL || m_addon->Type() != ADDON::AddonType::WEB_INTERFACE ||
-      fp == NULL || script.empty() || module == NULL || moduleDict == NULL)
+      fp == NULL || script.empty() || moduleDict == NULL)
     return;
+
+  const std::string loggerName = StringUtils::Format("CHTTPPythonWsgiInvoker[%s]", script.c_str());
 
   ADDON::CWebinterface* webinterface = static_cast<ADDON::CWebinterface*>(m_addon.get());
   if (webinterface->GetType() != ADDON::WebinterfaceTypeWsgi)
   {
-    CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: trying to execute a non-WSGI script", script.c_str());
+    CLog::Log(LOGERROR, "%s: trying to execute a non-WSGI script", loggerName.c_str());
     return;
   }
 
@@ -140,37 +148,38 @@ void CHTTPPythonWsgiInvoker::executeScript(void *fp, const std::string &script, 
   // get the script
   std::string scriptName = URIUtils::GetFileName(script);
   URIUtils::RemoveExtension(scriptName);
-  pyScript = PyString_FromStringAndSize(scriptName.c_str(), scriptName.size());
+  pyScript = PyUnicode_FromStringAndSize(scriptName.c_str(), scriptName.size());
   if (pyScript == NULL)
   {
-    CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: failed to convert script to python string", script.c_str());
+    CLog::Log(LOGERROR, "%s: failed to convert script to python string", loggerName.c_str());
     return;
   }
 
   // load the script
-  CLog::Log(LOGDEBUG, "CHTTPPythonWsgiInvoker[%s]: loading script", script.c_str());
+  CLog::Log(LOGDEBUG, "%s: loading script", loggerName.c_str());
   pyModule = PyImport_Import(pyScript);
   Py_DECREF(pyScript);
   if (pyModule == NULL)
   {
-    CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: failed to load WSGI script", script.c_str());
+    CLog::Log(LOGERROR, "%s: failed to load WSGI script", loggerName.c_str());
     return;
   }
 
   // get the entry point
   const std::string& entryPoint = webinterface->EntryPoint();
-  CLog::Log(LOGDEBUG, "CHTTPPythonWsgiInvoker[%s]: loading entry point \"%s\"", script.c_str(), entryPoint.c_str());
+  CLog::Log(LOGDEBUG, "%s: loading entry point \"%s\"", loggerName.c_str(), entryPoint.c_str());
   pyEntryPoint = PyObject_GetAttrString(pyModule, entryPoint.c_str());
   if (pyEntryPoint == NULL)
   {
-    CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: failed to load entry point \"%s\"", script.c_str(), entryPoint.c_str());
+    CLog::Log(LOGERROR, "%s: failed to load entry point \"%s\"", loggerName.c_str(), entryPoint.c_str());
     goto cleanup;
   }
 
   // check if the loaded entry point is a callable function
   if (!PyCallable_Check(pyEntryPoint))
   {
-    CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: defined entry point \"%s\" is not callable", script.c_str(), entryPoint.c_str());
+    CLog::Log(LOGERROR, "%s: defined entry point \"%s\" is not callable",
+              loggerName.c_str(), entryPoint.c_str());
     goto cleanup;
   }
 
@@ -178,7 +187,7 @@ void CHTTPPythonWsgiInvoker::executeScript(void *fp, const std::string &script, 
   m_wsgiResponse = new XBMCAddon::xbmcwsgi::WsgiResponse();
   if (m_wsgiResponse == NULL)
   {
-    CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: failed to create WsgiResponse object", script.c_str());
+    CLog::Log(LOGERROR, "%s: failed to create WsgiResponse object", loggerName.c_str());
     goto cleanup;
   }
 
@@ -194,7 +203,7 @@ void CHTTPPythonWsgiInvoker::executeScript(void *fp, const std::string &script, 
     for (std::map<std::string, std::string>::const_iterator cgiEnv = cgiEnvironment.begin();
          cgiEnv != cgiEnvironment.end(); ++cgiEnv)
     {
-      PyObject* pyEnvEntry = PyString_FromStringAndSize(cgiEnv->second.c_str(), cgiEnv->second.size());
+      PyObject* pyEnvEntry = PyUnicode_FromStringAndSize(cgiEnv->second.c_str(), cgiEnv->second.size());
       PyDict_SetItemString(pyEnviron, cgiEnv->first.c_str(), pyEnvEntry);
       Py_DECREF(pyEnvEntry);
     }
@@ -204,17 +213,20 @@ void CHTTPPythonWsgiInvoker::executeScript(void *fp, const std::string &script, 
   }
   catch (const XBMCAddon::WrongTypeException& e)
   {
-    CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: failed to prepare WsgiResponse object with wrong type exception: %s", script.c_str(), e.GetExMessage());
+    CLog::Log(LOGERROR, "%s: failed to prepare WsgiResponse object with wrong type exception: %s",
+              loggerName.c_str(), e.GetExMessage());
     goto cleanup;
   }
   catch (const XbmcCommons::Exception& e)
   {
-    CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: failed to prepare WsgiResponse object with exception: %s", script.c_str(), e.GetExMessage());
+    CLog::Log(LOGERROR, "%s: failed to prepare WsgiResponse object with exception: %s",
+              loggerName.c_str(), e.GetExMessage());
     goto cleanup;
   }
   catch (...)
   {
-    CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: failed to prepare WsgiResponse object with unknown exception", script.c_str());
+    CLog::Log(LOGERROR, "%s: failed to prepare WsgiResponse object with unknown exception",
+              loggerName.c_str());
     goto cleanup;
   }
 
@@ -228,7 +240,7 @@ void CHTTPPythonWsgiInvoker::executeScript(void *fp, const std::string &script, 
   Py_DECREF(pyArgs);
   if (pyResult == NULL)
   {
-    CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: no result", script.c_str());
+    CLog::Log(LOGERROR, "%s: no result", loggerName.c_str());
     goto cleanup;
   }
 
@@ -236,7 +248,7 @@ void CHTTPPythonWsgiInvoker::executeScript(void *fp, const std::string &script, 
   pyResultIterator = PyObject_GetIter(pyResult);
   if (pyResultIterator == NULL || !PyIter_Check(pyResultIterator))
   {
-    CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: result is not iterable", script.c_str());
+    CLog::Log(LOGERROR, "%s: result is not iterable", loggerName.c_str());
     goto cleanup;
   }
 
@@ -250,17 +262,20 @@ void CHTTPPythonWsgiInvoker::executeScript(void *fp, const std::string &script, 
     }
     catch (const XBMCAddon::WrongTypeException& e)
     {
-      CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: failed to parse result iterable object with wrong type exception: %s", script.c_str(), e.GetExMessage());
+      CLog::Log(LOGERROR, "%s: failed to parse result iterable object with wrong type exception: %s",
+                loggerName.c_str(), e.GetExMessage());
       goto cleanup;
     }
     catch (const XbmcCommons::Exception& e)
     {
-      CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: failed to parse result iterable object with exception: %s", script.c_str(), e.GetExMessage());
+      CLog::Log(LOGERROR, "%s: failed to parse result iterable object with exception: %s",
+                loggerName.c_str(), e.GetExMessage());
       goto cleanup;
     }
     catch (...)
     {
-      CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: failed to parse result iterable object with unknown exception", script.c_str());
+      CLog::Log(LOGERROR, "%s: failed to parse result iterable object with unknown exception",
+                loggerName.c_str());
       goto cleanup;
     }
 
@@ -278,9 +293,8 @@ cleanup:
     // Call optional close method on iterator
     if (PyObject_HasAttrString(pyResultIterator, "close") == 1)
     {
-      //! @bug libpython < 3.4 isn't const correct
-      if (PyObject_CallMethod(pyResultIterator, const_cast<char*>("close"), NULL) == NULL)
-        CLog::Log(LOGERROR, "CHTTPPythonWsgiInvoker[%s]: failed to close iterator object", script.c_str());
+      if (PyObject_CallMethod(pyResultIterator, "close", NULL) == NULL)
+        CLog::Log(LOGERROR, "%s: failed to close iterator object", loggerName.c_str());
     }
     Py_DECREF(pyResultIterator);
   }
@@ -296,18 +310,6 @@ cleanup:
   {
     Py_DECREF(pyModule);
   }
-}
-
-std::map<std::string, CPythonInvoker::PythonModuleInitialization> CHTTPPythonWsgiInvoker::getModules() const
-{
-  static std::map<std::string, PythonModuleInitialization> modules;
-  if (modules.empty())
-  {
-    for (size_t i = 0; i < sizeof(PythonModules) / sizeof(PythonModule); ++i)
-      modules.insert(std::make_pair(PythonModules[i].name, PythonModules[i].initialization));
-  }
-
-  return modules;
 }
 
 const char* CHTTPPythonWsgiInvoker::getInitializationScript() const
@@ -406,7 +408,7 @@ void CHTTPPythonWsgiInvoker::addWsgiEnvironment(HTTPPythonRequest* request, void
   }
   {
     // wsgi.url_scheme
-    PyObject* pyValue = PyString_FromStringAndSize("http", 4);
+    PyObject* pyValue = PyUnicode_FromStringAndSize("http", 4);
     PyDict_SetItemString(pyEnviron, "wsgi.url_scheme", pyValue);
     Py_DECREF(pyValue);
   }
