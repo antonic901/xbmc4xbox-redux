@@ -147,6 +147,7 @@ extern "C"
   FUNCTION(PyErr_Occurred)
   FUNCTION8(PyRun_SimpleFile)
   FUNCTION4(PySys_SetPath)
+  FUNCTION4(PySys_GetObject)
   FUNCTION8(PySys_SetObject)
   FUNCTION(Py_GetPath)
   FUNCTION4(PyThreadState_Delete)
@@ -189,6 +190,7 @@ extern "C"
     return ret;
   }*/
 
+  FUNCTION8(PyUnicode_FromWideChar)
   FUNCTION4(PyUnicode_AsUTF8)
   FUNCTION8(PyUnicode_AsUTF8AndSize)
   FUNCTION4(PyUnicode_GetLength)
@@ -196,6 +198,7 @@ extern "C"
   FUNCTION8(Py_AddPendingCall)
   FUNCTION8(PyList_GetItem)
   FUNCTION12(PyList_SetItem)
+  FUNCTION12(PyList_Insert)
   FUNCTION4(PyList_Size)
   FUNCTION4(PyList_New)
   FUNCTION8(PyList_Append)
@@ -280,6 +283,7 @@ extern "C"
   FUNCTION4(PyImport_AddModule)
   FUNCTION4(PyImport_ImportModule)
   FUNCTION8(PyImport_AppendInittab)
+  FUNCTION4(PyImport_ExtendInittab)
   FUNCTION4(PyObject_Str)
   FUNCTION20(PyRun_File)
   FUNCTION16(PyRun_String)
@@ -375,6 +379,7 @@ extern "C"
       dll.ResolveExport(DLL_FUNCTION(PyErr_Occurred)) &&
       dll.ResolveExport(DLL_FUNCTION(PyRun_SimpleFile)) &&
       dll.ResolveExport(DLL_FUNCTION(PySys_SetPath)) &&
+      dll.ResolveExport(DLL_FUNCTION(PySys_GetObject)) &&
       dll.ResolveExport(DLL_FUNCTION(PySys_SetObject)) &&
       dll.ResolveExport(DLL_FUNCTION(Py_GetPath)) &&
       dll.ResolveExport(DLL_FUNCTION(PyThreadState_Delete)) &&
@@ -384,6 +389,7 @@ extern "C"
       dll.ResolveExport(DLL_VA_FUNCTION(Py_BuildValue)) &&
       dll.ResolveExport(DLL_FUNCTION(PyType_IsSubtype)) &&
       dll.ResolveExport(DLL_VA_FUNCTION(PyArg_ParseTupleAndKeywords)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyUnicode_FromWideChar)) &&
       dll.ResolveExport(DLL_FUNCTION(PyUnicode_AsUTF8)) &&
       dll.ResolveExport(DLL_FUNCTION(PyUnicode_AsUTF8AndSize)) &&
       dll.ResolveExport(DLL_FUNCTION(PyUnicode_GetLength)) &&
@@ -392,6 +398,7 @@ extern "C"
       dll.ResolveExport(DLL_VA_FUNCTION(PyObject_CallMethod)) &&
       dll.ResolveExport(DLL_FUNCTION(PyList_GetItem)) &&
       dll.ResolveExport(DLL_FUNCTION(PyList_SetItem)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyList_Insert)) &&
       dll.ResolveExport(DLL_FUNCTION(PyList_Size)) &&
       dll.ResolveExport(DLL_FUNCTION(PyList_New)) &&
       dll.ResolveExport(DLL_FUNCTION(PyList_Append)) &&
@@ -473,6 +480,7 @@ extern "C"
       dll.ResolveExport(DLL_FUNCTION(PyImport_AddModule)) &&
       dll.ResolveExport(DLL_FUNCTION(PyImport_ImportModule)) &&
       dll.ResolveExport(DLL_FUNCTION(PyImport_AppendInittab)) &&
+      dll.ResolveExport(DLL_FUNCTION(PyImport_ExtendInittab)) &&
       dll.ResolveExport(DLL_FUNCTION(PyObject_Str)) &&
       dll.ResolveExport(DLL_FUNCTION(PyRun_File)) &&
       dll.ResolveExport(DLL_FUNCTION(PyErr_Clear)) &&
