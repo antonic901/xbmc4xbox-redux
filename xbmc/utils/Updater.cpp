@@ -40,6 +40,7 @@ bool CUpdaterJob::DoWork()
     XFILE::CCurlFile httpUtil;
     std::string channel(APP_CHANNEL);
 
+    CVariant data;
     bool updateAvailable = false;
     if (channel == "stable")
     {
@@ -53,7 +54,7 @@ bool CUpdaterJob::DoWork()
           return false;
         }
 
-        CVariant data = CJSONVariantParser::Parse(response);
+        data = CJSONVariantParser::Parse(response);
         if (data.isNull() || !data.isArray())
         {
           CLog::Log(LOGWARNING, "Check for update failed! API returned invalid response.");
