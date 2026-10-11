@@ -6644,7 +6644,7 @@ posix_killpg(PyObject *self, PyObject *args)
 }
 #endif
 
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && !defined(_XBOX)
 PyDoc_STRVAR(win32_kill__doc__,
 "kill(pid, sig)\n\n\
 Kill a process with a signal.");
@@ -10446,7 +10446,7 @@ posix_abort(PyObject *self, PyObject *noargs)
     return NULL;
 }
 
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && !defined(_XBOX)
 PyDoc_STRVAR(win32_startfile__doc__,
 "startfile(filepath [, operation]) - Start a file with its associated\n\
 application.\n\
@@ -11437,7 +11437,7 @@ static PyMethodDef posix_methods[] = {
 #ifdef HAVE_PLOCK
     {"plock",           posix_plock, METH_VARARGS, posix_plock__doc__},
 #endif /* HAVE_PLOCK */
-#ifdef MS_WINDOWS
+#if defined(MS_WINDOWS) && !defined(_XBOX)
     {"startfile",       win32_startfile, METH_VARARGS, win32_startfile__doc__},
     {"kill",    win32_kill, METH_VARARGS, win32_kill__doc__},
 #endif
