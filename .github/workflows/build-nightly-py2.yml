@@ -1,0 +1,98 @@
+name: (Xodi - Python 2) Build Nightly
+
+on:
+  workflow_dispatch:
+    inputs:
+      major:
+        description: Major version (non-negative integer)
+        required: true
+        type: string
+      minor:
+        description: Minor version (non-negative integer)
+        required: true
+        type: string
+      patch:
+        description: Patch version (non-negative integer)
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on:
+      - self-hosted
+
+    steps:
+      - name: Checkout master branch
+        uses: actions/checkout@v4
+        with:
+          ref: master
+          submodules: recursive
+
+      - name: Generate version.txt
+        shell: pwsh
+        run: |
+          $rev = git rev-parse --short HEAD
+          Set-Content -Path version.txt -Value $rev
+
+      - name: Download Xodi updater
+        shell: pwsh
+        run: |
+          $repo = "xbmc4xbox/xbmc-updater"
+          $assetName = "updater.xbe"
+          $release = Invoke-RestMethod "https://api.github.com/repos/$repo/releases/latest"
+          $asset = $release.assets | Where-Object { $_.name -eq $assetName }
+          if (-not $asset) {
+              Write-Error "updater.xbe not found in latest release"
+              exit 1
+          }
+          Invoke-WebRequest $asset.browser_download_url -OutFile $assetName
+
+      - name: Generate svn_rev.h
+        shell: powershell
+        env:
+          APP_VERSION_MAJOR: ${{ inputs.major }}
+          APP_VERSION_MINOR: ${{ inputs.minor }}
+          APP_VERSION_PATCH: ${{ inputs.patch }}
+        run: |
+          foreach ($component in @('MAJOR', 'MINOR', 'PATCH')) {
+            $value = [Environment]::GetEnvironmentVariable("APP_VERSION_$component")
+            if ($value -cnotmatch '\A(0|[1-9][0-9]*)\z') {
+              throw "$component version must be a non-negative integer without leading zeros."
+            }
+          }
+          $template = Get-Content ".\xbmc\svn_rev.tmpl" -Raw
+          $rev = git rev-parse --short HEAD
+          if ($LASTEXITCODE -ne 0) { throw "Failed to read the build revision." }
+          $date = Get-Date -Format "yyyy-MM-dd HH:mm"
+          $version = "$env:APP_VERSION_MAJOR.$env:APP_VERSION_MINOR.$env:APP_VERSION_PATCH"
+          $output = $template.Replace('$APP_CHANNEL$', 'nightly').
+            Replace('$APP_VERSION_MAJOR$', $env:APP_VERSION_MAJOR).
+            Replace('$APP_VERSION_MINOR$', $env:APP_VERSION_MINOR).
+            Replace('$APP_VERSION_PATCH$', $env:APP_VERSION_PATCH).
+            Replace('$APP_VERSION_CODE$', $version).
+            Replace('$WCREV$', $rev).
+            Replace('$WCDATE$', $date)
+          $output | Set-Content ".\xbmc\svn_rev.h" -Encoding ASCII
+
+      - name: Generate Xodi Python bindings
+        run: |
+          cd tools\codegenerator\
+          .\GenerateSWIGBindings.bat
+
+      - name: Build Xodi
+        run: .\Build.bat noprompt build1
+
+      - name: Create Nightly Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: nightly-py2
+          name: Nightly build
+          files: |
+            Xodi.zip
+            Xodi.tar
+            version.txt
+          body: "Automated nightly build."
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
