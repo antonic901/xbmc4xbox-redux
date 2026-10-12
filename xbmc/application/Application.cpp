@@ -1295,6 +1295,24 @@ void CApplication::OnApplicationMessage(ThreadMessage* pMsg)
     }
     break;
 
+  case TMSG_LAUNCH_XBE:
+    {
+      CUSTOM_LAUNCH_DATA* launchData = NULL;
+      if (!pMsg->params[1].empty())
+      {
+        CUSTOM_LAUNCH_DATA data;
+        memcpy(&data, pMsg->params[1].data(), sizeof(data));
+        launchData = &data;
+      }
+
+      Stop(EXITCODE_QUIT);
+      CUtil::LaunchXbe(pMsg->strParam.c_str(), pMsg->params[0].c_str(),
+                        pMsg->params.size() == 3 ? pMsg->params[2].c_str() : NULL,
+                        static_cast<F_VIDEO>(pMsg->param1), static_cast<F_COUNTRY>(pMsg->param2),
+                        launchData);
+    }
+    break;
+
   default:
     CLog::Log(LOGERROR, "%s: Unhandled threadmessage sent, %" PRIu32 , __FUNCTION__, msg);
     break;

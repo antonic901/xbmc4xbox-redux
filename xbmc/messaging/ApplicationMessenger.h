@@ -24,7 +24,6 @@
 #define TMSG_MASK_PLAYLISTPLAYER          (1<<29)
 #define TMSG_MASK_GUIINFOMANAGER          (1<<28)
 #define TMSG_MASK_WINDOWMANAGER           (1<<27)
-#define TMSG_MASK_XBOX                    (1<<25) // define messages used only on Xbox
 
 // defines here
 #define TMSG_PLAYLISTPLAYER_PLAY          TMSG_MASK_PLAYLISTPLAYER + 0
@@ -51,6 +50,7 @@
 #define TMSG_SHUTDOWN                     TMSG_MASK_APPLICATION + 0
 #define TMSG_POWERDOWN                    TMSG_MASK_APPLICATION + 1
 #define TMSG_QUIT                         TMSG_MASK_APPLICATION + 2
+#define TMSG_LAUNCH_XBE                   TMSG_MASK_APPLICATION + 3
 #define TMSG_RESTART                      TMSG_MASK_APPLICATION + 5
 #define TMSG_RESET                        TMSG_MASK_APPLICATION + 6
 #define TMSG_RESTARTAPP                   TMSG_MASK_APPLICATION + 7
@@ -115,8 +115,6 @@
   all configured parameters, like startup directory.
 */
 #define TMSG_GUI_PREVIOUS_WINDOW          TMSG_MASK_WINDOWMANAGER + 10
-
-#define TMSG_HTTPAPI                      TMSG_MASK_XBOX + 2
 
 // clang-format on
 

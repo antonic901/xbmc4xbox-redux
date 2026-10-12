@@ -27,6 +27,8 @@
 #include "AutoPtrHandle.h"
 #include "video/windows/GUIWindowVideoBase.h"
 #include "Util.h"
+#include "ServiceBroker.h"
+#include "messaging/ApplicationMessenger.h"
 #include "storage/DetectDVDType.h"
 #include "Autorun.h"
 #include "filesystem/Directory.h"
@@ -3174,6 +3176,7 @@ bool CUtil::RunFFPatchedXBE(std::string szPath1, std::string& szNewPath)
 
 void CUtil::RunXBE(const char* szPath1, char* szParameters, F_VIDEO ForceVideo, F_COUNTRY ForceCountry, CUSTOM_LAUNCH_DATA* pData)
 {
+  //! @todo we should really think about refactoring XBE launching logic!
   // check if locked
   if (CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetCurrentProfile().programsLocked() &&
       CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetMasterProfile().getLockMode() != LOCK_MODE_EVERYONE)
@@ -3233,9 +3236,15 @@ void CUtil::RunXBE(const char* szPath1, char* szParameters, F_VIDEO ForceVideo, 
       wsprintf(szXbePath, "d:\\%s", szXbe);
 
 #ifdef HAS_XBOX_HARDWARE
-      g_application.Stop(false);
-
-      CUtil::LaunchXbe(szDevicePath, szXbePath, szParameters, ForceVideo, ForceCountry, pData);
+      // We must launch XBE by sending thread message. RunXBE can be called from non-rendering tread
+      // and calling g_application.Stop() from non-rendering thread will deadlock.
+      std::vector<std::string> params;
+      params.push_back(szXbePath);
+      params.push_back(pData ? std::string(reinterpret_cast<const char*>(pData), sizeof(*pData)) : std::string());
+      if (szParameters)
+        params.push_back(szParameters);
+      CServiceBroker::GetAppMessenger()->PostMsg(TMSG_LAUNCH_XBE, ForceVideo, ForceCountry, NULL, szDevicePath, params);
+      return;
 #endif
     }
   }
