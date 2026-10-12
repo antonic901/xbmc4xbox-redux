@@ -121,7 +121,10 @@ void main()
   }
   else if (status == EXITCODE_QUIT)
   {
-    CUtil::LaunchXbe("Harddisk0\\Partition2", "D:\\xboxdash.xbe", NULL, VIDEO_NULL, COUNTRY_NULL, NULL);
+    LD_LAUNCH_DASHBOARD ld;
+    ZeroMemory(&ld, sizeof(LD_LAUNCH_DASHBOARD));
+    ld.dwReason = XLD_LAUNCH_DASHBOARD_MAIN_MENU;
+    XLaunchNewImage(0, (PLAUNCH_DATA)&ld);
   }
   else if (status == EXITCODE_RESTARTAPP)
   {

@@ -20,10 +20,11 @@
 
 #include "XboxBuiltins.h"
 
-#include "ServiceBroker.h"
-#include "programs/launchers/ProgramLauncher.h"
-#include "Util.h"
 #include "FileItem.h"
+#include "ServiceBroker.h"
+#include "Util.h"
+#include "messaging/ApplicationMessenger.h"
+#include "programs/launchers/ProgramLauncher.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/SystemInfo.h"
@@ -38,7 +39,7 @@ static int RunDashboard(const std::vector<std::string>& params)
   if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetBool("myprograms.usedashpath"))
     LAUNCHERS::CProgramLauncher::LaunchProgram(CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("myprograms.dashboard"));
   else
-    CUtil::BootToDash();
+    CServiceBroker::GetAppMessenger()->PostMsg(TMSG_QUIT);
 
   return 0;
 }
