@@ -238,9 +238,9 @@ CDirectoryProvider::~CDirectoryProvider()
   Reset();
 }
 
-boost::movelib::unique_ptr<IListProvider> CDirectoryProvider::Clone()
+boost::shared_ptr<IListProvider> CDirectoryProvider::Clone()
 {
-  return boost::movelib::unique_ptr<IListProvider>(new CDirectoryProvider(*this));
+  return boost::shared_ptr<IListProvider>(new CDirectoryProvider(*this));
 }
 
 bool CDirectoryProvider::Update(bool forceRefresh)

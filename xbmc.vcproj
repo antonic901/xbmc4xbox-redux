@@ -6732,6 +6732,12 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 						RelativePath=".\xbmc\guilib\listproviders\IListProvider.h">
 					</File>
 					<File
+						RelativePath=".\xbmc\guilib\listproviders\MultiProvider.cpp">
+					</File>
+					<File
+						RelativePath=".\xbmc\guilib\listproviders\MultiProvider.h">
+					</File>
+					<File
 						RelativePath=".\xbmc\guilib\listproviders\StaticProvider.cpp">
 					</File>
 					<File

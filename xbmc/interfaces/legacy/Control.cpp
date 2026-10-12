@@ -31,7 +31,7 @@
 #include "utils/StringUtils.h"
 #include "utils/XBMCTinyXML.h"
 
-#include <boost/move/unique_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 
 using namespace KODI;
 
@@ -1452,8 +1452,8 @@ namespace XBMCAddon
       }
 
       // set static list
-      boost::movelib::unique_ptr<IListProvider> provider(new CStaticListProvider(items));
-      static_cast<CGUIBaseContainer*>(pGUIControl)->SetListProvider(boost::move(provider));
+      boost::shared_ptr<IListProvider> provider(new CStaticListProvider(items));
+      static_cast<CGUIBaseContainer*>(pGUIControl)->SetListProvider(provider);
     }
 
     // ============================================================

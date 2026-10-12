@@ -105,5 +105,5 @@ void CGUIWindowInsignia::ClearProperties()
   SetProperty("OnlineUsers", "");
 
   if (m_pGamesContainer)
-    m_pGamesContainer->SetListProvider(NULL);
+    m_pGamesContainer->SetListProvider(boost::shared_ptr<IListProvider>());
 }

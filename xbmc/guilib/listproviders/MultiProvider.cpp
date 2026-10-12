@@ -19,29 +19,29 @@ CMultiProvider::CMultiProvider(const TiXmlNode *first, int parentID)
   {
     IListProviderPtr sub(IListProvider::CreateSingle(content, parentID));
     if (sub)
-      m_providers.push_back(boost::move(sub));
+      m_providers.push_back(sub);
   }
 }
 
 CMultiProvider::CMultiProvider(const CMultiProvider& other) : IListProvider(other.m_parentID)
 {
-  for (std::vector<IListProviderPtr>::const_iterator it = other.m_providers.begin(); it != other.m_providers.end(); ++it)
+  for (ProviderList::const_iterator it = other.m_providers.begin(); it != other.m_providers.end(); ++it)
   {
-   boost::movelib::unique_ptr<IListProvider> newProvider = (*it)->Clone();
+   boost::shared_ptr<IListProvider> newProvider = (*it)->Clone();
    if (newProvider)
-     m_providers.push_back(boost::move(newProvider));
+     m_providers.push_back(newProvider);
   }
 }
 
-boost::movelib::unique_ptr<IListProvider> CMultiProvider::Clone()
+boost::shared_ptr<IListProvider> CMultiProvider::Clone()
 {
-  return boost::movelib::unique_ptr<IListProvider>(new CMultiProvider(*this));
+  return boost::shared_ptr<IListProvider>(new CMultiProvider(*this));
 }
 
 bool CMultiProvider::Update(bool forceRefresh)
 {
   bool result = false;
-  for (std::vector<IListProviderPtr>::iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
+  for (ProviderList::iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
     result |= (*provider)->Update(forceRefresh);
   return result;
 }
@@ -52,7 +52,7 @@ void CMultiProvider::Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items)
   std::vector<boost::shared_ptr<CGUIListItem> > subItems;
   items.clear();
   m_itemMap.clear();
-  for (std::vector<IListProviderPtr>::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
+  for (ProviderList::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
   {
     (*provider)->Fetch(subItems);
     for (std::vector<boost::shared_ptr<CGUIListItem> >::iterator item = subItems.begin(); item != subItems.end(); ++item)
@@ -68,7 +68,7 @@ void CMultiProvider::Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items)
 bool CMultiProvider::IsUpdating() const
 {
   bool result = false;
-  for (std::vector<IListProviderPtr>::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
+  for (ProviderList::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
     result |= (*provider)->IsUpdating();
   return result;
 }
@@ -80,7 +80,7 @@ void CMultiProvider::Reset()
     m_itemMap.clear();
   }
 
-  for (std::vector<IListProviderPtr>::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
+  for (ProviderList::const_iterator provider = m_providers.begin(); provider != m_providers.end(); ++provider)
     (*provider)->Reset();
 }
 

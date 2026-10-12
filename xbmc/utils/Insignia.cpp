@@ -193,8 +193,8 @@ void CInsigniaJob::SetWindowProperties()
       items.push_back(staticItem);
     }
 
-    boost::movelib::unique_ptr<CStaticListProvider> provider = boost::movelib::make_unique<CStaticListProvider>(items);
-    gamesContainer->SetListProvider(boost::move(provider));
+    boost::shared_ptr<IListProvider> provider(new CStaticListProvider(items));
+    gamesContainer->SetListProvider(provider);
   }
 }
 

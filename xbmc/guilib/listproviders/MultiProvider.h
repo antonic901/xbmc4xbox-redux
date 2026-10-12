@@ -14,7 +14,7 @@
 #include <map>
 #include <vector>
 
-typedef boost::movelib::unique_ptr<IListProvider> IListProviderPtr;
+typedef boost::shared_ptr<IListProvider> IListProviderPtr;
 
 /*!
  \ingroup listproviders
@@ -27,7 +27,7 @@ public:
   explicit CMultiProvider(const CMultiProvider& other);
 
   // Implementation of IListProvider
-  virtual boost::movelib::unique_ptr<IListProvider> Clone();
+  virtual boost::shared_ptr<IListProvider> Clone();
   virtual bool Update(bool forceRefresh);
   virtual void Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items);
   virtual bool IsUpdating() const;
@@ -39,7 +39,8 @@ public:
 protected:
   typedef size_t item_key_type;
   static item_key_type GetItemKey(boost::shared_ptr<CGUIListItem> const& item);
-  std::vector<IListProviderPtr> m_providers;
+  typedef std::vector<IListProviderPtr> ProviderList;
+  ProviderList m_providers;
   std::map<item_key_type, IListProvider*> m_itemMap;
   CCriticalSection m_section; // protects m_itemMap
 };

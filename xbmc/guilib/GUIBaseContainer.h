@@ -18,7 +18,7 @@
 #include "utils/Stopwatch.h"
 
 #include <list>
-#include <boost/move/unique_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include <utility>
 #include <vector>
 
@@ -75,7 +75,7 @@ public:
   /*! \brief Set the list provider for this container (for python).
    \param provider the list provider to use for this container.
    */
-  void SetListProvider(boost::movelib::unique_ptr<IListProvider> provider);
+  void SetListProvider(boost::shared_ptr<IListProvider> provider);
 
   /*! \brief Set the offset of the first item in the container from the container's position
    Useful for lists/panels where the focused item may be larger than the non-focused items and thus
@@ -162,7 +162,7 @@ protected:
 
   CScroller m_scroller;
 
-  boost::movelib::unique_ptr<IListProvider> m_listProvider;
+  boost::shared_ptr<IListProvider> m_listProvider;
 
   bool m_wasReset;  // true if we've received a Reset message until we've rendered once.  Allows
                     // us to make sure we don't tell the infomanager that we've been moving when

@@ -60,7 +60,7 @@ public:
   virtual ~CDirectoryProvider();
 
   // Implementation of IListProvider
-  virtual boost::movelib::unique_ptr<IListProvider> Clone();
+  virtual boost::shared_ptr<IListProvider> Clone();
   virtual bool Update(bool forceRefresh);
   virtual void Announce(ANNOUNCEMENT::AnnouncementFlag flag,
                 const std::string& sender,

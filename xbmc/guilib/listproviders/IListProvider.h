@@ -10,7 +10,6 @@
 
 #include "system.h" // <xtl.h>
 #include <boost/shared_ptr.hpp>
-#include <boost/move/unique_ptr.hpp>
 #include <vector>
 
 class TiXmlNode;
@@ -32,18 +31,18 @@ public:
    \param parentID id of parent window for context.
    \return the list provider, empty pointer if none.
    */
-  static boost::movelib::unique_ptr<IListProvider> Create(const TiXmlNode* parent, int parentID);
+  static boost::shared_ptr<IListProvider> Create(const TiXmlNode* parent, int parentID);
 
   /*! \brief Factory to create list providers.  Cannot create a multi-provider.
    \param content the TiXmlNode for the content to create.
    \param parentID id of parent window for context.
    \return the list provider, empty pointer if none.
    */
-  static boost::movelib::unique_ptr<IListProvider> CreateSingle(const TiXmlNode* content, int parentID);
+  static boost::shared_ptr<IListProvider> CreateSingle(const TiXmlNode* content, int parentID);
 
   /*! \brief Create an instance of the derived class. Allows for polymorphic copies.
    */
-  virtual boost::movelib::unique_ptr<IListProvider> Clone() = 0;
+  virtual boost::shared_ptr<IListProvider> Clone() = 0;
 
   /*! \brief Update the list content
    \return true if the content has changed, false otherwise.

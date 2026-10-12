@@ -22,7 +22,7 @@ public:
   virtual ~CStaticListProvider();
 
   // Implementation of IListProvider
-  virtual boost::movelib::unique_ptr<IListProvider> Clone();
+  virtual boost::shared_ptr<IListProvider> Clone();
   virtual bool Update(bool forceRefresh);
   virtual void Fetch(std::vector<boost::shared_ptr<CGUIListItem> >& items);
   virtual bool OnClick(const boost::shared_ptr<CGUIListItem>& item);

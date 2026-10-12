@@ -105,7 +105,7 @@ CGUIBaseContainer::CGUIBaseContainer(const CGUIBaseContainer& other)
 {
   // Initialize CGUIControl
   m_bInvalidated = true;
-  m_listProvider = other.m_listProvider ? other.m_listProvider->Clone() : NULL;
+  m_listProvider = other.m_listProvider ? other.m_listProvider->Clone() : boost::shared_ptr<IListProvider>();
 
   for (std::vector<boost::shared_ptr<CGUIListItem> >::const_iterator it = other.m_items.begin(); it != other.m_items.end(); ++it)
     m_items.push_back(boost::make_shared<CGUIListItem>(**it));
@@ -1200,9 +1200,9 @@ void CGUIBaseContainer::LoadListProvider(TiXmlElement *content, int defaultItem,
     m_listProvider->SetDefaultItem(defaultItem, defaultAlways);
 }
 
-void CGUIBaseContainer::SetListProvider(boost::movelib::unique_ptr<IListProvider> provider)
+void CGUIBaseContainer::SetListProvider(boost::shared_ptr<IListProvider> provider)
 {
-  m_listProvider = boost::move(provider);
+  m_listProvider = provider;
   UpdateListProvider(true);
 }
 

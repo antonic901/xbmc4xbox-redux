@@ -64,15 +64,15 @@ CStaticListProvider::CStaticListProvider(const CStaticListProvider& other)
     if (!newItem)
       continue;
 
-    m_items.push_back(boost::move(newItem));
+    m_items.push_back(newItem);
   }
 }
 
 CStaticListProvider::~CStaticListProvider() {}
 
-boost::movelib::unique_ptr<IListProvider> CStaticListProvider::Clone()
+boost::shared_ptr<IListProvider> CStaticListProvider::Clone()
 {
-  return boost::movelib::unique_ptr<IListProvider>(new CStaticListProvider(*this));
+  return boost::shared_ptr<IListProvider>(new CStaticListProvider(*this));
 }
 
 bool CStaticListProvider::Update(bool forceRefresh)
