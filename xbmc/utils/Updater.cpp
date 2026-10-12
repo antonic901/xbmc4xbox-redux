@@ -50,7 +50,7 @@ bool CUpdaterJob::DoWork()
     {
       int page = 1;
       do
-      {      
+      {
         std::string response;
         if (!httpUtil.Get(StringUtils::Format("https://api.github.com/repos/antonic901/xbmc4xbox-redux/releases?page=%i", page), response))
         {
@@ -97,16 +97,18 @@ bool CUpdaterJob::DoWork()
     }
     else/* if (channel == "nightly") */
     {
-      std::string strLastRevision;
-      if (!httpUtil.Get("https://github.com/antonic901/xbmc4xbox-redux/releases/download/nightly/version.txt", strLastRevision))
+      std::string strUpstreamRevision;
+      if (!httpUtil.Get(StringUtils::Format("https://github.com/antonic901/xbmc4xbox-redux/releases/download/%s/version.txt", channel.c_str()), strUpstreamRevision))
       {
         CLog::Log(LOGWARNING, "Failed to fetch version file");
         return false;
       }
-      StringUtils::Replace(strLastRevision, "\r", "");
-      StringUtils::Replace(strLastRevision, "\n", "");
-      StringUtils::Trim(strLastRevision);
-      updateAvailable = !strLastRevision.empty() && strLastRevision != APP_SCMID;
+      StringUtils::Replace(strUpstreamRevision, "\r", "");
+      StringUtils::Replace(strUpstreamRevision, "\n", "");
+      StringUtils::Trim(strUpstreamRevision);
+
+      std::string strInstalledRevision(APP_SCMID);
+      updateAvailable = !strUpstreamRevision.empty() && strUpstreamRevision != strInstalledRevision;
     }
 
     if (updateAvailable)
