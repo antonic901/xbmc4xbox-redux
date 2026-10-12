@@ -230,8 +230,6 @@ bool CApplicationXbox::OnSettingChanged(const CSetting& setting)
   }
   else if (settingId == CSettings::SETTING_TRAINER_SCAN)
     CTrainer::ScanTrainers();
-  else if (settingId == CSettings::SETTING_UPDATER_CHECK)
-    CServiceBroker::GetJobManager()->AddJob(new CUpdaterJob(false, true), NULL, CJob::PRIORITY_HIGH);
   else if (settingId == CSettings::SETTING_NETWORK_ASSIGNMENT || settingId == CSettings::SETTING_NETWORK_IPADDRESS ||
            settingId == CSettings::SETTING_NETWORK_SUBNET || settingId == CSettings::SETTING_NETWORK_GATEWAY ||
            settingId == CSettings::SETTING_NETWORK_DNS || settingId == CSettings::SETTING_NETWORK_DNS2)
@@ -249,7 +247,9 @@ bool CApplicationXbox::OnSettingAction(const CSetting& setting)
 {
   const std::string& settingId = setting.GetId();
 
-  if (settingId == CSettings::SETTING_KARAOKE_EXPORT)
+  if (settingId == CSettings::SETTING_UPDATER_CHECK)
+    CServiceBroker::GetJobManager()->AddJob(new CUpdaterJob(false, true), NULL, CJob::PRIORITY_HIGH);
+  else if (settingId == CSettings::SETTING_KARAOKE_EXPORT)
   {
     // TODO: implement this
     return false;
