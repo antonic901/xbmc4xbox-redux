@@ -775,6 +775,7 @@ std::string CUtil::GetFileDigest(const std::string& strPath, KODI::UTILITY::CDig
 
 bool CUtil::CacheXBEIcon(const std::string& strFilePath, const std::string& strIcon)
 {
+  // TODO: add open source implementation of extracting XBE icon which won't require XDK files
   bool success = false;
 
   uint32_t crc = Crc32::ComputeFromLowerCase(strFilePath);
