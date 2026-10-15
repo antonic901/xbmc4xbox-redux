@@ -15,6 +15,8 @@
 #include "addons/AddonManager.h"
 #include "favourites/FavouritesService.h"
 #include "addons/gui/GUIDialogAddonInfo.h"
+#include "application/ApplicationComponents.h"
+#include "application/ApplicationPowerHandling.h"
 #include "filesystem/Directory.h"
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
@@ -185,7 +187,8 @@ CDirectoryProvider::CDirectoryProvider(const TiXmlElement* element, int parentID
     m_jobID(0),
     m_currentLimit(0),
     m_currentBrowse(AUTO),
-    m_isSubscribed(false)
+    m_isSubscribed(false),
+    m_appPower(CServiceBroker::GetAppComponents().GetComponent<CApplicationPowerHandling>())
 {
   assert(element);
   if (!element->NoChildren())
@@ -229,7 +232,8 @@ CDirectoryProvider::CDirectoryProvider(const CDirectoryProvider& other)
     m_currentSort(other.m_currentSort),
     m_currentLimit(other.m_currentLimit),
     m_currentBrowse(other.m_currentBrowse),
-    m_isSubscribed(false)
+    m_isSubscribed(false),
+    m_appPower(CServiceBroker::GetAppComponents().GetComponent<CApplicationPowerHandling>())
 {
 }
 
@@ -245,6 +249,13 @@ boost::shared_ptr<IListProvider> CDirectoryProvider::Clone()
 
 bool CDirectoryProvider::Update(bool forceRefresh)
 {
+  // update only if system was idle for 250ms
+  if (m_appPower->GlobalIdleTime() * 1000 < 250)
+  {
+    m_updateState = INVALIDATED;
+    return false;
+  }
+
   // we never need to force refresh here
   bool changed = false;
   bool fireJob = false;
