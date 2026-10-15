@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 
+class CApplicationPowerHandling;
 class CFileItem;
 class TiXmlElement;
 class CVariant;
@@ -108,4 +109,6 @@ private:
 
   CCriticalSection m_subscriptionSection;
   bool m_isSubscribed;
+
+  boost::shared_ptr<CApplicationPowerHandling> m_appPower;
 };
