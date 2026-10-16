@@ -178,7 +178,7 @@ int64_t CThread::GetAbsoluteUsage()
 
 float CThread::GetRelativeUsage()
 {
-  unsigned int iTime = XbmcThreads::SystemClockMillis();
+  uint64_t iTime = static_cast<uint64_t>(XbmcThreads::SystemClockMillis());
   iTime *= 10000; // convert into 100ns tics
 
   // only update every 1 second
