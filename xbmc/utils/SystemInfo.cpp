@@ -1445,7 +1445,7 @@ std::string CSysInfo::GetXBProduceInfo()
   std::string strXBProDate;
   strXBProDate = StringUtils::Format("%s, %s 200%c, %s: %c%c %s: %c",
     country,
-    g_localizeStrings.Get(201).c_str(),
+    g_localizeStrings.Get(345).c_str(),
     info[0x07],
     g_localizeStrings.Get(20169).c_str(),
     info[0x08],

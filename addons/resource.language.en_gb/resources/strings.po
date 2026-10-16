@@ -875,7 +875,11 @@ msgctxt "#203"
 msgid "Plot outline"
 msgstr ""
 
-#empty string with id 204
+#: xbmc/dialogs/GUIDialogMediaFilter.cpp
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#204"
+msgid "Compilation"
+msgstr ""
 
 #: xbmc/playlists/SmartPlaylist.cpp
 msgctxt "#205"
@@ -1078,7 +1082,10 @@ msgctxt "#252"
 msgid "Output stereo to all speakers"
 msgstr ""
 
-#empty string with id 253
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#253"
+msgid "Number of channels"
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#254"
@@ -2663,7 +2670,11 @@ msgctxt "#611"
 msgid "Enter number"
 msgstr ""
 
-#empty strings from id 612 to 613
+#empty string with id 612
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#613"
+msgid "Sample rate"
+msgstr ""
 
 #: xbmc/playlists/SmartPlayList.cpp
 msgctxt "#614"
@@ -2896,7 +2907,13 @@ msgctxt "#702"
 msgid "This path has been scanned before"
 msgstr ""
 
-#empty strings from id 703 to 704
+#empty string with id 704
+
+#: xbmc/interfaces/builtins/LibraryBuiltins.cpp
+#: xbmc/settings/MediaSettings.cpp
+msgctxt "#703"
+msgid "Can't clean up library while running background tasks"
+msgstr ""
 
 msgctxt "#705"
 msgid "Network"
@@ -4306,7 +4323,14 @@ msgctxt "#10020"
 msgid "Scripts"
 msgstr ""
 
-#empty strings from id 10021 to 10024
+#empty strings from id 10021 to 10023
+
+#: xbmc/filesystem/VideoDatabaseDirectory/DirectoryNodeMoviesOverview.cpp
+#: xbmc/filesystem/VideoDatabaseDirectory/DirectoryNodeMusicVideosOverview.cpp
+#: xbmc/filesystem/VideoDatabaseDirectory/DirectoryNodeTvShowsOverview.cpp
+msgctxt "#10024"
+msgid "Titles"
+msgstr ""
 
 #: xbmc/guilib/WindowIDs.h
 msgctxt "#10025"
@@ -4439,7 +4463,12 @@ msgctxt "#10057"
 msgid "Edit file source"
 msgstr ""
 
-#empty strings from id 10058 to 10099
+#: xbmc/video/dialogs/GUIDialogVideoInfo.cpp
+msgctxt "#10058"
+msgid "Remove tag from library"
+msgstr ""
+
+#empty strings from id 10059 to 10099
 
 #: xbmc/guilib/WindowIDs.h
 msgctxt "#10100"
@@ -4451,7 +4480,15 @@ msgctxt "#10101"
 msgid "Progress dialogue"
 msgstr ""
 
-#empty strings from id 10102 to 10125
+#empty strings from id 10102 to 10121
+
+#: xbmc/guilib/WindowIDs.h
+#: xbmc/music/dialogs/GUIDialogVisualisationPresetList.cpp
+msgctxt "#10122"
+msgid "Visualization preset list"
+msgstr ""
+
+#empty strings from id 10123 to 10125
 
 #: xbmc/guilib/WindowIDs.h
 msgctxt "#10126"
@@ -4734,7 +4771,10 @@ msgctxt "#12308"
 msgid "Show password"
 msgstr ""
 
-#empty string with id 12309
+#: xbmc/dialogs/GUIDialogKeyboardGeneric.cpp
+msgctxt "#12309"
+msgid "Hide password"
+msgstr ""
 
 #: addons/skin.estuary/1080i/DialogNumeric.xml
 #: skin.estouchy
@@ -5075,7 +5115,7 @@ msgctxt "#12394"
 msgid "Total uptime"
 msgstr ""
 
-empty strings from id 12395 to 12599
+#empty strings from id 12395 to 12599
 
 #: xbmc/guilib/WindowIDs.h
 msgctxt "#12600"
@@ -5129,7 +5169,12 @@ msgctxt "#13005"
 msgid "Shutdown"
 msgstr ""
 
-#empty strings from id 13006 to 13007
+#: xbmc/dialogs/GUIDialogMediaSource.cpp
+msgctxt "#13006"
+msgid "Add picture source"
+msgstr ""
+
+#empty string with id 13007
 
 #: system/settings/settings.xml
 msgctxt "#13008"
@@ -5801,7 +5846,12 @@ msgctxt "#13361"
 msgid "Enable voice"
 msgstr ""
 
-#empty strings from id 13362 to 13374
+#: xbmc/video/VideoUtils.cpp
+msgctxt "#13362"
+msgid "Continue watching"
+msgstr ""
+
+#empty strings from id 13363 to 13374
 
 msgctxt "#13375"
 msgid "Enable device"
@@ -6073,7 +6123,14 @@ msgctxt "#13516"
 msgid "Add art type"
 msgstr ""
 
-#empty strings from id 13517 to 13520
+#empty strings from id 13517 to 13518
+
+#: xbmc/video/dialogs/GUIDialogVideoInfo.cpp
+msgctxt "#13519"
+msgid "Embedded art"
+msgstr ""
+
+#empty string with id 13520
 
 #. Heading for selection of a type of art e.g. "thumb", "poster", "fanart" etc.
 #: xbmc/music/MusicUtils.cpp
@@ -6531,57 +6588,57 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#14200"
 msgid "Player"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14201"
 msgid "Player settings"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14202"
 msgid "Library"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14203"
 msgid "Library settings"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14204"
 msgid "TV"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14205"
 msgid "TV settings"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14206"
 msgid "Interface"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14207"
 msgid "Interface settings"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14208"
 msgid "Service settings"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14209"
 msgid "System settings"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14210"
 msgid "Profile settings"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14211"
@@ -6598,76 +6655,76 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#14215"
 msgid "Videos"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14216"
 msgid "Music"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14217"
 msgid "Pictures"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14218"
 msgid "Language"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14219"
 msgid "Databases"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14220"
 msgid "Display"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14221"
 msgid "Audio"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14222"
 msgid "Regional"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14223"
 msgid "Control"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14224"
 msgid "Other"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14225"
 msgid "Network Control"
-msgstr "
+msgstr ""
 
 #empty strings from id 14226 to 14229
 
 #: system/settings/settings.xml
 msgctxt "#14230"
 msgid "Actions"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14231"
 msgid "Processing"
-msgstr "
+msgstr ""
 
 #empty strings from id 14232 to 14234
 
 #: system/settings/settings.xml
 msgctxt "#14235"
 msgid "Download Services"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14236"
@@ -6684,12 +6741,12 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#14240"
 msgid "Lists & Views"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14241"
 msgid "Metadata"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14242"
@@ -6709,58 +6766,58 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#14245"
 msgid "Update library on startup"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14246"
 msgid "Hide progress of library updates"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14247"
 msgid "Clean library"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14248"
 msgid "Export library"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14249"
 msgid "Import library"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14250"
 msgid "Audio Decoder"
-msgstr "
+msgstr ""
 
 #empty string with id 14251
 
 #: system/settings/settings.xml
 msgctxt "#14252"
 msgid "Audio Passthrough"
-msgstr "
+msgstr ""
 
 #empty strings from id 14253 to 14254
 
 #: system/settings/settings.xml
 msgctxt "#14255"
 msgid "Sleep / Shutdown"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14256"
 msgid "Wake"
-msgstr "
+msgstr ""
 
 #empty strings from id 14257 to 14259
 
 #: system/settings/settings.xml
 msgctxt "#14260"
 msgid "Debug"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14261"
@@ -6772,29 +6829,29 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#14270"
 msgid "Unit Formats"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14271"
 msgid "Region default format"
-msgstr "
+msgstr ""
 
 #empty strings from id 14272 to 14274
 
 #: system/settings/settings.xml
 msgctxt "#14275"
 msgid "Application control"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14276"
 msgid "Allow remote control from applications on this system"
-msgstr "
+msgstr ""
 
 #: system/settings/settings.xml
 msgctxt "#14277"
 msgid "Allow remote control from applications on other systems"
-msgstr "
+msgstr ""
 
 #empty strings from id 14278 to 15010
 
@@ -6954,7 +7011,44 @@ msgctxt "#15216"
 msgid "Play in party mode"
 msgstr ""
 
-#empty strings from id 15217 to 15299
+#empty string with id 15217
+
+#: xbmc/favourites/FavouritesURL.cpp
+msgctxt "#15218"
+msgid "Play media"
+msgstr ""
+
+#: xbmc/favourites/FavouritesURL.cpp
+msgctxt "#15219"
+msgid "Show picture"
+msgstr ""
+
+#: xbmc/favourites/FavouritesURL.cpp
+msgctxt "#15220"
+msgid "Show content in \"%s\""
+msgstr ""
+
+#: xbmc/favourites/FavouritesURL.cpp
+msgctxt "#15221"
+msgid "Execute script"
+msgstr ""
+
+#: xbmc/favourites/FavouritesURL.cpp
+msgctxt "#15222"
+msgid "Execute Android app"
+msgstr ""
+
+#: xbmc/favourites/FavouritesURL.cpp
+msgctxt "#15223"
+msgid "Execute add-on"
+msgstr ""
+
+#: xbmc/favourites/FavouritesURL.cpp
+msgctxt "#15224"
+msgid "Other / Unknown"
+msgstr ""
+
+#empty strings from id 15225 to 15299
 
 #: xbmc/windows/GUIMediaWindow.cpp
 #: xbmc/windows/GUIWindowFileManager.cpp
@@ -7082,7 +7176,10 @@ msgctxt "#16022"
 msgid "Bob - Inverted"
 msgstr ""
 
-#empty string with id 16023
+#: xbmc/dialogs/GUIDialogSmartPlaylistRule.cpp
+msgctxt "#16023"
+msgid "Choose operator"
+msgstr ""
 
 #: xbmc/dialogs/GUIDialogProgress.cpp
 msgctxt "#16024"
@@ -7143,7 +7240,20 @@ msgctxt "#16038"
 msgid "Interlaced handling"
 msgstr ""
 
-#empty strings from id 16039 to 16099
+#: xbmc/video/dialogs/GUIDialogVideoSettings.cpp
+msgctxt "#16039"
+msgid "Off"
+msgstr ""
+
+#empty string with id 16040
+
+#: xbmc/guilib/GUIRadioButtonControl.cpp
+#: xbmc/guilib/guiinfo/GUIInfoHelper.cpp
+msgctxt "#16041"
+msgid "On"
+msgstr ""
+
+#empty strings from id 16042 to 16099
 
 #: xbmc/video/windows/GUIWindowVideoNav.cpp
 msgctxt "#16100"
@@ -7503,7 +7613,19 @@ msgctxt "#19177"
 msgid "Playback"
 msgstr ""
 
-#empty strings from id 19178 to 19348
+#empty strings from id 19178 to 19314
+
+#: xbmc/utils/SortUtils.cpp
+msgctxt "#19315"
+msgid "Backend order"
+msgstr ""
+
+#empty strings from id 19316 to 19347
+
+#: xbmc/utils/SortUtils.cpp
+msgctxt "#19348"
+msgid "Provider"
+msgstr ""
 
 #. label for 'by user preference' sort method
 #: xbmc/utils/SortUtils.cpp
@@ -8374,7 +8496,7 @@ msgctxt "#20222"
 msgid "Look for external subtitles"
 msgstr ""
 
-: system/settings/settings.xml
+#: system/settings/settings.xml
 #: xbmc/settings/dialogs/GUIDialogLibExportSettings.cpp
 msgctxt "#20223"
 msgid "Artist information folder"
@@ -8433,7 +8555,15 @@ msgctxt "#20255"
 msgid "First logon, edit your profile"
 msgstr ""
 
-#empty strings from id 20256 to 20299
+#empty string with id 20256
+
+#. Label for the legacy VDR Streamdev protocol.
+#: xbmc/Util.cpp
+msgctxt "#20257"
+msgid "VDR Streamdev client"
+msgstr ""
+
+#empty strings from id 20258 to 20299
 
 #: xbmc/network/GUIDialogNetworkSetup.cpp
 msgctxt "#20300"
@@ -9026,7 +9156,10 @@ msgctxt "#20426"
 msgid "Export to a single file or separate files per entry?"
 msgstr ""
 
-#empty string with id 20427
+#: xbmc/dialogs/GUIDialogSmartPlaylistRule.cpp
+msgctxt "#20427"
+msgid "Choose rule type"
+msgstr ""
 
 msgctxt "#20428"
 msgid "Single file"
@@ -9889,7 +10022,14 @@ msgctxt "#21482"
 msgid "Subtitle track count"
 msgstr ""
 
-#empty strings from id 21483 to 21601
+#empty string with id 21483
+
+#: xbmc/addons/gui/GUIDialogAddonInfo.cpp
+msgctxt "#21484"
+msgid "Show support"
+msgstr ""
+
+#empty strings from id 21485 to 21601
 
 #: xbmc/Util.cpp
 msgctxt "#21602"
@@ -10868,7 +11008,10 @@ msgctxt "#24087"
 msgid "All repositories"
 msgstr ""
 
-#empty string with id 24088
+#: xbmc/addons/AddonInstaller.cpp
+msgctxt "#24088"
+msgid "Failed to install repository"
+msgstr ""
 
 msgctxt "#24089"
 msgid "Add-on restarts"
@@ -11389,7 +11532,14 @@ msgctxt "#29801"
 msgid "QWERTY keyboard"
 msgstr ""
 
-#empty strings from id 29802 to 29908
+#empty strings from id 29802 to 29903
+
+#: xbmc/video/dialogs/GUIDialogVideoInfo.cpp
+msgctxt "#29904"
+msgid "Artist"
+msgstr ""
+
+#empty strings from id 29905 to 29908
 
 #. Studio name (if present)
 #: addons/skin.estuary/1080i/DialogPVRRadioRDSInfo.xml
@@ -11729,8 +11879,26 @@ msgctxt "#33102"
 msgid "Event server"
 msgstr ""
 
-#empty strings from id 33103 to 33999
 #translators: no need to add these to your language files
+
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#33103"
+msgid "Remote communication server"
+msgstr ""
+
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#33104"
+msgid "You have previously enabled the web interface without setting up a password. The web server has been disabled until you either explicitly allow this or set up authentication. Please review your settings."
+msgstr ""
+
+#empty strings from id 33105 to 33199
+
+#: xbmc/network/EventClient.cpp
+msgctxt "#33200"
+msgid "Detected new connection"
+msgstr ""
+
+#empty strings from id 33201 to 33999
 
 #: system/settings/settings.xml
 msgctxt "#34000"
@@ -11793,7 +11961,33 @@ msgctxt "#34202"
 msgid "Can't find a previous item to play"
 msgstr ""
 
-#empty strings from id 34202 to 36040
+#empty strings from id 34203 to 35048
+
+#: xbmc/addons/addoninfo/AddonInfo.cpp
+msgctxt "#35049"
+msgid "Game add-ons"
+msgstr ""
+
+#empty strings from id 35050 to 35250
+
+#: xbmc/dialogs/GUIDialogMediaSource.cpp
+msgctxt "#35251"
+msgid "Add game source"
+msgstr ""
+
+#: xbmc/dialogs/GUIDialogMediaSource.cpp
+msgctxt "#35252"
+msgid "Edit game source"
+msgstr ""
+
+#empty strings from id 35253 to 35258
+
+#: xbmc/music/windows/GUIWindowMusicPlaylistEditor.cpp
+msgctxt "#35259"
+msgid "Saved"
+msgstr ""
+
+#empty strings from id 35260 to 36040
 
 #: xbmc/video/dialogs/guidialogvideoinfo.cpp
 #: xbmc/music/dialogs/GUIDialogMusicInfo.cpp
@@ -12427,6 +12621,11 @@ msgctxt "#36300"
 msgid "Select the folder where movie set information (images) are saved locally."
 msgstr ""
 
+#: xbmc/interfaces/builtins/LibraryBuiltins.cpp
+msgctxt "#36301"
+msgid "No 'Movie set information folder' is configured to store movie set images so they will not be exported. Do you want to proceed?"
+msgstr ""
+
 #: system/settings/settings.xml
 msgctxt "#36302"
 msgid "No info available yet."
@@ -12682,7 +12881,7 @@ msgstr ""
 #. Description of setting with label #254 "DTS capable receiver"
 #: system/settings/settings.xml
 msgctxt "#36366"
-msgid "Select this option if your receiver is capable of decoding DTS streams.
+msgid "Select this option if your receiver is capable of decoding DTS streams."
 msgstr ""
 
 #. Description of setting with label #348 "Enable passthrough"
@@ -13060,6 +13259,16 @@ msgctxt "#36634"
 msgid "Anyone who has access to the web interface will be able to completely control this application and, therefore, this device, so it should be secured by a password. Are you sure you want to disable authentication?"
 msgstr ""
 
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#36635"
+msgid "If web server authentication is enabled, a password must be entered as well."
+msgstr ""
+
+#: xbmc/network/NetworkServices.cpp
+msgctxt "#36636"
+msgid "You must first enter a password before web server authentication can be enabled."
+msgstr ""
+
 #. Menuitem at "Settings -> System -> Add-ons"
 #: ./system/settings/settings.xml
 msgctxt "#36638"
@@ -13213,6 +13422,16 @@ msgstr ""
 #: xbmc/Windows/GUIMediaWindow.cpp
 msgctxt "#37015"
 msgid "Browse into"
+msgstr ""
+
+#: xbmc/network/upnp/UPnPPlayer.cpp
+msgctxt "#37022"
+msgid "UPnP player"
+msgstr ""
+
+#: xbmc/network/upnp/UPnPPlayer.cpp
+msgctxt "#37023"
+msgid "Do you wish to stop playback on the remote device?"
 msgstr ""
 
 #. Description of setting Skip steps
@@ -13583,6 +13802,66 @@ msgstr ""
 #empty strings from id 38074 to 38099
 #strings 38074 to 38099 reserved for music library
 
+#: xbmc/dialogs/GUIDialogMediaFilter.cpp
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#38074"
+msgid "Boxsets"
+msgstr ""
+
+#: xbmc/music/windows/MusicFileItemListModifier.cpp
+msgctxt "#38075"
+msgid "* All discs"
+msgstr ""
+
+#: xbmc/dialogs/GUIDialogMediaFilter.cpp
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#38076"
+msgid "Disc title"
+msgstr ""
+
+#: xbmc/music/GUIViewStateMusic.cpp
+#: xbmc/playlists/SmartPlayList.cpp
+#: xbmc/utils/SortUtils.cpp
+msgctxt "#38077"
+msgid "Total discs"
+msgstr ""
+
+#: xbmc/dialogs/GUIDialogMediaFilter.cpp
+#: xbmc/dialogs/GUIDialogSmartPlaylistRule.cpp
+#: xbmc/filesystem/MusicDatabaseDirectory/DirectoryNodeOverview.cpp
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#38078"
+msgid "Original year"
+msgstr ""
+
+#: xbmc/music/GUIViewStateMusic.cpp
+#: xbmc/utils/SortUtils.cpp
+msgctxt "#38079"
+msgid "Original date"
+msgstr ""
+
+#: xbmc/music/GUIViewStateMusic.cpp
+#: xbmc/playlists/SmartPlayList.cpp
+#: xbmc/utils/SortUtils.cpp
+msgctxt "#38080"
+msgid "BPM"
+msgstr ""
+
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#38081"
+msgid "Release status"
+msgstr ""
+
+#: xbmc/music/MusicUtils.cpp
+msgctxt "#38082"
+msgid "Added to end of playlist"
+msgstr ""
+
+#: xbmc/music/MusicUtils.cpp
+msgctxt "#38083"
+msgid "Added to playlist to play next"
+msgstr ""
+
 #. Description of section #14200 "Player""
 #: system/settings/settings.xml
 msgctxt "#38100"
@@ -13669,7 +13948,12 @@ msgctxt "#38208"
 msgid "If EXIF information exists (date, time, camera used, etc.), it will be displayed."
 msgstr ""
 
-#empty strings from id 38209 to 38299
+#: xbmc/video/ContextMenus.h
+msgctxt "#38209"
+msgid "Reset resume position"
+msgstr ""
+
+#empty strings from id 38210 to 38299
 
 #. Dialog header for settings for how to export specific music library data
 #: xbmc/settings/dialogs/GUIDialogLibExportSettings.cpp
@@ -13733,7 +14017,10 @@ msgctxt "#38310"
 msgid "Overwrite existing files"
 msgstr ""
 
-#empty string id 38311
+#: xbmc/settings/dialogs/GUIDialogLibExportSettings.cpp
+msgctxt "#38311"
+msgid "Overwrite existing files"
+msgstr ""
 
 #. Music item to export output, see #38093
 #: xbmc/settings/dialogs/GUIDialogLibExportSettings.cpp
@@ -13773,7 +14060,32 @@ msgctxt "#38320"
 msgid "Do you have local artist information (NFO) and art files that you want to fetch? Set the location of these artist folders now"
 msgstr ""
 
-#empty strings from id 38321 to 38329
+#: xbmc/settings/dialogs/GUIDialogLibExportSettings.cpp
+msgctxt "#38321"
+msgid "Artist folders only"
+msgstr ""
+
+#: xbmc/settings/dialogs/GUIDialogLibExportSettings.cpp
+msgctxt "#38322"
+msgid "Artists exported to Artist Information Folder and albums to music folders"
+msgstr ""
+
+#: xbmc/settings/dialogs/GUIDialogLibExportSettings.cpp
+msgctxt "#38323"
+msgid "Albums exported to music folders"
+msgstr ""
+
+#: xbmc/settings/dialogs/GUIDialogLibExportSettings.cpp
+msgctxt "#38324"
+msgid "Artists exported to Artist Information Folder"
+msgstr ""
+
+#: xbmc/settings/dialogs/GUIDialogLibExportSettings.cpp
+msgctxt "#38325"
+msgid "Artist subfolders created in Artist Information Folder"
+msgstr ""
+
+#empty strings from id 38326 to 38329
 
 #. Dialog heading when editing default settings for fetching additional music information
 #: xbmc/music/dialogs/GUIDialogInfoProviderSettings.cpp
@@ -13827,13 +14139,43 @@ msgstr ""
 #: xbmc/music/dialogs/GUIDialogInfoProviderSettings.cpp
 msgctxt "#38338"
 msgid "Choose how to apply settings"
+msgstr ""
 
 #. Heading when selecting from list for #38338
 #: xbmc/music/dialogs/GUIDialogInfoProviderSettings.cpp
 msgctxt "#38339"
 msgid "How to apply information provider settings"
+msgstr ""
 
-#empty strings from id 38340 to 38600
+#empty strings from id 38340 to 38349
+
+#: xbmc/music/MusicDatabase.cpp
+msgctxt "#38350"
+msgid "Importing song playback history"
+msgstr ""
+
+#: xbmc/music/MusicDatabase.cpp
+msgctxt "#38351"
+msgid "Matching data"
+msgstr ""
+
+#: xbmc/music/MusicDatabase.cpp
+msgctxt "#38352"
+msgid "Updating songs"
+msgstr ""
+
+#: xbmc/music/MusicDatabase.cpp
+msgctxt "#38353"
+msgid "Importing song history - %d updated out of %d imported songs"
+msgstr ""
+
+#: xbmc/music/MusicDatabase.cpp
+msgctxt "#38354"
+msgid "Unable to read xml file"
+msgstr ""
+
+#empty strings from id 38355 to 38599
+
 #strings from id 38600 to 38999 reserved for xbmc4xbox
 
 #: system/settings/xbox.xml
@@ -14411,10 +14753,25 @@ msgctxt "#38995"
 msgid "Default emulator"
 msgstr ""
 
+#: xbmc/view/GUIViewState.cpp
+msgctxt "#39010"
+msgid "Select sort method"
+msgstr ""
+
+#: xbmc/addons/gui/GUIDialogAddonInfo.cpp
+msgctxt "#39014"
+msgid "Would you also like to remove all related data (e.g. settings) of this add-on?"
+msgstr ""
+
 #. Description of setting with label #21358 "Share my libraries"
 #: system/settings/settings.xml
 msgctxt "#39017"
 msgid "Enables UPnP. This allows you to stream media in your libraries to a UPnP client and to detect remote UPnP servers."
+msgstr ""
+
+#: xbmc/addons/gui/GUIDialogAddonInfo.cpp
+msgctxt "#39020"
+msgid "The following additional add-ons will be installed"
 msgstr ""
 
 #: xbmc/addons/GUIDialogAddonInfo.cpp
@@ -14423,9 +14780,58 @@ msgctxt "#39024"
 msgid "Dependencies"
 msgstr ""
 
+#: xbmc/dialogs/GUIDialogMediaFilter.cpp
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#39025"
+msgid "Gender"
+msgstr ""
+
+#: xbmc/dialogs/GUIDialogMediaFilter.cpp
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#39026"
+msgid "Disambiguation"
+msgstr ""
+
+#: xbmc/addons/gui/GUIDialogAddonInfo.cpp
+msgctxt "#39028"
+msgid "Add-on: %s[CR]Origin: %s[CR]Version: %s[CR]- will be uninstalled and replaced. Would you like to proceed?"
+msgstr ""
+
+#: xbmc/addons/gui/GUIDialogAddonInfo.cpp
+msgctxt "#39029"
+msgid "Manually installed"
+msgstr ""
+
+#: xbmc/dialogs/GUIDialogMediaFilter.cpp
+#: xbmc/filesystem/MusicDatabaseDirectory.cpp
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#39030"
+msgid "Source"
+msgstr ""
+
+#: xbmc/filesystem/MusicDatabaseDirectory/DirectoryNodeOverview.cpp
+msgctxt "#39031"
+msgid "Sources"
+msgstr ""
+
 #: xbmc/network/GUIDialogNetworkSetup.cpp
 msgctxt "#39103"
 msgid "Unable to configure network location. Invalid path given."
+msgstr ""
+
+#: xbmc/windows/GUIWindowFileManager.cpp
+msgctxt "#39104"
+msgid "View as text"
+msgstr ""
+
+#: xbmc/playlists/SmartPlayList.cpp
+msgctxt "#39119"
+msgid "Last modified"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoInfo.cpp
+msgctxt "#39123"
+msgid "Artwork"
 msgstr ""
 
 #: system/settings/settings.xml
@@ -14508,10 +14914,20 @@ msgctxt "#39150"
 msgid "Limit the music video artwork fetched locally or applied from scraper remote art results to just those art types in the whitelist"
 msgstr ""
 
+#: xbmc/application/Application.cpp
+msgctxt "#39175"
+msgid "Building font cache in progress - please wait"
+msgstr ""
+
 #. Helper text for gui sound volume setting
 #: system/settings/settings.xml
 msgctxt "#39176"
 msgid "Relative volume for gui sounds"
+msgstr ""
+
+#: xbmc/settings/windows/GUIWindowSettingsScreenCalibration.cpp
+msgctxt "#39184"
+msgid "Current value: %d"
 msgstr ""
 
 #: system/settings/settings.xml
@@ -14523,6 +14939,174 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#39193"
 msgid "If music is being played, the screensaver will never be activated"
+msgstr ""
+
+#: xbmc/filesystem/VideoDatabaseDirectory.cpp
+#: xbmc/filesystem/VideoDatabaseDirectory/DirectoryNodeMoviesOverview.cpp
+msgctxt "#40000"
+msgid "Versions"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoInfo.cpp
+msgctxt "#40001"
+msgid "Manage versions"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40002"
+msgid "Add as version to..."
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManager.cpp
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40005"
+msgid "Operation not supported"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40006"
+msgid "The selected movie has multiple versions, preventing its conversion into a version of another movie. Remove the versions from the movie, rescan the libray and convert them individually."
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManager.cpp
+msgctxt "#40007"
+msgid "The \"%s\" version already exists!"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40008"
+msgid "Different movie version found"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40009"
+msgid "Found a different version of the movie \"%s\": %s. Would you like to convert it into an additional version of the original?"
+msgstr ""
+
+#: xbmc/media/MediaType.cpp
+msgctxt "#40010"
+msgid "video version"
+msgstr ""
+
+#: xbmc/media/MediaType.cpp
+msgctxt "#40011"
+msgid "video versions"
+msgstr ""
+
+#: xbmc/media/MediaType.cpp
+msgctxt "#40012"
+msgid "Video version"
+msgstr ""
+
+#: xbmc/media/MediaType.cpp
+msgctxt "#40013"
+msgid "Video versions"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40014"
+msgid "Add version"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerExtras.cpp
+msgctxt "#40015"
+msgid "Add extra"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerExtras.cpp
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40016"
+msgid "The selected video already is the \"%s\" version of the movie."
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerExtras.cpp
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40017"
+msgid "The selected video is the \"%s\" version of the movie \"%s\". Would you like to move the version to this movie?"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManager.cpp
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40018"
+msgid "Remove video version"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40019"
+msgid "The default version of a movie cannot be removed. Set a different default version and try again."
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManager.cpp
+msgctxt "#40020"
+msgid "Are you sure to remove version \"%s\"?"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoInfo.cpp
+#: xbmc/video/windows/GUIWindowVideoNav.cpp
+msgctxt "#40021"
+msgid "Would you really like to remove '%s' and all its versions from the library?"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerExtras.cpp
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40026"
+msgid "The selected video already is the \"%s\" extra of the movie."
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerExtras.cpp
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40027"
+msgid "The selected video is the \"%s\" extra of the movie \"%s\". Would you like to move the extra to this movie?"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40028"
+msgid "Browse files"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40029"
+msgid "Browse library"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40030"
+msgid "Select movie to add as a version"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40031"
+msgid "No other movies found in the library."
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40032"
+msgid "No similar movies were found in the library."
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerExtras.cpp
+msgctxt "#40034"
+msgid "The default version of a movie with multiple versions cannot be added as an extra to another movie. Please move or remove the other versions first."
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40035"
+msgid "You are about to convert a movie extra into a movie version. Are you sure?"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerExtras.cpp
+msgctxt "#40036"
+msgid "You are about to convert a movie version into a movie extra. Are you sure?"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40037"
+msgid "The movie to be added has multiple versions.[CR]The type of the default version will be selected in the next dialog. The other versions will keep their current type.[CR]Do you want to continue?"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManagerVersions.cpp
+msgctxt "#40038"
+msgid "The default version of a movie with multiple versions cannot be added to another movie. Please move or remove the other versions first."
 msgstr ""
 
 #. Select default video version setting
@@ -14571,4 +15155,54 @@ msgstr ""
 #: system/settings/settings.xml
 msgctxt "#40207"
 msgid "When enabled, a video with multiple versions will be shown as a folder in the video library. This folder can then be opened to display the individual video versions. When disabled, the configured select action will be applied."
+msgstr ""
+
+#: xbmc/video/guilib/VideoVersionHelper.cpp
+msgctxt "#40208"
+msgid "Choose version: %s"
+msgstr ""
+
+#: xbmc/video/guilib/VideoVersionHelper.cpp
+msgctxt "#40210"
+msgid "Versions"
+msgstr ""
+
+#: xbmc/video/guilib/VideoVersionHelper.cpp
+msgctxt "#40211"
+msgid "Extras"
+msgstr ""
+
+#: xbmc/video/guilib/VideoVersionHelper.cpp
+msgctxt "#40214"
+msgid "Choose extra: %s"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManager.cpp
+msgctxt "#40215"
+msgid "Choose version type"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManager.cpp
+msgctxt "#40216"
+msgid "New type..."
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManager.cpp
+msgctxt "#40217"
+msgid "New version type"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManager.cpp
+msgctxt "#40218"
+msgid "Choose extra name"
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManager.cpp
+msgctxt "#40219"
+msgid "New name..."
+msgstr ""
+
+#: xbmc/video/dialogs/GUIDialogVideoManager.cpp
+msgctxt "#40220"
+msgid "New extra name"
 msgstr ""

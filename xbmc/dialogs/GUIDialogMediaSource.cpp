@@ -30,16 +30,6 @@
 #include "utils/Variant.h"
 #include "video/windows/GUIWindowVideoBase.h"
 
-#if defined(TARGET_ANDROID)
-#include "utils/FileUtils.h"
-
-#include "platform/android/activity/XBMCApp.h"
-#endif
-
-#ifdef TARGET_WINDOWS_STORE
-#include "platform/win10/filesystem/WinLibraryDirectory.h"
-#endif
-
 using namespace XFILE;
 
 #define CONTROL_HEADING          2
@@ -245,29 +235,6 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
   if (m_type == "music")
   {
     CMediaSource share1;
-#if defined(TARGET_ANDROID)
-    // add the default android music directory
-    std::string path;
-    if (CXBMCApp::GetExternalStorage(path, "music") && !path.empty() && CDirectory::Exists(path))
-    {
-      share1.strPath = path;
-      share1.strName = g_localizeStrings.Get(20240);
-      share1.m_ignore = true;
-      extraShares.push_back(share1);
-    }
-#endif
-
-#if defined(TARGET_WINDOWS_STORE)
-    // add the default UWP music directory
-    std::string path;
-    if (XFILE::CWinLibraryDirectory::GetStoragePath(m_type, path) && !path.empty() && CDirectory::Exists(path))
-    {
-      share1.strPath = path;
-      share1.strName = g_localizeStrings.Get(20245);
-      share1.m_ignore = true;
-      extraShares.push_back(share1);
-    }
-#endif
 
     // add the music playlist location
     share1.strPath = "special://musicplaylists/";
@@ -285,28 +252,6 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
   else if (m_type == "video")
   {
     CMediaSource share1;
-#if defined(TARGET_ANDROID)
-    // add the default android video directory
-    std::string path;
-    if (CXBMCApp::GetExternalStorage(path, "videos") && !path.empty() && CFileUtils::Exists(path))
-    {
-      share1.strPath = path;
-      share1.strName = g_localizeStrings.Get(20241);
-      share1.m_ignore = true;
-      extraShares.push_back(share1);
-    }
-#endif
-#if defined(TARGET_WINDOWS_STORE)
-    // add the default UWP music directory
-    std::string path;
-    if (XFILE::CWinLibraryDirectory::GetStoragePath(m_type, path) && !path.empty() && CDirectory::Exists(path))
-    {
-      share1.strPath = path;
-      share1.strName = g_localizeStrings.Get(20246);
-      share1.m_ignore = true;
-      extraShares.push_back(share1);
-    }
-#endif
 
     // add the video playlist location
     share1.m_ignore = true;
@@ -317,45 +262,6 @@ void CGUIDialogMediaSource::OnPathBrowse(int item)
   else if (m_type == "pictures")
   {
     CMediaSource share1;
-#if defined(TARGET_ANDROID)
-    // add the default android music directory
-    std::string path;
-    if (CXBMCApp::GetExternalStorage(path, "pictures") && !path.empty() && CFileUtils::Exists(path))
-    {
-      share1.strPath = path;
-      share1.strName = g_localizeStrings.Get(20242);
-      share1.m_ignore = true;
-      extraShares.push_back(share1);
-    }
-
-    path.clear();
-    if (CXBMCApp::GetExternalStorage(path, "photos") && !path.empty() && CFileUtils::Exists(path))
-    {
-      share1.strPath = path;
-      share1.strName = g_localizeStrings.Get(20243);
-      share1.m_ignore = true;
-      extraShares.push_back(share1);
-    }
-#endif
-#if defined(TARGET_WINDOWS_STORE)
-    // add the default UWP music directory
-    std::string path;
-    if (XFILE::CWinLibraryDirectory::GetStoragePath(m_type, path) && !path.empty() && CDirectory::Exists(path))
-    {
-      share1.strPath = path;
-      share1.strName = g_localizeStrings.Get(20247);
-      share1.m_ignore = true;
-      extraShares.push_back(share1);
-    }
-    path.clear();
-    if (XFILE::CWinLibraryDirectory::GetStoragePath("photos", path) && !path.empty() && CDirectory::Exists(path))
-    {
-      share1.strPath = path;
-      share1.strName = g_localizeStrings.Get(20248);
-      share1.m_ignore = true;
-      extraShares.push_back(share1);
-    }
-#endif
 
     share1.m_ignore = true;
     if (CServiceBroker::GetSettingsComponent()->GetSettings()->GetString("debug.screenshotpath") != "")
