@@ -135,6 +135,9 @@ unsigned int CXBoxRenderManager::PreInit()
   CSingleExit leaveIt(CServiceBroker::GetWinSystem()->GetGfxContext());
   CExclusiveLock lock(m_sharedSection);
 
+  // UnInit() leaves the stop flag set, and FlipPage() uses it before the async renderer thread is recreated.
+  m_bStop = false;
+
   if(!g_eventVBlank)
   {
     //Only do this on first run
