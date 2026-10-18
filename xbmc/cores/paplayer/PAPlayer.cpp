@@ -1076,7 +1076,14 @@ void PAPlayer::DoAudioWork()
 {
   if (m_pCallback && m_visBufferLength)
   {
-    m_pCallback->OnAudioData(m_visBuffer, m_visBufferLength);
+    // DirectSound packets contain signed 16-bit PCM; the visualization API
+    // expects normalized floats and a sample count. Keep floating-point work
+    // outside the DirectSound callback.
+    float samples[PACKET_SIZE / sizeof(short)];
+    const unsigned int sampleCount = m_visBufferLength;
+    for (unsigned int i = 0; i < sampleCount; ++i)
+      samples[i] = m_visBuffer[i] * (1.0f / 32768.0f);
+    m_pCallback->OnAudioData(samples, sampleCount);
     m_visBufferLength = 0;
   }
 }
@@ -1094,8 +1101,12 @@ void PAPlayer::StreamCallback( LPVOID pPacketContext )
   if (m_pCallback)
   { // copy into our visualisation buffer.
     // can't use a memcpy() here due to the context (will crash otherwise)
-    memcpy(m_visBuffer, pkt->packet, pkt->length);
-    m_visBufferLength = pkt->length;
+    const unsigned int bytes = pkt->length < PACKET_SIZE ? pkt->length : PACKET_SIZE;
+    const unsigned int sampleCount = bytes / sizeof(short);
+    const short* samples = reinterpret_cast<const short*>(pkt->packet);
+    for (unsigned int i = 0; i < sampleCount; ++i)
+      m_visBuffer[i] = samples[i];
+    m_visBufferLength = sampleCount;
   }
 }
 
