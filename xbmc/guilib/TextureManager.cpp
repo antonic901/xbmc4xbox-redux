@@ -19,6 +19,7 @@
 #include "settings/SettingsComponent.h"
 #include "threads/SingleLock.h"
 #include "threads/SystemClock.h"
+#include "utils/DrivePath.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
@@ -240,7 +241,7 @@ void CGUITextureManager::StartPreLoad()
 
 void CGUITextureManager::PreLoad(const std::string& strTextureName)
 {
-  if (strTextureName.c_str()[1] == ':' || strTextureName == "-")
+  if (DrivePath::Length(strTextureName) || strTextureName == "-")
     return ;
 
   for (int i = 0; i < (int)m_vecTextures.size(); ++i)

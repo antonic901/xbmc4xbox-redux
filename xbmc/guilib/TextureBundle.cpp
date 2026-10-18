@@ -8,6 +8,7 @@
 #include "addons/Skin.h"
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
+#include "utils/DrivePath.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
 #include "filesystem/SpecialProtocol.h"
@@ -134,14 +135,14 @@ bool CTextureBundle::OpenBundle()
 
     WIN32_FIND_DATA FindData[2];
     FindClose(FindFirstFile(strPath.c_str(), &FindData[0]));
-    HANDLE hFind = FindFirstFile("Z:\\Textures.xpr", &FindData[1]);
+    HANDLE hFind = FindFirstFile("HDD0-Z:\\Textures.xpr", &FindData[1]);
     FindClose(hFind);
 
     if (hFind == INVALID_HANDLE_VALUE || FindData[0].nFileSizeLow != FindData[1].nFileSizeLow ||
         CompareFileTime(&FindData[0].ftLastWriteTime, &FindData[1].ftLastWriteTime))
     {
-      SetFileAttributes("Z:\\Textures.xpr", FILE_ATTRIBUTE_NORMAL); //must set readable before overwriting
-      if (!CopyFile(strPath.c_str(), "Z:\\Textures.xpr", FALSE))
+      SetFileAttributes("HDD0-Z:\\Textures.xpr", FILE_ATTRIBUTE_NORMAL); //must set readable before overwriting
+      if (!CopyFile(strPath.c_str(), "HDD0-Z:\\Textures.xpr", FALSE))
       {
         CLog::Log(LOGERROR, "Unable to open file: %s: %x", strPath.c_str(), GetLastError());
         return false;
@@ -153,7 +154,7 @@ bool CTextureBundle::OpenBundle()
         CloseHandle(m_hFile);
       }
     }
-    strPath = "Z:\\Textures.xpr";
+    strPath = "HDD0-Z:\\Textures.xpr";
   }
 #endif
 
@@ -272,7 +273,7 @@ bool CTextureBundle::HasFile(const std::string& Filename)
 
 void CTextureBundle::GetTexturesFromPath(const std::string &path, std::vector<std::string> &textures)
 {
-  if (path.size() > 1 && path[1] == ':')
+  if (DrivePath::Length(path))
     return;
 
   if (m_hFile == INVALID_HANDLE_VALUE && !OpenBundle())

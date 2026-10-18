@@ -127,7 +127,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "bsdsfv.h"
 #include "utils/StringUtils.h"
-
+#include "utils/URIUtils.h"
 
 /////////////////////////////////////////////////////////////////////////
 // CSfvFile
@@ -227,15 +227,8 @@ int CSfvFile::SetSfvDir(LPCTSTR dirname)
 
 int CSfvFile::CheckFile(LPCTSTR filename, unsigned long& returnCrc)
 {
-  TCHAR drive[_MAX_DRIVE];
-  TCHAR dir[_MAX_DIR];
-  TCHAR fname[_MAX_FNAME];
-  TCHAR ext[_MAX_EXT];
-  _tsplitpath(filename, drive, dir, fname, ext);
-  std::string sfvdir = drive;
-  sfvdir += dir;
-  std::string filestr = fname;
-  filestr += ext;
+  std::string sfvdir, filestr;
+  URIUtils::Split(filename, sfvdir, filestr);
 
   if (StringUtils::CompareNoCase(sfvdir, mSfvDir) != 0)
     SetSfvDir(sfvdir.c_str());
@@ -246,8 +239,7 @@ int CSfvFile::CheckFile(LPCTSTR filename, unsigned long& returnCrc)
   returnCrc = 0;
 
 
-  std::string name = fname;
-  name += ext;
+  std::string name = filestr;
   int index = 0;
     for (index = 0; index < mNrEntries; index++)
         if (strncmp (filestr.c_str(), mSfvTable[index].filename, strlen (name.c_str())) == 0)

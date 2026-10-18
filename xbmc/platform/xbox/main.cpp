@@ -27,43 +27,23 @@ void SetupDriveLetters()
   std::string strExecutablePath;
   CUtil::GetHomePath(strExecutablePath);
   char szDevicePath[MAX_PATH];
-  CIoSupport::GetPartition(strExecutablePath.c_str()[0], szDevicePath);
-  strcat(szDevicePath, &strExecutablePath.c_str()[2]);
+  size_t colon = strExecutablePath.find(':');
+  if (colon == std::string::npos)
+    return;
+
+  CIoSupport::GetPartition(strExecutablePath.substr(0, colon).c_str(), szDevicePath);
+  strcat(szDevicePath, strExecutablePath.c_str() + colon + 1);
 
   CIoSupport::Dismount("Cdrom0");
   CIoSupport::RemapDriveLetter('D', "Cdrom0");
   CIoSupport::RemapDriveLetter('Q', szDevicePath);
-  CIoSupport::RemapDriveLetter('C', "Harddisk0\\Partition2");
-  CIoSupport::RemapDriveLetter('E', "Harddisk0\\Partition1");
-  CIoSupport::RemapDriveLetter('X', "Harddisk0\\Partition3");
-  CIoSupport::RemapDriveLetter('Y', "Harddisk0\\Partition4");
-  CIoSupport::RemapDriveLetter('Z', "Harddisk0\\Partition5");
 
-  // Attempt to read the LBA48 v3 patch partition table, if kernel supports the command and it exists.
-  CIoSupport::ReadPartitionTable();
+  CIoSupport::MapHarddiskPartitions();
 
-  if (CIoSupport::HasPartitionTable())
-  {
-    // Mount up to Partition15 if they are available.
-    for (int i = EXTEND_PARTITION_BEGIN; i <= EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT - 1; i++)
-    {
-      char szDevice[32];
-      if (CIoSupport::PartitionExists(i))
-      {
-        char cDriveLetter = 'A' + i - 1;
-        char extendDriveLetter = CIoSupport::GetExtendedPartitionDriveLetter(cDriveLetter - EXTEND_DRIVE_BEGIN);
-        sprintf(szDevice, "Harddisk0\\Partition%u", i);
-        CIoSupport::RemapDriveLetter(extendDriveLetter, szDevice);
-      }
-    }
-  }
-  else
-  {
-    if (CIoSupport::DriveExists('F'))
-      CIoSupport::RemapDriveLetter('F', "Harddisk0\\Partition6");
-    if (CIoSupport::DriveExists('G'))
-      CIoSupport::RemapDriveLetter('G', "Harddisk0\\Partition7");
-  }
+  // Remove aliases inherited from the dashboard/BIOS, including the former P mount.
+  const char* legacyHddLetters = "ABCEFGPRSVWXYZ";
+  for (const char* letter = legacyHddLetters; *letter; ++letter)
+    CIoSupport::UnmapDriveLetter(*letter);
 }
 
 void main()
@@ -131,8 +111,13 @@ void main()
     char szXbePath[MAX_PATH];
     CIoSupport::GetXbePath(szXbePath);
     char szDevicePath[MAX_PATH];
-    CIoSupport::GetPartition(szXbePath[0], szDevicePath);
-    szXbePath[0] = 'D';
+    char* colon = strchr(szXbePath, ':');
+    if (!colon)
+      return;
+    *colon = 0;
+    CIoSupport::GetPartition(szXbePath, szDevicePath);
+    std::string launchPath = std::string("D:") + (colon + 1);
+    strcpy(szXbePath, launchPath.c_str());
     CUtil::LaunchXbe(szDevicePath, szXbePath, NULL, VIDEO_NULL, COUNTRY_NULL, NULL);
   }
 #endif

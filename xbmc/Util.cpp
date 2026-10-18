@@ -93,6 +93,7 @@
 #include "LocalizeStrings.h"
 #include "utils/md5.h"
 #include "utils/CharsetConverter.h"
+#include "utils/DrivePath.h"
 #include "utils/log.h"
 #include "video/VideoInfoTag.h"
 #include "programs/launchers/ProgramLauncher.h"
@@ -529,9 +530,9 @@ void CUtil::GetQualifiedFilename(const std::string &strBasePath, std::string &st
   // If the filename starts "x:", "\\" or "/" it's already fully qualified so return
   if (strFilename.size() > 1)
 #ifdef TARGET_POSIX
-    if ( (strFilename[1] == ':') || (strFilename[0] == '/') )
+    if ( (DrivePath::Length(strFilename)) || (strFilename[0] == '/') )
 #else
-    if ( strFilename[1] == ':' || (strFilename[0] == '\\' && strFilename[1] == '\\'))
+    if ( DrivePath::Length(strFilename) || (strFilename[0] == '\\' && strFilename[1] == '\\'))
 #endif
       return;
 
@@ -781,7 +782,7 @@ bool CUtil::CacheXBEIcon(const std::string& strFilePath, const std::string& strI
   bool success = false;
 
   uint32_t crc = Crc32::ComputeFromLowerCase(strFilePath);
-  std::string strTempFile = StringUtils::Format("Z:\\%08x.tbn", crc);
+  std::string strTempFile = StringUtils::Format("HDD0-Z:\\%08x.tbn", crc);
 
   // extract icon from .xbe
   if (URIUtils::HasExtension(strFilePath, ".xbx"))
@@ -997,7 +998,7 @@ std::string CUtil::GetFatXQualifiedPath(const std::string& strPath)
   // We need to check whether we must use forward (ie. special://)
   // or backslashes (ie. Q:\)
   std::string sep;
-  if (strFileNameAndPath.c_str()[1] == ':' || strFileNameAndPath.find('\\')>=0)
+  if (DrivePath::Length(strFileNameAndPath) || strFileNameAndPath.find('\\')>=0)
   {
     StringUtils::Replace(strFileNameAndPath, '/', '\\');
     sep="\\";
@@ -3097,7 +3098,8 @@ void CUtil::GetHomePath(std::string& strPath)
   char szXBEFileName[1024];
   CIoSupport::GetXbePath(szXBEFileName);
   char *szFileName = strrchr(szXBEFileName, '\\');
-  *szFileName = 0;
+  if (szFileName)
+    *szFileName = 0;
   strPath = szXBEFileName;
 }
 
@@ -3218,7 +3220,9 @@ void CUtil::RunXBE(const char* szPath1, char* szParameters, F_VIDEO ForceVideo, 
       char szDevicePath[1024];
       char szXbePath[1024];
 
-      CIoSupport::GetPartition(szDrive[0], szDevicePath);
+      CIoSupport::GetPartition(szDrive, szDevicePath);
+      if (!szDevicePath[0])
+        return;
 
       strcat(szDevicePath, szDirectory);
       wsprintf(szXbePath, "d:\\%s", szXbe);

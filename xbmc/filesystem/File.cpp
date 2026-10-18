@@ -23,6 +23,7 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "utils/BitstreamStats.h"
+#include "utils/DrivePath.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
@@ -77,7 +78,7 @@ bool CFile::Copy(const CURL& url2, const CURL& dest, XFILE::IFileCallback* pCall
       std::vector<std::string> tokens;
       std::string strDirectory = URIUtils::GetDirectory(pathToUrl);
       URIUtils::RemoveSlashAtEnd(strDirectory);  // for the test below
-      if (!(strDirectory.size() == 2 && strDirectory[1] == ':'))
+      if (!(DrivePath::IsRoot(strDirectory)))
       {
         CURL url(strDirectory);
         std::string pathsep;

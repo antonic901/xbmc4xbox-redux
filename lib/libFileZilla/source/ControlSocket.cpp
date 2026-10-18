@@ -37,6 +37,7 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "settings/AdvancedSettings.h"
+#include "utils/DrivePath.h"
 #include "utils/log.h"
 
 #include "platform/xbox/filesystem/MemoryUnitManager.h"
@@ -315,21 +316,7 @@ BOOL CControlSocket::SendCurDir(const std::string command,std::string curDir)
 
 BOOL CControlSocket::SendDir(const std::string command,std::string curDir,const std::string prompt)
 {
-  if (1 /*g_settings.m_bFTPSingleCharDrives*/
-    && (curDir.length() >= 2)
-    && (curDir[0] == '/') && isalpha(curDir[1]) && ((curDir.length() == 2) || (curDir[2] == ':')))
-  {
-    // modified to be consistent with other xbox ftp behavior: drive
-    // name is a single character without the ':' at the end
-    if (curDir.length() > 3)
-    {
-      curDir = StringUtils::ToUpper(curDir.substr(0, 2)) + curDir.substr(3);
-    }
-    else
-    {
-      curDir = StringUtils::ToUpper(curDir.substr(0, 2));
-    }
-  }
+  curDir = DrivePath::ToFTP(curDir);
 
   std::string str;
   str = StringUtils::Format("%s \"%s\"%s", command.c_str(), curDir.c_str(), prompt.c_str());
@@ -1077,27 +1064,23 @@ void CControlSocket::ParseCommand()
 
                         std::string dirToList = iter->dir;
 
-                        if (isalpha(iter->dir[0]) && iter->dir[1] == ':')
+                        if (DrivePath::IsRoot(iter->dir))
                         {
-                            char drive = tolower(iter->dir[0]);
-
-                            // extended partitions and memory units - check if the drive is available
-                            if (strchr("abfghirsvw", drive) && !CIoSupport::DriveExists(drive) && !g_memoryUnitManager.IsDriveValid(drive))
-                                continue;
-
-                            // don't show x, y, z in the listing as users shouldn't really be
-                            // stuffing around with these drives (power users can always go
-                            // to these folders by specifying the path directly)
-                            if (drive >= 'x' && !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_FTPShowCache)
-                                continue;
-
-                            if (1 /*g_settings.m_bFTPSingleCharDrives*/)
+                            std::string name = iter->dir.substr(0, DrivePath::Length(iter->dir));
+                            char drive = tolower(name[name.size() - 1]);
+                            if (name.size() > 1)
                             {
-                                // modified to be consistent with other xbox ftp behavior: drive
-                                // name is a single character without the ':' at the end
-                                dirToList = drive;
-                                StringUtils::ToUpper(dirToList);
+                                if (!CIoSupport::DriveExists(name.c_str()))
+                                    continue;
                             }
+                            else if ((drive >= 'h' && drive <= 'o') &&
+                                     !CIoSupport::DriveExists(name.c_str()) && !g_memoryUnitManager.IsDriveValid(drive))
+                                continue;
+
+                            if ((drive == 'x' || drive == 'y' || drive == 'z') &&
+                                !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_FTPShowCache)
+                                continue;
+                            dirToList = StringUtils::ToUpper(name);
                         }
 
                         StringUtils::TrimRight(dirToList, "\\");
@@ -1829,6 +1812,16 @@ void CControlSocket::ParseCommand()
                 t_directory dir;
                 for (std::vector<t_directory>::const_iterator iter=user.permissions.begin(); iter!=user.permissions.end(); iter++) {
                     if ((iter->dir != "/") && (iter->dir != "\\")) {
+                        if (DrivePath::IsRoot(iter->dir))
+                        {
+                            std::string name = iter->dir.substr(0, DrivePath::Length(iter->dir));
+                            char drive = tolower(name[name.size() - 1]);
+                            if (name.size() > 1 && !CIoSupport::DriveExists(name.c_str()))
+                                continue;
+                            if ((drive == 'x' || drive == 'y' || drive == 'z') &&
+                                !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_FTPShowCache)
+                                continue;
+                        }
                         if (NULL==pCurrent)
                         {
                             pCurrent = pResult;
@@ -1840,13 +1833,9 @@ void CControlSocket::ParseCommand()
                             pCurrent->pNext=NULL;
                         }
 
-            if (1 /*g_settings.m_bFTPSingleCharDrives*/
-              && (iter->dir.length() == 3)
-              && isalpha(iter->dir[0]) && (iter->dir[1] == ':') && (iter->dir[2] == '\\'))
+            if (DrivePath::IsRoot(iter->dir))
             {
-              // modified to be consistent with other xbox ftp behavior: drive
-              // name is a single character without the ':' at the end
-              result=iter->dir[0];
+              result = iter->dir.substr(0, DrivePath::Length(iter->dir));
             }
             else
             {

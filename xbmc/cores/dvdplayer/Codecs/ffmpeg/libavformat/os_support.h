@@ -30,6 +30,7 @@
 #include "config.h"
 
 #include <sys/stat.h>
+#include <string.h>
 
 #if defined(__MINGW32__) && !defined(__MINGW32CE__)
 #  include <fcntl.h>
@@ -56,12 +57,22 @@
 #define mkdir(a, b) _mkdir(a)
 #else
 #include <sys/stat.h>
+#include <string.h>
 #endif
 
 static inline int is_dos_path(const char *path)
 {
 #if HAVE_DOS_PATHS
-    if (path[0] && path[1] == ':')
+    /* Xbox named hard-disk mounts are local paths, not URL protocols. */
+    if (strlen(path) >= 7 &&
+        (path[0] == 'H' || path[0] == 'h') &&
+        (path[1] == 'D' || path[1] == 'd') &&
+        (path[2] == 'D' || path[2] == 'd') &&
+        (path[3] == '0' || path[3] == '1') && path[4] == '-' &&
+        ((path[5] >= 'A' && path[5] <= 'Z') || (path[5] >= 'a' && path[5] <= 'z')) &&
+        path[6] == ':')
+        return 1;
+    if (path[0] && path[1] == ':' && strchr("DdHhIiJjKkLlMmNnOoQqTtUu", path[0]))
         return 1;
 #endif
     return 0;

@@ -414,9 +414,9 @@ extern "C" HMODULE WINAPI dllRtlUnwind(PVOID TargetFrame OPTIONAL, PVOID TargetI
 extern "C" LPTSTR WINAPI dllGetCommandLineA()
 {
 #ifdef API_DEBUG
-  CLog::Log(LOGDEBUG, "GetCommandLineA() => \"c:\\xbmc.xbe\"\n");
+  CLog::Log(LOGDEBUG, "GetCommandLineA() => \"Q:\\default.xbe\"\n");
 #endif
-  return (LPTSTR)"c:\\xbmc.xbe";
+  return (LPTSTR)"Q:\\default.xbe";
 }
 
 extern "C" HMODULE WINAPI dllExitProcess(UINT uExitCode)
@@ -1001,7 +1001,7 @@ extern "C" DWORD WINAPI dllGetTempPathA(DWORD nBufferLength, LPTSTR lpBuffer)
   // If the function succeeds, the return value is the length, in TCHARs, of the string copied to lpBuffer,
   // not including the terminating null character. If the return value is greater than nBufferLength,
   // the return value is the size of the buffer required to hold the path.
-  const char* tempPath = "Z:\\temp\\";
+  const char* tempPath = "HDD0-Z:\\temp\\";
   unsigned int len = strlen(tempPath);
 
   if (nBufferLength > len)

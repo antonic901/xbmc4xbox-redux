@@ -37,6 +37,7 @@
 #include "settings/SettingsComponent.h"
 #include "storage/DetectDVDType.h"
 #include "storage/MediaManager.h"
+#include "utils/DrivePath.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
@@ -587,8 +588,7 @@ bool CGUIDialogFileBrowser::HaveDiscOrConnection( int iDriveType )
 void CGUIDialogFileBrowser::GoParentFolder()
 {
   std::string strPath(m_strParentPath);
-  if (strPath.size() == 2)
-    if (strPath[1] == ':')
+  if (DrivePath::IsRoot(strPath))
       URIUtils::AddSlashAtEnd(strPath);
   Update(strPath);
 }

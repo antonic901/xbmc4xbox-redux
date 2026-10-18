@@ -41,6 +41,7 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "FileItem.h"
+#include "utils/DrivePath.h"
 #include "utils/URIUtils.h"
 #include "utils/XTimeUtils.h"
 
@@ -168,33 +169,17 @@ extern "C" void __stdcall cleanup_emu_environ()
 
 bool emu_is_hd(const char* path)
 {
-  if (path[0] != 0 && path[1] == ':')
-  {
-    if (path[0] == 'C' ||
-        path[0] == 'E' ||
-        path[0] == 'F' ||
-        path[0] == 'Q' ||
-        path[0] == 'S' ||
-        path[0] == 'T' ||
-        path[0] == 'U' ||
-        path[0] == 'V' ||
-        path[0] == 'Y' ||
-        path[0] == 'Z')
-    {
-      return true;
-    }
-  }
+  if (DrivePath::Length(path) == 6)
+    return true;
+  if (DrivePath::Length(path) == 1)
+    return DrivePath::Upper(path[0]) == 'Q' || DrivePath::Upper(path[0]) == 'T' ||
+           DrivePath::Upper(path[0]) == 'U';
   return false;
 }
 
 bool emu_is_root_drive(const char* path)
 {
-  int pathlen = strlen(path);
-  if (pathlen == 2 || pathlen == 3)
-  {
-    return emu_is_hd(path);
-  }
-  return false;
+  return DrivePath::IsRoot(path) && emu_is_hd(path);
 }
 
 extern "C"
@@ -340,7 +325,7 @@ extern "C"
     if (len > maxLength && absPath != NULL) return NULL;
 
     // dll has to make sure it uses the correct path for now
-    if (len > 1 && relPath[1] == ':')
+    if (DrivePath::Length(relPath))
     {
       if (absPath == NULL) absPath = dll_strdup(relPath);
       else
@@ -1340,7 +1325,7 @@ extern "C"
 
 #ifndef _LINUX
     // check for remaining letter drives
-    if (path && isalpha(path[0]) && path[1] == ':' && ( strlen(path) == 2 || strlen(path) == 3 ) )
+    if (path && DrivePath::IsRoot(path) )
 #else
     if (!_stricmp(path, "D:") || !_stricmp(path, "D:\\"))
 #endif
@@ -1404,7 +1389,7 @@ extern "C"
 
 #ifndef _LINUX
     // check for remaining letter drives
-    if (path && isalpha(path[0]) && path[1] == ':' && ( strlen(path) == 2 || strlen(path) == 3 ) )
+    if (path && DrivePath::IsRoot(path) )
 #else
     if (!_stricmp(path, "D:") || !_stricmp(path, "D:\\"))
 #endif

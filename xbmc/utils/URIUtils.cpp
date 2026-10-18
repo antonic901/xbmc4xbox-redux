@@ -17,6 +17,7 @@
 #include "URL.h"
 #include "ServiceBroker.h"
 #include "StringUtils.h"
+#include "utils/DrivePath.h"
 #include "utils/log.h"
 
 #include <algorithm>
@@ -209,7 +210,7 @@ void URIUtils::Split(const std::string& strFileNameAndPath,
   {
     char ch = strFileNameAndPath[i];
     // Only break on ':' if it's a drive separator for DOS (ie d:foo)
-    if (ch == '/' || ch == '\\' || (ch == ':' && i == 1)) break;
+    if (ch == '/' || ch == '\\' || (ch == ':' && static_cast<size_t>(i) == DrivePath::Length(strFileNameAndPath))) break;
     else i--;
   }
   if (i == 0)
@@ -1131,7 +1132,7 @@ bool URIUtils::IsLibraryContent(const std::string &strFile)
 
 bool URIUtils::IsDOSPath(const std::string &path)
 {
-  if (path.size() > 1 && path[1] == ':' && isalpha(path[0]))
+  if (DrivePath::Length(path))
     return true;
 
   // windows network drives

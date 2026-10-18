@@ -13,6 +13,7 @@
 #include "sqlitedataset.h"
 
 #include "filesystem/File.h"
+#include "utils/DrivePath.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/XTimeUtils.h"
@@ -105,7 +106,7 @@ void SqliteDatabase::setHostName(const char* newHost)
     host += "/";
 
   // ensure the fully qualified path has slashes in the correct direction
-  if ((host[1] == ':') && isalpha(host[0]))
+  if (DrivePath::Length(host))
   {
     size_t pos = 0;
     while ((pos = host.find('/', pos)) != std::string::npos)

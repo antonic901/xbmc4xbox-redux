@@ -3265,7 +3265,7 @@ std::string CFileItem::GetGameSaveThumb() const
   std::string thumb = URIUtils::AddFileToFolder(CServiceBroker::GetSettingsComponent()->GetProfileManager()->GetGameSaveThumbFolder(), StringUtils::Format("%08x.tbn", crc));
   if (!CFile::Exists(thumb))
   {
-    std::string strSavegamePath = "E:\\UDATA\\" + Path.back();
+    std::string strSavegamePath = "HDD0-E:\\UDATA\\" + Path.back();
 
     std::string strPath = URIUtils::AddFileToFolder(strSavegamePath, "TitleImage.xbx");
     if (StringUtils::Split(Path.back(), '/').size() > 1)

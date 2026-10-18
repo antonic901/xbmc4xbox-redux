@@ -106,28 +106,23 @@ void CMediaManager::GetLocalDrives(VECSOURCES &localDrives, bool includeQ)
 {
   // Local shares
   CMediaSource share;
-  share.strPath = "C:\\";
-  share.strName = StringUtils::Format(g_localizeStrings.Get(21438).c_str(),'C');
   share.m_ignore = true;
-  share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
-  localDrives.push_back(share);
   share.strPath = "D:\\";
   share.strName = g_localizeStrings.Get(218);
   share.m_iDriveType = CMediaSource::SOURCE_TYPE_DVD;
   localDrives.push_back(share);
-  share.strPath = "E:\\";
-  share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
-  share.strName = StringUtils::Format(g_localizeStrings.Get(21438).c_str(),'E');
-  localDrives.push_back(share);
-  for (int driveCount=EXTEND_PARTITION_BEGIN;driveCount<=(EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT-1);driveCount++)
+  for (int i = 0; i < HDD_PARTITIONS_COUNT; ++i)
   {
-    if (CIoSupport::DriveExists(CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN)))
+    const char* name = CIoSupport::GetHarddiskDriveName(i);
+    if (name[5] == 'X' || name[5] == 'Y' || name[5] == 'Z')
+      continue;
+    if (CIoSupport::DriveExists(name))
     {
       CMediaSource share;
-      share.strPath = StringUtils::Format("%c:\\", CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
-      CLog::Log(LOGINFO, "  Local Source Drive %c:", CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
-      share.strName = StringUtils::Format(g_localizeStrings.Get(21438).c_str(),CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN));
+      share.strPath = StringUtils::Format("%s:\\", name);
+      share.strName = name;
       share.m_ignore = true;
+      share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
       localDrives.push_back(share);
     }
   }

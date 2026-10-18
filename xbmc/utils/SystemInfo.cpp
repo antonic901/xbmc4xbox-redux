@@ -49,6 +49,7 @@ extern "C" XPP_DEVICE_TYPE XDEVICE_TYPE_IR_REMOTE_TABLE;
 #include "platform/xbox/XKRC4.h"
 #include "platform/xbox/XKUtils.h"
 #include "platform/xbox/XKflash.h"
+#include "platform/xbox/storage/IoSupport.h"
 
 #include <conio.h>
 
@@ -992,36 +993,20 @@ bool CSysInfo::GetDiskSpace(const std::string drive,int& iTotal, int& iTotalFree
 
   if (drive.empty() || drive == "*") //All Drives
   {
-    ULARGE_INTEGER totalC, totalFreeC;
-    ULARGE_INTEGER totalE, totalFreeE;
-    ULARGE_INTEGER totalF, totalFreeF;
-    ULARGE_INTEGER totalG, totalFreeG;
-    ULARGE_INTEGER totalX, totalFreeX;
-    ULARGE_INTEGER totalY, totalFreeY;
-    ULARGE_INTEGER totalZ, totalFreeZ;
-
-    BOOL bC = GetDiskFreeSpaceEx("C:\\", NULL, &totalC, &totalFreeC);
-    BOOL bE = GetDiskFreeSpaceEx("E:\\", NULL, &totalE, &totalFreeE);
-    BOOL bF = GetDiskFreeSpaceEx("F:\\", NULL, &totalF, &totalFreeF);
-    BOOL bG = GetDiskFreeSpaceEx("G:\\", NULL, &totalG, &totalFreeG);
-    BOOL bX = GetDiskFreeSpaceEx("X:\\", NULL, &totalX, &totalFreeX);
-    BOOL bY = GetDiskFreeSpaceEx("Y:\\", NULL, &totalY, &totalFreeY);
-    BOOL bZ = GetDiskFreeSpaceEx("Z:\\", NULL, &totalZ, &totalFreeZ);
-
-    total.QuadPart = (bC?totalC.QuadPart:0)+
-      (bE?totalE.QuadPart:0)+
-      (bF?totalF.QuadPart:0)+
-      (bG?totalG.QuadPart:0)+
-      (bX?totalX.QuadPart:0)+
-      (bY?totalY.QuadPart:0)+
-      (bZ?totalZ.QuadPart:0);
-    totalFree.QuadPart = (bC?totalFreeC.QuadPart:0)+
-      (bE?totalFreeE.QuadPart:0)+
-      (bF?totalFreeF.QuadPart:0)+
-      (bG?totalFreeG.QuadPart:0)+
-      (bX?totalFreeX.QuadPart:0)+
-      (bY?totalFreeY.QuadPart:0)+
-      (bZ?totalFreeZ.QuadPart:0);
+    total.QuadPart = 0;
+    totalFree.QuadPart = 0;
+    for (int i = 0; i < HDD_PARTITIONS_COUNT; ++i)
+    {
+      std::string path = std::string(CIoSupport::GetHarddiskDriveName(i)) + ":\\";
+      ULARGE_INTEGER partitionTotal, partitionFree;
+      if (GetDiskFreeSpaceEx(path.c_str(), NULL, &partitionTotal, &partitionFree))
+      {
+        total.QuadPart += partitionTotal.QuadPart;
+        totalFree.QuadPart += partitionFree.QuadPart;
+      }
+    }
+    if (!total.QuadPart)
+      return false;
 
     iTotal = (int)(total.QuadPart/MB);
     iTotalFree = (int)(totalFree.QuadPart/MB);
@@ -1614,7 +1599,7 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
     case SYSTEM_FREE_SPACE_PERCENT_C:
     case SYSTEM_USED_SPACE_PERCENT_C:
       strDrive = "C";
-      bRet = g_sysinfo.GetDiskSpace("C",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("HDD0-C",total, totalFree, totalUsed, percentFree, percentused);
       break;
     case LCD_FREE_SPACE_E:
     case SYSTEM_FREE_SPACE_E:
@@ -1623,7 +1608,7 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
     case SYSTEM_FREE_SPACE_PERCENT_E:
     case SYSTEM_USED_SPACE_PERCENT_E:
       strDrive = "E";
-      bRet = g_sysinfo.GetDiskSpace("E",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("HDD0-E",total, totalFree, totalUsed, percentFree, percentused);
       break;
     case LCD_FREE_SPACE_F:
     case SYSTEM_FREE_SPACE_F:
@@ -1632,7 +1617,7 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
     case SYSTEM_FREE_SPACE_PERCENT_F:
     case SYSTEM_USED_SPACE_PERCENT_F:
       strDrive = "F";
-      bRet = g_sysinfo.GetDiskSpace("F",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("HDD0-F",total, totalFree, totalUsed, percentFree, percentused);
       break;
     case LCD_FREE_SPACE_G:
     case SYSTEM_FREE_SPACE_G:
@@ -1641,25 +1626,25 @@ std::string CSysInfo::GetHddSpaceInfo(int& percent, int drive, bool shortText)
     case SYSTEM_FREE_SPACE_PERCENT_G:
     case SYSTEM_USED_SPACE_PERCENT_G:
       strDrive = "G";
-      bRet = g_sysinfo.GetDiskSpace("G",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("HDD0-G",total, totalFree, totalUsed, percentFree, percentused);
       break;
     case SYSTEM_USED_SPACE_X:
     case SYSTEM_FREE_SPACE_X:
     case SYSTEM_TOTAL_SPACE_X:
       strDrive = "X";
-      bRet = g_sysinfo.GetDiskSpace("X",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("HDD0-X",total, totalFree, totalUsed, percentFree, percentused);
       break;
     case SYSTEM_USED_SPACE_Y:
     case SYSTEM_FREE_SPACE_Y:
     case SYSTEM_TOTAL_SPACE_Y:
       strDrive = "Y";
-      bRet = g_sysinfo.GetDiskSpace("Y",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("HDD0-Y",total, totalFree, totalUsed, percentFree, percentused);
       break;
     case SYSTEM_USED_SPACE_Z:
     case SYSTEM_FREE_SPACE_Z:
     case SYSTEM_TOTAL_SPACE_Z:
       strDrive = "Z";
-      bRet = g_sysinfo.GetDiskSpace("Z",total, totalFree, totalUsed, percentFree, percentused);
+      bRet = g_sysinfo.GetDiskSpace("HDD0-Z",total, totalFree, totalUsed, percentFree, percentused);
       break;
   }
   if (bRet)

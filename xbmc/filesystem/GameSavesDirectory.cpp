@@ -30,7 +30,7 @@ CGameSavesDirectory::~CGameSavesDirectory(void)
 bool CGameSavesDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
   // URL in Format: gamesaves://{title_id}/{savegame_id}
-  std::string strRootPath = "E:\\UDATA\\";
+  std::string strRootPath = "HDD0-E:\\UDATA\\";
   if (!url.GetHostName().empty())
     strRootPath += url.GetHostName();
   URIUtils::AddSlashAtEnd(strRootPath);

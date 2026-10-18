@@ -18,6 +18,7 @@
 #include "guilib/GUIComponent.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
+#include "utils/DrivePath.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/log.h"
@@ -308,7 +309,7 @@ bool CFileOperationJob::CFileOperation::ExecuteOperation(CFileOperationJob *base
 inline bool CFileOperationJob::CanBeRenamed(const std::string &strFileA, const std::string &strFileB)
 {
 #ifndef TARGET_POSIX
-  if (strFileA[1] == ':' && strFileA[0] == strFileB[0])
+  if (DrivePath::SameDrive(strFileA, strFileB))
     return true;
 #else
   if (URIUtils::IsHD(strFileA) && URIUtils::IsHD(strFileB))

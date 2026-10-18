@@ -132,7 +132,7 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
         if (URIUtils::IsProtocol(item->GetPath(), "gamesaves"))
         {
           std::vector<std::string> Path = StringUtils::Split(item->GetPath(), "://");
-          if (!CFileUtils::DeleteItem("E:\\UDATA\\" + Path.back() + "\\"))
+          if (!CFileUtils::DeleteItem("HDD0-E:\\UDATA\\" + Path.back() + "\\"))
             return false;
         }
         else
@@ -150,7 +150,7 @@ bool CGUIWindowPrograms::OnContextButton(int itemNumber, CONTEXT_BUTTON button)
   case CONTEXT_BUTTON_GAMESAVES:
     {
       std::string strTitleId = LAUNCHERS::CXBELauncher::GetTitleID(item->GetPath(), true).asString();
-      std::string strSaveGamePath = URIUtils::AddFileToFolder("E:\\UDATA\\", strTitleId);
+      std::string strSaveGamePath = URIUtils::AddFileToFolder("HDD0-E:\\UDATA\\", strTitleId);
       if (XFILE::CDirectory::Exists(strSaveGamePath))
         Update("gamesaves://" + strTitleId);
       else

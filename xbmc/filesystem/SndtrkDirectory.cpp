@@ -117,7 +117,7 @@ bool CSndtrkDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 
         // Add it to the list
         CFileItemPtr pItem(new CFileItem(strSong));
-        std::string strPath("E:\\TDATA\\fffe0000\\music\\");
+        std::string strPath("HDD0-E:\\TDATA\\fffe0000\\music\\");
         char tmpvar[16];
         *tmpvar = NULL;
         sprintf(tmpvar, "%04x", stInfo.uSoundtrackId);
@@ -143,9 +143,9 @@ bool CSndtrkDirectory::IsAlone(const std::string& strPath)
 
 bool CSndtrkDirectory::FindTrackName(const std::string& strPath, char *NameOfSong)
 {
-  char* ptr = strstr(strPath.c_str(), "E:\\TDATA\\fffe0000\\music\\");
+  char* ptr = strstr(strPath.c_str(), "HDD0-E:\\TDATA\\fffe0000\\music\\");
   if (ptr == NULL) return false;
-  ptr += strlen("E:\\TDATA\\fffe0000\\music\\");
+  ptr += strlen("HDD0-E:\\TDATA\\fffe0000\\music\\");
   char album[5];
   int x = 0;
   for (x = 0;x < 4;x++)

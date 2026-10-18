@@ -29,6 +29,7 @@
 #include "settings/Settings.h"
 #include "settings/SettingsComponent.h"
 #include "Util.h"
+#include "utils/DrivePath.h"
 #include "utils/StringUtils.h"
 
 #ifdef _DEBUG
@@ -868,9 +869,8 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
 #ifdef _XBOX
         if (1 /*g_settings.m_bFTPSingleCharDrives*/)
         {
-            // modified to be consistent with other xbox ftp behavior: drive
-            // name is a single character without the ':' at the end
-            if (path.size() == 1)
+            // FTP exposes drive names without the trailing colon.
+            if (DrivePath::IsName(path))
                 path += ':';
         }
 #endif
@@ -1080,7 +1080,7 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
         if (!bRelative)
         {
             //dir was / - We need to prepend with the drive letter
-            dir=currentdir.substr(1, 2) + '/';
+            dir=currentdir.substr(1, currentdir.find('/', 1) - 1) + '/';
         }
         else
         {
@@ -1095,7 +1095,7 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
         if (!bRelative && dir.length()>=2)
         {
             //Make sure / is in front of a dir starting with a drive letter
-            if (isalpha(dir[0]) && dir[1]==':')
+            if (DrivePath::Length(dir))
                 dir="/"+dir;
         }
         if (dir.substr(0, 1)!="/")
@@ -1117,28 +1117,19 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
             if (!bRelative)
             {
                 //dir starts with a / - Does that include the driver letter?
-                if (dir.length()<3 || !isalpha(dir[1]) || (dir[2] != ':'))
+                if (!DrivePath::Length(dir.substr(1)))
                 {
 #ifdef _XBOX
-                    if (1 /*g_settings.m_bFTPSingleCharDrives*/ &&
-                      (isalpha(dir[1]) && ((dir.length() == 2) || (dir[2] == '/'))))
+                    std::string converted = DrivePath::FromFTP(dir);
+                    if (converted != dir)
                     {
-                    // modified to be consistent with other xbox ftp behavior: drive
-                    // name is a single character without the ':' at the end
-                    // this is the drive letter specified without the ':' character
-                    // at the end - correct it
-                    CString drive = dir.substr(0, 2);
-                    StringUtils::ToUpper(drive);
-                    if (dir.length() > 3)
-                      dir = drive + ":/" + dir.substr(3);
-                    else
-                      dir = drive + ":/";
+                      dir = converted;
                     }
                     else
                     {
 #endif
                   //We were given an absolute path without a drive letter we need to put one in the dir list
-                  piecelist.push_back(currentdir.substr(1, 2));
+                  piecelist.push_back(currentdir.substr(1, currentdir.find('/', 1) - 1));
 #ifdef _XBOX
                     }
 #endif
@@ -1209,7 +1200,7 @@ int CPermissions::ChangeCurrentDir(LPCTSTR user, std::string &currentdir, std::s
         currentdir="/"+directory.dir;
     }
 #ifdef _XBOX
-    if ((currentdir.size() == 3) && (currentdir[0]=='/') && (isalpha(currentdir[1])) && (currentdir[2]==':'))
+    if (!currentdir.empty() && currentdir[0] == '/' && DrivePath::IsRoot(currentdir.substr(1)))
       StringUtils::ToUpper(currentdir);
 #endif
     return 0;

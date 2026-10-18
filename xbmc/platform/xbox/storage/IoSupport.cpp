@@ -24,6 +24,7 @@
 
 #include "system.h"
 #include "IoSupport.h"
+#include "utils/DrivePath.h"
 #include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
@@ -40,55 +41,151 @@
 #define NT_STATUS_OBJECT_NAME_NOT_FOUND long(0xC0000000 | 0x0034)
 #define NT_STATUS_VOLUME_DISMOUNTED     long(0xC0000000 | 0x026E)
 
-typedef struct
+struct HarddiskMapping
 {
-  char cDriveLetter;
-  char* szDevice;
-  int iPartition;
-}
-stDriveMapping;
+  const char* name;
+  const char* device;
+  int disk;
+  int partition;
+};
 
-#ifdef _XBOX
-stDriveMapping driveMapping[] =
-  {
-    { 'C', "Harddisk0\\Partition2", 2},
-    { 'D', "Cdrom0", -1},
-    { 'E', "Harddisk0\\Partition1", 1},
-    { 'X', "Harddisk0\\Partition3", 3},
-    { 'Y', "Harddisk0\\Partition4", 4},
-    { 'Z', "Harddisk0\\Partition5", 5},
-  };
-char extendPartitionMapping[] =
-  {
-      'F','G','R','S','V','W','A','B'
-  };
-#else
-stDriveMapping driveMapping[] =
-  {
-    { 'C', "C:", 2},
-    { 'D', "D:", -1},
-    { 'E', "E:", 1},
-    { 'X', "X:", 3},
-    { 'Y', "Y:", 4},
-    { 'Z', "Z:", 5},
-  };
-
-#include "../../Tools/Win32/XBMC_PC.h"
-
-#endif
-
-#define NUM_OF_DRIVES ( sizeof( driveMapping) / sizeof( driveMapping[0] ) )
-
+static const HarddiskMapping harddiskMapping[] =
+{
+  { "HDD0-E", "Harddisk0\\Partition1", 0, 1 },
+  { "HDD0-C", "Harddisk0\\Partition2", 0, 2 },
+  { "HDD0-X", "Harddisk0\\Partition3", 0, 3 },
+  { "HDD0-Y", "Harddisk0\\Partition4", 0, 4 },
+  { "HDD0-Z", "Harddisk0\\Partition5", 0, 5 },
+  { "HDD0-F", "Harddisk0\\Partition6", 0, 6 },
+  { "HDD0-G", "Harddisk0\\Partition7", 0, 7 },
+  { "HDD0-R", "Harddisk0\\Partition8", 0, 8 },
+  { "HDD0-S", "Harddisk0\\Partition9", 0, 9 },
+  { "HDD0-V", "Harddisk0\\Partition10", 0, 10 },
+  { "HDD0-W", "Harddisk0\\Partition11", 0, 11 },
+  { "HDD0-A", "Harddisk0\\Partition12", 0, 12 },
+  { "HDD0-B", "Harddisk0\\Partition13", 0, 13 },
+  { "HDD0-N", "Harddisk0\\Partition14", 0, 14 },
+  { "HDD1-E", "Harddisk1\\Partition1", 1, 1 },
+  { "HDD1-C", "Harddisk1\\Partition2", 1, 2 },
+  { "HDD1-X", "Harddisk1\\Partition3", 1, 3 },
+  { "HDD1-Y", "Harddisk1\\Partition4", 1, 4 },
+  { "HDD1-Z", "Harddisk1\\Partition5", 1, 5 },
+  { "HDD1-F", "Harddisk1\\Partition6", 1, 6 },
+  { "HDD1-G", "Harddisk1\\Partition7", 1, 7 },
+  { "HDD1-R", "Harddisk1\\Partition8", 1, 8 },
+  { "HDD1-S", "Harddisk1\\Partition9", 1, 9 },
+  { "HDD1-V", "Harddisk1\\Partition10", 1, 10 },
+  { "HDD1-W", "Harddisk1\\Partition11", 1, 11 },
+  { "HDD1-A", "Harddisk1\\Partition12", 1, 12 },
+  { "HDD1-B", "Harddisk1\\Partition13", 1, 13 },
+  { "HDD0-N", "Harddisk1\\Partition14", 0, 14 },
+};
 
 PVOID CIoSupport::m_rawXferBuffer;
 PARTITION_TABLE CIoSupport::m_partitionTable;
 bool CIoSupport::m_fPartitionTableIsValid;
 
 
+HRESULT CIoSupport::MapDrive(const char* name, const char* device)
+{
+#ifdef _XBOX
+  char target[MAX_PATH + 32];
+  char link[32];
+  sprintf(target, "\\Device\\%s", device);
+  sprintf(link, "\\??\\%s:", name);
+  ANSI_STRING targetName, linkName;
+  RtlInitAnsiString(&targetName, target);
+  RtlInitAnsiString(&linkName, link);
+  IoDeleteSymbolicLink(&linkName);
+  NTSTATUS status = IoCreateSymbolicLink(&linkName, &targetName);
+  if (!NT_SUCCESS(status))
+    CLog::Log(LOGERROR, "Failed to map %s to %s (status=0x%08x)", name, device, status);
+  return status;
+#else
+  return E_FAIL;
+#endif
+}
+
+bool CIoSupport::DriveExists(const char* name)
+{
+  if (!DrivePath::IsName(name))
+    return false;
+#ifdef _XBOX
+  char link[32];
+  if (strlen(name) > 6)
+    return false;
+  sprintf(link, "\\??\\%s:", name);
+  ANSI_STRING linkName;
+  RtlInitAnsiString(&linkName, link);
+  OBJECT_ATTRIBUTES oa;
+  oa.Attributes = OBJ_CASE_INSENSITIVE;
+  oa.ObjectName = &linkName;
+  oa.RootDirectory = 0;
+  IO_STATUS_BLOCK iosb;
+  HANDLE handle;
+  NTSTATUS status = NtOpenFile(&handle, GENERIC_READ, &oa, &iosb,
+                              FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_SYNCHRONOUS_IO_ALERT);
+  if (NT_SUCCESS(status))
+  {
+    CloseHandle(handle);
+    return true;
+  }
+#endif
+  return false;
+}
+
+void CIoSupport::GetPartition(const char* name, char* partition)
+{
+  for (int i = 0; i < HDD_PARTITIONS_COUNT; ++i)
+    if (stricmp(name, harddiskMapping[i].name) == 0)
+    {
+      strcpy(partition, harddiskMapping[i].device);
+      return;
+    }
+  *partition = 0;
+  if (stricmp(name, "D") == 0)
+    strcpy(partition, "Cdrom0");
+}
+
+void CIoSupport::GetDriveName(const char* partition, char* name)
+{
+  if (strnicmp(partition, "\\Device\\", 8) == 0)
+    partition += 8;
+  for (int i = 0; i < HDD_PARTITIONS_COUNT; ++i)
+  {
+    size_t length = strlen(harddiskMapping[i].device);
+    if (strnicmp(partition, harddiskMapping[i].device, length) == 0 &&
+        (partition[length] == 0 || partition[length] == '\\'))
+    {
+      strcpy(name, harddiskMapping[i].name);
+      return;
+    }
+  }
+  strcpy(name, stricmp(partition, "Cdrom0") == 0 ||
+               strnicmp(partition, "Cdrom0\\", 7) == 0 ? "D" : "");
+}
+
+const char* CIoSupport::GetHarddiskDriveName(int position)
+{
+  return position >= 0 && position < HDD_PARTITIONS_COUNT ? harddiskMapping[position].name : "";
+}
+
+void CIoSupport::MapHarddiskPartitions()
+{
+  for (int i = 0; i < HDD_PARTITIONS_COUNT; ++i)
+  {
+    const HarddiskMapping& mapping = harddiskMapping[i];
+    if (PartitionExists(mapping.partition, mapping.disk))
+      MapDrive(mapping.name, mapping.device);
+  }
+}
+
 // cDriveLetter e.g. 'D'
 // szDevice e.g. "Cdrom0" or "Harddisk0\Partition6"
 HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
 {
+  if (!DrivePath::IsName(std::string(1, cDriveLetter)))
+    return E_INVALIDARG;
 #ifdef _XBOX
   char szSourceDevice[MAX_PATH+32];
   char szDestinationDrive[16];
@@ -112,6 +209,7 @@ HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
   return status;
 #else
   if ((strnicmp(szDevice, "Harddisk0", 9) == 0) ||
+      (strnicmp(szDevice, "Harddisk1", 9) == 0) ||
       (strnicmp(szDevice, "Cdrom", 5) == 0))
     return S_OK;
   return E_FAIL;
@@ -171,51 +269,6 @@ HRESULT CIoSupport::Dismount(const char* szDevice)
 #else
   return S_OK;
 #endif
-}
-
-void CIoSupport::GetPartition(char cDriveLetter, char* szPartition)
-{
-  char upperLetter = toupper(cDriveLetter);
-  if (ExtendedPartitionMappingExists(upperLetter))
-  {
-    sprintf(szPartition, "Harddisk0\\Partition%u", EXTEND_PARTITION_BEGIN+GetExtendedPartitionPosition(upperLetter));
-    return;
-  }
-  for (unsigned int i=0; i < NUM_OF_DRIVES; i++)
-    if (driveMapping[i].cDriveLetter == upperLetter)
-    {
-      strcpy(szPartition, driveMapping[i].szDevice);
-      return;
-    }
-  *szPartition = 0;
-}
-
-void CIoSupport::GetDrive(const char* szPartition, char* cDriveLetter)
-{
-  int part_str_len = strlen(szPartition);
-  int part_num;
-
-  if (part_str_len < 19)
-  {
-    *cDriveLetter = 0;
-    return;
-  }
-
-  part_num = atoi(szPartition + 19);
-#ifdef _XBOX
-  if (part_num >= EXTEND_PARTITION_BEGIN)
-  {
-    *cDriveLetter = extendPartitionMapping[part_num-EXTEND_PARTITION_BEGIN];
-    return;
-  }
-#endif
-  for (unsigned int i=0; i < NUM_OF_DRIVES; i++)
-    if (strnicmp(driveMapping[i].szDevice, szPartition, strlen(driveMapping[i].szDevice)) == 0)
-    {
-      *cDriveLetter = driveMapping[i].cDriveLetter;
-      return;
-    }
-  *cDriveLetter = 0;
 }
 
 HRESULT CIoSupport::EjectTray()
@@ -436,20 +489,26 @@ BOOL CIoSupport::IsDebug()
 VOID CIoSupport::GetXbePath(char* szDest)
 {
 #ifdef _XBOX
-  //Function to get the XBE Path like:
-  //E:\DevKit\xbplayer\xbplayer.xbe
+  char devicePath[MAX_PATH];
+  unsigned int length = XeImageFileName->Length;
+  if (length >= sizeof(devicePath))
+    length = sizeof(devicePath) - 1;
+  memcpy(devicePath, XeImageFileName->Buffer, length);
+  devicePath[length] = 0;
 
-  char szTemp[MAX_PATH];
-  char cDriveLetter = 0;
-
-  strncpy(szTemp, XeImageFileName->Buffer + 8, XeImageFileName->Length - 8);
-  szTemp[20] = 0;
-  GetDrive(szTemp, &cDriveLetter);
-
-  strncpy(szTemp, XeImageFileName->Buffer + 29, XeImageFileName->Length - 29);
-  szTemp[XeImageFileName->Length - 29] = 0;
-
-  sprintf(szDest, "%c:\\%s", cDriveLetter, szTemp);
+  const char* device = devicePath;
+  if (strnicmp(device, "\\Device\\", 8) == 0)
+    device += 8;
+  char drive[7] = {0};
+  GetDriveName(device, drive);
+  if (!drive[0])
+  {
+    *szDest = 0;
+    return;
+  }
+  char partition[MAX_PATH];
+  GetPartition(drive, partition);
+  sprintf(szDest, "%s:%s", drive, device + strlen(partition));
 
 #else
   GetCurrentDirectory(XBMC_MAX_PATH, szDest);
@@ -457,80 +516,7 @@ VOID CIoSupport::GetXbePath(char* szDest)
 #endif
 }
 
-bool CIoSupport::DriveExists(char cDriveLetter)
-{
-  cDriveLetter = toupper(cDriveLetter);
-#ifdef _XBOX
-  // new kernel detection method
-  if (m_fPartitionTableIsValid)
-  {
-    char szDrive[32];
-    ANSI_STRING drive_string;
-    NTSTATUS status;
-    HANDLE hTemp;
-    OBJECT_ATTRIBUTES oa;
-    IO_STATUS_BLOCK iosb;
-
-    sprintf(szDrive, "\\??\\%c:", cDriveLetter);
-    RtlInitAnsiString(&drive_string, szDrive);
-
-    oa.Attributes = OBJ_CASE_INSENSITIVE;
-    oa.ObjectName = &drive_string;
-    oa.RootDirectory = 0;
-
-    status = NtOpenFile(&hTemp, GENERIC_READ | GENERIC_WRITE, &oa, &iosb, FILE_SHARE_READ | FILE_SHARE_WRITE, FILE_SYNCHRONOUS_IO_ALERT);
-
-    if (NT_SUCCESS(status))
-    {
-      CloseHandle(hTemp);
-      return true;
-    }
-
-    return false;
-  }
-  else
-  {
-    LARGE_INTEGER drive_size = GetDriveSize();
-    // old kernel detection method
-    if (cDriveLetter == 'F')
-    {
-      // if the drive is bigger than the old 8gb drive (plus a bit of room for error),
-      // the F drive can exist
-      if (drive_size.QuadPart >= 9000000000)
-        return true;
-    }
-
-    if (cDriveLetter == 'G')
-    {
-      // if the kernel is set to use partitions 6 and 7 by default
-      // the g drive can exist
-      if(((XboxKrnlVersion->Qfe & 67) == 67))
-        return true;
-      // not all kernel versions return 67, if the drive is bigger than
-      // 137 gb drive (plus a bit of room for error), the G drive can exist
-      else if ( drive_size.QuadPart >= 150000000000 )
-        return true;
-    }
-
-    return false;
-  }
-#else
-  if (cDriveLetter < 'A' || cDriveLetter > 'Z')
-    return false;
-
-  DWORD drivelist;
-  DWORD bitposition = cDriveLetter - 'A';
-
-  drivelist = GetLogicalDrives();
-
-  if (!drivelist)
-    return false;
-
-  return (drivelist >> bitposition) & 1;
-#endif
-}
-
-bool CIoSupport::PartitionExists(int nPartition)
+bool CIoSupport::PartitionExists(int nPartition, int nDisk)
 {
 #ifdef _XBOX
   char szPartition[32];
@@ -540,7 +526,9 @@ bool CIoSupport::PartitionExists(int nPartition)
   OBJECT_ATTRIBUTES oa;
   IO_STATUS_BLOCK iosb;
 
-  sprintf(szPartition, "\\Device\\Harddisk0\\Partition%u", nPartition);
+  if (nDisk < 0 || nDisk > 1 || nPartition < 0 || nPartition > MAX_PARTITIONS)
+    return false;
+  sprintf(szPartition, "\\Device\\Harddisk%u\\Partition%u", nDisk, nPartition);
   RtlInitAnsiString(&part_string, szPartition);
 
   oa.Attributes = OBJ_CASE_INSENSITIVE;
@@ -561,12 +549,16 @@ bool CIoSupport::PartitionExists(int nPartition)
 #endif
 }
 
-LARGE_INTEGER CIoSupport::GetDriveSize()
+LARGE_INTEGER CIoSupport::GetDriveSize(int nDisk)
 {
   LARGE_INTEGER drive_size;
 #ifdef _XBOX
   HANDLE hDevice;
-  char szHardDrive[32] = "\\Device\\Harddisk0\\Partition0";
+  char szHardDrive[32];
+  drive_size.QuadPart = 0;
+  if (nDisk < 0 || nDisk > 1)
+    return drive_size;
+  sprintf(szHardDrive, "\\Device\\Harddisk%u\\Partition0", nDisk);
   ANSI_STRING hd_string;
   OBJECT_ATTRIBUTES oa;
   IO_STATUS_BLOCK iosb;
@@ -624,71 +616,9 @@ bool CIoSupport::ReadPartitionTable()
 #endif
 }
 
-bool CIoSupport::ExtendedPartitionMappingExists(char mapLetter)
-{
-#ifdef _XBOX
-  int i;
-  for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++)
-  {
-    if (mapLetter == extendPartitionMapping[i])
-      return true;
-  }
-#endif
-  return false;
-}
-
-INT CIoSupport::GetExtendedPartitionPosition(char mapLetter)
-{
-#ifdef _XBOX
-  int i;
-  for (i=0;i<EXTEND_PARTITIONS_LIMIT;i++)
-  {
-    if (mapLetter == extendPartitionMapping[i])
-      return i;
-  }
-#endif
-  return 0;
-}
-
-
-char CIoSupport::GetExtendedPartitionDriveLetter(int pos)
-{
-#ifdef _XBOX
-  return extendPartitionMapping[pos];
-#else
-  return 0;
-#endif
-}
-
-
 bool CIoSupport::HasPartitionTable()
 {
   return m_fPartitionTableIsValid;
-}
-
-void CIoSupport::MapExtendedPartitions()
-{
-#ifdef _XBOX
-  if (!m_fPartitionTableIsValid)
-    return;
-  char szDevice[32] = "\\Harddisk0\\Partition0";
-  char driveletter;
-  char extenddriveletter;
-  // we start at 5 - the first 5 partitions are the mandatory standard Xbox partitions
-  // we don't deal with those here.
-  for (int i = EXTEND_PARTITION_BEGIN; i <= (EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT); i++)
-  {
-    if (m_partitionTable.pt_entries[i - 1].pe_flags & PE_PARTFLAGS_IN_USE)
-    {
-      driveletter = 'A' + i - 1;
-      extenddriveletter = extendPartitionMapping[driveletter-EXTEND_DRIVE_BEGIN];
-      CLog::Log(LOGINFO, "  map drive %c:", driveletter);
-      CLog::Log(LOGINFO, "  map extended drive %c:", extenddriveletter);
-      szDevice[20] = '1' + i - 1;
-      MapDriveLetter(extenddriveletter, szDevice);
-    }
-  }
-#endif
 }
 
 unsigned int CIoSupport::ReadPartitionTable(PARTITION_TABLE *p_table)

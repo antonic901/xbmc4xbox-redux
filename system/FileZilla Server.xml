@@ -26,22 +26,22 @@
   <XBFileZilla>
     <FreeSpace>
       <Drive>
-        <Name>c:</Name>
+        <Name>HDD0-C:</Name>
         <Minimum>10</Minimum>
         <Display>1</Display>
       </Drive>
       <Drive>
-        <Name>e:</Name>
+        <Name>HDD0-E:</Name>
         <Minimum>200</Minimum>
         <Display>1</Display>
       </Drive>
       <Drive>
-        <Name>f:</Name>
+        <Name>HDD0-F:</Name>
         <Minimum>500</Minimum>
         <Display>1</Display>
       </Drive>
       <Drive>
-        <Name>g:</Name>
+        <Name>HDD0-G:</Name>
         <Minimum>500</Minimum>
         <Display>1</Display>
       </Drive>
@@ -69,127 +69,7 @@
           <Option Name="IsHome">1</Option>
           <Option Name="AutoCreate">0</Option>
         </Permission>
-        <Permission Dir="C:\">
-          <Option Name="FileRead">1</Option>
-          <Option Name="FileWrite">1</Option>
-          <Option Name="FileDelete">1</Option>
-          <Option Name="FileAppend">1</Option>
-          <Option Name="DirCreate">1</Option>
-          <Option Name="DirDelete">1</Option>
-          <Option Name="DirList">1</Option>
-          <Option Name="DirSubdirs">1</Option>
-          <Option Name="IsHome">0</Option>
-          <Option Name="AutoCreate">0</Option>
-        </Permission>
         <Permission Dir="D:\">
-          <Option Name="FileRead">1</Option>
-          <Option Name="FileWrite">1</Option>
-          <Option Name="FileDelete">1</Option>
-          <Option Name="FileAppend">1</Option>
-          <Option Name="DirCreate">1</Option>
-          <Option Name="DirDelete">1</Option>
-          <Option Name="DirList">1</Option>
-          <Option Name="DirSubdirs">1</Option>
-          <Option Name="IsHome">0</Option>
-          <Option Name="AutoCreate">0</Option>
-        </Permission>
-        <Permission Dir="E:\">
-          <Option Name="FileRead">1</Option>
-          <Option Name="FileWrite">1</Option>
-          <Option Name="FileDelete">1</Option>
-          <Option Name="FileAppend">1</Option>
-          <Option Name="DirCreate">1</Option>
-          <Option Name="DirDelete">1</Option>
-          <Option Name="DirList">1</Option>
-          <Option Name="DirSubdirs">1</Option>
-          <Option Name="IsHome">0</Option>
-          <Option Name="AutoCreate">0</Option>
-        </Permission>
-        <Permission Dir="F:\">
-          <Option Name="FileRead">1</Option>
-          <Option Name="FileWrite">1</Option>
-          <Option Name="FileDelete">1</Option>
-          <Option Name="FileAppend">1</Option>
-          <Option Name="DirCreate">1</Option>
-          <Option Name="DirDelete">1</Option>
-          <Option Name="DirList">1</Option>
-          <Option Name="DirSubdirs">1</Option>
-          <Option Name="IsHome">0</Option>
-          <Option Name="AutoCreate">0</Option>
-        </Permission>
-        <Permission Dir="G:\">
-          <Option Name="FileRead">1</Option>
-          <Option Name="FileWrite">1</Option>
-          <Option Name="FileDelete">1</Option>
-          <Option Name="FileAppend">1</Option>
-          <Option Name="DirCreate">1</Option>
-          <Option Name="DirDelete">1</Option>
-          <Option Name="DirList">1</Option>
-          <Option Name="DirSubdirs">1</Option>
-          <Option Name="IsHome">0</Option>
-          <Option Name="AutoCreate">0</Option>
-        </Permission>
-        <Permission Dir="R:\">
-          <Option Name="FileRead">1</Option>
-          <Option Name="FileWrite">1</Option>
-          <Option Name="FileDelete">1</Option>
-          <Option Name="FileAppend">1</Option>
-          <Option Name="DirCreate">1</Option>
-          <Option Name="DirDelete">1</Option>
-          <Option Name="DirList">1</Option>
-          <Option Name="DirSubdirs">1</Option>
-          <Option Name="IsHome">0</Option>
-          <Option Name="AutoCreate">0</Option>
-        </Permission>
-        <Permission Dir="S:\">
-          <Option Name="FileRead">1</Option>
-          <Option Name="FileWrite">1</Option>
-          <Option Name="FileDelete">1</Option>
-          <Option Name="FileAppend">1</Option>
-          <Option Name="DirCreate">1</Option>
-          <Option Name="DirDelete">1</Option>
-          <Option Name="DirList">1</Option>
-          <Option Name="DirSubdirs">1</Option>
-          <Option Name="IsHome">0</Option>
-          <Option Name="AutoCreate">0</Option>
-        </Permission>
-        <Permission Dir="V:\">
-          <Option Name="FileRead">1</Option>
-          <Option Name="FileWrite">1</Option>
-          <Option Name="FileDelete">1</Option>
-          <Option Name="FileAppend">1</Option>
-          <Option Name="DirCreate">1</Option>
-          <Option Name="DirDelete">1</Option>
-          <Option Name="DirList">1</Option>
-          <Option Name="DirSubdirs">1</Option>
-          <Option Name="IsHome">0</Option>
-          <Option Name="AutoCreate">0</Option>
-        </Permission>
-        <Permission Dir="W:\">
-          <Option Name="FileRead">1</Option>
-          <Option Name="FileWrite">1</Option>
-          <Option Name="FileDelete">1</Option>
-          <Option Name="FileAppend">1</Option>
-          <Option Name="DirCreate">1</Option>
-          <Option Name="DirDelete">1</Option>
-          <Option Name="DirList">1</Option>
-          <Option Name="DirSubdirs">1</Option>
-          <Option Name="IsHome">0</Option>
-          <Option Name="AutoCreate">0</Option>
-        </Permission>
-        <Permission Dir="A:\">
-          <Option Name="FileRead">1</Option>
-          <Option Name="FileWrite">1</Option>
-          <Option Name="FileDelete">1</Option>
-          <Option Name="FileAppend">1</Option>
-          <Option Name="DirCreate">1</Option>
-          <Option Name="DirDelete">1</Option>
-          <Option Name="DirList">1</Option>
-          <Option Name="DirSubdirs">1</Option>
-          <Option Name="IsHome">0</Option>
-          <Option Name="AutoCreate">0</Option>
-        </Permission>
-        <Permission Dir="B:\">
           <Option Name="FileRead">1</Option>
           <Option Name="FileWrite">1</Option>
           <Option Name="FileDelete">1</Option>
@@ -237,7 +117,7 @@
           <Option Name="IsHome">0</Option>
           <Option Name="AutoCreate">0</Option>
         </Permission>
-        <Permission Dir="X:\">
+        <Permission Dir="HDD0-E:\">
           <Option Name="FileRead">1</Option>
           <Option Name="FileWrite">1</Option>
           <Option Name="FileDelete">1</Option>
@@ -249,7 +129,7 @@
           <Option Name="IsHome">0</Option>
           <Option Name="AutoCreate">0</Option>
         </Permission>
-        <Permission Dir="Y:\">
+        <Permission Dir="HDD0-C:\">
           <Option Name="FileRead">1</Option>
           <Option Name="FileWrite">1</Option>
           <Option Name="FileDelete">1</Option>
@@ -261,7 +141,283 @@
           <Option Name="IsHome">0</Option>
           <Option Name="AutoCreate">0</Option>
         </Permission>
-        <Permission Dir="Z:\">
+        <Permission Dir="HDD0-X:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD0-Y:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD0-Z:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD0-F:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD0-G:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD0-R:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD0-S:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD0-V:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD0-W:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD0-A:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD0-B:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-E:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-C:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-X:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-Y:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-Z:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-F:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-G:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-R:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-S:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-V:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-W:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-A:\">
+          <Option Name="FileRead">1</Option>
+          <Option Name="FileWrite">1</Option>
+          <Option Name="FileDelete">1</Option>
+          <Option Name="FileAppend">1</Option>
+          <Option Name="DirCreate">1</Option>
+          <Option Name="DirDelete">1</Option>
+          <Option Name="DirList">1</Option>
+          <Option Name="DirSubdirs">1</Option>
+          <Option Name="IsHome">0</Option>
+          <Option Name="AutoCreate">0</Option>
+        </Permission>
+        <Permission Dir="HDD1-B:\">
           <Option Name="FileRead">1</Option>
           <Option Name="FileWrite">1</Option>
           <Option Name="FileDelete">1</Option>
@@ -289,7 +445,7 @@
       <Option Name="User Limit">0</Option>
       <Option Name="IP Limit">0</Option>
       <Permissions>
-        <Permission Dir="C:\">
+        <Permission Dir="HDD0-C:\">
           <Option Name="FileRead">1</Option>
           <Option Name="FileWrite">0</Option>
           <Option Name="FileDelete">0</Option>

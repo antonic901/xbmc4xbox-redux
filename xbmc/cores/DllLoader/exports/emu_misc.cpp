@@ -382,17 +382,18 @@ void VobSubPFReserve(unsigned long pf, unsigned long size)
 
 unsigned long VobSubPFOpen(int id)
 {
-  char filename[42] = "Z:\\vobsub_queue_";
+  char filename[42] = "HDD0-Z:\\vobsub_queue_";
+  const size_t prefixLength = strlen(filename);
   HANDLE hFile = INVALID_HANDLE_VALUE;
 
   if (id >= 256)
   {
-    sprintf(filename + 16, "hdr%d", id - 256);
+    sprintf(filename + prefixLength, "hdr%d", id - 256);
     hFile = CreateFile(CSpecialProtocol::TranslatePath(filename).c_str(), GENERIC_WRITE, 0, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_SEQUENTIAL_SCAN, 0);
   }
   else
   {
-    sprintf(filename + 16, "data%d", id);
+    sprintf(filename + prefixLength, "data%d", id);
     hFile = CreateFile(CSpecialProtocol::TranslatePath(filename).c_str(), GENERIC_WRITE | GENERIC_READ, 0, 0, OPEN_ALWAYS, FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM | FILE_FLAG_NO_BUFFERING, 0);
   }
   if (hFile != INVALID_HANDLE_VALUE)

@@ -125,11 +125,11 @@ bool CSettingsComponent::InitDirectoriesXbox(bool bPlatformDirectories)
   CSpecialProtocol::SetXBMCPath(xbmcPath);
   CSpecialProtocol::SetXBMCBinAddonPath(xbmcPath + "addons");
 
-  std::string strWin32UserFolder = "E:\\UDATA\\Xodi\\";
+  std::string strWin32UserFolder = "HDD0-E:\\UDATA\\Xodi\\";
   CSpecialProtocol::SetLogPath(strWin32UserFolder);
   CSpecialProtocol::SetHomePath(strWin32UserFolder);
   CSpecialProtocol::SetMasterProfilePath(URIUtils::AddFileToFolder(strWin32UserFolder, "userdata"));
-  CSpecialProtocol::SetTempPath("Z:\\");
+  CSpecialProtocol::SetTempPath("HDD0-Z:\\");
 
   CreateUserDirs();
 

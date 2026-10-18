@@ -130,7 +130,11 @@ def splitdrive(p):
             if index2 == -1:
                 index2 = len(p)
             return p[:index2], p[index2:]
-        if normp[1] == ':':
+        if (len(normp) >= 7 and normp[:3].upper() == 'HDD' and
+                normp[3] in '01' and normp[4] == '-' and
+                normp[5].upper() in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' and normp[6] == ':'):
+            return p[:7], p[7:]
+        if normp[1] == ':' and normp[0].upper() in 'DHIJKLMNOQTU':
             return p[:2], p[2:]
     return '', p
 

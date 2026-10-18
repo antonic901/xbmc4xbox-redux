@@ -58,9 +58,9 @@ bool ModuleCodec::Init(const std::string &strFile, unsigned int filecache)
   m_CodecName.erase(0,1);
   StringUtils::ToUpper(m_CodecName);
 
-  std::string strLoadFile = "Z:\\cachedmod";
+  std::string strLoadFile = "HDD0-Z:\\cachedmod";
   if (!URIUtils::IsHD(strFile))
-    CFile::Copy(strFile,"Z:\\cachedmod");
+    CFile::Copy(strFile,"HDD0-Z:\\cachedmod");
   else
     strLoadFile = strFile;
 

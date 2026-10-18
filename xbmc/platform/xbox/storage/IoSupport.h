@@ -48,12 +48,7 @@
 #define MODE2_DATA_SIZE    2324 // And has 2324 usable bytes
 #define RAW_SECTOR_SIZE    2352 // Raw sector size
 
-// Xbox extended partition numbers, 6-7.  Note that up to 15 can normally be used, but we reserve 8->15 for memcards.
-#define EXTEND_PARTITION_BEGIN  6
-#define EXTEND_PARTITION_END    7
-#define EXTEND_DRIVE_BEGIN     'F'
-#define EXTEND_DRIVE_END       'G'
-#define EXTEND_PARTITIONS_LIMIT  8
+#define HDD_PARTITIONS_COUNT 28
 
 // This flag (part of PARTITION_ENTRY.pe_flags) tells you whether/not a
 // partition is being used (whether/not drive G is active, for example)
@@ -99,22 +94,23 @@ public:
   static HRESULT UnmapDriveLetter(char cDriveLetter);
   static HRESULT RemapDriveLetter(char cDriveLetter, const char* szDevice);
 
+  static HRESULT MapDrive(const char* name, const char* device);
+  static bool DriveExists(const char* name);
+  static void GetPartition(const char* name, char* partition);
+  // name must have room for six characters and a terminator.
+  static void GetDriveName(const char* partition, char* name);
+  static const char* GetHarddiskDriveName(int position);
+  static void MapHarddiskPartitions();
+
   static HRESULT Dismount(const char* szDevice);
 
-  static bool DriveExists(char cDrive);
-  static bool PartitionExists(int nPartition);
+  static bool PartitionExists(int nPartition, int nDisk = 0);
 
-  static void GetPartition(char cDriveLetter, char* szPartition);
-  static void GetDrive(const char* szPartition, char* cDriveLetter);
 
   static bool ReadPartitionTable();
   static bool HasPartitionTable();
-  static bool ExtendedPartitionMappingExists(char mapLetter); 
-  static INT GetExtendedPartitionPosition(char mapLetter); 
-  static char GetExtendedPartitionDriveLetter(int pos); 
-  static void MapExtendedPartitions();
 
-  static LARGE_INTEGER GetDriveSize();
+  static LARGE_INTEGER GetDriveSize(int nDisk = 0);
 
   static DWORD   GetTrayState();
   static HRESULT EjectTray();
