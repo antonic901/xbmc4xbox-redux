@@ -85,9 +85,9 @@ PARTITION_TABLE CIoSupport::m_partitionTable;
 bool CIoSupport::m_fPartitionTableIsValid;
 
 
-// cDriveLetter e.g. 'D'
+// drive e.g. "D" or "HDD1-1"
 // szDevice e.g. "Cdrom0" or "Harddisk0\Partition6"
-HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
+HRESULT CIoSupport::MapDriveLetter(const char* drive, const char* szDevice)
 {
 #ifdef _XBOX
   char szSourceDevice[MAX_PATH+32];
@@ -95,7 +95,7 @@ HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
   NTSTATUS status;
 
   sprintf(szSourceDevice, "\\Device\\%s", szDevice);
-  sprintf(szDestinationDrive, "\\??\\%c:", cDriveLetter);
+  sprintf(szDestinationDrive, "\\??\\%s:", drive);
 
   ANSI_STRING DeviceName, LinkName;
 
@@ -107,7 +107,7 @@ HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
   if (!NT_SUCCESS(status))
     CLog::Log(LOGERROR, "Failed to create symbolic link!  (status=0x%08x)", status);
   else
-    CLog::Log(LOGINFO, "Mapping drive %c to %s", cDriveLetter, szDevice);
+    CLog::Log(LOGINFO, "Mapping drive %s to %s", drive, szDevice);
 
   return status;
 #else
@@ -118,21 +118,21 @@ HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
 #endif
 }
 
-// cDriveLetter e.g. 'D'
-HRESULT CIoSupport::UnmapDriveLetter(char cDriveLetter)
+// drive e.g. "D" or "HDD1-1"
+HRESULT CIoSupport::UnmapDriveLetter(const char* drive)
 {
 #ifdef _XBOX
   char szDestinationDrive[16];
   ANSI_STRING LinkName;
   NTSTATUS status;
 
-  sprintf(szDestinationDrive, "\\??\\%c:", cDriveLetter);
+  sprintf(szDestinationDrive, "\\??\\%s:", drive);
   RtlInitAnsiString(&LinkName, szDestinationDrive);
 
   status =  IoDeleteSymbolicLink(&LinkName);
 
   if (NT_SUCCESS(status))
-    CLog::Log(LOGINFO, "Unmapped drive %c", cDriveLetter);
+    CLog::Log(LOGINFO, "Unmapped drive %s", drive);
   else if(status != NT_STATUS_OBJECT_NAME_NOT_FOUND)
     CLog::Log(LOGERROR, "Failed to delete symbolic link!  (status=0x%08x)", status);
 
@@ -142,11 +142,11 @@ HRESULT CIoSupport::UnmapDriveLetter(char cDriveLetter)
 #endif
 }
 
-HRESULT CIoSupport::RemapDriveLetter(char cDriveLetter, const char* szDevice)
+HRESULT CIoSupport::RemapDriveLetter(const char* drive, const char* szDevice)
 {
-  UnmapDriveLetter(cDriveLetter);
+  UnmapDriveLetter(drive);
 
-  return MapDriveLetter(cDriveLetter, szDevice);
+  return MapDriveLetter(drive, szDevice);
 }
 // to be used with CdRom devices.
 HRESULT CIoSupport::Dismount(const char* szDevice)
@@ -457,9 +457,9 @@ VOID CIoSupport::GetXbePath(char* szDest)
 #endif
 }
 
-bool CIoSupport::DriveExists(char cDriveLetter)
+bool CIoSupport::DriveExists(const char* drive)
 {
-  cDriveLetter = toupper(cDriveLetter);
+  const char cDriveLetter = toupper(static_cast<unsigned char>(drive[0]));
 #ifdef _XBOX
   // new kernel detection method
   if (m_fPartitionTableIsValid)
@@ -471,7 +471,7 @@ bool CIoSupport::DriveExists(char cDriveLetter)
     OBJECT_ATTRIBUTES oa;
     IO_STATUS_BLOCK iosb;
 
-    sprintf(szDrive, "\\??\\%c:", cDriveLetter);
+    sprintf(szDrive, "\\??\\%s:", drive);
     RtlInitAnsiString(&drive_string, szDrive);
 
     oa.Attributes = OBJ_CASE_INSENSITIVE;
@@ -488,7 +488,7 @@ bool CIoSupport::DriveExists(char cDriveLetter)
 
     return false;
   }
-  else
+  else if (drive[1] == '\0') // allow only single letter at this point
   {
     LARGE_INTEGER drive_size = GetDriveSize();
     // old kernel detection method
@@ -514,6 +514,8 @@ bool CIoSupport::DriveExists(char cDriveLetter)
 
     return false;
   }
+
+  return false;
 #else
   if (cDriveLetter < 'A' || cDriveLetter > 'Z')
     return false;
@@ -672,18 +674,16 @@ void CIoSupport::MapExtendedPartitions()
   if (!m_fPartitionTableIsValid)
     return;
   char szDevice[32] = "\\Harddisk0\\Partition0";
-  char driveletter;
-  char extenddriveletter;
   // we start at 5 - the first 5 partitions are the mandatory standard Xbox partitions
   // we don't deal with those here.
   for (int i = EXTEND_PARTITION_BEGIN; i <= (EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT); i++)
   {
     if (m_partitionTable.pt_entries[i - 1].pe_flags & PE_PARTFLAGS_IN_USE)
     {
-      driveletter = 'A' + i - 1;
-      extenddriveletter = extendPartitionMapping[driveletter-EXTEND_DRIVE_BEGIN];
+      char driveletter = 'A' + i - 1;
+      const char extenddriveletter[] = {extendPartitionMapping[driveletter-EXTEND_DRIVE_BEGIN], '\0'};
       CLog::Log(LOGINFO, "  map drive %c:", driveletter);
-      CLog::Log(LOGINFO, "  map extended drive %c:", extenddriveletter);
+      CLog::Log(LOGINFO, "  map extended drive %s:", extenddriveletter);
       szDevice[20] = '1' + i - 1;
       MapDriveLetter(extenddriveletter, szDevice);
     }

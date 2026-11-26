@@ -31,13 +31,13 @@ void SetupDriveLetters()
   strcat(szDevicePath, &strExecutablePath.c_str()[2]);
 
   CIoSupport::Dismount("Cdrom0");
-  CIoSupport::RemapDriveLetter('D', "Cdrom0");
-  CIoSupport::RemapDriveLetter('Q', szDevicePath);
-  CIoSupport::RemapDriveLetter('C', "Harddisk0\\Partition2");
-  CIoSupport::RemapDriveLetter('E', "Harddisk0\\Partition1");
-  CIoSupport::RemapDriveLetter('X', "Harddisk0\\Partition3");
-  CIoSupport::RemapDriveLetter('Y', "Harddisk0\\Partition4");
-  CIoSupport::RemapDriveLetter('Z', "Harddisk0\\Partition5");
+  CIoSupport::RemapDriveLetter("D", "Cdrom0");
+  CIoSupport::RemapDriveLetter("Q", szDevicePath);
+  CIoSupport::RemapDriveLetter("C", "Harddisk0\\Partition2");
+  CIoSupport::RemapDriveLetter("E", "Harddisk0\\Partition1");
+  CIoSupport::RemapDriveLetter("X", "Harddisk0\\Partition3");
+  CIoSupport::RemapDriveLetter("Y", "Harddisk0\\Partition4");
+  CIoSupport::RemapDriveLetter("Z", "Harddisk0\\Partition5");
 
   // Attempt to read the LBA48 v3 patch partition table, if kernel supports the command and it exists.
   CIoSupport::ReadPartitionTable();
@@ -51,7 +51,7 @@ void SetupDriveLetters()
       if (CIoSupport::PartitionExists(i))
       {
         char cDriveLetter = 'A' + i - 1;
-        char extendDriveLetter = CIoSupport::GetExtendedPartitionDriveLetter(cDriveLetter - EXTEND_DRIVE_BEGIN);
+        const char extendDriveLetter[] = {CIoSupport::GetExtendedPartitionDriveLetter(cDriveLetter - EXTEND_DRIVE_BEGIN), '\0'};
         sprintf(szDevice, "Harddisk0\\Partition%u", i);
         CIoSupport::RemapDriveLetter(extendDriveLetter, szDevice);
       }
@@ -59,10 +59,10 @@ void SetupDriveLetters()
   }
   else
   {
-    if (CIoSupport::DriveExists('F'))
-      CIoSupport::RemapDriveLetter('F', "Harddisk0\\Partition6");
-    if (CIoSupport::DriveExists('G'))
-      CIoSupport::RemapDriveLetter('G', "Harddisk0\\Partition7");
+    if (CIoSupport::DriveExists("F"))
+      CIoSupport::RemapDriveLetter("F", "Harddisk0\\Partition6");
+    if (CIoSupport::DriveExists("G"))
+      CIoSupport::RemapDriveLetter("G", "Harddisk0\\Partition7");
   }
 }
 

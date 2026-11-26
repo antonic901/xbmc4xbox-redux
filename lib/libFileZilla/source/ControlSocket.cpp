@@ -1079,16 +1079,16 @@ void CControlSocket::ParseCommand()
 
                         if (isalpha(iter->dir[0]) && iter->dir[1] == ':')
                         {
-                            char drive = tolower(iter->dir[0]);
+                            const char drive[] = {tolower(iter->dir[0]), '\0'};
 
                             // extended partitions and memory units - check if the drive is available
-                            if (strchr("abfghirsvw", drive) && !CIoSupport::DriveExists(drive) && !g_memoryUnitManager.IsDriveValid(drive))
+                            if (strchr("abfghirsvw", drive[0]) && !CIoSupport::DriveExists(drive) && !g_memoryUnitManager.IsDriveValid(drive[0]))
                                 continue;
 
                             // don't show x, y, z in the listing as users shouldn't really be
                             // stuffing around with these drives (power users can always go
                             // to these folders by specifying the path directly)
-                            if (drive >= 'x' && !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_FTPShowCache)
+                            if (drive[0] >= 'x' && !CServiceBroker::GetSettingsComponent()->GetAdvancedSettings()->m_FTPShowCache)
                                 continue;
 
                             if (1 /*g_settings.m_bFTPSingleCharDrives*/)
