@@ -1956,6 +1956,7 @@ const infomap system_labels[] = {
     {"currentcontrol", SYSTEM_CURRENT_CONTROL},
     {"currentcontrolid", SYSTEM_CURRENT_CONTROL_ID},
     {"dvdlabel", SYSTEM_DVD_LABEL},
+    {"xboxdisctitleid", SYSTEM_XBOX_DISC_TITLEID},
     {"internetstate", SYSTEM_INTERNET_STATE},
     {"osversioninfo", SYSTEM_OS_VERSION_INFO},
     {"kernelversion", SYSTEM_OS_VERSION_INFO}, // old, not correct name

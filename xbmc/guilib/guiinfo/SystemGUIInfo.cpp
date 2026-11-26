@@ -265,6 +265,9 @@ bool CSystemGUIInfo::GetLabel(std::string& value, const CFileItem *item, int con
     case SYSTEM_DVD_LABEL:
       value = MEDIA_DETECT::CDetectDVDMedia::GetDVDLabel();
       return true;
+    case SYSTEM_XBOX_DISC_TITLEID:
+      value = MEDIA_DETECT::CDetectDVDMedia::GetXboxDiscTitleID();
+      return true;
 #endif
     case SYSTEM_ALARM_POS:
       if (g_alarmClock.GetRemaining("shutdowntimer") == 0.0)

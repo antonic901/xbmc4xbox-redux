@@ -311,10 +311,18 @@ void CDetectDVDMedia::SetNewDVDShareUrl( const std::string& strNewUrl, bool bCDD
   m_diskLabel = strDescription;
   m_diskPath = strNewUrl;
 
-  // update label to xbe label if applicable
+  // Clear any ID left over from the previous disc
+  m_xboxDiscTitleID.clear();
+
+  // update label and title ID from the xbe if applicable
   if (IsDiscInDrive() && !bCDDA && CFile::Exists("D:\\default.xbe"))
+  {
     CUtil::GetXBEDescription("D:\\default.xbe", m_diskLabel);
-}
+
+    DWORD titleID = CUtil::GetXbeID("D:\\default.xbe");
+    if (titleID != 0)
+      m_xboxDiscTitleID = StringUtils::Format("%08X", titleID);
+  }
 
 DWORD CDetectDVDMedia::GetTrayState()
 {
@@ -412,6 +420,11 @@ CCdInfo* CDetectDVDMedia::GetCdInfo()
 const std::string &CDetectDVDMedia::GetDVDLabel()
 {
   return m_diskLabel;
+}
+
+const std::string &CDetectDVDMedia::GetXboxDiscTitleID()
+{
+  return m_xboxDiscTitleID;
 }
 
 const std::string &CDetectDVDMedia::GetDVDPath()
