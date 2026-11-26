@@ -55,6 +55,7 @@ public:
   static CEvent m_evAutorun;
 
   static const std::string &GetDVDLabel();
+  static const std::string &GetXboxDiscTitleID();
   static const std::string &GetDVDPath();
 
   static void UpdateState();
@@ -81,6 +82,7 @@ private:
   DWORD m_dwLastTrayState;
 
   static std::string m_diskLabel;
+  static std::string m_xboxDiscTitleID;
   static std::string m_diskPath;
 
   boost::shared_ptr<CLibcdio> m_cdio;
