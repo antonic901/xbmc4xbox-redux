@@ -128,6 +128,7 @@
 #define SYSTEM_CURRENT_CONTROL      136
 #define SYSTEM_CURRENT_CONTROL_ID   137
 #define SYSTEM_DVD_LABEL            138
+#define SYSTEM_XBOX_DISC_TITLEID    139
 #define SYSTEM_HASLOCKS             140
 #define SYSTEM_ISMASTER             141
 #define SYSTEM_TRAYOPEN             142
