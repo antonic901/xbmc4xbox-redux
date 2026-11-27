@@ -15,6 +15,8 @@
 
 #include <xtl.h>
 
+#include "platform/xbox/storage/IoSupport.h"
+
 #ifndef INVALID_FILE_ATTRIBUTES
 #define INVALID_FILE_ATTRIBUTES ((DWORD) -1)
 #endif
@@ -27,12 +29,12 @@ inline static std::string prepareXboxDirectoryName(const std::string& strPath)
   if (strPath.empty())
     return std::string(); // empty string
 
-  std::string name(CUtil::GetFatXQualifiedPath(strPath));
+  std::string name(CUtil::GetFatXQualifiedPath(CIoSupport::TranslateMountPath(strPath)));
   if (!name.empty())
   {
     if (name[name.size() - 1] == '\\')
       name.erase(name.size() - 1); // remove slash at the end if any
-    if (name.length() == 6 && name[name.size() - 1] == ':') // 6 is the length of "\\?\x:"
+    if (!name.empty() && name[name.size() - 1] == ':')
       name.push_back('\\'); // always add backslash for root folders
   }
   return name;
@@ -50,7 +52,7 @@ bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList &items)
   if (!pathWithSlash.empty() && pathWithSlash[pathWithSlash.size() - 1] != '\\')
     pathWithSlash.push_back('\\');
 
-  std::string searchMask(CUtil::GetFatXQualifiedPath(pathWithSlash));
+  std::string searchMask(CUtil::GetFatXQualifiedPath(CIoSupport::TranslateMountPath(pathWithSlash)));
   if (searchMask.empty())
     return false;
 
@@ -106,7 +108,7 @@ bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 bool CHDDirectory::Create(const CURL& url)
 {
   std::string name(prepareXboxDirectoryName(url.Get()));
-  if (name.empty())
+  if (name.empty() || CIoSupport::IsMountRoot(name))
     return false;
 
   if (!Create(name))
@@ -118,7 +120,7 @@ bool CHDDirectory::Create(const CURL& url)
 bool CHDDirectory::Remove(const CURL& url)
 {
   std::string name(prepareXboxDirectoryName(url.Get()));
-  if (name.empty())
+  if (name.empty() || CIoSupport::IsMountRoot(name))
     return false;
 
   if (RemoveDirectoryA(name.c_str()))
@@ -142,12 +144,12 @@ bool CHDDirectory::Exists(const CURL& url)
 
 bool CHDDirectory::RemoveRecursive(const CURL& url)
 {
-  std::string pathWithSlash(url.Get());
+  std::string pathWithSlash(CIoSupport::TranslateMountPath(url.Get()));
   if (!pathWithSlash.empty() && pathWithSlash[pathWithSlash.size() - 1] != '\\')
     pathWithSlash.push_back('\\');
 
   std::string basePath = CUtil::GetFatXQualifiedPath(pathWithSlash);
-  if (basePath.empty())
+  if (basePath.empty() || CIoSupport::IsMountRoot(basePath))
     return false;
 
   std::string searchMask = basePath + '*';

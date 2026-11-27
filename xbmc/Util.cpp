@@ -1483,7 +1483,7 @@ void CUtil::PlayDVD(const std::string& strProtocol, bool restart)
   else
   {
     CIoSupport::Dismount("Cdrom0");
-    CIoSupport::RemapDriveLetter('D', "Cdrom0");
+    CIoSupport::RemapDriveLetter("D", "Cdrom0");
     std::string strPath;
     strPath = StringUtils::Format("%s://1", strProtocol.c_str());
     CFileItem item(strPath, false);
@@ -3247,7 +3247,7 @@ void CUtil::LaunchXbe(const char* szPath, const char* szXbe, const char* szParam
   CLog::Log(LOGINFO, " mount %s as D:", strPath.c_str());
 
 #ifdef HAS_XBOX_HARDWARE
-  CIoSupport::RemapDriveLetter('D', const_cast<char*>(strPath.c_str()));
+  CIoSupport::RemapDriveLetter("D", const_cast<char*>(strPath.c_str()));
 
   CLog::Log(LOGINFO, "launch xbe:%s", szXbe);
 
@@ -3273,7 +3273,7 @@ void CUtil::LaunchXbe(const char* szPath, const char* szXbe, const char* szParam
     pData->magic = CUSTOM_LAUNCH_MAGIC;
     const char* xbe = szXbe+3;
     CLog::Log(LOGINFO, "launching game %s from path %s", pData->szFilename, strPath.c_str());
-    CIoSupport::UnmapDriveLetter('D');
+    CIoSupport::UnmapDriveLetter("D");
     XWriteTitleInfoAndRebootA( (char*)xbe, (char*)(std::string("\\Device\\")+strPath).c_str(), LDT_TITLE, dwTitleID, pData);
   }
   else

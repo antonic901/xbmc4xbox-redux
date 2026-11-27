@@ -15,6 +15,7 @@
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
+#include "platform/Filesystem.h"
 #include "utils/Crc32.h"
 #include "utils/HttpHeader.h"
 #include "utils/StringUtils.h"
@@ -472,6 +473,8 @@ char* Interface_Filesystem::translate_special_protocol(void* kodiBase, const cha
 bool Interface_Filesystem::get_disk_space(
     void* kodiBase, const char* path, uint64_t* capacity, uint64_t* free, uint64_t* available)
 {
+  using namespace KODI::PLATFORM::FILESYSTEM;
+
   CAddonDll* addon = static_cast<CAddonDll*>(kodiBase);
   if (addon == NULL || path == NULL || capacity == NULL || free == NULL ||
       available == NULL)
@@ -485,14 +488,14 @@ bool Interface_Filesystem::get_disk_space(
     return false;
   }
 
-  ULARGE_INTEGER availableBytes, totalBytes, freeBytes;
-  const std::string translatedPath = CSpecialProtocol::TranslatePath(path);
-  if (!GetDiskFreeSpaceEx(translatedPath.c_str(), &availableBytes, &totalBytes, &freeBytes))
+  int ec;
+  space_info freeSpace = space(CSpecialProtocol::TranslatePath(path), ec);
+  if (ec != 0)
     return false;
 
-  *capacity = totalBytes.QuadPart;
-  *free = freeBytes.QuadPart;
-  *available = availableBytes.QuadPart;
+  *capacity = freeSpace.capacity;
+  *free = freeSpace.free;
+  *available = freeSpace.available;
   return true;
 }
 

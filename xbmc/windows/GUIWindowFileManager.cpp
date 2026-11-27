@@ -41,6 +41,7 @@
 #include "messaging/helpers/DialogOKHelper.h"
 #include "network/Network.h"
 #include "pictures/GUIWindowSlideShow.h"
+#include "platform/Filesystem.h"
 #include "playlists/PlayList.h"
 #include "playlists/PlayListFactory.h"
 #include "programs/launchers/ProgramLauncher.h"
@@ -341,6 +342,7 @@ bool CGUIWindowFileManager::OnMessage(CGUIMessage& message)
 
 void CGUIWindowFileManager::OnSort(int iList)
 {
+  using namespace KODI::PLATFORM::FILESYSTEM;
   // always sort the list by label in ascending order
   for (int i = 0; i < m_vecItems[iList]->Size(); i++)
   {
@@ -355,19 +357,21 @@ void CGUIWindowFileManager::OnSort(int iList)
     {
       if (pItem->IsHD())
       {
-        ULARGE_INTEGER ulBytesFree;
-        if (GetDiskFreeSpaceEx(pItem->GetPath().c_str(), &ulBytesFree, NULL, NULL))
+        int ec;
+        space_info freeSpace = space(pItem->GetPath(), ec);
+        if (ec == 0)
         {
-          pItem->m_dwSize = ulBytesFree.QuadPart;
+          pItem->m_dwSize = freeSpace.free;
           pItem->SetFileSizeLabel();
         }
       }
       else if (pItem->IsDVD() && MEDIA_DETECT::CDetectDVDMedia::IsDiscInDrive())
       {
-        ULARGE_INTEGER ulBytesTotal;
-        if (GetDiskFreeSpaceEx(pItem->GetPath().c_str(), NULL, &ulBytesTotal, NULL))
+        int ec;
+        space_info freeSpace = space(pItem->GetPath(), ec);
+        if (ec == 0)
         {
-          pItem->m_dwSize = ulBytesTotal.QuadPart;
+          pItem->m_dwSize = freeSpace.capacity;
           pItem->SetFileSizeLabel();
         }
       }

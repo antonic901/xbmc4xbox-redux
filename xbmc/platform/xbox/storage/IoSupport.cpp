@@ -27,6 +27,7 @@
 #include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
+#include "utils/StringUtils.h"
 #include "utils/log.h"
 #ifdef HAS_UNDOCUMENTED
 #ifdef _XBOX
@@ -85,9 +86,9 @@ PARTITION_TABLE CIoSupport::m_partitionTable;
 bool CIoSupport::m_fPartitionTableIsValid;
 
 
-// cDriveLetter e.g. 'D'
+// drive e.g. "D" or "HDD1-1"
 // szDevice e.g. "Cdrom0" or "Harddisk0\Partition6"
-HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
+HRESULT CIoSupport::MapDriveLetter(const char* drive, const char* szDevice)
 {
 #ifdef _XBOX
   char szSourceDevice[MAX_PATH+32];
@@ -95,7 +96,7 @@ HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
   NTSTATUS status;
 
   sprintf(szSourceDevice, "\\Device\\%s", szDevice);
-  sprintf(szDestinationDrive, "\\??\\%c:", cDriveLetter);
+  sprintf(szDestinationDrive, "\\??\\%s:", drive);
 
   ANSI_STRING DeviceName, LinkName;
 
@@ -107,7 +108,7 @@ HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
   if (!NT_SUCCESS(status))
     CLog::Log(LOGERROR, "Failed to create symbolic link!  (status=0x%08x)", status);
   else
-    CLog::Log(LOGINFO, "Mapping drive %c to %s", cDriveLetter, szDevice);
+    CLog::Log(LOGINFO, "Mapping drive %s to %s", drive, szDevice);
 
   return status;
 #else
@@ -118,21 +119,21 @@ HRESULT CIoSupport::MapDriveLetter(char cDriveLetter, const char* szDevice)
 #endif
 }
 
-// cDriveLetter e.g. 'D'
-HRESULT CIoSupport::UnmapDriveLetter(char cDriveLetter)
+// drive e.g. "D" or "HDD1-1"
+HRESULT CIoSupport::UnmapDriveLetter(const char* drive)
 {
 #ifdef _XBOX
   char szDestinationDrive[16];
   ANSI_STRING LinkName;
   NTSTATUS status;
 
-  sprintf(szDestinationDrive, "\\??\\%c:", cDriveLetter);
+  sprintf(szDestinationDrive, "\\??\\%s:", drive);
   RtlInitAnsiString(&LinkName, szDestinationDrive);
 
   status =  IoDeleteSymbolicLink(&LinkName);
 
   if (NT_SUCCESS(status))
-    CLog::Log(LOGINFO, "Unmapped drive %c", cDriveLetter);
+    CLog::Log(LOGINFO, "Unmapped drive %s", drive);
   else if(status != NT_STATUS_OBJECT_NAME_NOT_FOUND)
     CLog::Log(LOGERROR, "Failed to delete symbolic link!  (status=0x%08x)", status);
 
@@ -142,11 +143,11 @@ HRESULT CIoSupport::UnmapDriveLetter(char cDriveLetter)
 #endif
 }
 
-HRESULT CIoSupport::RemapDriveLetter(char cDriveLetter, const char* szDevice)
+HRESULT CIoSupport::RemapDriveLetter(const char* drive, const char* szDevice)
 {
-  UnmapDriveLetter(cDriveLetter);
+  UnmapDriveLetter(drive);
 
-  return MapDriveLetter(cDriveLetter, szDevice);
+  return MapDriveLetter(drive, szDevice);
 }
 // to be used with CdRom devices.
 HRESULT CIoSupport::Dismount(const char* szDevice)
@@ -457,9 +458,9 @@ VOID CIoSupport::GetXbePath(char* szDest)
 #endif
 }
 
-bool CIoSupport::DriveExists(char cDriveLetter)
+bool CIoSupport::DriveExists(const char* drive)
 {
-  cDriveLetter = toupper(cDriveLetter);
+  const char cDriveLetter = toupper(static_cast<unsigned char>(drive[0]));
 #ifdef _XBOX
   // new kernel detection method
   if (m_fPartitionTableIsValid)
@@ -471,7 +472,7 @@ bool CIoSupport::DriveExists(char cDriveLetter)
     OBJECT_ATTRIBUTES oa;
     IO_STATUS_BLOCK iosb;
 
-    sprintf(szDrive, "\\??\\%c:", cDriveLetter);
+    sprintf(szDrive, "\\??\\%s:", drive);
     RtlInitAnsiString(&drive_string, szDrive);
 
     oa.Attributes = OBJ_CASE_INSENSITIVE;
@@ -488,7 +489,7 @@ bool CIoSupport::DriveExists(char cDriveLetter)
 
     return false;
   }
-  else
+  else if (drive[1] == '\0') // allow only single letter at this point
   {
     LARGE_INTEGER drive_size = GetDriveSize();
     // old kernel detection method
@@ -514,6 +515,8 @@ bool CIoSupport::DriveExists(char cDriveLetter)
 
     return false;
   }
+
+  return false;
 #else
   if (cDriveLetter < 'A' || cDriveLetter > 'Z')
     return false;
@@ -530,17 +533,17 @@ bool CIoSupport::DriveExists(char cDriveLetter)
 #endif
 }
 
-bool CIoSupport::PartitionExists(int nPartition)
+bool CIoSupport::PartitionExists(int nPartition, int nDrive /* = 0 */)
 {
 #ifdef _XBOX
-  char szPartition[32];
+  char szPartition[64];
   ANSI_STRING part_string;
   NTSTATUS status;
   HANDLE hTemp;
   OBJECT_ATTRIBUTES oa;
   IO_STATUS_BLOCK iosb;
 
-  sprintf(szPartition, "\\Device\\Harddisk0\\Partition%u", nPartition);
+  sprintf(szPartition, "\\Device\\Harddisk%i\\Partition%i", nDrive, nPartition);
   RtlInitAnsiString(&part_string, szPartition);
 
   oa.Attributes = OBJ_CASE_INSENSITIVE;
@@ -637,6 +640,140 @@ bool CIoSupport::ExtendedPartitionMappingExists(char mapLetter)
   return false;
 }
 
+bool CIoSupport::HasSecondHarddisk()
+{
+  for (int partition = 1; partition < MAX_PARTITIONS; ++partition)
+    if (PartitionExists(partition, 1))
+      return true;
+
+  return false;
+}
+
+void CIoSupport::MountSecondHarddisk()
+{
+  if (HasSecondHarddisk())
+  {
+    if (CreateDirectoryA("Z:\\Mounts", NULL) || GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+      for (int partition = 1; partition < MAX_PARTITIONS; ++partition)
+      {
+        if (PartitionExists(partition, 1))
+        {
+          char path[48];
+          sprintf(path, "Z:\\Mounts\\Partition%i", partition);
+          if (CreateDirectoryA(path, NULL) || GetLastError() == ERROR_ALREADY_EXISTS)
+          {
+            char szDevice[22];
+            sprintf(szDevice, "Harddisk1\\Partition%i", partition);
+            char cLetter[8];
+            sprintf(cLetter, "HDD1-%i", partition);
+            if (FAILED(RemapDriveLetter(cLetter, szDevice)))
+            {
+              CLog::Log(LOGERROR, "Failed to mount Harddisk1 partition %d at %s", partition, path);
+            }
+            else
+              CLog::Log(LOGINFO, "Mounted Harddisk1 partition %d at %s", partition, path);
+          }
+          else
+            CLog::Log(LOGERROR, "Failed to create mounting point %s (error=%lu)", path, GetLastError());
+        }
+      }
+    }
+    else
+      CLog::Log(LOGERROR, "Unable to create Z:\\Mounts (error=%lu)", GetLastError());
+  }
+}
+
+bool CIoSupport::IsMountRoot(const std::string& path)
+{
+  // Collapse separators and dot components before checking the target.
+  std::string canonical;
+  size_t start = 0;
+  while (start < path.size())
+  {
+    size_t end = path.find_first_of("/\\", start);
+    if (end == std::string::npos)
+      end = path.size();
+    const size_t length = end - start;
+    if (length == 2 && path.compare(start, length, "..") == 0)
+    {
+      const size_t separator = canonical.rfind('\\');
+      if (separator != std::string::npos)
+        canonical.erase(separator);
+    }
+    else if (length != 0 && !(length == 1 && path[start] == '.'))
+    {
+      if (!canonical.empty())
+        canonical += '\\';
+      canonical.append(path, start, length);
+    }
+    start = end + 1;
+  }
+
+  if (StringUtils::EqualsNoCase(canonical, "Z:\\Mounts"))
+    return true;
+
+  // Recognize both the visible mount points and translated drive roots.
+  const char* mountPrefix = "Z:\\Mounts\\Partition";
+  const char* drivePrefix = "HDD1-";
+  size_t number;
+  size_t end = canonical.size();
+  if (StringUtils::StartsWithNoCase(canonical, mountPrefix))
+    number = strlen(mountPrefix);
+  else if (StringUtils::StartsWithNoCase(canonical, drivePrefix) &&
+           !canonical.empty() && canonical[canonical.size() - 1] == ':')
+  {
+    number = strlen(drivePrefix);
+    --end;
+  }
+  else
+    return false;
+
+  if (number == end)
+    return false;
+  for (size_t i = number; i < end; ++i)
+    if (canonical[i] < '0' || canonical[i] > '9')
+      return false;
+  return true;
+}
+
+std::string CIoSupport::TranslateMountPath(const std::string& path)
+{
+  const char* prefix = "Z:\\Mounts\\Partition";
+  const size_t prefixLength = strlen(prefix);
+  if (path.size() < prefixLength)
+    return path;
+  for (size_t i = 0; i < prefixLength; ++i)
+  {
+    const char ch = path[i] == '/' ? '\\' : path[i];
+    if (tolower(static_cast<unsigned char>(ch)) !=
+        tolower(static_cast<unsigned char>(prefix[i])))
+      return path;
+  }
+
+  size_t end = prefixLength;
+  unsigned int partition = 0;
+  while (end < path.size() && path[end] >= '0' && path[end] <= '9')
+  {
+    partition = partition * 10 + (path[end] - '0');
+    if (partition > MAX_PARTITIONS)
+      return path;
+    ++end;
+  }
+  if (partition == 0 || (end < path.size() && path[end] != '\\' && path[end] != '/'))
+    return path;
+
+  char drive[16];
+  sprintf(drive, "HDD1-%u:", partition);
+  std::string result(drive);
+  if (end == path.size())
+    result += '\\';
+  else
+    for (; end < path.size(); ++end)
+      result += path[end] == '/' ? '\\' : path[end];
+  return result;
+}
+
 INT CIoSupport::GetExtendedPartitionPosition(char mapLetter)
 {
 #ifdef _XBOX
@@ -672,18 +809,16 @@ void CIoSupport::MapExtendedPartitions()
   if (!m_fPartitionTableIsValid)
     return;
   char szDevice[32] = "\\Harddisk0\\Partition0";
-  char driveletter;
-  char extenddriveletter;
   // we start at 5 - the first 5 partitions are the mandatory standard Xbox partitions
   // we don't deal with those here.
   for (int i = EXTEND_PARTITION_BEGIN; i <= (EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT); i++)
   {
     if (m_partitionTable.pt_entries[i - 1].pe_flags & PE_PARTFLAGS_IN_USE)
     {
-      driveletter = 'A' + i - 1;
-      extenddriveletter = extendPartitionMapping[driveletter-EXTEND_DRIVE_BEGIN];
+      char driveletter = 'A' + i - 1;
+      const char extenddriveletter[] = {extendPartitionMapping[driveletter-EXTEND_DRIVE_BEGIN], '\0'};
       CLog::Log(LOGINFO, "  map drive %c:", driveletter);
-      CLog::Log(LOGINFO, "  map extended drive %c:", extenddriveletter);
+      CLog::Log(LOGINFO, "  map extended drive %s:", extenddriveletter);
       szDevice[20] = '1' + i - 1;
       MapDriveLetter(extenddriveletter, szDevice);
     }

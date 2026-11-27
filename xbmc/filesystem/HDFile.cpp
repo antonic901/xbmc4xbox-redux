@@ -16,6 +16,8 @@
 #include <sys/stat.h>
 #include <xtl.h>
 
+#include "platform/xbox/storage/IoSupport.h"
+
 #ifndef INVALID_FILE_ATTRIBUTES
 #define INVALID_FILE_ATTRIBUTES ((DWORD) -1)
 #endif
@@ -51,7 +53,7 @@ std::string CHDFile::GetLocal(const CURL &url)
   }
 
   StringUtils::Replace(path, '/', '\\');
-  return path;
+  return CIoSupport::TranslateMountPath(path);
 }
 
 bool CHDFile::Open(const CURL& url)
@@ -113,6 +115,9 @@ bool CHDFile::SetHidden(const CURL &url, bool hidden)
 {
   std::string path = GetLocal(url);
 
+  if (CIoSupport::IsMountRoot(path))
+    return false;
+
   DWORD attributes = hidden ? FILE_ATTRIBUTE_HIDDEN : FILE_ATTRIBUTE_NORMAL;
   if (SetFileAttributesA(path.c_str(), attributes))
     return true;
@@ -127,6 +132,10 @@ bool CHDFile::OpenForWrite(const CURL& url, bool bOverWrite)
 
   std::string strPathOriginal = strPath;
   strPath = CUtil::GetFatXQualifiedPath(strPath);
+
+  if (CIoSupport::IsMountRoot(strPath))
+    return false;
+
   if (strPathOriginal != strPath)
     CLog::Log(LOGINFO, "CHDFile::OpenForWrite - Truncated filename: %s -> %s", strPathOriginal.c_str(), strPath.c_str());
 
@@ -235,6 +244,9 @@ bool CHDFile::Delete(const CURL& url)
 {
   std::string strFile = GetLocal(url);
 
+  if (CIoSupport::IsMountRoot(strFile))
+    return false;
+
   return ::DeleteFile(strFile.c_str()) ? true : false;
 }
 
@@ -242,6 +254,9 @@ bool CHDFile::Rename(const CURL& url, const CURL& urlnew)
 {
   std::string strFile = GetLocal(url);
   std::string  strNewFile = GetLocal(urlnew);
+
+  if (CIoSupport::IsMountRoot(strFile) || CIoSupport::IsMountRoot(strNewFile))
+    return false;
 
   return ::MoveFile(strFile.c_str(), strNewFile.c_str()) ? true : false;
 }

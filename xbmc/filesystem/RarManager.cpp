@@ -42,6 +42,8 @@
 #include "utils/StringUtils.h"
 #include "utils/Variant.h"
 
+#include "platform/Filesystem.h"
+
 #include <set>
 
 #define EXTRACTION_WARN_SIZE 50*1024*1024
@@ -490,10 +492,11 @@ void CRarManager::ExtractArchive(const std::string& strArchive, const std::strin
 
 int64_t CRarManager::CheckFreeSpace(const std::string& strDrive)
 {
-  ULARGE_INTEGER lTotalFreeBytes;
-  std::string path = CSpecialProtocol::TranslatePath(strDrive);
-  if (GetDiskFreeSpaceEx(path.c_str(), NULL, NULL, &lTotalFreeBytes))
-    return lTotalFreeBytes.QuadPart;
+  using namespace KODI::PLATFORM::FILESYSTEM;
+  int ec;
+  space_info freeSpace = space(CSpecialProtocol::TranslatePath(strDrive), ec);
+  if (ec == 0)
+    return freeSpace.free;
 
   return 0;
 }
