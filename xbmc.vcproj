@@ -5120,6 +5120,9 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 				Name="platform"
 				Filter="">
 				<File
+					RelativePath=".\xbmc\platform\Filesystem.h">
+				</File>
+				<File
 					RelativePath=".\xbmc\platform\xbmc.cpp">
 				</File>
 				<File
@@ -5133,6 +5136,45 @@ bundler xbelogo\saveimage.rdf -o xbelogo\saveimage.xbx
 					</File>
 					<File
 						RelativePath=".\xbmc\platform\xbox\custom_launch_params.h">
+					</File>
+					<File
+						RelativePath=".\xbmc\platform\xbox\Filesystem.cpp">
+						<FileConfiguration
+							Name="Debug|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Profile_FastCap|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release_LTCG|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Debug Xbox No Memory Tracking|Xbox">
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath=".\xbmc\platform\xbox\inttypes.h">

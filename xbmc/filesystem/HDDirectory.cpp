@@ -48,11 +48,11 @@ CHDDirectory::~CHDDirectory(void)
 
 bool CHDDirectory::GetDirectory(const CURL& url, CFileItemList &items)
 {
-  std::string pathWithSlash(CIoSupport::TranslateMountPath(url.Get()));
+  std::string pathWithSlash(url.Get());
   if (!pathWithSlash.empty() && pathWithSlash[pathWithSlash.size() - 1] != '\\')
     pathWithSlash.push_back('\\');
 
-  std::string searchMask(CUtil::GetFatXQualifiedPath(pathWithSlash));
+  std::string searchMask(CUtil::GetFatXQualifiedPath(CIoSupport::TranslateMountPath(pathWithSlash)));
   if (searchMask.empty())
     return false;
 
