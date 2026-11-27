@@ -35,6 +35,9 @@
 #include "utils/StringUtils.h"
 #include "utils/log.h"
 
+#include "platform/Filesystem.h"
+#include "platform/xbox/storage/IoSupport.h"
+
 #pragma warning (disable:4244)
 #pragma warning (disable:4800)
 CXBFileZillaImp* CXBFileZillaImp::mInstance = NULL;
@@ -384,6 +387,7 @@ std::string CXBFileZillaImp::ConvertToDrivename(LPCTSTR Dirname)
   std::string retval = Dirname;
   StringUtils::ToUpper(retval);
   StringUtils::Trim(retval);
+  retval = CIoSupport::TranslateMountPath(retval);
   StringUtils::TrimRight(retval, _T("\\"));
   int index = retval.find(_T("\\"));
   if (index != -1)
@@ -1300,22 +1304,19 @@ CFreeSpace::CFreeSpace()
 
 ULARGE_INTEGER CFreeSpace::GetFreeSpace()
 {
+  using namespace KODI::PLATFORM::FILESYSTEM;
   ULARGE_INTEGER FreeBytesAvailable;    // bytes available
   FreeBytesAvailable.QuadPart = 0;
 
   if (mDrive.empty())
     return FreeBytesAvailable;
 
-  ULARGE_INTEGER TotalNumberOfBytes;    // bytes on disk
-  ULARGE_INTEGER TotalNumberOfFreeBytes; // free bytes on disk
+  int ec;
+  const space_info freeSpace = space(mDrive, ec);
+  if (ec == 0)
+    FreeBytesAvailable.QuadPart = freeSpace.available;
 
-  if (GetDiskFreeSpaceEx(mDrive.c_str(), &FreeBytesAvailable, &TotalNumberOfBytes, &TotalNumberOfFreeBytes))
-    return FreeBytesAvailable;
-  else
-  {
-    FreeBytesAvailable.QuadPart = 0;
-    return FreeBytesAvailable;
-  }
+  return FreeBytesAvailable;
 }
 
 

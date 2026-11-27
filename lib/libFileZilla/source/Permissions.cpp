@@ -31,6 +31,10 @@
 #include "Util.h"
 #include "utils/StringUtils.h"
 
+#ifdef _XBOX
+#include "platform/xbox/storage/IoSupport.h"
+#endif
+
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
@@ -218,7 +222,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
         bIncludeLinks = TRUE;
     else
         bIncludeLinks = FALSE;
-    hFind = FindFirstFile((directory.dir+"\\" + sFileSpec).c_str(), &NextFindFileData);
+    hFind = FindFirstFile(CIoSupport::TranslateMountPath(directory.dir+"\\" + sFileSpec).c_str(), &NextFindFileData);
     while (hFind != INVALID_HANDLE_VALUE)
     {
         FindFileData=NextFindFileData;
@@ -366,7 +370,7 @@ int CPermissions::GetDirectoryListing(LPCTSTR user, std::string dir, t_dirlistin
     }
 
     // Now repeat the search with .lnk added
-    hFind = FindFirstFile((directory.dir+"\\" + sFileSpec + ".lnk").c_str(), &NextFindFileData);
+    hFind = FindFirstFile(CIoSupport::TranslateMountPath(directory.dir+"\\" + sFileSpec + ".lnk").c_str(), &NextFindFileData);
     while (hFind != INVALID_HANDLE_VALUE)
     {
         FindFileData=NextFindFileData;
@@ -606,7 +610,7 @@ int CPermissions::GetDirName(LPCTSTR user, std::string dirname, std::string curr
 
   //realdir and realdirname should now be complete, (realdir contains the existing part, realdirname the other
   StringUtils::Replace(realdirname, "/", "\\");
-  physical = realdir + "\\" + realdirname;
+  physical = CIoSupport::TranslateMountPath(realdir + "\\" + realdirname);
 
   //Restore what we actually want to create
   dir = dir2;
@@ -722,7 +726,7 @@ int CPermissions::GetFileName(LPCTSTR user, std::string filename, std::string cu
     int res=GetRealDirectory(dir,index,directory,truematch);
 
     dir = directory.dir;
-    result = dir+"\\"+filename;
+    result = CIoSupport::TranslateMountPath(dir+"\\"+filename);
     if (res)
         return res;
     if (!directory.bFileRead && op&FOP_READ)
@@ -734,7 +738,7 @@ int CPermissions::GetFileName(LPCTSTR user, std::string filename, std::string cu
     if (!truematch && !directory.bDirSubdirs)
         res |= PERMISSION_DENIED;
     StringUtils::TrimRight(dir, "\\");
-    DWORD nAttributes = GetFileAttributes((dir+"\\"+filename).c_str());
+    DWORD nAttributes = GetFileAttributes(CIoSupport::TranslateMountPath(dir+"\\"+filename).c_str());
     if (nAttributes==0xFFFFFFFF)
     {
         if (!(op&(FOP_WRITE|FOP_APPEND|FOP_CREATENEW)))
@@ -878,26 +882,26 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
         for (std::list<std::string>::iterator iter = PathPieces.begin(); iter!=PathPieces.end(); iter++)
         {
             std::string piece=*iter;
-            DWORD nAttributes=GetFileAttributes((path+"\\"+piece).c_str());
+            DWORD nAttributes=GetFileAttributes(CIoSupport::TranslateMountPath(path+"\\"+piece).c_str());
             if (nAttributes!=0xFFFFFFFF)
             {
                 if (!(nAttributes&FILE_ATTRIBUTE_DIRECTORY))
                     return PERMISSION_DIRNOTFILE;
                 path+="\\"+piece;
             }
-            else if (m_UsersList[user].ResolveLinks() && (nAttributes=GetFileAttributes((path+"\\"+piece+".lnk").c_str()))!=0xFFFFFFFF )
+            else if (m_UsersList[user].ResolveLinks() && (nAttributes=GetFileAttributes(CIoSupport::TranslateMountPath(path+"\\"+piece+".lnk").c_str()))!=0xFFFFFFFF )
             {
                 if (nAttributes&FILE_ATTRIBUTE_DIRECTORY)
                     return PERMISSION_DIRNOTFILE;
 
-                std::string target=GetShortcutTarget((path+"\\"+piece+".lnk").c_str());
+                std::string target=GetShortcutTarget(CIoSupport::TranslateMountPath(path+"\\"+piece+".lnk").c_str());
                 StringUtils::Replace(target, ":u", m_UsersList[user].user);
                 StringUtils::Replace(target, ":U", m_UsersList[user].user);
                 if (target=="")
                     return PERMISSION_NOTFOUND;
                 if (StringUtils::Right(target, 2)!=":\\")
                 {
-                    nAttributes=GetFileAttributes(target.c_str());
+                    nAttributes=GetFileAttributes(CIoSupport::TranslateMountPath(target).c_str());
                     if (nAttributes==0xFFFFFFFF)
                         return PERMISSION_NOTFOUND;
                     else if (!(nAttributes&FILE_ATTRIBUTE_DIRECTORY))
@@ -964,26 +968,26 @@ int CPermissions::GetRealDirectory(std::string directory, int user, t_directory 
         for (std::list<std::string>::iterator iter=PathPieces.begin(); iter!=PathPieces.end(); iter++)
         {
             std::string piece=*iter;
-            DWORD nAttributes=GetFileAttributes((path+"\\"+piece).c_str());
+            DWORD nAttributes=GetFileAttributes(CIoSupport::TranslateMountPath(path+"\\"+piece).c_str());
             if (nAttributes!=0xFFFFFFFF)
             {
                 if (!(nAttributes&FILE_ATTRIBUTE_DIRECTORY))
                     return PERMISSION_FILENOTDIR;
                 path+="\\"+piece;
             }
-            else if (m_UsersList[user].ResolveLinks() && (nAttributes=GetFileAttributes((path+"\\"+piece+".lnk").c_str()))!=0xFFFFFFFF )
+            else if (m_UsersList[user].ResolveLinks() && (nAttributes=GetFileAttributes(CIoSupport::TranslateMountPath(path+"\\"+piece+".lnk").c_str()))!=0xFFFFFFFF )
             {
                 if (nAttributes&FILE_ATTRIBUTE_DIRECTORY)
                     return PERMISSION_NOTFOUND;
 
-                std::string target=GetShortcutTarget((path+"\\"+piece+".lnk").c_str());
+                std::string target=GetShortcutTarget(CIoSupport::TranslateMountPath(path+"\\"+piece+".lnk").c_str());
                 StringUtils::Replace(target, ":u", m_UsersList[user].user);
                 StringUtils::Replace(target, ":U", m_UsersList[user].user);
                 if (target=="")
                     return PERMISSION_NOTFOUND;
                 if (StringUtils::Right(target, 2)!=":\\")
                 {
-                    nAttributes=GetFileAttributes(target.c_str());
+                    nAttributes=GetFileAttributes(CIoSupport::TranslateMountPath(target).c_str());
                     if (nAttributes==0xFFFFFFFF)
                         return PERMISSION_NOTFOUND;
                     else if (!(nAttributes&FILE_ATTRIBUTE_DIRECTORY))
@@ -1356,7 +1360,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
     WIN32_FIND_DATA FindFileData;
     WIN32_FIND_DATA NextFindFileData;
     HANDLE hFind;
-    hFind = FindFirstFile((directory.dir + "\\" + sFileSpec).c_str(), &NextFindFileData);
+    hFind = FindFirstFile(CIoSupport::TranslateMountPath(directory.dir + "\\" + sFileSpec).c_str(), &NextFindFileData);
     while (hFind != INVALID_HANDLE_VALUE)
     {
         FindFileData=NextFindFileData;
@@ -1436,7 +1440,7 @@ int CPermissions::GetShortDirectoryListing(LPCTSTR user, std::string currentDir,
         return 0;
 
     // Now repeat the search with .lnk added
-    hFind = FindFirstFile((directory.dir + "\\" + sFileSpec + ".lnk").c_str(), &NextFindFileData);
+    hFind = FindFirstFile(CIoSupport::TranslateMountPath(directory.dir + "\\" + sFileSpec + ".lnk").c_str(), &NextFindFileData);
     while (hFind != INVALID_HANDLE_VALUE)
     {
         FindFileData=NextFindFileData;
