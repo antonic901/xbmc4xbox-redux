@@ -126,7 +126,7 @@ void CMediaManager::GetLocalDrives(VECSOURCES &localDrives, bool includeQ)
     {
       CMediaSource share;
       share.strPath = StringUtils::Format("%s:\\", drive);
-      share.strName = StringUtils::Format(g_localizeStrings.Get(21438).c_str(), drive);
+      share.strName = StringUtils::Format(g_localizeStrings.Get(21438).c_str(), drive[0]);
       share.m_ignore = true;
       share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
       localDrives.push_back(share);
