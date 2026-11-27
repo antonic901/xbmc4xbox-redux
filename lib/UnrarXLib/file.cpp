@@ -6,6 +6,10 @@
 #include "Util.h"
 #include "utils/URIUtils.h"
 
+#ifdef _XBOX
+#include "platform/xbox/storage/IoSupport.h"
+#endif
+
 //static File *CreatedFiles[32];
 static int RemoveCreatedActive=0;
 
@@ -261,7 +265,14 @@ bool File::Rename(const char *NewName)
 {
   bool success=strcmp(FileName,NewName)==0;
   if (!success)
+  {
+#ifdef _XBOX
+    success=rename(CIoSupport::TranslateMountPath(FileName).c_str(),
+                   CIoSupport::TranslateMountPath(NewName).c_str())==0;
+#else
     success=rename(FileName,NewName)==0;
+#endif
+  }
   if (success)
   {
     strcpy(FileName,NewName);

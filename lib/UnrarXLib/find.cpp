@@ -1,5 +1,9 @@
 #include "rar.hpp"
 
+#ifdef _XBOX
+#include "platform/xbox/storage/IoSupport.h"
+#endif
+
 FindFile::FindFile()
 {
   *FindMask=0;
@@ -248,7 +252,11 @@ HANDLE FindFile::Win32Find(HANDLE hFind,const char *Mask,const wchar *MaskW,stru
     WIN32_FIND_DATA FindData;
     if (hFind==INVALID_HANDLE_VALUE)
     {
+#ifdef _XBOX
+      hFind=FindFirstFile(CIoSupport::TranslateMountPath(CharMask).c_str(),&FindData);
+#else
       hFind=FindFirstFile(CharMask,&FindData);
+#endif
       if (hFind==INVALID_HANDLE_VALUE)
       {
         int SysErr=GetLastError();

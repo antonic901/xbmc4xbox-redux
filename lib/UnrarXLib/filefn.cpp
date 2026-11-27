@@ -1,5 +1,10 @@
 #include "rar.hpp"
 
+#ifdef _XBOX
+#include "platform/Filesystem.h"
+#include "platform/xbox/storage/IoSupport.h"
+#endif
+
 
 void SetDirTime(const char *Name,RarTime *ftm,RarTime *ftc,RarTime *fta)
 {
@@ -9,8 +14,13 @@ void SetDirTime(const char *Name,RarTime *ftm,RarTime *ftc,RarTime *fta)
   bool sa=ftc!=NULL && fta->IsSet();
   if (!WinNT())
     return;
+#ifdef _XBOX
+  HANDLE hFile=CreateFile(CIoSupport::TranslateMountPath(Name).c_str(),GENERIC_WRITE, FILE_SHARE_READ|FILE_SHARE_WRITE,
+                          NULL,OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS,NULL);
+#else
   HANDLE hFile=CreateFile(Name,GENERIC_WRITE,FILE_SHARE_READ|FILE_SHARE_WRITE,
                           NULL,OPEN_EXISTING,FILE_FLAG_BACKUP_SEMANTICS,NULL);
+#endif
   if (hFile==INVALID_HANDLE_VALUE)
     return;
   FILETIME fm,fc,fa;
@@ -52,14 +62,16 @@ bool IsRemovable(const char *Name)
 Int64 GetFreeDisk(const char *Name)
 {
 #ifdef _XBOX
-  char Root[NM];
-  GetPathRoot(Name,Root);
+  using namespace KODI::PLATFORM::FILESYSTEM;
+  // Keep the destination directory so mounted paths retain their partition.
+  char Directory[NM];
+  GetFilePath(Name,Directory);
 
-  ULARGE_INTEGER uiTotalSize,uiTotalFree,uiUserFree;
-    uiUserFree.u.LowPart=uiUserFree.u.HighPart=0;
-  if ( GetDiskFreeSpaceEx( Root, &uiUserFree, &uiTotalSize, &uiTotalFree ) ) {
-    return(int32to64(uiUserFree.u.HighPart,uiUserFree.u.LowPart));
-  }
+  int ec;
+  const space_info freeSpace = space(Directory, ec);
+  if (ec == 0)
+    return int32to64(static_cast<uint32_t>(freeSpace.available >> 32),
+                     static_cast<uint32_t>(freeSpace.available));
   return 0;
 
 //#ifdef _WIN_32
@@ -142,12 +154,12 @@ Int64 GetFreeDisk(const char *Name)
 
 bool FileExist(const char *Name,const wchar *NameW)
 {
-#ifdef _WIN_32
-#ifndef _XBOX
+#ifdef _XBOX
+  return(GetFileAttributes(CIoSupport::TranslateMountPath(Name).c_str())!=0xffffffff);
+#elif defined(_WIN_32)
     if (WinNT() && NameW!=NULL && *NameW!=0)
       return(GetFileAttributesW(NameW)!=0xffffffff);
     else
-#endif
       return(GetFileAttributes(Name)!=0xffffffff);
 #elif defined(ENABLE_ACCESS)
   return(access(Name,0)==0);
@@ -238,12 +250,12 @@ void PrepareToDelete(const char *Name,const wchar *NameW)
 
 uint GetFileAttr(const char *Name,const wchar *NameW)
 {
-#ifdef _WIN_32
-#ifndef _XBOX
+#ifdef _XBOX
+  return(GetFileAttributes(CIoSupport::TranslateMountPath(Name).c_str()));
+#elif defined(_WIN_32)
     if (WinNT() && NameW!=NULL && *NameW!=0)
       return(GetFileAttributesW(NameW));
     else
-#endif
       return(GetFileAttributes(Name));
 #elif defined(_DJGPP)
   return(_chmod(Name,0));
@@ -263,12 +275,12 @@ uint GetFileAttr(const char *Name,const wchar *NameW)
 bool SetFileAttr(const char *Name,const wchar *NameW,uint Attr)
 {
   bool success;
-#ifdef _WIN_32
-#ifndef _XBOX
+#ifdef _XBOX
+  success=SetFileAttributes(CIoSupport::TranslateMountPath(Name).c_str(),Attr)!=0;
+#elif defined(_WIN_32)
     if (WinNT() && NameW!=NULL && *NameW!=0)
       success=SetFileAttributesW(NameW,Attr)!=0;
     else
-#endif
       success=SetFileAttributes(Name,Attr)!=0;
 #elif defined(_DJGPP)
   success=_chmod(Name,1,Attr)!=-1;
@@ -405,7 +417,12 @@ uint CalcFileCRC(File *SrcFile,Int64 Size)
 
 bool RenameFile(const char *SrcName,const wchar *SrcNameW,const char *DestName,const wchar *DestNameW)
 {
+#ifdef _XBOX
+  return(rename(CIoSupport::TranslateMountPath(SrcName).c_str(),
+                CIoSupport::TranslateMountPath(DestName).c_str())==0);
+#else
   return(rename(SrcName,DestName)==0);
+#endif
 }
 
 
@@ -417,7 +434,11 @@ bool DelFile(const char *Name)
 
 bool DelFile(const char *Name,const wchar *NameW)
 {
+#ifdef _XBOX
+  return(remove(CIoSupport::TranslateMountPath(Name).c_str())==0);
+#else
   return(remove(Name)==0);
+#endif
 }
 
 
@@ -429,5 +450,9 @@ bool DelDir(const char *Name)
 
 bool DelDir(const char *Name,const wchar *NameW)
 {
+#ifdef _XBOX
+  return(rmdir(CIoSupport::TranslateMountPath(Name).c_str())==0);
+#else
   return(rmdir(Name)==0);
+#endif
 }
