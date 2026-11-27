@@ -23,6 +23,7 @@
 //////////////////////////////////////////////////////////////////////
 
 #include <xtl.h>
+#include <string>
 
 #if !defined(AFX_IOSUPPORT_H__F084A488_BD6E_49D5_8CD3_0BE62149DB40__INCLUDED_)
 #define AFX_IOSUPPORT_H__F084A488_BD6E_49D5_8CD3_0BE62149DB40__INCLUDED_
@@ -102,7 +103,21 @@ public:
   static HRESULT Dismount(const char* szDevice);
 
   static bool DriveExists(const char* drive);
-  static bool PartitionExists(int nPartition);
+  static bool PartitionExists(int nPartition, int nDrive = 0);
+
+  static bool HasSecondHarddisk();
+  static void MountSecondHarddisk();
+  /*! \brief Check if given path is mount point.
+   Mount point is Z:\Mounts\ or Z:\Mounts\PartitionY\
+   \param path the path to check for
+   \return true if the path is root, false otherwise
+   */
+  static bool IsMountRoot(const std::string& path);
+  /*! \brief Translate mount path to real path.
+   Example: Z:\Mounts\PartitionY\foo to HDD1-Y:\foo
+   \param path the path to translate
+   */
+  static std::string TranslateMountPath(const std::string& path);
 
   static void GetPartition(char cDriveLetter, char* szPartition);
   static void GetDrive(const char* szPartition, char* cDriveLetter);

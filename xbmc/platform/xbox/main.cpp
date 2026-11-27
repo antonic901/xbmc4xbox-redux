@@ -64,6 +64,8 @@ void SetupDriveLetters()
     if (CIoSupport::DriveExists("G"))
       CIoSupport::RemapDriveLetter("G", "Harddisk0\\Partition7");
   }
+
+  CIoSupport::MountSecondHarddisk();
 }
 
 void main()

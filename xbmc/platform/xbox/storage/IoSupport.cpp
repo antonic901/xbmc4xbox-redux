@@ -27,6 +27,7 @@
 #include "ServiceBroker.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/SettingsComponent.h"
+#include "utils/StringUtils.h"
 #include "utils/log.h"
 #ifdef HAS_UNDOCUMENTED
 #ifdef _XBOX
@@ -532,17 +533,17 @@ bool CIoSupport::DriveExists(const char* drive)
 #endif
 }
 
-bool CIoSupport::PartitionExists(int nPartition)
+bool CIoSupport::PartitionExists(int nPartition, int nDrive /* = 0 */)
 {
 #ifdef _XBOX
-  char szPartition[32];
+  char szPartition[64];
   ANSI_STRING part_string;
   NTSTATUS status;
   HANDLE hTemp;
   OBJECT_ATTRIBUTES oa;
   IO_STATUS_BLOCK iosb;
 
-  sprintf(szPartition, "\\Device\\Harddisk0\\Partition%u", nPartition);
+  sprintf(szPartition, "\\Device\\Harddisk%i\\Partition%i", nDrive, nPartition);
   RtlInitAnsiString(&part_string, szPartition);
 
   oa.Attributes = OBJ_CASE_INSENSITIVE;
@@ -637,6 +638,140 @@ bool CIoSupport::ExtendedPartitionMappingExists(char mapLetter)
   }
 #endif
   return false;
+}
+
+bool CIoSupport::HasSecondHarddisk()
+{
+  for (int partition = 1; partition < MAX_PARTITIONS; ++partition)
+    if (PartitionExists(partition, 1))
+      return true;
+
+  return false;
+}
+
+void CIoSupport::MountSecondHarddisk()
+{
+  if (HasSecondHarddisk())
+  {
+    if (CreateDirectoryA("Z:\\Mounts", NULL) || GetLastError() == ERROR_ALREADY_EXISTS)
+    {
+      for (int partition = 1; partition < MAX_PARTITIONS; ++partition)
+      {
+        if (PartitionExists(partition, 1))
+        {
+          char path[48];
+          sprintf(path, "Z:\\Mounts\\Partition%i", partition);
+          if (CreateDirectoryA(path, NULL) || GetLastError() == ERROR_ALREADY_EXISTS)
+          {
+            char szDevice[22];
+            sprintf(szDevice, "Harddisk1\\Partition%i", partition);
+            char cLetter[8];
+            sprintf(cLetter, "HDD1-%i", partition);
+            if (FAILED(RemapDriveLetter(cLetter, szDevice)))
+            {
+              CLog::Log(LOGERROR, "Failed to mount Harddisk1 partition %d at %s", partition, path);
+            }
+            else
+              CLog::Log(LOGINFO, "Mounted Harddisk1 partition %d at %s", partition, path);
+          }
+          else
+            CLog::Log(LOGERROR, "Failed to create mounting point %s (error=%lu)", path, GetLastError());
+        }
+      }
+    }
+    else
+      CLog::Log(LOGERROR, "Unable to create Z:\\Mounts (error=%lu)", GetLastError());
+  }
+}
+
+bool CIoSupport::IsMountRoot(const std::string& path)
+{
+  // Collapse separators and dot components before checking the target.
+  std::string canonical;
+  size_t start = 0;
+  while (start < path.size())
+  {
+    size_t end = path.find_first_of("/\\", start);
+    if (end == std::string::npos)
+      end = path.size();
+    const size_t length = end - start;
+    if (length == 2 && path.compare(start, length, "..") == 0)
+    {
+      const size_t separator = canonical.rfind('\\');
+      if (separator != std::string::npos)
+        canonical.erase(separator);
+    }
+    else if (length != 0 && !(length == 1 && path[start] == '.'))
+    {
+      if (!canonical.empty())
+        canonical += '\\';
+      canonical.append(path, start, length);
+    }
+    start = end + 1;
+  }
+
+  if (StringUtils::EqualsNoCase(canonical, "Z:\\Mounts"))
+    return true;
+
+  // Recognize both the visible mount points and translated drive roots.
+  const char* mountPrefix = "Z:\\Mounts\\Partition";
+  const char* drivePrefix = "HDD1-";
+  size_t number;
+  size_t end = canonical.size();
+  if (StringUtils::StartsWithNoCase(canonical, mountPrefix))
+    number = strlen(mountPrefix);
+  else if (StringUtils::StartsWithNoCase(canonical, drivePrefix) &&
+           !canonical.empty() && canonical[canonical.size() - 1] == ':')
+  {
+    number = strlen(drivePrefix);
+    --end;
+  }
+  else
+    return false;
+
+  if (number == end)
+    return false;
+  for (size_t i = number; i < end; ++i)
+    if (canonical[i] < '0' || canonical[i] > '9')
+      return false;
+  return true;
+}
+
+std::string CIoSupport::TranslateMountPath(const std::string& path)
+{
+  const char* prefix = "Z:\\Mounts\\Partition";
+  const size_t prefixLength = strlen(prefix);
+  if (path.size() < prefixLength)
+    return path;
+  for (size_t i = 0; i < prefixLength; ++i)
+  {
+    const char ch = path[i] == '/' ? '\\' : path[i];
+    if (tolower(static_cast<unsigned char>(ch)) !=
+        tolower(static_cast<unsigned char>(prefix[i])))
+      return path;
+  }
+
+  size_t end = prefixLength;
+  unsigned int partition = 0;
+  while (end < path.size() && path[end] >= '0' && path[end] <= '9')
+  {
+    partition = partition * 10 + (path[end] - '0');
+    if (partition > MAX_PARTITIONS)
+      return path;
+    ++end;
+  }
+  if (partition == 0 || (end < path.size() && path[end] != '\\' && path[end] != '/'))
+    return path;
+
+  char drive[16];
+  sprintf(drive, "HDD1-%u:", partition);
+  std::string result(drive);
+  if (end == path.size())
+    result += '\\';
+  else
+    for (; end < path.size(); ++end)
+      result += path[end] == '/' ? '\\' : path[end];
+  return result;
 }
 
 INT CIoSupport::GetExtendedPartitionPosition(char mapLetter)

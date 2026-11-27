@@ -119,16 +119,29 @@ void CMediaManager::GetLocalDrives(VECSOURCES &localDrives, bool includeQ)
   share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
   share.strName = StringUtils::Format(g_localizeStrings.Get(21438).c_str(),'E');
   localDrives.push_back(share);
-  for (int driveCount=EXTEND_PARTITION_BEGIN;driveCount<=(EXTEND_PARTITION_BEGIN+EXTEND_PARTITIONS_LIMIT-1);driveCount++)
+  for (int i = 0; i < EXTEND_PARTITIONS_LIMIT; ++i)
   {
-    const char drive[] = {CIoSupport::GetExtendedPartitionDriveLetter(driveCount-EXTEND_PARTITION_BEGIN), '\0'}
+    const char drive[] = {CIoSupport::GetExtendedPartitionDriveLetter(i), '\0'};
     if (CIoSupport::DriveExists(drive))
     {
       CMediaSource share;
       share.strPath = StringUtils::Format("%s:\\", drive);
-      CLog::Log(LOGINFO, "  Local Source Drive %s:", drive);
       share.strName = StringUtils::Format(g_localizeStrings.Get(21438).c_str(), drive);
       share.m_ignore = true;
+      share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
+      localDrives.push_back(share);
+    }
+  }
+  for (int i = 1; i <= MAX_PARTITIONS; ++i)
+  {
+    const std::string drive = StringUtils::Format("HDD1-%i", i).c_str();
+    if (CIoSupport::DriveExists(drive.c_str()))
+    {
+      CMediaSource share;
+      share.strPath = StringUtils::Format("Z:\\Mounts\\Partition%i\\", i);
+      share.strName = StringUtils::Format("Second HDD - Partition %i", i);
+      share.m_ignore = true;
+      share.m_iDriveType = CMediaSource::SOURCE_TYPE_LOCAL;
       localDrives.push_back(share);
     }
   }
