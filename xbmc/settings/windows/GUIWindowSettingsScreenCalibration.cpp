@@ -485,7 +485,7 @@ bool CGUIWindowSettingsScreenCalibration::UpdateFromControl(int iControl)
 
   // Set resolution info text
   std::string resInfo =
-        StringUtils::Format("%s %ix%i - %s", g_localizeStrings.Get(13287), info.iWidth,
+        StringUtils::Format("%s %ix%i - %s", g_localizeStrings.Get(13287).c_str(), info.iWidth,
                             info.iHeight, info.strMode.c_str());
   SET_CONTROL_LABEL(CONTROL_LABEL_RES, resInfo);
 

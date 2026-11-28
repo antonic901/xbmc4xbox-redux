@@ -375,7 +375,7 @@ void CDisplaySettings::UpdateCalibrations()
   for (ResolutionInfos::iterator cal = m_calibrations.begin(); cal != m_calibrations.end(); ++cal)
   {
     ResolutionInfos::const_iterator res(std::find_if(m_resolutions.begin(), m_resolutions.end(),
-    boost::bind(&ModeEquals, *res, _1)));
+    boost::bind(&ModeEquals, *cal, _1)));
 
     if (res != m_resolutions.end())
     {
