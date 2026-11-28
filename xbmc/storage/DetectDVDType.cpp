@@ -48,6 +48,7 @@ int CDetectDVDMedia::m_DriveState = DRIVE_CLOSED_NO_MEDIA;
 CCdInfo* CDetectDVDMedia::m_pCdInfo = NULL;
 CDetectDVDMedia* CDetectDVDMedia::m_pInstance = NULL;
 std::string CDetectDVDMedia::m_diskLabel = "";
+std::string CDetectDVDMedia::m_xboxDiscTitleID = "";
 std::string CDetectDVDMedia::m_diskPath = "";
 
 CDetectDVDMedia::CDetectDVDMedia() : CThread("CDetectDVDMedia")
@@ -323,6 +324,7 @@ void CDetectDVDMedia::SetNewDVDShareUrl( const std::string& strNewUrl, bool bCDD
     if (titleID != 0)
       m_xboxDiscTitleID = StringUtils::Format("%08X", titleID);
   }
+}
 
 DWORD CDetectDVDMedia::GetTrayState()
 {
