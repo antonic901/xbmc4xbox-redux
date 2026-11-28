@@ -94,7 +94,11 @@ typedef struct _PARTITION_TABLE
 class CIoSupport
 {
 public:
-  static VOID GetXbePath(char* szDest);
+  /*! \brief Find DOS-like path of running executable.
+   
+   \param szDest pointer to memory where path will be stored
+   */
+  static void GetXbePath(char* szDest);
 
   static HRESULT MapDriveLetter(const char* drive, const char* szDevice);
   static HRESULT UnmapDriveLetter(const char* drive);

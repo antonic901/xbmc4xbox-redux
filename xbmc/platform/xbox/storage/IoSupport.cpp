@@ -434,28 +434,20 @@ BOOL CIoSupport::IsDebug()
 }
 
 
-VOID CIoSupport::GetXbePath(char* szDest)
+void CIoSupport::GetXbePath(char* szDest)
 {
-#ifdef _XBOX
-  //Function to get the XBE Path like:
-  //E:\DevKit\xbplayer\xbplayer.xbe
+  if (strncmp(XeImageFileName->Buffer, "\\Device\\CdRom0\\", 15) == 0)
+  {
+    sprintf(szDest, "D:\\%s", XeImageFileName->Buffer + 15);
+  }
+  else
+  {
+    char cDriveLetter = 0;
+    GetDrive(XeImageFileName->Buffer + 8, &cDriveLetter);
 
-  char szTemp[MAX_PATH];
-  char cDriveLetter = 0;
-
-  strncpy(szTemp, XeImageFileName->Buffer + 8, XeImageFileName->Length - 8);
-  szTemp[20] = 0;
-  GetDrive(szTemp, &cDriveLetter);
-
-  strncpy(szTemp, XeImageFileName->Buffer + 29, XeImageFileName->Length - 29);
-  szTemp[XeImageFileName->Length - 29] = 0;
-
-  sprintf(szDest, "%c:\\%s", cDriveLetter, szTemp);
-
-#else
-  GetCurrentDirectory(XBMC_MAX_PATH, szDest);
-  strcat(szDest, "\\XBMC_PC.exe");
-#endif
+    char* szPath = strchr(XeImageFileName->Buffer + 18, '\\');
+    sprintf(szDest, "%c:%s", cDriveLetter, szPath);
+  }
 }
 
 bool CIoSupport::DriveExists(const char* drive)
