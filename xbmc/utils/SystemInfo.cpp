@@ -1360,27 +1360,30 @@ std::string CSysInfo::GetUnits(int iFrontPort)
   // Values 14 -> on Port 2&3&4
   // Values 15 -> on Port 1&2&3&4
 
-  bool bPad=false, bMem=false, bKeyb=false, bHeadSet=false, bMic=false, bIR=false;
+  bool bMem = false;
+  if (iFrontPort >= 1 && iFrontPort <= 4)
+  {
+    DWORD portMask = 1u << (iFrontPort - 1);
+    bMem = (dwDeviceMemory & (portMask | (portMask << 16))) != 0;
+  }
+
+  bool bPad=false, bKeyb=false, bHeadSet=false, bMic=false, bIR=false;
   if (iFrontPort == 1)
   {
     bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 1 || dwDeviceGamePad == 3 || dwDeviceGamePad == 5 || dwDeviceGamePad == 7 || dwDeviceGamePad == 9 || dwDeviceGamePad == 11 || dwDeviceGamePad == 13 || dwDeviceGamePad == 15;
-    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 1 || dwDeviceMemory == 3 || dwDeviceMemory == 5 || dwDeviceMemory == 7 || dwDeviceMemory == 9 || dwDeviceMemory == 11 || dwDeviceMemory == 13 || dwDeviceMemory == 15;
   }
   else if (iFrontPort == 2)
   {
     bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 2 || dwDeviceGamePad == 3 || dwDeviceGamePad == 6 || dwDeviceGamePad == 7 || dwDeviceGamePad == 10 || dwDeviceGamePad == 11 || dwDeviceGamePad == 14 || dwDeviceGamePad == 15;
-    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 2 || dwDeviceMemory == 3 || dwDeviceMemory == 6 || dwDeviceMemory == 7 || dwDeviceMemory == 10 || dwDeviceMemory == 11 || dwDeviceMemory == 14 || dwDeviceMemory == 15;
   }
   else if (iFrontPort == 3)
   {
     bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 4 || dwDeviceGamePad == 5 || dwDeviceGamePad == 6 || dwDeviceGamePad == 7 || dwDeviceGamePad == 12 || dwDeviceGamePad == 13 || dwDeviceGamePad == 14 || dwDeviceGamePad == 15;
-    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 4 || dwDeviceMemory == 5 || dwDeviceMemory == 6 || dwDeviceMemory == 7 || dwDeviceMemory == 12 || dwDeviceMemory == 13 || dwDeviceMemory == 14 || dwDeviceMemory == 15;
     iFrontPort = 4;
   }
   else if (iFrontPort == 4)
   {
     bPad = dwDeviceGamePad > 0 && dwDeviceGamePad == 8 || dwDeviceGamePad == 9 || dwDeviceGamePad == 10 || dwDeviceGamePad == 11 || dwDeviceGamePad == 12 || dwDeviceGamePad == 13 || dwDeviceGamePad == 14 || dwDeviceGamePad == 15;
-    bMem = dwDeviceMemory > 0 && dwDeviceMemory == 8 || dwDeviceMemory == 9 || dwDeviceMemory == 10 || dwDeviceMemory == 11 || dwDeviceMemory == 12 || dwDeviceMemory == 13 || dwDeviceMemory == 14 || dwDeviceMemory == 15;
     iFrontPort = 8;
   }
   bKeyb = dwDeviceKeyboard > 0 && dwDeviceKeyboard == iFrontPort;
