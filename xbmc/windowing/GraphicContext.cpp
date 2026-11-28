@@ -288,44 +288,51 @@ void CGraphicContext::SetScissors(const CRect &rect)
   // Rect. See https://github.com/antonic901/xbmc4xbox-redux/issues/161
   D3DRECT scissors[4];
   int scissorCount = 0;
+  int left = MathUtils::round_int(m_scissors.x1);
+  int top = MathUtils::round_int(m_scissors.y1);
+  int right = MathUtils::round_int(m_scissors.x2);
+  int bottom = MathUtils::round_int(m_scissors.y2);
 
-  if (m_scissors.y1 > 0)
+  if (top > 0)
   {
     scissors[scissorCount].x1 = 0;
     scissors[scissorCount].y1 = 0;
     scissors[scissorCount].x2 = m_iScreenWidth;
-    scissors[scissorCount].y2 = MathUtils::round_int(m_scissors.y1);
+    scissors[scissorCount].y2 = top;
     scissorCount++;
   }
 
-  if (m_scissors.y2 < m_iScreenHeight)
+  if (bottom < m_iScreenHeight)
   {
     scissors[scissorCount].x1 = 0;
-    scissors[scissorCount].y1 = MathUtils::round_int(m_scissors.y2);
+    scissors[scissorCount].y1 = bottom;
     scissors[scissorCount].x2 = m_iScreenWidth;
     scissors[scissorCount].y2 = m_iScreenHeight;
     scissorCount++;
   }
 
-  if (m_scissors.x1 > 0)
+  if (left > 0 && top < bottom)
   {
     scissors[scissorCount].x1 = 0;
-    scissors[scissorCount].y1 = MathUtils::round_int(m_scissors.y1);
-    scissors[scissorCount].x2 = MathUtils::round_int(m_scissors.x1);
-    scissors[scissorCount].y2 = MathUtils::round_int(m_scissors.y2);
+    scissors[scissorCount].y1 = top;
+    scissors[scissorCount].x2 = left;
+    scissors[scissorCount].y2 = bottom;
     scissorCount++;
   }
 
-  if (m_scissors.x2 < m_iScreenWidth)
+  if (right < m_iScreenWidth && top < bottom)
   {
-    scissors[scissorCount].x1 = MathUtils::round_int(m_scissors.x2);
-    scissors[scissorCount].y1 = MathUtils::round_int(m_scissors.y1);
+    scissors[scissorCount].x1 = right;
+    scissors[scissorCount].y1 = top;
     scissors[scissorCount].x2 = m_iScreenWidth;
-    scissors[scissorCount].y2 = MathUtils::round_int(m_scissors.y2);
+    scissors[scissorCount].y2 = bottom;
     scissorCount++;
   }
 
-  m_pd3dDevice->SetScissors(scissorCount, TRUE, scissors);
+  if (scissorCount)
+    m_pd3dDevice->SetScissors(scissorCount, TRUE, scissors);
+  else
+    m_pd3dDevice->SetScissors(0, FALSE, NULL);
 }
 
 void CGraphicContext::ResetScissors()
