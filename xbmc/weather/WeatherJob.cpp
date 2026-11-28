@@ -540,7 +540,7 @@ bool CWeatherJob::FetchInternalWeather(const std::string& strLocationID, const s
     int humidity = window->GetProperty("Current.Humidity").asInteger32();
     window->SetProperty("Current.DewPoint", CalculateDewPoint(temperature, humidity));
 
-    element = doc.RootElement()->FirstChildElement("location")->FirstChildElement("day");
+    element = doc.RootElement()->FirstChildElement("location")->FirstChildElement("day")->NextSiblingElement("day");
     if (!element)
       return false;
 
@@ -594,7 +594,7 @@ bool CWeatherJob::FetchInternalWeather(const std::string& strLocationID, const s
     }
 
     // Parse daily forecast
-    element = doc.RootElement()->FirstChildElement("location")->FirstChildElement("day");
+    element = doc.RootElement()->FirstChildElement("location")->FirstChildElement("day")->NextSiblingElement("day");
     i = 1;
     while(element)
     {
